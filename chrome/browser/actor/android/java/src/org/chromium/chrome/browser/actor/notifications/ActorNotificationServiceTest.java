@@ -27,6 +27,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +76,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowSystemClock.class})
+@Config(
+        sdk = VERSION_CODES.BAKLAVA,
+        shadows = {ShadowSystemClock.class})
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
 public class ActorNotificationServiceTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -2043,6 +2046,32 @@ public class ActorNotificationServiceTest {
 
         assertSame(task2Notification, findNotification(/* tag= */ null, 2));
         assertTrue(getPromotedTaskIds().isEmpty());
+    }
+
+    @Test
+    @Config(
+            sdk = VERSION_CODES.VANILLA_ICE_CREAM,
+            shadows = {ShadowSystemClock.class})
+    public void testPreAndroid16_CompletedTaskNotOngoingAndNoDemotionScheduled() {
+        setUpTask(1);
+        setUpTask(2);
+        updateTask(1, ActorTaskState.ACTING);
+        updateTask(2, ActorTaskState.ACTING);
+        Notification task2Notification = findNotification(/* tag= */ null, 2);
+
+        updateTask(1, ActorTaskState.PAUSED_BY_USER);
+        assertSame(task2Notification, findNotification(/* tag= */ null, 2));
+        assertTrue(getPromotedTaskIds().isEmpty());
+
+        updateTask(1, ActorTaskState.FINISHED);
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(1));
+        assertFalse(mNotificationService.hasPendingDemotions());
+        Notification completedNotification = findNotification(/* tag= */ null, 1);
+        assertNotNull(completedNotification);
+        assertEquals(0, completedNotification.flags & Notification.FLAG_ONGOING_EVENT);
+        assertFalse(
+                completedNotification.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
     }
 
     private void setUpTask(int taskId) {

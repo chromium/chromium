@@ -194,7 +194,7 @@ public class ActorNotificationService {
             mLastWorklogUpdateTimes.remove(taskId);
         }
         Integer oldState = mTaskStates.get(taskId);
-        if (ChromeFeatureList.sActorLiveNotification.isEnabled()
+        if (ActorUtils.isLiveNotificationEnabled()
                 && getTask(taskId) != null
                 && (oldState == null
                         || ActorNotificationFactory.shouldUpdateNotification(oldState, newState))) {
@@ -213,8 +213,7 @@ public class ActorNotificationService {
             notifyTaskNotification(current);
         }
 
-        if (getLiveTaskId() == taskId
-                && ActorUtils.isOngoingNotification(ActorUtils.isCompletedState(newState))) {
+        if (getLiveTaskId() == taskId && ActorUtils.isCompletedState(newState)) {
             scheduleDemotion(taskId);
         }
     }

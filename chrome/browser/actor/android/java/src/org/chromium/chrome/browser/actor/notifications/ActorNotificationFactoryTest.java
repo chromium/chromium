@@ -19,6 +19,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.ActivityState;
@@ -39,6 +41,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.actor.foreground_service.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -50,6 +53,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Unit tests for {@link ActorNotificationFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = VERSION_CODES.BAKLAVA)
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
 public class ActorNotificationFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -715,6 +719,80 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_live_status_stopped),
                 stoppedNotif.extras.getCharSequence(
                         ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testBuildNotification_PreAndroid16_CompletedNotOngoingAndNoPromotedExtras() {
+        assertFalse(
+                "Live ongoing notifications require Android 16+",
+                ActorUtils.isOngoingNotification(/* isLive= */ true));
+
+        NotificationWrapper actingWrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.ACTING,
+                        /* isSilent= */ false,
+                        /* isWarning= */ false);
+        assertNotNull(actingWrapper);
+        Notification actingNotif = actingWrapper.getNotification();
+        assertTrue(
+                "Active notification on Android 15 must still be ongoing",
+                (actingNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertFalse(
+                "Active notification on Android 15 must not request promoted ongoing",
+                actingNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertNull(
+                (Object)
+                        actingNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        NotificationWrapper finishedWrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.FINISHED,
+                        /* isSilent= */ false,
+                        /* isWarning= */ false);
+        assertNotNull(finishedWrapper);
+        Notification finishedNotif = finishedWrapper.getNotification();
+        assertFalse(
+                "Completed notification on Android 15 must not be ongoing",
+                (finishedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Completed notification on Android 15 must have auto-cancel enabled",
+                (finishedNotif.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertFalse(
+                "Completed notification on Android 15 must not request promoted ongoing",
+                finishedNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertNull(
+                (Object)
+                        finishedNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
+
+        NotificationWrapper stoppedWrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.FAILED,
+                        /* isSilent= */ false,
+                        /* isWarning= */ false);
+        assertNotNull(stoppedWrapper);
+        Notification stoppedNotif = stoppedWrapper.getNotification();
+        assertFalse(
+                "Stopped notification on Android 15 must not be ongoing",
+                (stoppedNotif.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Stopped notification on Android 15 must have auto-cancel enabled",
+                (stoppedNotif.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertFalse(
+                "Stopped notification on Android 15 must not request promoted ongoing",
+                stoppedNotif.extras.getBoolean(
+                        ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+        assertNull(
+                (Object)
+                        stoppedNotif.extras.getCharSequence(
+                                ActorNotificationFactory.EXTRA_SHORT_CRITICAL_TEXT));
     }
 
     private void assertSmallIcon(Notification notification) {

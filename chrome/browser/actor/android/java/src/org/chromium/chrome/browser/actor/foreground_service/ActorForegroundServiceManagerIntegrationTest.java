@@ -21,6 +21,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Notification;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -70,7 +71,9 @@ import java.util.concurrent.TimeUnit;
 
 /** Integration tests for {@link ActorForegroundServiceManager} notification pinning. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowSystemClock.class})
+@Config(
+        sdk = VERSION_CODES.BAKLAVA,
+        shadows = {ShadowSystemClock.class})
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ACTOR_TASK_TIMEOUT,
     ChromeFeatureList.ACTOR_LIVE_NOTIFICATION,

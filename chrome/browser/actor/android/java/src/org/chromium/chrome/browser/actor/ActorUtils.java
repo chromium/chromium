@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.actor;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -18,15 +20,22 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 @NullMarked
 public class ActorUtils {
     /**
+     * @return True if Android 16+ live notifications (promoted ongoing) are enabled.
+     */
+    public static boolean isLiveNotificationEnabled() {
+        return VERSION.SDK_INT >= VERSION_CODES.BAKLAVA
+                && ChromeFeatureList.sActorLiveNotification.isEnabled();
+    }
+
+    /**
      * Determines whether a notification should be ongoing. Ongoing status is used for live
-     * notifications and is gated on {@link ChromeFeatureList#sActorLiveNotification}, which
-     * controls Android 16 live notification (promoted ongoing) support.
+     * notifications and is gated on {@link #isLiveNotificationEnabled()}.
      *
      * @param isLive Whether the notification is requested to be live.
      * @return True if the notification should be ongoing.
      */
     public static boolean isOngoingNotification(boolean isLive) {
-        return isLive && ChromeFeatureList.sActorLiveNotification.isEnabled();
+        return isLive && isLiveNotificationEnabled();
     }
 
     /**

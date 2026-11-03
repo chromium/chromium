@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.MediumTest;
 
@@ -31,6 +32,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -291,6 +293,7 @@ public class ActorNotificationClickIntegrationTest {
      */
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.BAKLAVA)
     @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
     public void testCompletedTaskWithUnreadableState_DemotesLiveNotification() throws Exception {
         int taskId = 202;
