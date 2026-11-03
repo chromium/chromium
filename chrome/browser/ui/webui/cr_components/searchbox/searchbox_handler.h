@@ -51,9 +51,12 @@ class WebContents;
 namespace searchbox_internal {
 // Internal constants for icon resource paths shared by SearchboxHandler and its
 // subclasses.
-extern const char* kSearchSparkIconResourceName;
-extern const char* kReplyRotated180IconResourceName;
-extern const char* kDockToRightIconResourceName;
+inline constexpr char kSearchSparkIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/search_spark.svg";
+inline constexpr char kReplyRotated180IconResourceName[] =
+    "//resources/cr_components/searchbox/icons/reply_rotated180.svg";
+inline constexpr char kDockToRightIconResourceName[] =
+    "//resources/cr_components/searchbox/icons/dock_to_right.svg";
 }  // namespace searchbox_internal
 
 namespace gfx {
