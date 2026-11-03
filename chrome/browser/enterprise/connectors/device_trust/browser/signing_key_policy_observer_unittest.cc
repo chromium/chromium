@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/browser/siging_key_policy_observer.h"
+#include "chrome/browser/enterprise/connectors/device_trust/browser/signing_key_policy_observer.h"
+
 #include "components/enterprise/device_trust/core/common_types.h"
 #include "components/enterprise/device_trust/core/mock_device_trust_key_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
