@@ -280,6 +280,7 @@ test("crypto_unittests") {
   if (is_apple) {
     if (!(is_ios && target_platform == "tvos")) {
       sources += [
+        "apple/fake_keychain_v2_unittest.mm",
         "apple/keychain_util_unittest.mm",
         "apple/unexportable_key_apple_unittest.mm",
       ]

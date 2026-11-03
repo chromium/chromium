@@ -59,6 +59,14 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,
                       CFDictionaryRef keychain_data) override;
+  // `AddGenericPassword()` and `FindGenericPassword()` were migrated from the
+  // legacy Keychain V1 mock (crbug.com/441317288) for callers like OSCrypt that
+  // access a keychain password without `kSecAttrAccessGroup`. Neither touches
+  // `items_`: `AddGenericPassword()` only records `called_add_generic_`, and
+  // `FindGenericPassword()` returns a canned password gated by
+  // `set_find_generic_result()`. Callers storing generic passwords scoped to
+  // `kSecAttrAccessGroup` use `ItemAdd()`, `ItemCopyMatching()`,
+  // `ItemUpdate()`, and `ItemDelete()`, which operate on `items_`.
   OSStatus AddGenericPassword(std::string_view service_name,
                               std::string_view account_name,
                               base::span<const uint8_t> password) override;
@@ -98,6 +106,12 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
     item_update_result_ = result;
   }
 
+  // Same as `set_item_update_result()`, for `ItemAdd()`.
+  void set_item_add_result(OSStatus result) {
+    base::AutoLock auto_lock(lock_);
+    item_add_result_ = result;
+  }
+
 #if !BUILDFLAG(IS_IOS)
   base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
       SecTaskRef task,
@@ -116,7 +130,8 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
 
   UVMethod uv_method_ GUARDED_BY(lock_) = UVMethod::kBiometrics;
 
-  // items_ contains the keychain items created by `KeyCreateRandomKey`.
+  // Contains the keychain items created by `KeyCreateRandomKey()` or added via
+  // `ItemAdd()`.
   std::vector<base::apple::ScopedCFTypeRef<CFDictionaryRef>> items_
       GUARDED_BY(lock_);
   // keychain_access_group_ is the value of `kSecAttrAccessGroup` that this
@@ -131,6 +146,9 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
 
   // Result code for the |ItemUpdate()| method.
   OSStatus item_update_result_ GUARDED_BY(lock_) = noErr;
+
+  // Result code for the `ItemAdd()` method.
+  OSStatus item_add_result_ GUARDED_BY(lock_) = noErr;
 };
 
 }  // namespace crypto::apple
