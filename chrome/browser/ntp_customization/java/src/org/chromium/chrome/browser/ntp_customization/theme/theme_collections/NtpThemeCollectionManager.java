@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -38,11 +39,13 @@ public class NtpThemeCollectionManager {
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Callback<Bitmap> mOnThemeImageSelectedCallback;
-    private boolean mOtherBackgroundTypeSelected;
     private final @Nullable ImageFetcher mImageFetcher;
-    private boolean mIsDestroyed;
+    private boolean mHasActiveSelection;
     private @Nullable Runnable mFetchNextImageRunnable;
-    private @Nullable CollectionImage mSelectingThemeCollectionImage;
+    // Cancels the callback of the in-flight download when a newer selection starts, or when the
+    // current selection is canceled or destroyed, so that any stale result is dropped when it
+    // arrives.
+    private @Nullable CallbackController mDownloadCallbackController;
 
     /**
      * Constructs a new NtpThemeCollectionManager.
@@ -61,10 +64,13 @@ public class NtpThemeCollectionManager {
         mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
     }
 
-    /** Cleans up the C++ side of {@link NtpThemeCollectionBridge}. */
+    /**
+     * Cleans up the C++ side of {@link NtpThemeCollectionBridge} and cancels any in-flight
+     * download.
+     */
     public void destroy() {
         mNtpThemeCollectionBridge.destroy();
-        mIsDestroyed = true;
+        cancelPendingSelection();
     }
 
     /**
@@ -120,15 +126,16 @@ public class NtpThemeCollectionManager {
      * @param image The {@link CollectionImage} selected by the user.
      */
     public void setThemeCollectionImage(CollectionImage image) {
-        resetSelectionState();
-        mSelectingThemeCollectionImage = image;
+        cancelPendingSelection();
+        mHasActiveSelection = true;
         mNtpThemeCollectionBridge.setThemeCollectionImage(image);
     }
 
     /** Cancels any in-flight theme collection selection or download. */
     public void cancelPendingSelection() {
-        resetSelectionState();
-        mOtherBackgroundTypeSelected = true;
+        mHasActiveSelection = false;
+        mFetchNextImageRunnable = null;
+        resetDownloadCallbackController();
     }
 
     /**
@@ -139,57 +146,59 @@ public class NtpThemeCollectionManager {
      */
     @VisibleForTesting
     public void onCustomBackgroundImageUpdated(@Nullable CustomBackgroundInfo info) {
-        if (mImageFetcher == null
+        if (!mHasActiveSelection
+                || mImageFetcher == null
                 || info == null
                 || !info.backgroundUrl.isValid()
                 || info.backgroundUrl.isEmpty()) {
             return;
         }
 
+        resetDownloadCallbackController();
+        mDownloadCallbackController = new CallbackController();
         NtpCustomizationUtils.fetchThemeCollectionImage(
                 mImageFetcher,
                 info.backgroundUrl,
-                (bitmap) -> {
-                    if (bitmap == null) {
-                        return;
-                    }
+                mDownloadCallbackController.makeCancelable(
+                        (bitmap) -> handleFetchedThemeCollectionImage(info, bitmap)));
+    }
 
-                    BackgroundImageInfo backgroundImageInfo =
-                            NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
+    /**
+     * Applies the downloaded theme collection bitmap image. A superseded, canceled, or destroyed
+     * download is canceled via {@link #mDownloadCallbackController} before reaching this method.
+     *
+     * @param info The {@link CustomBackgroundInfo} containing theme collection metadata.
+     * @param bitmap The fetched background image bitmap, or {@code null} if downloading failed.
+     */
+    private void handleFetchedThemeCollectionImage(
+            CustomBackgroundInfo info, @Nullable Bitmap bitmap) {
+        if (bitmap == null) {
+            mFetchNextImageRunnable = null;
+            return;
+        }
 
-                    // We do not set the theme collection image as the background if the bottom
-                    // sheet is dismissed; this is done to ensure proper theme color handling. Note
-                    // that this does not affect the prepared daily refresh image, as we only save
-                    // the primary color for that case.
-                    if (mIsDestroyed) {
-                        return;
-                    }
+        BackgroundImageInfo backgroundImageInfo =
+                NtpCustomizationUtils.getDefaultBackgroundImageInfo(mContext, bitmap);
 
-                    if (!shouldProcessThemeUpdate(info)) {
-                        return;
-                    }
+        String fileId = null;
+        if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
+            fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
+        }
+        NtpBackgroundDataThemeCollection backgroundData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        backgroundImageInfo,
+                        bitmap,
+                        /* primaryColor= */ null,
+                        fileId);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
+        mOnThemeImageSelectedCallback.onResult(bitmap);
 
-                    String fileId = null;
-                    if (NtpCustomizationUtils.isNTPCustomizationSyncEnabled()) {
-                        fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
-                    }
-                    NtpBackgroundDataThemeCollection backgroundData =
-                            new NtpBackgroundDataThemeCollection(
-                                    PlatformType.ANDROID,
-                                    info,
-                                    backgroundImageInfo,
-                                    bitmap,
-                                    /* primaryColor= */ null,
-                                    fileId);
-                    mNtpCustomizationConfigManager.onBackgroundDataChanged(
-                            mContext, backgroundData);
-                    mOnThemeImageSelectedCallback.onResult(bitmap);
-
-                    if (mFetchNextImageRunnable != null) {
-                        mFetchNextImageRunnable.run();
-                        mFetchNextImageRunnable = null;
-                    }
-                });
+        if (mFetchNextImageRunnable != null) {
+            mFetchNextImageRunnable.run();
+            mFetchNextImageRunnable = null;
+        }
     }
 
     /**
@@ -198,55 +207,17 @@ public class NtpThemeCollectionManager {
      * @param themeCollectionId The id of the theme collection
      */
     public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
-        resetSelectionState();
-        mFetchNextImageRunnable = this::fetchNextThemeCollectionImage;
+        cancelPendingSelection();
+        mHasActiveSelection = true;
+        mFetchNextImageRunnable = mNtpThemeCollectionBridge::fetchNextThemeCollectionImage;
         mNtpThemeCollectionBridge.setThemeCollectionDailyRefreshed(themeCollectionId);
     }
 
-    /** Fetches the next image for a theme collection with daily refresh enabled. */
-    private void fetchNextThemeCollectionImage() {
-        mNtpThemeCollectionBridge.fetchNextThemeCollectionImage();
-    }
-
-    /** Clears the state related to pending theme selections. */
-    private void resetSelectionState() {
-        mFetchNextImageRunnable = null;
-        mSelectingThemeCollectionImage = null;
-        mOtherBackgroundTypeSelected = false;
-    }
-
-    /**
-     * Determines whether a fetched theme update from the native side should be applied. This
-     * prevents applying a theme that the user has already navigated away from.
-     *
-     * <p>An asynchronous image fetch might complete after the user has already changed their
-     * selection. This method ensures that only the update corresponding to the user's most recent
-     * choice is processed.
-     *
-     * @param info The {@link CustomBackgroundInfo} of the theme update received from native.
-     * @return {@code true} if the theme update should be processed and applied, {@code false}
-     *     otherwise.
-     */
-    @VisibleForTesting
-    boolean shouldProcessThemeUpdate(CustomBackgroundInfo info) {
-        // Do not process the update if the user has subsequently selected a non-theme-collection
-        // background (e.g., "Upload an image", "Chrome Default" or "Chrome Colors").
-        if (mOtherBackgroundTypeSelected) {
-            return false;
+    /** Cancels and clears the {@link CallbackController} for the in-flight download, if any. */
+    private void resetDownloadCallbackController() {
+        if (mDownloadCallbackController != null) {
+            mDownloadCallbackController.destroy();
+            mDownloadCallbackController = null;
         }
-
-        // If the user was selecting a specific image from a theme collection, the incoming
-        // update's URL must match the selected image's URL. This ensures that if the user clicks
-        // multiple images in rapid succession, only the last one clicked is applied.
-        if (mSelectingThemeCollectionImage != null) {
-            return mSelectingThemeCollectionImage.imageUrl.equals(info.backgroundUrl);
-        }
-
-        // Otherwise, the update should only be processed if it's for the daily refresh feature.
-        return info.isDailyRefreshEnabled;
-    }
-
-    @Nullable CollectionImage getSelectingThemeCollectionImageForTesting() {
-        return mSelectingThemeCollectionImage;
     }
 }
