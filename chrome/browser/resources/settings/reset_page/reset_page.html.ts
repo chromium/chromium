@@ -8,18 +8,24 @@ import type {SettingsResetPageElement} from './reset_page.js';
 
 export function getHtml(this: SettingsResetPageElement) {
   return html`<!--_html_template_start_-->
-<settings-section page-title="$i18n{resetPageTitle}"
-    class="cr-centered-card-container">
-  <cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
-      @click="${this.onShowResetProfileDialogClick_}">
-  </cr-link-row>
-  <cr-lazy-render-lit id="resetProfileDialog"
-      .template="${() => html`
-        <settings-reset-profile-dialog
-            @close="${this.onResetProfileDialogClose_}">
-        </settings-reset-profile-dialog>
-      `}">
-  </cr-lazy-render-lit>
-</settings-section>
+${this.settingsRefresh2026Enabled_ ? html`
+  <cr-button id="resetProfile" @click="${this.onShowResetProfileDialogClick_}">
+    $i18n{resetAllSettings}
+  </cr-button>
+` : html`
+  <settings-section page-title="$i18n{resetPageTitle}"
+      class="cr-centered-card-container">
+    <cr-link-row id="resetProfile" label="$i18n{resetTrigger}"
+        @click="${this.onShowResetProfileDialogClick_}">
+    </cr-link-row>
+  </settings-section>
+`}
+<cr-lazy-render-lit id="resetProfileDialog"
+    .template="${() => html`
+      <settings-reset-profile-dialog
+          @close="${this.onResetProfileDialogClose_}">
+      </settings-reset-profile-dialog>
+    `}">
+</cr-lazy-render-lit>
 <!--_html_template_end_-->`;
 }

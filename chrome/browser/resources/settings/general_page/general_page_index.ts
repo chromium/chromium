@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import '../downloads_page/downloads_page.js';
 import '../on_startup_page/on_startup_page.js';
+import '../reset_page/reset_page.js';
 // <if expr="not is_chromeos">
 import '../system_page/system_page.js';
 
@@ -53,6 +54,7 @@ export class SettingsGeneralPageIndexElement extends
           // <if expr="not is_chromeos">
           'system',
           // </if>
+          'reset',
         ],
         'no-animation', 'no-animation');
   }
@@ -65,6 +67,8 @@ export class SettingsGeneralPageIndexElement extends
     queueMicrotask(() => {
       switch (newRoute) {
         case routes.GENERAL:
+        case routes.RESET_DIALOG:
+        case routes.TRIGGERED_RESET_DIALOG:
           this.showDefaultViews_();
           break;
         case routes.BASIC:

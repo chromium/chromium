@@ -311,13 +311,11 @@ function createRoutes(): SettingsRoutes {
   if (isSettingsRefresh2026Enabled && visibility.general !== false) {
     // TODO(b/574664004): Update "General" string.
     r.GENERAL = r.ADVANCED.createSection('/general', 'general', 'General');
-    if (visibility.reset !== false) {
-      r.RESET_DIALOG = r.GENERAL.createChild('/resetProfileSettings');
-      r.RESET_DIALOG.isNavigableDialog = true;
-      r.TRIGGERED_RESET_DIALOG =
-          r.GENERAL.createChild('/triggeredResetProfileSettings');
-      r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
-    }
+    r.RESET_DIALOG = r.GENERAL.createChild('/resetProfileSettings');
+    r.RESET_DIALOG.isNavigableDialog = true;
+    r.TRIGGERED_RESET_DIALOG =
+        r.GENERAL.createChild('/triggeredResetProfileSettings');
+    r.TRIGGERED_RESET_DIALOG.isNavigableDialog = true;
   }
 
   // <if expr="not is_chromeos">

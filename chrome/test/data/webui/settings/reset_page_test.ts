@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrCheckboxElement, SettingsResetPageElement, SettingsResetProfileDialogElement} from 'chrome://settings/lazy_load.js';
-import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -28,6 +28,7 @@ suite('DialogTests', function() {
   let resetPageBrowserProxy: TestResetBrowserProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
     resetPageBrowserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(resetPageBrowserProxy);
 
@@ -40,6 +41,28 @@ suite('DialogTests', function() {
     resetPage.remove();
   });
 
+  test('ResetProfileNode', function() {
+    const resetProfile =
+        resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile');
+    assertTrue(!!resetProfile);
+    assertEquals('CR-LINK-ROW', resetProfile.tagName);
+  });
+
+  test('ResetProfileNode_SettingsRefresh2026', async function() {
+    loadTimeData.overrideValues({
+      settingsRefresh2026: 'settings-refresh-2026',
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    resetPage = document.createElement('settings-reset-page');
+    document.body.appendChild(resetPage);
+    await microtasksFinished();
+
+    const resetProfile =
+        resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile');
+    assertTrue(!!resetProfile);
+    assertEquals('CR-BUTTON', resetProfile.tagName);
+  });
+
   /**
    * @param closeDialogFn A function to call for closing the dialog.
    */
@@ -49,7 +72,7 @@ suite('DialogTests', function() {
     resetPageBrowserProxy.resetResolver('onHideResetProfileDialog');
 
     // Open reset profile dialog.
-    resetPage.$.resetProfile.click();
+    resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile')!.click();
     await microtasksFinished();
     const dialog =
         resetPage.shadowRoot.querySelector('settings-reset-profile-dialog');
@@ -84,7 +107,7 @@ suite('DialogTests', function() {
   test(TestNames.ResetProfileDialogAction, async function() {
     resetPageBrowserProxy.setPerformResetProfileSettingsPromise();
     // Open reset profile dialog.
-    resetPage.$.resetProfile.click();
+    resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile')!.click();
     await microtasksFinished();
     const dialog =
         resetPage.shadowRoot.querySelector('settings-reset-profile-dialog');
@@ -134,7 +157,7 @@ suite('DialogTests', function() {
   });
 
   test(TestNames.ResetProfileDialogOriginUserClick, async function() {
-    resetPage.$.resetProfile.click();
+    resetPage.shadowRoot.querySelector<HTMLElement>('#resetProfile')!.click();
     await resetPageBrowserProxy.whenCalled('onShowResetProfileDialog');
     await testResetRequestOrigin('userclick');
   });

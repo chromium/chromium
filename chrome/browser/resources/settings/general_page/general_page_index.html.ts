@@ -20,6 +20,9 @@ export function getHtml(this: SettingsGeneralPageIndexElement) {
   <settings-system-page slot="view" id="system">
   </settings-system-page>
 </if>
+
+  <settings-reset-page slot="view" id="reset">
+  </settings-reset-page>
 </cr-view-manager>
 <!--_html_template_end_-->`;
 }

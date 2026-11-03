@@ -7,15 +7,18 @@
  * 'settings-reset-page' is the settings page containing reset
  * settings.
  */
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../settings_page/settings_section.js';
 import './reset_profile_dialog.js';
 
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixinLit, Router} from '../router.js';
@@ -30,7 +33,6 @@ export interface SettingsResetPageElement {
   $: {
     resetProfileDialog:
         CrLazyRenderLitElement<SettingsResetProfileDialogElement>,
-    resetProfile: HTMLElement,
   };
 }
 
@@ -51,6 +53,15 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {
+      settingsRefresh2026Enabled_: {type: Boolean},
+    };
+  }
+
+  protected accessor settingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
 
   /**
    * RouteObserverMixin
@@ -76,7 +87,9 @@ export class SettingsResetPageElement extends SettingsResetPageElementBase
 
   protected onResetProfileDialogClose_() {
     Router.getInstance().navigateTo(routes.RESET_DIALOG.parent!);
-    focusWithoutInk(this.$.resetProfile);
+    const toFocus = this.shadowRoot.querySelector<HTMLElement>('#resetProfile');
+    assert(toFocus);
+    focusWithoutInk(toFocus);
   }
 
   // SettingsPlugin implementation

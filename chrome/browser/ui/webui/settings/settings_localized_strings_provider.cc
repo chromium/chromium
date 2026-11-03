@@ -1201,6 +1201,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"resetPageTitle", IDS_SETTINGS_RESET},
+      {"resetAllSettings", IDS_SETTINGS_RESET_ALL_SETTINGS},
       {"resetTrigger", IDS_SETTINGS_RESET_SETTINGS_TRIGGER},
       {"resetPageExplanationBulletPoints",
        IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS},

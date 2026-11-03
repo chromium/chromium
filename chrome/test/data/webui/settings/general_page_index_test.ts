@@ -18,6 +18,7 @@ suite('GeneralPageIndex', function() {
     // <if expr="not is_chromeos">
     'system',
     // </if>
+    'reset',
   ];
 
   setup(async function() {
@@ -47,6 +48,14 @@ suite('GeneralPageIndex', function() {
     assertActiveViews(defaultViews);
 
     Router.getInstance().navigateTo(routes.GENERAL);
+    await microtasksFinished();
+    assertActiveViews(defaultViews);
+
+    Router.getInstance().navigateTo(routes.RESET_DIALOG);
+    await microtasksFinished();
+    assertActiveViews(defaultViews);
+
+    Router.getInstance().navigateTo(routes.TRIGGERED_RESET_DIALOG);
     await microtasksFinished();
     assertActiveViews(defaultViews);
   });
@@ -89,14 +98,21 @@ suite('GeneralPageIndex', function() {
     assertVisibleViews(['system'], defaultViews.filter(id => id !== 'system'));
     // </if>
 
-    // Case 4: No results hides all views.
+    // Case 4: Results only in settings-reset-page.
+    result = await index.searchContents('Reset all settings');
+    assertFalse(result.canceled);
+    assertEquals(1, result.matchCount);
+    assertFalse(result.wasClearSearch);
+    assertVisibleViews(['reset'], defaultViews.filter(id => id !== 'reset'));
+
+    // Case 5: No results hides all views.
     result = await index.searchContents('non-existing-text');
     assertFalse(result.canceled);
     assertEquals(0, result.matchCount);
     assertFalse(result.wasClearSearch);
     assertVisibleViews([], defaultViews);
 
-    // Case 5: Clearing search restores all views.
+    // Case 6: Clearing search restores all views.
     result = await index.searchContents('');
     assertFalse(result.canceled);
     assertEquals(0, result.matchCount);
