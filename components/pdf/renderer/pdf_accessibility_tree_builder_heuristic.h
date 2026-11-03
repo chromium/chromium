@@ -292,6 +292,11 @@ class PdfAccessibilityTreeBuilderHeuristic {
   // List levels from outermost to innermost. Empty if the current block is not
   // in a list.
   std::vector<ListLevel> list_levels_;
+
+  // Marker run whose ordered list lookahead was last recorded to UMA, so a
+  // marker checked by both `BreakParagraph()` and `CreateBlockLevelNode()` is
+  // recorded once.
+  std::optional<size_t> last_recorded_lookahead_run_index_;
 };
 
 }  // namespace pdf

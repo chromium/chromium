@@ -6343,6 +6343,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListStartReason",
       ListStartReason::kDecimalStartsAtOne, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
@@ -6364,6 +6366,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedAfterParagraph) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6385,6 +6388,10 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedAfterParagraph) {
   CheckParagraph(page->GetChildAtIndex(0u), "Intro paragraph");
   CheckOrderedList(page->GetChildAtIndex(1u), {"Item E", "Item F", "Item G"},
                    {"5. ", "6. ", "7. "});
+  // `BreakParagraph()` and `CreateBlockLevelNode()` both check "5.", but it is
+  // recorded once.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest,
@@ -6428,6 +6435,7 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRunWrapsLine) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6448,6 +6456,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRunWrapsLine) {
   CheckOrderedList(page->GetChildAtIndex(0u),
                    {"First item line 1First item line 2", "Second"},
                    {"1. ", "2. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 1, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest,
@@ -6631,6 +6641,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListNestedInUnordered) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListResumesAfterSublist) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6666,9 +6677,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListResumesAfterSublist) {
       top_list->GetChildAtIndex(1u), "Item 2", "2. ", "ol");
   CheckOrderedList(nested_list, {"Subitem 1", "Subitem 2"}, {"1. ", "2. "});
   CheckListItem(top_list->GetChildAtIndex(2u), "Item 3", "3. ");
+  // One sample each for the top-level list and the sublist.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 2);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListTypeChangeStartsNewList) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6692,6 +6707,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListTypeChangeStartsNewList) {
   CheckUnorderedList(page->GetChildAtIndex(0u), {"Bullet 1", "Bullet 2"}, "• ");
   CheckOrderedList(page->GetChildAtIndex(1u), {"Ordered 1", "Ordered 2"},
                    {"1. ", "2. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 0, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListNestedInOrdered) {
@@ -6844,6 +6861,67 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListUnconfirmedSingleItem) {
   CheckParagraph(page->GetChildAtIndex(0u), "1.Something");
   CheckParagraph(page->GetChildAtIndex(1u), "Normal paragraph line 1.");
   CheckParagraph(page->GetChildAtIndex(2u), "Normal paragraph line 2.");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListLookaheadLimit) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // "1." followed by 16 lines of text exceeds the 15-line lookahead limit
+  // before reaching "2. Item", so "1." is not confirmed as an ordered list.
+  std::vector<std::string> texts = {"1.", "Line 0"};
+  std::vector<gfx::RectF> bounds = {gfx::RectF(30.0f, 20.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 20.0f, 80.0f, 12.0f)};
+  for (int i = 1; i <= 16; ++i) {
+    texts.push_back("Line");
+    bounds.emplace_back(30.0f, 20.0f + i * 15.0f, 100.0f, 12.0f);
+  }
+  texts.push_back("2. Item");
+  bounds.emplace_back(30.0f, 20.0f + 17 * 15.0f, 60.0f, 12.0f);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(texts, bounds);
+  ASSERT_NE(nullptr, page);
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kList, page->GetChildAtIndex(i)->GetRole());
+  }
+
+  // Reaching the limit records the overflow bucket.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 50, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicOrderedListLookaheadLimitAfterParagraph) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // Same as above, but "1." follows a paragraph with normal line spacing, so
+  // it merges into that paragraph instead of starting a new block.
+  std::vector<std::string> texts = {"Intro paragraph", "1.", "Line 0"};
+  std::vector<gfx::RectF> bounds = {gfx::RectF(30.0f, 20.0f, 100.0f, 12.0f),
+                                    gfx::RectF(30.0f, 35.0f, 10.0f, 12.0f),
+                                    gfx::RectF(45.0f, 35.0f, 80.0f, 12.0f)};
+  for (int i = 2; i <= 17; ++i) {
+    texts.push_back("Line");
+    bounds.emplace_back(30.0f, 20.0f + i * 15.0f, 100.0f, 12.0f);
+  }
+  texts.push_back("2. Item");
+  bounds.emplace_back(30.0f, 20.0f + 18 * 15.0f, 60.0f, 12.0f);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(texts, bounds);
+  ASSERT_NE(nullptr, page);
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    EXPECT_NE(ax::mojom::Role::kList, page->GetChildAtIndex(i)->GetRole());
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", 50, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListNarrowRaggedRightColumn) {

@@ -2617,6 +2617,20 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.OrderedListLookaheadLines"
+    units="lines" expires_after="2027-04-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of intervening lines scanned by the ordered list
+    lookahead when it confirms a new ordered list in an untagged PDF document.
+    The overflow bucket (50) means it reached its line limit (15 lines) without
+    confirming. Recorded once per candidate marker; not recorded when the
+    lookahead rejects the candidate for another reason.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.{Role}Repetition"
     enum="PdfAccessibilityHeaderFooterRepetition" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>

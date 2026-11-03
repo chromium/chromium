@@ -206,6 +206,12 @@ constexpr float kMaxListNestingIndentEm = 4.0f;
 // marker that confirms a new ordered list.
 constexpr size_t kMaxOrderedListLookaheadLines = 15;
 
+// Exclusive max of Accessibility.PdfHeuristics.OrderedListLookaheadLines. Kept
+// independent of `kMaxOrderedListLookaheadLines` so changing the limit keeps
+// the bucket layout. Reaching the limit records this value, i.e. the overflow
+// bucket.
+constexpr size_t kOrderedListLookaheadLinesHistogramMax = 50;
+
 // Maximum digits in a decimal ordered list marker, so years (e.g. "2023.") are
 // not mistaken for markers.
 constexpr size_t kMaxOrderedMarkerDigits = 3;
@@ -1685,15 +1691,35 @@ ListMarkerKind ClassifyOrderedMarker(const TextRunContext& run_context) {
   return {.form = ListMarkerForm::kCombined, .ordered_value = value};
 }
 
+// Records Accessibility.PdfHeuristics.OrderedListLookaheadLines unless it was
+// already recorded for `marker_run_index`. `BuildPageTree()` classifies runs in
+// non-decreasing index order, so repeat checks of a marker are consecutive.
+void RecordOrderedListLookaheadLines(
+    size_t marker_run_index,
+    size_t lines,
+    std::optional<size_t>& last_recorded_run_index) {
+  if (last_recorded_run_index == marker_run_index) {
+    return;
+  }
+  CHECK(!last_recorded_run_index.has_value() ||
+        marker_run_index > *last_recorded_run_index);
+  last_recorded_run_index = marker_run_index;
+  base::UmaHistogramExactLinear(
+      "Accessibility.PdfHeuristics.OrderedListLookaheadLines", lines,
+      kOrderedListLookaheadLinesHistogramMax);
+}
+
 // Returns whether the first line after the marker run at `marker_run_index`
 // that starts with an ordered marker continues
 // `marker_kind`'s numbering in the same column, within
-// `kMaxOrderedListLookaheadLines` lines.
+// `kMaxOrderedListLookaheadLines` lines. Records the lines scanned when
+// confirmed, or the overflow bucket when the limit is reached.
 bool IsOrderedListStartConfirmed(
     const PageLayoutData& layout,
     size_t marker_run_index,
     const ListMarkerKind& marker_kind,
-    const HeuristicPageProperties& page_properties) {
+    const HeuristicPageProperties& page_properties,
+    std::optional<size_t>& last_recorded_lookahead_run_index) {
   CHECK(marker_kind.ordered_value.has_value());
   const float marker_x = layout.text_runs[marker_run_index].bounds.x();
 
@@ -1712,8 +1738,13 @@ bool IsOrderedListStartConfirmed(
     const TextRunContext run_context = GetTextRunContext(layout, i);
     const ListMarkerKind next_marker_kind = ClassifyOrderedMarker(run_context);
     if (next_marker_kind.form != ListMarkerForm::kNone) {
-      return std::abs(run.bounds.x() - marker_x) <= kListIndentThreshold &&
-             next_marker_kind.ordered_value == *marker_kind.ordered_value + 1;
+      if (std::abs(run.bounds.x() - marker_x) > kListIndentThreshold ||
+          next_marker_kind.ordered_value != *marker_kind.ordered_value + 1) {
+        return false;
+      }
+      RecordOrderedListLookaheadLines(marker_run_index, lines_count,
+                                      last_recorded_lookahead_run_index);
+      return true;
     }
     // A paragraph gap right after the marker's line suggests a numbered
     // heading followed by body text (e.g. "1. Introduction").
@@ -1728,6 +1759,9 @@ bool IsOrderedListStartConfirmed(
       return false;
     }
     if (++lines_count > kMaxOrderedListLookaheadLines) {
+      RecordOrderedListLookaheadLines(marker_run_index,
+                                      kOrderedListLookaheadLinesHistogramMax,
+                                      last_recorded_lookahead_run_index);
       return false;
     }
   }
@@ -1740,7 +1774,8 @@ ListMarkerKind ClassifyListMarker(
     const PageLayoutData& layout,
     size_t run_index,
     base::span<const ListLevel> list_levels,
-    const HeuristicPageProperties& page_properties) {
+    const HeuristicPageProperties& page_properties,
+    std::optional<size_t>& last_recorded_lookahead_run_index) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   const TextRunContext run_context = GetTextRunContext(layout, run_index);
   if (!IsLeftToRightRun(*run_context.run)) {
@@ -1792,7 +1827,8 @@ ListMarkerKind ClassifyListMarker(
              ClassifyHeading(run_context, page_properties) !=
                  HeadingClassifier::kNone ||
              !IsOrderedListStartConfirmed(layout, run_index, ordered_kind,
-                                          page_properties)) {
+                                          page_properties,
+                                          last_recorded_lookahead_run_index)) {
     // A new list may start at any positive number (e.g. when it resumes on a
     // new page). "0." is excluded because table decimals such as "0.98" are
     // often split into "0." and "98" runs. Heading-styled numbering (e.g. a
@@ -1914,15 +1950,18 @@ void TrimTextRunPrefix(size_t prefix_char_count,
 // nested item, or text continuing the parent item after a nested list) either
 // merges into the previous item's text or ends the list.
 // TODO(crbug.com/525509231): Investigate whether it's worth handling this.
-bool BreakAtListBoundary(const PageLayoutData& layout,
-                         size_t next_run_index,
-                         const ui::AXNodeData* block_node,
-                         base::span<const ListLevel> list_levels,
-                         const HeuristicPageProperties& page_properties) {
+bool BreakAtListBoundary(
+    const PageLayoutData& layout,
+    size_t next_run_index,
+    const ui::AXNodeData* block_node,
+    base::span<const ListLevel> list_levels,
+    const HeuristicPageProperties& page_properties,
+    std::optional<size_t>& last_recorded_lookahead_run_index) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   CHECK(block_node);
   const ListMarkerKind kind =
-      ClassifyListMarker(layout, next_run_index, list_levels, page_properties);
+      ClassifyListMarker(layout, next_run_index, list_levels, page_properties,
+                         last_recorded_lookahead_run_index);
   if (kind.form != ListMarkerForm::kNone) {
     return true;
   }
@@ -1972,7 +2011,8 @@ bool BreakParagraph(uint32_t text_run_index,
                     HeadingClassifier heading_classifier,
                     const PageLayoutData& layout,
                     const HeuristicPageProperties& page_properties,
-                    base::span<const ListLevel> list_levels) {
+                    base::span<const ListLevel> list_levels,
+                    std::optional<size_t>& last_recorded_lookahead_run_index) {
   const TextRunContext current_run_context =
       GetTextRunContext(layout, text_run_index);
   const chrome_pdf::AccessibilityTextRunInfo& current_run =
@@ -1998,7 +2038,8 @@ bool BreakParagraph(uint32_t text_run_index,
     }
 
     if (BreakAtListBoundary(layout, text_run_index + 1, block_node, list_levels,
-                            page_properties)) {
+                            page_properties,
+                            last_recorded_lookahead_run_index)) {
       return true;
     }
   }
@@ -2616,7 +2657,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
     if (!previous_on_line_node) {
       if (BreakParagraph(text_run_index, block_node, current_heading_classifier,
-                         page_layout, page_properties, list_levels_)) {
+                         page_layout, page_properties, list_levels_,
+                         last_recorded_lookahead_run_index_)) {
         BuildStaticNode(&static_text_state);
         block_node = nullptr;
         current_heading_classifier = HeadingClassifier::kNone;
@@ -2725,7 +2767,8 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     // item's `kListMarker` in `BuildPageTree()`.
     if (!header_footer_ax_role.has_value()) {
       result.list_marker_kind =
-          ClassifyListMarker(layout, text_run_index, levels, page_properties);
+          ClassifyListMarker(layout, text_run_index, levels, page_properties,
+                             last_recorded_lookahead_run_index_);
     }
     if (result.list_marker_kind.form != ListMarkerForm::kNone) {
       result.node = CreateListItemNode(run_context, result.list_marker_kind,
