@@ -67,7 +67,6 @@ class BaguetteInstaller {
   void Uninstall(base::OnceCallback<void(bool)> callback);
 
  private:
-  void GetBaguetteImageUrl(BaguetteInstallerCallback callback);
   void OnListVmDisks(
       BaguetteInstallerCallback callback,
       std::optional<vm_tools::concierge::ListVmDisksResponse> response);

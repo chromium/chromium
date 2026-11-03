@@ -122,6 +122,7 @@ void BaguetteInstaller::OnConciergeAvailable(BaguetteInstallerCallback callback,
   if (!service_is_available) {
     LOG(ERROR) << "vm_concierge service is unavailable.";
     std::move(callback).Run(InstallResult::Failure, {});
+    return;
   }
 
   // We always need to check if tools DLC is present for kernel, but we may
@@ -144,18 +145,13 @@ void BaguetteInstaller::OnListVmDisks(
   if (!response) {
     LOG(WARNING) << "Unable to query disk image status, will potentially "
                     "re-download baguette image needlessly.";
-  }
-  if (!response->success()) {
+  } else if (!response->success()) {
     LOG(WARNING) << "Unsuccessful disk image response, will potentially "
                     "re-download baguette image needlessly.";
-  }
-
-  if (std::any_of(
-          response->images().cbegin(), response->images().cend(),
-          [](auto image) {
-            return image.vm_type() ==
-                   vm_tools::concierge::VmInfo_VmType::VmInfo_VmType_BAGUETTE;
-          })) {
+  } else if (std::ranges::any_of(response->images(), [](const auto& image) {
+               return image.vm_type() == vm_tools::concierge::VmInfo_VmType::
+                                             VmInfo_VmType_BAGUETTE;
+             })) {
     std::move(callback).Run(InstallResult::Success, {});
     return;
   }

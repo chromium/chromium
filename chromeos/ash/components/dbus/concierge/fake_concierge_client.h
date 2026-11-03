@@ -249,6 +249,9 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     return modify_fake_power_config_call_count_;
   }
   int mute_vm_audio_call_count() const { return mute_vm_audio_call_count_; }
+  int get_baguette_image_url_call_count() const {
+    return get_baguette_image_url_call_count_;
+  }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -399,6 +402,12 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
     set_up_vm_user_response_ = set_up_vm_user_response;
   }
 
+  void set_get_baguette_image_url_response(
+      std::optional<vm_tools::concierge::GetBaguetteImageUrlResponse>
+          get_baguette_image_url_response) {
+    get_baguette_image_url_response_ = get_baguette_image_url_response;
+  }
+
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
   }
@@ -466,6 +475,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int list_vms_call_count_ = 0;
   int modify_fake_power_config_call_count_ = 0;
   int mute_vm_audio_call_count_ = 0;
+  int get_baguette_image_url_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;

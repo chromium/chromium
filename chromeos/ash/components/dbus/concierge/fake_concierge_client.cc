@@ -474,6 +474,7 @@ void FakeConciergeClient::SetUpVmUser(
 void FakeConciergeClient::GetBaguetteImageUrl(
     chromeos::DBusMethodCallback<
         vm_tools::concierge::GetBaguetteImageUrlResponse> callback) {
+  get_baguette_image_url_call_count_++;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), get_baguette_image_url_response_));

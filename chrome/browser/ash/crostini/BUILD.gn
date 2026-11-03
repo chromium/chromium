@@ -225,6 +225,7 @@ source_set("unit_tests") {
 
   sources = [
     "baguette_download_unittest.cc",
+    "baguette_installer_unittest.cc",
     "crostini_disk_unittest.cc",
     "crostini_export_import_unittest.cc",
     "crostini_features_unittest.cc",
@@ -255,6 +256,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/crostini/throttle:unit_tests",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os:test_support",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/settings:test_support",
@@ -295,6 +297,7 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/public/browser",
     "//content/test:test_support",
+    "//crypto",
     "//google_apis",
     "//mojo/public/cpp/bindings",
     "//services/device/public/cpp:test_support",
