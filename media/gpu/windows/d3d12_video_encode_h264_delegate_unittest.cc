@@ -6,6 +6,8 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/d3d12_mocks.h"
@@ -503,15 +505,53 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
       gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
 
+  const std::array<
+      D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION,
+      3>
+      kExpectedMmcoOps = {{
+          {.memory_management_control_operation = 4,
+           .max_long_term_frame_idx_plus1 = 3},
+          {.memory_management_control_operation = 6, .long_term_frame_idx = 2},
+          {.memory_management_control_operation = 0},
+      }};
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .Times(2)
+      .WillRepeatedly([&](const D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS&
+                              input_arguments,
+                          const D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE&) {
+        const D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264* pic_params =
+            input_arguments.PictureControlDesc.PictureControlCodecData
+                .pH264PicData;
+        EXPECT_EQ(pic_params->FrameType,
+                  D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_P_FRAME);
+        // SAFETY: |RefPicMarkingOperationsCommandsCount| bounds
+        // |pRefPicMarkingOperationsCommands|.
+        auto marking_ops = UNSAFE_BUFFERS(
+            base::span(pic_params->pRefPicMarkingOperationsCommands,
+                       pic_params->RefPicMarkingOperationsCommandsCount));
+        EXPECT_EQ(marking_ops.size(), kExpectedMmcoOps.size());
+        for (size_t i = 0;
+             i < marking_ops.size() && i < kExpectedMmcoOps.size(); i++) {
+          EXPECT_EQ(marking_ops[i].memory_management_control_operation,
+                    kExpectedMmcoOps[i].memory_management_control_operation);
+          EXPECT_EQ(marking_ops[i].max_long_term_frame_idx_plus1,
+                    kExpectedMmcoOps[i].max_long_term_frame_idx_plus1);
+          EXPECT_EQ(marking_ops[i].long_term_frame_idx,
+                    kExpectedMmcoOps[i].long_term_frame_idx);
+        }
+        return EncoderStatus::Codes::kOk;
+      });
+
+  encode_opts.key_frame = false;
   encode_opts.reference_buffers = {0};
-  encode_opts.update_buffer = std::nullopt;
+  encode_opts.update_buffer = 1;
   result_or_error = encoder_delegate_->Encode(
       input_frame, gfx::Rect(config.input_visible_size),
       gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
 
-  encode_opts.reference_buffers = {0};
-  encode_opts.update_buffer = 0;
+  // Encode the same frame again: MMCO 4 must still be sent even though the
+  // long-term frame index does not grow past the tracked maximum.
   result_or_error = encoder_delegate_->Encode(
       input_frame, gfx::Rect(config.input_visible_size),
       gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);

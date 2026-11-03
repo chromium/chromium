@@ -516,11 +516,18 @@ EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(
                     .long_term_pic_num = destroy_buffer.value()});
   }
   if (update_buffer.has_value()) {
-    if (update_buffer.value() >=
-        reference_frame_manager_.GetMaxLongTermFrameIndexPlus1()) {
-      mmco.push_back({.memory_management_control_operation = 4,
-                      .max_long_term_frame_idx_plus1 =
-                          static_cast<UINT>(update_buffer.value()) + 1});
+    if (!is_keyframe) {
+      // Always pair MMCO 4 with MMCO 6 so that every frame assigning a
+      // long-term frame index also (re)establishes MaxLongTermFrameIdx in the
+      // same slice header. Previously for typical L1T2 encoding, we will be
+      // signaling MMCO 4 right after the first T1 frame after IDR. If that T1
+      // frame get lost, subsequent MMCO 6 on decoding side will fail because
+      // the MaxLongTermFrameIdx would not have been updated correctly.
+      mmco.push_back(
+          {.memory_management_control_operation = 4,
+           .max_long_term_frame_idx_plus1 = static_cast<UINT>(std::max(
+               static_cast<uint32_t>(update_buffer.value()) + 1u,
+               reference_frame_manager_.GetMaxLongTermFrameIndexPlus1()))});
     }
     mmco.push_back({.memory_management_control_operation = 6,
                     .long_term_frame_idx = update_buffer.value()});
