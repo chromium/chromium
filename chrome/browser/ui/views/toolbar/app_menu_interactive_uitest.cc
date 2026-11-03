@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,8 +30,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_switches.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -238,4 +243,66 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, DoNotCrashOnBrowserClose) {
       PressButton(kToolbarAppMenuButtonElementId),
       Do([this]() { browser()->GetWindow()->Close(); }),
       WaitForHide(kBrowserViewElementId));
+}
+
+class AppMenuSearchInteractiveTest : public InteractiveBrowserTest {
+ public:
+  AppMenuSearchInteractiveTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAppMenuGlowUp, features::kChroMenuSearch}, {});
+  }
+  ~AppMenuSearchInteractiveTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_LINUX)
+    // On Linux with GTK4, GtkIMMulticontext re-injects unhandled non-printable
+    // keys onto an offscreen dummy GtkWindow when a TextInputClient is focused.
+    // Disable the GTK IME module so synthetic X11 key events route through
+    // InputMethodAuraLinux synchronously.
+    command_line->AppendSwitch(switches::kDisableGtkIme);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuSearchInteractiveTest, SearchBarKeyEventRouting) {
+  RunTestSequence(
+      MoveMouseTo(kToolbarBackButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchFieldElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, false),
+      // Pressing Down arrow on the active browser window routes through
+      // MenuController to focus the search field inside the non-activating
+      // MenuHost popup.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_DOWN, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      // Typing characters on the active browser window routes through the
+      // shared ui::InputMethod into the focused menu-hosted search field and
+      // filters the menu.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_D, ui::EF_NONE),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_O, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetText, u"do"),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      WaitForShow(AppMenuSearchBarView::kBackButtonElementId),
+      WaitForHide(AppMenuModel::kMoreToolsMenuItem),
+      // Pressing Escape clears the search query while keeping search results
+      // and the back button visible without closing the menu.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::Textfield::GetText, u""),
+      CheckViewProperty(AppMenuSearchBarView::kSearchFieldElementId,
+                        &views::View::HasFocus, true),
+      WaitForShow(AppMenuSearchBarView::kBackButtonElementId),
+      // Pressing the back button restores the normal menu and search icon.
+      PressButton(AppMenuSearchBarView::kBackButtonElementId),
+      WaitForShow(AppMenuSearchBarView::kSearchIconElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem));
 }

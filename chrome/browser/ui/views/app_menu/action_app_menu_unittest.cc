@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
@@ -2274,6 +2275,192 @@ TEST_F(ActionAppMenuWithSearchTest, ZoomSearchResultPersistsMenu) {
   views::test::WaitForMenuClosureAnimation();
   EXPECT_FALSE(menu.IsShowing());
 }
+
+TEST_F(ActionAppMenuWithSearchTest, SearchBarArrowNavigation) {
+  // These steps cover wrapping between the top and bottom items, which macOS
+  // turns off by default.
+  base::AutoReset<bool> enable_wrap(
+      &const_cast<views::MenuConfig&>(views::MenuConfig::instance())
+           .arrow_key_selection_wraps,
+      true);
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::Textfield* search_field = GetSearchField(search_bar);
+  ASSERT_NE(search_field, nullptr);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuController* controller = root->GetMenuController();
+  ASSERT_TRUE(controller);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+  views::MenuItemView* search_item = submenu->GetMenuItemAt(0);
+  ASSERT_NE(search_item, nullptr);
+
+  // When the menu opens, the search field is not focused and no child menu item
+  // is selected.
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), root);
+
+  // Pressing Down arrow focuses the search field first.
+  ui::KeyEvent down_event1(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event1);
+  EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), search_item);
+
+  // Pressing Down arrow again blurs the search field and selects the first menu
+  // item below the search bar (the block section item).
+  views::MenuItemView* block_item = submenu->GetMenuItemAt(1);
+  ASSERT_NE(block_item, nullptr);
+  ui::KeyEvent down_event2(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event2);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), block_item);
+
+  // Pressing Up arrow from the first menu item below the search bar re-focuses
+  // the search field.
+  ui::KeyEvent up_event1(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&up_event1);
+  EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), search_item);
+
+  // Pressing Up arrow again from the search field wraps around to the bottom
+  // menu item (the footer item).
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(footer_item, nullptr);
+  ui::KeyEvent up_event2(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&up_event2);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), footer_item);
+
+  // Pressing Down arrow from the bottom menu item wraps back to the top and
+  // focuses the search field.
+  ui::KeyEvent down_event3(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event3);
+  EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), search_item);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuWithSearchTest,
+       SearchBarUpArrowNavigationThroughNotificationWrapsToBottom) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+  // These steps cover wrapping between the top and bottom items, which macOS
+  // turns off by default.
+  base::AutoReset<bool> enable_wrap(
+      &const_cast<views::MenuConfig&>(views::MenuConfig::instance())
+           .arrow_key_selection_wraps,
+      true);
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
+  ASSERT_NE(search_bar, nullptr);
+  views::Textfield* search_field = GetSearchField(search_bar);
+  ASSERT_NE(search_field, nullptr);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::MenuController* controller = root->GetMenuController();
+  ASSERT_TRUE(controller);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  views::MenuItemView* upgrade_item = submenu->GetMenuItemAt(0);
+  views::MenuItemView* search_item = submenu->GetMenuItemAt(1);
+  views::MenuItemView* block_item = submenu->GetMenuItemAt(2);
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(upgrade_item, nullptr);
+  ASSERT_NE(search_item, nullptr);
+  ASSERT_NE(block_item, nullptr);
+  ASSERT_NE(footer_item, nullptr);
+
+  // First Down arrow selects the top notification item (index 0).
+  ui::KeyEvent down_event1(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event1);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), upgrade_item);
+
+  // Second Down arrow focuses the search field (index 1).
+  ui::KeyEvent down_event2(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event2);
+  EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), search_item);
+
+  // Third Down arrow selects the block item below the search bar (index 2).
+  ui::KeyEvent down_event3(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event3);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), block_item);
+
+  // Up arrow from the block item moves back to the search field.
+  ui::KeyEvent up_event1(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&up_event1);
+  EXPECT_TRUE(search_field->HasFocus());
+  EXPECT_TRUE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), search_item);
+
+  // Up arrow from the search field selects the notification item above it.
+  ui::KeyEvent up_event2(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&up_event2);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_FALSE(controller->HasFocusedTextfield());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), upgrade_item);
+
+  // Up arrow from the top notification item wraps around to the bottom footer.
+  ui::KeyEvent up_event3(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&up_event3);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), footer_item);
+
+  // Down arrow from the bottom footer wraps back to the top notification item.
+  ui::KeyEvent down_event4(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                           ui::EF_NONE);
+  controller->OnWillDispatchKeyEvent(&down_event4);
+  EXPECT_FALSE(search_field->HasFocus());
+  EXPECT_EQ(controller->GetSelectedMenuItem(), upgrade_item);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif
 
 TEST_F(ActionAppMenuWithSearchTest, SearchQueryWithoutMatchesShowsBackButton) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
