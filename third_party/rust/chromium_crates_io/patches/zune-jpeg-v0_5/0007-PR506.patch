@@ -1,4 +1,4 @@
-From 08c5a0501fc6a93bb34275d4fafb4fe371d64949 Mon Sep 17 00:00:00 2001
+From aba31d22abc922725190c3ac85ce72330504713e Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Sequential component recovery (PR506)
@@ -6,12 +6,12 @@ Subject: [PATCH] [rust jpeg] Sequential component recovery (PR506)
 Backport of https://github.com/etemesi254/zune-image/pull/506
 Published head: 6901007d535ac13e6fcdef9b946d089455c77fa4
 
-Effective cumulative source stage: de184ef7817c1fee4365b9d85e0e0cc75f196e66
+Original cumulative source stage: de184ef7817c1fee4365b9d85e0e0cc75f196e66
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Rebased onto published PR498 revision 50e283a32a465cdeaa0d235e0187791b227f6e21.
 ---
  .../vendor/zune-jpeg-v0_5/src/bitstream.rs    | 104 +++-
  .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  24 +-
@@ -23,7 +23,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
  create mode 100644 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
-index 37dc8d87eec50b6b7a5801b409e94e1719b6060e..263994c12f3d9d07081945b2d9da54b1e623a2e3 100644
+index 37dc8d8..263994c 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 @@ -84,20 +84,19 @@ macro_rules! decode_huff {
@@ -279,7 +279,7 @@ index 37dc8d87eec50b6b7a5801b409e94e1719b6060e..263994c12f3d9d07081945b2d9da54b1
  }
  
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-index 17a4d6b0dd92e4fa07ea7d85dca7c185712319c0..4a984c7bf20cbdaa3313efd5a87dd3aecbf68a1f 100644
+index 17a4d6b..4a984c7 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 @@ -396,15 +396,12 @@ pub struct JpegDecoder<T> {
@@ -336,7 +336,7 @@ index 17a4d6b0dd92e4fa07ea7d85dca7c185712319c0..4a984c7bf20cbdaa3313efd5a87dd3ae
          assert!(decoder.scanline_state.staging.capacity() < row_bytes * height);
          for component in &decoder.components {
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
-index 25cf3e9231c107c8373ae6eaa9101a04e98aea0e..57ac309d2b9250de5346b01743b66d3fadd1a842 100644
+index 25cf3e9..57ac309 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
 @@ -604,6 +604,8 @@ pub(crate) fn parse_sos<T: ZByteReaderTrait>(
@@ -361,10 +361,10 @@ index 25cf3e9231c107c8373ae6eaa9101a04e98aea0e..57ac309d2b9250de5346b01743b66d3f
          trace!("Ss={spec_start}, Se={spec_end} Ah={succ_high} Al={succ_low}");
  
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
-index db6dca158b5687049cd06ce8ce482510e3a495c2..4fc67d693f9a63a43d60f7625bb52102fdfcb5e2 100644
+index df4ae28..4a7d932 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
-@@ -356,6 +356,8 @@ mod mcu;
+@@ -358,6 +358,8 @@ mod mcu;
  mod mcu_prog;
  mod misc;
  mod scaled;
@@ -374,7 +374,7 @@ index db6dca158b5687049cd06ce8ce482510e3a495c2..4fc67d693f9a63a43d60f7625bb52102
  mod unsafe_utils_avx2;
  mod unsafe_utils_neon;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
-index b8527cf57cc5d227a5b89cf29b8a0754c21a0b19..b6d61ef185845f9579d07f1ca1857286b7870953 100644
+index b8527cf..b6d61ef 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 @@ -28,6 +28,113 @@ use crate::JpegDecoder;
@@ -975,7 +975,7 @@ index b8527cf57cc5d227a5b89cf29b8a0754c21a0b19..b6d61ef185845f9579d07f1ca1857286
              if *m == Marker::EOI {
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
 new file mode 100644
-index 0000000000000000000000000000000000000000..9e81a80ca71bfaac14a3c4f8c29f0c7ca441f9f2
+index 0000000..9e81a80
 --- /dev/null
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
 @@ -0,0 +1,481 @@
@@ -1460,6 +1460,3 @@ index 0000000000000000000000000000000000000000..9e81a80ca71bfaac14a3c4f8c29f0c7c
 +        assert_eq!(output, expected);
 +    }
 +}
--- 
-2.56.0
-

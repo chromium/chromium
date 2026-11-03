@@ -1,4 +1,4 @@
-From 8b58d3c56e67ee8e1ab19aa079260b64d9ac4cef Mon Sep 17 00:00:00 2001
+From aa52a4afe18203e4cd5ba30d99def033e07afc04 Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Native fancy chroma reconstruction (PR505)
@@ -6,12 +6,12 @@ Subject: [PATCH] [rust jpeg] Native fancy chroma reconstruction (PR505)
 Backport of https://github.com/etemesi254/zune-image/pull/505
 Published head: 3f791d04d1d7e07090693b9c595eca79fa7e3215
 
-Effective cumulative source stage: 846eb9b4c0304f6cf4720d7ddc3949b2b5bf479a
+Original cumulative source stage: 846eb9b4c0304f6cf4720d7ddc3949b2b5bf479a
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Rebased onto published PR498 revision 50e283a32a465cdeaa0d235e0187791b227f6e21.
 ---
  .../vendor/zune-jpeg-v0_5/src/mcu.rs          |  43 ++++++
  .../vendor/zune-jpeg-v0_5/src/upsampler.rs    | 122 +++++++++++++++++-
@@ -22,7 +22,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
  6 files changed, 326 insertions(+), 157 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
-index 712d9cbbac4d07894b70feca79db0e037955fc91..bb8f70bc3115e7784c79305c479cf0d327e65a8f 100644
+index 712d9cb..bb8f70b 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 @@ -1927,6 +1927,49 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
@@ -76,7 +76,7 @@ index 712d9cbbac4d07894b70feca79db0e037955fc91..bb8f70bc3115e7784c79305c479cf0d3
          let is_vertically_sampled = self
              .components
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
-index 8585b98bad35a88c6a43d02dbaee41705853c5aa..5f7e6e029143e0896c2ebb76645c9b796361c8ed 100644
+index 8585b98..5f7e6e0 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler.rs
 @@ -80,7 +80,8 @@
@@ -216,7 +216,7 @@ index 8585b98bad35a88c6a43d02dbaee41705853c5aa..5f7e6e029143e0896c2ebb76645c9b79
      mod portable_simd_impl {
          use super::*;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
-index a13672e10988bbf1c2997e9741676ebb2989ba35..2c1ec2eed74dcd2cc33c8f544bfd5188f77fe09f 100644
+index a13672e..2c1ec2e 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
 @@ -14,11 +14,15 @@ use core::arch::x86_64::*;
@@ -377,7 +377,7 @@ index a13672e10988bbf1c2997e9741676ebb2989ba35..2c1ec2eed74dcd2cc33c8f544bfd5188
 +    }
  }
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
-index 7fc7c78ab461a336e3238a25d17da9a33f4b2d4f..7edf95345f4faedf927a59353cc90c5621f30976 100644
+index 7fc7c78..7edf953 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/neon.rs
 @@ -12,7 +12,15 @@ use core::arch::aarch64::{vdupq_n_s16, vld1q_s16, vaddq_s16, vmulq_s16, vshrq_n_
@@ -515,7 +515,7 @@ index 7fc7c78ab461a336e3238a25d17da9a33f4b2d4f..7edf95345f4faedf927a59353cc90c56
      }
  }
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
-index 0eddd6757fde99f8cae65af479fcb7cdea686165..e715e9b13ce8bdf8d64e1e23e8493fff19464640 100644
+index 0eddd67..e715e9b 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/portable_simd.rs
 @@ -6,17 +6,19 @@
@@ -670,7 +670,7 @@ index 0eddd6757fde99f8cae65af479fcb7cdea686165..e715e9b13ce8bdf8d64e1e23e8493fff
 +    upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
  }
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
-index 120ca28bdc8ded3ceb1715758dd1eae897a88003..26953e333f5f94dc77e5d94a43abe2fe39e3c5dc 100644
+index 120ca28..26953e3 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/scalar.rs
 @@ -9,52 +9,35 @@
@@ -813,6 +813,3 @@ index 120ca28bdc8ded3ceb1715758dd1eae897a88003..26953e333f5f94dc77e5d94a43abe2fe
          &mut output[output_half..]
      );
  }
--- 
-2.56.0
-

@@ -1,30 +1,32 @@
-From 8c9f37a6a44725535eefd6e1b489c47c771403cd Mon Sep 17 00:00:00 2001
+From 292fcf6020e29b4a6ad2988e795a65912e9da1e4 Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Reduced IDCT output (PR498)
 
 Backport of https://github.com/etemesi254/zune-image/pull/498
-Published head: c0fd65c06ac6972523bd88ea773414d7d50a3dc6
+Published head: 50e283a32a465cdeaa0d235e0187791b227f6e21
 
-Effective cumulative source stage: c0fd65c06ac6972523bd88ea773414d7d50a3dc6
+Effective cumulative source stage: 50e283a32a465cdeaa0d235e0187791b227f6e21
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Includes every reduced n/8 ratio, native component-specific integer IDCTs, and numerator-aware rounded-up geometry.
 ---
- .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  55 +++-
- .../vendor/zune-jpeg-v0_5/src/idct.rs         |  92 ++++++
- .../vendor/zune-jpeg-v0_5/src/idct/scalar.rs  |  68 ++++
- .../vendor/zune-jpeg-v0_5/src/lib.rs          |  12 +
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  55 ++-
+ .../vendor/zune-jpeg-v0_5/src/idct.rs         |  93 +++++
+ .../vendor/zune-jpeg-v0_5/src/idct/scalar.rs  | 103 ++++++
+ .../zune-jpeg-v0_5/src/idct/scaled_basis.rs   | 142 ++++++++
+ .../vendor/zune-jpeg-v0_5/src/lib.rs          |  14 +
  .../vendor/zune-jpeg-v0_5/src/mcu.rs          |  27 +-
  .../vendor/zune-jpeg-v0_5/src/mcu_prog.rs     |   9 +-
- .../vendor/zune-jpeg-v0_5/src/scaled.rs       | 295 ++++++++++++++++++
- 7 files changed, 537 insertions(+), 21 deletions(-)
+ .../vendor/zune-jpeg-v0_5/src/scaled.rs       | 324 ++++++++++++++++++
+ 8 files changed, 746 insertions(+), 21 deletions(-)
+ create mode 100644 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scaled_basis.rs
  create mode 100644 third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-index b21d22d5fe67249157b8615b942ac751959ef920..17a4d6b0dd92e4fa07ea7d85dca7c185712319c0 100644
+index b21d22d..17a4d6b 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 @@ -486,7 +486,8 @@ pub struct JpegDecoder<T> {
@@ -158,10 +160,18 @@ index b21d22d5fe67249157b8615b942ac751959ef920..17a4d6b0dd92e4fa07ea7d85dca7c185
          &mut self, output: &mut McuDecodeOutput<'_, '_>
      ) -> Result<(), DecodeErrors> {
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
-index 26104e31711cb4cf3700fdbdf10ecf869d61b715..c3803709c57e00287ee91bbc3763e902ab72d51e 100644
+index 26104e3..8dcd73c 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
-@@ -117,6 +117,98 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
+@@ -53,6 +53,7 @@ pub mod avx2;
+ pub mod neon;
+ 
+ pub mod scalar;
++mod scaled_basis;
+ 
+ /// Choose an appropriate IDCT function
+ #[allow(unused_variables)]
+@@ -117,6 +118,98 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
  mod tests {
      use super::*;
  
@@ -261,12 +271,23 @@ index 26104e31711cb4cf3700fdbdf10ecf869d61b715..c3803709c57e00287ee91bbc3763e902
          const STRIDE: usize = 13;
          let mut functions: Vec<(&str, IDCTPtr)> = vec![
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
-index 49ad44038d2201a9be79dace42ce64140a380df4..947d7d5087a1479989eb3cddbbffa3a7021dd39b 100644
+index 49ad440..4663fc0 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scalar.rs
-@@ -39,6 +39,74 @@ pub fn idct_int_1x1(in_vector: &mut [i32; 64], mut out_vector: &mut [i16], strid
-     }
- }
+@@ -10,6 +10,7 @@
+ //!
+ //! Not as fast as AVX one.
+ 
++use super::scaled_basis::{BASIS_10, BASIS_12, BASIS_14, BASIS_3, BASIS_5, BASIS_6, BASIS_7};
+ use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
+ 
+ #[inline(always)]
+@@ -35,10 +36,112 @@ pub fn idct_int_1x1(in_vector: &mut [i32; 64], mut out_vector: &mut [i16], strid
+     for _ in 0..7 {
+         out_vector = &mut out_vector[stride..];
+         out_vector[..8].fill(coeff);
++    }
++}
  
 +// Separable reduced-IDCT weights and pass precision match libjpeg-turbo's
 +// jidctred.c. These average DCT reconstruction cells, rather than sampling a
@@ -317,9 +338,9 @@ index 49ad44038d2201a9be79dace42ce64140a380df4..947d7d5087a1479989eb3cddbbffa3a7
 +            let sample = wa(sum, 1 << (row_shift - 1)) >> row_shift;
 +            output[row * stride + column] = clamp(wa(sample, 128));
 +        }
-+    }
-+}
-+
+     }
+ }
+ 
 +/// Reconstruct a half-scale 4x4 block without modifying coefficients or row padding.
 +pub fn idct_scaled_4x4(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
 +    reduced_idct(coefficients, output, stride, &HALF_WEIGHTS, 12, 19);
@@ -336,21 +357,206 @@ index 49ad44038d2201a9be79dace42ce64140a380df4..947d7d5087a1479989eb3cddbbffa3a7
 +    output[0] = clamp(wa(wa(coefficients[0], 4) >> 3, 128));
 +}
 +
++/// Reconstruct a three-eighths-scale block with native integer rounding.
++pub fn idct_scaled_3x3(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_3, 11, 18);
++}
++
++/// Reconstruct a five-eighths-scale block with native integer rounding.
++pub fn idct_scaled_5x5(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_5, 11, 18);
++}
++
++/// Reconstruct a three-quarters-scale block with native integer rounding.
++pub fn idct_scaled_6x6(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_6, 11, 18);
++}
++
++/// Reconstruct a seven-eighths-scale block with native integer rounding.
++pub fn idct_scaled_7x7(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_7, 11, 18);
++}
++
++/// Reconstruct a ten-sample chroma block for native component scaling.
++pub fn idct_scaled_10x10(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_10, 11, 18);
++}
++
++/// Reconstruct a twelve-sample chroma block for native component scaling.
++pub fn idct_scaled_12x12(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_12, 11, 18);
++}
++
++/// Reconstruct a fourteen-sample chroma block for native component scaling.
++pub fn idct_scaled_14x14(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
++    reduced_idct(coefficients, output, stride, &BASIS_14, 11, 18);
++}
++
  #[allow(unused_assignments)]
  #[allow(
      clippy::too_many_lines,
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scaled_basis.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scaled_basis.rs
+new file mode 100644
+index 0000000..0642c0c
+--- /dev/null
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/scaled_basis.rs
+@@ -0,0 +1,142 @@
++/*
++ * Copyright (c) 2026.
++ *
++ * This software is free software;
++ *
++ * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
++ */
++
++//! Q13 cosine-basis coefficients matching native scaled-IDCT integer rounding.
++//! Evaluated before the first-pass descale of the corresponding native kernels.
++
++pub(super) const BASIS_3: [[i32; 8]; 3] = [
++    [8192, 10033, 5793, 0, 0, 0, 0, 0],
++    [8192, 0, -11586, 0, 0, 0, 0, 0],
++    [8192, -10033, 5793, 0, 0, 0, 0, 0]
++];
++
++pub(super) const BASIS_5: [[i32; 8]; 5] = [
++    [8192, 11019, 9372, 6810, 3580, 0, 0, 0],
++    [8192, 6810, -3580, -11018, -9372, 0, 0, 0],
++    [8192, 0, -11584, 0, 11584, 0, 0, 0],
++    [8192, -6810, -3580, 11018, -9372, 0, 0, 0],
++    [8192, -11019, 9372, -6810, 3580, 0, 0, 0]
++];
++
++pub(super) const BASIS_6: [[i32; 8]; 6] = [
++    [8192, 11190, 10033, 8192, 5793, 2998, 0, 0],
++    [8192, 8192, 0, -8192, -11586, -8192, 0, 0],
++    [8192, 2998, -10033, -8192, 5793, 11190, 0, 0],
++    [8192, -2998, -10033, 8192, 5793, -11190, 0, 0],
++    [8192, -8192, 0, 8192, -11586, 8192, 0, 0],
++    [8192, -11190, 10033, -8192, 5793, -2998, 0, 0]
++];
++
++pub(super) const BASIS_7: [[i32; 8]; 7] = [
++    [8192, 11295, 10438, 9058, 7223, 5027, 2578, 0],
++    [8192, 9058, 2578, -5027, -10438, -11295, -7223, 0],
++    [8192, 5027, -7223, -11295, -2578, 9058, 10438, 0],
++    [8192, 0, -11585, 0, 11585, 0, -11585, 0],
++    [8192, -5027, -7223, 11295, -2578, -9058, 10438, 0],
++    [8192, -9058, 2578, 5027, -10438, 11295, -7223, 0],
++    [8192, -11295, 10438, -9058, 7223, -5027, 2578, 0]
++];
++
++pub(super) const BASIS_10: [[i32; 8]; 10] = [
++    [8192, 11443, 11019, 10322, 9373, 8192, 6810, 5260],
++    [8192, 10323, 6810, 1812, -3580, -8192, -11018, -11442],
++    [8192, 8192, 0, -8192, -11586, -8192, 0, 8192],
++    [8192, 5260, -6810, -11442, -3580, 8192, 11018, 1812],
++    [8192, 1812, -11019, -5260, 9373, 8192, -6810, -10322],
++    [8192, -1812, -11019, 5260, 9373, -8192, -6810, 10322],
++    [8192, -5260, -6810, 11442, -3580, -8192, 11018, -1812],
++    [8192, -8192, 0, 8192, -11586, 8192, 0, -8192],
++    [8192, -10323, 6810, -1812, -3580, 8192, -11018, 11442],
++    [8192, -11443, 11019, -10322, 9373, -8192, 6810, -5260]
++];
++
++pub(super) const BASIS_12: [[i32; 8]; 12] = [
++    [8192, 11487, 11190, 10703, 10033, 9192, 8192, 7053],
++    [8192, 10703, 8192, 4433, 0, -4433, -8192, -10703],
++    [8192, 9192, 2998, -4433, -10033, -11485, -8192, -1512],
++    [8192, 7053, -2998, -10703, -10033, -1512, 8192, 11486],
++    [8192, 4433, -8192, -10704, 0, 10704, 8192, -4433],
++    [8192, 1513, -11190, -4433, 10033, 7053, -8192, -9191],
++    [8192, -1513, -11190, 4433, 10033, -7053, -8192, 9191],
++    [8192, -4433, -8192, 10704, 0, -10704, 8192, 4433],
++    [8192, -7053, -2998, 10703, -10033, 1512, 8192, -11486],
++    [8192, -9192, 2998, 4433, -10033, 11485, -8192, 1512],
++    [8192, -10703, 8192, -4433, 0, 4433, -8192, 10703],
++    [8192, -11487, 11190, -10703, 10033, -9192, 8192, -7053]
++];
++
++pub(super) const BASIS_14: [[i32; 8]; 14] = [
++    [8192, 11513, 11295, 10935, 10438, 9810, 9058, 8192],
++    [8192, 10935, 9058, 6164, 2578, -1297, -5026, -8192],
++    [8192, 9810, 5027, -1297, -7223, -10934, -11295, -8192],
++    [8192, 8192, 0, -8192, -11586, -8192, 0, 8192],
++    [8192, 6164, -5027, -11512, -7223, 3826, 11295, 8192],
++    [8192, 3826, -9058, -9809, 2578, 11512, 5026, -8192],
++    [8192, 1297, -11295, -3826, 10438, 6164, -9058, -8192],
++    [8192, -1297, -11295, 3826, 10438, -6164, -9058, 8192],
++    [8192, -3826, -9058, 9809, 2578, -11512, 5026, 8192],
++    [8192, -6164, -5027, 11512, -7223, -3826, 11295, -8192],
++    [8192, -8192, 0, 8192, -11586, 8192, 0, -8192],
++    [8192, -9810, 5027, 1297, -7223, 10934, -11295, 8192],
++    [8192, -10935, 9058, -6164, 2578, 1297, -5026, 8192],
++    [8192, -11513, 11295, -10935, 10438, -9810, 9058, -8192]
++];
++
++#[cfg(test)]
++mod tests {
++    use alloc::vec;
++
++    use crate::decoder::IDCTPtr;
++    use crate::idct::scalar::{
++        idct_scaled_10x10, idct_scaled_12x12, idct_scaled_14x14, idct_scaled_3x3, idct_scaled_5x5,
++        idct_scaled_6x6, idct_scaled_7x7
++    };
++
++    #[test]
++    fn native_basis_pixels_coefficients_and_padding() {
++        // Native JDCT_ISLOW digests include nonzero AC coefficients in every
++        // frequency, including frequencies omitted by the smaller transforms.
++        let cases: [(usize, IDCTPtr, u64); 7] = [
++            (3, idct_scaled_3x3, 0x1ec5e9af714517d2),
++            (5, idct_scaled_5x5, 0x6dd4ce36356afd58),
++            (6, idct_scaled_6x6, 0x2b33f734cdf926ce),
++            (7, idct_scaled_7x7, 0x95c8123e6da8e64e),
++            (10, idct_scaled_10x10, 0x1767d731c035ae8c),
++            (12, idct_scaled_12x12, 0x74e15d7e20e75cf6),
++            (14, idct_scaled_14x14, 0xccb72e6863a96da9)
++        ];
++        let mut original = core::array::from_fn(|i| (i as i32 * 37 % 65) - 32);
++        original[0] = 311;
++        for (side, transform, expected) in cases {
++            let stride = side + 5;
++            let mut output = vec![-321; stride * side];
++            let mut coefficients = original;
++            transform(&mut coefficients, &mut output, stride);
++            assert_eq!(coefficients, original);
++            let actual = output
++                .chunks_exact(stride)
++                .flat_map(|row| row[..side].iter())
++                .fold(0xcbf29ce484222325_u64, |hash, &sample| {
++                    (hash ^ u64::try_from(sample).unwrap()).wrapping_mul(0x100000001b3)
++                });
++            assert_eq!(actual, expected, "native pixels for {side}x{side}");
++            for row in output.chunks_exact(stride) {
++                assert!(row[side..].iter().all(|&sample| sample == -321));
++            }
++            for (dc, sample) in [(-4096, 0), (0, 128), (4096, 255)] {
++                let mut coefficients = [0; 64];
++                coefficients[0] = dc;
++                transform(&mut coefficients, &mut output, stride);
++                for row in output.chunks_exact(stride) {
++                    assert!(row[..side].iter().all(|&value| value == sample));
++                    assert!(row[side..].iter().all(|&value| value == -321));
++                }
++            }
++        }
++    }
++}
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
-index 8dd779fd678b4b2f2117f3b5f444673eecf2bef2..db6dca158b5687049cd06ce8ce482510e3a495c2 100644
+index 8dd779f..df4ae28 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/lib.rs
-@@ -70,6 +70,16 @@
+@@ -70,6 +70,18 @@
  //! assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
  //! ```
  //!
 +//! ## Reduced-IDCT output
 +//!
-+//! Select [`JpegScale::Half`], [`JpegScale::Quarter`], or [`JpegScale::Eighth`]
-+//! with [`JpegDecoder::into_scaled`] before starting pixel decoding. This produces
++//! Select a [`JpegScale`] with [`JpegDecoder::into_scaled`] before starting pixel
++//! decoding. All reduced ratios `n/8`, for `n` from 1 through 7, are supported.
++//! Multiply coded dimensions by [`JpegScale::numerator`] before rounding division
++//! by [`JpegScale::denominator`]. This produces
 +//! native reduced-IDCT samples, not a resized full-size image. Output dimensions
 +//! are rounded up; component-specific IDCT sizes account for chroma subsampling.
 +//! [`ScaledJpegDecoder`] retains reduced planes across incremental retries and
@@ -360,7 +566,7 @@ index 8dd779fd678b4b2f2117f3b5f444673eecf2bef2..db6dca158b5687049cd06ce8ce482510
  //! ## Incremental input
  //!
  //! `JpegDecoder` can be retried on the same decoder when the underlying reader can
-@@ -326,6 +336,7 @@ pub use crate::decoder::{
+@@ -326,6 +338,7 @@ pub use crate::decoder::{
      ScanlineReadStatus, ScanlineStatus
  };
  pub use crate::marker::Marker;
@@ -368,7 +574,7 @@ index 8dd779fd678b4b2f2117f3b5f444673eecf2bef2..db6dca158b5687049cd06ce8ce482510
  mod bitstream;
  #[cfg(feature = "arith")]
  mod bitstream_arith;
-@@ -344,6 +355,7 @@ mod marker;
+@@ -344,6 +357,7 @@ mod marker;
  mod mcu;
  mod mcu_prog;
  mod misc;
@@ -377,7 +583,7 @@ index 8dd779fd678b4b2f2117f3b5f444673eecf2bef2..db6dca158b5687049cd06ce8ce482510
  mod unsafe_utils_avx2;
  mod unsafe_utils_neon;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
-index 952a78e88d7e755af60003cf03d26e8dd92c0e71..b8527cf57cc5d227a5b89cf29b8a0754c21a0b19 100644
+index 952a78e..b8527cf 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 @@ -43,7 +43,8 @@ struct McuWidthContext<'a, B: BitStream> {
@@ -464,7 +670,7 @@ index 952a78e88d7e755af60003cf03d26e8dd92c0e71..b8527cf57cc5d227a5b89cf29b8a0754
                                  // For non-interleaved, j indexes data units directly
                                  j * 8
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
-index f532af45820e6ce35aecb945cb00a084348de33e..766f515108aa222f4c5c931a0d1b600717f1934e 100644
+index f532af4..766f515 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 @@ -1347,6 +1347,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
@@ -501,10 +707,10 @@ index f532af45820e6ce35aecb945cb00a084348de33e..766f515108aa222f4c5c931a0d1b6007
              data:     Vec<u8>,
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
 new file mode 100644
-index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3bcd0e2f5d
+index 0000000..ea111ba
 --- /dev/null
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
-@@ -0,0 +1,295 @@
+@@ -0,0 +1,324 @@
 +/*
 + * Copyright (c) 2026.
 + *
@@ -522,7 +728,10 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +
 +use crate::decoder::{IDCTPtr, McuDecodeOutput, MAX_COMPONENTS};
 +use crate::errors::DecodeErrors;
-+use crate::idct::scalar::{idct_scaled_1x1, idct_scaled_2x2, idct_scaled_4x4};
++use crate::idct::scalar::{
++    idct_scaled_10x10, idct_scaled_12x12, idct_scaled_14x14, idct_scaled_1x1, idct_scaled_2x2,
++    idct_scaled_3x3, idct_scaled_4x4, idct_scaled_5x5, idct_scaled_6x6, idct_scaled_7x7
++};
 +use crate::worker::color_convert;
 +use crate::JpegDecoder;
 +
@@ -534,17 +743,36 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +    /// Decode at one quarter of the coded width and height.
 +    Quarter,
 +    /// Decode at one eighth of the coded width and height.
-+    Eighth
++    Eighth,
++    /// Decode at three eighths of the coded width and height.
++    ThreeEighths,
++    /// Decode at five eighths of the coded width and height.
++    FiveEighths,
++    /// Decode at three quarters of the coded width and height.
++    ThreeQuarters,
++    /// Decode at seven eighths of the coded width and height.
++    SevenEighths
 +}
 +
 +impl JpegScale {
-+    /// The denominator of the output ratio (2, 4, or 8).
++    /// The numerator of the reduced output ratio.
++    #[must_use]
++    pub const fn numerator(self) -> usize {
++        match self {
++            Self::Half | Self::Quarter | Self::Eighth => 1,
++            Self::ThreeEighths | Self::ThreeQuarters => 3,
++            Self::FiveEighths => 5,
++            Self::SevenEighths => 7
++        }
++    }
++
++    /// The denominator of the reduced output ratio (2, 4, or 8).
 +    #[must_use]
 +    pub const fn denominator(self) -> usize {
 +        match self {
 +            Self::Half => 2,
-+            Self::Quarter => 4,
-+            Self::Eighth => 8
++            Self::Quarter | Self::ThreeQuarters => 4,
++            Self::Eighth | Self::ThreeEighths | Self::FiveEighths | Self::SevenEighths => 8
 +        }
 +    }
 +}
@@ -652,7 +880,7 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +                "scaled decoding requires known image dimensions"
 +            ));
 +        }
-+        let minimum = 8 / scale.denominator();
++        let minimum = 8 * scale.numerator() / scale.denominator();
 +        let h_max = decoder
 +            .components
 +            .iter()
@@ -679,8 +907,15 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +            let transform = match block_size {
 +                1 => idct_scaled_1x1,
 +                2 => idct_scaled_2x2,
++                3 => idct_scaled_3x3,
 +                4 => idct_scaled_4x4,
++                5 => idct_scaled_5x5,
++                6 => idct_scaled_6x6,
++                7 => idct_scaled_7x7,
 +                8 => decoder.idct_func,
++                10 => idct_scaled_10x10,
++                12 => idct_scaled_12x12,
++                14 => idct_scaled_14x14,
 +                _ => unreachable!()
 +            };
 +            let stride = width.div_ceil(h_max * 8) * component.horizontal_sample * block_size;
@@ -701,8 +936,8 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +            });
 +        }
 +        Ok(Self {
-+            width: width.div_ceil(scale.denominator()),
-+            height: height.div_ceil(scale.denominator()),
++            width: (width * scale.numerator()).div_ceil(scale.denominator()),
++            height: (height * scale.numerator()).div_ceil(scale.denominator()),
 +            planes
 +        })
 +    }
@@ -800,6 +1035,3 @@ index 0000000000000000000000000000000000000000..cce9ae117eeb4503766931d67cd31d3b
 +        }
 +    }
 +}
--- 
-2.56.0
-

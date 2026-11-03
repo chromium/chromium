@@ -1,4 +1,4 @@
-From 5e1bfa2abc7cc9dbbfd9365d972be800aff8b61f Mon Sep 17 00:00:00 2001
+From 5243244685dee546e957f2ce7d5128b476a34543 Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Buffered publication rows (PR508)
@@ -6,12 +6,13 @@ Subject: [PATCH] [rust jpeg] Buffered publication rows (PR508)
 Backport of https://github.com/etemesi254/zune-image/pull/508
 Published head: 9867965335ee4f058fb11199b4f8b9e70f40af55
 
-Effective cumulative source stage: 9867965335ee4f058fb11199b4f8b9e70f40af55
+Original cumulative source stage: 9867965335ee4f058fb11199b4f8b9e70f40af55
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Rebased onto published PR498 revision 50e283a32a465cdeaa0d235e0187791b227f6e21.
+Update buffered-row documentation to account for both scale numerator and denominator.
 ---
  .../vendor/zune-jpeg-v0_5/src/bitstream.rs    |  27 +++-
  .../vendor/zune-jpeg-v0_5/src/decoder.rs      |  57 +++++++
@@ -22,7 +23,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
  6 files changed, 402 insertions(+), 25 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
-index 263994c12f3d9d07081945b2d9da54b1e623a2e3..2adab10de0f3c6b4b97cd78069d7dd6d9281353e 100644
+index 263994c..2adab10 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 @@ -84,9 +84,11 @@ macro_rules! decode_huff {
@@ -136,7 +137,7 @@ index 263994c12f3d9d07081945b2d9da54b1e623a2e3..2adab10de0f3c6b4b97cd78069d7dd6d
  }
  
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-index 4a984c7bf20cbdaa3313efd5a87dd3aecbf68a1f..e9d184dafdc4da3d055d44ecafff0a707f407568 100644
+index 4a984c7..e9d184d 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 @@ -402,6 +402,9 @@ pub struct JpegDecoder<T> {
@@ -230,7 +231,7 @@ index 4a984c7bf20cbdaa3313efd5a87dd3aecbf68a1f..e9d184dafdc4da3d055d44ecafff0a70
      /// preview image.
      ///
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
-index b6d61ef185845f9579d07f1ca1857286b7870953..712d9cbbac4d07894b70feca79db0e037955fc91 100644
+index b6d61ef..712d9cb 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 @@ -20,7 +20,7 @@ use crate::components::SampleRatios;
@@ -448,7 +449,7 @@ index b6d61ef185845f9579d07f1ca1857286b7870953..712d9cbbac4d07894b70feca79db0e03
              match marker {
                  Marker::SOS => {
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
-index d5b7868031efae722b1b7add2588c02cd94c53d6..5c546077f1b92ced68b29701bffaaff26e9e982f 100644
+index d5b7868..5c54607 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 @@ -436,6 +436,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
@@ -751,7 +752,7 @@ index d5b7868031efae722b1b7add2588c02cd94c53d6..5c546077f1b92ced68b29701bffaaff2
              let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&data), options);
              decoder.set_incremental_mode(incremental);
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
-index 9e81a80ca71bfaac14a3c4f8c29f0c7ca441f9f2..998c28fff34943a01eecf479a3f027d9e1c618a2 100644
+index 9e81a80..998c28f 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/recovery_tests.rs
 @@ -110,6 +110,27 @@ fn bad_huffman_code_consumes_seventeen_bits_only_in_lenient_mode() {
@@ -873,17 +874,17 @@ index 9e81a80ca71bfaac14a3c4f8c29f0c7ca441f9f2..998c28fff34943a01eecf479a3f027d9
  fn malformed_entropy_is_bounded_with_and_without_end_markers() {
      let mut random = 1_u32;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
-index cce9ae117eeb4503766931d67cd31d3bcd0e2f5d..b75b5466114d97566c17bd5bef1a9ebc0560e532 100644
+index ea111ba..a42a4b4 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/scaled.rs
-@@ -69,6 +69,15 @@ impl<T: ZByteReaderTrait> ScaledJpegDecoder<T> {
+@@ -91,6 +91,15 @@ impl<T: ZByteReaderTrait> ScaledJpegDecoder<T> {
          (self.output.width, self.output.height)
      }
  
 +    /// Buffered publication bound in coded-pixel rows, not reduced rows.
 +    ///
 +    /// Forward [`JpegDecoder::buffered_output_rows`] without changing geometry.
-+    /// Consumers must apply the selected scale denominator.
++    /// Consumers must apply the selected scale numerator and denominator.
 +    #[must_use]
 +    pub fn buffered_output_rows(&self) -> Option<usize> {
 +        self.decoder.buffered_output_rows()
@@ -892,6 +893,3 @@ index cce9ae117eeb4503766931d67cd31d3bcd0e2f5d..b75b5466114d97566c17bd5bef1a9ebc
      /// Required packed output bytes, or `None` if the size overflows.
      pub fn output_buffer_size(&self) -> Option<usize> {
          self.output
--- 
-2.56.0
-

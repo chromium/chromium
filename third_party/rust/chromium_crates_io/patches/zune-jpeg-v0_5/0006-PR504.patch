@@ -1,4 +1,4 @@
-From 8e6393b607777c6a1eb57c6e95a74c29dae9799b Mon Sep 17 00:00:00 2001
+From bfdf9eecf7315f42aecbe0dc41d1c2b2f14fdb28 Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Packed progressive reconstruction (PR504)
@@ -6,12 +6,12 @@ Subject: [PATCH] [rust jpeg] Packed progressive reconstruction (PR504)
 Backport of https://github.com/etemesi254/zune-image/pull/504
 Published head: fe79d5842d21e01f500496c35120ee568be59aa8
 
-Effective cumulative source stage: 94946ddc272d1b75b0ece72666348d31028562ab
+Original cumulative source stage: 94946ddc272d1b75b0ece72666348d31028562ab
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Rebased onto published PR498 revision 50e283a32a465cdeaa0d235e0187791b227f6e21.
 ---
  .../vendor/zune-jpeg-v0_5/src/bitstream.rs    | 228 +++++++++++-------
  .../zune-jpeg-v0_5/src/bitstream_arith.rs     |   4 +-
@@ -19,7 +19,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
  3 files changed, 206 insertions(+), 102 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
-index ac5720019faf135340f3b1a97934f494a67e387b..37dc8d87eec50b6b7a5801b409e94e1719b6060e 100644
+index ac57200..37dc8d8 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 @@ -189,7 +189,7 @@ pub(crate) trait BitStream {
@@ -297,7 +297,7 @@ index ac5720019faf135340f3b1a97934f494a67e387b..37dc8d87eec50b6b7a5801b409e94e17
          return Ok(());
      }
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
-index c274aff2dad8aafd753b00d6e06d829338f6ea7e..4d27cf33cd7ae1b5d907f8f4529a9c83783fc4cd 100644
+index c274aff..4d27cf3 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
 @@ -872,10 +872,10 @@ impl BitStream for BitStreamArithmetic {
@@ -314,7 +314,7 @@ index c274aff2dad8aafd753b00d6e06d829338f6ea7e..4d27cf33cd7ae1b5d907f8f4529a9c83
          self.decode_dc(reader, dc_table, dc_prediction, last_dc_diff)?;
          *block = (*dc_prediction as i16).wrapping_mul(self.successive_low_mask);
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
-index 766f515108aa222f4c5c931a0d1b600717f1934e..d5b7868031efae722b1b7add2588c02cd94c53d6 100644
+index 766f515..d5b7868 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
 @@ -449,7 +449,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
@@ -485,6 +485,3 @@ index 766f515108aa222f4c5c931a0d1b600717f1934e..d5b7868031efae722b1b7add2588c02c
      #[test]
      fn smoothing_preserves_known_coefficients_and_precision_bounds() {
          let mut blocks = [0; 9 * 64];
--- 
-2.56.0
-

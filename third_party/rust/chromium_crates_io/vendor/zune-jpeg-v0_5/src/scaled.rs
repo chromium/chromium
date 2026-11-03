@@ -15,7 +15,10 @@ use zune_core::bytestream::ZByteReaderTrait;
 
 use crate::decoder::{IDCTPtr, McuDecodeOutput, MAX_COMPONENTS};
 use crate::errors::DecodeErrors;
-use crate::idct::scalar::{idct_scaled_1x1, idct_scaled_2x2, idct_scaled_4x4};
+use crate::idct::scalar::{
+    idct_scaled_10x10, idct_scaled_12x12, idct_scaled_14x14, idct_scaled_1x1, idct_scaled_2x2,
+    idct_scaled_3x3, idct_scaled_4x4, idct_scaled_5x5, idct_scaled_6x6, idct_scaled_7x7
+};
 use crate::worker::color_convert;
 use crate::JpegDecoder;
 
@@ -27,17 +30,36 @@ pub enum JpegScale {
     /// Decode at one quarter of the coded width and height.
     Quarter,
     /// Decode at one eighth of the coded width and height.
-    Eighth
+    Eighth,
+    /// Decode at three eighths of the coded width and height.
+    ThreeEighths,
+    /// Decode at five eighths of the coded width and height.
+    FiveEighths,
+    /// Decode at three quarters of the coded width and height.
+    ThreeQuarters,
+    /// Decode at seven eighths of the coded width and height.
+    SevenEighths
 }
 
 impl JpegScale {
-    /// The denominator of the output ratio (2, 4, or 8).
+    /// The numerator of the reduced output ratio.
+    #[must_use]
+    pub const fn numerator(self) -> usize {
+        match self {
+            Self::Half | Self::Quarter | Self::Eighth => 1,
+            Self::ThreeEighths | Self::ThreeQuarters => 3,
+            Self::FiveEighths => 5,
+            Self::SevenEighths => 7
+        }
+    }
+
+    /// The denominator of the reduced output ratio (2, 4, or 8).
     #[must_use]
     pub const fn denominator(self) -> usize {
         match self {
             Self::Half => 2,
-            Self::Quarter => 4,
-            Self::Eighth => 8
+            Self::Quarter | Self::ThreeQuarters => 4,
+            Self::Eighth | Self::ThreeEighths | Self::FiveEighths | Self::SevenEighths => 8
         }
     }
 }
@@ -72,7 +94,7 @@ impl<T: ZByteReaderTrait> ScaledJpegDecoder<T> {
     /// Buffered publication bound in coded-pixel rows, not reduced rows.
     ///
     /// Forward [`JpegDecoder::buffered_output_rows`] without changing geometry.
-    /// Consumers must apply the selected scale denominator.
+    /// Consumers must apply the selected scale numerator and denominator.
     #[must_use]
     pub fn buffered_output_rows(&self) -> Option<usize> {
         self.decoder.buffered_output_rows()
@@ -154,7 +176,7 @@ impl ScaledOutput {
                 "scaled decoding requires known image dimensions"
             ));
         }
-        let minimum = 8 / scale.denominator();
+        let minimum = 8 * scale.numerator() / scale.denominator();
         let h_max = decoder
             .components
             .iter()
@@ -181,8 +203,15 @@ impl ScaledOutput {
             let transform = match block_size {
                 1 => idct_scaled_1x1,
                 2 => idct_scaled_2x2,
+                3 => idct_scaled_3x3,
                 4 => idct_scaled_4x4,
+                5 => idct_scaled_5x5,
+                6 => idct_scaled_6x6,
+                7 => idct_scaled_7x7,
                 8 => decoder.idct_func,
+                10 => idct_scaled_10x10,
+                12 => idct_scaled_12x12,
+                14 => idct_scaled_14x14,
                 _ => unreachable!()
             };
             let stride = width.div_ceil(h_max * 8) * component.horizontal_sample * block_size;
@@ -203,8 +232,8 @@ impl ScaledOutput {
             });
         }
         Ok(Self {
-            width: width.div_ceil(scale.denominator()),
-            height: height.div_ceil(scale.denominator()),
+            width: (width * scale.numerator()).div_ceil(scale.denominator()),
+            height: (height * scale.numerator()).div_ceil(scale.denominator()),
             planes
         })
     }

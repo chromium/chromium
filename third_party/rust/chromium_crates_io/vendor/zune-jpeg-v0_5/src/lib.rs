@@ -72,8 +72,10 @@
 //!
 //! ## Reduced-IDCT output
 //!
-//! Select [`JpegScale::Half`], [`JpegScale::Quarter`], or [`JpegScale::Eighth`]
-//! with [`JpegDecoder::into_scaled`] before starting pixel decoding. This produces
+//! Select a [`JpegScale`] with [`JpegDecoder::into_scaled`] before starting pixel
+//! decoding. All reduced ratios `n/8`, for `n` from 1 through 7, are supported.
+//! Multiply coded dimensions by [`JpegScale::numerator`] before rounding division
+//! by [`JpegScale::denominator`]. This produces
 //! native reduced-IDCT samples, not a resized full-size image. Output dimensions
 //! are rounded up; component-specific IDCT sizes account for chroma subsampling.
 //! [`ScaledJpegDecoder`] retains reduced planes across incremental retries and

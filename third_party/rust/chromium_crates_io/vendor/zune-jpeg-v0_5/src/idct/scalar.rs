@@ -10,6 +10,7 @@
 //!
 //! Not as fast as AVX one.
 
+use super::scaled_basis::{BASIS_10, BASIS_12, BASIS_14, BASIS_3, BASIS_5, BASIS_6, BASIS_7};
 use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
 
 #[inline(always)]
@@ -35,7 +36,6 @@ pub fn idct_int_1x1(in_vector: &mut [i32; 64], mut out_vector: &mut [i16], strid
     for _ in 0..7 {
         out_vector = &mut out_vector[stride..];
         out_vector[..8].fill(coeff);
-
     }
 }
 
@@ -105,6 +105,41 @@ pub fn idct_scaled_2x2(coefficients: &mut [i32; 64], output: &mut [i16], stride:
 pub fn idct_scaled_1x1(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
     assert!(stride > 0 && !output.is_empty());
     output[0] = clamp(wa(wa(coefficients[0], 4) >> 3, 128));
+}
+
+/// Reconstruct a three-eighths-scale block with native integer rounding.
+pub fn idct_scaled_3x3(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_3, 11, 18);
+}
+
+/// Reconstruct a five-eighths-scale block with native integer rounding.
+pub fn idct_scaled_5x5(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_5, 11, 18);
+}
+
+/// Reconstruct a three-quarters-scale block with native integer rounding.
+pub fn idct_scaled_6x6(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_6, 11, 18);
+}
+
+/// Reconstruct a seven-eighths-scale block with native integer rounding.
+pub fn idct_scaled_7x7(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_7, 11, 18);
+}
+
+/// Reconstruct a ten-sample chroma block for native component scaling.
+pub fn idct_scaled_10x10(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_10, 11, 18);
+}
+
+/// Reconstruct a twelve-sample chroma block for native component scaling.
+pub fn idct_scaled_12x12(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_12, 11, 18);
+}
+
+/// Reconstruct a fourteen-sample chroma block for native component scaling.
+pub fn idct_scaled_14x14(coefficients: &mut [i32; 64], output: &mut [i16], stride: usize) {
+    reduced_idct(coefficients, output, stride, &BASIS_14, 11, 18);
 }
 
 #[allow(unused_assignments)]

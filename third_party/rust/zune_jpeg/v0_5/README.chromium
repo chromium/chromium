@@ -26,12 +26,17 @@ Local Modifications:
   https://github.com/etemesi254/zune-image/pull/508
   https://github.com/etemesi254/zune-image/pull/505
   https://github.com/etemesi254/zune-image/pull/507
-  Each patch records its published PR head and cumulative source stage.
+  Each patch records its published PR head and source-stage provenance.
+  PR498 includes its eighth-step extension; subsequent patches are rebased
+  onto that revision rather than carrying a second patch for the same PR.
 - The effective Rust source is byte-identical to the validated combination
   of these published PRs; there are no additional Chromium-only decoder
   implementation changes. Keep coded/raw geometry, strict errors, growing
   input and full-frame recovery separate from buffered publication bounds.
-  Reduced output supports only 1/2, 1/4 and 1/8 and is frame-buffered.
+  Reduced output supports every n/8 ratio for n from 1 through 7 and is
+  frame-buffered. Include PR498's eighth-step extension at
+  50e283a32a465cdeaa0d235e0187791b227f6e21; the cumulative source matches
+  8f3ad58e9a7dc6bca100cf276ecc11324e339cef.
 - Track upstream acceptance and release availability in:
   https://github.com/etemesi254/zune-image/issues/503
   Remove maintained patches only after verifying their complete behavior is

@@ -1,4 +1,4 @@
-From 9c2dd8dbf59614ecb863ae6cc44a5ed470fa2da1 Mon Sep 17 00:00:00 2001
+From 025bc9f82d646601bb1b9ed0e6b4c00943ecce55 Mon Sep 17 00:00:00 2001
 From: Sergio Gonzalez Martin <sergiog@microsoft.com>
 Date: Mon, 26 Oct 2026 19:32:59 +0000
 Subject: [PATCH] [rust jpeg] Abbreviated Huffman tables (PR507)
@@ -6,18 +6,19 @@ Subject: [PATCH] [rust jpeg] Abbreviated Huffman tables (PR507)
 Backport of https://github.com/etemesi254/zune-image/pull/507
 Published head: 40f756942f4ee144d47a997418c28847044f0eb4
 
-Effective cumulative source stage: b7307e58695ef7db167c72050e15c1e69466b870
+Original cumulative source stage: b7307e58695ef7db167c72050e15c1e69466b870
 Only this stage's new Rust-source delta is carried. Prerequisite changes are not duplicated in later PR patches.
 
 Tracking: https://github.com/etemesi254/zune-image/issues/503
 
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+Rebased onto published PR498 revision 50e283a32a465cdeaa0d235e0187791b227f6e21.
+Effective final Rust source stage: 8f3ad58e9a7dc6bca100cf276ecc11324e339cef
 ---
  .../vendor/zune-jpeg-v0_5/src/misc.rs         | 61 ++++++++++++++++++-
  1 file changed, 60 insertions(+), 1 deletion(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
-index 3a000d75db92ab4f2c9e17616a84a611f2d77439..65352d6b86c95ad58a2a0336a03c76682d9e09f0 100644
+index 3a000d7..65352d6 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
 @@ -270,7 +270,9 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
@@ -95,6 +96,3 @@ index 3a000d75db92ab4f2c9e17616a84a611f2d77439..65352d6b86c95ad58a2a0336a03c7668
  // https://www.loc.gov/preservation/digital/formats/fdd/fdd000063.shtml
  // "Avery Lee, writing in the rec.video.desktop newsgroup in 2001, commented that "MJPEG, or at
  //  least the MJPEG in AVIs having the MJPG fourcc, is restricted JPEG with a fixed -- and
--- 
-2.56.0
-

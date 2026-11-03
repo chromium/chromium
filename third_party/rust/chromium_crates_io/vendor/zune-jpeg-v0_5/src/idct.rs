@@ -53,6 +53,7 @@ pub mod avx2;
 pub mod neon;
 
 pub mod scalar;
+mod scaled_basis;
 
 /// Choose an appropriate IDCT function
 #[allow(unused_variables)]
