@@ -196,6 +196,15 @@ class WaylandToplevelWindow : public WaylandWindow,
                                  wl_callback* callback,
                                  uint32_t time);
 
+  // Sends set_fullscreen and a wl_display.sync to track when the compositor has
+  // processed it.
+  void SendSetFullscreen(int64_t fullscreen_display_id);
+
+  // wl_callback_listener callback for `fullscreen_sync_callback_`.
+  static void OnFullscreenSyncDone(void* data,
+                                   wl_callback* callback,
+                                   uint32_t time);
+
   // We want to remember whether it was previously maximized, for cases like
   // restoring from fullscreen or compositor-initiated tiling, so we can
   // restore back to the correct state.
@@ -249,6 +258,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   // compositor minimized the window, so their activated state must not be
   // taken to mean that the window was restored.
   wl::Object<wl_callback> minimize_sync_callback_;
+
+  // Set while the compositor has not yet processed the last set_fullscreen
+  // request. Configures received in the meantime were sent before the
+  // compositor fullscreened the window, so their non-fullscreen state must not
+  // be taken to mean that fullscreen was exited.
+  wl::Object<wl_callback> fullscreen_sync_callback_;
 
   bool is_active_ = false;
   bool is_xdg_active_ = false;

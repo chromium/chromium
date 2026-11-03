@@ -200,6 +200,7 @@ void WaylandToplevelWindow::Hide() {
   // not the case here.
   xdg_toplevel_.reset();
   minimize_sync_callback_.reset();
+  fullscreen_sync_callback_.reset();
   toplevel_session_.reset();
   appmenu_.reset();
 
@@ -316,6 +317,7 @@ void WaylandToplevelWindow::Minimize() {
     } else {
       auto previous_state = applied_state().window_state;
       previously_maximized_ = previous_state == PlatformWindowState::kMaximized;
+      fullscreen_sync_callback_.reset();
       SendSetMinimized();
       ForceApplyWindowStateDoNotUse(PlatformWindowState::kMinimized);
       delegate()->OnWindowStateChanged(previous_state,
@@ -576,10 +578,15 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
           : (GetLatestRequestedState().window_state ==
                  PlatformWindowState::kMinimized &&
              !can_unminimize);
+  // With kAsyncFullscreenWindowState disabled, SetFullscreen(true) applies
+  // kFullScreen immediately and sets fullscreen_sync_callback_. A configure
+  // sent before the compositor processed set_fullscreen does not mean
+  // fullscreen was exited.
+  const bool is_pending_fullscreen = !!fullscreen_sync_callback_;
 
   if (is_minimized || window_states.is_minimized) {
     window_state = PlatformWindowState::kMinimized;
-  } else if (window_states.is_fullscreen) {
+  } else if (is_pending_fullscreen || window_states.is_fullscreen) {
     window_state = PlatformWindowState::kFullScreen;
   } else if (window_states.is_maximized) {
     window_state = PlatformWindowState::kMaximized;
@@ -603,13 +610,16 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
-  // The compositor does not report the minimized state, but it still reports
-  // the state underneath, which is what Restore() should return to. Use that
-  // instead of the previous configure while the client keeps the window
-  // minimized.
+  // The compositor does not report the minimized state, and a configure that
+  // predates set_fullscreen does not yet report fullscreen, but either still
+  // reports the state underneath, which is what Restore() or exiting
+  // fullscreen should return to. Use that instead of the previous configure
+  // while the client keeps the window minimized or fullscreen.
   PlatformWindowState previous_state = last_configured_window_state_;
-  if (window_state == PlatformWindowState::kMinimized &&
-      !window_states.is_minimized) {
+  if ((window_state == PlatformWindowState::kMinimized &&
+       !window_states.is_minimized) ||
+      (window_state == PlatformWindowState::kFullScreen &&
+       !window_states.is_fullscreen)) {
     previous_state =
         window_states.is_fullscreen  ? PlatformWindowState::kFullScreen
         : window_states.is_maximized ? PlatformWindowState::kMaximized
@@ -647,11 +657,20 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   // bounds.
   gfx::Rect bounds_dip(
       pending_configure_state_.bounds_dip.value_or(gfx::Rect()));
-  if (window_state == PlatformWindowState::kMinimized) {
+  const bool is_stale_fullscreen_configure =
+      window_state == PlatformWindowState::kFullScreen &&
+      !window_states.is_fullscreen;
+  if (window_state == PlatformWindowState::kMinimized ||
+      (is_stale_fullscreen_configure &&
+       (!window_states.is_maximized || width_dip <= 1 || height_dip <= 1))) {
     // Keep the current (restored) bounds while minimized. Otherwise the bounds
     // shrink to the no-shadow configure size, the throttled renderer keeps that
     // smaller buffer, and on un-minimize it is briefly shown mismatched against
     // the retained window geometry, shifting the content (Wayland-only).
+    // Likewise, keep current bounds on non-maximized or 0x0 configures that
+    // predate set_fullscreen so bounds_dip does not remain empty or shrink to a
+    // pre-fullscreen no-shadow size; stale maximized configures are still acked
+    // and must obey the configured size (crbug.com/576504456).
     bounds_dip = GetBoundsInDIP();
   } else if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
@@ -951,6 +970,9 @@ void WaylandToplevelWindow::TriggerStateChanges(
         window_state == PlatformWindowState::kFullScreen);
   CHECK(!base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState));
 
+  if (window_state != PlatformWindowState::kFullScreen) {
+    fullscreen_sync_callback_.reset();
+  }
   if (xdg_toplevel_) {
     // A client-initiated state is in applied_state() before any request
     // carries it, so check both for the state being left.
@@ -966,8 +988,7 @@ void WaylandToplevelWindow::TriggerStateChanges(
       SendSetMinimized();
       pending_minimize_ = true;
     } else if (window_state == PlatformWindowState::kFullScreen) {
-      xdg_toplevel_->SetFullscreen(
-          GetWaylandOutputForDisplayId(fullscreen_display_id));
+      SendSetFullscreen(fullscreen_display_id);
     } else if (window_state == PlatformWindowState::kMaximized) {
       if (is_leaving(PlatformWindowState::kFullScreen)) {
         xdg_toplevel_->UnSetFullscreen();
@@ -1043,6 +1064,31 @@ void WaylandToplevelWindow::OnMinimizeSyncDone(void* data,
   auto* self = static_cast<WaylandToplevelWindow*>(data);
   CHECK_EQ(self->minimize_sync_callback_.get(), callback);
   self->minimize_sync_callback_.reset();
+}
+
+void WaylandToplevelWindow::SendSetFullscreen(int64_t fullscreen_display_id) {
+  CHECK(xdg_toplevel_);
+  xdg_toplevel_->SetFullscreen(
+      GetWaylandOutputForDisplayId(fullscreen_display_id));
+
+  // Requests are processed in order, so the sync completes only after the
+  // compositor has processed set_fullscreen.
+  fullscreen_sync_callback_.reset(connection()->GetSyncCallback());
+  static constexpr wl_callback_listener kFullscreenSyncListener = {
+      .done = &OnFullscreenSyncDone,
+  };
+  wl_callback_add_listener(fullscreen_sync_callback_.get(),
+                           &kFullscreenSyncListener, this);
+  connection()->Flush();
+}
+
+// static
+void WaylandToplevelWindow::OnFullscreenSyncDone(void* data,
+                                                 wl_callback* callback,
+                                                 uint32_t time) {
+  auto* self = static_cast<WaylandToplevelWindow*>(data);
+  CHECK_EQ(self->fullscreen_sync_callback_.get(), callback);
+  self->fullscreen_sync_callback_.reset();
 }
 
 void WaylandToplevelWindow::UpdatePreviouslyMaximized(

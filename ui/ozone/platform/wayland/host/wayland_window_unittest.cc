@@ -1252,6 +1252,161 @@ TEST_P(WaylandWindowTest, StaleActivatedConfigureDoesNotUnminimize) {
   SyncDisplay();
 }
 
+// Regression test for crbug.com/571648519. With kAsyncFullscreenWindowState
+// disabled, SetFullscreen(true) applies kFullScreen immediately. A configure
+// sent by the compositor before it processed set_fullscreen must not drop the
+// window back out of fullscreen or lose previously_maximized_.
+TEST_P(WaylandWindowTest, StaleConfigureDoesNotExitFullscreen) {
+  constexpr gfx::Size kNormalSize{800, 600};
+  constexpr gfx::Size kMaximizedSize{1280, 800};
+  constexpr gfx::Size kFullscreenSize{1920, 1080};
+  EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(testing::AnyNumber());
+  EXPECT_CALL(delegate_, OnWindowStateChanged(_, _))
+      .Times(testing::AnyNumber());
+
+  auto active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, {0, 0}, active);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  ASSERT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  window_->Maximize();
+  ASSERT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+
+  // A stale maximized configure is still acked, so its configured geometry must
+  // be obeyed (otherwise compositors such as Weston raise
+  // xdg_wm_base.invalid_surface_state).
+  PostToServerAndWait([id = surface_id_, size = kMaximizedSize](
+                          wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    wl::MockXdgSurface* xdg_surface = mock_surface->xdg_surface();
+    EXPECT_CALL(*xdg_surface, SetWindowGeometry(gfx::Rect(size)));
+    EXPECT_CALL(*xdg_surface, AckConfigure(_));
+  });
+
+  // Queue the compositor's reply to set_maximized before the client calls
+  // SetFullscreen(true), so it predates set_fullscreen on the server.
+  auto active_maximized = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
+  server_.Post(
+      base::BindLambdaForTesting([&, id = surface_id_, size = kMaximizedSize](
+                                     wl::TestWaylandServerThread* server) {
+        auto* xdg_surface =
+            server->GetObject<wl::MockSurface>(id)->xdg_surface();
+        wl::ScopedWlArray states(active_maximized);
+        xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
+                                    size.width(), size.height(), states.get());
+        xdg_surface_send_configure(xdg_surface->resource(),
+                                   server->GetNextSerial());
+      }));
+  server_.FlushForTesting();
+
+  window_->SetFullscreen(true, display::kInvalidDisplayId);
+  EXPECT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+
+  // Dispatch the stale configure. The window must remain fullscreen while
+  // acking the maximized configure's size.
+  SyncDisplay();
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+  EXPECT_EQ(gfx::Rect(kMaximizedSize), window_->GetBoundsInDIP());
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    Mock::VerifyAndClearExpectations(mock_surface->xdg_surface());
+  });
+
+  // Dispatch the compositor's fullscreen configure.
+  auto active_fullscreen = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_FULLSCREEN});
+  SendConfigureEvent(surface_id_, kFullscreenSize, active_fullscreen);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+
+  // Exiting fullscreen must still restore to maximized.
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    EXPECT_CALL(*mock_surface->xdg_surface()->xdg_toplevel(),
+                UnsetFullscreen());
+    EXPECT_CALL(*mock_surface->xdg_surface()->xdg_toplevel(), SetMaximized());
+  });
+  window_->SetFullscreen(false, display::kInvalidDisplayId);
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  SyncDisplay();
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+    ASSERT_TRUE(mock_surface);
+    Mock::VerifyAndClearExpectations(
+        mock_surface->xdg_surface()->xdg_toplevel());
+  });
+
+  // Once the sync after set_fullscreen has completed, a compositor-initiated
+  // configure without fullscreen must still exit fullscreen.
+  window_->SetFullscreen(true, display::kInvalidDisplayId);
+  SyncDisplay();
+  auto normal_active = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, kNormalSize, normal_active);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
+
+  // Same race while an earlier configure is still in in_flight_requests_
+  // (processed, but not yet latched) when SetFullscreen(true) runs, so
+  // GetLatestRequestedState() still reports the unlatched state.
+  window_->Maximize();
+  SendConfigureEvent(surface_id_, {1000, 700}, active_maximized);
+  connection_->RoundTripQueue();
+  server_.Post(
+      base::BindLambdaForTesting([&, id = surface_id_, size = kMaximizedSize](
+                                     wl::TestWaylandServerThread* server) {
+        auto* xdg_surface =
+            server->GetObject<wl::MockSurface>(id)->xdg_surface();
+        wl::ScopedWlArray states(active_maximized);
+        xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(),
+                                    size.width(), size.height(), states.get());
+        xdg_surface_send_configure(xdg_surface->resource(),
+                                   server->GetNextSerial());
+      }));
+  server_.FlushForTesting();
+
+  window_->SetFullscreen(true, display::kInvalidDisplayId);
+  SyncDisplay();
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+  EXPECT_EQ(gfx::Rect(kMaximizedSize), window_->GetBoundsInDIP());
+
+  window_->SetFullscreen(false, display::kInvalidDisplayId);
+  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+  SyncDisplay();
+
+  // A stale 0x0 configure (such as the initial configure sent before the
+  // compositor saw set_fullscreen) must keep non-empty bounds and not trip
+  // XdgSurface::SetWindowGeometry().
+  connection_->RoundTripQueue();
+  server_.Post(base::BindLambdaForTesting(
+      [id = surface_id_](wl::TestWaylandServerThread* server) {
+        auto* xdg_surface =
+            server->GetObject<wl::MockSurface>(id)->xdg_surface();
+        wl::ScopedWlArray empty_states({});
+        xdg_toplevel_send_configure(xdg_surface->xdg_toplevel()->resource(), 0,
+                                    0, empty_states.get());
+        xdg_surface_send_configure(xdg_surface->resource(),
+                                   server->GetNextSerial());
+      }));
+  server_.FlushForTesting();
+
+  window_->SetFullscreen(true, display::kInvalidDisplayId);
+  SyncDisplay();
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  EXPECT_EQ(PlatformWindowState::kFullScreen,
+            window_->GetPlatformWindowState());
+  EXPECT_FALSE(window_->GetBoundsInDIP().IsEmpty());
+}
+
 // Regression test for crbug.com/396148609. A minimized window is not visible,
 // so its window geometry and bounds must be left at their restored values.
 // Otherwise the geometry origin flips to (0,0) and the bounds shrink to the
