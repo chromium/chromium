@@ -4243,6 +4243,7 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
     public void testSaveAsContextMenuStrings_Disabled() {
+        DeviceInfo.setIsDesktopForTesting(false);
         Context context = ContextUtils.getApplicationContext();
 
         assertEquals(

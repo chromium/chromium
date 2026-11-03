@@ -54,6 +54,7 @@ import java.util.concurrent.Callable;
 public class MediaLauncherActivityTest {
     @Before
     public void setUp() {
+        DeviceInfo.setIsDesktopForTesting(false);
         MediaViewerUtils.forceEnableMediaLauncherActivityForTest();
     }
 
@@ -102,7 +103,6 @@ public class MediaLauncherActivityTest {
     @EnableFeatures(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHandleAudioIntentOpenInNewTab() throws Exception {
-        DeviceInfo.setIsDesktopForTesting(true);
         String url = TestContentProvider.createContentUrl("media/audio.mp3");
         Context context = ContextUtils.getApplicationContext();
         Uri uri = Uri.parse(url);

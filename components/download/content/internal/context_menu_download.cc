@@ -45,7 +45,7 @@ void CreateContextMenuDownload(const GURL& url,
   }
   dl_params->set_prompt(
       base::FeatureList::IsEnabled(
-          download::features::kEnableDownloadSaveAsContextMenu) &&
+          download::features::kEnableDownloadSaveAsContextMenu) ||
       base::android::device_info::is_desktop());
   dl_params->set_request_origin(origin);
   dl_params->set_suggested_name(params.suggested_filename);
