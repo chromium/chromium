@@ -34,4 +34,9 @@ agentic_review {
     content_patterns: "\\b(?:AutofillManagerTestApi::pass_key|OnFormsSeen|OnFormSubmitted|OnTextFieldValueChanged|OnDidEndTextFieldEditing|OnTextFieldDidScroll|OnSelectControlSelectionChanged|OnSelectFieldOptionsDidChange|OnFocusOnFormField|OnFocusOnNonFormField|OnAskForValuesToFill(?:Test)?|OnHidePopup|OnCaretMovedInFormField|OnDidAutofillForm|SuppressAutomaticRefills|RequestRefill|OnJavaScriptChangedAutofilledValue|OnFormWithEmailVerificationTokenSubmitted|OnDidDetectJavaScriptAutofill)\\b"
     rules: "components/autofill/agents/knowledge_base/do-not-call-autofill-manager-renderer-events-in-browser-tests.md"
   }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    content_patterns: "\\bswitch\\s*\\(|\\bdefault\\s*:|\\b(?:FieldType|SuggestionType|FillingProduct)\\b"
+    rules: "components/autofill/agents/knowledge_base/avoid-default-in-switch-over-autofill-enums.md"
+  }
 }
