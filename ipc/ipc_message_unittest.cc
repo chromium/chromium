@@ -27,6 +27,8 @@
 
 namespace IPC {
 
+// Verifies basic serialization and deserialization of `int`, `std::string`,
+// and `std::u16string` values in an `IPC::Message`.
 TEST(IPCMessageTest, BasicMessageTest) {
   int v1 = 10;
   std::string v2("foobar");
@@ -58,6 +60,8 @@ TEST(IPCMessageTest, BasicMessageTest) {
   EXPECT_FALSE(iter.ReadString16(&vs16));
 }
 
+// Verifies `IPC::WriteParam` and `IPC::ReadParam` round-trip serialization for
+// `base::Value` types and rejection of corrupt payloads.
 TEST(IPCMessageTest, Value) {
   auto expect_value_equals = [](const base::Value& input) {
     IPC::Message msg;
@@ -96,6 +100,8 @@ TEST(IPCMessageTest, Value) {
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
+// Verifies `IPC::WriteParam` and `IPC::ReadParam` round-trip serialization for
+// nested `base::DictValue` instances and rejection of corrupt payloads.
 TEST(IPCMessageTest, ValueDict) {
   base::DictValue input;
   input.Set("null", base::Value());
@@ -131,7 +137,8 @@ TEST(IPCMessageTest, ValueDict) {
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
-
+// Verifies that `base::PickleIterator::ReadString` rejects a string length
+// that exceeds the remaining message buffer.
 TEST(IPCMessageIntegrity, ReadBeyondBufferStr) {
   // This was BUG 984408.
   uint32_t v1 = std::numeric_limits<uint32_t>::max() - 1;
@@ -145,6 +152,8 @@ TEST(IPCMessageIntegrity, ReadBeyondBufferStr) {
   EXPECT_FALSE(iter.ReadString(&vs));
 }
 
+// Verifies that `base::PickleIterator::ReadString16` rejects a 16-bit string
+// length that exceeds the remaining message buffer.
 TEST(IPCMessageIntegrity, ReadBeyondBufferStr16) {
   // This was BUG 984408.
   uint32_t v1 = std::numeric_limits<uint32_t>::max() - 1;
@@ -158,6 +167,8 @@ TEST(IPCMessageIntegrity, ReadBeyondBufferStr16) {
   EXPECT_FALSE(iter.ReadString16(&vs));
 }
 
+// Verifies that `base::PickleIterator::ReadBytes` succeeds when reading valid
+// bytes from a fresh iterator.
 TEST(IPCMessageIntegrity, ReadBytesBadIterator) {
   // This was BUG 1035467.
   IPC::Message m;
@@ -169,10 +180,12 @@ TEST(IPCMessageIntegrity, ReadBytesBadIterator) {
   EXPECT_TRUE(iter.ReadBytes(&data, sizeof(int)));
 }
 
+// Verifies that `ReadParam` rejects a negative element count when deserializing
+// a non-specialized `std::vector<P>`.
 TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
-  // A slight variation of BUG 984408. Note that the pickling of vector<char>
+  // A slight variation of BUG 984408. Note that the pickling of `vector<char>`
   // has a specialized template which is not vulnerable to this bug. So here
-  // try to hit the non-specialized case vector<P>.
+  // try to hit the non-specialized case `vector<P>`.
   IPC::Message m;
   m.WriteInt(-1);  // This is the count of elements.
   m.WriteInt(1);
@@ -184,14 +197,11 @@ TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
   EXPECT_FALSE(ReadParam(&m, &iter, &vec));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ReadVectorTooLarge1 DISABLED_ReadVectorTooLarge1
-#else
-#define MAYBE_ReadVectorTooLarge1 ReadVectorTooLarge1
-#endif
-TEST(IPCMessageIntegrity, MAYBE_ReadVectorTooLarge1) {
+// Verifies that `ReadParam` rejects a positive `std::vector<int64_t>` element
+// count whose byte size exceeds `INT_MAX`.
+TEST(IPCMessageIntegrity, ReadVectorTooLarge1) {
   // This was BUG 1006367. This is the large but positive length case. Again
-  // we try to hit the non-specialized case vector<P>.
+  // we try to hit the non-specialized case `vector<P>`.
   IPC::Message m;
   m.WriteInt(0x21000003);  // This is the count of elements.
   m.WriteInt64(1);
@@ -202,10 +212,12 @@ TEST(IPCMessageIntegrity, MAYBE_ReadVectorTooLarge1) {
   EXPECT_FALSE(ReadParam(&m, &iter, &vec));
 }
 
+// Verifies that `ReadParam` rejects a large positive `std::vector<int64_t>`
+// element count that would overflow when multiplied by `sizeof(int64_t)`.
 TEST(IPCMessageIntegrity, ReadVectorTooLarge2) {
   // This was BUG 1006367. This is the large but positive with an additional
   // integer overflow when computing the actual byte size. Again we try to hit
-  // the non-specialized case vector<P>.
+  // the non-specialized case `vector<P>`.
   IPC::Message m;
   m.WriteInt(0x71000000);  // This is the count of elements.
   m.WriteInt64(1);
