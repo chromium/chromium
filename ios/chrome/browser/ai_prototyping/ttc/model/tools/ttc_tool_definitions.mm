@@ -11,16 +11,16 @@
 
 namespace {
 
-// JSON schema keys and type strings.
+// JSON schema keys and type strings, sorted alphabetically.
+constexpr char kBooleanType[] = "boolean";
 constexpr char kDescriptionKey[] = "description";
-constexpr char kTypeKey[] = "type";
-constexpr char kPropertiesKey[] = "properties";
-constexpr char kRequiredKey[] = "required";
-constexpr char kUrlKey[] = "url";
 constexpr char kNewTabKey[] = "new_tab";
 constexpr char kObjectType[] = "object";
+constexpr char kPropertiesKey[] = "properties";
+constexpr char kRequiredKey[] = "required";
 constexpr char kStringType[] = "string";
-constexpr char kBooleanType[] = "boolean";
+constexpr char kTypeKey[] = "type";
+constexpr char kUrlKey[] = "url";
 
 }  // namespace
 
@@ -32,6 +32,15 @@ namespace ttc {
 std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   std::vector<ToolDefinition> tools;
 
+  ToolDefinition close_current_tab;
+  close_current_tab.name = kToolCloseCurrentTab;
+  close_current_tab.description = "Closes the currently active tab.";
+  // The tool takes no arguments, so its schema is left empty.
+  close_current_tab.behavior = ToolDefinition::Behavior::kBlocking;
+  close_current_tab.verbalization =
+      ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(close_current_tab));
+
   ToolDefinition close_session;
   close_session.name = kToolCloseSession;
   close_session.description = "Ends and closes the active session.";
@@ -39,6 +48,14 @@ std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   close_session.behavior = ToolDefinition::Behavior::kBlocking;
   close_session.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(close_session));
+
+  ToolDefinition create_tab;
+  create_tab.name = kToolCreateTab;
+  create_tab.description = "Creates and opens a new tab in the browser.";
+  // The tool takes no arguments, so its schema is left empty.
+  create_tab.behavior = ToolDefinition::Behavior::kBlocking;
+  create_tab.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(create_tab));
 
   ToolDefinition go_back;
   go_back.name = kToolGoBack;

@@ -22,7 +22,7 @@ using TtcToolDefinitionsTest = PlatformTest;
 TEST_F(TtcToolDefinitionsTest, TestGetDefaultToolDefinitions) {
   std::vector<ttc::ToolDefinition> definitions =
       ttc::GetDefaultToolDefinitions();
-  ASSERT_EQ(definitions.size(), 4u);
+  ASSERT_EQ(definitions.size(), 6u);
 
   std::set<std::string> tool_names;
   for (const ttc::ToolDefinition& def : definitions) {
@@ -41,10 +41,8 @@ TEST_F(TtcToolDefinitionsTest, TestGetDefaultToolDefinitions) {
   }
 
   std::set<std::string> expected_tool_names = {
-      ttc::kToolCloseSession,
-      ttc::kToolGoBack,
-      ttc::kToolGoForward,
-      ttc::kToolOpenUrl,
+      ttc::kToolCloseCurrentTab, ttc::kToolCloseSession, ttc::kToolCreateTab,
+      ttc::kToolGoBack,          ttc::kToolGoForward,    ttc::kToolOpenUrl,
   };
   EXPECT_EQ(tool_names, expected_tool_names);
 }

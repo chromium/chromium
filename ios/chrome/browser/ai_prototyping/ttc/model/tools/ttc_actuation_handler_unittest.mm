@@ -675,4 +675,34 @@ TEST_F(TtcActuationHandlerTest,
   handler->Disconnect();
 }
 
+// Tests that `ProcessToolCall` executes `create_tab` and `close_current_tab`
+// against the browser's `WebStateList`.
+TEST_F(TtcActuationHandlerTest, ProcessToolCallCreatesAndClosesBrowserTabs) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(web_state_list->count(), 1);
+  web::WebState* initial_tab = GetActiveWebState();
+
+  // `create_tab` creates and activates a new foreground tab.
+  base::test::TestFuture<ttc::ToolResponse> create_future;
+  handler->ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolCreateTab, base::DictValue()},
+      GetActiveWebState(), create_future.GetCallback());
+  EXPECT_TRUE(create_future.Get().Ok());
+  ASSERT_EQ(web_state_list->count(), 2);
+  web::WebState* created_tab = GetActiveWebState();
+  EXPECT_NE(created_tab, initial_tab);
+
+  // `close_current_tab` closes the currently active tab.
+  base::test::TestFuture<ttc::ToolResponse> close_future;
+  handler->ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolCloseCurrentTab, base::DictValue()},
+      GetActiveWebState(), close_future.GetCallback());
+  EXPECT_TRUE(close_future.Get().Ok());
+  EXPECT_EQ(web_state_list->count(), 1);
+  EXPECT_EQ(GetActiveWebState(), initial_tab);
+
+  handler->Disconnect();
+}
+
 }  // namespace

@@ -39,6 +39,14 @@ TEST_F(TtcToolValidatorTest, TestValidToolCalls) {
   result = TtcToolValidator::ValidateToolCall(
       ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()});
   EXPECT_TRUE(result.has_value());
+
+  result = TtcToolValidator::ValidateToolCall(
+      ttc::ToolRequest{ttc::kToolCloseCurrentTab, base::DictValue()});
+  EXPECT_TRUE(result.has_value());
+
+  result = TtcToolValidator::ValidateToolCall(
+      ttc::ToolRequest{ttc::kToolCreateTab, base::DictValue()});
+  EXPECT_TRUE(result.has_value());
 }
 
 // Tests defensive rejection against an empty tool name and unknown tools.
@@ -213,6 +221,33 @@ TEST_F(TtcToolValidatorTest,
   ASSERT_TRUE(action.ParseFromString(request.action_protos[0]));
   ASSERT_TRUE(action.has_navigate());
   EXPECT_EQ(action.navigate().url(), "https://example.com/");
+}
+
+// Tests validation and action creation for `close_current_tab` and
+// `create_tab`.
+TEST_F(TtcToolValidatorTest, CreateActuationRequestForTabManagementTools) {
+  // `create_tab` creates a foreground tab.
+  base::expected<TtcActuationRequest, std::string> create_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolCreateTab, base::DictValue()});
+  ASSERT_TRUE(create_result.has_value());
+  ASSERT_EQ(create_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action create_action;
+  ASSERT_TRUE(create_action.ParseFromString(create_result->action_protos[0]));
+  ASSERT_TRUE(create_action.has_create_tab());
+  EXPECT_TRUE(create_action.create_tab().foreground());
+
+  // `close_current_tab` emits a `CloseTabAction` with `tab_id` unset for
+  // downstream injection.
+  base::expected<TtcActuationRequest, std::string> close_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolCloseCurrentTab, base::DictValue()});
+  ASSERT_TRUE(close_result.has_value());
+  ASSERT_EQ(close_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action close_action;
+  ASSERT_TRUE(close_action.ParseFromString(close_result->action_protos[0]));
+  ASSERT_TRUE(close_action.has_close_tab());
+  EXPECT_FALSE(close_action.close_tab().has_tab_id());
 }
 
 }  // namespace

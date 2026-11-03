@@ -17,7 +17,7 @@
 
 namespace {
 
-// Tool argument keys.
+// Tool argument keys, sorted alphabetically.
 constexpr char kNewTabKey[] = "new_tab";
 constexpr char kUrlKey[] = "url";
 
@@ -55,14 +55,18 @@ optimization_guide::proto::Action BuildActionProto(
     const std::string& name,
     const base::DictValue& arguments) {
   optimization_guide::proto::Action action;
-  if (name == ttc::kToolOpenUrl) {
-    const std::string* url_string = arguments.FindString(kUrlKey);
-    GURL gurl(url_string ? *url_string : std::string());
-    action.mutable_navigate()->set_url(gurl.spec());
+  if (name == ttc::kToolCloseCurrentTab) {
+    action.mutable_close_tab();
+  } else if (name == ttc::kToolCreateTab) {
+    action.mutable_create_tab()->set_foreground(true);
   } else if (name == ttc::kToolGoBack) {
     action.mutable_back();
   } else if (name == ttc::kToolGoForward) {
     action.mutable_forward();
+  } else if (name == ttc::kToolOpenUrl) {
+    const std::string* url_string = arguments.FindString(kUrlKey);
+    GURL gurl(url_string ? *url_string : std::string());
+    action.mutable_navigate()->set_url(gurl.spec());
   }
   return action;
 }
@@ -95,7 +99,8 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
     return base::unexpected(ttc::kErrorMessageInvalidToolCall);
   }
 
-  if (name == ttc::kToolCloseSession || name == ttc::kToolGoBack ||
+  if (name == ttc::kToolCloseCurrentTab || name == ttc::kToolCloseSession ||
+      name == ttc::kToolCreateTab || name == ttc::kToolGoBack ||
       name == ttc::kToolGoForward) {
     return base::ok();
   }
