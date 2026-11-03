@@ -70,12 +70,6 @@ std::vector<std::string> GetPreloadingPredictionUkmMetrics() {
   };
 }
 
-const std::vector<std::string> kPreloadingAttemptUkmMetrics =
-    GetPreloadingAttemptUkmMetrics();
-
-const std::vector<std::string> kPreloadingPredictionUkmMetrics =
-    GetPreloadingPredictionUkmMetrics();
-
 std::string ConvertEagernessToString(
     blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {

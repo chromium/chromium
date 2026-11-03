@@ -28,8 +28,6 @@ namespace test {
 // PreloadingPrediction UKM logs for calling TestUkmRecorder::GetEntries.
 std::vector<std::string> GetPreloadingAttemptUkmMetrics();
 std::vector<std::string> GetPreloadingPredictionUkmMetrics();
-extern const std::vector<std::string> kPreloadingAttemptUkmMetrics;
-extern const std::vector<std::string> kPreloadingPredictionUkmMetrics;
 
 // Used for generating histogram names recorded per trigger.
 inline constexpr char kPreloadingEmbedderHistogramSuffixForTesting[] =
