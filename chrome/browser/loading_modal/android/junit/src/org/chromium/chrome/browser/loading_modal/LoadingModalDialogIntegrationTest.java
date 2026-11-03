@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator.S
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
@@ -47,9 +48,11 @@ public class LoadingModalDialogIntegrationTest {
     private static class TestDialogManagerObserver implements ModalDialogManagerObserver {
         private final CallbackHelper mDialogAddedCallbackHelper = new CallbackHelper();
         private final CallbackHelper mDialogDismissedCallbackHelper = new CallbackHelper();
+        private PropertyModel mAddedDialogModel;
 
         @Override
         public void onDialogAdded(PropertyModel model) {
+            mAddedDialogModel = model;
             mDialogAddedCallbackHelper.notifyCalled();
         }
 
@@ -64,6 +67,10 @@ public class LoadingModalDialogIntegrationTest {
 
         CallbackHelper getDialogDismissedCallbackHelper() {
             return mDialogDismissedCallbackHelper;
+        }
+
+        PropertyModel getAddedDialogModel() {
+            return mAddedDialogModel;
         }
     }
 
@@ -93,6 +100,9 @@ public class LoadingModalDialogIntegrationTest {
 
         coordinator.show();
         mObserver.getDialogAddedCallbackHelper().waitForOnly();
+        assertThat(
+                mObserver.getAddedDialogModel().get(ModalDialogProperties.CONTENT_DESCRIPTION),
+                equalTo(mActivity.getString(R.string.loading_modal_dialog_content_description)));
 
         coordinator.dismiss();
         mObserver.getDialogDismissedCallbackHelper().waitForOnly();

@@ -132,6 +132,10 @@ public class LoadingModalDialogCoordinator {
                                 ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.FULLSCREEN_DIALOG)
                         .with(ModalDialogProperties.CONTROLLER, mMediator)
+                        .with(
+                                ModalDialogProperties.CONTENT_DESCRIPTION,
+                                mCustomView.getResources(),
+                                R.string.loading_modal_dialog_content_description)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mCustomView)
                         .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, mButtonsView)
                         .build();

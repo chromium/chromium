@@ -8192,6 +8192,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ENTERPRISE_SIGNALS_DISCLAIMER_SHEET_CLOSED" desc="Accessibility string read when the Enterprise Signals Disclaimer bottom sheet is closed.">
         Enterprise signals disclaimer bottom sheet is closed
       </message>
+
+      <!-- Loading modal dialog strings -->
+      <message name="IDS_LOADING_MODAL_DIALOG_CONTENT_DESCRIPTION" desc="Accessibility content description for the fullscreen loading modal dialog.">
+        Loading…
+      </message>
     </messages>
   </release>
 </grit>

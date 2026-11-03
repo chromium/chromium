@@ -22,7 +22,10 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  deps = [ "//ui/android:ui_java_resources" ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
   sources = [
     "java/res/layout/loading_modal.xml",
     "java/res/layout/loading_modal_button_bar.xml",
