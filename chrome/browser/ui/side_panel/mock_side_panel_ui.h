@@ -44,6 +44,8 @@ class MockSidePanelUI : public SidePanelUI {
               (),
               (const, override));
   MOCK_METHOD(int, GetCurrentEntryDefaultContentWidth, (), (const, override));
+  MOCK_METHOD(void, OverrideContentsWidth, (int width), (override));
+  MOCK_METHOD(void, ResetContentsWidthOverride, (), (override));
   MOCK_METHOD(bool, IsSidePanelShowing, (), (const, override));
   MOCK_METHOD(bool,
               IsSidePanelEntryShowing,

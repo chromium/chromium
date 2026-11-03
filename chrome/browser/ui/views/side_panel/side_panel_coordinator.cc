@@ -64,6 +64,14 @@ void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   side_panel_toolbar_pinning_controller_.reset();
 }
 
+void SidePanelCoordinator::OverrideContentsWidth(int width) {
+  GetSidePanel()->OverrideContentsWidth(width);
+}
+
+void SidePanelCoordinator::ResetContentsWidthOverride() {
+  GetSidePanel()->ResetContentsWidthOverride();
+}
+
 void SidePanelCoordinator::Toggle(SidePanelEntryKey key,
                                   SidePanelOpenTrigger open_trigger) {
   // If an entry is already showing in the sidepanel, the sidepanel

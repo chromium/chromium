@@ -374,6 +374,18 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   }
 }
 
+void SidePanel::OverrideContentsWidth(int width) {
+  if (CanOverrideWidth()) {
+    SetPanelWidth(ClampPanelWidth(width + GetBorderInsets().width()));
+  }
+}
+
+void SidePanel::ResetContentsWidthOverride() {
+  if (CanOverrideWidth()) {
+    UpdateWidthOnEntryChanged();
+  }
+}
+
 bool SidePanel::IsRightAligned() const {
   return horizontal_alignment() == HorizontalAlignment::kRight;
 }
@@ -389,6 +401,15 @@ bool SidePanel::IsClosing() {
   return SidePanelAnimations::kClose ==
          BrowserAnimationController::From(browser_view_->browser())
              ->GetCurrentMotion(kAnimationGroup);
+}
+
+bool SidePanel::CanOverrideWidth() const {
+  return state_ != State::kClosed && state_ != State::kClosing &&
+         starting_width_on_resize_ < 0;
+}
+
+int SidePanel::ClampPanelWidth(int width) const {
+  return std::max(width, GetMinimumSize().width());
 }
 
 gfx::Rect SidePanel::GetContentAnimationBounds(
@@ -510,8 +531,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
     starting_width_on_resize_ = -1;
   }
 
-  const int minimum_width = GetMinimumSize().width();
-  proposed_width = std::max(proposed_width, minimum_width);
+  proposed_width = ClampPanelWidth(proposed_width);
 
   if (width() != proposed_width) {
     if (SidePanelUI* side_panel_ui =

@@ -54,6 +54,8 @@ class SidePanelCoordinator final : public SidePanelUIBase,
               SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
                 gfx::Rect starting_bounds_in_browser_coordinates) override;
+  void OverrideContentsWidth(int width) override;
+  void ResetContentsWidthOverride() override;
 
   // SidePanelUIBase:
   using SidePanelUIBase::Show;

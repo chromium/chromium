@@ -45,6 +45,8 @@ class SidePanel : public views::AccessiblePaneView,
 
   void SetPanelWidth(int width);
   void UpdateWidthOnEntryChanged();
+  void OverrideContentsWidth(int width);
+  void ResetContentsWidthOverride();
   void UpdateSidePanelWidthPref(const std::string& panel_id, int width);
   void UpdateHorizontalAlignment(
       std::optional<SidePanelEntryId> entry_id = std::nullopt);
@@ -129,6 +131,12 @@ class SidePanel : public views::AccessiblePaneView,
       const std::optional<gfx::Rect>& clip_to_visible_area);
 
  private:
+  // Returns whether programmatic content width overrides are currently allowed
+  // (i.e. when the side panel is open or opening and not being manually resized
+  // by the user).
+  bool CanOverrideWidth() const;
+  int ClampPanelWidth(int width) const;
+
   // This method is the shared implementation of Open/Close.
   void UpdateVisibility(bool should_be_open, bool animated);
 

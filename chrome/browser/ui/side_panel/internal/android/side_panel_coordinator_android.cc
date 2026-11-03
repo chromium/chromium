@@ -519,6 +519,14 @@ void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
   }
 }
 
+void SidePanelCoordinatorAndroid::OverrideContentsWidth(int width) {
+  // TODO(crbug.com/580036068): Implement.
+}
+
+void SidePanelCoordinatorAndroid::ResetContentsWidthOverride() {
+  // TODO(crbug.com/580036068): Implement.
+}
+
 void SidePanelCoordinatorAndroid::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents,

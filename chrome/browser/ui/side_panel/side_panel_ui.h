@@ -79,6 +79,16 @@ class SidePanelUI {
   // not set or if the side panel is closed.
   virtual int GetCurrentEntryDefaultContentWidth() const = 0;
 
+  // Temporarily overrides the open side panel's content width to `width`
+  // without updating the manual width preference. `width` is the content width
+  // excluding the border area and does not reflect the entire side panel's
+  // width.
+  virtual void OverrideContentsWidth(int width) = 0;
+
+  // Resets the open side panel's content width override, restoring its stored
+  // manual width preference or the current entry's default width.
+  virtual void ResetContentsWidthOverride() = 0;
+
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.

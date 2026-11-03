@@ -67,6 +67,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
+  void OverrideContentsWidth(int width) override;
+  void ResetContentsWidthOverride() override;
   void OnActiveTabChanged(content::WebContents* old_contents,
                           content::WebContents* new_contents,
                           bool tab_removed_for_deletion) override;

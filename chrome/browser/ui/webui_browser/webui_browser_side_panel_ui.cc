@@ -66,6 +66,14 @@ void WebUIBrowserSidePanelUI::ShowFrom(
   SidePanelUI::Show(entry_key);
 }
 
+void WebUIBrowserSidePanelUI::OverrideContentsWidth(int width) {
+  // TODO(crbug.com/580036068): Implement.
+}
+
+void WebUIBrowserSidePanelUI::ResetContentsWidthOverride() {
+  // TODO(crbug.com/580036068): Implement.
+}
+
 void WebUIBrowserSidePanelUI::DisableAnimationsForTesting() {}
 
 void WebUIBrowserSidePanelUI::SetNoDelaysForTesting(
