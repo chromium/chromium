@@ -362,6 +362,24 @@ TEST_F(BeginFrameSourceWaylandTest, ResetClearsDeadlineState) {
   EXPECT_EQ(2, delegate_.begin_frame_count);
 }
 
+// When the interval grows between issues (here the first feedback from a 30 Hz
+// display after the 60 Hz default), the grid tick before the new deadline can
+// precede the previous frame's deadline. Ensure monotonicity.
+TEST_F(BeginFrameSourceWaylandTest, FrameTimeNeverPrecedesPreviousDeadline) {
+  const base::TimeTicks last_deadline =
+      base::TimeTicks::Now() - base::Milliseconds(1);
+  set_last_frame_deadline(last_deadline);
+  const base::TimeDelta interval = 2 * kDefaultInterval;
+  source_->OnPresentationFeedback(gfx::PresentationFeedback(
+      last_deadline - kDefaultInterval, interval, /*flags=*/0));
+  source_->SetNeedsBeginFrame(true);
+
+  EXPECT_EQ(1, delegate_.begin_frame_count);
+  EXPECT_EQ(interval, delegate_.last_interval);
+  EXPECT_EQ(last_deadline + kDefaultInterval, delegate_.last_deadline);
+  EXPECT_EQ(last_deadline, delegate_.last_frame_time);
+}
+
 // End to end: after a damaging ack and its frame callback, the deferred timer
 // fires and the next begin frame is issued.
 TEST_F(BeginFrameSourceWaylandTest, DeferredFrameEventuallyIssues) {
