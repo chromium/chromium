@@ -3893,6 +3893,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>
+      <message name="IDS_IOS_GEOLOCATION_SYSTEM_PERMISSION_INFOBAR_BANNER_TITLE" desc="Title for the banner infobar shown when a website requests location permissions while system location access is denied. [iOS only]">
+        Allow Geolocation?
+      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title of a page that shows all accounts on the user's device and lets them add, remove and otherwise manage their accounts. Avoid long strings given the limited space between surrounding buttons.">
         Accounts on this device
       </message>

@@ -25,6 +25,8 @@ source_set("infobar_delegate") {
 
 source_set("tab_helper") {
   sources = [
+    "geolocation_system_permission_infobar_delegate.h",
+    "geolocation_system_permission_infobar_delegate.mm",
     "permissions_metrics.h",
     "permissions_metrics.mm",
     "permissions_tab_helper.h",
@@ -35,6 +37,8 @@ source_set("tab_helper") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/infobars/core",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays",
@@ -46,6 +50,8 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
   ]
 }
 
@@ -109,6 +115,7 @@ optimize_ts("media_js") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "geolocation_system_permission_infobar_delegate_unittest.mm",
     "permissions_tab_helper_unittest.mm",
     "permissions_unittest.mm",
   ]
@@ -121,6 +128,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays",
@@ -134,6 +143,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//ui/base",
   ]
 }
 

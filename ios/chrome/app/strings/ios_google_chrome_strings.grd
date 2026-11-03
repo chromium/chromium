@@ -510,6 +510,9 @@ Things to consider:
       <message name="IDS_IOS_GEMINI_SUGGESTIONS_TURNING_OFF_DESCRIPTION" desc="Description explaining that turning off suggestions does not affect processing for other features and points to sync settings.">
         Turning off suggestions doesn't control Chrome's processing of page titles and URLs for other features. You can manage access to this data in your <ph name="BEGIN_LINK">BEGIN_LINK</ph>sync settings<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_GEOLOCATION_SYSTEM_PERMISSION_INFOBAR_BANNER_MESSAGE" desc="Body text for the banner infobar explaining that Chrome needs location access to satisfy a website's permission request. [iOS only]">
+        Chrome needs location permission for this site
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chrome.
       </message>

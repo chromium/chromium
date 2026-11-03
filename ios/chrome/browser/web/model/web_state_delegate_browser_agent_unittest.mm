@@ -11,6 +11,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
@@ -18,6 +21,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
@@ -34,10 +38,13 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/permissions/permissions.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -46,6 +53,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/models/image_model.h"
 #import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 const char kURL1[] = "https://www.some.url.com";
@@ -750,48 +759,99 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   EXPECT_EQ(0U, queue->size());
 }
 
-// Tests that RequestGeolocationPermission presents a dialog only once when
-// system location authorization is denied, and denies immediately on subsequent
-// requests.
+// Tests that RequestGeolocationPermission presents an infobar banner only once
+// when system location authorization is denied, and tapping Continue presents
+// the settings dialog.
 TEST_F(WebStateDelegateBrowserAgentTest,
-       RequestGeolocationPermissionDeniedPresentsDialogOnce) {
+       RequestGeolocationPermissionDeniedPresentsBannerOnce) {
   ScopedBlockSwizzler auth_status_swizzler(
       [GeolocationManager class], @selector(authorizationStatus), ^{
         return kCLAuthorizationStatusDenied;
       });
 
   auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
   OverlayRequestQueue::CreateForWebState(web_state.get());
+  infobars::InfoBarManager* manager =
+      InfoBarManagerImpl::FromWebState(web_state.get());
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
 
-  // First request should present the dialog and resolve the callback with
-  // PermissionDecisionDeny when the dialog is dismissed.
+  // First request should present the banner.
   base::test::TestFuture<web::PermissionDecision> first_decision;
   delegate()->RequestGeolocationPermission(
       web_state.get(), GURL(kURL1),
       base::CallbackToBlock(first_decision.GetCallback()));
+  EXPECT_EQ(1U, manager->infobars().size());
+  ConfirmInfoBarDelegate* infobar_delegate =
+      manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_NE(nullptr, infobar_delegate);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_IOS_GEOLOCATION_SYSTEM_PERMISSION_INFOBAR_BANNER_TITLE),
+            infobar_delegate->GetTitleText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_IOS_GEOLOCATION_SYSTEM_PERMISSION_INFOBAR_BANNER_MESSAGE),
+            infobar_delegate->GetMessageText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_CONTINUE),
+      infobar_delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+  EXPECT_FALSE(infobar_delegate->GetIcon().IsEmpty());
+
+  // Tapping "Continue" should trigger the overlay dialog in kWebContentArea.
+  EXPECT_EQ(0U, queue->size());
+  infobar_delegate->Accept();
   EXPECT_EQ(1U, queue->size());
   queue->CancelAllRequests();
   EXPECT_EQ(0U, queue->size());
   EXPECT_EQ(web::PermissionDecisionDeny, first_decision.Get());
 
-  // A subsequent request should immediately deny without presenting a dialog.
+  // A subsequent request should immediately deny without presenting a banner.
   base::test::TestFuture<web::PermissionDecision> second_decision;
   delegate()->RequestGeolocationPermission(
       web_state.get(), GURL(kURL1),
       base::CallbackToBlock(second_decision.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, second_decision.Get());
+  EXPECT_EQ(1U, manager->infobars().size());
   EXPECT_EQ(0U, queue->size());
 
-  // Even after 24 hours, the dialog should not be presented again.
+  // Even after 24 hours, the banner should not be presented again.
   task_environment_.FastForwardBy(base::Days(1));
   base::test::TestFuture<web::PermissionDecision> later_decision;
   delegate()->RequestGeolocationPermission(
       web_state.get(), GURL(kURL1),
       base::CallbackToBlock(later_decision.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, later_decision.Get());
+  EXPECT_EQ(1U, manager->infobars().size());
   EXPECT_EQ(0U, queue->size());
+}
+
+// Tests that dismissing the geolocation prompt infobar denies permission.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       RequestGeolocationPermissionDismissBannerDeniesPermission) {
+  ScopedBlockSwizzler auth_status_swizzler(
+      [GeolocationManager class], @selector(authorizationStatus), ^{
+        return kCLAuthorizationStatusDenied;
+      });
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  InfoBarManagerImpl::CreateForWebState(web_state.get());
+  infobars::InfoBarManager* manager =
+      InfoBarManagerImpl::FromWebState(web_state.get());
+
+  base::test::TestFuture<web::PermissionDecision> decision;
+  delegate()->RequestGeolocationPermission(
+      web_state.get(), GURL(kURL1),
+      base::CallbackToBlock(decision.GetCallback()));
+  EXPECT_EQ(1U, manager->infobars().size());
+  ConfirmInfoBarDelegate* infobar_delegate =
+      manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_NE(nullptr, infobar_delegate);
+  infobar_delegate->InfoBarDismissed();
+  EXPECT_EQ(web::PermissionDecisionDeny, decision.Get());
 }
 
 // Tests that RequestGeolocationPermission denies immediately without presenting

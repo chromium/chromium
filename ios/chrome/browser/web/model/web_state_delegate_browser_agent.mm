@@ -33,9 +33,9 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/model/public/web_content_area/geolocation_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/insecure_form_overlay.h"
+#import "ios/chrome/browser/permissions/model/geolocation_system_permission_infobar_delegate.h"
 #import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -190,23 +190,6 @@ void PostPermissionDecision(web::WebStatePermissionDecisionHandler handler,
       FROM_HERE, base::BindOnce(handler, decision));
 }
 
-void OnRequestGeolocationPermissionResponse(
-    web::WebStatePermissionDecisionHandler handler,
-    OverlayResponse* response) {
-  if (handler) {
-    handler(web::PermissionDecisionDeny);
-  }
-  if (response) {
-    auto* info = response->GetInfo<GeolocationPromptDialogResponse>();
-    if (info && info->tapped_settings()) {
-      [[UIApplication sharedApplication]
-                    openURL:
-                        [NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                    options:@{}
-          completionHandler:nil];
-    }
-  }
-}
 
 }  // namespace
 
@@ -507,14 +490,7 @@ void WebStateDelegateBrowserAgent::RequestGeolocationPermission(
   local_state->SetTime(prefs::kIosGeolocationSystemPromptLastShownTime,
                        base::Time::Now());
 
-  std::unique_ptr<OverlayRequest> request =
-      OverlayRequest::CreateWithConfig<GeolocationPromptDialogRequest>();
-
-  request->GetCallbackManager()->AddCompletionCallback(
-      base::BindOnce(&OnRequestGeolocationPermissionResponse, handler));
-
-  OverlayRequestQueue::FromWebState(source, OverlayModality::kWebContentArea)
-      ->AddRequest(std::move(request));
+  GeolocationSystemPermissionInfoBarDelegate::Create(source, handler);
 }
 
 void WebStateDelegateBrowserAgent::OnProxyAuthChallenge(
