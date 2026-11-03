@@ -95,6 +95,22 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   // had a beforeunload handler.
   virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 
+  // Invoked when the ephemeral tab group `group_id` is promoted to a regular
+  // group. Closed tab entries (and tabs inside closed split entries) that were
+  // captured while `group_id` was ephemeral are marked non-ephemeral, so they
+  // are persisted with their group, and take `visual_data`. Entries of groups
+  // that were never ephemeral are not touched.
+  virtual void PromoteEphemeralTabGroup(
+      const tab_groups::TabGroupId& group_id,
+      const tab_groups::TabGroupVisualData& visual_data) = 0;
+
+  // Invoked when `group_id` is saved (or re-saved) as `saved_group_id`. Sets
+  // the saved group id of non-ephemeral closed tab entries (and tabs inside
+  // closed split entries) in `group_id` whose saved group id differs. No-op
+  // (no rewrite, no notification) if nothing changes.
+  virtual void UpdateSavedTabGroupId(const tab_groups::TabGroupId& group_id,
+                                     const base::Uuid& saved_group_id) = 0;
+
   // Invoked when the split is done closing.
   virtual void SplitClosed(const split_tabs::SplitTabId& id) = 0;
 

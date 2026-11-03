@@ -41,6 +41,11 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
                              const split_tabs::SplitTabId& id) override;
   void GroupClosed(const tab_groups::TabGroupId& group) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
+  void PromoteEphemeralTabGroup(
+      const tab_groups::TabGroupId& group_id,
+      const tab_groups::TabGroupVisualData& visual_data) override;
+  void UpdateSavedTabGroupId(const tab_groups::TabGroupId& group_id,
+                             const base::Uuid& saved_group_id) override;
   void SplitClosed(const split_tabs::SplitTabId& id) override;
   void SplitCloseStopped(const split_tabs::SplitTabId& id) override;
   void ClearEntries() override;

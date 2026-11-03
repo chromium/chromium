@@ -55,6 +55,10 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
     // Invoked when navigations from entries have been deleted.
     virtual void OnNavigationEntriesDeleted();
 
+    // Invoked when fields of existing entries have been modified in place and
+    // the persisted entries need to be rewritten.
+    virtual void OnEntriesModified();
+
     // Invoked before the entry is restored. |entry_iterator| points to the
     // entry corresponding to the session identified by |id|.
     virtual void OnRestoreEntryById(SessionID id,
@@ -110,6 +114,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
                              const split_tabs::SplitTabId& id);
   void GroupClosed(const tab_groups::TabGroupId& group);
   void GroupCloseStopped(const tab_groups::TabGroupId& group);
+  void PromoteEphemeralTabGroup(
+      const tab_groups::TabGroupId& group_id,
+      const tab_groups::TabGroupVisualData& visual_data);
+  void UpdateSavedTabGroupId(const tab_groups::TabGroupId& group_id,
+                             const base::Uuid& saved_group_id);
   void SplitClosed(const split_tabs::SplitTabId& id);
   void SplitCloseStopped(const split_tabs::SplitTabId& id);
   void ClearEntries();
@@ -127,6 +136,11 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
 
   // Notifies observers the entries have changed.
   void NotifyEntriesChanged();
+
+  // Notifies the persistence observer that existing entries were modified in
+  // place, and the entries observers unless a restore is in progress (in which
+  // case RestoreEntryById() notifies once it finishes).
+  void NotifyEntriesModified();
 
   // Notifies observers the service has loaded.
   void NotifyLoaded();

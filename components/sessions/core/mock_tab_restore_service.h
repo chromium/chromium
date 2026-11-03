@@ -70,6 +70,18 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               (override));
 
   MOCK_METHOD(void,
+              PromoteEphemeralTabGroup,
+              (const tab_groups::TabGroupId& group_id,
+               const tab_groups::TabGroupVisualData& visual_data),
+              (override));
+
+  MOCK_METHOD(void,
+              UpdateSavedTabGroupId,
+              (const tab_groups::TabGroupId& group_id,
+               const base::Uuid& saved_group_id),
+              (override));
+
+  MOCK_METHOD(void,
               SplitClosed,
               (const split_tabs::SplitTabId& id),
               (override));

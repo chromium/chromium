@@ -18,6 +18,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -200,6 +201,31 @@ void ReconstructSplits(
   }
 }
 
+// Calls `update` on every closed tab entry that belongs to `group_id`: TAB
+// entries and the tabs inside SPLIT entries. `update` returns whether it
+// modified the tab. Returns true if any tab was modified.
+bool UpdateClosedTabsInGroup(
+    TabRestoreService::Entries& entries,
+    const tab_groups::TabGroupId& group_id,
+    base::FunctionRef<bool(tab_restore::Tab&)> update) {
+  bool modified = false;
+  for (std::unique_ptr<tab_restore::Entry>& entry : entries) {
+    if (entry->type == tab_restore::Type::TAB) {
+      auto& tab = static_cast<tab_restore::Tab&>(*entry);
+      if (tab.group == group_id) {
+        modified |= update(tab);
+      }
+    } else if (entry->type == tab_restore::Type::SPLIT) {
+      for (auto& tab : static_cast<tab_restore::Split&>(*entry).tabs) {
+        if (tab->group == group_id) {
+          modified |= update(*tab);
+        }
+      }
+    }
+  }
+  return modified;
+}
+
 }  // namespace
 
 // TabRestoreServiceHelper::Observer -------------------------------------------
@@ -209,6 +235,8 @@ TabRestoreServiceHelper::Observer::~Observer() = default;
 void TabRestoreServiceHelper::Observer::OnClearEntries() {}
 
 void TabRestoreServiceHelper::Observer::OnNavigationEntriesDeleted() {}
+
+void TabRestoreServiceHelper::Observer::OnEntriesModified() {}
 
 void TabRestoreServiceHelper::Observer::OnRestoreEntryById(
     SessionID id,
@@ -468,6 +496,52 @@ void TabRestoreServiceHelper::GroupCloseStopped(
   // created, or adjust the group entry here to account for any unclosed tabs.
 
   closing_groups_.erase(group);
+}
+
+void TabRestoreServiceHelper::PromoteEphemeralTabGroup(
+    const tab_groups::TabGroupId& group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  const bool modified =
+      UpdateClosedTabsInGroup(entries_, group_id, [&](tab_restore::Tab& tab) {
+        if (!tab.is_group_ephemeral) {
+          return false;
+        }
+        tab.is_group_ephemeral = false;
+        tab.group_visual_data = visual_data;
+        return true;
+      });
+  if (modified) {
+    NotifyEntriesModified();
+  }
+}
+
+void TabRestoreServiceHelper::UpdateSavedTabGroupId(
+    const tab_groups::TabGroupId& group_id,
+    const base::Uuid& saved_group_id) {
+  const bool modified =
+      UpdateClosedTabsInGroup(entries_, group_id, [&](tab_restore::Tab& tab) {
+        // An ephemeral entry is written without its group, so recording the
+        // id would only cause a no-op rewrite. The id is delivered again
+        // once the group is promoted and saved.
+        if (tab.is_group_ephemeral || tab.saved_group_id == saved_group_id) {
+          return false;
+        }
+        tab.saved_group_id = saved_group_id;
+        return true;
+      });
+  if (modified) {
+    NotifyEntriesModified();
+  }
+}
+
+void TabRestoreServiceHelper::NotifyEntriesModified() {
+  if (observer_) {
+    observer_->OnEntriesModified();
+  }
+  // While restoring, RestoreEntryById() notifies once it has finished.
+  if (!restoring_) {
+    NotifyEntriesChanged();
+  }
 }
 
 void TabRestoreServiceHelper::SplitClosed(const split_tabs::SplitTabId& id) {

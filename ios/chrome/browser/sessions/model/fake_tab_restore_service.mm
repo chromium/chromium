@@ -82,6 +82,18 @@ void FakeTabRestoreService::GroupCloseStopped(
   NOTREACHED();
 }
 
+void FakeTabRestoreService::PromoteEphemeralTabGroup(
+    const tab_groups::TabGroupId& group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  NOTREACHED();
+}
+
+void FakeTabRestoreService::UpdateSavedTabGroupId(
+    const tab_groups::TabGroupId& group_id,
+    const base::Uuid& saved_group_id) {
+  NOTREACHED();
+}
+
 void FakeTabRestoreService::SplitClosed(const split_tabs::SplitTabId& id) {
   NOTREACHED();
 }
