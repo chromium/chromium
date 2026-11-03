@@ -11,7 +11,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/haptics/haptics.mojom.h"
+#include "services/device/public/mojom/haptics.mojom.h"
 
 namespace content {
 
@@ -27,7 +27,7 @@ class RenderFrameHost;
 // reached with a direct in-process call; there is no browser<->device-service
 // pipe.
 class CONTENT_EXPORT HapticsServiceImpl final
-    : public DocumentService<blink::mojom::HapticsService> {
+    : public DocumentService<device::mojom::HapticsService> {
  public:
   // Creates and binds a HapticsManager backend for a HapticsServiceImpl. Tests
   // set this to inject a fake in place of the real platform backend; a null
@@ -37,19 +37,19 @@ class CONTENT_EXPORT HapticsServiceImpl final
 
   static void Create(
       RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<blink::mojom::HapticsService> receiver);
+      mojo::PendingReceiver<device::mojom::HapticsService> receiver);
 
   static void SetHapticsManagerFactoryForTesting(HapticsManagerFactory factory);
 
   HapticsServiceImpl(
       RenderFrameHost& render_frame_host,
-      mojo::PendingReceiver<blink::mojom::HapticsService> receiver,
+      mojo::PendingReceiver<device::mojom::HapticsService> receiver,
       base::SelfDeletingPassKey key);
   HapticsServiceImpl(const HapticsServiceImpl&) = delete;
   HapticsServiceImpl& operator=(const HapticsServiceImpl&) = delete;
 
-  // blink::mojom::HapticsService:
-  void PlayHaptics(blink::mojom::HapticEffect effect, double intensity) final;
+  // device::mojom::HapticsService:
+  void PlayHaptics(device::mojom::HapticEffect effect, double intensity) final;
 
  private:
   ~HapticsServiceImpl() override;

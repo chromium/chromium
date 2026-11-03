@@ -70,7 +70,7 @@ HapticsManagerImplWin::SetStaticsProviderForTesting(
       &g_statics_provider_for_testing, provider);
 }
 
-void HapticsManagerImplWin::PlayHaptics(blink::mojom::HapticEffect effect,
+void HapticsManagerImplWin::PlayHaptics(device::mojom::HapticEffect effect,
                                         double intensity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
@@ -177,7 +177,7 @@ void HapticsManagerImplWin::PrimeHapticsController() {
 }
 
 std::optional<uint16_t> HapticsManagerImplWin::WaveformForEffect(
-    blink::mojom::HapticEffect effect) {
+    device::mojom::HapticEffect effect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<uint16_t>& cached =
       waveform_cache_[static_cast<size_t>(effect)];
@@ -188,7 +188,7 @@ std::optional<uint16_t> HapticsManagerImplWin::WaveformForEffect(
 }
 
 std::optional<uint16_t> HapticsManagerImplWin::ComputeWaveformForEffect(
-    blink::mojom::HapticEffect effect) {
+    device::mojom::HapticEffect effect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UINT16 value = 0;
@@ -198,25 +198,25 @@ std::optional<uint16_t> HapticsManagerImplWin::ComputeWaveformForEffect(
     return std::nullopt;
   }
   switch (effect) {
-    case blink::mojom::HapticEffect::kHint:
+    case device::mojom::HapticEffect::kHint:
       hr = known_waveforms2_->get_Hover(&value);
       break;
-    case blink::mojom::HapticEffect::kSuccess:
+    case device::mojom::HapticEffect::kSuccess:
       hr = known_waveforms2_->get_Success(&value);
       break;
-    case blink::mojom::HapticEffect::kError:
+    case device::mojom::HapticEffect::kError:
       hr = known_waveforms2_->get_Error(&value);
       break;
-    case blink::mojom::HapticEffect::kEdge:
-    case blink::mojom::HapticEffect::kTick:
-    case blink::mojom::HapticEffect::kAlign: {
+    case device::mojom::HapticEffect::kEdge:
+    case device::mojom::HapticEffect::kTick:
+    case device::mojom::HapticEffect::kAlign: {
       ComPtr<IKnownSimpleHapticsControllerWaveformsStatics3> waveforms3;
       if (FAILED(known_waveforms2_.As(&waveforms3)) || !waveforms3) {
         return std::nullopt;
       }
-      if (effect == blink::mojom::HapticEffect::kEdge) {
+      if (effect == device::mojom::HapticEffect::kEdge) {
         hr = waveforms3->get_Collide(&value);
-      } else if (effect == blink::mojom::HapticEffect::kTick) {
+      } else if (effect == device::mojom::HapticEffect::kTick) {
         hr = waveforms3->get_Step(&value);
       } else {
         hr = waveforms3->get_Align(&value);
@@ -232,7 +232,7 @@ std::optional<uint16_t> HapticsManagerImplWin::ComputeWaveformForEffect(
 
 std::optional<uint16_t>
 HapticsManagerImplWin::DefaultWaveformForEffectAndDevice(
-    blink::mojom::HapticEffect effect,
+    device::mojom::HapticEffect effect,
     haptics::HapticDeviceType device_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!known_waveforms2_) {
@@ -245,8 +245,8 @@ HapticsManagerImplWin::DefaultWaveformForEffectAndDevice(
     return std::nullopt;
   }
   if (device_type == haptics::HapticDeviceType_Touchpad &&
-      (effect == blink::mojom::HapticEffect::kSuccess ||
-       effect == blink::mojom::HapticEffect::kError)) {
+      (effect == device::mojom::HapticEffect::kSuccess ||
+       effect == device::mojom::HapticEffect::kError)) {
     return std::nullopt;
   }
   if (device_type == haptics::HapticDeviceType_Pen) {

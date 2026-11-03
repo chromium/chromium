@@ -21,6 +21,7 @@ mojom("mojom") {
     "geolocation_client_id.mojom",
     "geolocation_context.mojom",
     "geolocation_control.mojom",
+    "haptics.mojom",
     "hid.mojom",
     "input_service.mojom",
     "nfc.mojom",

@@ -17,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "content/browser/haptics/haptics_manager.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/haptics/haptics.mojom.h"
+#include "services/device/public/mojom/haptics.mojom.h"
 
 namespace content {
 
@@ -53,7 +53,7 @@ class CONTENT_EXPORT HapticsManagerImplWin : public HapticsManager {
   ~HapticsManagerImplWin() override;
 
   // HapticsManager:
-  void PlayHaptics(blink::mojom::HapticEffect effect,
+  void PlayHaptics(device::mojom::HapticEffect effect,
                    double intensity) override;
 
   // Installs a provider that supplies the WinRT statics, replacing the real
@@ -71,15 +71,15 @@ class CONTENT_EXPORT HapticsManagerImplWin : public HapticsManager {
   void PrimeHapticsController();
 
   // Returns the cached waveform for |effect|. Failed lookups are retried.
-  std::optional<uint16_t> WaveformForEffect(blink::mojom::HapticEffect effect);
+  std::optional<uint16_t> WaveformForEffect(device::mojom::HapticEffect effect);
 
   // Looks up the waveform for |effect| in the WinRT statics.
   std::optional<uint16_t> ComputeWaveformForEffect(
-      blink::mojom::HapticEffect effect);
+      device::mojom::HapticEffect effect);
 
   // Returns the fallback waveform for |effect| and |device_type|.
   std::optional<uint16_t> DefaultWaveformForEffectAndDevice(
-      blink::mojom::HapticEffect effect,
+      device::mojom::HapticEffect effect,
       ABI::Windows::Devices::Haptics::HapticDeviceType device_type);
 
   Microsoft::WRL::ComPtr<
@@ -96,7 +96,7 @@ class CONTENT_EXPORT HapticsManagerImplWin : public HapticsManager {
 
   // Per-effect waveform ids, each cached on first successful resolution.
   static constexpr size_t kHapticEffectCount =
-      static_cast<size_t>(blink::mojom::HapticEffect::kMaxValue) + 1;
+      static_cast<size_t>(device::mojom::HapticEffect::kMaxValue) + 1;
   std::array<std::optional<uint16_t>, kHapticEffectCount> waveform_cache_;
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+// The predefined semantic haptic effects exposed by navigator.playHaptics().
+enum HapticEffect {
+  // A light, subtle cue that signals something is interactive or an action may
+  // follow.
+  kHint,
+  // A heavy boundary signal that indicates reaching the end of a range or
+  // hitting a limit.
+  kEdge,
+  // A firm pulse that marks discrete changes, like moving through a list or
+  // toggling a switch.
+  kTick,
+  // A crisp pulse when an object locks into place or aligns with guides or
+  // edges.
+  kAlign,
+  // A confirmation that communicates the successful completion of an action.
+  kSuccess,
+  // A confirmation that communicates that an action failed or could not be
+  // completed.
+  kError,
+};
+
+// Renderer-facing interface for the Web Haptics API. Implemented by
+// content::HapticsServiceImpl in the browser process, which is the
+// authoritative security boundary that enforces checks for API calls.
+interface HapticsService {
+  // Plays |effect| at |intensity| (normalized to [0.0, 1.0]) on the most recent
+  // input device.
+  PlayHaptics(HapticEffect effect, double intensity);
+};

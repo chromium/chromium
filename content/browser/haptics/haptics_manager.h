@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_HAPTICS_HAPTICS_MANAGER_H_
 #define CONTENT_BROWSER_HAPTICS_HAPTICS_MANAGER_H_
 
-#include "third_party/blink/public/mojom/haptics/haptics.mojom-forward.h"
+#include "services/device/public/mojom/haptics.mojom-forward.h"
 
 namespace content {
 
@@ -16,7 +16,7 @@ class HapticsManager {
 
   // Plays |effect| at |intensity| (expected pre-clamped to [0, 1]) on the most
   // recent input device.
-  virtual void PlayHaptics(blink::mojom::HapticEffect effect,
+  virtual void PlayHaptics(device::mojom::HapticEffect effect,
                            double intensity) = 0;
 };
 

@@ -19,20 +19,20 @@ namespace blink {
 
 namespace {
 
-mojom::blink::HapticEffect ToMojoEffect(const V8HapticEffect& effect) {
+device::mojom::blink::HapticEffect ToMojoEffect(const V8HapticEffect& effect) {
   switch (effect.AsEnum()) {
     case V8HapticEffect::Enum::kHint:
-      return mojom::blink::HapticEffect::kHint;
+      return device::mojom::blink::HapticEffect::kHint;
     case V8HapticEffect::Enum::kEdge:
-      return mojom::blink::HapticEffect::kEdge;
+      return device::mojom::blink::HapticEffect::kEdge;
     case V8HapticEffect::Enum::kTick:
-      return mojom::blink::HapticEffect::kTick;
+      return device::mojom::blink::HapticEffect::kTick;
     case V8HapticEffect::Enum::kAlign:
-      return mojom::blink::HapticEffect::kAlign;
+      return device::mojom::blink::HapticEffect::kAlign;
     case V8HapticEffect::Enum::kSuccess:
-      return mojom::blink::HapticEffect::kSuccess;
+      return device::mojom::blink::HapticEffect::kSuccess;
     case V8HapticEffect::Enum::kError:
-      return mojom::blink::HapticEffect::kError;
+      return device::mojom::blink::HapticEffect::kError;
   }
   NOTREACHED();
 }

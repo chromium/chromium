@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_HAPTICS_HAPTICS_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_HAPTICS_HAPTICS_CONTROLLER_H_
 
-#include "third_party/blink/public/mojom/haptics/haptics.mojom-blink.h"
+#include "services/device/public/mojom/haptics.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_haptic_effect.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -42,7 +42,7 @@ class MODULES_EXPORT HapticsController final
   // Bound at construction for documents that support haptics; left unbound
   // (so playHaptics() no-ops) otherwise. Auto-reset when the context is
   // destroyed.
-  HeapMojoRemote<mojom::blink::HapticsService> haptics_service_;
+  HeapMojoRemote<device::mojom::blink::HapticsService> haptics_service_;
 };
 
 }  // namespace blink
