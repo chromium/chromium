@@ -32,7 +32,10 @@
 #include <libxslt/xslt.h>
 
 #include <algorithm>
+#include <array>
+#include <cstdio>
 #include <memory>
+#include <string_view>
 #include <type_traits>
 
 #include "base/auto_reset.h"
@@ -844,7 +847,7 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
     return nullptr;
 
   // Copy the sax handler
-  UNSAFE_TODO(memcpy(parser->sax, handlers, sizeof(xmlSAXHandler)));
+  *parser->sax = *handlers;
 
   // Set parser options.
   // XML_PARSE_NODICT: default dictionary option.
@@ -1440,18 +1443,22 @@ void XMLDocumentParser::GetError(XMLErrors::ErrorType type,
   if (IsStopped())
     return;
 
-  char formatted_message[1024];
-  UNSAFE_TODO(vsnprintf(formatted_message, sizeof(formatted_message) - 1,
-                        message, args));
+  std::array<char, 1024> formatted_message = {};
+  // SAFETY: `message` is a NUL-terminated printf-style format string provided
+  // by libxml2 together with matching `args`. The size passed to vsnprintf()
+  // is smaller than the size of `formatted_message`, so the output (including
+  // its NUL terminator) always fits in the buffer.
+  UNSAFE_BUFFERS(vsnprintf(formatted_message.data(),
+                           formatted_message.size() - 1, message, args));
 
   if (parser_paused_) {
     pending_callbacks_.push_back(std::make_unique<PendingErrorCallback>(
-        type, reinterpret_cast<const xmlChar*>(formatted_message),
+        type, reinterpret_cast<const xmlChar*>(formatted_message.data()),
         GetTextPosition()));
     return;
   }
 
-  HandleError(type, formatted_message, GetTextPosition());
+  HandleError(type, formatted_message.data(), GetTextPosition());
 }
 
 void XMLDocumentParser::GetProcessingInstruction(const String& target,
@@ -1658,8 +1665,10 @@ PRINTF_FORMAT(2, 3)
 static void WarningHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  UNSAFE_TODO(GetParser(closure))
-      ->GetError(XMLErrors::kErrorTypeWarning, message, args);
+  // SAFETY: libxml2 provides `message` as a NUL-terminated printf-style
+  // format string, with variadic arguments matching its conversion specifiers.
+  UNSAFE_BUFFERS(GetParser(closure)->GetError(XMLErrors::kErrorTypeWarning,
+                                              message, args));
   va_end(args);
 }
 
@@ -1667,8 +1676,10 @@ PRINTF_FORMAT(2, 3)
 static void NormalErrorHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  UNSAFE_TODO(GetParser(closure))
-      ->GetError(XMLErrors::kErrorTypeNonFatal, message, args);
+  // SAFETY: libxml2 provides `message` as a NUL-terminated printf-style
+  // format string, with variadic arguments matching its conversion specifiers.
+  UNSAFE_BUFFERS(GetParser(closure)->GetError(XMLErrors::kErrorTypeNonFatal,
+                                              message, args));
   va_end(args);
 }
 
@@ -2069,8 +2080,8 @@ static void AttributesStartElementNsHandler(void* closure,
                                             int nb_attributes,
                                             int /*nbDefaulted*/,
                                             const xmlChar** libxml_attributes) {
-  if (UNSAFE_TODO(strcmp(reinterpret_cast<const char*>(xml_local_name),
-                         "attrs")) != 0) {
+  if (std::string_view(reinterpret_cast<const char*>(xml_local_name)) !=
+      "attrs") {
     return;
   }
 
