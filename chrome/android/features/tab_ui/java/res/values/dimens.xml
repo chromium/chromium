@@ -162,9 +162,6 @@ found in the LICENSE file.
     <dimen name="archived_tabs_auto_delete_bottom_sheet_icon_dimen">38dp</dimen>
     <dimen name="archived_tabs_auto_delete_bottom_sheet_button_padding">4dp</dimen>
 
-    <!-- Dimens for hub search tab -->
-    <dimen name="hub_search_tab_group_image_span_edge_size">12sp</dimen>
-
     <!-- Dimens for pinned tab strip -->
     <dimen name="pinned_tab_strip_item_horizontal_padding">12dp</dimen>
     <dimen name="pinned_tab_strip_item_bg_radius">16dp</dimen>

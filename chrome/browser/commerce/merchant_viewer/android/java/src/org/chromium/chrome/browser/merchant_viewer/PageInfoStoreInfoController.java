@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUi;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoMainController;

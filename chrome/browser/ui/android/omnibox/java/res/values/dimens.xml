@@ -83,6 +83,7 @@ found in the LICENSE file.
     <dimen name="fusebox_scrollable_carousel_tile_width">80dp</dimen>
     <dimen name="fusebox_url_bar_translation_y">4dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
+    <dimen name="hub_search_tab_group_image_span_edge_size">12sp</dimen>
     <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>
     <dimen name="incognito_badge_lateral_padding_start">4dp</dimen>
     <dimen name="incognito_indicator_lateral_end_padding">12dp</dimen>

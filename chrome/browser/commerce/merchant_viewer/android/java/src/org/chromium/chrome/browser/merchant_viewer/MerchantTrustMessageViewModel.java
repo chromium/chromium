@@ -19,7 +19,6 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
-import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.messages.DismissReason;

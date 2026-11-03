@@ -35,6 +35,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/android/content:java",
@@ -48,9 +49,13 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/omnibox:java_resources",
+    "//chrome/browser/ui/android/toolbar:java_resources",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:java_resources",
     "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",
@@ -58,6 +63,7 @@ android_library("java") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
+    "//components/omnibox/browser:java_resources",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
     "//components/page_info/android:page_info_action_enum_java",
@@ -76,11 +82,12 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java_resources",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
-  resources_package = "org.chromium.chrome.tab_ui"
+  resources_package = "org.chromium.chrome.browser.merchant_viewer"
 }
 
 robolectric_library("junit") {
@@ -102,7 +109,6 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:base_module_java",
-    "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/commerce/android:java",
@@ -118,6 +124,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",
@@ -125,6 +132,7 @@ robolectric_library("junit") {
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
+    "//components/omnibox/browser:java_resources",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/page_info/android:java",
     "//components/prefs/android:java",
@@ -145,12 +153,12 @@ robolectric_library("junit") {
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
   ]
-  resources_package = "org.chromium.chrome.tab_ui"
+  resources_package = "org.chromium.chrome.browser.merchant_viewer"
 }
 
 android_library("javatests") {
   testonly = true
-  resources_package = "org.chromium.chrome.tab_ui"
+  resources_package = "org.chromium.chrome.browser.merchant_viewer"
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustBottomSheetCoordinatorTest.java",
@@ -162,7 +170,6 @@ android_library("javatests") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android/features/tab_ui:java_resources",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
