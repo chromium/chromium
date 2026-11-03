@@ -1789,26 +1789,21 @@ public class VerticalTabListCoordinator {
 
                     int destGroupTabId = dropTarget.destGroupTabId;
                     int destTabIndex = dropTarget.destTabIndex;
-                    int indexInGroup = TabList.INVALID_TAB_INDEX;
+                    int indexInGroup = 0;
+                    Token destGroupId = null;
 
                     if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
                         Tab destGroupTab = tabModel.getTabById(destGroupTabId);
                         if (destGroupTab != null) {
-                            Token groupId = destGroupTab.getTabGroupId();
-                            List<Tab> groupTabs =
-                                    groupId != null
-                                            ? tabModel.getTabsInGroup(groupId)
-                                            : Collections.emptyList();
-                            int firstGroupModelIndex =
-                                    !groupTabs.isEmpty()
-                                            ? tabModel.indexOf(groupTabs.get(0))
-                                            : destTabIndex;
-                            indexInGroup =
-                                    MathUtils.clamp(
-                                            destTabIndex - firstGroupModelIndex,
-                                            0,
-                                            groupTabs.size());
+                            destGroupId = destGroupTab.getTabGroupId();
                         }
+                    }
+                    if (destGroupId != null) {
+                        List<Tab> groupTabs = tabModel.getTabsInGroup(destGroupId);
+                        int firstGroupModelIndex = tabModel.indexOf(groupTabs.get(0));
+                        indexInGroup =
+                                MathUtils.clamp(
+                                        destTabIndex - firstGroupModelIndex, 0, groupTabs.size());
                     }
 
                     MultiInstanceOrchestratorFactory.getInstance()
@@ -1819,15 +1814,12 @@ public class VerticalTabListCoordinator {
                                     /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
                                     /* bringToFront= */ true);
 
-                    if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
-                        Tab destGroupTab = tabModel.getTabById(destGroupTabId);
-                        if (destGroupTab != null && indexInGroup != TabList.INVALID_TAB_INDEX) {
-                            tabModel.mergeListOfTabsToGroup(
-                                    Collections.singletonList(tab),
-                                    destGroupTab,
-                                    indexInGroup,
-                                    TabGroupMergeNotificationType.DONT_NOTIFY);
-                        }
+                    if (destGroupId != null) {
+                        tabModel.mergeListOfTabsToExistingGroup(
+                                Collections.singletonList(tab),
+                                destGroupId,
+                                indexInGroup,
+                                TabGroupMergeNotificationType.DONT_NOTIFY);
                     }
 
                     DragDropMetricUtils.recordDragDropType(

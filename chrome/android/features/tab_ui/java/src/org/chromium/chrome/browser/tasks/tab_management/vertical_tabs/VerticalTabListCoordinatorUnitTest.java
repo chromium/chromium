@@ -3668,9 +3668,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         eq(TabList.INVALID_TAB_INDEX),
                         eq(true));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(childTab),
+                        eq(groupId),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -3938,9 +3938,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         eq(TabList.INVALID_TAB_INDEX),
                         eq(true));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(childTab),
+                        eq(destGroupId),
                         eq(0),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -4004,9 +4004,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         eq(TabList.INVALID_TAB_INDEX),
                         eq(true));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(childTab1),
+                        eq(groupId),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
@@ -4070,9 +4070,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         eq(TabList.INVALID_TAB_INDEX),
                         eq(true));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(draggedTab)),
-                        eq(childTab1),
+                        eq(groupId),
                         eq(2),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
 
