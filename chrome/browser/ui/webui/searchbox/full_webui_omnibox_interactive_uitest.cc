@@ -1504,6 +1504,15 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // URL's favicon for a URL.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        InputIconUpdatesWhileTyping) {
+#if BUILDFLAG(IS_LINUX) &&                                      \
+    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
+     defined(THREAD_SANITIZER) || !defined(NDEBUG))
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/578703415): With the WebUI toolbar, the typed "
+                    "character flakily never shows up in the WebUI input on "
+                    "Linux sanitizer and debug builds.";
+  }
+#endif
   ASSERT_TRUE(embedded_https_test_server().Start());
   const GURL url =
       embedded_https_test_server().GetURL("/favicon/page_with_favicon.html");
