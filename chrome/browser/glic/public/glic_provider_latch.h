@@ -57,6 +57,15 @@ class GlicProviderLatch final : public base::SupportsUserData::Data {
   // directly instead of `GetProvider`.
   static GlicProvider GetProvider(Profile& profile);
 
+  // Returns the latch stored on `context`, or nullptr. Unlike `Get()`, doesn't
+  // resolve through the original profile or fall back to a default latch, so
+  // off-the-record and other non-regular profiles return nullptr.
+  static const GlicProviderLatch* GetIfLatched(
+      const content::BrowserContext& context);
+
+  // Returns the latched provider.
+  GlicProvider provider() const { return provider_; }
+
   // Returns the latched `GlicProviderSpec`.
   const GlicProviderSpec& GetSpec() const;
 

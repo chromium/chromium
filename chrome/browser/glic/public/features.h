@@ -213,6 +213,11 @@ BASE_DECLARE_FEATURE(kGeicActuation);
 // can be rolled out separately.
 BASE_DECLARE_FEATURE(kGeicSsr);
 
+// Prompts the user to relaunch Chrome when the Glic provider configuration
+// (e.g. the `GeminiEnterpriseUrl` policy) changes mid-session. Requires
+// `kGeic`.
+BASE_DECLARE_FEATURE(kGeicProviderChangePrompt);
+
 BASE_DECLARE_FEATURE(kGlicMarketingAutoOpen);
 extern const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist;
 extern const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount;

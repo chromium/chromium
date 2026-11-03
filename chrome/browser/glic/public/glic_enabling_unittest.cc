@@ -45,6 +45,7 @@
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/glic/public/glic_provider_latch.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -4104,6 +4105,22 @@ TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
   EXPECT_EQ(GlicProviderLatch::GetProvider(*profile()),
             GlicProvider::kGeminiEnterprise);
   EXPECT_EQ(GlicKeyedService::Get(profile()), nullptr);
+}
+
+// Like the latch, a pending provider change doesn't depend on Glic
+// eligibility. Callers decide whether to act on it.
+TEST_F(GlicEnablingGeicPolicyGlicDisabledTest,
+       PendingProviderChangeReportedWhenIneligibleForGlic) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGeicProviderChangePrompt);
+  ASSERT_FALSE(GlicEnabling::IsProfileEligible(profile()));
+
+  static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+      profile()->GetPrefs())
+      ->RemoveManagedPref(prefs::kGlicGeminiEnterpriseUrl);
+
+  EXPECT_EQ(GlicEnabling::GetPendingProviderChange(profile()),
+            GlicProviderChange::kGeicToGemini);
 }
 
 // Like `GlicEnablingGeicPolicyTest`, but with the `enabled` param of

@@ -43,6 +43,8 @@
 #include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
+#include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/global_features.h"
@@ -1209,6 +1211,19 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
   }
 
   return mojom::ProfileReadyState::kReady;
+}
+
+// static
+GlicProviderChange GlicEnabling::GetPendingProviderChange(Profile* profile) {
+  // GEiC being disabled (`kGeic` or its `enabled` param) needs no check here:
+  // `geic::ResolveGeicGuestUrl()` then resolves to Gemini, as it did when the
+  // provider was latched, so the result is `kNone`.
+  if (!profile ||
+      !base::FeatureList::IsEnabled(features::kGeicProviderChangePrompt)) {
+    return GlicProviderChange::kNone;
+  }
+  return GlicProviderLatchFactory::GetPendingProviderChange(
+      base::PassKey<GlicEnabling>(), profile);
 }
 
 // static

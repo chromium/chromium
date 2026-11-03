@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -367,6 +368,17 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // Same as IsReadyForProfile, but returns a more detailed state.
   static mojom::ProfileReadyState GetProfileReadyState(Profile* profile);
+
+  // Returns the provider change that a relaunch would apply to `profile`. Can
+  // change at runtime. Always `kNone` unless `kGeicProviderChangePrompt` is
+  // enabled.
+  //
+  // Doesn't consider whether `profile` is eligible for Glic, before or after
+  // the relaunch: the provider is latched regardless of eligibility, and
+  // enablement is computed for the latched provider, so it can't tell whether
+  // the profile would be eligible under the new one. Callers decide whether to
+  // act on the change.
+  static GlicProviderChange GetPendingProviderChange(Profile* profile);
 
   // If Glic has recovered to a ready state since the last check, logs the
   // previous unhealthy state as a recovery outcome on user interaction.

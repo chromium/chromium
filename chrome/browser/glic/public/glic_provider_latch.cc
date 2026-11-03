@@ -48,6 +48,13 @@ GlicProvider GlicProviderLatch::GetProvider(Profile& profile) {
   return Get(profile).provider_;
 }
 
+// static
+const GlicProviderLatch* GlicProviderLatch::GetIfLatched(
+    const content::BrowserContext& context) {
+  return static_cast<const GlicProviderLatch*>(
+      context.GetUserData(kGlicProviderLatchKey));
+}
+
 const GlicProviderSpec& GlicProviderLatch::GetSpec() const {
   return *spec_;
 }

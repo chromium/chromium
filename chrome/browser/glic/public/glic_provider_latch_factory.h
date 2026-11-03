@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_LATCH_FACTORY_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_PROVIDER_LATCH_FACTORY_H_
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_change.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
@@ -16,6 +18,8 @@ class NoDestructor;
 class KeyedService;
 
 namespace glic {
+
+class GlicEnabling;
 
 // Resolves the `GlicProvider` for each regular user profile
 // (`ProfileSelections::BuildForRegularProfile()`) when its keyed services are
@@ -36,6 +40,16 @@ class GlicProviderLatchFactory : public ProfileKeyedServiceFactory {
   // callback.
   static void SetProviderForTesting(content::BrowserContext* context,
                                     GlicProvider provider);
+
+  // Returns the provider change that a relaunch would apply to `context`,
+  // computed on each call from the latch and the live configuration. Returns
+  // `kNone` for contexts that aren't latched themselves, e.g. off-the-record
+  // and guest profiles. Like the latch, doesn't consider Glic eligibility. Only
+  // `GlicEnabling::GetPendingProviderChange()`, which also checks
+  // `kGeicProviderChangePrompt`, may call this.
+  static GlicProviderChange GetPendingProviderChange(
+      base::PassKey<GlicEnabling>,
+      content::BrowserContext* context);
 
  private:
   friend base::NoDestructor<GlicProviderLatchFactory>;
