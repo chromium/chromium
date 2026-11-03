@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/media_control/browser/media_blocker.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/browser/android/jni_headers/CastContentWindowAndroid_jni.h"
@@ -21,15 +22,15 @@ using base::android::ConvertUTF8ToJavaString;
 namespace {
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
-    int64_t native_window,
+    CastContentWindowAndroid* native_window,
     bool enable_touch_input,
     bool turn_on_screen,
     bool keep_screen_on,
     const std::string& session_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastContentWindowAndroid_create(
-      env, native_window, enable_touch_input, turn_on_screen, keep_screen_on,
-      ConvertUTF8ToJavaString(env, session_id));
+      env, jni_zero::MakeRaw(native_window), enable_touch_input, turn_on_screen,
+      keep_screen_on, ConvertUTF8ToJavaString(env, session_id));
 }
 
 bool ShouldRequestAudioFocus(bool is_remote_control_mode,
@@ -49,7 +50,7 @@ CastContentWindowAndroid::CastContentWindowAndroid(
     mojom::CastWebViewParamsPtr params)
     : CastContentWindow(std::move(params)),
       web_contents_attached_(false),
-      java_window_(CreateJavaWindow(reinterpret_cast<int64_t>(this),
+      java_window_(CreateJavaWindow(this,
                                     params_->enable_touch_input,
                                     params_->turn_on_screen,
                                     params_->keep_screen_on,

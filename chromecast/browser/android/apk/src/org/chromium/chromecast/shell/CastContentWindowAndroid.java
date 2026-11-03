@@ -6,6 +6,10 @@ package org.chromium.chromecast.shell;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -21,11 +25,14 @@ import org.chromium.content_public.browser.WebContents;
 public class CastContentWindowAndroid
         implements CastWebContentsComponent.OnComponentClosedHandler,
                 CastWebContentsComponent.SurfaceEventHandler {
+    @JniType("::chromecast::CastContentWindowAndroid")
+    interface NativeCastContentWindowAndroid extends JniTypeToken {}
+
     private static final String TAG = "CastContentWindow";
 
     // Note: CastContentWindowAndroid may outlive the native object. The native
-    // ref should be checked that it is not zero before it is used.
-    private long mNativeCastContentWindowAndroid;
+    // ref should be checked that it is not null before it is used.
+    private JniRawPtr<NativeCastContentWindowAndroid> mNativeCastContentWindowAndroid;
     private final String mSessionId;
     private final CastWebContentsComponent mComponent;
 
@@ -36,8 +43,8 @@ public class CastContentWindowAndroid
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private static CastContentWindowAndroid create(
-            long nativeCastContentWindowAndroid,
+    static CastContentWindowAndroid create(
+            JniRawPtr<NativeCastContentWindowAndroid> nativeCastContentWindowAndroid,
             boolean enableTouchInput,
             boolean turnOnScreen,
             boolean keepScreenOn,
@@ -51,7 +58,7 @@ public class CastContentWindowAndroid
     }
 
     private CastContentWindowAndroid(
-            long nativeCastContentWindowAndroid,
+            JniRawPtr<NativeCastContentWindowAndroid> nativeCastContentWindowAndroid,
             boolean enableTouchInput,
             boolean turnOnScreen,
             boolean keepScreenOn,
@@ -112,8 +119,9 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void onNativeDestroyed() {
-        assert mNativeCastContentWindowAndroid != 0;
-        mNativeCastContentWindowAndroid = 0;
+        assert mNativeCastContentWindowAndroid != null;
+        mNativeCastContentWindowAndroid.release();
+        mNativeCastContentWindowAndroid = null;
 
         // Note: there is a potential race condition when this function is called after
         // createWindowForWebContents. If the stop intent is received after the start intent but
@@ -129,7 +137,7 @@ public class CastContentWindowAndroid
     @Override
     public void onComponentClosed() {
         Log.d(TAG, "Component closed: sessionId=%s", mSessionId);
-        if (mNativeCastContentWindowAndroid != 0) {
+        if (mNativeCastContentWindowAndroid != null) {
             CastContentWindowAndroidJni.get().onActivityStopped(mNativeCastContentWindowAndroid);
         }
     }
@@ -137,7 +145,7 @@ public class CastContentWindowAndroid
     @Override
     public void onVisibilityChange(int visibilityType) {
         Log.d(TAG, "Visiblity changed: sessionId=%s, visibility=%d", mSessionId, visibilityType);
-        if (mNativeCastContentWindowAndroid != 0) {
+        if (mNativeCastContentWindowAndroid != null) {
             CastContentWindowAndroidJni.get()
                     .onVisibilityChange(mNativeCastContentWindowAndroid, visibilityType);
         }
@@ -145,8 +153,8 @@ public class CastContentWindowAndroid
 
     @NativeMethods
     interface Natives {
-        void onActivityStopped(long nativeCastContentWindowAndroid);
+        void onActivityStopped(JniPtr<NativeCastContentWindowAndroid> self);
 
-        void onVisibilityChange(long nativeCastContentWindowAndroid, int visibilityType);
+        void onVisibilityChange(JniPtr<NativeCastContentWindowAndroid> self, int visibilityType);
     }
 }
