@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "pdf/accessibility_structs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,7 +76,8 @@ void ExpectTextRun(const chrome_pdf::AccessibilityTextRunInfo& run,
   EXPECT_EQ(bounds, run.bounds);
 }
 
-// Boundaries of a grid with 30 px cells.
+// Boundaries of grids with 30 px cells.
+constexpr float kTwoCellBoundaries[] = {0, 30, 60};
 constexpr float kThreeCellBoundaries[] = {0, 30, 60, 90};
 
 // Returns full-span ruling lines for a grid with the given column (`xs`) and
@@ -90,6 +93,60 @@ std::vector<RulingLine> CreateGridLines(base::span<const float> xs,
     lines.push_back(CreateVLine(x, ys.front(), ys.back()));
   }
   return lines;
+}
+
+// Returns a text run with the given bounds.
+chrome_pdf::AccessibilityTextRunInfo CreateTextRun(const gfx::RectF& bounds) {
+  chrome_pdf::AccessibilityTextRunInfo run;
+  run.bounds = bounds;
+  return run;
+}
+
+// Returns one text run per listed {row, col} cell of the grid with boundaries
+// `xs` and `ys`, inset 5 px from the cell edges, in the listed order. Rows must
+// be less than `ys.size() - 1`, columns less than `xs.size() - 1`, and cells
+// larger than 10 px in both dimensions.
+std::vector<chrome_pdf::AccessibilityTextRunInfo> CreateRunsInCells(
+    base::span<const float> xs,
+    base::span<const float> ys,
+    std::vector<std::pair<size_t, size_t>> cells) {
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+  text_runs.reserve(cells.size());
+  for (const auto& [r, c] : cells) {
+    gfx::RectF bounds(xs[c], ys[r], xs[c + 1] - xs[c], ys[r + 1] - ys[r]);
+    bounds.Inset(5);
+    CHECK(!bounds.IsEmpty());
+    text_runs.push_back(CreateTextRun(bounds));
+  }
+  return text_runs;
+}
+
+// Returns one text run per cell of the grid with boundaries `xs` and `ys`, in
+// row-major order.
+std::vector<chrome_pdf::AccessibilityTextRunInfo> CreateRunsInAllCells(
+    base::span<const float> xs,
+    base::span<const float> ys) {
+  std::vector<std::pair<size_t, size_t>> cells;
+  cells.reserve((ys.size() - 1) * (xs.size() - 1));
+  for (size_t r = 0; r < ys.size() - 1; ++r) {
+    for (size_t c = 0; c < xs.size() - 1; ++c) {
+      cells.emplace_back(r, c);
+    }
+  }
+  return CreateRunsInCells(xs, ys, std::move(cells));
+}
+
+// Ruling lines and text runs to pass to `DetectGridTables()`.
+struct GridInput {
+  std::vector<RulingLine> ruling_lines;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+};
+
+// Returns full-span ruling lines for the grid with boundaries `xs` and `ys`,
+// and one text run per cell, in row-major order.
+GridInput CreateGridWithRunInEveryCell(base::span<const float> xs,
+                                       base::span<const float> ys) {
+  return {CreateGridLines(xs, ys), CreateRunsInAllCells(xs, ys)};
 }
 
 }  // namespace
@@ -527,6 +584,165 @@ TEST(PdfAccessibilityTableDetectorTest, SeparatesDisconnectedGrids) {
                              .column_boundaries = {0, 30, 60}},
                   RulingGrid{.row_boundaries = {100, 130, 160},
                              .column_boundaries = {0, 30, 60}}));
+}
+
+TEST(PdfAccessibilityTableDetectorTest, Grid3x3WithOneRunPerCell) {
+  // 3x3 grid: horizontal lines at y = 0, 30, 60, 90; vertical lines at x = 0,
+  // 30, 60, 90.
+  const auto [ruling_lines, text_runs] =
+      CreateGridWithRunInEveryCell(kThreeCellBoundaries, kThreeCellBoundaries);
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 1u);
+
+  const HeuristicTable& table = tables[0];
+  EXPECT_EQ(table.bounds, gfx::RectF(0, 0, 90, 90));
+  EXPECT_EQ(table.anchor_text_run_index, 0u);
+  ASSERT_EQ(table.rows.size(), 3u);
+
+  size_t expected_run_index = 0;
+  for (size_t r = 0; r < table.rows.size(); ++r) {
+    const HeuristicTableRow& row = table.rows[r];
+    EXPECT_EQ(row.bounds, gfx::RectF(0, r * 30, 90, 30));
+    ASSERT_EQ(row.cells.size(), 3u);
+
+    for (size_t c = 0; c < row.cells.size(); ++c) {
+      const HeuristicTableCell& cell = row.cells[c];
+      EXPECT_EQ(cell.bounds, gfx::RectF(c * 30, r * 30, 30, 30));
+      ASSERT_EQ(cell.text_run_indices.size(), 1u);
+      EXPECT_EQ(cell.text_run_indices[0], expected_run_index++);
+    }
+  }
+}
+
+TEST(PdfAccessibilityTableDetectorTest, Grid2x3WithOneRunPerCell) {
+  // 2 rows x 3 columns: horizontal lines at y = 0, 30, 60; vertical lines at
+  // x = 0, 30, 60, 90.
+  const auto [ruling_lines, text_runs] =
+      CreateGridWithRunInEveryCell(kThreeCellBoundaries, kTwoCellBoundaries);
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 1u);
+
+  const HeuristicTable& table = tables[0];
+  EXPECT_EQ(table.bounds, gfx::RectF(0, 0, 90, 60));
+  EXPECT_EQ(table.anchor_text_run_index, 0u);
+  ASSERT_EQ(table.rows.size(), 2u);
+
+  size_t expected_run_index = 0;
+  for (size_t r = 0; r < table.rows.size(); ++r) {
+    const HeuristicTableRow& row = table.rows[r];
+    EXPECT_EQ(row.bounds, gfx::RectF(0, r * 30, 90, 30));
+    ASSERT_EQ(row.cells.size(), 3u);
+
+    for (size_t c = 0; c < row.cells.size(); ++c) {
+      const HeuristicTableCell& cell = row.cells[c];
+      EXPECT_EQ(cell.bounds, gfx::RectF(c * 30, r * 30, 30, 30));
+      ASSERT_EQ(cell.text_run_indices.size(), 1u);
+      EXPECT_EQ(cell.text_run_indices[0], expected_run_index++);
+    }
+  }
+}
+
+TEST(PdfAccessibilityTableDetectorTest, Grid3x2WithOneRunPerCell) {
+  // 3 rows x 2 columns: horizontal lines at y = 0, 30, 60, 90; vertical lines
+  // at x = 0, 30, 60.
+  const auto [ruling_lines, text_runs] =
+      CreateGridWithRunInEveryCell(kTwoCellBoundaries, kThreeCellBoundaries);
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 1u);
+
+  const HeuristicTable& table = tables[0];
+  EXPECT_EQ(table.bounds, gfx::RectF(0, 0, 60, 90));
+  EXPECT_EQ(table.anchor_text_run_index, 0u);
+  ASSERT_EQ(table.rows.size(), 3u);
+
+  size_t expected_run_index = 0;
+  for (size_t r = 0; r < table.rows.size(); ++r) {
+    const HeuristicTableRow& row = table.rows[r];
+    EXPECT_EQ(row.bounds, gfx::RectF(0, r * 30, 60, 30));
+    ASSERT_EQ(row.cells.size(), 2u);
+
+    for (size_t c = 0; c < row.cells.size(); ++c) {
+      const HeuristicTableCell& cell = row.cells[c];
+      EXPECT_EQ(cell.bounds, gfx::RectF(c * 30, r * 30, 30, 30));
+      ASSERT_EQ(cell.text_run_indices.size(), 1u);
+      EXPECT_EQ(cell.text_run_indices[0], expected_run_index++);
+    }
+  }
+}
+
+TEST(PdfAccessibilityTableDetectorTest, CellWithTwoRunsAscendingOrder) {
+  // 2x2 grid.
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kTwoCellBoundaries, kTwoCellBoundaries);
+
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs = {
+      // Cell (0, 0): run 0
+      CreateTextRun(gfx::RectF(5, 5, 20, 20)),
+      // Cell (0, 1): run 1
+      CreateTextRun(gfx::RectF(35, 5, 20, 20)),
+      // Cell (1, 0): run 2 and run 3 (two lines of text)
+      CreateTextRun(gfx::RectF(5, 33, 20, 8)),
+      CreateTextRun(gfx::RectF(5, 45, 20, 8)),
+      // Cell (1, 1): run 4
+      CreateTextRun(gfx::RectF(35, 35, 20, 20)),
+  };
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 1u);
+
+  const HeuristicTable& table = tables[0];
+  ASSERT_EQ(table.rows.size(), 2u);
+  EXPECT_EQ(table.rows[0].cells.size(), 2u);
+
+  const HeuristicTableCell& cell_1_0 = table.rows[1].cells[0];
+  ASSERT_EQ(cell_1_0.text_run_indices.size(), 2u);
+  EXPECT_EQ(cell_1_0.text_run_indices[0], 2u);
+  EXPECT_EQ(cell_1_0.text_run_indices[1], 3u);
+}
+
+TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithNoText) {
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kThreeCellBoundaries, kThreeCellBoundaries);
+
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+  EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, TwoSeparateGridsSortedByAnchor) {
+  // Two separate grids that do not touch:
+  // Top grid at y = [0, 60], x = [0, 60].
+  // Bottom grid at y = [100, 160], x = [0, 60].
+  std::vector<RulingLine> ruling_lines = {
+      CreateHLine(0, 0, 60),   CreateHLine(30, 0, 60),
+      CreateHLine(60, 0, 60),  CreateHLine(100, 0, 60),
+      CreateHLine(130, 0, 60), CreateHLine(160, 0, 60),
+      CreateVLine(0, 0, 60),   CreateVLine(0, 100, 160),
+      CreateVLine(30, 0, 60),  CreateVLine(30, 100, 160),
+      CreateVLine(60, 0, 60),  CreateVLine(60, 100, 160),
+  };
+
+  // Text runs are ordered such that the lower grid's runs come first.
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs =
+      CreateRunsInAllCells(kTwoCellBoundaries, {100, 130, 160});
+  base::Extend(text_runs,
+               CreateRunsInAllCells(kTwoCellBoundaries, kTwoCellBoundaries));
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 2u);
+
+  EXPECT_EQ(tables[0].anchor_text_run_index, 0u);
+  EXPECT_EQ(tables[0].bounds, gfx::RectF(0, 100, 60, 60));
+
+  EXPECT_EQ(tables[1].anchor_text_run_index, 4u);
+  EXPECT_EQ(tables[1].bounds, gfx::RectF(0, 0, 60, 60));
 }
 
 }  // namespace pdf

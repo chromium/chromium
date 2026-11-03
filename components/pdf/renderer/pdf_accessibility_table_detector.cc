@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
 #include <ranges>
 #include <utility>
@@ -529,6 +530,108 @@ std::vector<float> LinePositions(base::span<const RulingLine> lines,
   });
 }
 
+// Returns index `i` such that `boundaries[i] <= value < boundaries[i + 1]`,
+// clamped to the first and last intervals.
+size_t FindInterval(base::span<const float> boundaries, float value) {
+  CHECK_GE(boundaries.size(), 2u);
+  // Count the interval starts at or below `value`.
+  const base::span<const float> starts =
+      boundaries.first(boundaries.size() - 1);
+  const size_t count = std::ranges::upper_bound(starts, value) - starts.begin();
+  return count > 0 ? count - 1 : 0;
+}
+
+// The text run indices in each grid cell, as `cells[row][col]`:
+// - Outer: rows.
+// - Middle: columns.
+// - Inner: indices into `text_runs` of the runs in that cell (empty if none).
+using RunIndicesByCell = std::vector<std::vector<std::vector<size_t>>>;
+
+// Puts each text run in the cell that contains its center. Runs centered
+// outside the grid are skipped.
+RunIndicesByCell AssignRunsToCells(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    const RulingGrid& grid) {
+  const size_t row_count = grid.row_boundaries.size() - 1;
+  const size_t col_count = grid.column_boundaries.size() - 1;
+  RunIndicesByCell cells(row_count,
+                         std::vector<std::vector<size_t>>(col_count));
+
+  const gfx::RectF grid_bounds = gfx::BoundingRect(
+      gfx::PointF(grid.column_boundaries.front(), grid.row_boundaries.front()),
+      gfx::PointF(grid.column_boundaries.back(), grid.row_boundaries.back()));
+
+  for (size_t run_idx = 0; run_idx < text_runs.size(); ++run_idx) {
+    const gfx::PointF center = text_runs[run_idx].bounds.CenterPoint();
+    if (!grid_bounds.InclusiveContains(center)) {
+      continue;
+    }
+    cells[FindInterval(grid.row_boundaries, center.y())]
+         [FindInterval(grid.column_boundaries, center.x())]
+             .push_back(run_idx);
+  }
+  return cells;
+}
+
+// Returns the total number of run indices across all cells.
+size_t CountAssignedRuns(const RunIndicesByCell& cells) {
+  size_t count = 0;
+  for (const auto& row : cells) {
+    for (const auto& cell_runs : row) {
+      count += cell_runs.size();
+    }
+  }
+  return count;
+}
+
+// Builds a table from the cells in the given rows and columns, at least one of
+// which must have a run. Moves each cell's run indices from `cells` into the
+// table. The table's anchor is its lowest run index, i.e. its first text in
+// reading order.
+HeuristicTable BuildTable(RunIndicesByCell cells,
+                          const RulingGrid& grid,
+                          gfx::Range rows,
+                          gfx::Range cols) {
+  const std::vector<float>& row_boundaries = grid.row_boundaries;
+  const std::vector<float>& column_boundaries = grid.column_boundaries;
+  HeuristicTable table;
+  table.bounds = gfx::BoundingRect(
+      gfx::PointF(column_boundaries[cols.start()],
+                  row_boundaries[rows.start()]),
+      gfx::PointF(column_boundaries[cols.end()], row_boundaries[rows.end()]));
+  size_t anchor_text_run_index = std::numeric_limits<size_t>::max();
+  table.rows.reserve(rows.length());
+
+  // Row `r` spans from row boundary `r` to `r + 1`, across all of `cols`.
+  for (size_t r = rows.start(); r < rows.end(); ++r) {
+    HeuristicTableRow row;
+    row.bounds = gfx::BoundingRect(
+        gfx::PointF(column_boundaries[cols.start()], row_boundaries[r]),
+        gfx::PointF(column_boundaries[cols.end()], row_boundaries[r + 1]));
+    row.cells.reserve(cols.length());
+
+    // Cell `(r, c)` spans from column boundary `c` to `c + 1`. Its run indices
+    // move into the table, and the lowest one updates the anchor.
+    for (size_t c = cols.start(); c < cols.end(); ++c) {
+      HeuristicTableCell cell;
+      cell.bounds = gfx::BoundingRect(
+          gfx::PointF(column_boundaries[c], row_boundaries[r]),
+          gfx::PointF(column_boundaries[c + 1], row_boundaries[r + 1]));
+      cell.text_run_indices = std::move(cells[r][c]);
+      if (!cell.text_run_indices.empty()) {
+        anchor_text_run_index =
+            std::min(anchor_text_run_index, cell.text_run_indices.front());
+      }
+      row.cells.push_back(std::move(cell));
+    }
+    table.rows.push_back(std::move(row));
+  }
+  // At least one cell has a run, so the anchor was set.
+  CHECK_NE(anchor_text_run_index, std::numeric_limits<size_t>::max());
+  table.anchor_text_run_index = anchor_text_run_index;
+  return table;
+}
+
 }  // namespace
 
 std::vector<RulingLine> ExtractRulingLines(
@@ -650,6 +753,25 @@ std::vector<RulingGrid> DetectRulingGrids(
     });
   }
   return grids;
+}
+
+std::vector<HeuristicTable> DetectGridTables(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    base::span<const RulingLine> ruling_lines) {
+  std::vector<HeuristicTable> tables;
+  for (const RulingGrid& grid : DetectRulingGrids(ruling_lines)) {
+    RunIndicesByCell cells = AssignRunsToCells(text_runs, grid);
+    // Skip grids with no text runs (e.g., a drawing).
+    if (CountAssignedRuns(cells) == 0) {
+      continue;
+    }
+
+    tables.push_back(BuildTable(
+        std::move(cells), grid, gfx::Range(0, grid.row_boundaries.size() - 1),
+        gfx::Range(0, grid.column_boundaries.size() - 1)));
+  }
+  std::ranges::sort(tables, {}, &HeuristicTable::anchor_text_run_index);
+  return tables;
 }
 
 }  // namespace pdf

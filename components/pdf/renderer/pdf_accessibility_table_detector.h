@@ -88,10 +88,48 @@ struct RulingGrid {
   std::vector<float> column_boundaries;
 };
 
+// A cell of a detected grid: the area between two adjacent row boundaries and
+// two adjacent column boundaries.
+struct HeuristicTableCell {
+  // Page-relative pixels.
+  gfx::RectF bounds;
+  // Indices into the page's text runs whose centers fall in `bounds`, in
+  // ascending (stream) order. Empty for cells without text.
+  std::vector<size_t> text_run_indices;
+};
+
+// One row of a detected grid.
+struct HeuristicTableRow {
+  // Page-relative pixels.
+  gfx::RectF bounds;
+  // One cell per column, left to right, including empty cells.
+  std::vector<HeuristicTableCell> cells;
+};
+
+// A table detected from a grid of ruling lines. Every row has the same number
+// of cells; there are no row or column spans.
+struct HeuristicTable {
+  // Page-relative pixels.
+  gfx::RectF bounds;
+  // Lowest text run index in the table. Callers emit the table at this
+  // position in reading order.
+  size_t anchor_text_run_index = 0;
+  // Rows from top to bottom. At least 2 rows of at least 2 cells each.
+  std::vector<HeuristicTableRow> rows;
+};
+
 // Finds grids formed by horizontal and vertical ruling lines that touch or
 // cross. Doesn't look at text. `ruling_lines` must be ordered as returned by
 // `ExtractRulingLines()`. Returns grids in no particular order.
 std::vector<RulingGrid> DetectRulingGrids(
+    base::span<const RulingLine> ruling_lines);
+
+// Detects tables drawn as connected grids of horizontal and vertical ruling
+// lines. Returns tables sorted by `anchor_text_run_index`, with each cell's
+// `text_run_indices` ascending. Tables may share text runs; callers must
+// resolve overlaps.
+std::vector<HeuristicTable> DetectGridTables(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     base::span<const RulingLine> ruling_lines);
 
 }  // namespace pdf
