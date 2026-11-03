@@ -11,6 +11,7 @@
 #import <vector>
 
 #import "base/feature_list.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace content {
@@ -64,7 +65,7 @@ class ContentJavaScriptFeatureManager {
   void AddFeature(const JavaScriptFeature* feature);
 
   // The features which are managed by this feature manager.
-  std::set<const JavaScriptFeature*> features_;
+  std::set<raw_ptr<const JavaScriptFeature>> features_;
 
   // Maps handler names to features that handle script messages.
   std::map<std::string, base::WeakPtr<JavaScriptFeature>>
