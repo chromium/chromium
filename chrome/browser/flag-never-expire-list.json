@@ -45,7 +45,6 @@
   "enable-experimental-cookie-features",
   "enable-experimental-web-platform-features",
   "enable-experimental-webassembly-features",
-  "enable-fake-keyboard-heuristic",
   "enable-fake-mouse-heuristic",
   "enable-force-dark",
   "enable-future-v8-vm-features",

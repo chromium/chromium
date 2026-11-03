@@ -18,8 +18,6 @@ BASE_FEATURE(kEnableNeuralPalmDetectionFilter,
 // Controls whether libinput is used to handle touchpad.
 BASE_FEATURE(kLibinputHandleTouchpad, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFakeKeyboardHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFakeMouseHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{

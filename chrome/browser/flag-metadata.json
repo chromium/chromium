@@ -4060,14 +4060,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "enable-fake-keyboard-heuristic",
-    "owners": ["wmahon@chromium.org", "chromeos-tango@google.com"],
-    // This flag is used to enable automatic detection of non-keyboard devices
-    // pretending to be keyboards. It is useful as a flag for users who want to
-    // selectively disable this feature, and for debuggability.
-    "expiry_milestone": -1
-  },
-  {
     "name": "enable-fake-mouse-heuristic",
     "owners": ["wmahon@chromium.org", "chromeos-tango@google.com"],
     // This flag is used to enable automatic detection of devices pretending to

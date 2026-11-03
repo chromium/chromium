@@ -5,9 +5,7 @@
 #include "ui/events/ozone/evdev/imposter_checker_evdev_state.h"
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "ui/events/ozone/features.h"
 
 namespace ui {
 
@@ -35,8 +33,7 @@ ImposterCheckerEvdevState::~ImposterCheckerEvdevState() {
 }
 
 bool ImposterCheckerEvdevState::IsKeyboardCheckEnabled() {
-  return keyboard_check_enabled_ &&
-         base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic);
+  return keyboard_check_enabled_;
 }
 
 void ImposterCheckerEvdevState::SetKeyboardCheckEnabled(bool enabled) {

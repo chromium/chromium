@@ -4,8 +4,6 @@
 
 #include "ui/events/ozone/evdev/fake_keyboard_heuristic_metrics.h"
 
-#include "ui/events/ozone/features.h"
-
 namespace ui {
 
 FakeKeyboardHeuristicMetrics::FakeKeyboardHeuristicMetrics()
@@ -18,7 +16,7 @@ bool FakeKeyboardHeuristicMetrics::IsEligible() const {
 }
 
 bool FakeKeyboardHeuristicMetrics::IsEnabled() const {
-  return base::FeatureList::IsEnabled(kEnableFakeKeyboardHeuristic);
+  return true;
 }
 
 void FakeKeyboardHeuristicMetrics::RecordUsage(bool success) {

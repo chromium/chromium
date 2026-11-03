@@ -7729,13 +7729,6 @@ inline constexpr char kEnableLibinputToHandleTouchpadDescription[] =
     "devices. Use libinput if an input device doesn't work or is not working"
     "well.";
 
-inline constexpr char kEnableFakeKeyboardHeuristicName[] =
-    "Enable Fake Keyboard Heuristic";
-inline constexpr char kEnableFakeKeyboardHeuristicDescription[] =
-    "Enable heuristic to prevent non-keyboard devices from pretending "
-    "to be keyboards. Primarily assists in preventing the virtual keyboard "
-    "from being disabled unintentionally.";
-
 inline constexpr char kEnableFakeMouseHeuristicName[] =
     "Enable Fake Mouse Heuristic";
 inline constexpr char kEnableFakeMouseHeuristicDescription[] =
