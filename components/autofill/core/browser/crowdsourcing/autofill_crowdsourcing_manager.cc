@@ -237,6 +237,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "Hashed descriptions of the form and its fields. User data is not "
             "sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "autofill.googleapis.com"
           internal {
             contacts {
               owners: "//components/autofill/OWNERS"
@@ -290,6 +291,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
           "data given to each field, if recognized from the user's "
           "profile(s). User data is not sent."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "autofill.googleapis.com"
         internal {
           contacts {
             owners: "//components/autofill/OWNERS"

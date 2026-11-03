@@ -13,8 +13,8 @@ Refer to README.md for content description and update process.
  <item id="affiliation_lookup_by_hash" added_in_milestone="87" content_hash_code="01224316" os_list="windows,chromeos,android,linux" file_path="components/affiliations/core/browser/hash_affiliation_fetcher.cc" />
  <item id="android_device_manager_socket" added_in_milestone="65" content_hash_code="00623801" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_device_manager.cc" />
  <item id="android_web_socket" added_in_milestone="65" content_hash_code="00bbd661" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_web_socket.cc" />
- <item id="autofill_query" added_in_milestone="62" content_hash_code="006ccff5" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc" />
- <item id="autofill_upload" added_in_milestone="62" content_hash_code="04a7eb65" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc" />
+ <item id="autofill_query" added_in_milestone="62" content_hash_code="0545af04" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc" />
+ <item id="autofill_upload" added_in_milestone="62" content_hash_code="079f04e5" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc" />
  <item id="backdrop_collection_images_download" added_in_milestone="68" content_hash_code="009770fb" os_list="linux,windows,chromeos,android" file_path="components/themes/ntp_background_service.cc" />
  <item id="backdrop_collection_names_download" added_in_milestone="68" content_hash_code="048c7a89" os_list="linux,windows,chromeos,android" file_path="components/themes/ntp_background_service.cc" />
  <item id="backdrop_next_image_download" added_in_milestone="77" content_hash_code="003626bf" os_list="linux,windows,chromeos,android" file_path="components/themes/ntp_background_service.cc" />
