@@ -1524,6 +1524,10 @@ void SelectionOverlayController::SendRegionsToPanel(
     CapturedRegions captured_regions,
     bool should_focus_panel) {
   session_->panel_sync_pending = false;
+  // Without a valid region, glic would show the screenshot with no chips.
+  if (captured_regions.empty()) {
+    return;
+  }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());
   GlicInstance* instance = service->GetInstanceForTab(tab_);
   if (!instance) {

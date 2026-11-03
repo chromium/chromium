@@ -728,6 +728,55 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                       ".length === 2"));
 }
 
+// A region that doesn't fit the screenshot isn't sent to the panel, and
+// without any valid region the panel gets nothing: no screenshot without
+// chips.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       PanelGetsNothingWithoutValidRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
+  const base::UnguessableToken region_id = base::UnguessableToken::Create();
+  auto adjust_region = [this, region_id](const gfx::RectF& rect) {
+    static_cast<selection::SelectionOverlayPageHandler*>(GetController())
+        ->AdjustRegion(selection::SelectedRegion::New(
+                           region_id, selection::RegionShape::NewRect(rect)),
+                       /*is_using_keyboard=*/true);
+  };
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+        GetController()->Show(/*options=*/nullptr,
+                              ::selection::EntryPoint::kKeyboardShortcut);
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      OpenGlic(),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
+      // Once the panel has a region, the page context is here and every
+      // adjustment is sent right away.
+      Do([&]() { adjust_region(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f)); }),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.includes('Region: ')"),
+      // Move the region off the screenshot, then back.
+      Do([&]() {
+        adjust_region(gfx::RectF(1.5f, 1.5f, 0.2f, 0.2f));
+        adjust_region(gfx::RectF(0.4f, 0.4f, 0.2f, 0.2f));
+      }),
+      WaitForJsResultAt(kGlicContentsElementId, kContextResult,
+                        "el => el.innerText.split('Region: ').length === 3"),
+      // Two contexts, both with a region; none for the invalid one.
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.split('Tab Context: present')"
+                      ".length === 3"));
+}
+
 namespace {
 
 // The test client holds a capture-region hotkey invoke until the test clicks
