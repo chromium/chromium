@@ -35,6 +35,10 @@ TEST_F(TtcToolValidatorTest, TestValidToolCalls) {
   result = TtcToolValidator::ValidateToolCall(
       ttc::ToolRequest{ttc::kToolGoForward, base::DictValue()});
   EXPECT_TRUE(result.has_value());
+
+  result = TtcToolValidator::ValidateToolCall(
+      ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()});
+  EXPECT_TRUE(result.has_value());
 }
 
 // Tests defensive rejection against an empty tool name and unknown tools.
@@ -50,6 +54,13 @@ TEST_F(TtcToolValidatorTest, TestDefensiveRejections) {
       ttc::ToolRequest{"unknown_tool", base::DictValue()});
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ttc::kErrorMessageUnknownTool);
+
+  // `close_session` is a manual task hook and does not create an Actor request.
+  base::expected<TtcActuationRequest, std::string> close_session_request =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()});
+  ASSERT_FALSE(close_session_request.has_value());
+  EXPECT_EQ(close_session_request.error(), ttc::kErrorMessageInvalidToolCall);
 }
 
 // Tests URL validation edge cases and disallowed schemes.

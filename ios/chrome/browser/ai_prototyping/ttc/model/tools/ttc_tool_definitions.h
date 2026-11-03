@@ -13,6 +13,7 @@ namespace ttc {
 
 // Canonical navigation and browsing tool names matching Desktop Chrome's
 // tools.mojom contract. Listed in strict alphabetical order.
+inline constexpr char kToolCloseSession[] = "close_session";
 inline constexpr char kToolGoBack[] = "go_back";
 inline constexpr char kToolGoForward[] = "go_forward";
 inline constexpr char kToolOpenUrl[] = "open_url";

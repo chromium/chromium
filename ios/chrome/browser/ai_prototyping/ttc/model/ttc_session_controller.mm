@@ -239,6 +239,11 @@ TtcSessionController::TtcSessionController(
           std::move(voice_focused_web_state_tracker)) {
   CHECK(conversation_);
   conversation_->set_delegate(this);
+  if (actuation_handler_) {
+    actuation_handler_->SetCloseSessionCallback(
+        base::BindRepeating(&TtcSessionController::StopSessionAsync,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
   RegisterBackgroundObserver();
 }
 

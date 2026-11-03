@@ -28,6 +28,7 @@
 #import "components/sessions/core/session_id.h"
 #import "components/ttc/app/public/tool_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
@@ -45,6 +46,9 @@
 #import "ios/web/public/web_state_id.h"
 
 namespace {
+
+// Journal event name for tool actuation execution.
+constexpr char kActuationExecuteEventName[] = "ActuationExecute";
 
 // Internal title used when creating the session's Actor task; not surfaced in
 // user-facing UI.
@@ -218,6 +222,12 @@ void TtcActuationHandler::set_journal(TTCJournal* journal) {
   journal_ = journal ? journal->GetWeakPtr() : nullptr;
 }
 
+void TtcActuationHandler::SetCloseSessionCallback(
+    base::RepeatingClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  close_session_callback_ = std::move(callback);
+}
+
 #pragma mark - Teardown
 
 void TtcActuationHandler::Disconnect() {
@@ -226,6 +236,7 @@ void TtcActuationHandler::Disconnect() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   TtcTaskInterventionHandler* intervention_delegate =
       std::exchange(intervention_delegate_, nil);
+  close_session_callback_.Reset();
 
   actor::ActorTaskId task_id = std::exchange(task_id_, actor::ActorTaskId());
   actor::ActorService* actor_service = std::exchange(actor_service_, nullptr);
@@ -254,6 +265,11 @@ void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
                                           ActuationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(callback);
+
+  if (tool_request.name == ttc::kToolCloseSession) {
+    CloseSession(std::move(callback));
+    return;
+  }
 
   auto request = TtcToolValidator::CreateActuationRequest(tool_request);
   if (!request.has_value()) {
@@ -361,6 +377,34 @@ void TtcActuationHandler::StopTask(actor::ActorTaskStoppedReason reason) {
 
 #pragma mark - Private
 
+void TtcActuationHandler::CloseSession(ActuationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!close_session_callback_) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kExecutorDestroyed);
+    return;
+  }
+  std::unique_ptr<TTCJournal::PendingAsyncEntry> async_entry;
+  if (journal_) {
+    async_entry = journal_->BeginAsyncEvent(
+        TTCJournalComponent::kActuation, kActuationExecuteEventName,
+        TTCJournalDetailsBuilder()
+            .SetSummary(
+                base::StrCat({"Tool started: ", ttc::kToolCloseSession}))
+            .Build());
+  }
+  EndActuationAsyncEntry(std::move(async_entry),
+                         actor::mojom::ActionResultCode::kOk,
+                         /*error_message=*/{});
+  // Guard with `weak_this` in case the caller tears down or disconnects
+  // `this` during the synchronous tool response.
+  base::WeakPtr<TtcActuationHandler> weak_this = weak_ptr_factory_.GetWeakPtr();
+  std::move(callback).Run(ttc::ToolResponse::Success());
+  if (weak_this && weak_this->close_session_callback_) {
+    weak_this->close_session_callback_.Run();
+  }
+}
+
 void TtcActuationHandler::OnPerformActionsFinished(
     actor::ActorTaskId task_id,
     actor::PerformActionsResult result) {
@@ -435,7 +479,7 @@ TtcActuationHandler::BeginActuationAsyncEntry(
   }
   std::string joined_names = base::JoinString(action_names, ", ");
   return journal_->BeginAsyncEvent(
-      TTCJournalComponent::kActuation, "ActuationExecute",
+      TTCJournalComponent::kActuation, kActuationExecuteEventName,
       TTCJournalDetailsBuilder()
           .SetSummary(base::StrCat({"Tool started: ", joined_names}))
           .Add("task_id", task_id_.value())

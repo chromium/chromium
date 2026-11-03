@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_definitions.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_tool_validator.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
@@ -487,6 +488,59 @@ TEST_F(TtcActuationHandlerTest, TestMultipleDisconnectCallsAreIdempotent) {
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
   handler->Disconnect();
   EXPECT_NO_FATAL_FAILURE(handler->Disconnect());
+}
+
+// Tests that `ProcessToolCall` for `close_session` replies with success,
+// logs `ActuationExecute` to `TTCJournal`, and invokes the registered
+// close-session callback without requiring an `ActorService` or active
+// `WebState`.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallCloseSessionRunsCallbackAndReturnsSuccess) {
+  TtcActuationHandler handler(/*actor_service=*/nullptr);
+  TTCJournal journal;
+  handler.set_journal(&journal);
+  bool close_session_called = false;
+  handler.SetCloseSessionCallback(
+      base::BindRepeating([](bool* called) { *called = true; },
+                          base::Unretained(&close_session_called)));
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler.ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()},
+      /*active_web_state=*/nullptr, future.GetCallback());
+
+  EXPECT_TRUE(future.Get().Ok());
+  EXPECT_TRUE(close_session_called);
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[0].type, TTCJournalEntryType::kBegin);
+  EXPECT_EQ(journal.entries()[0].summary, "Tool started: close_session");
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_EQ(journal.entries()[1].summary, "Tool finished: ok");
+  handler.Disconnect();
+}
+
+// Tests that `ProcessToolCall` for `close_session` fails with
+// `kExecutorDestroyed` and does not invoke the callback after `Disconnect()`
+// clears the registered close-session hook.
+TEST_F(TtcActuationHandlerTest,
+       CloseSessionAfterDisconnectFailsWithExecutorDestroyed) {
+  TtcActuationHandler handler(/*actor_service=*/nullptr);
+  bool close_session_called = false;
+  handler.SetCloseSessionCallback(
+      base::BindRepeating([](bool* called) { *called = true; },
+                          base::Unretained(&close_session_called)));
+  handler.Disconnect();
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler.ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()},
+      /*active_web_state=*/nullptr, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kExecutorDestroyed);
+  EXPECT_FALSE(close_session_called);
 }
 
 }  // namespace

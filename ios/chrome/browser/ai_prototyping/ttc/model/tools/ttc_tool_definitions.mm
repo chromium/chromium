@@ -32,6 +32,14 @@ namespace ttc {
 std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   std::vector<ToolDefinition> tools;
 
+  ToolDefinition close_session;
+  close_session.name = kToolCloseSession;
+  close_session.description = "Ends and closes the active session.";
+  // The tool takes no arguments, so its schema is left empty.
+  close_session.behavior = ToolDefinition::Behavior::kBlocking;
+  close_session.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(close_session));
+
   ToolDefinition go_back;
   go_back.name = kToolGoBack;
   go_back.description = "Go back to the previous page in history.";

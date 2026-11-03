@@ -887,4 +887,38 @@ TEST_F(TtcSessionControllerTest, TestStopSessionStopsActiveActorTask) {
   controller.Disconnect();
 }
 
+// Tests that `OnToolCall` for `close_session` replies with success, transitions
+// the session lifecycle to `kFinished`, and stops the underlying conversation
+// asynchronously.
+TEST_F(TtcSessionControllerTest,
+       OnToolCallCloseSessionTransitionsToFinishedAndStopsConversation) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  std::unique_ptr<TtcConversation> conversation =
+      std::make_unique<TtcConversation>(fake_audio, nullptr);
+  std::unique_ptr<TtcActuationHandler> actuation_handler =
+      std::make_unique<TtcActuationHandler>(/*actor_service=*/nullptr);
+  FakeTtcSessionControllerObserver observer;
+  TtcSessionController controller(std::move(conversation),
+                                  /*voice_focused_web_state_tracker=*/nullptr,
+                                  std::move(actuation_handler));
+  controller.AddObserver(&observer);
+  controller.StartSession();
+  controller.OnConversationInitialized();
+  ASSERT_EQ(controller.lifecycle(), TTCSessionLifecycle::kLive);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  controller.OnToolCall(
+      ttc::ToolRequest{ttc::kToolCloseSession, base::DictValue()},
+      future.GetCallback());
+
+  EXPECT_TRUE(future.Get().Ok());
+  EXPECT_EQ(controller.lifecycle(), TTCSessionLifecycle::kFinished);
+  EXPECT_EQ(observer.last_lifecycle(), TTCSessionLifecycle::kFinished);
+  EXPECT_FALSE(fake_audio.didStopCapture);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return fake_audio.didStopCapture; }));
+  controller.Disconnect();
+}
+
 }  // namespace

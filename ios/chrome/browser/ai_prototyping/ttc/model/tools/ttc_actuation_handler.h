@@ -51,6 +51,10 @@ class TtcActuationHandler {
   TTCJournal* journal() const;
   void set_journal(TTCJournal* journal);
 
+  // Registers the `callback` invoked when a `close_session` tool request is
+  // processed.
+  void SetCloseSessionCallback(base::RepeatingClosure callback);
+
   // Disconnects active references, cancels any active task with `kShutdown`,
   // and fails any pending actuation callback with `kExecutorDestroyed`.
   void Disconnect();
@@ -79,6 +83,9 @@ class TtcActuationHandler {
                     actor::ActorTaskStoppedReason::kTaskComplete);
 
  private:
+  // Executes the `close_session` tool and invokes `callback`.
+  void CloseSession(ActuationCallback callback);
+
   // Handles completion of `ActorService::PerformActions`.
   void OnPerformActionsFinished(actor::ActorTaskId task_id,
                                 actor::PerformActionsResult result);
@@ -112,6 +119,9 @@ class TtcActuationHandler {
 
   // Active async journal entry for the in-flight actuation, if any.
   std::unique_ptr<TTCJournal::PendingAsyncEntry> active_async_entry_;
+
+  // Manual task hook invoked when `close_session` is requested.
+  base::RepeatingClosure close_session_callback_;
 
   // Intervention delegate used for Actor tasks created by this handler.
   TtcTaskInterventionHandler* intervention_delegate_ = nil;

@@ -86,7 +86,8 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
     return base::unexpected(ttc::kErrorMessageInvalidToolCall);
   }
 
-  if (name == ttc::kToolGoBack || name == ttc::kToolGoForward) {
+  if (name == ttc::kToolCloseSession || name == ttc::kToolGoBack ||
+      name == ttc::kToolGoForward) {
     return base::ok();
   }
 
@@ -118,6 +119,12 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
 // static
 base::expected<TtcActuationRequest, std::string>
 TtcToolValidator::CreateActuationRequest(const ttc::ToolRequest& tool_request) {
+  // `close_session` is handled directly by `TtcActuationHandler` via its
+  // manual task hook rather than mapped to an Actor protobuf action.
+  if (tool_request.name == ttc::kToolCloseSession) {
+    return base::unexpected(ttc::kErrorMessageInvalidToolCall);
+  }
+
   base::expected<void, std::string> validation = ValidateToolCall(tool_request);
   if (!validation.has_value()) {
     return base::unexpected(validation.error());
