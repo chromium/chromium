@@ -38,6 +38,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -1008,6 +1009,59 @@ TEST(ToolRegistryTest, GetAllToolsContainsScrollPageTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kScrollPage, &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, SiteBasedSearchToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      SiteBasedSearchToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kSiteBasedSearch);
+  EXPECT_EQ(definition->name, SiteBasedSearchToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(SiteBasedSearchToolRequest::kQueryParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(SiteBasedSearchToolRequest::kQueryParam));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsSiteBasedSearchTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  ASSERT_TRUE(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kSiteBasedSearch,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, SiteBasedSearchToolQueryParamIsString) {
+  ToolRegistry registry;
+  std::vector<const ToolDefinition*> tools =
+      registry.GetToolsByIds({ToolId::kSiteBasedSearch});
+  ASSERT_EQ(tools.size(), 1u);
+  const base::DictValue* properties =
+      tools[0]->parameters_json_schema.FindDict("properties");
+  ASSERT_TRUE(properties);
+  const base::DictValue* query_schema =
+      properties->FindDict(SiteBasedSearchToolRequest::kQueryParam);
+  ASSERT_TRUE(query_schema);
+  const std::string* type = query_schema->FindString("type");
+  ASSERT_TRUE(type);
+  EXPECT_EQ(*type, "string");
+}
+
+TEST(ToolRegistryTest, SiteBasedSearchToolRequiresQueryParam) {
+  ToolRegistry registry;
+  std::vector<const ToolDefinition*> tools =
+      registry.GetToolsByIds({ToolId::kSiteBasedSearch});
+  ASSERT_EQ(tools.size(), 1u);
+  const base::ListValue* required =
+      tools[0]->parameters_json_schema.FindList("required");
+  ASSERT_TRUE(required);
+  EXPECT_TRUE(std::ranges::contains(
+      *required, base::Value(SiteBasedSearchToolRequest::kQueryParam)));
 }
 
 TEST(ToolRegistryTest, GetAllToolsContainsMoveMouseTool) {

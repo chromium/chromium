@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_SITE_BASED_SEARCH_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_SITE_BASED_SEARCH_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -24,10 +25,20 @@ class SiteBasedSearchToolRequest : public TabToolRequest {
   SiteBasedSearchToolRequest(ActorSurfaceHandle actor_surface_handle,
                              std::string query,
                              std::string document_identifier);
+
+  // JSON argument key for the search query string parameter.
+  static constexpr std::string_view kQueryParam = "query";
+
   ~SiteBasedSearchToolRequest() override;
 
   SiteBasedSearchToolRequest(const SiteBasedSearchToolRequest&);
   SiteBasedSearchToolRequest& operator=(const SiteBasedSearchToolRequest&);
+
+  // Model-facing tool name for registry lookup.
+  static constexpr std::string_view kModelFacingName = "site_based_search";
+
+  // Returns the `ToolId::kSiteBasedSearch` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   bool RequiresUrlCheckInCurrentTab() const override;

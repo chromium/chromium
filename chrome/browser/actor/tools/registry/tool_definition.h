@@ -103,7 +103,10 @@ enum class ToolId {
   kCloseGeminiPanel = 38,
   // Opens a URL in the given tab or in a new tab in that tab's window.
   kOpenUrl = 39,
-  kMaxValue = kOpenUrl,
+  // Searches within the currently active website using its search bar or
+  // OpenSearch Description Document (OSDD) template.
+  kSiteBasedSearch = 40,
+  kMaxValue = kSiteBasedSearch,
 };
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
 // building instances with `ToolDefinitionBuilder`.

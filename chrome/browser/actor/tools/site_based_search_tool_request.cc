@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -13,6 +14,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/site_based_search_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -32,6 +36,19 @@
 
 namespace actor {
 
+namespace {
+
+// Default description for the `site_based_search` tool.
+constexpr std::string_view kSiteBasedSearchToolDescription =
+    "Searches within the currently active website using its search bar or "
+    "OpenSearch Description Document (OSDD) template.";
+
+// Description for the `query` parameter of the `site_based_search` tool.
+constexpr std::string_view kQueryParamDescription =
+    "Search terms or query string to execute on the current website.";
+
+}  // namespace
+
 SiteBasedSearchToolRequest::SiteBasedSearchToolRequest(
     ActorSurfaceHandle actor_surface_handle,
     std::string query,
@@ -46,6 +63,15 @@ SiteBasedSearchToolRequest::SiteBasedSearchToolRequest(
     const SiteBasedSearchToolRequest&) = default;
 SiteBasedSearchToolRequest& SiteBasedSearchToolRequest::operator=(
     const SiteBasedSearchToolRequest&) = default;
+
+// static
+std::optional<ToolDefinition> SiteBasedSearchToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kSiteBasedSearch, kModelFacingName,
+                               kSiteBasedSearchToolDescription)
+      .SetToolParameterSchema(ToolSchemaBuilder().AddStringProperty(
+          kQueryParam, kQueryParamDescription))
+      .Build();
+}
 
 bool SiteBasedSearchToolRequest::RequiresUrlCheckInCurrentTab() const {
   return true;
