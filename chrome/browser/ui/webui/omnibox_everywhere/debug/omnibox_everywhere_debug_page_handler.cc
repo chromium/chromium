@@ -13,18 +13,34 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_page_handler_impl.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_ui.h"
 
 namespace omnibox_everywhere_debug {
+
+namespace {
+
+void ResetProfilePromoData(Profile* profile) {
+  UserEducationInternalsPageHandlerImpl handler(
+      /*web_ui=*/nullptr, profile, mojo::NullReceiver());
+  handler.ClearFeaturePromoData(
+      feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+      base::DoNothing());
+  handler.RemoveGracePeriods(base::DoNothing());
+}
+
+}  // namespace
 
 OmniboxEverywhereDebugPageHandler::OmniboxEverywhereDebugPageHandler(
     content::WebUI* web_ui,
     Profile* profile,
     mojo::PendingRemote<mojom::Page> page,
     mojo::PendingReceiver<mojom::PageHandler> receiver)
-    : profile_(profile),
+    : web_ui_(web_ui),
+      profile_(profile),
       page_(std::move(page)),
       receiver_(this, std::move(receiver)),
       user_education_internals_page_handler_(
@@ -33,7 +49,8 @@ OmniboxEverywhereDebugPageHandler::OmniboxEverywhereDebugPageHandler(
               profile,
               mojo::NullReceiver())) {
   CHECK(profile_);
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     pref_change_registrar_.Init(local_state);
     pref_change_registrar_.Add(
@@ -59,7 +76,8 @@ OmniboxEverywhereDebugPageHandler::~OmniboxEverywhereDebugPageHandler() =
     default;
 
 void OmniboxEverywhereDebugPageHandler::SetBackgroundModeEnabled(bool enabled) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     local_state->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereBackgroundMode, enabled);
@@ -68,7 +86,8 @@ void OmniboxEverywhereDebugPageHandler::SetBackgroundModeEnabled(bool enabled) {
 
 void OmniboxEverywhereDebugPageHandler::GetBackgroundModeEnabled(
     GetBackgroundModeEnabledCallback callback) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   bool enabled =
       local_state
           ? local_state->GetBoolean(
@@ -79,7 +98,8 @@ void OmniboxEverywhereDebugPageHandler::GetBackgroundModeEnabled(
 
 void OmniboxEverywhereDebugPageHandler::SetLaunchOnStartupEnabled(
     bool enabled) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     local_state->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereLaunchOnStartup, enabled);
@@ -88,7 +108,8 @@ void OmniboxEverywhereDebugPageHandler::SetLaunchOnStartupEnabled(
 
 void OmniboxEverywhereDebugPageHandler::GetLaunchOnStartupEnabled(
     GetLaunchOnStartupEnabledCallback callback) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   bool enabled =
       local_state
           ? local_state->GetBoolean(
@@ -98,7 +119,8 @@ void OmniboxEverywhereDebugPageHandler::GetLaunchOnStartupEnabled(
 }
 
 void OmniboxEverywhereDebugPageHandler::SetHotkeyEnabled(bool enabled) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     local_state->SetBoolean(omnibox_everywhere::prefs::kHotkeyEnabled, enabled);
   }
@@ -106,7 +128,8 @@ void OmniboxEverywhereDebugPageHandler::SetHotkeyEnabled(bool enabled) {
 
 void OmniboxEverywhereDebugPageHandler::GetHotkeyEnabled(
     GetHotkeyEnabledCallback callback) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   bool enabled =
       local_state
           ? local_state->GetBoolean(omnibox_everywhere::prefs::kHotkeyEnabled)
@@ -115,7 +138,8 @@ void OmniboxEverywhereDebugPageHandler::GetHotkeyEnabled(
 }
 
 void OmniboxEverywhereDebugPageHandler::SetEphemeralModelEnabled(bool enabled) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     local_state->SetBoolean(
         omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, enabled);
@@ -124,7 +148,8 @@ void OmniboxEverywhereDebugPageHandler::SetEphemeralModelEnabled(bool enabled) {
 
 void OmniboxEverywhereDebugPageHandler::GetEphemeralModelEnabled(
     GetEphemeralModelEnabledCallback callback) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   bool enabled =
       local_state
           ? local_state->GetBoolean(
@@ -149,17 +174,22 @@ void OmniboxEverywhereDebugPageHandler::InvokeOmniboxEverywhere(
           cpp_source = omnibox_everywhere::InvocationSource::kProfilePicker;
           break;
       }
-      controller->OnInvoke(cpp_source, profile_);
+      Profile* profile = profile_;
+      controller->OnInvoke(cpp_source, profile);
     }
   }
 }
 
 void OmniboxEverywhereDebugPageHandler::ShowLensIph() {
-  if (user_education_internals_page_handler_) {
-    user_education_internals_page_handler_->ShowFeaturePromo(
-        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
-        base::DoNothing());
+  if (!user_education_internals_page_handler_ || !web_ui_ ||
+      !web_ui_->GetWebContents() ||
+      !BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_ui_->GetWebContents())) {
+    return;
   }
+  user_education_internals_page_handler_->ShowFeaturePromo(
+      feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+      base::DoNothing());
 }
 
 void OmniboxEverywhereDebugPageHandler::CreateStartMenuShortcut(
@@ -192,47 +222,39 @@ void OmniboxEverywhereDebugPageHandler::PinToTaskbar(
 
 void OmniboxEverywhereDebugPageHandler::ResetProfilePrefs(
     ResetProfilePrefsCallback callback) {
-  if (profile_->IsRegularProfile()) {
-    omnibox_everywhere::prefs::ResetProfilePrefs(profile_);
-  }
-  if (user_education_internals_page_handler_) {
-    user_education_internals_page_handler_->ClearFeaturePromoData(
-        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
-        base::DoNothing());
-    user_education_internals_page_handler_->RemoveGracePeriods(
-        base::DoNothing());
+  // Cache `profile_` locally before mutating preferences: clearing profile
+  // preferences (such as `kOmniboxEverywhereShowShortcuts`) can synchronously
+  // tear down a hidden Omnibox Everywhere WebContents and destroy `this`.
+  Profile* profile = profile_;
+  ResetProfilePromoData(profile);
+  if (profile->IsRegularProfile()) {
+    omnibox_everywhere::prefs::ResetProfilePrefs(profile);
   }
   std::move(callback).Run(true);
 }
 
 void OmniboxEverywhereDebugPageHandler::ResetAllPrefs(
     ResetAllPrefsCallback callback) {
+  // Cache `profile_` locally before mutating preferences: clearing profile or
+  // Local State preferences can synchronously tear down the Omnibox Everywhere
+  // WebContents and destroy `this`.
+  Profile* profile = profile_;
   if (g_browser_process && g_browser_process->profile_manager()) {
     for (Profile* loaded_profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
       if (!loaded_profile->IsRegularProfile()) {
         continue;
       }
+      ResetProfilePromoData(loaded_profile);
       omnibox_everywhere::prefs::ResetProfilePrefs(loaded_profile);
-      UserEducationInternalsPageHandlerImpl handler(
-          /*web_ui=*/nullptr, loaded_profile, mojo::NullReceiver());
-      handler.ClearFeaturePromoData(
-          feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
-          base::DoNothing());
-      handler.RemoveGracePeriods(base::DoNothing());
     }
-  } else if (profile_->IsRegularProfile()) {
-    omnibox_everywhere::prefs::ResetProfilePrefs(profile_);
-    if (user_education_internals_page_handler_) {
-      user_education_internals_page_handler_->ClearFeaturePromoData(
-          feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
-          base::DoNothing());
-      user_education_internals_page_handler_->RemoveGracePeriods(
-          base::DoNothing());
-    }
+  } else if (profile->IsRegularProfile()) {
+    ResetProfilePromoData(profile);
+    omnibox_everywhere::prefs::ResetProfilePrefs(profile);
   }
 
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (local_state) {
     omnibox_everywhere::prefs::ResetLocalStatePrefs(local_state);
   }
@@ -242,7 +264,8 @@ void OmniboxEverywhereDebugPageHandler::ResetAllPrefs(
 
 void OmniboxEverywhereDebugPageHandler::OnPrefChanged(
     const std::string& pref_name) {
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
   if (!local_state || !page_.is_bound()) {
     return;
   }
