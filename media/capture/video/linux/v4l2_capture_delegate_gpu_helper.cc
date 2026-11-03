@@ -6,9 +6,9 @@
 
 #include <cstdint>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -164,10 +164,9 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
   }
 
   int status = ConvertCaptureDataToNV12(
-      sample.data(), sample.size(), capture_format, dimensions,
-      data_color_space, rotation,
-      scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kY).data(),
-      scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kUV).data(),
+      sample, capture_format, dimensions, data_color_space, rotation,
+      scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kY),
+      scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kUV),
       scoped_mapping->Stride(VideoFrame::Plane::kY),
       scoped_mapping->Stride(VideoFrame::Plane::kUV));
 
@@ -188,14 +187,13 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
 }
 
 int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
-    const uint8_t* sample,
-    size_t sample_size,
+    base::span<const uint8_t> sample,
     const VideoCaptureFormat& capture_format,
     const gfx::Size& dimensions,
     const gfx::ColorSpace& data_color_space,
     int rotation,
-    uint8_t* dst_y,
-    uint8_t* dst_uv,
+    base::span<uint8_t> dst_y,
+    base::span<uint8_t> dst_uv,
     int dst_stride_y,
     int dst_stride_uv) {
   const libyuv::FourCC fourcc =
@@ -203,7 +201,7 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
   const libyuv::RotationMode rotation_mode = TranslateRotation(rotation);
   if (rotation_mode == libyuv::RotationMode::kRotate0 &&
       IsNV12ConvertSupported(fourcc)) {
-    return FastConvertToNV12(sample, sample_size, capture_format, dst_y, dst_uv,
+    return FastConvertToNV12(sample, capture_format, dst_y, dst_uv,
                              dst_stride_y, dst_stride_uv);
   }
 
@@ -246,46 +244,49 @@ int V4L2CaptureDelegateGpuHelper::ConvertCaptureDataToNV12(
   const int crop_width = width & ~1;
   const int crop_height = height & ~1;
   int status = libyuv::ConvertToI420(
-      sample, sample_size, i420_y.data(), i420_stride_y, i420_u.data(),
+      sample.data(), sample.size(), i420_y.data(), i420_stride_y, i420_u.data(),
       i420_stride_u, i420_v.data(), i420_stride_v, 0, 0, width, height,
       crop_width, crop_height, rotation_mode, fourcc);
   if (status != 0) {
     return status;
   }
 
-  status = libyuv::I420ToNV12(
-      i420_y.data(), i420_stride_y, i420_u.data(), i420_stride_u, i420_v.data(),
-      i420_stride_v, dst_y, dst_stride_y, dst_uv, dst_stride_uv, width, height);
+  status = libyuv::I420ToNV12(i420_y.data(), i420_stride_y, i420_u.data(),
+                              i420_stride_u, i420_v.data(), i420_stride_v,
+                              dst_y.data(), dst_stride_y, dst_uv.data(),
+                              dst_stride_uv, width, height);
 
   return status;
 }
 
 int V4L2CaptureDelegateGpuHelper::FastConvertToNV12(
-    const uint8_t* sample,
-    size_t sample_size,
+    base::span<const uint8_t> sample,
     const VideoCaptureFormat& capture_format,
-    uint8_t* dst_y,
-    uint8_t* dst_uv,
+    base::span<uint8_t> dst_y,
+    base::span<uint8_t> dst_uv,
     int dst_stride_y,
     int dst_stride_uv) {
   const int src_width = capture_format.frame_size.width();
   const int src_height = capture_format.frame_size.height();
-  const uint8_t* src_uv = UNSAFE_TODO(sample + (src_width * src_height));
 
   const libyuv::FourCC fourcc =
       VideoCaptureFormatToLibyuvFourcc(capture_format);
   switch (libyuv::CanonicalFourCC(fourcc)) {
     case libyuv::FOURCC_YUY2:
-      return libyuv::YUY2ToNV12(sample, src_width * 2, dst_y, dst_stride_y,
-                                dst_uv, dst_stride_uv, src_width, src_height);
-    case libyuv::FOURCC_MJPG:
-      return libyuv::MJPGToNV12(sample, sample_size, dst_y, dst_stride_y,
-                                dst_uv, dst_stride_uv, src_width, src_height,
+      return libyuv::YUY2ToNV12(sample.data(), src_width * 2, dst_y.data(),
+                                dst_stride_y, dst_uv.data(), dst_stride_uv,
                                 src_width, src_height);
-    case libyuv::FOURCC_NV12:
-      return libyuv::NV12Copy(sample, src_width, src_uv, src_width, dst_y,
-                              dst_stride_y, dst_uv, dst_stride_uv, src_width,
-                              src_height);
+    case libyuv::FOURCC_MJPG:
+      return libyuv::MJPGToNV12(sample.data(), sample.size(), dst_y.data(),
+                                dst_stride_y, dst_uv.data(), dst_stride_uv,
+                                src_width, src_height, src_width, src_height);
+    case libyuv::FOURCC_NV12: {
+      auto [src_y, src_uv] = sample.split_at(
+          base::CheckMul(src_width, src_height).ValueOrDie<size_t>());
+      return libyuv::NV12Copy(src_y.data(), src_width, src_uv.data(), src_width,
+                              dst_y.data(), dst_stride_y, dst_uv.data(),
+                              dst_stride_uv, src_width, src_height);
+    }
     default:
       return -1;
   }

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace media {
@@ -42,24 +43,22 @@ class CAPTURE_EXPORT V4L2CaptureDelegateGpuHelper {
                              int frame_feedback_id = 0);
 
  private:
-  int ConvertCaptureDataToNV12(const uint8_t* sample,
-                               size_t sample_size,
+  int ConvertCaptureDataToNV12(base::span<const uint8_t> sample,
                                const VideoCaptureFormat& format,
                                const gfx::Size& dimensions,
                                const gfx::ColorSpace& data_color_space,
                                int rotation,
-                               uint8_t* dst_y,
-                               uint8_t* dst_uv,
+                               base::span<uint8_t> dst_y,
+                               base::span<uint8_t> dst_uv,
                                int dst_stride_y,
                                int dst_stride_uv);
 
   // This method directly converts the sample data into `NV12` format when the
   // input `VideoCaptureFormat` supported.
-  int FastConvertToNV12(const uint8_t* sample,
-                        size_t sample_size,
+  int FastConvertToNV12(base::span<const uint8_t> sample,
                         const VideoCaptureFormat& format,
-                        uint8_t* dst_y,
-                        uint8_t* dst_uv,
+                        base::span<uint8_t> dst_y,
+                        base::span<uint8_t> dst_uv,
                         int dst_stride_y,
                         int dst_stride_uv);
 
