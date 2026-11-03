@@ -31,6 +31,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/compositor.h"
@@ -257,7 +258,7 @@ void NativeWidgetMac::GetWindowFrameTitlebarHeight(
 
 bool NativeWidgetMac::WillExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
   // This is supported only by subclasses in chrome/browser/ui.
   NOTIMPLEMENTED();
@@ -266,7 +267,7 @@ bool NativeWidgetMac::WillExecuteCommand(
 
 bool NativeWidgetMac::ExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder) {
   // This is supported only by subclasses in chrome/browser/ui.
   NOTIMPLEMENTED();

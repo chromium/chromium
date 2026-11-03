@@ -7,14 +7,13 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-namespace ui {
-namespace test {
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
-TestWebContentsHandler::TestWebContentsHandler() {
-}
+namespace ui::test {
 
-TestWebContentsHandler::~TestWebContentsHandler() {
-}
+TestWebContentsHandler::TestWebContentsHandler() = default;
+
+TestWebContentsHandler::~TestWebContentsHandler() = default;
 
 content::WebContents* TestWebContentsHandler::OpenURLFromTab(
     content::BrowserContext* context,
@@ -30,7 +29,7 @@ void TestWebContentsHandler::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {}
 
@@ -39,5 +38,4 @@ void TestWebContentsHandler::RunFileChooser(
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {}
 
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test

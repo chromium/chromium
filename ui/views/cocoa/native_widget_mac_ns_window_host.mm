@@ -36,6 +36,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
@@ -234,15 +235,16 @@ class BridgedNativeWidgetHostDummy
         remote_cocoa::mojom::ValidateUserInterfaceItemResult::New();
     std::move(callback).Run(std::move(result));
   }
-  void WillExecuteCommand(int32_t command,
-                          WindowOpenDisposition window_open_disposition,
-                          bool is_before_first_responder,
-                          ExecuteCommandCallback callback) override {
+  void WillExecuteCommand(
+      int32_t command,
+      ui::mojom::WindowOpenDisposition window_open_disposition,
+      bool is_before_first_responder,
+      ExecuteCommandCallback callback) override {
     bool will_execute = false;
     std::move(callback).Run(will_execute);
   }
   void ExecuteCommand(int32_t command,
-                      WindowOpenDisposition window_open_disposition,
+                      ui::mojom::WindowOpenDisposition window_open_disposition,
                       bool is_before_first_responder,
                       ExecuteCommandCallback callback) override {
     bool was_executed = false;
@@ -1984,7 +1986,7 @@ bool NativeWidgetMacNSWindowHost::ValidateUserInterfaceItem(
 
 bool NativeWidgetMacNSWindowHost::WillExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder,
     bool* will_execute) {
   *will_execute = native_widget_mac_->WillExecuteCommand(
@@ -1994,7 +1996,7 @@ bool NativeWidgetMacNSWindowHost::WillExecuteCommand(
 
 bool NativeWidgetMacNSWindowHost::ExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder,
     bool* was_executed) {
   *was_executed = native_widget_mac_->ExecuteCommand(
@@ -2171,7 +2173,7 @@ void NativeWidgetMacNSWindowHost::ValidateUserInterfaceItem(
 
 void NativeWidgetMacNSWindowHost::WillExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder,
     ExecuteCommandCallback callback) {
   bool will_execute = false;
@@ -2182,7 +2184,7 @@ void NativeWidgetMacNSWindowHost::WillExecuteCommand(
 
 void NativeWidgetMacNSWindowHost::ExecuteCommand(
     int32_t command,
-    WindowOpenDisposition window_open_disposition,
+    ui::mojom::WindowOpenDisposition window_open_disposition,
     bool is_before_first_responder,
     ExecuteCommandCallback callback) {
   bool was_executed = false;

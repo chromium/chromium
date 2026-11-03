@@ -8,23 +8,24 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace ui {
 
-// Retrieves the WindowOpenDisposition used to open a link from a user gesture
-// represented by |event|. For example, a Cmd+Click would mean open the
-// associated link in a background tab.
+// Retrieves the `ui::mojom::WindowOpenDisposition` used to open a link from a
+// user gesture represented by `event`. For example, a Cmd+Click would mean open
+// the associated link in a background tab.
 COMPONENT_EXPORT(UI_BASE)
-WindowOpenDisposition WindowOpenDispositionFromNSEvent(NSEvent* event);
+ui::mojom::WindowOpenDisposition WindowOpenDispositionFromNSEvent(
+    NSEvent* event);
 
-// Retrieves the WindowOpenDisposition used to open a link from a user gesture
-// represented by |event|, but instead use the modifier flags given by |flags|,
-// which is the same format as |-NSEvent modifierFlags|. This allows
+// Retrieves the `ui::mojom::WindowOpenDisposition` used to open a link from a
+// user gesture represented by `event`, but instead use the modifier flags given
+// by `flags`, which is the same format as `-NSEvent modifierFlags`. This allows
 // substitution of the modifiers without having to create a new event from
 // scratch.
 COMPONENT_EXPORT(UI_BASE)
-WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(
+ui::mojom::WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(
     NSEvent* event,
     NSUInteger flags);
 

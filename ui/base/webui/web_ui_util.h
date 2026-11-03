@@ -12,8 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/window_open_disposition.h"
 
 class GURL;
 class SkBitmap;
@@ -37,8 +37,9 @@ std::string GetPngDataUrl(base::span<const uint8_t> data);
 // an integer button and booleans alt key, ctrl key, meta key, and shift key
 // (in that order), starting at |start_index|.
 COMPONENT_EXPORT(UI_BASE)
-WindowOpenDisposition GetDispositionFromClick(const base::ListValue& args,
-                                              size_t start_index);
+ui::mojom::WindowOpenDisposition GetDispositionFromClick(
+    const base::ListValue& args,
+    size_t start_index);
 
 // Parse a formatted scale factor string into float and sets to |scale_factor|.
 COMPONENT_EXPORT(UI_BASE)

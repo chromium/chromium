@@ -4,17 +4,20 @@
 
 #include "ui/base/cocoa/cocoa_base_utils.h"
 
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 
 namespace ui {
 
-WindowOpenDisposition WindowOpenDispositionFromNSEvent(NSEvent* event) {
+ui::mojom::WindowOpenDisposition WindowOpenDispositionFromNSEvent(
+    NSEvent* event) {
   return WindowOpenDispositionFromNSEventWithFlags(event, event.modifierFlags);
 }
 
-WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(
-    NSEvent* event, NSUInteger modifiers) {
+ui::mojom::WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(
+    NSEvent* event,
+    NSUInteger modifiers) {
   int event_flags = EventFlagsFromNSEventWithModifiers(event, modifiers);
   return DispositionFromEventFlags(event_flags);
 }

@@ -5,17 +5,18 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 #include "build/build_config.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/event_constants.h"
 
 namespace ui {
 
-WindowOpenDisposition DispositionFromClick(
+ui::mojom::WindowOpenDisposition DispositionFromClick(
     bool middle_button,
     bool alt_key,
     bool ctrl_key,
     bool meta_key,
     bool shift_key,
-    WindowOpenDisposition disposition_for_current_tab) {
+    ui::mojom::WindowOpenDisposition disposition_for_current_tab) {
   // MacOS uses meta key (Command key) to spawn new tabs.
 #if BUILDFLAG(IS_APPLE)
   const bool new_tab_modifier = middle_button || meta_key;
@@ -25,22 +26,24 @@ WindowOpenDisposition DispositionFromClick(
   const bool split_view_modifier = ctrl_key;
 #endif
   if (split_view_modifier && alt_key && !shift_key) {
-    return WindowOpenDisposition::kNewSplitView;
+    return ui::mojom::WindowOpenDisposition::kNewSplitView;
   }
   if (new_tab_modifier) {
-    return shift_key ? WindowOpenDisposition::kNewForegroundTab
-                     : WindowOpenDisposition::kNewBackgroundTab;
+    return shift_key ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                     : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   }
-  if (shift_key)
-    return WindowOpenDisposition::kNewWindow;
-  if (alt_key)
-    return WindowOpenDisposition::kSaveToDisk;
+  if (shift_key) {
+    return ui::mojom::WindowOpenDisposition::kNewWindow;
+  }
+  if (alt_key) {
+    return ui::mojom::WindowOpenDisposition::kSaveToDisk;
+  }
   return disposition_for_current_tab;
 }
 
-WindowOpenDisposition DispositionFromEventFlags(
+ui::mojom::WindowOpenDisposition DispositionFromEventFlags(
     int event_flags,
-    WindowOpenDisposition disposition_for_current_tab) {
+    ui::mojom::WindowOpenDisposition disposition_for_current_tab) {
   return DispositionFromClick((event_flags & ui::EF_MIDDLE_MOUSE_BUTTON) != 0,
                               (event_flags & ui::EF_ALT_DOWN) != 0,
                               (event_flags & ui::EF_CONTROL_DOWN) != 0,

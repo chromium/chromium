@@ -43,6 +43,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
@@ -704,9 +705,9 @@ TEST_F(NativeWidgetMacTest, NotImplemented) {
           gfx::NativeWindow(native_parent));
 
   EXPECT_FALSE(window_host->native_widget_mac()->WillExecuteCommand(
-      5001, WindowOpenDisposition::kCurrentTab, true));
+      5001, ui::mojom::WindowOpenDisposition::kCurrentTab, true));
   EXPECT_FALSE(window_host->native_widget_mac()->ExecuteCommand(
-      5001, WindowOpenDisposition::kCurrentTab, true));
+      5001, ui::mojom::WindowOpenDisposition::kCurrentTab, true));
 
   [native_parent close];
 }

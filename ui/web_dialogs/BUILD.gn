@@ -23,6 +23,7 @@ component("web_dialogs") {
     "//content/public/common",
     "//skia",
     "//ui/base/interaction",
+    "//ui/base/mojom",
     "//ui/webui",
     "//url",
   ]

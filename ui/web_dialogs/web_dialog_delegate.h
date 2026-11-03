@@ -15,7 +15,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
 
 class GURL;

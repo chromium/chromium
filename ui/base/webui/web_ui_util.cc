@@ -22,10 +22,10 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font.h"
@@ -76,8 +76,9 @@ std::string GetPngDataUrl(base::span<const uint8_t> data) {
   return output;
 }
 
-WindowOpenDisposition GetDispositionFromClick(const base::ListValue& list,
-                                              size_t start_index) {
+ui::mojom::WindowOpenDisposition GetDispositionFromClick(
+    const base::ListValue& list,
+    size_t start_index) {
   double button = list[start_index].GetDouble();
   bool alt_key = list[start_index + 1].GetBool();
   bool ctrl_key = list[start_index + 2].GetBool();

@@ -56,6 +56,7 @@ component("webview") {
   public_deps = [
     "//base",
     "//content/public/browser",
+    "//ui/base/mojom",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",

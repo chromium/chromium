@@ -13,8 +13,8 @@
 #include "base/scoped_observation.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -111,18 +111,20 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   // Returns in |will_execute| whether or not ExecuteCommand() will execute
   // the chrome command |command| with |window_open_disposition| and
   // |is_before_first_responder|.
-  virtual bool WillExecuteCommand(int32_t command,
-                                  WindowOpenDisposition window_open_disposition,
-                                  bool is_before_first_responder);
+  virtual bool WillExecuteCommand(
+      int32_t command,
+      ui::mojom::WindowOpenDisposition window_open_disposition,
+      bool is_before_first_responder);
 
   // Execute the chrome command |command| with |window_open_disposition|. If
   // |is_before_first_responder| then only call ExecuteCommand if the command
   // is reserved and extension shortcut handling is not suspended. Returns in
   // |was_executed| whether or not ExecuteCommand was called (regardless of what
   // the return value for ExecuteCommand was).
-  virtual bool ExecuteCommand(int32_t command,
-                              WindowOpenDisposition window_open_disposition,
-                              bool is_before_first_responder);
+  virtual bool ExecuteCommand(
+      int32_t command,
+      ui::mojom::WindowOpenDisposition window_open_disposition,
+      bool is_before_first_responder);
 
   ui::Compositor* GetCompositor() {
     return const_cast<ui::Compositor*>(
