@@ -9583,6 +9583,15 @@ bool Element::IsVideoAd() const {
   return false;
 }
 
+bool Element::IsStickyAd() const {
+  if (const NodeRareData* data = RareData()) {
+    if (const auto* monitor = data->GetDisplayAdElementMonitor()) {
+      return monitor->IsStickyAd();
+    }
+  }
+  return false;
+}
+
 bool Element::IsOverlayPopupAd() const {
   if (const NodeRareData* data = RareData()) {
     if (const auto* monitor = data->GetDisplayAdElementMonitor()) {

@@ -1963,6 +1963,10 @@ class CORE_EXPORT Element : public ContainerNode {
   // Returns true if the element is an ad-related video stream.
   bool IsVideoAd() const;
 
+  // Returns true if the element is an ad that has been detected to stay in
+  // place in the viewport while the page scrolls.
+  bool IsStickyAd() const;
+
   // Returns true if the element is an overlay popup ad.
   bool IsOverlayPopupAd() const;
 

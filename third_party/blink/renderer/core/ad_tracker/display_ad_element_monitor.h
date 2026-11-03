@@ -60,6 +60,8 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool IsVideoAd() const { return is_video_ad_; }
   void UpdateToVideoAd();
 
+  bool IsStickyAd() const { return is_sticky_ad_; }
+
   bool IsOverlayPopupAd() const { return is_overlay_popup_ad_; }
   void SetIsOverlayPopupAd();
 

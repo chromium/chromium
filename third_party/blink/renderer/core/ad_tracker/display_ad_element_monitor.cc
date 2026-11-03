@@ -615,6 +615,7 @@ void DisplayAdElementMonitor::UpdateToStickyAd(
 
   Placement old_placement = std::exchange(placement_, Placement::kSticky);
   is_sticky_ad_ = true;
+  InvalidatePaintForAdLabel();
 
   // Determine if the newly sticky ad matches any sub-types (e.g., "large
   // sticky ad", "sticky video ad", "sticky pop-out ad") to record metrics and

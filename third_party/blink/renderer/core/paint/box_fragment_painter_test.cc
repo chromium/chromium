@@ -979,4 +979,68 @@ TEST_P(BoxFragmentPainterTest, PaintCombinedBadgeForPopupVideoAd) {
   EXPECT_EQ(popup_video_label.height(), popup_label.height());
 }
 
+// Unlike popup and video, there is no setter for stickiness: it is detected by
+// DisplayAdElementMonitor from scrolling. So this drives the real detection, as
+// DisplayAdElementMonitorTest.LargeStickyAdDetected does: a fixed-position ad
+// that stays put while the page scrolls by more than the ad's height.
+TEST_P(BoxFragmentPainterTest, StickyBadgeAddedWhenAdBecomesSticky) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div style="height: 2000px;"></div>
+    <div id="ad" style="position: fixed; left: 0; top: 0;
+                        width: 100px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* ad = GetDocument().getElementById(AtomicString("ad"));
+  ASSERT_TRUE(ad);
+  ad->SetIsAdRelated(NoProvenance{});
+
+  // The first update also records the ad's initial position as the anchor for
+  // sticky detection.
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(ad->IsStickyAd());
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_FALSE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 0);
+  }
+
+  // Scroll by more than the ad's height (100px). The fixed ad stays in place,
+  // so the monitor's post-lifecycle check flags it as sticky and invalidates
+  // paint; one more update then repaints the highlight with the label. Check
+  // the invalidation flag directly. The monitor sets it after this update has
+  // painted, so it is still pending here, and
+  // PaintRecordBuilder below paints without a display item cache, so it would
+  // show the label even without invalidation.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(ad->IsStickyAd());
+  EXPECT_TRUE(ad->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kAdLabelBackgroundColor));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
+  }
+}
+
 }  // namespace blink

@@ -673,13 +673,17 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
                      SkBlendMode::kHardLight);
   }
 
-  // Ads detected as a notable kind get an additional label in the top-right
-  // corner of the highlight listing those kinds, e.g. "popup" or "popup,
-  // video". An ad of several kinds gets one combined label, not one per kind.
+  // Ads detected as a notable kind (popup, sticky, video) get an additional
+  // label in the top-right corner of the highlight listing those kinds, e.g.
+  // "sticky" or "popup, video". An ad of several kinds gets one combined label,
+  // not one per kind.
   if (base::FeatureList::IsEnabled(features::kAdHighlightLabel)) {
     AdLabelTypes labels;
     if (element->IsOverlayPopupAd()) {
       labels.Put(AdLabelType::kPopup);
+    }
+    if (element->IsStickyAd()) {
+      labels.Put(AdLabelType::kSticky);
     }
     if (element->IsVideoAd()) {
       labels.Put(AdLabelType::kVideo);
