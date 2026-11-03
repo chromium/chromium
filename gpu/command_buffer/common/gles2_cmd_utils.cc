@@ -1675,24 +1675,22 @@ std::string GLES2Util::GetStringEnum(uint32_t value) {
 }
 
 std::string GLES2Util::GetStringError(uint32_t value) {
-  static EnumToString string_table[] = {
-    { GL_NONE, "GL_NONE" },
+  static const EnumToString string_table[] = {
+      {GL_NONE, "GL_NONE"},
   };
-  return GLES2Util::GetQualifiedEnumString(string_table,
-                                           std::size(string_table), value);
+  return GLES2Util::GetQualifiedEnumString(string_table, value);
 }
 
 std::string GLES2Util::GetStringBool(uint32_t value) {
   return value ? "GL_TRUE" : "GL_FALSE";
 }
 
-std::string GLES2Util::GetQualifiedEnumString(const EnumToString* table,
-                                              size_t count,
-                                              uint32_t value) {
-  for (const EnumToString* end = UNSAFE_TODO(table + count); table < end;
-       UNSAFE_TODO(++table)) {
-    if (table->value == value) {
-      return table->name;
+std::string GLES2Util::GetQualifiedEnumString(
+    base::span<const EnumToString> table,
+    uint32_t value) {
+  for (const EnumToString& entry : table) {
+    if (entry.value == value) {
+      return entry.name;
     }
   }
   return GetStringEnum(value);

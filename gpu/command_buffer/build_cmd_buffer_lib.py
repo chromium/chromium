@@ -7957,8 +7957,7 @@ extern const NameToFunc g_gles2_function_table[] = {
               f.write('    { %s, "%s" },\n' % (value, value))
             f.write(
               """  };
-  return %sUtil::GetQualifiedEnumString(
-      string_table, std::size(string_table), value);
+  return %sUtil::GetQualifiedEnumString(string_table, value);
 }
 
 """
@@ -7966,8 +7965,7 @@ extern const NameToFunc g_gles2_function_table[] = {
             )
           else:
             f.write(
-              """  return %sUtil::GetQualifiedEnumString(
-      nullptr, 0, value);
+              """  return %sUtil::GetStringEnum(value);
 }
 
 """
