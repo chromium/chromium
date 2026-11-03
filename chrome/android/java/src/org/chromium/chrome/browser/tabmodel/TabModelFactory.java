@@ -40,7 +40,7 @@ public class TabModelFactory {
             TabRemover tabRemover,
             boolean supportUndo,
             @TabModelType int tabModelType,
-            TabUngrouperFactory tabUngrouperFactory,
+            TabUngrouper tabUngrouper,
             @SupportedProfileType int supportedProfileType) {
         if (ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()
                 && supportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
@@ -60,7 +60,7 @@ public class TabModelFactory {
                 modelDelegate,
                 asyncTabParamsManager,
                 tabRemover,
-                tabUngrouperFactory,
+                tabUngrouper,
                 supportUndo);
     }
 
@@ -80,7 +80,7 @@ public class TabModelFactory {
             @Nullable @CustomTabProfileType Integer customTabProfileType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory,
+            TabUngrouper tabUngrouper,
             @SupportedProfileType int supportedProfileType) {
         if (ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()
                 && supportedProfileType == SupportedProfileType.REGULAR) {
@@ -99,7 +99,7 @@ public class TabModelFactory {
                 customTabProfileType,
                 modelDelegate,
                 tabRemover,
-                tabUngrouperFactory);
+                tabUngrouper);
     }
 
     /** Creates an empty {@link IncognitoTabModelInternal}. */
@@ -120,7 +120,7 @@ public class TabModelFactory {
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory,
+            TabUngrouper tabUngrouper,
             boolean supportUndo) {
         return new TabCollectionTabModelImpl(
                 profile,
@@ -135,8 +135,7 @@ public class TabModelFactory {
                 modelDelegate,
                 asyncTabParamsManager,
                 tabRemover,
-                /* isIncognitoBranded= */ false,
-                tabUngrouperFactory,
+                tabUngrouper,
                 () -> createBatch(profile),
                 supportUndo);
     }
@@ -153,7 +152,7 @@ public class TabModelFactory {
             @Nullable @CustomTabProfileType Integer customTabProfileType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabUngrouper tabUngrouper) {
         IncognitoTabModelImplCreator incognitoCreator =
                 new IncognitoTabModelImplCreator(
                         profileProvider,
@@ -167,7 +166,7 @@ public class TabModelFactory {
                         customTabProfileType,
                         modelDelegate,
                         tabRemover,
-                        tabUngrouperFactory);
+                        tabUngrouper);
         return new IncognitoTabModelImpl(incognitoCreator);
     }
 }

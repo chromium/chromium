@@ -27,7 +27,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabModelDelegate mModelDelegate;
     private final TabRemover mTabRemover;
-    private final TabUngrouperFactory mTabUngrouperFactory;
+    private final TabUngrouper mTabUngrouper;
 
     private final @ActivityType int mActivityType;
     private final @Nullable @CustomTabProfileType Integer mCustomTabProfileType;
@@ -50,7 +50,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param customTabProfileType Profile type of the custom tab, or null if not a custom tab.
      * @param modelDelegate Delegate to handle external dependencies and interactions.
      * @param tabRemover Delegate to handle removing tabs tabs.
-     * @param tabUngrouperFactory Factory to create a {@link TabUngrouper}.
+     * @param tabUngrouper The {@link TabUngrouper} used to ungroup tabs.
      */
     IncognitoTabModelImplCreator(
             ProfileProvider profileProvider,
@@ -64,7 +64,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
             @Nullable @CustomTabProfileType Integer customTabProfileType,
             TabModelDelegate modelDelegate,
             TabRemover tabRemover,
-            TabUngrouperFactory tabUngrouperFactory) {
+            TabUngrouper tabUngrouper) {
         mProfileProvider = profileProvider;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
@@ -76,7 +76,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         mCustomTabProfileType = customTabProfileType;
         mModelDelegate = modelDelegate;
         mTabRemover = tabRemover;
-        mTabUngrouperFactory = tabUngrouperFactory;
+        mTabUngrouper = tabUngrouper;
     }
 
     @Override
@@ -95,8 +95,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                         mModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ true,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> createBatch(mProfileProvider.getOriginalProfile()),
                         /* supportUndo= */ false);
         return model;

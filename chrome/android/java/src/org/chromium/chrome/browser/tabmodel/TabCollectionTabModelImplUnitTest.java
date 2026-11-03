@@ -86,7 +86,7 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private AsyncTabParamsManager mAsyncTabParamsManager;
     @Mock private TabRemover mTabRemover;
-    @Mock private TabUngrouperFactory mTabUngrouperFactory;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabModelObserver mTabModelObserver;
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
@@ -235,8 +235,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> mScopedStorageBatch,
                         /* supportUndo= */ false);
         mTabModel.addObserver(mTabModelObserver);
@@ -587,8 +586,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> mScopedStorageBatch,
                         /* supportUndo= */ true);
 
@@ -616,8 +614,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ true,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> mScopedStorageBatch,
                         /* supportUndo= */ false);
 
@@ -658,8 +655,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> mScopedStorageBatch,
                         false);
 
@@ -716,8 +712,7 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        mTabUngrouperFactory,
+                        mTabUngrouper,
                         () -> mScopedStorageBatch,
                         false);
 
@@ -962,8 +957,7 @@ public class TabCollectionTabModelImplUnitTest {
                 tabModelDelegate,
                 mAsyncTabParamsManager,
                 null,
-                /* isIncognitoBranded= */ false,
-                mTabUngrouperFactory,
+                mTabUngrouper,
                 () -> batch,
                 false);
     }

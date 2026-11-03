@@ -153,18 +153,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                 mModalDialogManager != null
                         ? new TabRemoverImpl(mContext, mModalDialogManager, regularTabModelSupplier)
                         : new PassthroughTabRemover(regularTabModelSupplier);
-        TabUngrouperFactory tabUngrouperFactory =
-                new TabUngrouperFactory() {
-                    @Override
-                    public TabUngrouper create(
-                            boolean isIncognitoBranded,
-                            Supplier<@Nullable TabModel> tabModelSupplier) {
-                        return (isIncognitoBranded || mModalDialogManager == null)
-                                ? new PassthroughTabUngrouper(tabModelSupplier)
-                                : new TabUngrouperImpl(
-                                        mContext, mModalDialogManager, tabModelSupplier);
-                    }
-                };
+        TabUngrouper regularTabUngrouper =
+                mModalDialogManager != null
+                        ? new TabUngrouperImpl(
+                                mContext, mModalDialogManager, regularTabModelSupplier)
+                        : new PassthroughTabUngrouper(regularTabModelSupplier);
         TabModelInternal normalModel =
                 TabModelFactory.createTabModel(
                         profileProvider.getOriginalProfile(),
@@ -180,7 +173,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                         regularTabRemover,
                         mIsUndoSupported,
                         mTabModelType,
-                        tabUngrouperFactory,
+                        regularTabUngrouper,
                         mSupportedProfileType);
         if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModel);
@@ -192,6 +185,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(() -> getModel(/* incognito= */ true));
+        TabUngrouper incognitoTabUngrouper =
+                new PassthroughTabUngrouper(() -> getModel(/* incognito= */ true));
         IncognitoTabModelInternal incognitoModel =
                 TabModelFactory.createIncognitoTabModel(
                         profileProvider,
@@ -205,7 +200,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                         mCustomTabProfileType,
                         this,
                         incognitoTabRemover,
-                        tabUngrouperFactory,
+                        incognitoTabUngrouper,
                         mSupportedProfileType);
         if (incognitoTabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(incognitoModel);

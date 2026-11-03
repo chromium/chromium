@@ -20,8 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.function.Supplier;
-
 /** {@link TabModelSelector} for archived tabs. Must be instantiated and used on the UI thread. */
 @NullMarked
 public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase {
@@ -85,7 +83,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase {
                         tabRemover,
                         /* supportUndo= */ true,
                         TabModelType.ARCHIVED,
-                        ArchivedTabModelSelectorImpl::createTabUngrouper,
+                        new PassthroughTabUngrouper(() -> getModel(/* incognito= */ false)),
                         SupportedProfileType.MIXED);
         if (tabCreator instanceof NeedsTabModel needsTabModel) {
             needsTabModel.setTabModel(normalModel);
@@ -140,10 +138,5 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase {
     public @Nullable Profile getProfile(boolean offTheRecord) {
         if (mProfile.isOffTheRecord() != offTheRecord) return null;
         return mProfile;
-    }
-
-    private static TabUngrouper createTabUngrouper(
-            boolean isIncognitoBranded, Supplier<@Nullable TabModel> tabModelSupplier) {
-        return new PassthroughTabUngrouper(tabModelSupplier);
     }
 }

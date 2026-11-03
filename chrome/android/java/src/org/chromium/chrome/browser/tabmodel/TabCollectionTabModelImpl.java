@@ -38,7 +38,6 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -345,8 +344,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * @param modelDelegate The {@link TabModelDelegate} for interacting outside the tab model.
      * @param asyncTabParamsManager To detect if an async tab operation is in progress.
      * @param tabRemover For removing tabs.
-     * @param isIncognitoBranded Parameter to tabUngrouperFactory
-     * @param tabUngrouperFactory For ungrouping tabs.
+     * @param tabUngrouper For ungrouping tabs.
      * @param batchFactory A factory for creating {@link ScopedStorageBatch} objects.
      * @param supportUndo Whether the tab model supports undo functionality.
      */
@@ -363,8 +361,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             TabModelDelegate modelDelegate,
             AsyncTabParamsManager asyncTabParamsManager,
             TabRemover tabRemover,
-            boolean isIncognitoBranded,
-            TabUngrouperFactory tabUngrouperFactory,
+            TabUngrouper tabUngrouper,
             Supplier<ScopedStorageBatch> batchFactory,
             boolean supportUndo) {
         super(profile);
@@ -378,7 +375,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         mModelDelegate = modelDelegate;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabRemover = tabRemover;
-        mTabUngrouper = tabUngrouperFactory.create(isIncognitoBranded, SupplierUtils.of(this));
+        mTabUngrouper = tabUngrouper;
         mBatchFactory = batchFactory;
         if (supportUndo && !isIncognito()) {
             mPendingTabClosureManager =

@@ -161,10 +161,8 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
         Profile regularProfile = ProfileManager.getLastUsedRegularProfile();
         TabRemover normalTabRemover =
                 new PassthroughTabRemover(() -> mSelector.getModel(/* incognito= */ false));
-        TabUngrouperFactory tabUngrouperFactory =
-                (isIncognitoBranded, tabModelSupplier) ->
-                        new PassthroughTabUngrouper(
-                                () -> mSelector.getModel(/* incognito= */ isIncognitoBranded));
+        TabUngrouper normalTabUngrouper =
+                new PassthroughTabUngrouper(() -> mSelector.getModel(/* incognito= */ false));
         Supplier<ScopedStorageBatch> batchFactory = () -> createBatch(regularProfile);
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
@@ -176,12 +174,13 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                         NO_RESTORE_TYPE,
                         delegate,
                         normalTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        tabUngrouperFactory,
+                        normalTabUngrouper,
                         batchFactory);
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(() -> mSelector.getModel(/* incognito= */ true));
+        TabUngrouper incognitoTabUngrouper =
+                new PassthroughTabUngrouper(() -> mSelector.getModel(/* incognito= */ true));
         mIncognitoTabModel =
                 new TabModelSelectorTestIncognitoTabModel(
                         regularProfile.getPrimaryOtrProfile(/* createIfNeeded= */ true),
@@ -191,8 +190,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                         asyncTabParamsManager,
                         delegate,
                         incognitoTabRemover,
-                        /* isIncognitoBranded= */ true,
-                        tabUngrouperFactory,
+                        incognitoTabUngrouper,
                         batchFactory);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
@@ -212,8 +210,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 @ActivityType int activityType,
                 TabModelDelegate modelDelegate,
                 TabRemover tabRemover,
-                boolean isIncognitoBranded,
-                TabUngrouperFactory tabUngrouperFactory,
+                TabUngrouper tabUngrouper,
                 Supplier<ScopedStorageBatch> batchFactory) {
             super(
                     profile,
@@ -228,8 +225,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                     modelDelegate,
                     asyncTabParamsManager,
                     tabRemover,
-                    isIncognitoBranded,
-                    tabUngrouperFactory,
+                    tabUngrouper,
                     batchFactory,
                     /* supportUndo= */ false);
         }
@@ -284,8 +280,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                 AsyncTabParamsManager asyncTabParamsManager,
                 TabModelDelegate modelDelegate,
                 TabRemover tabRemover,
-                boolean isIncognitoBranded,
-                TabUngrouperFactory tabUngrouperFactory,
+                TabUngrouper tabUngrouper,
                 Supplier<ScopedStorageBatch> batchFactory) {
             super(
                     ProfileManager.getLastUsedRegularProfile()
@@ -297,8 +292,7 @@ public class TabModelSelectorObserverTestRule extends SigninTestRule {
                     NO_RESTORE_TYPE,
                     modelDelegate,
                     tabRemover,
-                    isIncognitoBranded,
-                    tabUngrouperFactory,
+                    tabUngrouper,
                     batchFactory);
         }
 

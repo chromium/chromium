@@ -256,8 +256,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        /* isIncognitoBranded= */ false,
-                        (unused, tabModelSupplier) -> new PassthroughTabUngrouper(tabModelSupplier),
+                        new PassthroughTabUngrouper(() -> mTabModel),
                         () -> mScopedStorageBatch,
                         /* supportUndo= */ true);
         mTabModel.addObserver(mTabModelObserver);
