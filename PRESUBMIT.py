@@ -5955,6 +5955,7 @@ def CheckNoDeprecatedCss(input_api, output_api):
             r'ui/webui/resources/cr_components/most_visited/.*\.css$',
             r'ui/webui/resources/cr_components/composebox/composebox_match.css$',
             r'ui/webui/resources/cr_components/searchbox/searchbox_match.css$',
+            r'^chrome/browser/resources/glic/selection_overlay/glic_selection_overlay\.css$',
             r'^chrome/browser/resources/new_tab_page/action_chips/action_chips\.css$'
         ))
     file_filter = lambda f: input_api.FilterSourceFile(

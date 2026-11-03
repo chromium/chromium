@@ -2117,7 +2117,98 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "  const chip0Rect = chips[0].getBoundingClientRect();"
           "  const chip1Rect = chips[1].getBoundingClientRect();"
           "  return rect.height > 96 && rect.height <= 130 && "
+          "      chip0Rect.top >= pillRect.bottom && "
           "      chip1Rect.top >= chip0Rect.bottom && "
+          "      Math.abs(chip0Rect.left - pillRect.left) <= 1 && "
+          "      Math.abs(chip1Rect.left - pillRect.left) <= 1;"
+          "}"),
+      ExecuteJsAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  el.suggestedActions = ["
+          "    {...el.suggestedActions[0], title: 'Short'},"
+          "    {...el.suggestedActions[0], title: 'A longer suggestion title "
+          "that wraps onto a second line in the chip'},"
+          "    {...el.suggestedActions[0], title: 'A very long suggestion "
+          "title that definitely exceeds two lines and therefore is ellipsised "
+          "at the end of the second line instead of growing to three or more "
+          "lines'},"
+          "  ];"
+          "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
+          "  const chips = "
+          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
+          "  if (!pill || chips.length !== 3) return false;"
+          "  const pillRect = pill.getBoundingClientRect();"
+          "  const r0 = chips[0].getBoundingClientRect();"
+          "  const r1 = chips[1].getBoundingClientRect();"
+          "  const r2 = chips[2].getBoundingClientRect();"
+          "  const label2 = chips[2].querySelector('.chip-label');"
+          "  return r0.width <= pillRect.width && "
+          "      r1.width <= pillRect.width && "
+          "      r2.width <= pillRect.width && "
+          "      Math.round(r0.height) === 32 && "
+          "      Math.round(r1.height) === 52 && "
+          "      Math.round(r2.height) === 52 && "
+          "      getComputedStyle(label2).webkitLineClamp === '2';"
+          "}"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
+                       FloatingPromptAndChipsShownAboveSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+  auto point_from_bottom_left = [this](int x, int y) {
+    return base::BindLambdaForTesting([this, x, y](ui::TrackedElement* el) {
+      return AsView<views::View>(el)->GetBoundsInScreen().bottom_left() +
+             gfx::Vector2d(x, -y);
+    });
+  };
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  point_from_bottom_left(50, 150)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  point_from_bottom_left(150, 20)),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const container = "
+          "el.shadowRoot.querySelector('#floatingPromptContainer');"
+          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
+          "  const chips = "
+          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
+          "  if (!container || container.hidden || !pill || chips.length !== "
+          "2) {"
+          "    return false;"
+          "  }"
+          "  const titles = chips.map(c => "
+          "c.querySelector('.chip-label')?.textContent?.trim());"
+          "  if (titles[0] !== 'Summarize' || titles[1] !== 'Ask Gemini') {"
+          "    return false;"
+          "  }"
+          "  const pillRect = pill.getBoundingClientRect();"
+          "  const chip0Rect = chips[0].getBoundingClientRect();"
+          "  const chip1Rect = chips[1].getBoundingClientRect();"
+          "  return container.hasAttribute('above-selection') && "
+          "      chip0Rect.top >= chip1Rect.bottom && "
+          "      pillRect.top >= chip0Rect.bottom && "
           "      Math.abs(chip0Rect.left - pillRect.left) <= 1 && "
           "      Math.abs(chip1Rect.left - pillRect.left) <= 1;"
           "}"));

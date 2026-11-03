@@ -63,6 +63,7 @@ export function getHtml(this: GlicSelectionOverlayElement) {
       this.enableSelectionOverlayPromptBox ? html`
       <div id="floatingPromptContainer"
           ?hidden="${!this.showFloatingPrompt}"
+          ?above-selection="${this.promptAboveSelection}"
           style="${this.floatingPromptStyle}">
         ${this.enableSelectionOverlayPromptBox ? html`
           <div class="searchbox-row">
