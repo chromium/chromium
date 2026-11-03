@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_lanes_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/multicol_break_token_data.h"
@@ -440,8 +441,9 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     CHECK_GE(intersection_count, 2u);
 
     if (must_compute_lane_visibility) {
-      gap_geometry.MarkGridLanesEmptySegments(track_direction, gap_index,
-                                              intersections);
+      To<GridLanesGapGeometry>(gap_geometry)
+          .MarkGridLanesEmptySegments(track_direction, gap_index,
+                                      intersections);
     }
 
     const wtf_size_t last_intersection_index = intersection_count - 1;
