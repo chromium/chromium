@@ -378,6 +378,15 @@ aura::Window* GetHostWindow(aura::Window* window) {
   return window->parent();
 }
 
+// Returns whether drag-and-drop data from or to `web_contents` is
+// off-the-record.
+bool IsOffTheRecordForDragAndDrop(WebContents& web_contents) {
+  return GetContentClient()
+      ->browser()
+      ->GetUserBrowserContext(*web_contents.GetPrimaryMainFrame())
+      ->IsOffTheRecord();
+}
+
 }  // namespace
 
 WebContentsViewAura::DropMetadata::DropMetadata(
@@ -1268,8 +1277,7 @@ void WebContentsViewAura::StartDragging(
   data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
       web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
       ui::DataTransferEndpointOptions{
-          .off_the_record =
-              web_contents_->GetBrowserContext()->IsOffTheRecord()}));
+          .off_the_record = IsOffTheRecordForDragAndDrop(*web_contents_)}));
   WebContentsDelegate* delegate = web_contents_->GetDelegate();
   if (delegate && delegate->IsPrivileged())
     data->MarkAsFromPrivileged();
@@ -1669,12 +1677,11 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   }
   aura::client::DragUpdateInfo drag_info;
   auto* focused_frame = web_contents_->GetFocusedFrame();
-  if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord() &&
+  if (focused_frame && !IsOffTheRecordForDragAndDrop(*web_contents_) &&
       web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL().is_valid()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
         web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
-        {.off_the_record =
-             web_contents_->GetBrowserContext()->IsOffTheRecord()});
+        {.off_the_record = IsOffTheRecordForDragAndDrop(*web_contents_)});
   }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();

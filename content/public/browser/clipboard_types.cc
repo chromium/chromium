@@ -165,6 +165,14 @@ const ui::ClipboardFormatType& SourceRFHTokenType() {
   return *type;
 }
 
+namespace {
+
+BrowserContext* GetUserBrowserContext(RenderFrameHost& rfh) {
+  return GetContentClient()->browser()->GetUserBrowserContext(rfh);
+}
+
+}  // namespace
+
 void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
                           base::OnceCallback<void(ClipboardEndpoint)> callback,
                           std::string result) {
@@ -195,7 +203,7 @@ void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
                     *clipboard_source_dte->GetURL(),
                     ui::DataTransferEndpointOptions{
                         .off_the_record =
-                            rfh->GetBrowserContext()->IsOffTheRecord()});
+                            GetUserBrowserContext(*rfh)->IsOffTheRecord()});
               } else {
                 source_dte = std::move(clipboard_source_dte);
               }
@@ -210,7 +218,7 @@ void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
                       if (!rfh) {
                         return nullptr;
                       }
-                      return rfh->GetBrowserContext();
+                      return GetUserBrowserContext(*rfh);
                     },
                     rfh->GetGlobalFrameToken()),
                 *rfh));
@@ -255,7 +263,7 @@ std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
       source_url,
       ui::DataTransferEndpointOptions{
           .notify_if_restricted = rfh.HasTransientUserActivation(),
-          .off_the_record = rfh.GetBrowserContext()->IsOffTheRecord(),
+          .off_the_record = GetUserBrowserContext(rfh)->IsOffTheRecord(),
       });
 }
 
@@ -268,7 +276,7 @@ ClipboardEndpoint CreateClipboardEndpoint(RenderFrameHost& rfh) {
             if (!rfh) {
               return nullptr;
             }
-            return rfh->GetBrowserContext();
+            return GetUserBrowserContext(*rfh);
           },
           rfh.GetGlobalId()),
       rfh);
