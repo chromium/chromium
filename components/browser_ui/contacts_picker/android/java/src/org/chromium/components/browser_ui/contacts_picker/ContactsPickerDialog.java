@@ -78,6 +78,23 @@ public class ContactsPickerDialog extends FullscreenAlertDialog
         cancel();
     }
 
+    /**
+     * When using the system contacts picker, this dialog is created to manage the adapter, but
+     * show() is delayed until the external intent returns. If cancelled or torn down before being
+     * shown, Android's base Dialog class silently drops dismissal and never dispatches
+     * OnDismissListener. Explicitly calling mCategoryView.onDialogDismissed() here ensures the
+     * adapter is destroyed unconditionally, preventing an Activity memory leak to
+     * IdentityManagerImpl.
+     */
+    @Override
+    public void dismiss() {
+        boolean wasShowing = isShowing();
+        super.dismiss();
+        if (!wasShowing) {
+            mCategoryView.onDialogDismissed();
+        }
+    }
+
     public PickerCategoryView getCategoryViewForTesting() {
         return mCategoryView;
     }

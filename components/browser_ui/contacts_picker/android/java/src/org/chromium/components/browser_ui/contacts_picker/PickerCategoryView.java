@@ -281,14 +281,18 @@ public class PickerCategoryView extends OptimizedFrameLayout
                                 ACTION_CANCEL));
         mDialog.setOnDismissListener(
                 dialog1 -> {
-                    ContactsPicker.onContactsPickerDismissed();
-                    mPickerAdapter.destroy();
+                    onDialogDismissed();
                 });
 
         mPickerAdapter.notifyDataSetChanged();
         if (ContactsPickerFeatureMap.shouldShowSystemContactsPicker()) {
             launchSystemPicker();
         }
+    }
+
+    public void onDialogDismissed() {
+        ContactsPicker.onContactsPickerDismissed();
+        mPickerAdapter.destroy();
     }
 
     public boolean siteWantsNames() {

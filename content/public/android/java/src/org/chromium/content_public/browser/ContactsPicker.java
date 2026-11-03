@@ -112,7 +112,11 @@ public final class ContactsPicker {
                         @Override
                         public void onVisibilityChanged(@Visibility int visibility) {
                             if (visibility != Visibility.VISIBLE) {
-                                dismissAndCleanup();
+                                if (sContactsPickerDelegate != null
+                                        && sContactsPickerDelegate
+                                                .shouldCancelOnVisibilityChange()) {
+                                    dismissAndCleanup();
+                                }
                             }
                         }
 
@@ -130,7 +134,8 @@ public final class ContactsPicker {
 
             // Defensive check in case visibility changed during picker creation.
             if (webContents.getVisibility() != Visibility.VISIBLE) {
-                if (sContactsPickerDelegate != null) {
+                if (sContactsPickerDelegate != null
+                        && sContactsPickerDelegate.shouldCancelOnVisibilityChange()) {
                     sContactsPickerDelegate.cancelContactsPicker(sPicker);
                 }
             }
@@ -141,11 +146,18 @@ public final class ContactsPicker {
 
     /** Called when the contacts picker dialog has been dismissed. */
     public static void onContactsPickerDismissed() {
-        assert sPicker != null;
+        if (sPicker == null) return;
         sPicker = null;
         if (sWebContentsObserver != null) {
             sWebContentsObserver.observe(null);
             sWebContentsObserver = null;
         }
+    }
+
+    public static void resetForTesting() {
+        if (sPicker != null && sContactsPickerDelegate != null) {
+            sContactsPickerDelegate.cancelContactsPicker(sPicker);
+        }
+        onContactsPickerDismissed();
     }
 }

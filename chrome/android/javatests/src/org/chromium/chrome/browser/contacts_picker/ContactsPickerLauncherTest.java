@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,6 +56,15 @@ public class ContactsPickerLauncherTest {
     @Before
     public void setUp() {
         ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(false);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ContactsPicker.resetForTesting();
+                });
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(null);
     }
 
     private boolean showContactsPicker(WebContents webContents) {
@@ -153,5 +163,32 @@ public class ContactsPickerLauncherTest {
                         throw new CriteriaNotSatisfiedException(e);
                     }
                 });
+    }
+
+    @Test
+    @LargeTest
+    public void testSystemPickerNotDismissedOnNavigation() throws Exception {
+        ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(true);
+        WebPageStation firstPage = mActivityTestRule.startOnBlankPage();
+        WebContents webContents = firstPage.webContentsElement.value();
+
+        // Wait for WebContents to be visible.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return ThreadUtils.runOnUiThreadBlocking(
+                            () -> webContents.getVisibility() == Visibility.VISIBLE);
+                },
+                "WebContents never became visible");
+
+        // Launch the picker.
+        Assert.assertTrue(showContactsPicker(webContents));
+        Assert.assertTrue(ContactsPicker.hasPickerForTesting());
+
+        // Switch to a new page/tab. This triggers visibility/navigation changes.
+        firstPage.openFakeLinkToWebPage(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+
+        // Verify the picker tracking is NOT dismissed and the observer is NOT reset.
+        Assert.assertTrue(ContactsPicker.hasPickerForTesting());
+        Assert.assertNotNull(ContactsPicker.getObserverForTesting());
     }
 }

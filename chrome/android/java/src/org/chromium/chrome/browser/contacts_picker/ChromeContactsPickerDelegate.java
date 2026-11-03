@@ -68,4 +68,9 @@ public class ChromeContactsPickerDelegate implements ContactsPickerDelegate {
     public void cancelContactsPicker(Object picker) {
         ((ContactsPickerDialog) picker).cancel();
     }
+
+    @Override
+    public boolean shouldCancelOnVisibilityChange() {
+        return !ContactsPickerFeatureMap.shouldShowSystemContactsPicker();
+    }
 }
