@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_page_handler.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
@@ -137,14 +144,36 @@ class TestBookmarkNavigationWrapper
 
   base::WeakPtr<content::NavigationHandle> NavigateTo(
       NavigateParams* params) override {
+    ++navigate_count_;
     if (on_navigate_) {
       on_navigate_.Run();
     }
     return nullptr;
   }
 
+  void PromptForOpenAll(BrowserWindowInterface* browser,
+                        size_t child_count,
+                        base::OnceCallback<void(bool)> callback) override {
+    prompt_child_count_ = child_count;
+    prompt_callback_ = std::move(callback);
+  }
+
+  size_t navigate_count() const { return navigate_count_; }
+  bool has_pending_prompt() const { return !prompt_callback_.is_null(); }
+  std::optional<size_t> prompt_child_count() const {
+    return prompt_child_count_;
+  }
+
+  void ResolvePrompt(bool confirmed) {
+    CHECK(prompt_callback_);
+    std::move(prompt_callback_).Run(confirmed);
+  }
+
  private:
   base::RepeatingClosure on_navigate_;
+  size_t navigate_count_ = 0;
+  std::optional<size_t> prompt_child_count_;
+  base::OnceCallback<void(bool)> prompt_callback_;
 };
 
 // Helper class to handle the return value of
@@ -974,6 +1003,183 @@ TEST_F(BookmarksPageHandlerTest, OpenBookmarkSynchronouslyDestroysHandler) {
       1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
   histogram_tester.ExpectUniqueSample(
       "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelFolder, 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, OpenBookmarkPromptConfirmed) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::AutoReset<size_t> prompt_threshold(
+      &bookmarks::kNumBookmarkUrlsBeforePrompting, 2);
+
+  const bookmarks::BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
+  model()->AddURL(folder, 0, u"Site 1", GURL("https://example.com/1"));
+  model()->AddURL(folder, 1, u"Site 2", GURL("https://example.com/2"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  handler()->OpenBookmark(folder->id(), /*parent_folder_depth=*/1,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+
+  // Metrics must not be logged while the confirmation prompt is pending.
+  ASSERT_TRUE(wrapper.has_pending_prompt());
+  EXPECT_EQ(2u, wrapper.prompt_child_count());
+  EXPECT_EQ(0u, wrapper.navigate_count());
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectTotalCount("Bookmarks.LaunchLocation", 0);
+  histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 0);
+
+  // Confirming the prompt opens all URLs and logs launch metrics once.
+  wrapper.ResolvePrompt(/*confirmed=*/true);
+
+  EXPECT_EQ(2u, wrapper.navigate_count());
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelSubfolder,
+      1);
+  histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, OpenBookmarkPromptCancelled) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::AutoReset<size_t> prompt_threshold(
+      &bookmarks::kNumBookmarkUrlsBeforePrompting, 2);
+
+  const bookmarks::BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
+  model()->AddURL(folder, 0, u"Site 1", GURL("https://example.com/1"));
+  model()->AddURL(folder, 1, u"Site 2", GURL("https://example.com/2"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  handler()->OpenBookmark(folder->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+
+  ASSERT_TRUE(wrapper.has_pending_prompt());
+  wrapper.ResolvePrompt(/*confirmed=*/false);
+
+  EXPECT_EQ(0u, wrapper.navigate_count());
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectTotalCount("Bookmarks.LaunchLocation", 0);
+  histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 0);
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OpenBookmarkPromptConfirmedAfterHandlerDestroyed) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::AutoReset<size_t> prompt_threshold(
+      &bookmarks::kNumBookmarkUrlsBeforePrompting, 2);
+
+  const bookmarks::BookmarkNode* folder =
+      model()->AddFolder(model()->bookmark_bar_node(), 0, u"Folder");
+  model()->AddURL(folder, 0, u"Site 1", GURL("https://example.com/1"));
+  model()->AddURL(folder, 1, u"Site 2", GURL("https://example.com/2"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  handler()->OpenBookmark(folder->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+
+  ASSERT_TRUE(wrapper.has_pending_prompt());
+
+  // Closing the side panel while the confirmation dialog is open destroys the
+  // handler before the user confirms the dialog.
+  ClearHandler();
+  wrapper.ResolvePrompt(/*confirmed=*/true);
+
+  EXPECT_EQ(2u, wrapper.navigate_count());
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelFolder, 1);
+  histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 1);
+}
+
+TEST_F(BookmarksPageHandlerTest, OpenBookmarkDoesNotLogWhenNoBookmarksOpened) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  const bookmarks::BookmarkNode* bookmark_bar = model()->bookmark_bar_node();
+  const bookmarks::BookmarkNode* empty_folder =
+      model()->AddFolder(bookmark_bar, 0, u"Empty Folder");
+  const bookmarks::BookmarkNode* js_bookmark = model()->AddURL(
+      bookmark_bar, 1, u"Bookmarklet", GURL("javascript:void(0)"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  // Empty folders do not open any tabs.
+  handler()->OpenBookmark(empty_folder->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+  EXPECT_EQ(0u, wrapper.navigate_count());
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectTotalCount("Bookmarks.LaunchLocation", 0);
+
+  // Javascript bookmarklets are blocked from opening in a new tab.
+  auto middle_click = ui::mojom::ClickModifiers::New();
+  middle_click->middle_button = true;
+  handler()->OpenBookmark(js_bookmark->id(), /*parent_folder_depth=*/0,
+                          std::move(middle_click),
+                          side_panel::mojom::ActionSource::kBookmark);
+  EXPECT_EQ(0u, wrapper.navigate_count());
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectTotalCount("Bookmarks.LaunchLocation", 0);
+
+  // Javascript bookmarklets opened in the current tab do navigate and log.
+  handler()->OpenBookmark(js_bookmark->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kBookmark);
+  EXPECT_EQ(1u, wrapper.navigate_count());
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.LaunchLocation", BookmarkLaunchLocation::kSidePanelFolder, 1);
+}
+
+TEST_F(BookmarksPageHandlerTest,
+       OpenBookmarkPriceTrackingDoesNotLogNavigation) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  const bookmarks::BookmarkNode* node =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"Product",
+                      GURL("https://example.com/product"));
+
+  TestBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  handler()->OpenBookmark(node->id(), /*parent_folder_depth=*/0,
+                          ui::mojom::ClickModifiers::New(),
+                          side_panel::mojom::ActionSource::kPriceTracking);
+
+  EXPECT_EQ(1u, wrapper.navigate_count());
+  EXPECT_EQ(
+      0, user_action_tester.GetActionCount("SidePanel.Bookmarks.Navigation"));
+  histogram_tester.ExpectTotalCount("Bookmarks.LaunchLocation", 0);
 }
 
 }  // namespace

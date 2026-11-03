@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 
+#include <cstddef>
 #include <iterator>
 #include <numeric>
+#include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -71,9 +75,31 @@ static BookmarkNavigationWrapper* g_nav_wrapper_test_instance = nullptr;
 
 base::WeakPtr<content::NavigationHandle> BookmarkNavigationWrapper::NavigateTo(
     NavigateParams* params) {
-  return g_nav_wrapper_test_instance
+  return (g_nav_wrapper_test_instance && g_nav_wrapper_test_instance != this)
              ? g_nav_wrapper_test_instance->NavigateTo(params)
              : Navigate(params);
+}
+
+void BookmarkNavigationWrapper::PromptForOpenAll(
+    BrowserWindowInterface* browser,
+    size_t child_count,
+    base::OnceCallback<void(bool)> callback) {
+  if (g_nav_wrapper_test_instance && g_nav_wrapper_test_instance != this) {
+    g_nav_wrapper_test_instance->PromptForOpenAll(browser, child_count,
+                                                  std::move(callback));
+    return;
+  }
+  chrome::ShowQuestionMessageBoxAsync(
+      browser->GetWindow()->GetNativeWindow(),
+      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+      l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
+                                 base::NumberToString16(child_count)),
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             chrome::MessageBoxResult result) {
+            std::move(callback).Run(result == chrome::MESSAGE_BOX_RESULT_YES);
+          },
+          std::move(callback)));
 }
 
 // static
@@ -96,7 +122,8 @@ OpenedWebContentsSet OpenAllHelper(
     std::vector<UrlAndId> bookmark_urls,
     ui::mojom::WindowOpenDisposition initial_disposition,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
-    std::optional<BookmarkLaunchAction> launch_action) {
+    std::optional<BookmarkLaunchAction> launch_action,
+    base::OnceClosure on_bookmarks_opened) {
   OpenedWebContentsSet::container_type opened_tabs;
   ui::mojom::WindowOpenDisposition disposition = initial_disposition;
   // We keep track of (potentially) two browsers in addition to the original
@@ -150,6 +177,9 @@ OpenedWebContentsSet OpenAllHelper(
                           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
     params.disposition = disposition;
     params.browser = browser_to_use;
+    if (on_bookmarks_opened) {
+      std::move(on_bookmarks_opened).Run();
+    }
     base::WeakPtr<content::NavigationHandle> handle =
         nav_wrapper.NavigateTo(&params);
     if (handle && navigation_initiator.has_value()) {
@@ -296,10 +326,12 @@ void DoOpen(
     std::optional<std::u16string> folder_title,
     bool add_to_split,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
-    std::optional<BookmarkLaunchAction> launch_action) {
-  const auto opened_web_contents = OpenAllHelper(
-      browser, std::move(url_and_ids_to_open), initial_disposition,
-      navigation_initiator, std::move(launch_action));
+    std::optional<BookmarkLaunchAction> launch_action,
+    base::OnceClosure on_bookmarks_opened) {
+  const auto opened_web_contents =
+      OpenAllHelper(browser, std::move(url_and_ids_to_open),
+                    initial_disposition, navigation_initiator,
+                    std::move(launch_action), std::move(on_bookmarks_opened));
   if (add_to_split && opened_web_contents.size() == 1) {
     TabStripModel* model = browser->tab_strip_model();
     auto* const single_web_contents = *(opened_web_contents.begin());
@@ -361,14 +393,16 @@ void DoOpenPromptConfirm(
     bool add_to_split,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action,
-    chrome::MessageBoxResult result) {
-  if (result != chrome::MESSAGE_BOX_RESULT_YES) {
+    base::OnceClosure on_bookmarks_opened,
+    bool confirmed) {
+  if (!confirmed) {
     return;
   }
 
   DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
          bookmark_folder_node_id, folder_title, add_to_split,
-         navigation_initiator, launch_action);
+         navigation_initiator, std::move(launch_action),
+         std::move(on_bookmarks_opened));
 }
 }  // namespace
 
@@ -379,10 +413,14 @@ void OpenAllIfAllowed(
     ui::mojom::WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
-    std::optional<BookmarkLaunchAction> launch_action) {
+    std::optional<BookmarkLaunchAction> launch_action,
+    base::OnceClosure on_bookmarks_opened) {
   std::vector<UrlAndId> url_and_ids =
       GetURLsToOpen(nodes, initial_disposition ==
                                ui::mojom::WindowOpenDisposition::kOffTheRecord);
+  if (url_and_ids.empty()) {
+    return;
+  }
 
   std::optional<base::Uuid> bookmark_folder_node_id;
   if (nodes.size() == 1 && nodes[0]->is_folder()) {
@@ -392,7 +430,7 @@ void OpenAllIfAllowed(
   // Skip the prompt if there are few bookmarks.
   size_t child_count = url_and_ids.size();
   if (child_count < bookmarks::kNumBookmarkUrlsBeforePrompting) {
-    DoOpenPromptConfirm(
+    DoOpen(
         browser, std::move(url_and_ids), initial_disposition,
         bookmark_folder_node_id,
         context == bookmarks::OpenAllBookmarksContext::kInGroup
@@ -400,27 +438,25 @@ void OpenAllIfAllowed(
             : std::nullopt,
         context == bookmarks::OpenAllBookmarksContext::kInSplit,
         navigation_initiator, std::move(launch_action),
-        chrome::MESSAGE_BOX_RESULT_YES);
+        std::move(on_bookmarks_opened));
     return;
   }
 
   // The callback passed contains the pointer |browser|. This is safe
   // since if |browser| is closed, the message box will be destroyed
   // before the user can answer "Yes".
-
-  chrome::ShowQuestionMessageBoxAsync(
-      browser->GetWindow()->GetNativeWindow(),
-      l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-      l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
-                                 base::NumberToString16(child_count)),
+  bookmarks::BookmarkNavigationWrapper nav_wrapper;
+  nav_wrapper.PromptForOpenAll(
+      browser, child_count,
       base::BindOnce(
-          DoOpenPromptConfirm, browser, std::move(url_and_ids),
+          &DoOpenPromptConfirm, browser, std::move(url_and_ids),
           initial_disposition, bookmark_folder_node_id,
           context == bookmarks::OpenAllBookmarksContext::kInGroup
               ? std::optional<std::u16string>(nodes[0]->GetTitledUrlNodeTitle())
               : std::nullopt,
           context == bookmarks::OpenAllBookmarksContext::kInSplit,
-          navigation_initiator, std::nullopt));
+          navigation_initiator, /*launch_action=*/std::nullopt,
+          std::move(on_bookmarks_opened)));
 }
 
 int OpenCount(const std::vector<raw_ptr<const bookmarks::BookmarkNode,

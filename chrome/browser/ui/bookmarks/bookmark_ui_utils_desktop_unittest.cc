@@ -2,22 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
+#include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#include "url/gurl.h"
 
 using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
+
+class PromptCapturingBookmarkNavigationWrapper
+    : public TestingBookmarkNavigationWrapper {
+ public:
+  PromptCapturingBookmarkNavigationWrapper() = default;
+  ~PromptCapturingBookmarkNavigationWrapper() override = default;
+
+  void PromptForOpenAll(BrowserWindowInterface* browser,
+                        size_t child_count,
+                        base::OnceCallback<void(bool)> callback) override {
+    prompt_child_count_ = child_count;
+    prompt_callback_ = std::move(callback);
+  }
+
+  bool has_pending_prompt() const { return !prompt_callback_.is_null(); }
+  std::optional<size_t> prompt_child_count() const {
+    return prompt_child_count_;
+  }
+
+  void ResolvePrompt(bool confirmed) {
+    CHECK(prompt_callback_);
+    std::move(prompt_callback_).Run(confirmed);
+  }
+
+ private:
+  std::optional<size_t> prompt_child_count_;
+  base::OnceCallback<void(bool)> prompt_callback_;
+};
 
 class BookmarkUIUtilsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
@@ -115,6 +159,79 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   // Now add the URL to that |subfolder1|.
   model->AddURL(subfolder1, 0, u"BAR", GURL("http://bar-foo.com"));
   EXPECT_FALSE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
+}
+
+TEST_F(BookmarkUIUtilsTest, OpenAllIfAllowedOnBookmarksOpenedCallback) {
+  std::unique_ptr<BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  PromptCapturingBookmarkNavigationWrapper wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&wrapper);
+  base::ScopedClosureRunner reset_nav_wrapper(base::BindOnce(
+      &bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting, nullptr));
+
+  const BookmarkNode* empty_folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Empty");
+  size_t opened_callback_count = 0;
+  bookmarks::OpenAllIfAllowed(
+      /*browser=*/nullptr, {empty_folder},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kNone,
+      /*navigation_initiator=*/std::nullopt,
+      /*launch_action=*/std::nullopt,
+      base::BindLambdaForTesting([&]() { ++opened_callback_count; }));
+  EXPECT_EQ(0u, opened_callback_count);
+  EXPECT_TRUE(wrapper.urls().empty());
+
+  // Opening a folder below the prompt threshold invokes `on_bookmarks_opened`
+  // once even when multiple URLs are opened.
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 1, u"Folder");
+  model->AddURL(folder, 0, u"JS", GURL("javascript:void(0)"));
+  model->AddURL(folder, 1, u"One", GURL("https://example.com/1"));
+  model->AddURL(folder, 2, u"Two", GURL("https://example.com/2"));
+
+  bookmarks::OpenAllIfAllowed(
+      /*browser=*/nullptr, {folder},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kNone,
+      /*navigation_initiator=*/std::nullopt,
+      /*launch_action=*/std::nullopt,
+      base::BindLambdaForTesting([&]() { ++opened_callback_count; }));
+  EXPECT_EQ(1u, opened_callback_count);
+  EXPECT_EQ(2u, wrapper.urls().size());
+
+  // When prompting is required, `on_bookmarks_opened` runs only if confirmed.
+  base::AutoReset<size_t> prompt_threshold(
+      &bookmarks::kNumBookmarkUrlsBeforePrompting, 2);
+
+  size_t cancelled_callback_count = 0;
+  bookmarks::OpenAllIfAllowed(
+      /*browser=*/nullptr, {folder},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kNone,
+      /*navigation_initiator=*/std::nullopt,
+      /*launch_action=*/std::nullopt,
+      base::BindLambdaForTesting([&]() { ++cancelled_callback_count; }));
+  ASSERT_TRUE(wrapper.has_pending_prompt());
+  EXPECT_EQ(3u, wrapper.prompt_child_count());
+  EXPECT_EQ(0u, cancelled_callback_count);
+  wrapper.ResolvePrompt(/*confirmed=*/false);
+  EXPECT_EQ(0u, cancelled_callback_count);
+  EXPECT_EQ(2u, wrapper.urls().size());
+
+  size_t confirmed_callback_count = 0;
+  bookmarks::OpenAllIfAllowed(
+      /*browser=*/nullptr, {folder},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kNone,
+      /*navigation_initiator=*/std::nullopt,
+      /*launch_action=*/std::nullopt,
+      base::BindLambdaForTesting([&]() { ++confirmed_callback_count; }));
+  ASSERT_TRUE(wrapper.has_pending_prompt());
+  EXPECT_EQ(0u, confirmed_callback_count);
+  wrapper.ResolvePrompt(/*confirmed=*/true);
+  EXPECT_EQ(1u, confirmed_callback_count);
+  EXPECT_EQ(4u, wrapper.urls().size());
 }
 
 }  // namespace

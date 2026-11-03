@@ -7,9 +7,13 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -652,27 +656,36 @@ void BookmarksPageHandler::OpenBookmark(
     return;
   }
 
-  // Opening a bookmark may synchronously close the side panel and destroy
-  // `this`, so record metrics prior to open.
-  // TODO(crbug.com/578519711): bookmarks::OpenAllIfAllowed sometimes open a
-  // confirmation dialog that may result in the bookmarks not opening. Ensure
-  // metrics are only logged when bookmarks are actually opened.
-  if (source != side_panel::mojom::ActionSource::kPriceTracking) {
-    base::RecordAction(
-        base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
-    RecordBookmarkLaunch(parent_folder_depth > 0
-                             ? BookmarkLaunchLocation::kSidePanelSubfolder
-                             : BookmarkLaunchLocation::kSidePanelFolder,
-                         profile_metrics::GetBrowserProfileType(
-                             browser_window_interface_->GetProfile()));
-  }
-
   ui::mojom::WindowOpenDisposition open_location = ui::DispositionFromClick(
       click_modifiers->middle_button, click_modifiers->alt_key,
       click_modifiers->ctrl_key, click_modifiers->meta_key,
       click_modifiers->shift_key);
-  bookmarks::OpenAllIfAllowed(browser_window_interface_, {bookmark_node},
-                              open_location);
+  base::OnceClosure on_bookmarks_opened;
+  if (source != side_panel::mojom::ActionSource::kPriceTracking) {
+    // Opening a bookmark may synchronously close the side panel and destroy
+    // `this`, or show an asynchronous confirmation dialog that outlives `this`.
+    // Capture the metric parameters prior to opening so the callback does not
+    // reference `this` when bookmarks are actually opened.
+    const BookmarkLaunchLocation launch_location =
+        parent_folder_depth > 0 ? BookmarkLaunchLocation::kSidePanelSubfolder
+                                : BookmarkLaunchLocation::kSidePanelFolder;
+    const profile_metrics::BrowserProfileType profile_type =
+        profile_metrics::GetBrowserProfileType(
+            browser_window_interface_->GetProfile());
+    on_bookmarks_opened = base::BindOnce(
+        [](BookmarkLaunchLocation launch_location,
+           profile_metrics::BrowserProfileType profile_type) {
+          base::RecordAction(
+              base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
+          RecordBookmarkLaunch(launch_location, profile_type);
+        },
+        launch_location, profile_type);
+  }
+  bookmarks::OpenAllIfAllowed(
+      browser_window_interface_, {bookmark_node}, open_location,
+      bookmarks::OpenAllBookmarksContext::kNone,
+      /*navigation_initiator=*/std::nullopt,
+      /*launch_action=*/std::nullopt, std::move(on_bookmarks_opened));
 }
 
 void BookmarksPageHandler::Undo() {
