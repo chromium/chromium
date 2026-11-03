@@ -212,10 +212,14 @@ class SnapSearchResult {
         axis_ == SearchAxis::kX ? rect_.value().y() : rect_.value().x();
     const float rect_end = axis_ == SearchAxis::kX ? rect_.value().bottom()
                                                    : rect_.value().right();
-    return gfx::RangeF(std::clamp(rect_start - snapport_visible_range_.end(),
-                                  0.0f, snapport_max_visible_),
-                       std::clamp(rect_end - snapport_visible_range_.start(),
-                                  0.0f, snapport_max_visible_));
+    // Returns an invalid range if the area does not intersect the snapport at
+    // any reachable scroll position, e.g. because it is in negative overflow
+    // or is clipped beyond the scrollable overflow. Both ranges are closed, so
+    // touching counts as intersecting and zero-sized areas at the edges remain
+    // visible.
+    return gfx::RangeF::ClosedRange(rect_start - snapport_visible_range_.end(),
+                                    rect_end - snapport_visible_range_.start())
+        .Intersect(gfx::RangeF::ClosedRange(0.0f, snapport_max_visible_));
   }
 
   const struct SnapAreaData* area() const { return area_; }

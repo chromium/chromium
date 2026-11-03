@@ -519,6 +519,43 @@ TEST(RangeTest, IntersectRangeF) {
             gfx::RangeF::InvalidRange());
 }
 
+TEST(RangeTest, ClosedRangeF) {
+  const gfx::RangeF forward = gfx::RangeF::ClosedRange(2.f, 3.f);
+  EXPECT_FALSE(forward.is_reversed());
+  EXPECT_TRUE(forward.Contains(gfx::RangeF(2.f)));
+  EXPECT_TRUE(forward.Contains(gfx::RangeF(2.5f)));
+  EXPECT_TRUE(forward.Contains(gfx::RangeF(3.f)));
+  EXPECT_FALSE(forward.Contains(gfx::RangeF(1.999f)));
+  EXPECT_FALSE(forward.Contains(gfx::RangeF(3.001f)));
+
+  // A reverse RangeF excludes its start (the max), so that's the end that is
+  // extended.
+  const gfx::RangeF reverse = gfx::RangeF::ClosedRange(3.f, 2.f);
+  EXPECT_TRUE(reverse.is_reversed());
+  EXPECT_TRUE(reverse.Contains(gfx::RangeF(2.f)));
+  EXPECT_TRUE(reverse.Contains(gfx::RangeF(2.5f)));
+  EXPECT_TRUE(reverse.Contains(gfx::RangeF(3.f)));
+  EXPECT_FALSE(reverse.Contains(gfx::RangeF(1.999f)));
+  EXPECT_FALSE(reverse.Contains(gfx::RangeF(3.001f)));
+
+  const gfx::RangeF point = gfx::RangeF::ClosedRange(2.f, 2.f);
+  EXPECT_TRUE(point.Contains(gfx::RangeF(2.f)));
+  EXPECT_FALSE(point.Contains(gfx::RangeF(1.999f)));
+  EXPECT_FALSE(point.Contains(gfx::RangeF(2.001f)));
+
+  // Closed ranges that only touch at an endpoint intersect, unlike half-open
+  // ones.
+  EXPECT_FALSE(gfx::RangeF(0.f, 1.f).Intersects(gfx::RangeF(1.f, 2.f)));
+  EXPECT_TRUE(gfx::RangeF::ClosedRange(0.f, 1.f).Intersects(
+      gfx::RangeF::ClosedRange(1.f, 2.f)));
+  EXPECT_TRUE(gfx::RangeF::ClosedRange(1.f, 0.f).Intersects(
+      gfx::RangeF::ClosedRange(2.f, 1.f)));
+  EXPECT_TRUE(gfx::RangeF::ClosedRange(0.f, 0.f).Intersects(
+      gfx::RangeF::ClosedRange(-1.f, 0.f)));
+  EXPECT_TRUE(gfx::RangeF::ClosedRange(0.f, 0.f).Intersects(
+      gfx::RangeF::ClosedRange(0.f, 1.f)));
+}
+
 TEST(RangeTest, IsBoundedBy) {
   constexpr gfx::Range r1(0, 0);
   constexpr gfx::Range r2(0, 1);

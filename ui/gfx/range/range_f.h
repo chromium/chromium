@@ -33,6 +33,11 @@ class GFX_RANGE_EXPORT RangeF {
     return RangeF(std::numeric_limits<float>::max());
   }
 
+  // Returns a range representing the closed interval between |start| and
+  // |end|. Since a RangeF excludes its max endpoint, the max is extended to the
+  // next representable float. The direction of the range is preserved.
+  static RangeF ClosedRange(float start, float end);
+
   // Checks if the range is valid through comparison to InvalidRange().
   constexpr bool IsValid() const { return *this != InvalidRange(); }
 

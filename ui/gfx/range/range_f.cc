@@ -15,6 +15,16 @@
 
 namespace gfx {
 
+// static
+RangeF RangeF::ClosedRange(float start, float end) {
+  // The max of a RangeF is excluded in either direction, so extend it.
+  constexpr float kInf = std::numeric_limits<float>::infinity();
+  if (start <= end) {
+    return RangeF(start, std::nextafter(end, kInf));
+  }
+  return RangeF(std::nextafter(start, kInf), end);
+}
+
 RangeF RangeF::Intersect(const Range& range) const {
   RangeF range_f(range.start(), range.end());
   return Intersect(range_f);

@@ -15916,7 +15916,7 @@ class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
         gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
     SnapContainerData container2(
         ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
-        gfx::RectF(100, 100, 100, 100), gfx::PointF(0, 4900));
+        gfx::RectF(0, 100, 100, 100), gfx::PointF(0, 4900));
 
     // Add snap areas to both snap containers.
     ScrollSnapAlign start_alignment = ScrollSnapAlign(SnapAlignment::kStart);
