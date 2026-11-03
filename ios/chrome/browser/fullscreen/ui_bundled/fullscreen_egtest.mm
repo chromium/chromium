@@ -51,6 +51,18 @@ const CGFloat kViewportFitCoverTolerance = 5.0;
 // Identifier for Find in Page Done button in iOS's system Find Navigator.
 constexpr char kFindInPageDoneButtonID[] = "find.doneButton";
 
+// Scroll distance (in points of `UIScrollView.contentOffset` change) for a
+// partial scroll that stops before fully collapsing/expanding the toolbars.
+// Must exceed the 10pt `kFullscreenScrollThreshold` /
+// `kFullscreenSnapThreshold` while remaining strictly below the 30pt minimum
+// collapsible toolbar height delta.
+constexpr CGFloat kHalfwayScrollDragAmount = 18.0;
+
+// Scroll distance (in points of `UIScrollView.contentOffset` change) used to
+// scroll further into the document before testing the downward partial-scroll
+// exit, avoiding the top boundary.
+constexpr CGFloat kPreExitScrollDragAmount = 60.0;
+
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -404,6 +416,78 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
           forHistogram:@(kFullscreenScrollToTheBottomTime)];
   GREYAssertNil(scrollToBottomError, @"Histogram error: %@",
                 scrollToBottomError);
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
+}
+
+// Tests that swiping halfway and releasing logs kUserInitiatedFinishedByCode
+// for both entering and exiting fullscreen.
+- (void)testHalfwayScrollFinishedByCode {
+  _responses["/tallpage"] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+
+  GURL URL = self.testServer->GetURL("/tallpage");
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Wait for WebKit to commit the tall page's content size to the scroll view
+  // before starting the partial drag.
+  GREYAssertTrue(WaitUntilConditionOrTimeout(
+                     kWaitForPageLoadTimeout,
+                     ^bool {
+                       return ![FullscreenAppInterface isScrolledToBottom];
+                     }),
+                 @"Page content height was not initialized.");
+
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
+  // 1. Drag partially to trigger a code snap without momentum.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:
+          [FullscreenAppInterface
+              dragWithoutDecelerationInDirection:kGREYDirectionUp
+                                          amount:kHalfwayScrollDragAmount]];
+
+  // Wait for the animation to snap it closed.
+  [ChromeEarlGreyUI waitForToolbarVisible:NO];
+
+  // Enter has kUserInitiatedFinishedByCode because it was snapped by code.
+  NSError* enterError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(FullscreenModeTransitionTrigger::
+                                        kUserInitiatedFinishedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Enter"];
+  GREYAssertNil(enterError, @"Histogram error for Enter: %@", enterError);
+
+  // Scroll down further into the document so that the subsequent downward drag
+  // does not hit the top boundary of the page (y <= 0), which would immediately
+  // expand toolbars via user scroll rather than animating via code.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:
+          [FullscreenAppInterface
+              dragWithoutDecelerationInDirection:kGREYDirectionUp
+                                          amount:kPreExitScrollDragAmount]];
+
+  // 2. Drag partially down to exit fullscreen without deceleration.
+  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+      performAction:
+          [FullscreenAppInterface
+              dragWithoutDecelerationInDirection:kGREYDirectionDown
+                                          amount:kHalfwayScrollDragAmount]];
+
+  // Wait for the animation to snap it open.
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Exit has kUserInitiatedFinishedByCode because it was snapped open by code.
+  NSError* exitError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(FullscreenModeTransitionTrigger::
+                                        kUserInitiatedFinishedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError, @"Histogram error for Exit: %@", exitError);
 
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
@@ -1115,6 +1199,24 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                             CGPointMake(0, expectedYOffset))];
 }
 
+// Smooth scrolling cannot be tested in EarlGrey for halfway scroll snaps due
+// to a KVO loopback during the snap animation:
+// - `DragWithoutDeceleration` stops at an intermediate progress without
+//   momentum and initiates a code snap via `AnimateWithStyle`.
+// - In smooth scrolling, `FullscreenWebViewResizer` observes `WKWebView.frame`
+//   via KVO. When the frame animates, it updates `scrollView.contentOffset`
+//   to compensate for the frame inset.
+// - That `contentOffset` change is picked up by `ChromeBroadcaster` via KVO,
+//   which forwards the offset update to `FullscreenModel::SetProgress(0.0)`.
+// - `FullscreenModel` interprets this as a user scroll to 0.0 and logs
+//   `kUserControlled`.
+// The code-snap transition trigger for smooth scrolling is verified via unit
+// tests (`FullscreenMetricsTest.RecordsEnterUserInitiatedFinishedByCode`).
+- (void)testHalfwayScrollFinishedByCode {
+  EARL_GREY_TEST_SKIPPED(
+      @"Smooth scrolling is not supported for halfway scroll test.");
+}
+
 @end
 
 #pragma mark - Bottom omnibox Tests
@@ -1182,6 +1284,15 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       assertWithMatcher:grey_scrollViewContentOffset(
                             CGPointMake(0, expectedYOffset))];
+}
+
+// Smooth scrolling cannot be tested in EarlGrey for halfway scroll snaps due
+// to a KVO loopback on `WKWebView.frame` during the snap animation, which
+// updates `scrollView.contentOffset` and triggers the scroll view delegate to
+// set `FullscreenModel::SetProgress(0.0)` (`kUserControlled`).
+- (void)testHalfwayScrollFinishedByCode {
+  EARL_GREY_TEST_SKIPPED(
+      @"Smooth scrolling is not supported for halfway scroll test.");
 }
 
 @end

@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol GREYAction;
+typedef NS_ENUM(NSInteger, GREYDirection);
+
 // FullscreenAppInterface contains the app-side implementation for helpers.
 // These helpers are compiled into the app binary and can be called from either
 // app or test code.
@@ -23,6 +26,11 @@
 
 // Returns whether the active web view is scrolled to the bottom.
 + (BOOL)isScrolledToBottom;
+
+// Returns an action that drags in `direction` for `amount` points and holds
+// stationary before release to eliminate `UIScrollView` deceleration momentum.
++ (id<GREYAction>)dragWithoutDecelerationInDirection:(GREYDirection)direction
+                                              amount:(CGFloat)amount;
 
 @end
 
