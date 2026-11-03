@@ -8,8 +8,14 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/webnn_context_provider_impl.h"
+
+#if BUILDFLAG(IS_APPLE)
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/webnn/webnn_compiler_service_impl.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "services/webnn/host/execution_provider_initializer.h"
@@ -24,7 +30,12 @@ struct EpDeviceInfo;
 namespace test {
 
 // A minimal fake WebNNBrowserHost implementation for testing.
-class FakeWebNNBrowserHostForTesting : public mojom::WebNNBrowserHost {
+class FakeWebNNBrowserHostForTesting : public mojom::WebNNBrowserHost
+#if BUILDFLAG(IS_APPLE)
+    ,
+                                       public mojom::WebNNCompilerHost
+#endif
+{
  public:
   FakeWebNNBrowserHostForTesting();
   ~FakeWebNNBrowserHostForTesting() override;
@@ -53,10 +64,18 @@ class FakeWebNNBrowserHostForTesting : public mojom::WebNNBrowserHost {
 #if BUILDFLAG(IS_APPLE)
   void CopyCompiledModel(const base::FilePath& compiler_model_path,
                          CopyCompiledModelCallback callback) override;
+
+  // mojom::WebNNCompilerHost:
+  void Terminate() override;
 #endif  // BUILDFLAG(IS_APPLE)
 
  private:
   mojo::Receiver<mojom::WebNNBrowserHost> receiver_;
+#if BUILDFLAG(IS_APPLE)
+  mojo::Remote<mojom::WebNNCompilerService> compiler_service_remote_;
+  std::unique_ptr<WebNNCompilerServiceImpl> compiler_service_;
+  mojo::ReceiverSet<mojom::WebNNCompilerHost> compiler_host_receivers_;
+#endif
 };
 
 class WebNNTestEnvironment {

@@ -4,6 +4,7 @@
 
 #include "services/webnn/webnn_test_environment.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -13,6 +14,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/host/weights_file_provider.h"
+#include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -20,6 +22,11 @@
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 #include "services/webnn/host/weights_file_creator_impl.h"
 #include "services/webnn/public/cpp/in_process_context_provider.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -142,7 +149,24 @@ void FakeWebNNBrowserHostForTesting::RequestCompilerContext(
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
         compiler_host_receiver,
     RequestCompilerContextCallback callback) {
+#if BUILDFLAG(IS_APPLE)
+  if (!base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess) ||
+      !base::FeatureList::IsEnabled(mojom::features::kWebNNCoreML)) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!compiler_service_) {
+    compiler_service_ = std::make_unique<WebNNCompilerServiceImpl>(
+        compiler_service_remote_.BindNewPipeAndPassReceiver());
+  }
+  compiler_host_receivers_.Add(this, std::move(compiler_host_receiver));
+  compiler_service_remote_->CreateCompilerContext(
+      std::move(context_options), context_properties,
+      std::move(model_loader_remote), std::move(compiler_context_receiver),
+      std::move(callback));
+#else
   std::move(callback).Run(false);
+#endif
 }
 #endif
 
@@ -155,7 +179,28 @@ void FakeWebNNBrowserHostForTesting::CreateWeightsFile(
 void FakeWebNNBrowserHostForTesting::CopyCompiledModel(
     const base::FilePath& compiler_model_path,
     CopyCompiledModelCallback callback) {
-  std::move(callback).Run(compiler_model_path);
+  base::ScopedTempDir gpu_temp_dir;
+  if (!gpu_temp_dir.CreateUniqueTempDir()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  base::FilePath dest_path =
+      gpu_temp_dir.GetPath().Append(compiler_model_path.BaseName());
+  if (!base::CopyDirectory(compiler_model_path, dest_path,
+                           /*recursive=*/true)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  // Release ownership; ContextImplCoreml::OnCompiledModelCopied adopts
+  // dest_path.DirName() into its own ScopedTempDir.
+  std::ignore = gpu_temp_dir.Take();
+  std::move(callback).Run(dest_path);
+}
+
+void FakeWebNNBrowserHostForTesting::Terminate() {
+  compiler_service_.reset();
+  compiler_service_remote_.reset();
+  compiler_host_receivers_.Clear();
 }
 #endif
 
