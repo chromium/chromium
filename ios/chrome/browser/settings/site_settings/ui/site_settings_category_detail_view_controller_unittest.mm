@@ -66,6 +66,21 @@ class SiteSettingsCategoryDetailViewControllerTest
     return static_cast<SiteSettingsCategoryDetailViewController*>(controller());
   }
 
+  // Verifies that the Default Setting section has the "Default behavior"
+  // header and subtitle.
+  void ExpectDefaultBehaviorHeader() {
+    TableViewTextHeaderFooterItem* header =
+        static_cast<TableViewTextHeaderFooterItem*>(
+            [GetController().tableViewModel headerForSectionIndex:0]);
+    ASSERT_NE(nil, header);
+    EXPECT_NSEQ(
+        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER),
+        header.text);
+    EXPECT_NSEQ(
+        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE),
+        header.subtitle);
+  }
+
   id mutator_;
   id delegate_;
   base::test::TaskEnvironment task_environment_{
@@ -81,10 +96,11 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
 
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PERMISSIONS_MICROPHONE),
               GetController().title);
-  // Only 1 section initially: Default Setting, with no header when empty.
+  // Only 1 section initially: Default Setting, whose header is shown even
+  // without exceptions.
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(2, NumberOfItemsInSection(0));
-  EXPECT_EQ(nil, [GetController().tableViewModel headerForSectionIndex:0]);
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultBehaviorHeader());
 
   TableViewDetailIconItem* askItem =
       static_cast<TableViewDetailIconItem*>(GetTableViewItem(0, 0));
@@ -149,16 +165,7 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(1, NumberOfItemsInSection(1));
   EXPECT_EQ(1, NumberOfItemsInSection(2));
 
-  TableViewTextHeaderFooterItem* defaultHeader =
-      static_cast<TableViewTextHeaderFooterItem*>(
-          [view_controller.tableViewModel headerForSectionIndex:0]);
-  ASSERT_NE(nil, defaultHeader);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER),
-      defaultHeader.text);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE),
-      defaultHeader.subtitle);
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultBehaviorHeader());
 
   TableViewTextHeaderFooterItem* allowedHeader =
       static_cast<TableViewTextHeaderFooterItem*>(
@@ -185,10 +192,11 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
   EXPECT_EQ(GURL("https://blocked.com"), notAllowedItem.URL.gurl);
   EXPECT_EQ(nil, notAllowedItem.title);
 
-  // Clearing lists should remove the sections and default header again.
+  // Clearing lists should remove the exception sections but keep the default
+  // header.
   [view_controller setAllowedSites:@[] notAllowedSites:@[]];
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(nil, [view_controller.tableViewModel headerForSectionIndex:0]);
+  ASSERT_NO_FATAL_FAILURE(ExpectDefaultBehaviorHeader());
 }
 
 // Tests that selecting Ask or Block calls the mutator, while exception rows

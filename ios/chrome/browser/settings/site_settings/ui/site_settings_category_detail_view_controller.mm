@@ -551,19 +551,14 @@ enum ItemType {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierDefaultSetting];
 
-  BOOL hasSiteExceptions =
-      _allAllowedSites.count > 0 || _allNotAllowedSites.count > 0;
-  if (hasSiteExceptions) {
-    TableViewTextHeaderFooterItem* header =
-        [[TableViewTextHeaderFooterItem alloc]
-            initWithType:ItemTypeDefaultSettingHeader];
-    header.text =
-        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER);
-    header.subtitle =
-        l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE);
-    [model setHeader:header
-        forSectionWithIdentifier:SectionIdentifierDefaultSetting];
-  }
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
+      initWithType:ItemTypeDefaultSettingHeader];
+  header.text =
+      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_HEADER);
+  header.subtitle =
+      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DEFAULT_BEHAVIOR_SUBTITLE);
+  [model setHeader:header
+      forSectionWithIdentifier:SectionIdentifierDefaultSetting];
 
   TableViewDetailIconItem* askItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeDefaultSettingAsk];
