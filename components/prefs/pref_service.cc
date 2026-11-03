@@ -401,6 +401,14 @@ void PrefService::SetString(std::string_view path, std::string_view value) {
   SetUserPrefValue(path, base::Value(value));
 }
 
+void PrefService::SetString(std::string_view path, const char* value) {
+  SetUserPrefValue(path, base::Value(value));
+}
+
+void PrefService::SetString(std::string_view path, std::string&& value) {
+  SetUserPrefValue(path, base::Value(std::move(value)));
+}
+
 void PrefService::SetDict(std::string_view path, base::DictValue dict) {
   SetUserPrefValue(path, base::Value(std::move(dict)));
 }

@@ -276,6 +276,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void SetInteger(std::string_view path, int value);
   void SetDouble(std::string_view path, double value);
   void SetString(std::string_view path, std::string_view value);
+  void SetString(std::string_view path, const char* value);
+  void SetString(std::string_view path, std::string&& value);
   void SetDict(std::string_view path, base::DictValue dict);
   void SetList(std::string_view path, base::ListValue list);
   void SetFilePath(std::string_view path, const base::FilePath& value);
