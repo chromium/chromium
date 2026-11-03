@@ -1780,26 +1780,6 @@
             ]
         }
     ],
-    "AutofillAiUsePrivateAi": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiUsePrivateAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiWalletPassBranding2026": [
         {
             "platforms": [

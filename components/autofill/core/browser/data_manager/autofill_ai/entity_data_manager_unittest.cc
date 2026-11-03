@@ -425,9 +425,13 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
           .is_null());
 
   // Opt in the user prior to enabling the Private AI feature.
-  client().SetUpPrefsAndIdentityForAutofillAi();
-  ASSERT_TRUE(GetObsoleteAutofillAiOptInStatus(client().GetPrefs(),
-                                               client().GetIdentityManager()));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kAutofillAiUsePrivateAi);
+    client().SetUpPrefsAndIdentityForAutofillAi();
+    ASSERT_TRUE(GetObsoleteAutofillAiOptInStatus(
+        client().GetPrefs(), client().GetIdentityManager()));
+  }
 
   // Enable the Private AI feature flag and simulate profile startup by
   // recreating `EntityDataManager`.

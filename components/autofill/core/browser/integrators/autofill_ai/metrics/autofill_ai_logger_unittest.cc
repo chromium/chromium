@@ -1182,6 +1182,9 @@ TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
 class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
  public:
   AutofillAiMqlsMetricsTest() {
+    feature_list_.InitAndDisableFeature(features::kAutofillAiUsePrivateAi);
+    SetAutofillAiOptInStatus(autofill_client(),
+                             AutofillAiOptInStatus::kOptedIn);
     logs_uploader_ = std::make_unique<
         optimization_guide::TestModelQualityLogsUploaderService>(&local_state_);
 
@@ -1292,6 +1295,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
       logs_uploader_;
