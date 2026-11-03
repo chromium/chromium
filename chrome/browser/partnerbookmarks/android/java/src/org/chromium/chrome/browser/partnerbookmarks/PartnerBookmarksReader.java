@@ -8,10 +8,11 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -31,10 +32,12 @@ import javax.annotation.concurrent.GuardedBy;
 /** Reads bookmarks from the partner content provider (if any). */
 @NullMarked
 public class PartnerBookmarksReader {
+    @JniType("::PartnerBookmarksReader")
+    interface NativePartnerBookmarksReader extends JniTypeToken {}
+
     private static final String TAG = "PartnerBMReader";
     private static final Set<FaviconUpdateObserver> sFaviconUpdateObservers = new HashSet<>();
     private static final float DESIRED_FAVICON_SIZE_DP = 16.0f;
-    @VisibleForTesting static final long NULL_NATIVE_POINTER = 0;
 
     /** Root bookmark id reserved for the implied root of the bookmarks */
     static final long ROOT_FOLDER_ID = 0;
@@ -45,8 +48,7 @@ public class PartnerBookmarksReader {
     /** Storage for failed favicon retrieval attempts to throttle future requests. */
     private @Nullable PartnerBookmarksFaviconThrottle mFaviconThrottle;
 
-    // JNI c++ pointer
-    private long mNativePartnerBookmarksReader;
+    private @Nullable JniUniquePtr<NativePartnerBookmarksReader> mNativePartnerBookmarksReader;
 
     /** The context (used to get a ContentResolver) */
     protected Context mContext;
@@ -110,14 +112,14 @@ public class PartnerBookmarksReader {
      * @param browserCustomizations Provides status of partner customizations.
      * @param nativePartnerBookmarksReader Native counterpart to this class.
      */
-    public PartnerBookmarksReader(
+    PartnerBookmarksReader(
             Context context,
             PartnerBrowserCustomizations browserCustomizations,
-            long nativePartnerBookmarksReader) {
+            @Nullable JniUniquePtr<NativePartnerBookmarksReader> nativePartnerBookmarksReader) {
         mContext = context;
         mNativePartnerBookmarksReader = nativePartnerBookmarksReader;
         // Catch case where the underlying profile is null, bail out.
-        if (mNativePartnerBookmarksReader == NULL_NATIVE_POINTER) {
+        if (mNativePartnerBookmarksReader == null) {
             return;
         }
 
@@ -157,7 +159,7 @@ public class PartnerBookmarksReader {
 
     /** Asynchronously read bookmarks from the partner content provider */
     public void readBookmarks(PartnerBookmark.BookmarkIterator bookmarkIterator) {
-        if (mNativePartnerBookmarksReader == 0) {
+        if (mNativePartnerBookmarksReader == null) {
             Log.e(TAG, "Partner bookmarks can't be read because the native counterpart is null.");
             return;
         }
@@ -212,6 +214,7 @@ public class PartnerBookmarksReader {
                         }
                     }
                 };
+        assert mNativePartnerBookmarksReader != null;
         return PartnerBookmarksReaderJni.get()
                 .addPartnerBookmark(
                         mNativePartnerBookmarksReader,
@@ -249,6 +252,7 @@ public class PartnerBookmarksReader {
             return;
         }
         Log.i(TAG, "Partner bookmarks creation complete.");
+        assert mNativePartnerBookmarksReader != null;
         PartnerBookmarksReaderJni.get()
                 .partnerBookmarksCreationComplete(mNativePartnerBookmarksReader);
     }
@@ -278,8 +282,10 @@ public class PartnerBookmarksReader {
                 observer.onCompletedFaviconLoading();
             }
         }
-        PartnerBookmarksReaderJni.get().destroy(mNativePartnerBookmarksReader);
-        mNativePartnerBookmarksReader = 0;
+        if (mNativePartnerBookmarksReader != null) {
+            mNativePartnerBookmarksReader.destroy();
+            mNativePartnerBookmarksReader = null;
+        }
         mShutDown = true;
     }
 
@@ -431,14 +437,11 @@ public class PartnerBookmarksReader {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("Profile*") Profile profile);
-
-        void reset(long nativePartnerBookmarksReader);
-
-        void destroy(long nativePartnerBookmarksReader);
+        @Nullable JniUniquePtr<NativePartnerBookmarksReader> init(
+                @JniType("Profile*") Profile profile);
 
         long addPartnerBookmark(
-                long nativePartnerBookmarksReader,
+                JniPtr<NativePartnerBookmarksReader> self,
                 @JniType("std::u16string") @Nullable String url,
                 @JniType("std::u16string") String title,
                 boolean isFolder,
@@ -449,7 +452,7 @@ public class PartnerBookmarksReader {
                 int desiredFaviconSizePx,
                 FetchFaviconCallback callback);
 
-        void partnerBookmarksCreationComplete(long nativePartnerBookmarksReader);
+        void partnerBookmarksCreationComplete(JniPtr<NativePartnerBookmarksReader> self);
 
         @JniType("std::string")
         String getNativeUrlString(@JniType("std::string") String url);

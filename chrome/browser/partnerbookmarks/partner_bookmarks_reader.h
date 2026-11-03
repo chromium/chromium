@@ -35,8 +35,6 @@ class PartnerBookmarksReader {
 
   ~PartnerBookmarksReader();
 
-  void Destroy(JNIEnv* env);
-  void Reset(JNIEnv* env);
   int64_t AddPartnerBookmark(
       JNIEnv* env,
       const std::u16string& url,
