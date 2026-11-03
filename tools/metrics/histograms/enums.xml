@@ -6271,6 +6271,7 @@ shown properly on the user-facing crash UI.
 <enum name="IOSContextualPanelItemType">
   <int value="0" label="Sample Panel Item"/>
   <int value="1" label="(Obsolete) Price Insights Item"/>
+  <int value="2" label="Reader Mode Item"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
