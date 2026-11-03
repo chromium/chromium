@@ -41,9 +41,7 @@ class ScopedOverviewAnimationSettings {
   ~ScopedOverviewAnimationSettings();
 
   void AddObserver(ui::ImplicitAnimationObserver* observer);
-  void CacheRenderSurface();
   void DeferPaint();
-  void TrilinearFiltering();
   ui::LayerAnimator* GetAnimator();
 
  private:

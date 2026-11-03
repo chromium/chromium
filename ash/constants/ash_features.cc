@@ -1587,9 +1587,6 @@ BASE_FEATURE(kTerminalDev, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables experimental feature for resizing tiling windows.
 BASE_FEATURE(kTilingWindowResize, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables trilinear filtering.
-BASE_FEATURE(kTrilinearFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use the Android staging SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2709,12 +2706,6 @@ bool IsTouchpadInDiagnosticsAppEnabled() {
 
 bool IsTouchscreenCalibrationEnabled() {
   return base::FeatureList::IsEnabled(kEnableTouchscreenCalibration);
-}
-
-bool IsTrilinearFilteringEnabled() {
-  static bool use_trilinear_filtering =
-      base::FeatureList::IsEnabled(kTrilinearFiltering);
-  return use_trilinear_filtering;
 }
 
 bool ShouldUseAndroidStagingSmds() {
