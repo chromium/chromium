@@ -896,8 +896,9 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   EXPECT_EQ(2, observer.notify_content_changed_count);
 }
 
-// The test is flaky. See https://crbug.com/324282438
-TEST_P(IndexedDBTest, DISABLED_DatabaseOperationSequencing) {
+// Verifies that database operations (create, delete, and re-create object
+// stores) within an upgrade transaction execute in the correct sequence.
+TEST_P(IndexedDBTest, DatabaseOperationSequencing) {
   const std::u16string kObjectStoreName1 = u"os1";
   const std::u16string kObjectStoreName2 = u"os2";
   const std::u16string kObjectStoreName3 = u"os3";
