@@ -108,8 +108,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Requested scale for retained surface root render-pass backings, matching
   // the resolution at which the frame content was rasterized. This changes
-  // backing resolution, not its intended on-screen scale. Values at or below
-  // 1, non-finite values, and a missing Mojo field request no enlargement.
+  // backing resolution, not its intended on-screen scale. Invalid values and a
+  // missing Mojo field are treated as 1.
   float surface_backing_size_scale_factor = 1.f;
 
   gfx::SizeF scrollable_viewport_size;

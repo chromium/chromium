@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -58,6 +62,22 @@ class SurfaceAggregatorPixelTest : public VizPixelTestWithParam {
   base::TimeTicks next_display_time_ = base::TimeTicks() + base::Seconds(1);
 };
 
+class SurfaceAggregatorBackingScalePixelTest
+    : public SurfaceAggregatorPixelTest {
+ public:
+  SurfaceAggregatorBackingScalePixelTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kRenderNonMergedSurfaceAtBackingScale);
+    // Use production backing allocation and prevent renderer-side pass
+    // bypassing so tests exercise the allocated render-pass texture.
+    renderer_settings_.dont_round_texture_sizes_for_pixel_tests = false;
+    renderer_settings_.disable_render_pass_bypassing = true;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 INSTANTIATE_TEST_SUITE_P(,
                          SurfaceAggregatorPixelTest,
                          testing::ValuesIn(GetGpuRendererTypes()),
@@ -65,6 +85,11 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SurfaceAggregatorPixelTest);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SurfaceAggregatorBackingScalePixelTest,
+                         testing::ValuesIn(GetRendererTypes()),
+                         testing::PrintToStringParamName());
 
 SharedQuadState* CreateAndAppendTestSharedQuadState(
     CompositorRenderPass* render_pass,
@@ -197,6 +222,127 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleAggregatedFrame) {
   EXPECT_TRUE(this->RunPixelTest(
       pass_list, base::FilePath(FILE_PATH_LITERAL("blue_yellow.png")),
       pixel_comparator));
+}
+
+// Verifies aggregation and rendering when a very small backing scale produces
+// a logical render-pass size below one pixel before enclosing.
+TEST_P(SurfaceAggregatorBackingScalePixelTest, DrawAtVerySmallBackingScale) {
+  // Embeds a retained blue 100x100 child over red with backing and embedding
+  // scales of 0.009. Verifies:
+  // - Aggregation encloses the 0.9x0.9 output to 1x1.
+  // - Renderer coordinate conversion and sampling use the non-zero logical
+  //   output size to produce one blue pixel over red.
+  constexpr float kBackingScale = 0.009f;
+  constexpr float kEmbeddingScale = 0.009f;
+  const gfx::Size child_size(100, 100);
+  const gfx::Rect child_rect(child_size);
+  const gfx::Rect viewport_rect(device_viewport_size_);
+
+  auto child_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryChildFrameSinkId, kIsChildRoot);
+  ParentLocalSurfaceIdAllocator child_allocator;
+  child_allocator.GenerateId();
+  const LocalSurfaceId child_local_surface_id =
+      child_allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId child_surface_id(child_support->frame_sink_id(),
+                                   child_local_surface_id);
+
+  root_allocator_.GenerateId();
+  const LocalSurfaceId root_local_surface_id =
+      root_allocator_.GetCurrentLocalSurfaceId();
+  const SurfaceId root_surface_id(support_->frame_sink_id(),
+                                  root_local_surface_id);
+
+  // Submit the child at its original 100x100 dimensions. Aggregation applies
+  // the backing scale from the frame metadata:
+  //
+  //   100 * kBackingScale
+  //     = 100 * 0.009
+  //     = 0.9
+  //
+  // ScaleToEnclosingRect() rounds the non-empty 0.9x0.9 output up to 1x1.
+  {
+    auto child_pass = CompositorRenderPass::Create();
+    child_pass->SetNew(CompositorRenderPassId{1}, child_rect, child_rect,
+                       gfx::Transform());
+    SharedQuadState* child_shared_state = CreateAndAppendTestSharedQuadState(
+        child_pass.get(), gfx::Transform(), child_size);
+    auto* blue_quad = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    blue_quad->SetNew(child_shared_state, child_rect, child_rect,
+                      SkColors::kBlue, /*anti_aliasing_off=*/true);
+
+    CompositorFrame child_frame =
+        CompositorFrameBuilder().AddRenderPass(std::move(child_pass)).Build();
+    child_frame.metadata.surface_backing_size_scale_factor = kBackingScale;
+    child_support->SubmitCompositorFrame(child_local_surface_id,
+                                         std::move(child_frame));
+  }
+
+  // Embed the original 100x100 child at 0.009x and retain its root pass. During
+  // aggregation, the embedding transform is combined with compensation for the
+  // backing scale:
+  //
+  //   kEmbeddingScale * (1 / kBackingScale)
+  //     = 0.009 * (1 / 0.009)
+  //     = identity
+  //
+  // The aggregated 1x1 child pass therefore occupies one pixel in the root.
+  {
+    auto root_pass = CompositorRenderPass::Create();
+    root_pass->SetNew(CompositorRenderPassId{1}, viewport_rect, viewport_rect,
+                      gfx::Transform());
+
+    gfx::Transform embedding_transform;
+    embedding_transform.Scale(kEmbeddingScale);
+    SharedQuadState* surface_shared_state = CreateAndAppendTestSharedQuadState(
+        root_pass.get(), embedding_transform, child_size);
+    auto* surface_quad = root_pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();
+    surface_quad->SetAll(surface_shared_state, child_rect, child_rect,
+                         /*needs_blending=*/false,
+                         SurfaceRange(std::nullopt, child_surface_id),
+                         SkColors::kWhite,
+                         /*stretch_content=*/false, /*reflection=*/false,
+                         /*merge=*/false);
+
+    // Draw red behind the child so a missing or incorrectly sampled child pass
+    // is visible in the output.
+    SharedQuadState* background_shared_state =
+        CreateAndAppendTestSharedQuadState(root_pass.get(), gfx::Transform(),
+                                           device_viewport_size_);
+    auto* red_background =
+        root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    red_background->SetNew(background_shared_state, viewport_rect,
+                           viewport_rect, SkColors::kRed,
+                           /*anti_aliasing_off=*/false);
+
+    support_->SubmitCompositorFrame(
+        root_local_surface_id,
+        CompositorFrameBuilder().AddRenderPass(std::move(root_pass)).Build());
+  }
+
+  SurfaceAggregator aggregator(manager_.surface_manager(),
+                               resource_provider_.get(), false);
+  auto aggregated_frame = aggregator.Aggregate(
+      root_surface_id, GetNextDisplayTime(), gfx::OVERLAY_TRANSFORM_NONE);
+
+  ASSERT_EQ(2u, aggregated_frame.render_pass_list.size());
+  // The retained child's 0.9x0.9 output must enclose to 1x1 to avoid zero
+  // divisors.
+  EXPECT_EQ(gfx::Rect(1, 1),
+            aggregated_frame.render_pass_list.front()->output_rect);
+
+  // The 1x1 logical child pass gets a 64x64 backing. Its scaled blue quad
+  // covers [0, 0.9) on each axis, including the texel center at (0.5, 0.5).
+  // Antialiasing is disabled, so that texel is fully blue. The child pass's
+  // single logical pixel maps to the root's top-left pixel over a red
+  // background.
+  std::vector<SkColor> expected_output_colors(
+      viewport_rect.width() * viewport_rect.height(),
+      SkColors::kRed.toSkColor());
+  expected_output_colors.front() = SkColors::kBlue.toSkColor();
+  EXPECT_TRUE(RunPixelTest(&aggregated_frame.render_pass_list,
+                           &expected_output_colors,
+                           cc::AlphaDiscardingExactPixelComparator()));
 }
 
 // Tests a surface quad that has a non-identity transform into its pass.

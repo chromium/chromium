@@ -961,17 +961,19 @@ void SurfaceAggregator::EmitSurfaceContent(
   size_t passes_to_copy =
       merge_pass ? num_render_passes - 1 : num_render_passes;
 
-  // Only retained root passes need enlargement. Non-root effect passes are
-  // already sized at the external page scale. Preserve the source coordinate
-  // space throughout video capture.
+  // Only retained root passes need backing-scale adjustment. Non-root effect
+  // passes are already sized at the external page scale. Preserve the source
+  // coordinate space throughout video capture.
   float root_pass_backing_scale = 1.0f;
   if (base::FeatureList::IsEnabled(
           features::kRenderNonMergedSurfaceAtBackingScale) &&
       !merge_pass && !has_video_capture) {
     root_pass_backing_scale = frame_metadata.surface_backing_size_scale_factor;
-    root_pass_backing_scale = std::isfinite(root_pass_backing_scale)
-                                  ? std::max(root_pass_backing_scale, 1.0f)
-                                  : 1.0f;
+    if (!std::isfinite(root_pass_backing_scale) ||
+        root_pass_backing_scale <= 0.0f ||
+        !std::isfinite(1.0f / root_pass_backing_scale)) {
+      root_pass_backing_scale = 1.0f;
+    }
   }
 
   for (size_t j = 0; j < passes_to_copy; ++j) {
@@ -1015,7 +1017,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     copy_pass->transform_to_root_target.PostConcat(combined_transform);
     copy_pass->transform_to_root_target.PostConcat(
         dest_pass->transform_to_root_target);
-    // Scale quads into the enlarged backing and remove the same backing-only
+    // Scale quads into the adjusted backing and remove the same backing-only
     // scale from the pass's mapping to the root target, preserving its
     // on-screen geometry.
     copy_pass->transform_to_root_target.Scale(1.0f / pass_backing_scale);

@@ -36,8 +36,8 @@ struct CompositorFrameMetadata {
   float page_scale_factor;
   // Requested scale for retained surface root render-pass backings, matching
   // the resolution at which the frame content was rasterized. This changes
-  // backing resolution, not its intended on-screen scale. Values at or below
-  // 1, non-finite values, and a missing field request no enlargement.
+  // backing resolution, not its intended on-screen scale. Invalid values and a
+  // missing field are treated as 1.
   float surface_backing_size_scale_factor;
   gfx.mojom.SizeF scrollable_viewport_size;
   gfx.mojom.Size visible_viewport_size;
