@@ -98,7 +98,7 @@ constexpr CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
 constexpr CGFloat kEndButtonFakeboxTrailingSpaceUICleanup = 20.0;
 constexpr CGFloat kEndButtonFakeboxIPadTrailingSpace = 18.0;
 constexpr CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
-constexpr CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
+constexpr CGFloat kEndButtonOmniboxTrailingSpace = 14.0;
 
 // Distance between the trailing fakebox icon and the placeholder text.
 constexpr CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
