@@ -145,7 +145,6 @@ void OmniboxPopupFullPresenter::Show() {
         app_menu_control_observation_.Observe(
             browser_view->toolbar_button_provider()->GetAppMenuControl());
       }
-#if defined(USE_AURA)
       auto* elements = BrowserElementsViews::From(browser_view->browser());
       if (views::View* strip =
               elements
@@ -155,7 +154,6 @@ void OmniboxPopupFullPresenter::Show() {
         vertical_tab_strip_observation_.Observe(strip);
       }
       UpdateVerticalTabStripOcclusion();
-#endif  // USE_AURA
     }
   }
 }
@@ -163,6 +161,8 @@ void OmniboxPopupFullPresenter::Show() {
 void OmniboxPopupFullPresenter::Hide() {
   pending_focus_task_.Cancel();
   refocus_on_activation_ = false;
+  // The popup stops being observed before it's hidden.
+  KeepBrowserPaintingAsActiveAcrossHandoff();
   browser_widget_observation_.Reset();
   browser_focus_manager_observation_.Reset();
   // Cancel any pending context menu request, since the base `Hide()` only
@@ -431,7 +431,17 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
                        weak_factory_.GetWeakPtr()));
   }
 
+  // In immersive fullscreen on macOS, the popup's parent is an overlay, so
+  // activating the popup doesn't lock the browser window.
+  if (active && widget == GetWidget() && !browser_paint_as_active_lock_) {
+    if (views::Widget* browser_widget = GetBrowserWidget()) {
+      browser_paint_as_active_lock_ = browser_widget->LockPaintAsActive();
+    }
+  }
+
   if (!active) {
+    KeepBrowserPaintingAsActiveAcrossHandoff();
+
     // The browser or popup widget deactivating may mean another window, such
     // as a bubble, took activation. Check once activation settles, since
     // handoffs between the browser and the popup deactivate one widget before
@@ -801,6 +811,7 @@ void OmniboxPopupFullPresenter::WidgetDestroyed() {
   event_monitor_.reset();
   forward_events_timer_.Stop();
   popup_widget_observation_.Reset();
+  KeepBrowserPaintingAsActiveAcrossHandoff();
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync. Skip this when
   // `Hide()` is discarding the widget on purpose, since clearing the state here
@@ -869,6 +880,15 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
         event_screen_point.x() < window_bounds.right() &&
         event_screen_point.y() >= window_bounds.y() &&
         event_screen_point.y() < top_container_bounds.bottom();
+  }
+
+  // Treat vertical tabs, outside the top container, like horizontal tabs.
+  // Otherwise clicking a tab blurs the omnibox before the tab switch saves its
+  // state. See crbug.com/580059964.
+  if (views::View* strip = vertical_tab_strip_observation_.GetSource();
+      strip && strip->IsDrawn() &&
+      strip->GetBoundsInScreen().Contains(event_screen_point)) {
+    contains_top_container = true;
   }
 
   bool contains_popup = false;
@@ -996,4 +1016,26 @@ void OmniboxPopupFullPresenter::UpdateVerticalTabStripOcclusion() {
   // Ensure events in the covered part reach the strip.
   layer->SetClipRect(clip);
 #endif  // USE_AURA
+}
+
+void OmniboxPopupFullPresenter::KeepBrowserPaintingAsActiveAcrossHandoff() {
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (!browser_widget || !browser_widget->ShouldPaintAsActive()) {
+    return;
+  }
+  if (!browser_paint_as_active_lock_) {
+    browser_paint_as_active_lock_ = browser_widget->LockPaintAsActive();
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OmniboxPopupFullPresenter::
+                         ReleaseBrowserPaintAsActiveLockIfPopupInactive,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void OmniboxPopupFullPresenter::
+    ReleaseBrowserPaintAsActiveLockIfPopupInactive() {
+  if (!GetWidget() || !GetWidget()->IsActive()) {
+    browser_paint_as_active_lock_.reset();
+  }
 }
