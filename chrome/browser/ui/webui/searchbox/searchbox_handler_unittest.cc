@@ -3351,13 +3351,7 @@ TEST_F(OmniboxComposeboxHandlerTest, LensSearchEligibility) {
 TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_SingleActiveTabHandoffToSidePanel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {omnibox::kContextManagementInComposebox,
-       contextual_tasks::kContextualTasks,
-       contextual_tasks::kContextualTasksSidePanel,
-       contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3417,13 +3411,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
 TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_OmniboxPageActionSetsEntryPoint206) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {omnibox::kContextManagementInComposebox,
-       contextual_tasks::kContextualTasks,
-       contextual_tasks::kContextualTasksSidePanel,
-       contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3481,13 +3469,7 @@ TEST_F(OmniboxComposeboxHandlerTest,
 TEST_F(OmniboxComposeboxHandlerTest,
        ProcessContextAndOpenUrl_MultiTabWithActiveTabOpensSidePanel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {omnibox::kContextManagementInComposebox,
-       contextual_tasks::kContextualTasks,
-       contextual_tasks::kContextualTasksSidePanel,
-       contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3559,13 +3541,7 @@ TEST_F(
     OmniboxComposeboxHandlerTest,
     ProcessContextAndOpenUrl_MultiTabWithoutActiveTabDoesNotBypassToSidePanel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {omnibox::kContextManagementInComposebox,
-       contextual_tasks::kContextualTasks,
-       contextual_tasks::kContextualTasksSidePanel,
-       contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
@@ -3620,14 +3596,7 @@ TEST_F(
 TEST_F(OmniboxComposeboxHandlerTest,
        StartContextualAimQueryInSidePanel_SignedOutUnificationOpensSidePanel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{omnibox::kContextManagementInComposebox, {}},
-       {contextual_tasks::kContextualTasksSidePanel, {}},
-       {lens::features::kLensSidePanelUnification,
-        {{"allow-signed-out", "true"}}}},
-      /*disabled_features=*/{
-          contextual_tasks::kContextualTasksForceEntryPointEligibility});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   testing::NiceMock<MockAimEligibilityService> mock_aim_eligibility_service(
       *profile()->GetPrefs(), nullptr, nullptr, nullptr);
@@ -3698,13 +3667,7 @@ TEST_F(
     OmniboxComposeboxHandlerTest,
     StartContextualAimQueryInSidePanel_ReturnsFalseForInvalidOrIneligibleInputs) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {omnibox::kContextManagementInComposebox,
-       contextual_tasks::kContextualTasks,
-       contextual_tasks::kContextualTasksSidePanel,
-       contextual_tasks::kContextualTasksForceEntryPointEligibility},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
 
   sessions::SessionTabHelper::CreateForWebContents(
       web_contents_.get(), base::BindRepeating([](content::WebContents*) {
