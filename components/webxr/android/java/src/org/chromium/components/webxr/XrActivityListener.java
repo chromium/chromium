@@ -4,6 +4,8 @@
 
 package org.chromium.components.webxr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
@@ -11,6 +13,10 @@ import android.os.Bundle;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -29,10 +35,13 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("webxr")
 @NullMarked
 public class XrActivityListener implements ActivityLifecycleCallbacks {
+    @JniType("::webxr::XrActivityListener")
+    interface NativeXrActivityListener extends JniTypeToken {}
+
     private static final String TAG = "XrActivityListener";
     private static final boolean DEBUG_LOGS = false;
 
-    private long mNativeXrActivityListener;
+    private @Nullable JniRawPtr<NativeXrActivityListener> mNativeXrActivityListener;
     private final ImmutableWeakReference<Activity> mWeakActivity;
     private final ImmutableWeakReference<Application> mWeakApplication;
 
@@ -41,31 +50,41 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
      * to which the provided webContents belongs.
      */
     @CalledByNative
-    private XrActivityListener(long nativeXrActivityListener, final WebContents webContents) {
-        if (DEBUG_LOGS) {
-            Log.i(TAG, "constructor, nativeXrActivityListener=" + nativeXrActivityListener);
+    XrActivityListener(
+            JniRawPtr<NativeXrActivityListener> nativeXrActivityListener,
+            final WebContents webContents) {
+        try {
+            if (DEBUG_LOGS) {
+                Log.i(TAG, "constructor, nativeXrActivityListener=" + nativeXrActivityListener);
+            }
+
+            ThreadUtils.assertOnUiThread();
+
+            assert webContents != null;
+            WindowAndroid window = webContents.getTopLevelNativeWindow();
+            assert window != null;
+            Activity activity = window.getActivity().get();
+            assert activity != null;
+
+            mWeakActivity = new ImmutableWeakReference<Activity>(activity);
+
+            Application application = activity.getApplication();
+            mWeakApplication = new ImmutableWeakReference<Application>(application);
+
+            application.registerActivityLifecycleCallbacks(this);
+            mNativeXrActivityListener = nativeXrActivityListener;
+        } catch (Throwable t) {
+            nativeXrActivityListener.release();
+            throw t;
         }
-
-        ThreadUtils.assertOnUiThread();
-
-        assert webContents != null;
-        WindowAndroid window = webContents.getTopLevelNativeWindow();
-        assert window != null;
-        Activity activity = window.getActivity().get();
-        assert activity != null;
-
-        mNativeXrActivityListener = nativeXrActivityListener;
-        mWeakActivity = new ImmutableWeakReference<Activity>(activity);
-
-        Application application = activity.getApplication();
-        mWeakApplication = new ImmutableWeakReference<Application>(application);
-
-        application.registerActivityLifecycleCallbacks(this);
     }
 
     @CalledByNative
     private void onNativeDestroy() {
-        mNativeXrActivityListener = 0;
+        if (mNativeXrActivityListener != null) {
+            mNativeXrActivityListener.release();
+            mNativeXrActivityListener = null;
+        }
 
         // If we cannot get the application, then we don't have a need to unregister the
         // callbacks.
@@ -76,9 +95,9 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityResumed(Activity activity) {
-        if (mWeakActivity.get() != activity || mNativeXrActivityListener == 0) return;
+        if (mWeakActivity.get() != activity || mNativeXrActivityListener == null) return;
 
-        XrActivityListenerJni.get().onActivityResumed(mNativeXrActivityListener);
+        XrActivityListenerJni.get().onActivityResumed(assumeNonNull(mNativeXrActivityListener));
     }
 
     // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
@@ -103,6 +122,6 @@ public class XrActivityListener implements ActivityLifecycleCallbacks {
 
     @NativeMethods
     interface Natives {
-        void onActivityResumed(long nativeXrActivityListener);
+        void onActivityResumed(JniPtr<NativeXrActivityListener> self);
     }
 }

@@ -12,6 +12,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/child_process_id_util.h"
 #include "device/vr/android/xr_activity_state_handler.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webxr/android/xr_jni_headers/XrActivityListener_jni.h"
@@ -37,8 +38,9 @@ XrActivityListener::XrActivityListener(
     return;
   }
   ScopedJavaLocalRef<jobject> j_xr_activity_listener =
-      Java_XrActivityListener_Constructor(env, (int64_t)this,
-                                          webxr::GetJavaWebContents(frame_id));
+      Java_XrActivityListener_Constructor(
+          env, jni_zero::MakeRaw(this),
+          webxr::GetJavaWebContents(frame_id));
   if (j_xr_activity_listener.is_null()) {
     return;
   }
