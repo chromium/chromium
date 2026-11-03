@@ -22,8 +22,8 @@ framework via `infobars::InfoBarSpec` and `infobars::BrowserInfoBarManager`.
   appearance and behavior, including its `InfoBarIdentifier`, message text or
   template (`SetMessageText()` / `SetMessageTextTemplate()`), icon
   (`SetIcon()`), buttons (`AddOkButton()` / `AddCancelButton()`), links,
-  priority (`SetPriority()`), and lifecycle scope (`InfoBarScope::kTab` or
-  `InfoBarScope::kGlobal`).
+  priority (`SetPriority()`), promotional policy gating (`SetIsPromotional()`),
+  and lifecycle scope (`InfoBarScope::kTab` or `InfoBarScope::kGlobal`).
 * **`infobars::BrowserInfoBarManager`**
   ([`browser_infobar_manager.h`](browser_infobar_manager.h)): A browser-process
   global feature (`BrowserInfoBarManager::From(g_browser_process)`) that stores
@@ -116,6 +116,26 @@ calling `ContentInfoBarManager::AddInfoBar()`:
   // For a global InfoBar:
   manager->Hide(infobars::InfoBarDelegate::MY_FEATURE_INFOBAR_DELEGATE);
   ```
+
+### 4. Promotional InfoBars and Enterprise Policy (`PromotionsEnabled`)
+
+For infobars that are promotional in nature (e.g., prompting to set Chrome as
+default, pin to taskbar, or explore promotional features), mark the spec with
+`.SetIsPromotional(true)` in `InfoBarSpec::Builder`.
+
+`BrowserInfoBarManager` centrally checks promotional specs against the
+`PromotionsEnabled` enterprise policy (`prefs::kPromotionsEnabled` in
+`local_state`). When disabled, promotional infobars are automatically
+suppressed across `Show()`, `Replace()`, and `ShowGlobally()`, and the
+`InfoBar.Centralized.SuppressedByPolicy` histogram is recorded.
+
+> **Note on Policy Dynamic Refresh:**
+> Policy suppression is checked at show time (`Show()`, `Replace()`,
+> `ShowGlobally()`). Dynamic refreshes of the promotional policy do not
+> auto-close already-visible infobars mid-session to avoid abruptly dismissing
+> a prompt the user may actively be reading. Dynamic refreshes apply to any
+> newly triggered infobars and take full effect for existing sessions on next
+> browser restart.
 
 ---
 

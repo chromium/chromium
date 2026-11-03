@@ -2185,6 +2185,8 @@ chromium-metrics-reviews@google.com.
                  close or navigation expiry"/>
     <variant name="LinkClicked" summary="Link click action"/>
     <variant name="Show" summary="Show/display action"/>
+    <variant name="SuppressedByPolicy"
+        summary="Show/replace request suppressed by enterprise policy"/>
   </token>
 </histogram>
 

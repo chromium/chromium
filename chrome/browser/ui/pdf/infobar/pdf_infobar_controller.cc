@@ -177,6 +177,7 @@ void PdfInfoBarController::RegisterInfoBarSpec() {
                                ? omnibox::kChromeProductIcon
                                : omnibox::kProductChromeRefreshOldIcon)
           .SetScope(infobars::InfoBarScope::kTab)
+          .SetIsPromotional(true)
           .AddOkButton(l10n_util::GetStringUTF16(
                            IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL),
                        base::BindRepeating(

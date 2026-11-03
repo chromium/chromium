@@ -31,6 +31,7 @@ TEST_F(InfoBarSpecTest, BuildDefaultSpec) {
   EXPECT_EQ(spec.icon(), nullptr);
   EXPECT_EQ(spec.icon_id(), 0);
   EXPECT_TRUE(spec.expire_on_navigation());
+  EXPECT_FALSE(spec.is_promotional());
   EXPECT_TRUE(spec.close_on_accept());
   EXPECT_TRUE(spec.close_on_cancel());
   EXPECT_TRUE(spec.close_on_extra_button());
@@ -79,6 +80,7 @@ TEST_F(InfoBarSpecTest, BuildCustomSpec) {
           .SetPriority(InfoBarDelegate::InfobarPriority::kCriticalSecurity)
           .SetIconId(123)
           .SetExpireOnNavigation(false)
+          .SetIsPromotional(true)
           .AddOkButton(ok_label, ok_cb)
           .AddCancelButton(cancel_label, cancel_cb)
           .SetDismissAction(dismiss_cb)
@@ -93,6 +95,7 @@ TEST_F(InfoBarSpecTest, BuildCustomSpec) {
             InfoBarDelegate::InfobarPriority::kCriticalSecurity);
   EXPECT_EQ(spec.icon_id(), 123);
   EXPECT_FALSE(spec.expire_on_navigation());
+  EXPECT_TRUE(spec.is_promotional());
   EXPECT_EQ(spec.ok_button_label(), ok_label);
   EXPECT_FALSE(spec.ok_button_callback().is_null());
   EXPECT_EQ(spec.cancel_button_label(), cancel_label);

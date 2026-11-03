@@ -244,6 +244,7 @@ void RegisterInfoBars() {
                                  ? omnibox::kChromeProductIcon
                                  : vector_icons::kProductRefreshIcon)
                     .SetScope(infobars::InfoBarScope::kGlobal)
+                    .SetIsPromotional(true)
                     // Only offer to pin in normal, non-incognito,
                     // non-guest browsers.
                     .SetBrowserFilter(base::BindRepeating(
@@ -396,6 +397,7 @@ void RegisterInfoBars() {
             .SetExpireOnNavigation(false)
             .SetShouldHideInFullscreen(true)
             .SetShouldAnimate(false)
+            .SetIsPromotional(true)
             .SetBrowserFilter(
                 base::BindRepeating([](BrowserWindowInterface* browser) {
                   const Profile* profile = browser->GetProfile();
@@ -433,6 +435,7 @@ void RegisterInfoBars() {
                                  : omnibox::kProductChromeRefreshOldIcon)
             .SetScope(InfoBarScope::kGlobal)
             .SetExpireOnNavigation(false)
+            .SetIsPromotional(true)
             .SetBrowserFilter(
                 base::BindRepeating([](BrowserWindowInterface* browser) {
                   return session_restore_infobar::
@@ -463,6 +466,7 @@ void RegisterInfoBars() {
             .SetScope(InfoBarScope::kGlobal)
             .SetExpireOnNavigation(false)
             .SetShouldHideInFullscreen(true)
+            .SetIsPromotional(true)
             .SetBrowserFilter(
                 base::BindRepeating([](BrowserWindowInterface* browser) {
                   const Profile* profile = browser->GetProfile();

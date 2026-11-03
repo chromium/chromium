@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -34,6 +36,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobars_switches.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1032,6 +1035,77 @@ TEST_F(BrowserInfoBarManagerUnitTest, GlobalCascadeCloseAndTeardown) {
   DetachedWebContentsActionObserver detached_observer(
       manager(), ContentInfoBarManager::FromWebContents(b4_tab0), global_id);
   browser4->Close(/*remove_infobars_before_closing_tabs=*/false);
+}
+
+TEST_F(BrowserInfoBarManagerUnitTest,
+       PromotionalSpecsRespectPromotionsEnabledPref) {
+  const auto promo_tab_id = InfoBarDelegate::TEST_INFOBAR;
+  const auto promo_global_id =
+      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+  const auto non_promo_tab_id = InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE;
+
+  manager()->Register(InfoBarSpec::Builder(promo_tab_id)
+                          .SetMessageText(u"Promo Tab")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetIsPromotional(true)
+                          .SetAllowDuplicates(true)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(promo_global_id)
+                          .SetMessageText(u"Promo Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetIsPromotional(true)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(non_promo_tab_id)
+                          .SetMessageText(u"Non-Promo Tab")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  auto browser = CreateBrowserWindow();
+  content::WebContents* contents = browser->AddTab();
+  tabs::TabInterface* tab = browser->tab_strip_model().GetActiveTab();
+  auto* content_manager = ContentInfoBarManager::FromWebContents(contents);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  ASSERT_NE(nullptr, local_state);
+
+  base::HistogramTester histogram_tester;
+
+  // When promotions are disabled by policy/pref, promotional infobars are
+  // suppressed across Show(), Replace(), and ShowGlobally(), while
+  // non-promotional infobars still show.
+  local_state->SetBoolean(prefs::kPromotionsEnabled, false);
+
+  EXPECT_EQ(nullptr, manager()->Show(tab, promo_tab_id));
+  EXPECT_FALSE(manager()->ShowGlobally(promo_global_id));
+  EXPECT_EQ(0u, content_manager->infobars().size());
+  histogram_tester.ExpectBucketCount("InfoBar.Centralized.SuppressedByPolicy",
+                                     promo_tab_id, 1);
+  histogram_tester.ExpectBucketCount("InfoBar.Centralized.SuppressedByPolicy",
+                                     promo_global_id, 1);
+
+  infobars::InfoBar* non_promo = manager()->Show(tab, non_promo_tab_id);
+  ASSERT_NE(nullptr, non_promo);
+  EXPECT_EQ(1u, content_manager->infobars().size());
+
+  // Replacing a shown infobar with a promotional spec is also suppressed.
+  EXPECT_EQ(nullptr, manager()->Replace(non_promo, promo_tab_id));
+  EXPECT_EQ(1u, content_manager->infobars().size());
+  EXPECT_EQ(non_promo_tab_id,
+            content_manager->infobars()[0]->delegate()->GetIdentifier());
+  histogram_tester.ExpectBucketCount("InfoBar.Centralized.SuppressedByPolicy",
+                                     promo_tab_id, 2);
+
+  // Re-enabling promotions allows promotional infobars to be shown and
+  // replaced.
+  local_state->SetBoolean(prefs::kPromotionsEnabled, true);
+
+  infobars::InfoBar* replaced = manager()->Replace(non_promo, promo_tab_id);
+  ASSERT_NE(nullptr, replaced);
+  EXPECT_EQ(promo_tab_id, replaced->delegate()->GetIdentifier());
+
+  EXPECT_NE(nullptr, manager()->Show(tab, promo_tab_id));
+  EXPECT_TRUE(manager()->ShowGlobally(promo_global_id));
+  EXPECT_EQ(3u, content_manager->infobars().size());
 }
 
 }  // namespace infobars

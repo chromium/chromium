@@ -130,6 +130,12 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetIsCloseable(bool is_closeable) {
   return *this;
 }
 
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetIsPromotional(
+    bool is_promotional) {
+  spec_.is_promotional_ = is_promotional;
+  return *this;
+}
+
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetAllowDuplicates(
     bool allow_duplicates) {
   spec_.allow_duplicates_ = allow_duplicates;

@@ -19,12 +19,14 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1959,6 +1961,52 @@ IN_PROC_BROWSER_TEST_F(
   CloseBrowserSynchronously(browser2);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kAccepted, results[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       PromotionalSpecsRespectPromotionsEnabledPref) {
+  const auto promo_tab_id = InfoBarDelegate::TEST_INFOBAR;
+  const auto promo_global_id =
+      InfoBarDelegate::DEFAULT_BROWSER_INFOBAR_DELEGATE;
+  const auto non_promo_id = InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE;
+
+  manager()->Register(InfoBarSpec::Builder(promo_tab_id)
+                          .SetMessageText(u"Promo Tab")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetIsPromotional(true)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(promo_global_id)
+                          .SetMessageText(u"Promo Global")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetIsPromotional(true)
+                          .Build());
+  manager()->Register(InfoBarSpec::Builder(non_promo_id)
+                          .SetMessageText(u"Non-Promo")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                               false);
+
+  EXPECT_FALSE(manager()->Show(tab, promo_tab_id));
+  EXPECT_FALSE(manager()->ShowGlobally(promo_global_id));
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
+
+  infobars::InfoBar* non_promo = manager()->Show(tab, non_promo_id);
+  ASSERT_TRUE(non_promo);
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_FALSE(manager()->Replace(non_promo, promo_tab_id));
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled, true);
+
+  EXPECT_TRUE(manager()->Replace(non_promo, promo_tab_id));
+  EXPECT_TRUE(manager()->ShowGlobally(promo_global_id));
+  EXPECT_EQ(2u, infobar_manager->infobars().size());
 }
 
 }  // namespace infobars

@@ -129,6 +129,7 @@ class InfoBarSpec {
   bool should_hide_in_fullscreen() const { return should_hide_in_fullscreen_; }
   bool should_animate() const { return should_animate_; }
   bool is_closeable() const { return is_closeable_; }
+  bool is_promotional() const { return is_promotional_; }
   bool allow_duplicates() const { return allow_duplicates_; }
   bool close_on_accept() const { return close_on_accept_; }
   bool close_on_cancel() const { return close_on_cancel_; }
@@ -180,6 +181,7 @@ class InfoBarSpec {
   bool should_hide_in_fullscreen_ = false;
   bool should_animate_ = true;
   bool is_closeable_ = true;
+  bool is_promotional_ = false;
   bool allow_duplicates_ = false;
   bool close_on_accept_ = true;
   bool close_on_cancel_ = true;
@@ -285,6 +287,10 @@ class InfoBarSpec::Builder {
   Builder& SetShouldHideInFullscreen(bool should_hide_in_fullscreen);
   Builder& SetShouldAnimate(bool should_animate);
   Builder& SetIsCloseable(bool is_closeable);
+  // Marks the infobar as promotional. Promotional infobars are suppressed when
+  // the PromotionsEnabled enterprise policy (prefs::kPromotionsEnabled) is
+  // disabled.
+  Builder& SetIsPromotional(bool is_promotional);
   // Allows multiple instances of this spec to coexist on the same tab.
   Builder& SetAllowDuplicates(bool allow_duplicates);
   // Pressing the OK button closes the infobar by default. Pass false to

@@ -139,9 +139,23 @@ void SessionRestoreInfoBarManager::ShowInfoBar(
       return;
     }
 
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    if (!browser_infobar_manager) {
+      return;
+    }
+
     profile_ = &profile;
-    profile_->AddObserver(this);
     message_type_ = message_type;
+
+    if (!browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)) {
+      profile_ = nullptr;
+      message_type_ = InfobarMessageType::kNone;
+      return;
+    }
+
+    profile_->AddObserver(this);
 
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile_->GetPrefs());
@@ -156,13 +170,6 @@ void SessionRestoreInfoBarManager::ShowInfoBar(
       ignored_metric_recorded_for_session_ = false;
       action_taken_for_session_ = false;
       RecordInfoBarAction(message_type_, InfobarAction::kShown);
-    }
-
-    auto* browser_infobar_manager =
-        infobars::BrowserInfoBarManager::From(g_browser_process);
-    if (browser_infobar_manager) {
-      browser_infobar_manager->ShowGlobally(
-          infobars::InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE);
     }
     return;
   }

@@ -24,9 +24,11 @@
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -478,7 +480,8 @@ BrowserWindowInterface* BrowserForInfoBar(infobars::InfoBar* infobar) {
 DEFINE_USER_DATA(BrowserInfoBarManager);
 
 BrowserInfoBarManager::BrowserInfoBarManager(BrowserProcess* browser_process)
-    : scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
+    : local_state_(browser_process->local_state()),
+      scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
                                 *this) {
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
@@ -523,6 +526,11 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
   }
   CHECK(tab);
   CHECK(params.scope.value_or(it->second.scope()) == InfoBarScope::kTab);
+  if (IsBlockedByPolicy(it->second)) {
+    base::UmaHistogramSparse("InfoBar.Centralized.SuppressedByPolicy",
+                             identifier);
+    return nullptr;
+  }
 
   auto* contents = tab->GetContents();
   if (!contents) {
@@ -555,6 +563,11 @@ infobars::InfoBar* BrowserInfoBarManager::Replace(
   }
   CHECK(old_infobar);
   CHECK(params.scope.value_or(it->second.scope()) == InfoBarScope::kTab);
+  if (IsBlockedByPolicy(it->second)) {
+    base::UmaHistogramSparse("InfoBar.Centralized.SuppressedByPolicy",
+                             identifier);
+    return nullptr;
+  }
 
   infobars::InfoBarManager* manager = old_infobar->owner();
   if (!manager) {
@@ -596,6 +609,11 @@ bool BrowserInfoBarManager::ShowGlobally(
     return false;
   }
   CHECK(it->second.scope() == InfoBarScope::kGlobal);
+  if (IsBlockedByPolicy(it->second)) {
+    base::UmaHistogramSparse("InfoBar.Centralized.SuppressedByPolicy",
+                             identifier);
+    return false;
+  }
 
   if (active_global_infobars_.contains(identifier)) {
     return false;
@@ -892,6 +910,11 @@ void BrowserInfoBarManager::TrackTabInstance(infobars::InfoBar* infobar) {
   if (!infobar_manager_observations_.IsObservingSource(manager)) {
     infobar_manager_observations_.AddObservation(manager);
   }
+}
+
+bool BrowserInfoBarManager::IsBlockedByPolicy(const InfoBarSpec& spec) const {
+  return spec.is_promotional() && local_state_ &&
+         !local_state_->GetBoolean(prefs::kPromotionsEnabled);
 }
 
 bool BrowserInfoBarManager::IsTrackedGlobalInstance(

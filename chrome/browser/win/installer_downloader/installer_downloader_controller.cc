@@ -182,6 +182,7 @@ void InstallerDownloaderController::RegisterInfoBar() {
                        ? omnibox::kChromeProductIcon
                        : vector_icons::kProductRefreshIcon)
           .SetScope(infobars::InfoBarScope::kGlobal)
+          .SetIsPromotional(true)
           // The infobar should not be shown on guest profiles and non normal
           // browser type.
           .SetBrowserFilter(

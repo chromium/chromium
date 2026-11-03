@@ -22,6 +22,7 @@
 
 class BrowserProcess;
 class BrowserWindowInterface;
+class PrefService;
 
 namespace tabs {
 class TabInterface;
@@ -53,8 +54,10 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier) const;
 
   // Shows the infobar in `tab`. Returns the added infobar, or null if none
-  // was added. The infobar can be closed (and destroyed) at any time; a
-  // caller that retains the pointer must hold it via InfoBar::AsWeakPtr().
+  // was added (for example, when a promotional spec is suppressed because
+  // `prefs::kPromotionsEnabled` is disabled). The infobar can be closed (and
+  // destroyed) at any time; a caller that retains the pointer must hold it
+  // via InfoBar::AsWeakPtr().
   infobars::InfoBar* Show(
       tabs::TabInterface* tab,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier);
@@ -66,13 +69,18 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       InfoBarShowParams params);
 
   // Replaces `old_infobar` in place without reporting a result for it.
+  // Returns the replacement infobar, or null if replacement did not occur
+  // (for example, when a promotional spec is suppressed because
+  // `prefs::kPromotionsEnabled` is disabled), in which case `old_infobar`
+  // remains in place untouched.
   infobars::InfoBar* Replace(
       infobars::InfoBar* old_infobar,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier,
       InfoBarShowParams params = InfoBarShowParams());
 
   // Shows the infobar in every browser. Returns true if any instance was
-  // added.
+  // added. Promotional specs are suppressed and return false when
+  // `prefs::kPromotionsEnabled` is disabled.
   bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
   // As above, with per-show overrides applied to every instance, including
@@ -115,6 +123,12 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   friend class RegistryInfoBarDelegate;
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);
+
+  // Returns true if `spec` is suppressed by enterprise policy. Checked at show
+  // time (`Show()`, `Replace()`, `ShowGlobally()`); already-visible infobars
+  // are intentionally not auto-closed mid-session on dynamic policy updates to
+  // avoid dismissing prompts the user may actively be reading.
+  bool IsBlockedByPolicy(const InfoBarSpec& spec) const;
   bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
 
   // Records a tab-scoped `infobar` that was just added, so that
@@ -122,6 +136,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
   // when it goes away.
   void TrackTabInstance(infobars::InfoBar* infobar);
 
+  const raw_ptr<PrefService> local_state_;
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
 
   std::map<infobars::InfoBarDelegate::InfoBarIdentifier, InfoBarSpec>

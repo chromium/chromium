@@ -136,6 +136,9 @@ behavior when the feature requires different handling for:
 - User dismissal.
 - Closing after acceptance.
 - Priority.
+- Promotional classification (`SetIsPromotional(true)` when the InfoBar is a
+  promotional prompt that must be suppressed when the `PromotionsEnabled`
+  enterprise policy / `prefs::kPromotionsEnabled` is disabled).
 
 Do not assume that changing scope alone preserves the lifecycle behavior
 of a legacy InfoBar.
