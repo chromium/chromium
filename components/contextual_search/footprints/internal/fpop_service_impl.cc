@@ -52,6 +52,7 @@ const net::NetworkTrafficAnnotationTag kFpopTrafficAnnotation =
         data: "OAuth token and the My Activity setting ID. Different IDs "
               "will be used to check different activity control settings."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "footprints-pa.googleapis.com"
         user_data {
           type: ACCESS_TOKEN
         }
