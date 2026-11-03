@@ -28,10 +28,13 @@ ExtensionsMenuCoordinator::ExtensionsMenuCoordinator(
       extensions_container_(CHECK_DEREF(extensions_container)) {}
 
 ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
-  if (views::Widget* const menu = GetExtensionsMenuWidget()) {
-    // Close the menu widget synchronously as it may hold references back to the
-    // coordinator and its host Browser.
-    menu->CloseNow();
+  if (views::View* const bubble_contents =
+          bubble_view_observation_.GetSource()) {
+    if (views::Widget* const menu = bubble_contents->GetWidget()) {
+      // Close the menu widget synchronously as it may hold references back to
+      // the coordinator and its host Browser.
+      menu->CloseNow();
+    }
   }
 }
 
@@ -56,7 +59,14 @@ void ExtensionsMenuCoordinator::Hide() {
             extensions_features::kExtensionsMenuAccessControl),
         base::NotFatalUntil::M162);
   if (views::Widget* const menu = GetExtensionsMenuWidget()) {
-    menu->CloseNow();
+    // Close the widget asynchronously so any views or delegate frames currently
+    // on the stack (e.g., when a synchronous accessibility event spins a nested
+    // message loop that invokes Hide()) can unwind safely before teardown.
+    menu->Close();
+    // Immediately stop tracking the view so IsShowing() returns false.
+    // `bubble_view_observation_` and `menu_delegate_` are reset when the widget
+    // finishes closing in OnViewIsDeleting() (or if reopened before then).
+    bubble_tracker_.SetView(nullptr);
   }
 }
 
@@ -83,6 +93,20 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   CHECK(base::FeatureList::IsEnabled(
             extensions_features::kExtensionsMenuAccessControl),
         base::NotFatalUntil::M162);
+  if (views::View* const prev_bubble = bubble_view_observation_.GetSource()) {
+    // If a previous bubble widget is still awaiting asynchronous teardown from
+    // Hide(), finish closing it now so OnViewIsDeleting() cleans up its
+    // observation and delegate in the proper view-destruction order before
+    // observing the new bubble contents.
+    if (views::Widget* const menu = prev_bubble->GetWidget()) {
+      menu->CloseNow();
+    } else {
+      bubble_tracker_.SetView(nullptr);
+      bubble_view_observation_.Reset();
+      menu_delegate_.reset();
+    }
+  }
+
   views::BubbleBorder::Arrow arrow =
       extensions_container_views ? extensions_container_views->GetPopupArrow()
                                  : views::BubbleBorder::TOP_RIGHT;
