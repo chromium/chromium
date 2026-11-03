@@ -23,6 +23,12 @@ class ContextMenuNativeDelegateImpl {
       content::WebContents* const web_contents,
       content::ContextMenuParams* const context_menu_params);
 
+  ContextMenuNativeDelegateImpl(const ContextMenuNativeDelegateImpl&) = delete;
+  ContextMenuNativeDelegateImpl& operator=(
+      const ContextMenuNativeDelegateImpl&) = delete;
+
+  ~ContextMenuNativeDelegateImpl();
+
   void RetrieveImageForContextMenu(
       JNIEnv* env,
       content::RenderFrameHost* render_frame_host,
