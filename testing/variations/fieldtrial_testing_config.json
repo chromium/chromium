@@ -3446,6 +3446,40 @@
             ]
         }
     ],
+    "CADisplayLinkInGpu": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_MacOS26",
+                    "params": {
+                        "CADisplayLinkInGpuMinMacOSMajorVersion": "26"
+                    },
+                    "enable_features": [
+                        "CADisplayLinkInGpu"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_MacOS15",
+                    "params": {
+                        "CADisplayLinkInGpuMinMacOSMajorVersion": "15"
+                    },
+                    "enable_features": [
+                        "CADisplayLinkInGpu"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTGoogleBottomBar": [
         {
             "platforms": [
