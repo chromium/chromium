@@ -8,6 +8,8 @@ assert(toolkit_views)
 
 source_set("memory_bank") {
   public = [
+    "memory_banks_hotkey_manager.h",
+    "memory_banks_hotkey_manager_factory.h",
     "memory_banks_palette_bubble_controller.h",
     "memory_banks_palette_bubble_view.h",
     "save_to_memory_bank_bubble_controller.h",
@@ -15,13 +17,20 @@ source_set("memory_bank") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//components/keyed_service/core",
+    "//components/prefs",
     "//content/public/browser",
+    "//ui/base",
     "//ui/views",
   ]
 }
 
 source_set("memory_bank_impl") {
   sources = [
+    "memory_banks_hotkey_manager.cc",
+    "memory_banks_hotkey_manager_factory.cc",
     "memory_banks_palette_bubble_controller.cc",
     "memory_banks_palette_bubble_view.cc",
     "save_to_memory_bank_bubble_controller.cc",
@@ -30,16 +39,24 @@ source_set("memory_bank_impl") {
   deps = [
     ":memory_bank",
     "//chrome/app:generated_resources",
+    "//chrome/browser/context_hub:features",
+    "//chrome/browser/context_hub:memory_banks_shortcut",
+    "//chrome/browser/context_hub:prefs",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_manager_service",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/common",
+    "//components/prefs",
     "//components/tabs:public",
+    "//content/public/browser",
     "//ui/base",
     "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
+    "//ui/views",
     "//ui/views/controls/webview",
     "//url",
   ]
@@ -48,6 +65,8 @@ source_set("memory_bank_impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "memory_banks_hotkey_manager_factory_unittest.cc",
+    "memory_banks_hotkey_manager_unittest.cc",
     "memory_banks_palette_bubble_controller_unittest.cc",
     "memory_banks_palette_bubble_view_unittest.cc",
     "save_to_memory_bank_bubble_view_unittest.cc",
@@ -55,11 +74,19 @@ source_set("unit_tests") {
   deps = [
     ":memory_bank",
     ":memory_bank_impl",
+    "//base/test:test_support",
     "//chrome/app:generated_resources",
+    "//chrome/browser/context_hub:features",
+    "//chrome/browser/context_hub:memory_banks_shortcut",
+    "//chrome/browser/context_hub:prefs",
+    "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/test:test_support",
+    "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/events:event_constants",
+    "//ui/events:events_base",
     "//ui/views",
   ]
 }

@@ -412,6 +412,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/views/context_hub/memory_banks_hotkey_manager_factory.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service_factory.h"
@@ -1147,6 +1148,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   MediaNotificationServiceFactory::GetInstance();
+  MemoryBanksHotkeyManagerFactory::GetInstance();
 #endif
   MerchantTrustServiceFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
