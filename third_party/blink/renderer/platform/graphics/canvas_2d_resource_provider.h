@@ -169,11 +169,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
     return context_provider_wrapper_;
   }
 
-  bool ShouldReplaceTargetBuffer(
-      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
-
-  void EnsureResourceReadyForDraw();
-
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
   // The maximum number of in-flight resources waiting to be used for

@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -659,11 +660,90 @@ void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
       GetAnimatedImageFrameIndexMap(id));
 }
 
+bool BaseRenderingContext2D::ShouldReplaceTargetBuffer(
+    PaintImage::ContentId content_id) {
+  CHECK(shared_image_provider_->IsAccelerated());
+
+  // If the canvas is single buffered, concurrent read/writes to the resource
+  // are allowed. Note that we ignore the resource lost case as well since
+  // that only indicates that we did not get a sync token for read/write
+  // synchronization which is not a requirement for single buffered canvas.
+  if (shared_image_provider_->IsSingleBuffered()) {
+    return false;
+  }
+
+  // If the resource is missing or lost, we cannot use it for writes again.
+  if (!shared_image_provider_->resource() ||
+      shared_image_provider_->resource()->IsLost()) {
+    return true;
+  }
+
+  // We have the only ref to the resource which implies there are no active
+  // readers.
+  if (shared_image_provider_->resource_->HasOneRef()) {
+    return false;
+  }
+
+  // Another context may have a read reference to this resource. Flush the
+  // deferred queue in that context so that we don't need to copy.
+  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
+
+  return !shared_image_provider_->resource_->HasOneRef();
+}
+
+void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
+  CHECK(shared_image_provider_->IsAccelerated());
+  DCHECK(shared_image_provider_->resource_);
+
+  // Since the resource will be updated, the cached snapshot is no longer
+  // valid. Note that it is important to release this reference here to not
+  // trigger copy-on-write below from the resource ref in the snapshot.
+  // Note that this is valid for single buffered mode also, since while the
+  // resource/mailbox remains the same, the snapshot needs an updated sync
+  // token for these writes.
+  shared_image_provider_->cached_snapshot_.reset();
+
+  if (ShouldReplaceTargetBuffer(shared_image_provider_->cached_content_id_)) {
+    shared_image_provider_->cached_content_id_ = PaintImage::kInvalidContentId;
+    DCHECK(!shared_image_provider_->current_resource_has_write_access_)
+        << "Write access must be released before sharing the resource";
+
+    auto old_resource = std::move(shared_image_provider_->resource_);
+    auto* old_resource_shared_image =
+        static_cast<CanvasResourceSharedImage*>(old_resource.get());
+
+    shared_image_provider_->resource_ =
+        shared_image_provider_->NewOrRecycledResource();
+    if (shared_image_provider_->must_preserve_content_on_copy_on_write_) {
+      auto [src_token, dst_token] =
+          shared_image_provider_->RasterInterface()->CopySharedImage(
+              old_resource_shared_image->GetSharedImage(),
+              old_resource_shared_image->acquire_sync_token(),
+              shared_image_provider_->resource()->GetSharedImage(),
+              shared_image_provider_->resource()->acquire_sync_token(),
+              gfx::Rect(shared_image_provider_->Size()), gfx::Point(0, 0));
+      old_resource_shared_image->SetReleaseSyncToken(src_token);
+      shared_image_provider_->resource_->SetReleaseSyncToken(dst_token);
+    } else {
+      // If we're not copying over the previous contents, we need to ensure
+      // that the image is cleared on the next BeginRasterCHROMIUM.
+      shared_image_provider_->is_cleared_ = false;
+    }
+
+    UMA_HISTOGRAM_BOOLEAN(
+        "Blink.Canvas.ContentChangeMode",
+        shared_image_provider_->must_preserve_content_on_copy_on_write_);
+    // By default, the contents of the new resource must be preserved on a
+    // subsequent CopyOnWrite.
+    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+  }
+}
+
 void BaseRenderingContext2D::RasterRecordToSharedImage(
     cc::PaintRecord last_recording) {
   CHECK(shared_image_provider_->IsAccelerated());
   if (!shared_image_provider_->IsGpuContextLost()) {
-    shared_image_provider_->EnsureResourceReadyForDraw();
+    EnsureResourceReadyForDraw();
     shared_image_provider_->EnsureWriteAccess();
 
     const bool needs_clear = !shared_image_provider_->is_cleared_;
@@ -811,7 +891,7 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
       return false;
     }
 
-    shared_image_provider_->EnsureResourceReadyForDraw();
+    EnsureResourceReadyForDraw();
 
     // The below write to the resource's SharedImage will need to be preserved
     // in the case of a subsequent CopyOnWrite.

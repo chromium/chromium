@@ -426,6 +426,9 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void NotifyGpuContextLostTask(base::WeakPtr<Canvas2DResourceProvider>);
 
+  bool ShouldReplaceTargetBuffer(
+      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
+  void EnsureResourceReadyForDraw();
   void RasterRecordToSharedImage(cc::PaintRecord last_recording);
   void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
