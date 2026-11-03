@@ -3349,6 +3349,18 @@ if (enable_java_templates) {
         ]
       }
 
+      if (defined(invoker.kotlin_friend_deps)) {
+        _friend_paths = []
+        foreach(_friend_dep, invoker.kotlin_friend_deps) {
+          _friend_out_dir = get_label_info(_friend_dep, "target_out_dir")
+          _friend_name = get_label_info(_friend_dep, "name")
+          _friend_paths +=
+              [ rebase_path("$_friend_out_dir/$_friend_name.turbine.jar",
+                            root_build_dir) ]
+        }
+        args += [ "--friend-paths=$_friend_paths" ]
+      }
+
       # SDK jar must be first on classpath.
       if (invoker.include_android_sdk) {
         args += [
@@ -4113,6 +4125,9 @@ if (enable_java_templates) {
 
           if (defined(invoker.enable_compose)) {
             enable_compose = invoker.enable_compose
+          }
+          if (defined(invoker.kotlin_friend_deps)) {
+            kotlin_friend_deps = invoker.kotlin_friend_deps
           }
         }
       }

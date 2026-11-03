@@ -142,6 +142,12 @@ def _ParseOptions(argv):
         '--compiler-plugin-jar', help='Path to compiler plugin JAR.'
     )
     parser.add_argument(
+        '--friend-paths',
+        action='append',
+        default=[],
+        help='List of friend jar paths for -Xfriend-paths.',
+    )
+    parser.add_argument(
         '--chromium-code',
         action='store_true',
         help='Whether code being compiled should be built with stricter '
@@ -162,6 +168,7 @@ def _ParseOptions(argv):
     args.classpath = action_helpers.parse_gn_list(args.classpath)
     args.kotlin_srcjars = action_helpers.parse_gn_list(args.kotlin_srcjars)
     args.java_srcjars = action_helpers.parse_gn_list(args.java_srcjars)
+    args.friend_paths = action_helpers.parse_gn_list(args.friend_paths)
 
     source_files = []
     for arg in extra_args:
@@ -227,6 +234,10 @@ def main(argv):
     if args.compiler_plugin_jar:
         kotlinc_cmd += [
             f'-Xplugin={args.compiler_plugin_jar}',
+        ]
+    if args.friend_paths:
+        kotlinc_cmd += [
+            f'-Xfriend-paths={",".join(args.friend_paths)}',
         ]
 
     if args.generated_dir:
