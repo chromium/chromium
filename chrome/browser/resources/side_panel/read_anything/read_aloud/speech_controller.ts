@@ -4,8 +4,6 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
-import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
 import {NodeStore} from '../content/node_store.js';
 import type {ContentPosition} from '../content/read_anything_types.js';
 import {ContentPositionSource} from '../content/read_anything_types.js';
@@ -59,8 +57,6 @@ export class SpeechController {
       AudioBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private visualBrowserProxy_: VisualBrowserProxy =
-      VisualBrowserProxyImpl.getInstance();
   private model_: SpeechModel = new SpeechModel();
   private speech_: SpeechBrowserProxy = SpeechBrowserProxyImpl.getInstance();
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
@@ -200,10 +196,6 @@ export class SpeechController {
   }
 
   onLineFocusChange(position: CaretPosition|null) {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return;
-    }
-
     let contentPosition: ContentPosition|null = null;
     if (position) {
       let node: Node = position.offsetNode;
@@ -1010,24 +1002,7 @@ export class SpeechController {
       // prevent the previous highlights from being added. However, not
       // showing the previous highlight is preferred to 10+ second speech
       // delays / crashes.
-      // This is technically a bug with both line focus and playing from
-      // selection. However, this bug is much more noticeable with line focus.
-      // Therefore, this change is being temporarily guarded with the line
-      // focus flag to allow it to be more safely tested in case it causes
-      // unexpected bugs. Longer term, moveSpeechForward should be the default
-      // regardless of the line focus flag OR reading mode should implement
-      // a better searching algorithm for finding the node in the DOM instead
-      // of looking through every element one-by-one.
-      if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-        this.readAloudModel_.moveSpeechForward();
-      } else {
-        this.highlightCurrentGranularity_(
-            currentSegments, /*scrollIntoView=*/ false,
-            /*shouldUpdateSentenceHighlight=*/ true,
-            /*shouldSetLastReadingPos=*/ false);
-        this.moveToNextGranularity_();
-      }
-
+      this.readAloudModel_.moveSpeechForward();
       currentSegments = this.readAloudModel_.getCurrentTextSegments();
       hasCurrentText = currentSegments.length > 0;
       foundSegment = this.findSegment_(currentSegments, node, offset);

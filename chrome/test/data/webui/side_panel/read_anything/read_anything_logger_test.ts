@@ -196,30 +196,15 @@ suite('Logger', () => {
     assertEquals(1, metrics.getCallCount('recordEmptyState'));
   });
 
-  test('line focus session with flag enabled', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
+  test('line focus session is recorded', () => {
     logger.logLineFocusSession();
     assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
   });
 
-  test('line focus session with flag disabled', () => {
-    visualBrowserProxy.lineFocusEnabled = false;
-    logger.logLineFocusSession();
-    assertEquals(0, metrics.getCallCount('recordLineFocusSession'));
-  });
-
-  test('line focus toggled with flag enabled', () => {
-    visualBrowserProxy.lineFocusEnabled = true;
+  test('line focus toggled', () => {
     logger.logLineFocusToggled(true);
     logger.logLineFocusToggled(false);
     assertEquals(2, metrics.getCallCount('recordLineFocusToggled'));
-  });
-
-  test('line focus toggled with flag disabled', () => {
-    visualBrowserProxy.lineFocusEnabled = false;
-    logger.logLineFocusToggled(true);
-    logger.logLineFocusToggled(false);
-    assertEquals(0, metrics.getCallCount('recordLineFocusToggled'));
   });
 
   test('logVoiceSpeed', () => {

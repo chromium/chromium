@@ -68,15 +68,10 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   isEnabled(): boolean {
-    return this.visualBrowserProxy_.isLineFocusEnabled() &&
-        this.model_.isSessionActive();
+    return this.model_.isSessionActive();
   }
 
   onKeyDown(e: KeyboardEvent, container: HTMLElement, height: number): boolean {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return false;
-    }
-
     if (isLineFocusShortcut(e)) {
       this.toggle(!this.isEnabled(), container, height);
       this.logger_.logLineFocusToggled(this.isEnabled());
@@ -92,27 +87,21 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onScroll() {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.model_.getCurrentMoveMode().onScroll();
-    }
+    this.model_.getCurrentMoveMode().onScroll();
   }
 
   onScrollEnd(newScrollTop: number) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.model_.getCurrentMoveMode().onScrollEnd(newScrollTop);
-    }
+    this.model_.getCurrentMoveMode().onScrollEnd(newScrollTop);
   }
 
   onMouseMove(y: number) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled() &&
-        !this.speechController_.isSpeechActive()) {
+    if (!this.speechController_.isSpeechActive()) {
       this.model_.getCurrentMoveMode().onMouseMove(y);
     }
   }
 
   onMouseMoveInToolbar(y: number) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled() &&
-        !this.speechController_.isSpeechActive()) {
+    if (!this.speechController_.isSpeechActive()) {
       this.model_.getCurrentMoveMode().onMouseMoveInToolbar(y);
     }
   }
@@ -127,15 +116,11 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   onWordBoundary(segments: Segment[]) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.model_.getCurrentMoveMode().onWordBoundary(segments);
-    }
+    this.model_.getCurrentMoveMode().onWordBoundary(segments);
   }
 
   onTextLocationsChange(container: HTMLElement, height: number) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.model_.getCurrentMoveMode().onTextLocationsChange(container, height);
-    }
+    this.model_.getCurrentMoveMode().onTextLocationsChange(container, height);
   }
 
   restoreFromPrefs(
@@ -196,9 +181,6 @@ export class LineFocusController implements MoveModeDelegate {
 
   private propagateLineFocus_(
       style: LineFocusStyle, movement: LineFocusMovement, isOn: boolean) {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return;
-    }
     const lineFocusValue = isOn ? this.lineFocusToEnumValue_(style, movement) :
                                   this.visualBrowserProxy_.getLineFocusOff();
     const lastNonDisabledLineFocus =
@@ -220,9 +202,6 @@ export class LineFocusController implements MoveModeDelegate {
   }
 
   toggle(isOn: boolean, container: HTMLElement, height: number) {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return;
-    }
     if (this.isEnabled() === isOn) {
       return;
     }

@@ -128,12 +128,6 @@ suite('LineFocusController', () => {
     assertFalse(lineFocusController.isEnabled());
   });
 
-  test('isEnabled is false with flag disabled', () => {
-    visualBrowserProxy.lineFocusEnabled = false;
-    lineFocusController.toggle(true, defaultContainer, defaultHeight);
-    assertFalse(lineFocusController.isEnabled());
-  });
-
   test('onStyleChange updates style only', () => {
     lineFocusController.toggle(false, defaultContainer, defaultHeight);
     const isStatic = lineFocusController.getCurrentLineFocusMovement() ===
@@ -178,18 +172,6 @@ suite('LineFocusController', () => {
     assertEquals(
         visualBrowserProxy.lineFocusLargeCursorWindow,
         (await visualBrowserProxy.whenCalled('onLineFocusChanged'))[1]);
-  });
-
-  test('style and movement changes do nothing with flag disabled', () => {
-    visualBrowserProxy.lineFocusEnabled = false;
-
-    lineFocusController.onStyleChange(
-        LineFocusStyle.SMALL_WINDOW, defaultContainer, defaultHeight);
-    assertEquals(0, visualBrowserProxy.getCallCount('onLineFocusChanged'));
-
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    assertEquals(0, visualBrowserProxy.getCallCount('onLineFocusChanged'));
   });
 
   test('onMovementChange propagates line focus mode', async () => {
@@ -378,20 +360,6 @@ suite('LineFocusController', () => {
     assertLT(startingTop, model.getTop());
   });
 
-  test('onScroll delegates only when flag enabled', () => {
-    let scrollCount = 0;
-    model.getCurrentMoveMode().onScroll = () => {
-      scrollCount++;
-    };
-
-    lineFocusController.onScroll();
-    assertEquals(1, scrollCount);
-
-    visualBrowserProxy.lineFocusEnabled = false;
-    lineFocusController.onScroll();
-    assertEquals(1, scrollCount);
-  });
-
   test('keyboard toggle is logged', async () => {
     const container = createShortContainer();
     lineFocusController.toggle(false, container, defaultHeight);
@@ -402,19 +370,6 @@ suite('LineFocusController', () => {
     metrics.reset();
     lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
     assertFalse(await metrics.whenCalled('recordLineFocusToggled'));
-  });
-
-  test('onMouseMove does nothing if flag disabled', () => {
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
-    visualBrowserProxy.lineFocusEnabled = false;
-    lineFocusContentPositionChanged = false;
-
-    lineFocusController.onMouseMove(101);
-
-    assertFalse(lineFocusContentPositionChanged);
   });
 
   test('onMouseMove does nothing when speech active', () => {
@@ -433,18 +388,6 @@ suite('LineFocusController', () => {
     lineFocusController.onMouseMove(101);
 
     assertFalse(lineFocusContentPositionChanged);
-  });
-
-  test('onMouseMoveInToolbar does nothing if flag disabled', () => {
-    visualBrowserProxy.lineFocusEnabled = false;
-    lineFocusController.onMovementChange(
-        LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
-
-    lineFocusController.onMouseMoveInToolbar(101);
-
-    assertEquals(0, model.getTop());
   });
 
   test('onMouseMoveInToolbar does nothing when speech active', () => {
@@ -652,15 +595,6 @@ suite('LineFocusController', () => {
 
       lineFocusController.toggle(true, defaultContainer, defaultHeight);
 
-      assertFalse(lineFocusModesChanged);
-    });
-
-    test('does nothing if flag is disabled', () => {
-      visualBrowserProxy.lineFocusEnabled = false;
-
-      lineFocusController.toggle(true, defaultContainer, defaultHeight);
-
-      assertFalse(lineFocusController.isEnabled());
       assertFalse(lineFocusModesChanged);
     });
   });

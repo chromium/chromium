@@ -252,15 +252,11 @@ export class ReadAnythingLogger {
   }
 
   logLineFocusSession() {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.metrics.recordLineFocusSession();
-    }
+    this.metrics.recordLineFocusSession();
   }
 
   logLineFocusToggled(enabled: boolean) {
-    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
-      this.metrics.recordLineFocusToggled(enabled);
-    }
+    this.metrics.recordLineFocusToggled(enabled);
   }
 
   logLinkStatusCount(status: LinkStatus, count: number) {

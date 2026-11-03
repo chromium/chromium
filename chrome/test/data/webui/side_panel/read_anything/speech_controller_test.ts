@@ -11,11 +11,9 @@ import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
-import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('SpeechController', () => {
   let audioBrowserProxy: TestAudioBrowserProxy;
-  let visualBrowserProxy: TestVisualBrowserProxy;
   let speech: TestSpeechBrowserProxy;
   let speechController: SpeechController;
   let isSpeechActiveChanged: boolean;
@@ -63,7 +61,6 @@ suite('SpeechController', () => {
   setup(() => {
     const result = setupTestEnvironment();
     audioBrowserProxy = result.audioBrowserProxy;
-    visualBrowserProxy = result.visualBrowserProxy;
     speech = result.speech;
     metrics = result.metrics;
     readAloudModel = result.readAloudModel;
@@ -1224,76 +1221,6 @@ suite('SpeechController', () => {
         assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
         // We verify that it bypassed adding previous highlights for performance
         assertEquals(0, nextGranularityCalls);
-        assertTrue(onPlayingFromPosition);
-      });
-
-  test(
-      'playFromContentPosition without line focus adds intermediate highlights',
-      async () => {
-        visualBrowserProxy.lineFocusEnabled = false;
-        const text1 = 'First line. ';
-        const text2 = 'Second line.';
-        const node1 = document.createTextNode(text1);
-        const node2 = document.createTextNode(text2);
-        nodeStore.setDomNode(node1, 1);
-        nodeStore.setDomNode(node2, 2);
-
-        const segment1 = {
-          node: ReadAloudNode.create(node1)!,
-          start: 0,
-          length: text1.length,
-        };
-        const segment2 = {
-          node: ReadAloudNode.create(node2)!,
-          start: 0,
-          length: text2.length,
-        };
-
-        const allSegments = [[segment1], [segment2]];
-        const allContent = [text1, text2];
-        let currentSegmentIndex = 0;
-
-        readAloudModel.resetSpeechToBeginning = () => {
-          readAloudModel.methodCalled('resetSpeechToBeginning');
-          currentSegmentIndex = 0;
-          readAloudModel.setCurrentTextSegments(
-              allSegments[currentSegmentIndex]!);
-          readAloudModel.setCurrentTextContent(
-              allContent[currentSegmentIndex]!);
-        };
-
-        readAloudModel.moveSpeechForward = () => {
-          readAloudModel.methodCalled('moveSpeechForward');
-          if (currentSegmentIndex < allSegments.length - 1) {
-            currentSegmentIndex++;
-            readAloudModel.setCurrentTextSegments(
-                allSegments[currentSegmentIndex]!);
-            readAloudModel.setCurrentTextContent(
-                allContent[currentSegmentIndex]!);
-          }
-        };
-
-        readAloudModel.setCurrentTextSegments(
-            allSegments[currentSegmentIndex]!);
-        readAloudModel.setCurrentTextContent(allContent[currentSegmentIndex]!);
-
-        const element = document.createElement('p');
-        element.appendChild(node1);
-        element.appendChild(node2);
-        document.body.appendChild(element);
-
-        let nextGranularityCalls = 0;
-        highlighter.onWillMoveToNextGranularity = () => {
-          nextGranularityCalls++;
-        };
-
-        speechController.onSelectionChange(
-            {node: node2, offset: 0, source: ContentPositionSource.SELECTION});
-        speechController.onPlayPauseToggle(element);
-        await speech.whenCalled('speak');
-
-        assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
-        assertEquals(1, nextGranularityCalls);
         assertTrue(onPlayingFromPosition);
       });
 
