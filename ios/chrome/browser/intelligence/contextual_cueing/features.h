@@ -127,6 +127,11 @@ BASE_DECLARE_FEATURE_PARAM(bool, kDisableFrequencyCappingAndBackoff);
 // execution requests.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxBackgroundTabs);
 
+// Maximum number of eligible historical tabs to include in contextual cue model
+// execution requests, and the time window to query from history.
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxHistoricalTabs);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kHistoricalTabsTimeWindow);
+
 // Maximum consecutive Message UI impressions ignored without interaction for a
 // vertical before permanently switching to Omnibox Chip UI for that vertical.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxConsecutiveMessageIgnores);

@@ -14,10 +14,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
@@ -31,6 +34,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
@@ -444,6 +448,7 @@ void ContextualCueingTabHelper::CancelClassification() {
     return;
   }
   weak_ptr_factory_.InvalidateWeakPtrs();
+  cancelable_task_tracker_.TryCancelAll();
   log_entry_.reset();
   is_model_execution_in_flight_ = false;
 
@@ -691,10 +696,58 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
   request.add_supported_surfaces(
       optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME);
 
-  if (delegate_) {
-    base::flat_set<GURL> seen_urls;
-    seen_urls.insert(expected_url.GetWithoutRef());
+  const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
+  if (max_historical_tabs > 0) {
+    history::HistoryService* history_service =
+        ios::HistoryServiceFactory::GetForProfile(profile);
+    if (history_service) {
+      history::QueryOptions options;
+      options.begin_time = base::Time::Now() - kHistoricalTabsTimeWindow.Get();
+      options.duplicate_policy = history::QueryOptions::REMOVE_ALL_DUPLICATES;
+      options.policy_for_404_visits =
+          history::VisitQuery404sPolicy::kExclude404s;
+      // Only include visits originating from the local device (stored with an
+      // empty `originator_cache_guid`).
+      options.client_ids = {""};
+      // Buffer the query limit to account for deduplication against the active
+      // tab, background tabs, and duplicate URL visits.
+      options.max_count =
+          max_historical_tabs * 2 + kMaxBackgroundTabs.Get() + 1;
+      history_service->QueryHistory(
+          std::u16string(), options,
+          base::BindOnce(&ContextualCueingTabHelper::OnHistoryQueryComplete,
+                         weak_ptr_factory_.GetWeakPtr(), expected_url,
+                         std::move(request)),
+          &cancelable_task_tracker_);
+      return;
+    }
+  }
 
+  OnHistoryQueryComplete(expected_url, std::move(request),
+                         history::QueryResults());
+}
+
+void ContextualCueingTabHelper::OnHistoryQueryComplete(
+    const GURL& expected_url,
+    optimization_guide::proto::ContextualCueingRequest request,
+    history::QueryResults results) {
+  if (!web_state_ || web_state_->GetLastCommittedURL() != expected_url) {
+    is_model_execution_in_flight_ = false;
+    return;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(profile);
+  OptimizationGuideService* service =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  if (!service) {
+    is_model_execution_in_flight_ = false;
+    return;
+  }
+
+  base::flat_set<GURL> seen_urls = {expected_url.GetWithoutRef()};
+  if (delegate_) {
     std::vector<BackgroundTabContext> bg_contexts =
         delegate_->GetEligibleBackgroundTabs(web_state_,
                                              kMaxBackgroundTabs.Get());
@@ -714,6 +767,25 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
   if (GetPrivateInsightsService(web_state_)) {
     cue_request_background_tabs_.assign(request.background_tabs().begin(),
                                         request.background_tabs().end());
+  }
+
+  const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
+  if (!results.empty() && max_historical_tabs > 0) {
+    for (const auto& visit : results) {
+      if (static_cast<size_t>(request.historical_tabs_size()) >=
+          max_historical_tabs) {
+        break;
+      }
+      if (!visit.url().is_valid() || !visit.url().SchemeIsHTTPOrHTTPS()) {
+        continue;
+      }
+      if (!seen_urls.insert(visit.url().GetWithoutRef()).second) {
+        continue;
+      }
+      auto* historical_tab = request.add_historical_tabs();
+      historical_tab->set_url(visit.url().spec());
+      historical_tab->set_title(base::UTF16ToUTF8(visit.title()));
+    }
   }
 
   service->ExecuteModel(

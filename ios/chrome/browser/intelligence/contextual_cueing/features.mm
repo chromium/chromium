@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 
 namespace contextual_cueing {
@@ -201,6 +202,16 @@ BASE_FEATURE_PARAM(size_t,
                    kMaxBackgroundTabs,
                    &kGeminiContextualSuggestionsCues,
                    5);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMaxHistoricalTabs,
+                   &kGeminiContextualSuggestionsCues,
+                   0);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kHistoricalTabsTimeWindow,
+                   &kGeminiContextualSuggestionsCues,
+                   base::Hours(24));
 
 BASE_FEATURE_PARAM(size_t,
                    kMaxConsecutiveMessageIgnores,

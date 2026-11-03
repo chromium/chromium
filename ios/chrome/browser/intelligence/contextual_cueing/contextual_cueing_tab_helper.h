@@ -18,6 +18,7 @@
 #import "base/observer_list.h"
 #import "base/observer_list_types.h"
 #import "base/scoped_observation.h"
+#import "base/task/cancelable_task_tracker.h"
 #import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -36,6 +37,10 @@ class ProfileIOS;
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
+
+namespace history {
+class QueryResults;
+}  // namespace history
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -222,6 +227,14 @@ class ContextualCueingTabHelper
   // Initiates a request to the Model Execution Service for contextual cues.
   void InitiateModelExecutionRequest(const GURL& expected_url);
 
+  // Callback invoked when the `HistoryService` query completes. Populates
+  // `background_tabs` and `historical_tabs` on `request` and initiates model
+  // execution.
+  void OnHistoryQueryComplete(
+      const GURL& expected_url,
+      optimization_guide::proto::ContextualCueingRequest request,
+      history::QueryResults results);
+
   // Callback invoked when the Model Execution Service returns a response.
   void OnModelExecutionResponseReceived(
       const GURL& expected_url,
@@ -346,6 +359,10 @@ class ContextualCueingTabHelper
   id<LocationBarBadgeCommands> location_bar_badge_handler_ = nil;
   // Handler for dispatching Gemini commands.
   id<GeminiCommands> gemini_handler_ = nil;
+
+  // Tracks asynchronous `HistoryService` query tasks and cancels them upon
+  // navigation or web state destruction.
+  base::CancelableTaskTracker cancelable_task_tracker_;
 
   base::WeakPtrFactory<ContextualCueingTabHelper> weak_ptr_factory_{this};
 };

@@ -14,17 +14,24 @@
 #import "base/functional/bind.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/history/core/browser/history_backend.h"
+#import "components/history/core/browser/history_db_task.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -45,6 +52,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
@@ -235,6 +243,9 @@ class TestOptimizationGuideService : public FakeOptimizationGuideService {
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override {
     last_service_type_ = options.service_type;
+    last_request_ =
+        static_cast<const optimization_guide::proto::ContextualCueingRequest&>(
+            request_metadata);
     FakeOptimizationGuideService::ExecuteModel(feature, request_metadata,
                                                options, std::move(callback));
   }
@@ -244,9 +255,16 @@ class TestOptimizationGuideService : public FakeOptimizationGuideService {
     return last_service_type_;
   }
 
+  const std::optional<optimization_guide::proto::ContextualCueingRequest>&
+  last_request() const {
+    return last_request_;
+  }
+
  private:
   std::optional<optimization_guide::ModelExecutionServiceType>
       last_service_type_;
+  std::optional<optimization_guide::proto::ContextualCueingRequest>
+      last_request_;
 };
 
 std::unique_ptr<KeyedService> CreateFakeOptimizationGuideService(
@@ -382,6 +400,8 @@ class ContextualCueingTabHelperTest : public PlatformTest {
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(&IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
     AddTestingFactories(builder);
     profile_ = std::move(builder).Build();
 
@@ -990,6 +1010,210 @@ TEST_F(ContextualCueingTabHelperTest, BackgroundTabsCollectionFlow) {
   EXPECT_EQ(observer.cue_call_count_, 1);
 
   tab_helper->RemoveObserver(&observer);
+}
+
+// Tests that historical tabs are not populated by default when
+// `kMaxHistoricalTabs` is 0.
+TEST_F(ContextualCueingTabHelperTest, HistoricalTabsDisabledByDefault) {
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(history_service);
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/history1"), u"History 1",
+      /*visit_count=*/1, /*typed_count=*/0,
+      base::Time::Now() - base::Minutes(5),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+
+  auto response = CreateTestCueResponse("Buy now", "Explore deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+  OnPageClassified(tab_helper, test_url, categories);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  ASSERT_TRUE(fake_opt_guide_service_->last_request().has_value());
+  EXPECT_EQ(fake_opt_guide_service_->last_request()->historical_tabs_size(), 0);
+}
+
+// Tests that historical tabs are populated from `HistoryService` in
+// reverse-chronological order, including search URLs, while excluding
+// non-HTTP(S) URLs, visits from foreign devices, visits outside
+// `kHistoricalTabsTimeWindow`, and deduplicating against the active tab,
+// background tabs, and prior historical tabs via `GetWithoutRef()`.
+TEST_F(ContextualCueingTabHelperTest, HistoricalTabsPopulatedAndDeduplicated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kMaxHistoricalTabs.name, "10"}});
+
+  FakeContextualCueingDelegate delegate;
+  delegate.SetBackgroundTabs({
+      {GURL("https://example.com/bg1"), "Background Tab 1"},
+  });
+
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(history_service);
+
+  const base::Time now = base::Time::Now();
+  // Active and background tab URLs (including with #ref) should be
+  // deduplicated.
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/store/item123#reviews"), u"Active Tab With Ref",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(1),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/bg1#section"), u"Background Tab With Ref",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(2),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Non-HTTP(S) URLs should be excluded.
+  history_service->AddPageWithDetails(
+      GURL("file:///tmp/local.html"), u"Local File",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(3),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Visits older than `kHistoricalTabsTimeWindow` (24h) should be excluded.
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/old_visit"), u"Old Visit",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Hours(25),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Visits from a foreign device (non-empty `originator_cache_guid`) should be
+  // excluded.
+  class AddForeignVisitTask : public history::HistoryDBTask {
+   public:
+    explicit AddForeignVisitTask(base::Time visit_time)
+        : visit_time_(visit_time) {}
+    bool RunOnDBThread(history::HistoryBackend* backend,
+                       history::HistoryDatabase* db) override {
+      history::VisitRow foreign_visit;
+      foreign_visit.visit_time = visit_time_;
+      foreign_visit.transition = ui::PageTransitionFromInt(
+          ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+          ui::PAGE_TRANSITION_CHAIN_END);
+      foreign_visit.originator_cache_guid = "foreign_device_guid";
+      foreign_visit.is_known_to_sync = true;
+      backend->AddSyncedVisit(GURL("https://example.com/foreign_visit"),
+                              u"Foreign Visit", /*hidden=*/false, foreign_visit,
+                              std::nullopt, std::nullopt);
+      return true;
+    }
+    void DoneRunOnMainThread() override {}
+
+   private:
+    base::Time visit_time_;
+  };
+  base::CancelableTaskTracker foreign_visit_tracker;
+  history_service->ScheduleDBTask(
+      FROM_HERE, std::make_unique<AddForeignVisitTask>(now - base::Minutes(4)),
+      &foreign_visit_tracker);
+
+  // Eligible visits (including search URLs and #ref deduplication within
+  // history).
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/history1"), u"History 1",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(30),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://www.google.com/search?q=test+query"), u"Google Search",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(20),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/history2#part1"), u"History 2 Old",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(15),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://example.com/history2#part2"), u"History 2 New",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(10),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+
+  auto response = CreateTestCueResponse("Buy now", "Explore deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  tab_helper->SetDelegate(&delegate);
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+  OnPageClassified(tab_helper, test_url, categories);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  ASSERT_TRUE(fake_opt_guide_service_->last_request().has_value());
+  const auto& request = *fake_opt_guide_service_->last_request();
+  ASSERT_EQ(request.historical_tabs_size(), 3);
+
+  EXPECT_EQ(request.historical_tabs(0).url(),
+            "https://example.com/history2#part2");
+  EXPECT_EQ(request.historical_tabs(0).title(), "History 2 New");
+  EXPECT_FALSE(request.historical_tabs(0).has_tab_id());
+
+  EXPECT_EQ(request.historical_tabs(1).url(),
+            "https://www.google.com/search?q=test+query");
+  EXPECT_EQ(request.historical_tabs(1).title(), "Google Search");
+  EXPECT_FALSE(request.historical_tabs(1).has_tab_id());
+
+  EXPECT_EQ(request.historical_tabs(2).url(), "https://example.com/history1");
+  EXPECT_EQ(request.historical_tabs(2).title(), "History 1");
+  EXPECT_FALSE(request.historical_tabs(2).has_tab_id());
+}
+
+// Tests that `historical_tabs` is capped at `kMaxHistoricalTabs`.
+TEST_F(ContextualCueingTabHelperTest, MaxHistoricalTabsRespected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  InitFeatureListWithExtraParams(scoped_feature_list,
+                                 {{kMaxHistoricalTabs.name, "5"}});
+
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  history::HistoryService* history_service =
+      ios::HistoryServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(history_service);
+
+  const base::Time now = base::Time::Now();
+  const size_t max_historical_tabs = kMaxHistoricalTabs.Get();
+  const size_t total_visits = max_historical_tabs + 5;
+  for (size_t i = 0; i < total_visits; ++i) {
+    history_service->AddPageWithDetails(
+        GURL(base::StringPrintf("https://example.com/history/%zu", i)),
+        base::UTF8ToUTF16(base::StringPrintf("History %zu", i)),
+        /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(i + 1),
+        /*hidden=*/false, history::SOURCE_BROWSED);
+  }
+
+  auto response = CreateTestCueResponse("Buy now", "Explore deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+  OnPageClassified(tab_helper, test_url, categories);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  ASSERT_TRUE(fake_opt_guide_service_->last_request().has_value());
+  EXPECT_EQ(
+      static_cast<size_t>(
+          fake_opt_guide_service_->last_request()->historical_tabs_size()),
+      max_historical_tabs);
 }
 
 // Tests that error page navigations do not count towards page spacing.

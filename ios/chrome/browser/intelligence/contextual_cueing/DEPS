@@ -1,7 +1,9 @@
 include_rules = [
+  # keep-sorted start
   "+components/contextual_cueing",
   "+components/feature_engagement/public",
   "+components/google/core/common",
+  "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
   "+components/optimization_guide/core",
@@ -11,6 +13,7 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/sync/service",
   "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/bwg/metrics",
   "+ios/chrome/browser/intelligence/bwg/model",
@@ -30,6 +33,7 @@ include_rules = [
   "+ios/chrome/browser/shared/ui/table_view",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {
