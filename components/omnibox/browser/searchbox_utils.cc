@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/contextual_search_provider.h"
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/geolocation_header_service.h"
 #endif  // !BUILDFLAG(IS_IOS)
@@ -631,6 +632,7 @@ std::u16string GetAccessibilityLabelForSelection(
     const std::u16string& match_text,
     bool include_positional_info,
     const TemplateURLService* template_url_service,
+    const AutocompleteProviderClient* client,
     int* label_prefix_length) {
   const size_t line = selection.line;
   CHECK_NE(line, OmniboxPopupSelection::kNoMatch);
@@ -760,6 +762,23 @@ std::u16string GetAccessibilityLabelForSelection(
   }
   if (additional_message_id != 0 && additional_message.empty()) {
     additional_message = l10n_util::GetStringUTF16(additional_message_id);
+  }
+
+  // Narrate the "Opens in side panel" description shown on the match, ahead of
+  // any other suffix.
+  if (selection.state == OmniboxPopupSelection::LineState::kNormal &&
+      ContextualSearchProvider::HasSidePanelDescription(match, client)) {
+    // TODO(crbug.com/573671297): Hardcoded format string is to avoid adding a
+    // translation string after M158 string cutoff. Will be replaced by a
+    // dedicated suffix message.
+    const std::u16string side_panel_suffix = base::StrCat(
+        {u"$1, ",
+         l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL)});
+    additional_message =
+        additional_message.empty()
+            ? side_panel_suffix
+            : l10n_util::FormatString(additional_message, {side_panel_suffix},
+                                      nullptr);
   }
 
   // If there's a button focused, we don't want the "n of m" message announced.

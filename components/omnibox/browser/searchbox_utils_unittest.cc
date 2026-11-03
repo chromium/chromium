@@ -13,23 +13,28 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
+#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"
 #endif  // !BUILDFLAG(IS_IOS)
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -332,5 +337,47 @@ TEST_F(SearchboxUtilsTest, GetKeywordVectorIcon) {
   }
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+TEST_F(SearchboxUtilsTest,
+       GetAccessibilityLabelForSelection_SidePanelDescription) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGSuggestionSidePanelDescription", "true"}});
+  MockAutocompleteProviderClient provider_client;
+
+  AutocompleteMatch entrypoint_match(nullptr, 1000, false,
+                                     omnibox::AutocompleteMatchType::kPedal);
+  entrypoint_match.takeover_action =
+      base::MakeRefCounted<ContextualSearchOpenLensAction>();
+  AutocompleteMatch contextual_match(
+      nullptr, 1000, false, omnibox::AutocompleteMatchType::kSearchSuggest);
+  contextual_match.subtypes.insert(
+      omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  contextual_match.description = u"Opens in side panel";
+  AutocompleteResult result;
+  result.AppendMatches({entrypoint_match, contextual_match});
+
+  auto get_label = [&](size_t line) {
+    return GetAccessibilityLabelForSelection(
+        result, OmniboxPopupSelection(line), /*header_text=*/u"",
+        /*match_text=*/u"foo", /*include_positional_info=*/false,
+        /*template_url_service=*/nullptr, &provider_client);
+  };
+  const std::u16string entrypoint_label =
+      l10n_util::GetStringUTF16(IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION);
+
+  // Not narrated when the AskG action won't open the side panel.
+  EXPECT_EQ(get_label(0), entrypoint_label);
+  EXPECT_EQ(get_label(1), u"foo search suggestion");
+
+  ON_CALL(provider_client, ShouldOpenCoBrowsePanel())
+      .WillByDefault(Return(true));
+  const std::u16string side_panel_suffix =
+      u", " +
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL);
+  EXPECT_EQ(get_label(0), entrypoint_label + side_panel_suffix);
+  EXPECT_EQ(get_label(1), u"foo search suggestion" + side_panel_suffix);
+}
 
 }  // namespace searchbox

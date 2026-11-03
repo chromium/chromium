@@ -19,6 +19,7 @@
 #include "ui/gfx/vector_icon_types.h"
 
 class AutocompleteController;
+class AutocompleteProviderClient;
 class OmniboxClient;
 
 namespace searchbox {
@@ -208,6 +209,8 @@ const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl);
 //     the input when the match is selected (typically `fill_into_edit`).
 //   - `include_positional_info` controls whether "n of m" is appended. It is
 //     always omitted when a button is focused.
+//   - `client` is used to check whether the match shows the "Opens in side
+//     panel" description, which is then also narrated.
 // `selection.line` must not be kNoMatch.
 std::u16string GetAccessibilityLabelForSelection(
     const AutocompleteResult& result,
@@ -216,6 +219,7 @@ std::u16string GetAccessibilityLabelForSelection(
     const std::u16string& match_text,
     bool include_positional_info,
     const TemplateURLService* template_url_service,
+    const AutocompleteProviderClient* client,
     int* label_prefix_length = nullptr);
 
 // The IPH message that sometimes appears at the bottom of the omnibox is
