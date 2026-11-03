@@ -52,11 +52,25 @@ IS_LINUX_X64 = sys.platform == 'linux' and platform.machine() == 'x86_64'
 # machine, and no faster during full builds.
 _JAVAC_SHARD_TARGET_SIZE = 2 * 1024 * 1024
 _MAX_JAVAC_SHARDS = 8
-# Targets with fewer files than this are not sharded, which avoids stat()ing
-# files of small targets. It is the number of files needed to reach the
-# smallest total size that round()s to 2 shards, assuming an average file size
-# of at most 256KB (the largest averages are from generated protos).
+# Targets with fewer files than this are not sharded (by javac or Error Prone),
+# which avoids stat()ing files of small targets. It is the number of files
+# needed to reach the smallest total size that round()s to 2 javac shards,
+# assuming an average file size of at most 256KB (the largest averages are from
+# generated protos, which Error Prone does not check).
 _MIN_FILES_TO_SHARD = (_JAVAC_SHARD_TARGET_SIZE * 3 // 2) // (256 * 1024)
+
+# Error Prone uses about 4x as much CPU per byte as javac, so its shards can be
+# smaller. The set of diagnostics it reports does not depend on how files are
+# sharded (other than through javac's limit of 100 errors and 100 warnings per
+# process), so the number of shards can depend on the machine:
+# * At most one shard per 1MB of source, which keeps most actions at 1-2
+#   processes.
+# * At most half of the usable CPUs, which bounds oversubscription on machines
+#   (and remote workers) with few CPUs.
+# * At most 16. On an idle machine, 16 shards of chrome_java finish about 1.7x
+#   faster than 8 processes, for 13% more CPU time.
+_ERRORPRONE_MIN_SHARD_SIZE = 1024 * 1024
+_MAX_ERRORPRONE_SHARDS = 16
 
 # These warnings cannot be suppressed even for third party code. Deprecation
 # warnings especially do not help since we must support older android version.
@@ -92,19 +106,38 @@ def _GetFileSize(path):
     return os.path.getsize(path)
 
 
-def _ComputeNumShards(java_files):
-    """Returns how many javac processes to split |java_files| across.
+def _GetUsableCpuCount():
+    """Returns the number of CPUs this process may use (e.g. with taskset)."""
+    try:
+        return len(os.sched_getaffinity(0))
+    except (AttributeError, OSError):  # Not available on macOS, or sandboxed.
+        return os.cpu_count() or 1
 
-    Must depend only on the inputs (and not on e.g. the number of CPUs), since
-    the shard boundaries affect the output (javac adds bridge methods when a
-    superclass comes from a header jar rather than from source).
+
+def _ComputeNumShards(java_files, use_errorprone):
+    """Returns how many processes to split |java_files| across.
+
+    For javac, this must depend only on the inputs (and not on e.g. the number
+    of CPUs), since the shard boundaries affect the output (javac adds bridge
+    methods when a superclass comes from a header jar rather than from source).
+
+    For Error Prone, the number also depends on the number of CPUs (see
+    _MAX_ERRORPRONE_SHARDS).
     """
     if len(java_files) < _MIN_FILES_TO_SHARD:
         return 1
     total_size = sum(_GetFileSize(p) for p in java_files)
-    return max(
-        1, min(_MAX_JAVAC_SHARDS, round(total_size / _JAVAC_SHARD_TARGET_SIZE))
-    )
+    if use_errorprone:
+        num_shards = min(
+            _MAX_ERRORPRONE_SHARDS,
+            total_size // _ERRORPRONE_MIN_SHARD_SIZE,
+            _GetUsableCpuCount() // 2,
+        )
+    else:
+        num_shards = min(
+            _MAX_JAVAC_SHARDS, round(total_size / _JAVAC_SHARD_TARGET_SIZE)
+        )
+    return max(1, num_shards)
 
 
 def _ShardJavaFiles(java_files, num_shards):
@@ -123,6 +156,23 @@ def _ShardJavaFiles(java_files, num_shards):
         shards[min(idx, num_shards - 1)].append(path)
         cumulative_size += size
     return [s for s in shards if s]
+
+
+def _AllowSharding(options, javac_cmd, use_errorprone):
+    """Returns whether the compile can be split across multiple processes.
+
+    Each process finds classes from the other shards via the target's header
+    jar, so it must be on the classpath.
+    """
+    if options.header_jar not in options.classpath:
+        return False
+    # Error Prone uses about 4x as much CPU as javac, so sharding pays off even
+    # with the JVM. Its processorpath holds only Error Prone plugins.
+    if use_errorprone:
+        return True
+    # Sharding with the JVM javac is not worthwhile since each process needs to
+    # warm up its JIT. Annotation processors might need to see all sources.
+    return javac_cmd[0] == _JAVAC_GRAALVM_PATH and not options.processorpath
 
 
 def _RunShardedJavac(
@@ -461,13 +511,7 @@ def _Compile(
         # when running Error Prone.
         jar_info_path = options.jar_path + '.info'
 
-    # Sharding with the JVM javac is not worthwhile since each process needs to
-    # warm up its JIT. Annotation processors might need to see all sources.
-    allow_sharding = (
-        javac_cmd[0] == _JAVAC_GRAALVM_PATH
-        and not options.processorpath
-        and options.header_jar in options.classpath
-    )
+    allow_sharding = _AllowSharding(options, javac_cmd, use_errorprone)
 
     # Compiles with Error Prone take twice as long to run as pure javac. Thus GN
     # rules run both in parallel, with Error Prone only used for checks.
@@ -594,7 +638,7 @@ def _RunCompiler(
 
             num_shards = 1
             if allow_sharding:
-                num_shards = _ComputeNumShards(java_files)
+                num_shards = _ComputeNumShards(java_files, use_errorprone)
             if num_shards > 1:
                 _RunShardedJavac(
                     cmd,

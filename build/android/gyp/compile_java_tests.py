@@ -125,27 +125,69 @@ class ShardingTests(unittest.TestCase):
 
     def testComputeNumShards(self):
         target = compile_java._JAVAC_SHARD_TARGET_SIZE
-        self.assertEqual(1, compile_java._ComputeNumShards([]))
+        self.assertEqual(1, compile_java._ComputeNumShards([], False))
         with mock.patch.object(compile_java, '_MIN_FILES_TO_SHARD', 0):
             files = self._CreateFiles([target // 2])
-            self.assertEqual(1, compile_java._ComputeNumShards(files))
+            self.assertEqual(1, compile_java._ComputeNumShards(files, False))
             files = self._CreateFiles([target] * 3)
-            self.assertEqual(3, compile_java._ComputeNumShards(files))
+            self.assertEqual(3, compile_java._ComputeNumShards(files, False))
 
     def testComputeNumShards_TooFewFiles(self):
         num_files = compile_java._MIN_FILES_TO_SHARD
         size = compile_java._JAVAC_SHARD_TARGET_SIZE * 4 // num_files
         files = self._CreateFiles([size] * num_files)
-        self.assertEqual(1, compile_java._ComputeNumShards(files[1:]))
-        self.assertEqual(4, compile_java._ComputeNumShards(files))
+        self.assertEqual(1, compile_java._ComputeNumShards(files[1:], False))
+        self.assertEqual(4, compile_java._ComputeNumShards(files, False))
 
     def testComputeNumShards_Max(self):
         files = self._CreateFiles([10] * 100)
         with mock.patch.object(compile_java, '_JAVAC_SHARD_TARGET_SIZE', 10):
             self.assertEqual(
                 compile_java._MAX_JAVAC_SHARDS,
-                compile_java._ComputeNumShards(files),
+                compile_java._ComputeNumShards(files, False),
             )
+
+    def testComputeNumShards_ErrorProne(self):
+        files = self._CreateFiles([10] * 20)
+
+        def num_shards(usable_cpus, files):
+            with (
+                mock.patch.object(
+                    compile_java, '_GetUsableCpuCount', return_value=usable_cpus
+                ),
+                mock.patch.object(
+                    compile_java, '_ERRORPRONE_MIN_SHARD_SIZE', 10
+                ),
+            ):
+                return compile_java._ComputeNumShards(files, True)
+
+        # Capped by half the number of usable CPUs.
+        self.assertEqual(4, num_shards(8, files))
+        self.assertEqual(4, num_shards(9, files))
+        self.assertEqual(1, num_shards(1, files))
+        # Capped by _MAX_ERRORPRONE_SHARDS.
+        self.assertEqual(
+            compile_java._MAX_ERRORPRONE_SHARDS, num_shards(96, files)
+        )
+        # Capped by the amount of source.
+        with mock.patch.object(compile_java, '_MIN_FILES_TO_SHARD', 0):
+            self.assertEqual(3, num_shards(96, files[:3]))
+        # Too few files.
+        self.assertEqual(1, num_shards(96, files[:3]))
+
+    def testGetUsableCpuCount(self):
+        with mock.patch(
+            'os.sched_getaffinity', return_value={0, 1, 2}, create=True
+        ):
+            self.assertEqual(3, compile_java._GetUsableCpuCount())
+        for error in (AttributeError, OSError):
+            with (
+                mock.patch(
+                    'os.sched_getaffinity', side_effect=error, create=True
+                ),
+                mock.patch('os.cpu_count', return_value=5),
+            ):
+                self.assertEqual(5, compile_java._GetUsableCpuCount())
 
     def testShardJavaFiles(self):
         files = self._CreateFiles([10, 10, 10, 10, 40, 10, 10])
@@ -161,6 +203,27 @@ class ShardingTests(unittest.TestCase):
         files = self._CreateFiles([100, 1])
         shards = compile_java._ShardJavaFiles(files, 4)
         self.assertEqual([[files[0]], [files[1]]], shards)
+
+    def testAllowSharding(self):
+        def allow(classpath, processorpath, javac, use_errorprone):
+            options = types.SimpleNamespace(
+                header_jar='header.jar',
+                classpath=classpath,
+                processorpath=processorpath,
+            )
+            return compile_java._AllowSharding(options, [javac], use_errorprone)
+
+        graalvm = compile_java._JAVAC_GRAALVM_PATH
+        self.assertTrue(allow(['header.jar'], [], graalvm, False))
+        # Needs the header jar to find classes from other shards.
+        self.assertFalse(allow([], [], graalvm, False))
+        self.assertFalse(allow([], ['ep.jar'], 'errorprone', True))
+        # Not worthwhile for the JVM javac, nor with annotation processors.
+        self.assertFalse(allow(['header.jar'], [], 'javac', False))
+        self.assertFalse(allow(['header.jar'], ['ap.jar'], graalvm, False))
+        # Error Prone's processorpath has only Error Prone plugins.
+        self.assertTrue(allow(['header.jar'], ['ep.jar'], 'errorprone', True))
+        self.assertTrue(allow(['header.jar'], ['ep.jar'], 'javac', True))
 
     def _RunShardedJavac(
         self, sizes, chromium_code=True, warnings_as_errors=False

@@ -77,6 +77,9 @@ This step can be disabled via GN arg: `use_errorprone_java_compiler = false`
   patterns, including some [custom to Chromium][ep_plugins].
 * ErrorProne used to replace step 1a, but was changed to a concurrent step after
   being identified as being slower.
+* Large targets are split across multiple concurrent ErrorProne processes
+  (based on their size and on the number of CPUs). Each process finds
+  classes from the other shards via the target's header jar.
 
 [ErrorProne]: https://errorprone.info/
 [ep_plugins]: /tools/android/errorprone_plugin/
