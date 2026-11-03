@@ -167,12 +167,16 @@ def _TransformArchivePath(archive_path, existing_dirs, renamed_dirs):
         locale names (e.g. values-fil -> values-tl, values-b+en+US ->
         values-en-rUS, values-id -> values-in, values-no -> values-nb) unless
         the target config directory already exists in the same resource_dir.
+        A trailing grammatical gender qualifier is preserved (e.g.
+        values-fil-FEMININE -> values-tl-FEMININE).
       * Moves images from drawable-*-mdpi-* folders to drawable-* folders (see
         http://crbug.com/289843).
       * Removes .png and .webp extensions (except .9.png) to save binary size
         and skip redundant aapt2 PNG crunching.
     """
-    locale = resource_utils.FindLocaleInStringResourceFilePath(archive_path)
+    locale, gender = resource_utils.FindLocaleAndGenderInStringResourceFilePath(
+        archive_path
+    )
     if locale:
         cr_locale = resource_utils.ToChromiumLocaleName(locale)
         if not cr_locale:
@@ -180,13 +184,15 @@ def _TransformArchivePath(archive_path, existing_dirs, renamed_dirs):
         locale2 = resource_utils.ToAndroidLocaleName(cr_locale)
         if locale == locale2:
             return archive_path
-        src_subdir = f'values-{locale}'
+        src_subdir = os.path.dirname(archive_path)
         dst_subdir = renamed_dirs.get(src_subdir)
         if dst_subdir is None:
             # Ignore rather than rename when the destination resources config
             # already exists (e.g. some libraries provide both values-nb/ and
             # values-no/, or both values-es-rUS/ and values-b+es+419/).
             target_subdir = f'values-{locale2}'
+            if gender:
+                target_subdir += f'-{gender}'
             if target_subdir in existing_dirs:
                 dst_subdir = src_subdir
             else:

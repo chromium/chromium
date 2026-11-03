@@ -14,6 +14,7 @@ sys.path.insert(
 )
 import compile_resources  # noqa: E402
 import dist_aar  # noqa: E402
+import prepare_resources  # noqa: E402
 from util import build_utils  # noqa: E402
 from util import resource_utils  # noqa: E402
 from util import resources_parser  # noqa: E402
@@ -253,6 +254,43 @@ class ResourceUtilsTest(unittest.TestCase):
             ),
         )
 
+    def test_FindLocaleInStringResourceFilePath_GrammaticalGender(self):
+        _TEST_PATH_TO_LOCALE_MAP = {
+            'res/values-fr-MASCULINE/whatever.xml': 'fr',
+            'res/values-fr-feminine/whatever.xml': 'fr',
+            'res/values-pt-rBR-NEUTER/whatever.xml': 'pt-rBR',
+            'res/values-b+sr+Latn-FEMININE/whatever.xml': 'b+sr+Latn',
+            # A gender qualifier without a locale is not localized.
+            'res/values-masculine/whatever.xml': None,
+            'res/values-MASCULINE/whatever.xml': None,
+            # Unknown trailing qualifiers are still not treated as locales.
+            'res/values-fr-OTHER/whatever.xml': None,
+        }
+        for path, locale in _TEST_PATH_TO_LOCALE_MAP.items():
+            self.assertEqual(
+                locale,
+                resource_utils.FindLocaleInStringResourceFilePath(path),
+                msg=path,
+            )
+
+    def test_FindLocaleAndGenderInStringResourceFilePath(self):
+        _TEST_PATH_TO_LOCALE_AND_GENDER_MAP = {
+            'res/values/whatever.xml': (None, None),
+            'res/values-fr/whatever.xml': ('fr', None),
+            'res/values-fr-MASCULINE/whatever.xml': ('fr', 'MASCULINE'),
+            'res/values-fr-feminine/whatever.xml': ('fr', 'feminine'),
+            'res/values-b+sr+Latn-NEUTER/whatever.xml': ('b+sr+Latn', 'NEUTER'),
+            'res/values-masculine/whatever.xml': (None, None),
+        }
+        for path, expected in _TEST_PATH_TO_LOCALE_AND_GENDER_MAP.items():
+            self.assertEqual(
+                expected,
+                resource_utils.FindLocaleAndGenderInStringResourceFilePath(
+                    path
+                ),
+                msg=path,
+            )
+
     def test_ParseAndroidResourceStringsFromXml(self):
         ret, namespaces = resource_utils.ParseAndroidResourceStringsFromXml(
             _TEST_XML_INPUT_1
@@ -437,6 +475,71 @@ class ResourceUtilsTest(unittest.TestCase):
         self.assertEqual(
             'raw/foo.arsc',
             compile_resources._OrigPathFromFlatName('raw_foo.arsc.flat'),
+        )
+
+    def test_ShouldKeepResourceEntry_LocaleAllowlist(self):
+        wanted_locales = compile_resources._ToAndroidLocales(
+            ['fr', 'pt-BR', 'sr-Latn']
+        )
+        _TEST_ENTRY_TO_KEEP_MAP = {
+            'values/strings.xml': True,
+            'values-fr/strings.xml': True,
+            'values-fr-MASCULINE/strings.xml': True,
+            'values-fr-feminine/strings.xml': True,
+            'values-pt-rBR-NEUTER/strings.xml': True,
+            'values-b+sr+Latn/strings.xml': True,
+            'values-b+sr+Latn-FEMININE/strings.xml': True,
+            'values-de/strings.xml': False,
+            'values-de-MASCULINE/strings.xml': False,
+            'values-de-feminine/strings.xml': False,
+            'values-pt-rPT-NEUTER/strings.xml': False,
+        }
+        for entry_name, keep in _TEST_ENTRY_TO_KEEP_MAP.items():
+            self.assertEqual(
+                keep,
+                compile_resources._ShouldKeepResourceEntry(
+                    'subdir', entry_name, lambda _: True, wanted_locales
+                ),
+                msg=entry_name,
+            )
+
+    def test_TransformArchivePath_RenamesLocales(self):
+        _TEST_PATH_MAP = {
+            'values-fil/strings.xml': 'values-tl/strings.xml',
+            'values-fil-MASCULINE/strings.xml': (
+                'values-tl-MASCULINE/strings.xml'
+            ),
+            'values-fil-feminine/strings.xml': 'values-tl-feminine/strings.xml',
+            'values-he-NEUTER/strings.xml': 'values-iw-NEUTER/strings.xml',
+            'values-no-FEMININE/strings.xml': 'values-nb-FEMININE/strings.xml',
+            'values-b+en+US-MASCULINE/strings.xml': (
+                'values-en-rUS-MASCULINE/strings.xml'
+            ),
+            # Already-canonical directories are left alone.
+            'values-tl-MASCULINE/strings.xml': (
+                'values-tl-MASCULINE/strings.xml'
+            ),
+            'values-fr-FEMININE/strings.xml': 'values-fr-FEMININE/strings.xml',
+        }
+        for src_path, dst_path in _TEST_PATH_MAP.items():
+            existing_dirs = {os.path.dirname(src_path)}
+            self.assertEqual(
+                dst_path,
+                prepare_resources._TransformArchivePath(
+                    src_path, existing_dirs, {}
+                ),
+                msg=src_path,
+            )
+
+    def test_TransformArchivePath_GenderedTargetExists(self):
+        # Like non-gendered directories, a gendered directory is not renamed
+        # if the destination directory already exists.
+        existing_dirs = {'values-no-FEMININE', 'values-nb-FEMININE'}
+        self.assertEqual(
+            'values-no-FEMININE/strings.xml',
+            prepare_resources._TransformArchivePath(
+                'values-no-FEMININE/strings.xml', existing_dirs, {}
+            ),
         )
 
     def test_DistAarAddResources(self):

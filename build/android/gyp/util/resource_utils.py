@@ -195,6 +195,54 @@ def IsAndroidLocaleQualifier(string):
     ) or _RE_ANDROID_LOCALE_QUALIFIER_2.match(string)
 
 
+# Grammatical gender resource qualifier (added in Android 14 / API 34), which
+# immediately follows the locale qualifier (e.g. 'values-fr-feminine'). aapt2
+# treats qualifiers case-insensitively, and GRIT generates them in upper case
+# (e.g. 'values-fr-FEMININE').
+_RE_GRAMMATICAL_GENDER_QUALIFIER = re.compile(
+    r'^(.+)-(feminine|masculine|neuter)$', re.IGNORECASE
+)
+
+
+def SplitGrammaticalGenderQualifier(qualifiers):
+    """Splits a trailing grammatical gender qualifier off of |qualifiers|.
+
+    Args:
+      qualifiers: A resource directory's qualifiers (e.g. 'fr-rCA-FEMININE').
+    Returns:
+      A (qualifiers_without_gender, gender) tuple (e.g. ('fr-rCA', 'FEMININE')).
+      |gender| keeps its original case, and is None if |qualifiers| does not
+      end with a grammatical gender qualifier.
+    """
+    m = _RE_GRAMMATICAL_GENDER_QUALIFIER.match(qualifiers)
+    if not m:
+        return qualifiers, None
+    return m.group(1), m.group(2)
+
+
+def FindLocaleAndGenderInStringResourceFilePath(file_path):
+    """Return Android locale and grammatical gender of a string resource path.
+
+    Args:
+      file_path: A file path.
+    Returns:
+      If |file_path| is of the format '.../values-<locale>/<name>.xml' or
+      '.../values-<locale>-<gender>/<name>.xml', return a (<locale>, <gender>)
+      tuple, where <locale> is an Android locale qualifier and <gender> is a
+      grammatical gender qualifier or None. Otherwise return (None, None).
+    """
+    if not file_path.endswith('.xml'):
+        return None, None
+    prefix = 'values-'
+    dir_name = os.path.basename(os.path.dirname(file_path))
+    if not dir_name.startswith(prefix):
+        return None, None
+    locale, gender = SplitGrammaticalGenderQualifier(dir_name[len(prefix) :])
+    if not IsAndroidLocaleQualifier(locale):
+        return None, None
+    return locale, gender
+
+
 def FindLocaleInStringResourceFilePath(file_path):
     """Return Android locale name of a string resource file path.
 
@@ -203,15 +251,10 @@ def FindLocaleInStringResourceFilePath(file_path):
     Returns:
       If |file_path| is of the format '.../values-<locale>/<name>.xml', return
       the value of <locale> (and Android locale qualifier). Otherwise return None.
+      A trailing grammatical gender qualifier (e.g. 'values-fr-FEMININE') is
+      not included in the returned locale.
     """
-    if not file_path.endswith('.xml'):
-        return None
-    prefix = 'values-'
-    dir_name = os.path.basename(os.path.dirname(file_path))
-    if not dir_name.startswith(prefix):
-        return None
-    qualifier = dir_name[len(prefix) :]
-    return qualifier if IsAndroidLocaleQualifier(qualifier) else None
+    return FindLocaleAndGenderInStringResourceFilePath(file_path)[0]
 
 
 def ToAndroidLocaleList(locale_list):
