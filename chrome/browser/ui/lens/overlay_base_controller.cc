@@ -22,10 +22,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -270,21 +274,59 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
   promo_anchor->SetProperty(views::kViewIgnoredByLayoutKey, true);
   promo_anchor_ = host_view->AddChildView(std::move(promo_anchor));
 
-  // Create the web view.
-  std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
-      tab_->GetContents()->GetBrowserContext());
-  content::WebContents* web_view_contents = web_view->GetWebContents();
-  web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
+  std::unique_ptr<content::WebContents> contents =
+      TakePrewarmedOverlayWebContents();
+  if (contents) {
+    CHECK(!contents->IsCrashed());
+  } else {
+    contents = CreateOverlayWebContents();
+  }
+  overlay_web_view_ =
+      host_view->AddChildView(CreateOverlayWebView(std::move(contents)));
+
+  // Listen to the render process housing out overlay.
+  render_process_host_observation_.Observe(
+      overlay_web_view_->GetWebContents()->GetPrimaryMainFrame()->GetProcess());
+
+  return host_view;
+}
+
+std::unique_ptr<content::WebContents>
+OverlayBaseController::CreateOverlayWebContents() {
+  content::BrowserContext* browser_context =
+      tab_->GetContents()->GetBrowserContext();
+  const GURL initial_url = GetInitialURL();
+  content::WebContents::CreateParams create_params(browser_context);
+  // Start in the WebUI's SiteInstance so the first navigation commits in the
+  // process observed in CreateViewForOverlay().
+  create_params.site_instance =
+      content::SiteInstance::CreateForURL(browser_context, initial_url);
+  std::unique_ptr<content::WebContents> contents =
+      content::WebContents::Create(create_params);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      web_view_contents, SK_ColorTRANSPARENT);
+      contents.get(), SK_ColorTRANSPARENT);
 
   // Set the label for the renderer process in Chrome Task Manager.
-  task_manager::WebContentsTags::CreateForToolContents(web_view_contents,
+  task_manager::WebContentsTags::CreateForToolContents(contents.get(),
                                                        GetToolResourceId());
 
   // As the embedder for the lens overlay WebUI content we must set the
   // appropriate tab interface here.
-  webui::SetTabInterface(web_view_contents, GetTabInterface());
+  webui::SetTabInterface(contents.get(), GetTabInterface());
+
+  // Load the untrusted WebUI.
+  content::NavigationController::LoadURLParams params(initial_url);
+  params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  contents->GetController().LoadURLWithParams(params);
+  return contents;
+}
+
+std::unique_ptr<views::WebView> OverlayBaseController::CreateOverlayWebView(
+    std::unique_ptr<content::WebContents> contents) {
+  auto web_view = std::make_unique<views::WebView>(
+      tab_->GetContents()->GetBrowserContext());
+  web_view->SetOwnedWebContents(std::move(contents));
+  web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
 
   // Set the web contents delegate to this controller so we can handle keyboard
   // events. Allow accelerators (e.g. hotkeys) to work on this web view.
@@ -292,17 +334,19 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
   SetReferenceView(web_view.get());
   SetAcceleratorHandling(
       views::WebContentsAcceleratorHandling::kProcessBeforeRenderer);
+  return web_view;
+}
 
-  // Load the untrusted WebUI into the web view.
-  web_view->LoadInitialURL(GetInitialURL());
+std::unique_ptr<content::WebContents>
+OverlayBaseController::TakePrewarmedOverlayWebContents() {
+  return nullptr;
+}
 
-  overlay_web_view_ = host_view->AddChildView(std::move(web_view));
-
-  // Listen to the render process housing out overlay.
-  render_process_host_observation_.Observe(
-      overlay_web_view_->GetWebContents()->GetPrimaryMainFrame()->GetProcess());
-
-  return host_view;
+void OverlayBaseController::MaybeStartOverlayWebUI() {
+  if (state_ == State::kScreenshot) {
+    ShowOverlay();
+    state_ = State::kStartingWebUI;
+  }
 }
 
 void OverlayBaseController::InitializeScreenshot(
@@ -330,9 +374,8 @@ void OverlayBaseController::InitializeScreenshot(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CreateRgbBitmap, bitmap), std::move(callback));
-  ShowOverlay();
-
-  state_ = State::kStartingWebUI;
+  // No-op if a prewarmed overlay is already showing.
+  MaybeStartOverlayWebUI();
 }
 
 void OverlayBaseController::ReshowScreenshot(

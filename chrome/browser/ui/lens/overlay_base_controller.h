@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_LENS_OVERLAY_BASE_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -181,7 +182,25 @@ class OverlayBaseController
   // exist.
   void SetOverlayWebViewOpacity(float opacity);
 
+  // Wraps `contents` in the overlay WebView.
+  std::unique_ptr<views::WebView> CreateOverlayWebView(
+      std::unique_ptr<content::WebContents> contents);
+
  protected:
+  // Creates the overlay WebContents and starts loading the WebUI.
+  std::unique_ptr<content::WebContents> CreateOverlayWebContents();
+
+  // Returns the subclass's prewarmed overlay WebContents, if it has one whose
+  // renderer has not crashed; otherwise nullptr. The overlay shows it in place
+  // of a newly created one.
+  virtual std::unique_ptr<content::WebContents>
+  TakePrewarmedOverlayWebContents();
+
+  // Shows the overlay and moves to `State::kStartingWebUI` if the screenshot is
+  // still being captured. Called once the screenshot is ready, or earlier by a
+  // subclass whose prewarmed WebUI can bind in parallel with the capture.
+  void MaybeStartOverlayWebUI();
+
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
 
