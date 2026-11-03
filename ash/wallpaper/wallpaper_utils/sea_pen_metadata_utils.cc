@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -268,13 +269,13 @@ bool IsValidTemplateQuery(
   }
 
   for (const auto& [query_chip, query_option] : query_options) {
-    if (!chip_set.contains(query_chip)) {
+    if (!std::ranges::contains(chip_set, query_chip)) {
       // The query chip is not in the template's chip set.
       LOG(WARNING) << "Chip id is not found.";
       return false;
     }
     const auto available_options = ChipToOptionSet().find(query_chip)->second;
-    if (!available_options.contains(query_option)) {
+    if (!std::ranges::binary_search(available_options, query_option)) {
       // The query's option is not an allowed option.
       LOG(WARNING) << "Option id not found.";
       return false;
