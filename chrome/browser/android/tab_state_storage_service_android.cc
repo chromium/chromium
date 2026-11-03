@@ -30,6 +30,7 @@
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/TabStateStorageService_jni.h"
@@ -91,11 +92,6 @@ ScopedBatchAndroid::ScopedBatchAndroid(
     : batch(std::move(batch)) {}
 
 ScopedBatchAndroid::~ScopedBatchAndroid() = default;
-
-static void JNI_TabStateStorageService_CommitBatch(JNIEnv* env,
-                                                   int64_t batch_android_ptr) {
-  delete reinterpret_cast<ScopedBatchAndroid*>(batch_android_ptr);
-}
 
 TabStateStorageServiceAndroid::TabStateStorageServiceAndroid(
     TabStateStorageService* tab_state_storage_service)
@@ -206,9 +202,10 @@ void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {
 #endif
 }
 
-int64_t TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
-  return reinterpret_cast<int64_t>(
-      new ScopedBatchAndroid(tab_state_storage_service_->CreateScopedBatch()));
+jni_zero::JniUniquePtr<ScopedBatchAndroid>
+TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
+  return jni_zero::MakeUnique<ScopedBatchAndroid>(
+      tab_state_storage_service_->CreateScopedBatch());
 }
 
 void TabStateStorageServiceAndroid::SetKey(JNIEnv* env,

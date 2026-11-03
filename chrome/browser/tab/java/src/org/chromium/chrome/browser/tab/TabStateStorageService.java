@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -21,19 +23,22 @@ import java.util.List;
 @JNINamespace("tabs")
 @NullMarked
 public class TabStateStorageService {
-    private static class ScopedStorageBatchImpl implements ScopedStorageBatch {
-        private long mNativeScopedBatch;
+    @JniType("::tabs::TabStateStorageServiceAndroid::ScopedBatchAndroid")
+    interface NativeScopedBatchAndroid extends JniTypeToken {}
 
-        private ScopedStorageBatchImpl(long nativeScopedBatch) {
+    private static class ScopedStorageBatchImpl implements ScopedStorageBatch {
+        private @Nullable JniUniquePtr<NativeScopedBatchAndroid> mNativeScopedBatch;
+
+        private ScopedStorageBatchImpl(JniUniquePtr<NativeScopedBatchAndroid> nativeScopedBatch) {
             mNativeScopedBatch = nativeScopedBatch;
         }
 
         @Override
         public void close() {
-            assert mNativeScopedBatch != 0;
-            if (mNativeScopedBatch != 0) {
-                TabStateStorageServiceJni.get().commitBatch(mNativeScopedBatch);
-                mNativeScopedBatch = 0;
+            assert mNativeScopedBatch != null;
+            if (mNativeScopedBatch != null) {
+                mNativeScopedBatch.destroy();
+                mNativeScopedBatch = null;
             }
         }
     }
@@ -167,8 +172,8 @@ public class TabStateStorageService {
 
     /** Starts a scoped batch of operations. */
     public ScopedStorageBatch createBatch() {
-        long batchPtr = TabStateStorageServiceJni.get().createBatch(mNativeTabStateStorageService);
-        return new ScopedStorageBatchImpl(batchPtr);
+        return new ScopedStorageBatchImpl(
+                TabStateStorageServiceJni.get().createBatch(mNativeTabStateStorageService));
     }
 
     /**
@@ -234,7 +239,8 @@ public class TabStateStorageService {
                 long nativeTabStateStorageServiceAndroid,
                 @JniType("std::vector<std::string>") List<String> windowTags);
 
-        long createBatch(long nativeTabStateStorageServiceAndroid);
+        JniUniquePtr<NativeScopedBatchAndroid> createBatch(
+                long nativeTabStateStorageServiceAndroid);
 
         void clearWindowWithOtrStatus(
                 long nativeTabStateStorageServiceAndroid,
@@ -249,8 +255,6 @@ public class TabStateStorageService {
                         JniPtr<TabStripCollection> tabStripCollection);
 
         void printAll(long nativeTabStateStorageServiceAndroid);
-
-        void commitBatch(long scopedBatchAndroid);
 
         void setKey(
                 long nativeTabStateStorageServiceAndroid,

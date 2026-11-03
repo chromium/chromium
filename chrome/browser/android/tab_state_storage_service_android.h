@@ -11,6 +11,7 @@
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace tabs {
 
@@ -69,7 +70,7 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
 
   void PrintAll(JNIEnv* env);
 
-  int64_t CreateBatch(JNIEnv* env);
+  jni_zero::JniUniquePtr<ScopedBatchAndroid> CreateBatch(JNIEnv* env);
 
   void SetKey(JNIEnv* env,
               const std::string& window_tag,
