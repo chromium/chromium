@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -146,6 +147,12 @@ public class SettingsPageTest {
                 "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
                         + " causing Android 14's letterbox education dialog to intercept clicks.",
                 Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && isLandscape);
+
+        // Batched tests spawn many renderer processes, which can trigger OS memory-pressure
+        // signals (e.g. TRIM_MEMORY_RUNNING_LOW / CRITICAL on Android <= 13) while a Settings tab
+        // is briefly hidden behind another tab. Prevent ChromeTabbedActivity.onTrimMemory() from
+        // freezing hidden SettingsPage instances mid-test. See crbug.com/579988178.
+        NativePageAssassin.setDisableFreezeAllHiddenPagesForTesting(true);
     }
 
     @After

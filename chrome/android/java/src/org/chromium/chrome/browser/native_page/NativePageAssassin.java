@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 public class NativePageAssassin {
 
     private static final NativePageAssassin sInstance = new NativePageAssassin();
+    private static boolean sDisableFreezeAllHiddenPagesForTesting;
 
     /**
      * The number of hidden tabs to consider "recent". Any non-recent native page will be frozen.
@@ -37,7 +39,8 @@ public class NativePageAssassin {
      */
     private final ArrayList<WeakReference<Tab>> mRecentTabs = new ArrayList<>(MAX_RECENT_TABS + 1);
 
-    private NativePageAssassin() {}
+    /** Package-private for testing. Production code should use {@link #getInstance()}. */
+    NativePageAssassin() {}
 
     /**
      * @return The one and only NativePageAssassin.
@@ -77,10 +80,20 @@ public class NativePageAssassin {
 
     /** Freezes all hidden NativePages that aren't already frozen. */
     public void freezeAllHiddenPages() {
+        if (sDisableFreezeAllHiddenPagesForTesting) return;
         for (int i = 0; i < mRecentTabs.size(); i++) {
             freeze(mRecentTabs.get(i).get());
         }
         mRecentTabs.clear();
+    }
+
+    /**
+     * Disables {@link #freezeAllHiddenPages()} (triggered by OS memory pressure) for testing so
+     * batched multi-tab tests do not flakily freeze hidden native pages mid-test.
+     */
+    public static void setDisableFreezeAllHiddenPagesForTesting(boolean disable) {
+        sDisableFreezeAllHiddenPagesForTesting = disable;
+        ResettersForTesting.register(() -> sDisableFreezeAllHiddenPagesForTesting = false);
     }
 
     private void freeze(@Nullable Tab tab) {
