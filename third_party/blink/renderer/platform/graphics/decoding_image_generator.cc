@@ -153,7 +153,7 @@ sk_sp<const SkData> DecodingImageGenerator::GetEncodedData() const {
 bool DecodingImageGenerator::GetPixels(SkPixmap dst_pixmap,
                                        size_t frame_index,
                                        PaintImage::GeneratorClientId client_id,
-                                       uint32_t lazy_pixel_ref) {
+                                       uint64_t lazy_pixel_ref) {
   TRACE_EVENT2("blink", "DecodingImageGenerator::getPixels", "frame index",
                static_cast<int>(frame_index), "client_id", client_id);
   const SkImageInfo& dst_info = dst_pixmap.info();
@@ -267,7 +267,7 @@ bool DecodingImageGenerator::QueryYUVA(
 bool DecodingImageGenerator::GetYUVAPlanes(
     const SkYUVAPixmaps& pixmaps,
     size_t frame_index,
-    uint32_t lazy_pixel_ref,
+    uint64_t lazy_pixel_ref,
     PaintImage::GeneratorClientId client_id) {
   // TODO(crbug.com/943519): YUV decoding does not currently support incremental
   // decoding. See comment in image_frame_generator.h.

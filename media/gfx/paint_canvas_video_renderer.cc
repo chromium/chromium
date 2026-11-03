@@ -649,7 +649,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
   bool GetPixels(SkPixmap dst_pixmap,
                  size_t frame_index,
                  cc::PaintImage::GeneratorClientId client_id,
-                 uint32_t lazy_pixel_ref) override {
+                 uint64_t lazy_pixel_ref) override {
     DCHECK_EQ(frame_index, 0u);
 
     if (IsYuvPlanar(frame_->format()) &&
@@ -720,7 +720,7 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                      size_t frame_index,
-                     uint32_t lazy_pixel_ref,
+                     uint64_t lazy_pixel_ref,
                      cc::PaintImage::GeneratorClientId client_id) override {
     DCHECK_EQ(frame_index, 0u);
     DCHECK_EQ(pixmaps.numPlanes(), 3);

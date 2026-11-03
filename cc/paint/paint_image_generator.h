@@ -41,7 +41,7 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   virtual bool GetPixels(SkPixmap dst_pixmap,
                          size_t frame_index,
                          PaintImage::GeneratorClientId client_id,
-                         uint32_t lazy_pixel_ref) = 0;
+                         uint64_t lazy_pixel_ref) = 0;
 
   // Returns true if the generator supports YUV decoding, providing the details
   // about planar configuration and conversion to RGB in |info|.
@@ -60,7 +60,7 @@ class CC_PAINT_EXPORT PaintImageGenerator : public SkRefCnt {
   // DecodingImageGenerator tracing needs. Remove it.
   virtual bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                              size_t frame_index,
-                             uint32_t lazy_pixel_ref,
+                             uint64_t lazy_pixel_ref,
                              PaintImage::GeneratorClientId client_id) = 0;
 
   // Returns the smallest size that is at least as big as the requested size,

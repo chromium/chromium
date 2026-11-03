@@ -94,7 +94,8 @@ void TestOptionsProvider::PushFonts() {
 ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
     const DrawImage& draw_image) {
   DCHECK(!draw_image.paint_image().IsPaintWorklet());
-  uint32_t image_id = draw_image.paint_image().GetSwSkImage()->uniqueID();
+  uint32_t image_id = static_cast<uint32_t>(
+      draw_image.paint_image().GetSwSkImage()->uniqueID());
   // Lock and reuse the entry if possible.
   const EntryKey entry_key(TransferCacheEntryType::kImage, image_id);
   if (LockEntryDirect(entry_key)) {

@@ -40,13 +40,13 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   bool GetPixels(SkPixmap pixmap,
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
-                 uint32_t lazy_pixel_ref) override;
+                 uint64_t lazy_pixel_ref) override;
   bool QueryYUVA(
       const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
       SkYUVAPixmapInfo* yuva_pixmap_info) const override;
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
                      size_t frame_index,
-                     uint32_t lazy_pixel_ref,
+                     uint64_t lazy_pixel_ref,
                      PaintImage::GeneratorClientId client_id) override;
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const override;
   const ImageHeaderMetadata* GetMetadataForDecodeAcceleration() const override;

@@ -3393,7 +3393,7 @@ class CheckerImagingTileManagerTest : public TestLayerTreeHostBase {
 
     MOCK_METHOD4(
         GetPixels,
-        bool(SkPixmap, size_t, PaintImage::GeneratorClientId, uint32_t));
+        bool(SkPixmap, size_t, PaintImage::GeneratorClientId, uint64_t));
   };
 
   void TearDown() override {

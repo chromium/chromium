@@ -2484,7 +2484,7 @@ class BlockingPaintImageGenerator : public FakePaintImageGenerator {
   bool GetPixels(SkPixmap dst_pixmap,
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
-                 uint32_t lazy_pixel_ref) override {
+                 uint64_t lazy_pixel_ref) override {
     base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync;
     decode_started_.Signal();
     allow_finish_.Wait();

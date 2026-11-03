@@ -313,7 +313,7 @@ bool PaintImage::DecodeYuv(const SkYUVAPixmaps& pixmaps,
   // This function assumes that the color space being applied to `pixmaps`
   // is the same color space returned by `GetSkImageInfo()`.
   DCHECK(pixmaps.isValid());
-  const uint32_t lazy_pixel_ref = stable_id();
+  const uint64_t lazy_pixel_ref = stable_id();
   switch (aux_image) {
     case AuxImage::kDefault:
       DCHECK(paint_image_generator_);

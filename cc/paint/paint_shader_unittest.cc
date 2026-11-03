@@ -37,7 +37,7 @@ class MockImageGenerator : public FakePaintImageGenerator {
             SkImageInfo::MakeN32Premul(size.width(), size.height())) {}
 
   MOCK_METHOD4(GetPixels,
-               bool(SkPixmap, size_t, PaintImage::GeneratorClientId, uint32_t));
+               bool(SkPixmap, size_t, PaintImage::GeneratorClientId, uint64_t));
 };
 
 class MockImageProvider : public ImageProvider {

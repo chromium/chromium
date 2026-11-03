@@ -50,7 +50,7 @@ sk_sp<const SkData> FakePaintImageGenerator::GetEncodedData() const {
 bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
                                         size_t frame_index,
                                         PaintImage::GeneratorClientId client_id,
-                                        uint32_t lazy_pixel_ref) {
+                                        uint64_t lazy_pixel_ref) {
   base::AutoLock lock(lock_);
 
   if (force_fail_decode_) {
@@ -92,7 +92,7 @@ bool FakePaintImageGenerator::QueryYUVA(
 bool FakePaintImageGenerator::GetYUVAPlanes(
     const SkYUVAPixmaps& pixmaps,
     size_t frame_index,
-    uint32_t lazy_pixel_ref,
+    uint64_t lazy_pixel_ref,
     PaintImage::GeneratorClientId client_id) {
   base::AutoLock lock(lock_);
 
