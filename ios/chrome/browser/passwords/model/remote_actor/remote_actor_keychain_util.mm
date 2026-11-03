@@ -9,8 +9,16 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/to_vector.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 
 namespace {
+
+NSString* g_keychain_access_group_override = nil;
+
+NSString* GetEffectiveAccessGroup() {
+  return g_keychain_access_group_override
+             ?: app_group::CommonApplicationGroup();
+}
 
 std::optional<std::vector<uint8_t>> GetKeyWithQuery(NSString* access_group,
                                                     NSString* account,
@@ -44,11 +52,17 @@ std::optional<std::vector<uint8_t>> GetKeyWithQuery(NSString* access_group,
 
 }  // namespace
 
-namespace remote_actor {
-
-std::optional<std::vector<uint8_t>> GetSharedSymmetricKey() {
-  return GetKeyWithQuery(kKeychainAccessGroup, kKeychainAccount,
-                         kKeychainService);
+std::optional<std::vector<uint8_t>> GetRemoteActorSharedSymmetricKey() {
+  return GetKeyWithQuery(GetEffectiveAccessGroup(), kRemoteActorKeychainAccount,
+                         kRemoteActorKeychainService);
 }
 
-}  // namespace remote_actor
+void SetRemoteActorKeychainAccessGroupOverrideForTesting(  // IN-TEST
+    NSString* access_group_override) {
+  g_keychain_access_group_override =
+      access_group_override ? [access_group_override copy] : @"";
+}
+
+void ResetRemoteActorKeychainAccessGroupOverrideForTesting() {  // IN-TEST
+  g_keychain_access_group_override = nil;
+}

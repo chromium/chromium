@@ -6,6 +6,8 @@ source_set("remote_actor") {
   sources = [
     "ios_chrome_remote_actor_credential_sharing_service_factory.h",
     "ios_chrome_remote_actor_credential_sharing_service_factory.mm",
+    "remote_actor_constants.h",
+    "remote_actor_constants.mm",
     "remote_actor_credential_sharing_delegate_bridge.h",
     "remote_actor_credential_sharing_delegate_bridge.mm",
     "remote_actor_keychain_util.h",
@@ -26,6 +28,7 @@ source_set("remote_actor") {
     "//crypto",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/common/app_group",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -49,6 +52,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/remote_actor",
     "//crypto",
     "//ios/chrome/browser/passwords/model/remote_actor/proto",
+    "//ios/chrome/browser/passwords/model/remote_actor/test:test_support",
     "//testing/gtest",
     "//url",
   ]
