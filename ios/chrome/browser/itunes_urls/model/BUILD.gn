@@ -9,14 +9,18 @@ source_set("model") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//net",
     "//url",
   ]
   public_deps = [ "//ios/web/public" ]
   frameworks = [
     "Foundation.framework",
     "StoreKit.framework",
+    "UIKit.framework",
   ]
 }
 
@@ -27,6 +31,8 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test/fakes",
@@ -36,5 +42,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
   ]
 }

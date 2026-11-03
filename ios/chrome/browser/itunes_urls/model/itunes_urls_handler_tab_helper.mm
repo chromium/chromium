@@ -6,24 +6,40 @@
 
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
+#import <UIKit/UIKit.h>
 
+#import <memory>
+#import <string>
+#import <string_view>
+#import <utility>
 #import <vector>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
+#import "url/url_constants.h"
 
 namespace {
 
@@ -109,26 +125,55 @@ void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  // Don't Handle URLS in Off The record mode as this will open StoreKit with
-  // Users' iTunes account. Also don't Handle navigations in iframe because they
-  // may be spam, and they will be handled by other policy deciders. Finally,
-  // don't handle navigations when the WebState is not visible, so background
-  // tabs can load the web page instead of presenting StoreKit over the active
-  // tab.
-  if (web_state()->GetBrowserState()->IsOffTheRecord() ||
-      !request_info.target_frame_is_main || !web_state()->IsVisible()) {
-    return std::move(callback).Run(
+  // Don't handle navigations in iframe because they may be spam, and they will
+  // be handled by other policy deciders.
+  if (!request_info.target_frame_is_main) {
+    std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
   }
 
   GURL request_url = net::GURLWithNSURL(request.URL);
-  if (!CanHandleUrl(request_url)) {
-    return std::move(callback).Run(
-        web::WebStatePolicyDecider::PolicyDecision::Allow());
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+
+  // Don't handle navigations when the WebState is not visible, so background
+  // tabs can load the web page instead of presenting StoreKit or an overlay
+  // over the active tab.
+  if (web_state()->IsVisible() && CanHandleUrl(request_url)) {
+    policy_decision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
+    if (!is_prompt_active_) {
+      if (web_state()->GetBrowserState()->IsOffTheRecord()) {
+        ShowAppLaunchOverlay(request_url);
+      } else {
+        HandleITunesUrl(request_url);
+      }
+    }
   }
 
-  HandleITunesUrl(request_url);
-  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  if (is_prompt_active_) {
+    DelayPolicyDecision(std::move(callback), policy_decision);
+    return;
+  }
+  std::move(callback).Run(policy_decision);
+}
+
+void ITunesUrlsHandlerTabHelper::ShouldAllowResponse(
+    NSURLResponse* response,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  web::WebStatePolicyDecider::PolicyDecision policy_decision =
+      web::WebStatePolicyDecider::PolicyDecision::Allow();
+  // A main-frame navigation that started and passed `ShouldAllowRequest()`
+  // before the prompt was triggered can still receive its response while the
+  // prompt is active. Delay the response decision so the navigation does not
+  // commit behind the prompt and cancel the overlay.
+  if (!response_info.for_main_frame || !is_prompt_active_) {
+    std::move(callback).Run(policy_decision);
+    return;
+  }
+
+  DelayPolicyDecision(std::move(callback), policy_decision);
 }
 
 void ITunesUrlsHandlerTabHelper::SetWebContentsHandler(
@@ -145,4 +190,108 @@ void ITunesUrlsHandlerTabHelper::HandleITunesUrl(const GURL& url) {
     [web_content_handler_
         showAppStoreWithParameters:ExtractITunesProductParameters(url)];
   }
+}
+
+void ITunesUrlsHandlerTabHelper::ShowAppLaunchOverlay(const GURL& url) {
+  is_prompt_active_ = true;
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state(), OverlayModality::kWebContentArea);
+  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
+      app_launcher_overlays::AppLaunchConfirmationRequest>(
+      app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kOpenAppStoreFromIncognito);
+  request->GetCallbackManager()->AddCompletionCallback(
+      base::BindOnce(&ITunesUrlsHandlerTabHelper::OnShowAppLaunchOverlayDone,
+                     weak_factory_.GetWeakPtr(), url));
+  queue->AddRequest(std::move(request));
+}
+
+void ITunesUrlsHandlerTabHelper::OnShowAppLaunchOverlayDone(
+    const GURL& url,
+    OverlayResponse* response) {
+  bool user_accepted =
+      response &&
+      response->GetInfo<app_launcher_overlays::AllowAppLaunchResponse>();
+  base::UmaHistogramBoolean(
+      "Tab.ExternalApplicationOpened.AppStoreFromIncognito", user_accepted);
+  if (!user_accepted) {
+    CompleteAppLaunchPrompt();
+    return;
+  }
+
+  GURL launch_url = url;
+  if (launch_url.SchemeIs(url::kHttpScheme)) {
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(url::kHttpsScheme);
+    launch_url = launch_url.ReplaceComponents(replacements);
+  }
+
+  [[UIApplication sharedApplication]
+                openURL:net::NSURLWithGURL(launch_url)
+                options:@{
+                  UIApplicationOpenURLOptionUniversalLinksOnly : @YES
+                }
+      completionHandler:
+          base::CallbackToBlock(base::BindOnce(
+              &ITunesUrlsHandlerTabHelper::OnAppStoreLaunchCompleted,
+              weak_factory_.GetWeakPtr()))];
+}
+
+void ITunesUrlsHandlerTabHelper::OnAppStoreLaunchCompleted(bool success) {
+  if (success) {
+    CompleteAppLaunchPrompt();
+    return;
+  }
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state(), OverlayModality::kWebContentArea);
+  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
+      app_launcher_overlays::AppLaunchConfirmationRequest>(
+      app_launcher_overlays::AppLaunchConfirmationRequestCause::
+          kAppLaunchFailed);
+  request->GetCallbackManager()->AddCompletionCallback(
+      base::BindOnce(&ITunesUrlsHandlerTabHelper::OnFailureOverlayDone,
+                     weak_factory_.GetWeakPtr()));
+  // Insert the failure alert at the front of the queue so `OverlayPresenter`
+  // presents it immediately, ahead of any other overlays queued while the
+  // confirmation prompt or app launch was in progress.
+  queue->InsertRequest(0, std::move(request));
+}
+
+void ITunesUrlsHandlerTabHelper::OnFailureOverlayDone(
+    OverlayResponse* response) {
+  bool user_accepted =
+      response &&
+      response->GetInfo<app_launcher_overlays::AllowAppLaunchResponse>();
+  base::UmaHistogramBoolean("Tab.ExternalApplicationOpened.Failed",
+                            user_accepted);
+  CompleteAppLaunchPrompt();
+}
+
+void ITunesUrlsHandlerTabHelper::DelayPolicyDecision(
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback,
+    web::WebStatePolicyDecider::PolicyDecision policy_decision) {
+  if (pending_policy_decision_callback_) {
+    // Running `PolicyDecision::Cancel()` may destruct `this`, so post the
+    // execution to remove the function from the stack.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(pending_policy_decision_callback_),
+                       web::WebStatePolicyDecider::PolicyDecision::Cancel()));
+  }
+  pending_policy_decision_callback_ = std::move(callback);
+  pending_policy_decision_ = policy_decision;
+}
+
+void ITunesUrlsHandlerTabHelper::CompleteAppLaunchPrompt() {
+  is_prompt_active_ = false;
+  if (!pending_policy_decision_callback_) {
+    return;
+  }
+
+  // The callback may destruct `this`, so post the execution to remove the
+  // function from the stack.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(pending_policy_decision_callback_),
+                                pending_policy_decision_));
 }
