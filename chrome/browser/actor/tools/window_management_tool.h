@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -65,6 +66,12 @@ class WindowManagementTool : public Tool, public BrowserCollectionObserver {
 
   // Called when the browser with `window_id_` has closed.
   void OnBrowserDidClose(BrowserWindowInterface* browser);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Called once the window requested by kCreate exists, or with nullptr if it
+  // couldn't be created.
+  void OnBrowserWindowCreated(BrowserWindowInterface* browser);
+#endif
 
   // Finishes the invocation when `browser` next becomes the active window.
   void FinishWhenWindowActive(BrowserWindowInterface& browser);

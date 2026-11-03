@@ -12,12 +12,14 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/web_contents.h"
@@ -27,8 +29,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/url_constants.h"
 #endif
 
@@ -121,20 +121,19 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
   callback_ = std::move(callback);
 
   switch (action_) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/470475787): Port window creation to Android.
-    case Action::kCreate:
-      OnInvokeFinished(
-          MakeResult(mojom::ActionResultCode::kToolUnknown,
-                     /*requires_page_stabilization=*/false,
-                     "Creating windows is not supported on Android yet."));
-      break;
-#else
     case Action::kCreate: {
       BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                        &tool_delegate().GetProfile(),
                                        /*from_user_gesture=*/false);
       params.initial_show_state = ::ui::mojom::WindowShowState::kNormal;
+#if BUILDFLAG(IS_ANDROID)
+      // Window creation launches a new Activity, so the window and its
+      // initial tab only exist once the asynchronous callback runs.
+      CreateBrowserWindow(
+          std::move(params),
+          base::BindOnce(&WindowManagementTool::OnBrowserWindowCreated,
+                         weak_ptr_factory_.GetWeakPtr()));
+#else
       BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
       content::WebContents* web_contents =
           chrome::AddAndReturnTabAt(browser, GURL(url::kAboutBlankURL),
@@ -149,9 +148,9 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
       created_actor_surface_handle_ = ActorSurfaceHandle::From(web_contents);
       FinishWhenWindowActive(*browser);
       browser->GetWindow()->Show();
+#endif  // BUILDFLAG(IS_ANDROID)
       break;
     }
-#endif  // BUILDFLAG(IS_ANDROID)
     case Action::kActivate: {
       BrowserWindowInterface* browser = GetTargetBrowser();
       mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
@@ -306,6 +305,40 @@ void WindowManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
     OnInvokeFinished(MakeOkResult());
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WindowManagementTool::OnBrowserWindowCreated(
+    BrowserWindowInterface* browser) {
+  if (!browser) {
+    OnInvokeFinished(MakeResult(mojom::ActionResultCode::kNewTabCreationFailed,
+                                /*requires_page_stabilization=*/false,
+                                "Failed to create a new window."));
+    return;
+  }
+  // A fully initialized Android window has its initial tab.
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+  if (!tab) {
+    OnInvokeFinished(MakeResult(mojom::ActionResultCode::kNewTabCreationFailed,
+                                /*requires_page_stabilization=*/false,
+                                "Failed to create a new tab in new window."));
+    return;
+  }
+  created_actor_surface_handle_ = ActorSurfaceHandle::From(tab->GetHandle());
+  // The callback runs while the new Activity is becoming top-resumed, before
+  // its activation has been reported through the browser collection, so
+  // IsActive() can't be trusted here: finishing on it would leave the
+  // collection's activation order (and everything built on it, such as the
+  // last active window) still pointing at the previous window. Wait for the
+  // activation event unless the collection has already recorded it.
+  if (ProfileBrowserCollection::GetForProfile(browser->GetProfile())
+          ->GetLastActiveBrowser() == browser) {
+    OnInvokeFinished(MakeOkResult());
+    return;
+  }
+  FinishWhenWindowActive(*browser);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void WindowManagementTool::FinishWhenWindowActive(
     BrowserWindowInterface& browser) {
