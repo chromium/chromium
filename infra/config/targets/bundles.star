@@ -3314,7 +3314,6 @@ targets.bundle(
     targets = [
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
@@ -4469,7 +4468,7 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_win_debug_telemetry_tests",
     targets = [
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+        # No FYI-only Windows/Debug Telemetry tests at this time.
     ],
 )
 
@@ -4493,7 +4492,6 @@ targets.bundle(
     name = "gpu_fyi_win_release_telemetry_tests",
     targets = [
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are

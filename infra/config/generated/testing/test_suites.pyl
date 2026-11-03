@@ -2239,26 +2239,6 @@
       },
     },
 
-    'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
-      'webgl_conformance_vulkan_passthrough_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'gpu_force_command_decoder_passthrough',
-            'gpu_force_angle_vulkan',
-            'gpu_force_high_performance_gpu',
-            'gpu_integration_test_webgl1_args',
-            'gpu_integration_test_common_args',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'gpu_webrtc_metal_passthrough_graphite_telemetry_test': {
       'webrtc_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -3179,7 +3159,6 @@
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
       'legacy_context_lost_passthrough_graphite_tests',
       'legacy_expected_color_pixel_passthrough_graphite_test',
       'legacy_info_collection_tests',

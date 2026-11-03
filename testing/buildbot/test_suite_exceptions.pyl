@@ -470,10 +470,4 @@
       'Mac V8 FYI Release (Intel)',
     ],
   },
-  'webgl_conformance_vulkan_passthrough_tests': {
-    'remove_from': [
-      # TODO(crbug.com/380431384): Re-enable when fixed
-      'Win V8 FYI Release (NVIDIA)',
-    ],
-  },
 }

@@ -249,7 +249,6 @@ chromium_luci.configure_targets(
             "gpu_force_angle_gles": True,
             "gpu_force_angle_metal": True,
             "gpu_force_angle_swiftshader": True,
-            "gpu_force_angle_vulkan": True,
             "gpu_force_command_decoder_passthrough": True,
             "gpu_force_command_decoder_validating": True,
             "gpu_force_high_performance_gpu": True,

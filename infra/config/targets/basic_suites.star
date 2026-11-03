@@ -1181,17 +1181,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
-    tests = {
-        "webgl_conformance_vulkan_passthrough_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(

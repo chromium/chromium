@@ -2690,13 +2690,6 @@ ci.thin_tester(
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
             ),
-
-            # TODO(crbug.com/380431384): Re-enable when fixed
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
-                reason = [
-                    "crbug.com/380431384 flaky crashes in random tests",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -3006,9 +2999,6 @@ ci.thin_tester(
             "screenshot_sync_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
-                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -3221,12 +3211,6 @@ ci.thin_tester(
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
             ),
-            # TODO(crbug.com/380431384): Re-enable when fixed
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
-                reason = [
-                    "crbug.com/380431384 flaky crashes in random tests",
-                ],
-            ),
             "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     args = [
@@ -3351,9 +3335,6 @@ ci.thin_tester(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
             "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
-            ),
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
         },
@@ -3514,9 +3495,6 @@ ci.thin_tester(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
             "screenshot_sync_passthrough_graphite_tests": targets.remove(
-                reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
-            ),
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
                 reason = "crbug.com/541312843 enable these tests after the test bundle standardization lands",
             ),
         },
@@ -3720,12 +3698,6 @@ ci.thin_tester(
                 reason = [
                     "TODO(crbug.com/40912267): Enable Media Foundation browser tests on NVIDIA",
                     "gpu bots once the Windows OS supports HW secure decryption.",
-                ],
-            ),
-            # TODO(crbug.com/380431384): Re-enable when fixed
-            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
-                reason = [
-                    "crbug.com/380431384 flaky crashes in random tests",
                 ],
             ),
             "pixel_skia_gold_passthrough_graphite_test": targets.per_test_modification(
