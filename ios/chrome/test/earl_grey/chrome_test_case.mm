@@ -240,7 +240,6 @@ void ResetAuthentication() {
   [[self class] disableMockAuthentication];
   [super tearDown];
   gExecutedSetUpForTestCase = false;
-  gStartupTest = false;
 }
 
 - (net::EmbeddedTestServer*)testServer {
@@ -330,11 +329,10 @@ void ResetAuthentication() {
     policy_test_utils::ClearPolicies();
   }
 
-  // Do not attempt to rotate if this is a startup test or if the original
-  // orientation is unknown (for tests that test the startup sequence, the
-  // orientation may not be available at -setUp).
-  if (![ChromeTestCase isStartupTest] &&
-      _originalOrientation != UIInterfaceOrientationUnknown) {
+  // Do not attempt to rotate if the original orientation is unknown (for tests
+  // that halt the startup sequence before a scene exists, the orientation may
+  // not be available at -setUp).
+  if (_originalOrientation != UIInterfaceOrientationUnknown) {
     if ([ChromeEarlGrey isDuoSimulator]) {
       // Synchronization off due to an infinite spinner if the keyboard is
       // visible.
@@ -345,17 +343,23 @@ void ResetAuthentication() {
       if (@available(iOS 27.1, *)) {
         [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
       }
-    } else if ([ChromeEarlGrey interfaceOrientation] != _originalOrientation) {
-      // Synchronization off due to an infinite spinner if the keyboard is
-      // visible.
-      ScopedSynchronizationDisabler disabler;
-      // Rotate the device back to the original orientation, since some tests
-      // attempt to run in other orientations.
-      [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
+    } else {
+      UIInterfaceOrientation currentOrientation =
+          [ChromeEarlGrey interfaceOrientation];
+      if (currentOrientation != UIInterfaceOrientationUnknown &&
+          currentOrientation != _originalOrientation) {
+        // Synchronization off due to an infinite spinner if the keyboard is
+        // visible.
+        ScopedSynchronizationDisabler disabler;
+        // Rotate the device back to the original orientation, since some tests
+        // attempt to run in other orientations.
+        [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
+      }
     }
   }
   _executedTestMethodSetUp = NO;
   _testServer = nil;
+  gStartupTest = false;
   [super tearDown];
 }
 
