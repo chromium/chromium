@@ -108,6 +108,11 @@ class NineboxImageSource : public gfx::CanvasImageSource {
   const gfx::Outsets margins_;
 };
 
+// Maximum number of cached entries before unowned entries are evicted on a
+// miss. Retaining a small working set of unowned entries avoids repeated
+// re-rasterization and UIResource churn when decorations cycle across states.
+inline constexpr size_t kMaxCacheSizeBeforeEviction = 16;
+
 // Generic cache for decoration details.
 template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
 class DecorationCache {
@@ -122,10 +127,13 @@ class DecorationCache {
       return iter->second;
     }
 
-    // Evict the details whose ninebox image does not have any owners.
-    base::EraseIf(cache, [](auto& pair) {
-      return pair.second.nine_patch_image.IsUniquelyOwned();
-    });
+    // Evict the details whose ninebox image does not have any owners once the
+    // cache reaches `kMaxCacheSizeBeforeEviction`.
+    if (cache.size() >= kMaxCacheSizeBeforeEviction) {
+      base::EraseIf(cache, [](auto& pair) {
+        return pair.second.nine_patch_image.IsUniquelyOwned();
+      });
+    }
 
     const gfx::Insets aperture_insets =
         Generator::GetNineboxApertureInsets(spec, rounded_corners);
@@ -142,6 +150,8 @@ class DecorationCache {
   }
 
   static size_t GetCacheSize() { return GetCache().size(); }
+
+  static void ClearCache() { GetCache().clear(); }
 
  private:
   struct Key {
@@ -207,8 +217,15 @@ struct DecorationDetails {
                                                            spec);
   }
 
+  static constexpr size_t kMaxCacheSizeBeforeEviction =
+      internal::kMaxCacheSizeBeforeEviction;
+
   static size_t GetDetailsCacheSizeForTest() {
     return internal::DecorationCache<Spec, Generator>::GetCacheSize();
+  }
+
+  static void ClearDetailsCacheForTest() {
+    internal::DecorationCache<Spec, Generator>::ClearCache();
   }
 
   // Visual specification of the decoration.

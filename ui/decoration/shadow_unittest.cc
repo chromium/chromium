@@ -324,67 +324,57 @@ TEST_F(ShadowTest, AdjustRoundedCorners) {
             shadow->details_for_testing()->nine_patch_image.size());
 }
 
-// Test that the uniquely owned shadow image is evicted from the cache when new
-// shadow details are created.
+// Test that uniquely owned shadow images are retained up to
+// `ShadowDetails::kMaxCacheSizeBeforeEviction` and evicted once that capacity
+// is reached.
 TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
-  // Insert a new shadow with unique details which will evict existing details
-  // from the cache.
+  ShadowDetails::ClearDetailsCacheForTest();
+
   {
     auto new_decoration = Decoration::CreateShadow(kElevationUnique);
 
     const gfx::Size min_content_size = GetMinContentSize(kElevationUnique);
     new_decoration->SetContentBounds(gfx::Rect(min_content_size));
-    // The cache size should be 1.
     EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a shadow with the same detail won't increase the cache size.
     auto same_decoration = Decoration::CreateShadow(kElevationUnique);
     same_decoration->SetContentBounds(
         gfx::Rect(gfx::Point(10, 10), min_content_size + gfx::Size(50, 50)));
-    // The cache size is unchanged.
     EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 
-    // Creating a new uniquely owned detail will increase the cache size.
-    ShadowDetails::Get(gfx::RoundedCornersF(3),
-                       Shadow::MakeShadowValues(kElevationUnique));
-    EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
+    // Below `kMaxCacheSizeBeforeEviction`, uniquely owned details are retained
+    // in the cache.
+    for (size_t i = 1; i < ShadowDetails::kMaxCacheSizeBeforeEviction; ++i) {
+      ShadowDetails::Get(gfx::RoundedCornersF(2 + i),
+                         Shadow::MakeShadowValues(kElevationUnique));
+      EXPECT_EQ(i + 1, ShadowDetails::GetDetailsCacheSizeForTest());
+    }
 
-    // Creating a shadow with different details will replace the uniquely owned
-    // detail.
+    // Once the cache reaches `kMaxCacheSizeBeforeEviction`, inserting a new
+    // detail evicts all uniquely owned details while keeping actively owned
+    // ones (`new_decoration` + `small_decoration`).
     auto small_decoration = Decoration::CreateShadow(kElevationSmall);
     const gfx::Rect small_content_bounds(GetMinContentSize(kElevationSmall));
     small_decoration->SetContentBounds(small_content_bounds);
     EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
-
-    // Changing the shadow appearance will insert a new detail in the cache and
-    // make the old detail uniquely owned.
-    small_decoration->SetContentBounds(small_content_bounds);
-    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(3));
-    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
-
-    // Changing the shadow with another appearance will replace the uniquely
-    // owned detail.
-    small_decoration->SetContentBounds(small_content_bounds);
-    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(4));
-    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
-
-    // Changing the shadow to be pill shaped will replace the uniquely owned
-    // detail.
-    small_decoration->SetContentBounds(
-        gfx::Rect(GetMinContentSize(kElevationSmall, gfx::RoundedCornersF(14),
-                                    /*is_pill_shaped=*/true)));
-    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(14));
-    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
   }
 
-  // After destroying all the shadows, the cache has 3 uniquely owned details.
-  EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
+  // After destroying all shadows, both remaining details are uniquely owned.
+  EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
 
-  // After inserting a new detail, the uniquely owned details will be evicted.
+  // Fill the cache back up to capacity with uniquely owned details, then insert
+  // `large_decoration` to evict them all.
+  for (size_t i = 2; i < ShadowDetails::kMaxCacheSizeBeforeEviction; ++i) {
+    ShadowDetails::Get(gfx::RoundedCornersF(2 + i),
+                       Shadow::MakeShadowValues(kElevationUnique));
+  }
+  EXPECT_EQ(ShadowDetails::kMaxCacheSizeBeforeEviction,
+            ShadowDetails::GetDetailsCacheSizeForTest());
+
   auto large_decoration = Decoration::CreateShadow(kElevationLarge);
   large_decoration->SetContentBounds(
       gfx::Rect(GetMinContentSize(kElevationLarge)));
-  // The cache size is unchanged.
   EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 }
 
