@@ -385,9 +385,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Android.DiscardLatency.{DiscardReason}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-12-16">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
   <summary>
     [Android] Records the latency for a tab discarded for {DiscardReason}.
     Emitted after the tab discard callback is run. Note that discard might not
