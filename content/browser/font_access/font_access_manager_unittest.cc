@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -193,7 +194,7 @@ void ValidateFontEnumerationBasic(FontEnumerationStatus status,
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
   blink::FontEnumerationTable table;
-  EXPECT_TRUE(table.ParseFromArray(mapping.memory(), mapping.size()));
+  EXPECT_TRUE(table.ParseFromString(base::as_string_view(mapping)));
 
   blink::FontEnumerationTable_FontData previous_font;
   for (const auto& font : table.fonts()) {

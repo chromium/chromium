@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -334,7 +337,8 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     const uint8_t dummy_value = frame_count % 256;
 
     // Reset the whole buffer to 0
-    UNSAFE_TODO(memset(outgoing_buffer.memory(), 0, outgoing_buffer.size()));
+    auto data = base::span(outgoing_buffer);
+    std::ranges::fill(data, 0);
 
     // Set all bytes affecting |info->visible_rect| to |dummy_value|.
     const int kYStride = info->strides ? info->strides->stride_by_plane[0]
@@ -362,47 +366,41 @@ class SharedMemoryDeviceExerciser : public VirtualDeviceExerciser,
     const int kVStride = info->strides ? info->strides->stride_by_plane[2]
                                        : info->coded_size.width() / 2;
 
-    uint8_t* write_ptr = outgoing_buffer.GetMemoryAsSpan<uint8_t>().data();
-    FillVisiblePortionOfPlane(&write_ptr, dummy_value, kYCodedRowCount,
-                              kYRowsToSkipAtStart, kYVisibleRowCount, kYStride,
-                              kYColsToSkipAtStart, kYVisibleColCount);
-    FillVisiblePortionOfPlane(&write_ptr, dummy_value, kUCodedRowCount,
-                              kURowsToSkipAtStart, kUVisibleRowCount, kUStride,
-                              kUColsToSkipAtStart, kUVisibleColCount);
-    FillVisiblePortionOfPlane(&write_ptr, dummy_value, kUCodedRowCount,
-                              kURowsToSkipAtStart, kUVisibleRowCount, kVStride,
-                              kUColsToSkipAtStart, kUVisibleColCount);
+    data = FillVisiblePortionOfPlane(
+        data, dummy_value, kYCodedRowCount, kYRowsToSkipAtStart,
+        kYVisibleRowCount, kYStride, kYColsToSkipAtStart, kYVisibleColCount);
+    data = FillVisiblePortionOfPlane(
+        data, dummy_value, kUCodedRowCount, kURowsToSkipAtStart,
+        kUVisibleRowCount, kUStride, kUColsToSkipAtStart, kUVisibleColCount);
+    data = FillVisiblePortionOfPlane(
+        data, dummy_value, kUCodedRowCount, kURowsToSkipAtStart,
+        kUVisibleRowCount, kVStride, kUColsToSkipAtStart, kUVisibleColCount);
 
     virtual_device_->OnFrameReadyInBuffer(buffer_id, std::move(info));
   }
 
-  void FillVisiblePortionOfPlane(uint8_t** write_ptr,
-                                 uint8_t fill_value,
-                                 int row_count,
-                                 int rows_to_skip_at_start,
-                                 int visible_row_count,
-                                 int col_count,
-                                 int cols_to_skip_at_start,
-                                 int visible_col_count) {
-    const int kColsToSkipAtEnd =
-        col_count - visible_col_count - cols_to_skip_at_start;
-    const int kRowsToSkipAtEnd =
-        row_count - visible_row_count - rows_to_skip_at_start;
-
-    // Skip rows at start
-    UNSAFE_TODO((*write_ptr) += col_count * rows_to_skip_at_start);
-    // Fill rows
+  base::span<uint8_t> FillVisiblePortionOfPlane(base::span<uint8_t> buffer,
+                                                uint8_t fill_value,
+                                                int row_count,
+                                                int rows_to_skip_at_start,
+                                                int visible_row_count,
+                                                int col_count,
+                                                int cols_to_skip_at_start,
+                                                int visible_col_count) {
+    const size_t stride = base::checked_cast<size_t>(col_count);
+    // Consume the entire plane, including padding, before filling visible rows.
+    auto plane =
+        buffer.take_first(base::checked_cast<size_t>(row_count) * stride);
+    plane = plane.subspan(base::checked_cast<size_t>(rows_to_skip_at_start) *
+                          stride);
     for (int i = 0; i < visible_row_count; i++) {
-      // Skip cols at start
-      UNSAFE_TODO((*write_ptr) += cols_to_skip_at_start);
-      // Fill visible bytes
-      UNSAFE_TODO(memset(*write_ptr, fill_value, visible_col_count));
-      UNSAFE_TODO((*write_ptr) += visible_col_count);
-      // Skip cols at end
-      UNSAFE_TODO((*write_ptr) += kColsToSkipAtEnd);
+      auto row = plane.take_first(stride);
+      std::ranges::fill(
+          row.subspan(base::checked_cast<size_t>(cols_to_skip_at_start),
+                      base::checked_cast<size_t>(visible_col_count)),
+          fill_value);
     }
-    // Skip rows at end
-    UNSAFE_TODO((*write_ptr) += col_count * kRowsToSkipAtEnd);
+    return buffer;
   }
 
   media::mojom::PlaneStridesPtr strides_;

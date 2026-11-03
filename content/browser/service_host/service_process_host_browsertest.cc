@@ -4,11 +4,10 @@
 
 #include "content/public/browser/service_process_host.h"
 
-#include <string.h>
-
+#include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
@@ -180,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
   });
   auto region = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
   base::WritableSharedMemoryMapping mapping = region.Map();
-  UNSAFE_TODO(memset(mapping.memory(), 0, kBufferSize));
+  ASSERT_TRUE(mapping.IsValid());
+  std::ranges::fill(mapping, 0);
 
   // Send several messages, since it helps to verify a lack of raciness between
   // service-side message dispatch and service termination.
@@ -191,9 +191,9 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
   echo_service.reset();
   observer.WaitForDeath();
 
-  const std::string& kLastMessage = kMessages[std::size(kMessages) - 1];
-  UNSAFE_TODO(EXPECT_EQ(
-      0, memcmp(mapping.memory(), kLastMessage.data(), kLastMessage.size())));
+  const std::string& kLastMessage = kMessages.back();
+  EXPECT_EQ(base::as_byte_span(kLastMessage),
+            base::span(mapping).first(kLastMessage.size()));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {

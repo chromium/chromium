@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -304,8 +305,8 @@ GamepadController::GamepadController() {
     // clusterfuzz. If it happened in the wild, the test would be retried.
     LOG(ERROR) << "GamepadController shared memory mapping is not valid";
   } else {
-    gamepads_ =
-        new (shared_memory_mapping_.memory()) device::GamepadHardwareBuffer();
+    gamepads_ = std::construct_at(
+        shared_memory_mapping_.GetMemoryAs<device::GamepadHardwareBuffer>());
   }
 
   Reset();
