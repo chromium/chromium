@@ -532,16 +532,19 @@ TEST_F(CdpActorSessionTrackerTest,
   // flight.
   DeleteContents();
 
-  // Completing the background task must not UAF/crash.
+  // Completing the background task must not UAF/crash and still populates the
+  // endpoint cache.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return tracker_->GetPendingExtractionsCountForTesting() == 0u;
   }));
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_TRUE(tracker_->HasCachedWebSocketProcessTreeForTesting(
+      MakeLoopbackEndpoint(777)));
   tracker_->OnClientDetached(&ws_channel);
 }
 
 TEST_F(CdpActorSessionTrackerTest,
-       RetainsPlaceholderWhileInFlightAndPopulatesProcessTreeOnCompletion) {
+       RetainsPlaceholderWhileInFlightAndPopulatesCacheOnCompletion) {
   auto manual_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
   tracker_->SetExtractorsForTesting(
       CdpActorSessionTracker::PipeExtractorCallback(),
@@ -556,39 +559,44 @@ TEST_F(CdpActorSessionTrackerTest,
   FakeDevToolsAgentHostClient ws_client("RemoteDebugger", ws_meta);
   FakeDevToolsChannel ws_channel(tab_host.get(), &ws_client);
 
+  const PeerMetadata pipe_meta = {.transport_type =
+                                      PeerMetadata::TransportType::kPipe};
+  FakeDevToolsAgentHostClient pipe_client("Pipe", pipe_meta);
+  FakeDevToolsChannel pipe_channel(tab_host.get(), &pipe_client);
+
   tracker_->OnClientAttached(&ws_channel);
   tracker_->OnCommandHandled(&ws_channel);
-  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 1u);
+  tracker_->OnClientAttached(&pipe_channel);
+  tracker_->OnCommandHandled(&pipe_channel);
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 2u);
 
-  // While the task on `manual_runner` is still in flight, the tab retains a
-  // placeholder entry (empty `process_nodes`) and `pending_extractions_count_`
-  // remains 1.
+  // While both tasks on `manual_runner` are still in flight, the tab retains
+  // placeholder entries (empty `process_nodes`) and neither cache is populated
+  // yet.
+  EXPECT_FALSE(tracker_->HasCachedPipeProcessTreeForTesting());
+  EXPECT_FALSE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
   std::optional<EventInitiatorInfo> info =
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
   ASSERT_TRUE(info.has_value());
   ASSERT_TRUE(info->has_external_process_info());
-  ASSERT_EQ(info->external_process_info().external_processes_size(), 1);
-  EXPECT_EQ(
-      info->external_process_info().external_processes(0).transport_type(),
-      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
+  ASSERT_EQ(info->external_process_info().external_processes_size(), 2);
   EXPECT_EQ(
       info->external_process_info().external_processes(0).process_nodes_size(),
       0);
-
-  // Now allow the background task to finish and reply; the process tree is
-  // populated on the tab and `pending_extractions_count_` drops to 0.
-  manual_runner->RunPendingTasks();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return tracker_->GetPendingExtractionsCountForTesting() == 0u;
-  }));
-  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
-  info = CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
-  ASSERT_TRUE(info.has_value());
   EXPECT_EQ(
-      info->external_process_info().external_processes(0).process_nodes_size(),
-      1);
+      info->external_process_info().external_processes(1).process_nodes_size(),
+      0);
+
+  // Allow the background tasks to finish and reply; both caches and tab entries
+  // are populated and `pending_extractions_count_` drops to 0.
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
+  EXPECT_TRUE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
 
   tracker_->OnClientDetached(&ws_channel);
+  tracker_->OnClientDetached(&pipe_channel);
 }
 
 TEST_F(CdpActorSessionTrackerTest,
@@ -636,9 +644,7 @@ TEST_F(CdpActorSessionTrackerTest,
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 16u);
 
   manual_runner->RunPendingTasks();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return tracker_->GetPendingExtractionsCountForTesting() == 0u;
-  }));
+  task_environment()->FastForwardBy(base::TimeDelta());
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
   EXPECT_EQ(websocket_extractor_calls_, 16);
 
@@ -647,9 +653,8 @@ TEST_F(CdpActorSessionTrackerTest,
   tracker_->OnClientAttached(&pipe_channel_active);
   tracker_->OnCommandHandled(&pipe_channel_active);
   manual_runner->RunPendingTasks();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return tracker_->GetPendingExtractionsCountForTesting() == 0u;
-  }));
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
 
   tracker_->OnClientDetached(&pipe_channel_shed);
   tracker_->OnClientDetached(&pipe_channel_active);
@@ -698,6 +703,10 @@ TEST_F(CdpActorSessionTrackerTest,
   }));
 
   EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
+  EXPECT_TRUE(tracker_->HasCachedWebSocketProcessTreeForTesting(
+      MakeLoopbackEndpoint(999)));
+
   std::optional<EventInitiatorInfo> info =
       CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
   ASSERT_TRUE(info.has_value());
@@ -706,6 +715,136 @@ TEST_F(CdpActorSessionTrackerTest,
 
   tracker_->OnClientDetached(&ws_channel);
   tracker_->OnClientDetached(&pipe_channel);
+}
+
+TEST_F(CdpActorSessionTrackerTest,
+       CachesPipeAcrossBrowserLifetimeAndWebSocketWhileEndpointActive) {
+  auto manual_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  tracker_->SetExtractorsForTesting(
+      CdpActorSessionTracker::PipeExtractorCallback(),
+      CdpActorSessionTracker::WebSocketExtractorCallback(), manual_runner);
+
+  auto tab_host =
+      base::MakeRefCounted<FakeDevToolsAgentHost>(web_contents(), profile());
+
+  // 1. Pipe extraction runs once and is cached for the entire browser lifetime.
+  const PeerMetadata pipe_meta = {.transport_type =
+                                      PeerMetadata::TransportType::kPipe};
+  FakeDevToolsAgentHostClient pipe_client_1("Pipe", pipe_meta);
+  FakeDevToolsChannel pipe_channel_1(tab_host.get(), &pipe_client_1);
+  tracker_->OnClientAttached(&pipe_channel_1);
+  tracker_->OnCommandHandled(&pipe_channel_1);
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_EQ(pipe_extractor_calls_, 1);
+  EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
+
+  // Child session (Target.attachToTarget) with forwarded `PeerMetadata::kPipe`
+  // reuses the cached Pipe `ProcessTree` without spawning a second OS walk,
+  // even after detaching and advancing past 30s.
+  tracker_->OnClientDetached(&pipe_channel_1);
+  task_environment()->FastForwardBy(base::Seconds(120));
+  EXPECT_TRUE(tracker_->HasCachedPipeProcessTreeForTesting());
+
+  FakeDevToolsAgentHostClient pipe_child_client("DevTools", pipe_meta);
+  FakeDevToolsChannel pipe_child_channel(tab_host.get(), &pipe_child_client);
+  tracker_->OnClientAttached(&pipe_child_channel);
+  tracker_->OnCommandHandled(&pipe_child_channel);
+  EXPECT_EQ(pipe_extractor_calls_, 1);
+  std::optional<EventInitiatorInfo> info =
+      CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
+  ASSERT_TRUE(info.has_value());
+  ASSERT_EQ(info->external_process_info().external_processes_size(), 1);
+  EXPECT_EQ(info->external_process_info()
+                .external_processes(0)
+                .process_nodes(0)
+                .process_id(),
+            7001);
+  tracker_->OnClientDetached(&pipe_child_channel);
+  task_environment()->FastForwardBy(base::Seconds(31));
+
+  // 2. WebSocket extraction is cached per `net::IPEndPoint` across active
+  // channels sharing that endpoint and evicted once the last channel for that
+  // endpoint detaches.
+  const net::IPEndPoint ws_ep = MakeLoopbackEndpoint(600);
+  const PeerMetadata ws_meta = {
+      .transport_type = PeerMetadata::TransportType::kWebSocket,
+      .peer_address = ws_ep};
+
+  FakeDevToolsAgentHostClient ws_root_client("RemoteDebugger", ws_meta);
+  FakeDevToolsChannel ws_root_channel(tab_host.get(), &ws_root_client);
+  FakeDevToolsAgentHostClient ws_child_client("DevTools", ws_meta);
+  FakeDevToolsChannel ws_child_channel(tab_host.get(), &ws_child_client);
+
+  tracker_->OnClientAttached(&ws_root_channel);
+  tracker_->OnCommandHandled(&ws_root_channel);
+  tracker_->OnClientAttached(&ws_child_channel);
+  tracker_->OnCommandHandled(&ws_child_channel);
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+  EXPECT_TRUE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
+
+  // Detaching one channel while another channel on the same endpoint remains
+  // active preserves the endpoint cache.
+  tracker_->OnClientDetached(&ws_child_channel);
+  EXPECT_TRUE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
+
+  // Attaching another channel while `ws_root_channel` is still active hits the
+  // cache without re-extracting.
+  FakeDevToolsChannel ws_reattach_channel(tab_host.get(), &ws_child_client);
+  tracker_->OnClientAttached(&ws_reattach_channel);
+  tracker_->OnCommandHandled(&ws_reattach_channel);
+  EXPECT_EQ(websocket_extractor_calls_, 1);
+
+  // Detaching all channels for `ws_ep` immediately evicts the endpoint cache so
+  // a new connection reusing the same ip:port cannot pick up the previous
+  // connection's process tree, while `TabCdpActorTracker` still retains the
+  // detached actor on the tab for the 30s post-detach window.
+  tracker_->OnClientDetached(&ws_reattach_channel);
+  tracker_->OnClientDetached(&ws_root_channel);
+  EXPECT_FALSE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
+
+  FakeDevToolsChannel ws_fresh_channel(tab_host.get(), &ws_root_client);
+  tracker_->OnClientAttached(&ws_fresh_channel);
+  tracker_->OnCommandHandled(&ws_fresh_channel);
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_EQ(websocket_extractor_calls_, 2);
+  tracker_->OnClientDetached(&ws_fresh_channel);
+  task_environment()->FastForwardBy(base::Seconds(31));
+
+  // If the last WebSocket channel detaches while background extraction is still
+  // in flight, `OnExtractionCompleted` still populates the detached actor's
+  // `ProcessTree` on the tab for the 30s post-detach grace window and then
+  // immediately evicts the endpoint from `websocket_cache_`.
+  FakeDevToolsChannel ws_inflight_detach_channel(tab_host.get(),
+                                                 &ws_root_client);
+  tracker_->OnClientAttached(&ws_inflight_detach_channel);
+  tracker_->OnCommandHandled(&ws_inflight_detach_channel);
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 1u);
+  tracker_->OnClientDetached(&ws_inflight_detach_channel);
+
+  manual_runner->RunPendingTasks();
+  task_environment()->FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(tracker_->GetPendingExtractionsCountForTesting(), 0u);
+  EXPECT_EQ(websocket_extractor_calls_, 3);
+  EXPECT_FALSE(tracker_->HasCachedWebSocketProcessTreeForTesting(ws_ep));
+
+  info = CdpActorSessionTracker::GetEventInitiatorInfo(web_contents());
+  ASSERT_TRUE(info.has_value());
+  ASSERT_EQ(info->external_process_info().external_processes_size(), 1);
+  ASSERT_EQ(
+      info->external_process_info().external_processes(0).process_nodes_size(),
+      1);
+  EXPECT_EQ(info->external_process_info()
+                .external_processes(0)
+                .process_nodes(0)
+                .process_id(),
+            8600);
 }
 
 }  // namespace
