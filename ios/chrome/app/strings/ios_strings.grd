@@ -353,6 +353,12 @@
       <message name="IDS_IOS_ACTOR_HEADER_TASK_STOPPED" desc="Title of the minimized actuation header when the user stopped the task. The task title is displayed below it. [iOS only]">
         Task stopped
       </message>
+      <message name="IDS_IOS_ACTOR_INPUT_PLATE_PLACEHOLDER" desc="Placeholder shown in the empty text field where the user types an answer to the actor while it performs a task for them. [iOS only]">
+        Answer
+      </message>
+      <message name="IDS_IOS_ACTOR_INPUT_PLATE_SEND_ACCESSIBILITY_LABEL" desc="Accessibility label, read by VoiceOver, of the icon-only button that sends the text the user typed in reply to the actor. [iOS only]">
+        Send
+      </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_CLICKING" desc="Worklog chip label indicating the actor is clicking an element on the page. [iOS only]">
         Clicking
       </message>

@@ -35,6 +35,16 @@ inline constexpr NSString* const
     kActuationInterventionButtonStackAccessibilityIdentifier =
         @"ActuationInterventionButtonStackAccessibilityIdentifier";
 
+// Accessibility identifier for the text field of the actor input plate.
+inline constexpr NSString* const
+    kActorInputPlateTextFieldAccessibilityIdentifier =
+        @"ActorInputPlateTextFieldAccessibilityIdentifier";
+
+// Accessibility identifier for the send button of the actor input plate.
+inline constexpr NSString* const
+    kActorInputPlateSendButtonAccessibilityIdentifier =
+        @"ActorInputPlateSendButtonAccessibilityIdentifier";
+
 // Returns the accessibility identifier of the button displaying the action at
 // `index` of `ActuationInterventionData.actions`.
 NSString* ActuationInterventionActionButtonAccessibilityIdentifier(

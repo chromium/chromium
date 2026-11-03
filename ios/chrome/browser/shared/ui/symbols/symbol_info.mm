@@ -506,6 +506,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"arrow.down.to.line.compact", SymbolType::kSystem};
     case SymbolPaperclip:
       return {@"paperclip", SymbolType::kSystem};
+    case SymbolPaperplaneFill:
+      return {@"paperplane.fill", SymbolType::kSystem};
     case SymbolPasteAction:
       return {@"doc.on.clipboard", SymbolType::kSystem};
     case SymbolPauseButton:

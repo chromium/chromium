@@ -268,6 +268,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolOpenImageAction,
   SymbolOpenInDownloads,
   SymbolPaperclip,
+  SymbolPaperplaneFill,
   SymbolPasteAction,
   SymbolPauseButton,
   SymbolPauseFill,
