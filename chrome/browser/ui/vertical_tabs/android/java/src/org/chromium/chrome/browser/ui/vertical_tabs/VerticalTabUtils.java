@@ -61,14 +61,16 @@ public class VerticalTabUtils {
     @IntDef({
         LayoutSwitchEntryPoint.APP_MENU,
         LayoutSwitchEntryPoint.TAB_CONTEXT_MENU,
-        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU
+        LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
+        LayoutSwitchEntryPoint.SETTINGS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LayoutSwitchEntryPoint {
         int APP_MENU = 0;
         int TAB_CONTEXT_MENU = 1;
         int TAB_STRIP_CONTEXT_MENU = 2;
-        int COUNT = 3;
+        int SETTINGS = 3;
+        int COUNT = 4;
     }
 
     // LINT.IfChange(AndroidVerticalTabsLayoutToggleSourceAndDirection)
@@ -79,6 +81,8 @@ public class VerticalTabUtils {
         LayoutToggleSourceAndDirection.DISABLE_APP_MENU,
         LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU,
         LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU,
+        LayoutToggleSourceAndDirection.ENABLE_SETTINGS,
+        LayoutToggleSourceAndDirection.DISABLE_SETTINGS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LayoutToggleSourceAndDirection {
@@ -88,7 +92,9 @@ public class VerticalTabUtils {
         int DISABLE_APP_MENU = 3;
         int DISABLE_TAB_CONTEXT_MENU = 4;
         int DISABLE_TAB_STRIP_CONTEXT_MENU = 5;
-        int COUNT = 6;
+        int ENABLE_SETTINGS = 6;
+        int DISABLE_SETTINGS = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
@@ -410,6 +416,8 @@ public class VerticalTabUtils {
                     return LayoutToggleSourceAndDirection.ENABLE_TAB_CONTEXT_MENU;
                 case LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU:
                     return LayoutToggleSourceAndDirection.ENABLE_TAB_STRIP_CONTEXT_MENU;
+                case LayoutSwitchEntryPoint.SETTINGS:
+                    return LayoutToggleSourceAndDirection.ENABLE_SETTINGS;
             }
         } else {
             switch (entryPoint) {
@@ -419,6 +427,8 @@ public class VerticalTabUtils {
                     return LayoutToggleSourceAndDirection.DISABLE_TAB_CONTEXT_MENU;
                 case LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU:
                     return LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU;
+                case LayoutSwitchEntryPoint.SETTINGS:
+                    return LayoutToggleSourceAndDirection.DISABLE_SETTINGS;
             }
         }
         assert false : "Invalid entry point or direction";

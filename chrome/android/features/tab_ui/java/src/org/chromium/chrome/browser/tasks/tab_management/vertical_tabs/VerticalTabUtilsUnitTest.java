@@ -273,6 +273,14 @@ public class VerticalTabUtilsUnitTest {
     }
 
     @Test
+    public void testRecordLayoutToggle_Enable_Settings() {
+        assertLayoutToggleHistogram(
+                LayoutSwitchEntryPoint.SETTINGS,
+                /* isEnabling= */ true,
+                LayoutToggleSourceAndDirection.ENABLE_SETTINGS);
+    }
+
+    @Test
     public void testRecordLayoutToggle_Disable_AppMenu() {
         assertLayoutToggleHistogram(
                 LayoutSwitchEntryPoint.APP_MENU,
@@ -294,6 +302,14 @@ public class VerticalTabUtilsUnitTest {
                 LayoutSwitchEntryPoint.TAB_STRIP_CONTEXT_MENU,
                 /* isEnabling= */ false,
                 LayoutToggleSourceAndDirection.DISABLE_TAB_STRIP_CONTEXT_MENU);
+    }
+
+    @Test
+    public void testRecordLayoutToggle_Disable_Settings() {
+        assertLayoutToggleHistogram(
+                LayoutSwitchEntryPoint.SETTINGS,
+                /* isEnabling= */ false,
+                LayoutToggleSourceAndDirection.DISABLE_SETTINGS);
     }
 
     @Test

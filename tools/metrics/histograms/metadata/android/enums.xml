@@ -525,6 +525,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Disable: App Menu"/>
   <int value="4" label="Disable: Tab Context Menu"/>
   <int value="5" label="Disable: Tab Strip Context Menu"/>
+  <int value="6" label="Enable: Settings"/>
+  <int value="7" label="Disable: Settings"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/vertical_tabs/android/java/src/org/chromium/chrome/browser/ui/vertical_tabs/VerticalTabUtils.java:AndroidVerticalTabsLayoutToggleSourceAndDirection)-->

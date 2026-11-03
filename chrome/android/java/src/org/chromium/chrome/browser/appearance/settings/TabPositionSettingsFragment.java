@@ -75,8 +75,10 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
                         return false;
                     }
                     VerticalTabUtils.setVerticalTabsEnabled((boolean) newValue);
-                    // TODO(crbug.com/559165430): Record layout toggle histogram when Settings
-                    // entry point is added.
+                    VerticalTabUtils.recordLayoutToggle(
+                            preference.getContext(),
+                            VerticalTabUtils.LayoutSwitchEntryPoint.SETTINGS,
+                            (boolean) newValue);
                     return true;
                 });
         updateCardPreference();

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutToggleSourceAndDirection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -149,6 +150,10 @@ public class TabPositionSettingsFragmentTest {
         assertFalse(verticalOption.isSelected());
 
         // Select Vertical.
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.LayoutToggleSourceAndDirection",
+                        LayoutToggleSourceAndDirection.ENABLE_SETTINGS);
         ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
         assertTrue(cardPref.isVerticalTabsSelected());
         assertFalse(horizontalOption.isSelected());
@@ -156,8 +161,13 @@ public class TabPositionSettingsFragmentTest {
         assertTrue(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
 
         // Select Horizontal.
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.LayoutToggleSourceAndDirection",
+                        LayoutToggleSourceAndDirection.DISABLE_SETTINGS);
         ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
         assertFalse(cardPref.isVerticalTabsSelected());
         assertTrue(horizontalOption.isSelected());
@@ -165,6 +175,7 @@ public class TabPositionSettingsFragmentTest {
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -186,6 +197,10 @@ public class TabPositionSettingsFragmentTest {
         VerticalTabUtils.setTabLayoutSwitchingInProgress(true);
 
         // Clicking Vertical should be ignored while switching is in progress.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.LayoutToggleSourceAndDirection")
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
         assertFalse(cardPref.isVerticalTabsSelected());
         assertTrue(horizontalOption.isSelected());
@@ -193,6 +208,7 @@ public class TabPositionSettingsFragmentTest {
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
 
         // Once switching finishes, clicking Vertical should succeed.
         VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
@@ -206,6 +222,10 @@ public class TabPositionSettingsFragmentTest {
 
         // Clicking Horizontal while switching is in progress should also be ignored.
         VerticalTabUtils.setTabLayoutSwitchingInProgress(true);
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.LayoutToggleSourceAndDirection")
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
         assertTrue(cardPref.isVerticalTabsSelected());
         assertFalse(horizontalOption.isSelected());
@@ -213,6 +233,7 @@ public class TabPositionSettingsFragmentTest {
         assertTrue(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
 
         // Once switching finishes, clicking Horizontal should succeed.
         VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
@@ -247,6 +268,10 @@ public class TabPositionSettingsFragmentTest {
                                 NARROW_WINDOW_WIDTH_DP);
 
         // Clicking Vertical when Horizontal is selected should be ignored on a narrow window.
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.LayoutToggleSourceAndDirection")
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
         assertFalse(cardPref.isVerticalTabsSelected());
         assertTrue(horizontalOption.isSelected());
@@ -254,6 +279,7 @@ public class TabPositionSettingsFragmentTest {
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
 
         // Simulate Vertical Tabs already enabled and in the auto-hide state on a narrow window.
         ThreadUtils.runOnUiThreadBlocking(
@@ -263,6 +289,10 @@ public class TabPositionSettingsFragmentTest {
         CriteriaHelper.pollUiThread(cardPref::isVerticalTabsSelected);
 
         // Clicking Horizontal while Vertical Tabs is in auto-hide state should also be ignored.
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.VerticalTabs.LayoutToggleSourceAndDirection")
+                        .build();
         ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
         assertTrue(cardPref.isVerticalTabsSelected());
         assertFalse(horizontalOption.isSelected());
@@ -270,6 +300,7 @@ public class TabPositionSettingsFragmentTest {
         assertTrue(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        histogramWatcher.assertExpected();
 
         // Once the window is wide enough, clicking Horizontal should succeed.
         ThreadUtils.runOnUiThreadBlocking(

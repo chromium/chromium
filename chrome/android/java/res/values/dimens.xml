@@ -563,9 +563,7 @@ found in the LICENSE file.
     <dimen name="immersive_playback_confirmation_dialog_width">256dp</dimen>
 
     <!-- Tab position settings. -->
-    <!-- TODO(crbug.com/559165430): Replace with the exact UX spec breakpoint. Two 180dp preview
-         illustrations plus 16dp padding on each side need at least 426dp to fit side by side. -->
-    <dimen name="tab_position_card_container_width_breakpoint">480dp</dimen>
+    <dimen name="tab_position_card_container_width_breakpoint">562dp</dimen>
     <dimen name="tab_position_card_padding">16dp</dimen>
     <dimen name="tab_position_card_title_margin_bottom">12dp</dimen>
     <dimen name="tab_position_card_preview_corner_radius">8dp</dimen>
