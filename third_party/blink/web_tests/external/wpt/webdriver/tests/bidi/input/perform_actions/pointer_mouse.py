@@ -33,7 +33,7 @@ async def test_down_closes_browsing_context(
     wait_for_future_safe,
     mouse_up
 ):
-    url = inline("""<input onmousedown="window.close()">close</input>""")
+    url = inline("""<input onmousedown="window.close()">close""")
 
     # Opening a new context via `window.open` is required
     # for the script to be able to close it.
