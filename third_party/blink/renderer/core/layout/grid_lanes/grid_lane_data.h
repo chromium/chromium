@@ -96,7 +96,9 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
 };
 
 // Stores items placed in a single grid lane.
-struct GridLaneData : public GarbageCollected<GridLaneData> {
+struct GridLaneData {
+  DISALLOW_NEW();
+
   void AddItem(GridLanesItemData* item) {
     item_data.push_back(std::move(item));
   }
@@ -113,7 +115,7 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
   HeapVector<Member<GridLanesItemData>> item_data;
 };
 
-using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
+using GridLanesDataVector = HeapVector<GridLaneData, 1>;
 
 // Returns the item at `index_path` in `lane_data`'s item tree. The first index
 // selects an item from `GridLaneData::item_data`. Each subsequent index selects
@@ -154,5 +156,7 @@ void AdjustGridLanesItemPlacementOffsets(LayoutUnit offset_adjustment,
 void ReverseGridLanesItemOrder(GridLanesDataVector& grid_lanes);
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GridLaneData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_LANES_GRID_LANE_DATA_H_

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lane_data.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_item_group.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
@@ -28,10 +29,8 @@ class GridSizingTree;
 class SubgriddedItemData;
 enum class GridItemContributionType;
 struct GridItemData;
-struct GridLaneData;
 struct GridLanesGapGeometryState;
 struct GridPlacementData;
-using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 
 class CORE_EXPORT GridLanesLayoutAlgorithm
     : public LayoutAlgorithm<GridLanesNode,

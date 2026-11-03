@@ -10,14 +10,14 @@ namespace blink {
 
 namespace {
 
-bool MoveToNextSibling(const GridLaneData* lane_data,
+bool MoveToNextSibling(const GridLaneData& lane_data,
                        ItemIndexPath& item_index_path) {
   CHECK(!item_index_path.empty());
-  wtf_size_t sibling_count = lane_data->item_data.size();
+  wtf_size_t sibling_count = lane_data.item_data.size();
   if (item_index_path.size() > 1) {
     ItemIndexPath parent_path = item_index_path;
     parent_path.pop_back();
-    sibling_count = GridLanesItemDataFromPath(*lane_data, parent_path)
+    sibling_count = GridLanesItemDataFromPath(lane_data, parent_path)
                         ->items_densely_packed_above.size();
   }
   if (item_index_path.back() + 1 >= sibling_count) {
@@ -27,17 +27,16 @@ bool MoveToNextSibling(const GridLaneData* lane_data,
   return true;
 }
 
-void AppendFirstPostorderedDenselyPackedItem(const GridLaneData* lane_data,
+void AppendFirstPostorderedDenselyPackedItem(const GridLaneData& lane_data,
                                              ItemIndexPath& item_index_path) {
-  while (!GridLanesItemDataFromPath(*lane_data, item_index_path)
+  while (!GridLanesItemDataFromPath(lane_data, item_index_path)
               ->items_densely_packed_above.empty()) {
     item_index_path.push_back(0u);
   }
 }
 
-ItemIndexPath FirstPostorderItemPath(const GridLaneData* lane_data) {
-  CHECK(lane_data);
-  if (lane_data->item_data.empty()) {
+ItemIndexPath FirstPostorderItemPath(const GridLaneData& lane_data) {
+  if (lane_data.item_data.empty()) {
     return {};
   }
 
@@ -47,9 +46,8 @@ ItemIndexPath FirstPostorderItemPath(const GridLaneData* lane_data) {
   return item_index_path;
 }
 
-ItemIndexPath NextPostorderItemPath(const GridLaneData* lane_data,
+ItemIndexPath NextPostorderItemPath(const GridLaneData& lane_data,
                                     const ItemIndexPath& item_index_path) {
-  CHECK(lane_data);
   CHECK(!item_index_path.empty());
   ItemIndexPath path = item_index_path;
 
@@ -62,19 +60,19 @@ ItemIndexPath NextPostorderItemPath(const GridLaneData* lane_data,
   return path;
 }
 
-ItemIndexPath FirstPreorderItemPath(const GridLaneData* lane_data) {
+ItemIndexPath FirstPreorderItemPath(const GridLaneData& lane_data) {
   ItemIndexPath path;
-  if (!lane_data->item_data.empty()) {
+  if (!lane_data.item_data.empty()) {
     path.push_back(0u);
   }
   return path;
 }
 
-ItemIndexPath NextPreorderItemPath(const GridLaneData* lane_data,
+ItemIndexPath NextPreorderItemPath(const GridLaneData& lane_data,
                                    const ItemIndexPath& item_index_path) {
   CHECK(!item_index_path.empty());
   ItemIndexPath path = item_index_path;
-  if (!GridLanesItemDataFromPath(*lane_data, path)
+  if (!GridLanesItemDataFromPath(lane_data, path)
            ->items_densely_packed_above.empty()) {
     path.push_back(0u);
     return path;
@@ -219,13 +217,13 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
 GridLanesItemData* GridLanesItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (grid_lane_idx_ < grid_lanes_.size()) {
-    const GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
-    if (lane_data && (iteration_mode_ == kStackingAxisReadingFlow ||
-                      lane_data->has_unfinished_items || item_break_token)) {
+    const GridLaneData& lane_data = grid_lanes_[grid_lane_idx_];
+    if (iteration_mode_ == kStackingAxisReadingFlow ||
+        lane_data.has_unfinished_items || item_break_token) {
       while (!grid_lanes_item_index_path_.empty()) {
         const ItemIndexPath item_index_path = grid_lanes_item_index_path_;
         GridLanesItemData* item_data =
-            GridLanesItemDataFromPath(*lane_data, item_index_path);
+            GridLanesItemDataFromPath(lane_data, item_index_path);
         grid_lanes_item_index_path_ = NextItemPath(lane_data, item_index_path);
 
         if (is_column_ && IsPendingColumnSpanner(*item_data)) {
@@ -331,11 +329,10 @@ GridLanesItemIterator::MaybeProcessNextPendingColumnSpanner() {
   grid_lane_idx_ = pending_column_spanner.lane_idx;
   grid_lanes_item_index_path_ = pending_column_spanner.item_index_path;
 
-  const GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
-  CHECK(lane_data);
+  const GridLaneData& lane_data = grid_lanes_[grid_lane_idx_];
 
   GridLanesItemData* item_data = GridLanesItemDataFromPath(
-      *lane_data, pending_column_spanner.item_index_path);
+      lane_data, pending_column_spanner.item_index_path);
   CHECK(item_data->is_item_start);
   grid_lanes_item_index_path_ =
       NextItemPath(lane_data, grid_lanes_item_index_path_);
@@ -356,10 +353,9 @@ bool GridLanesItemIterator::IsPendingColumnSpanner(
 
   const PendingColumnSpanner& pending_column_spanner =
       pending_column_spanners_.back();
-  const GridLaneData* lane_data = grid_lanes_[pending_column_spanner.lane_idx];
-  CHECK(lane_data);
+  const GridLaneData& lane_data = grid_lanes_[pending_column_spanner.lane_idx];
 
-  return GridLanesItemDataFromPath(*lane_data,
+  return GridLanesItemDataFromPath(lane_data,
                                    pending_column_spanner.item_index_path)
              ->item == item_data.item;
 }
@@ -375,14 +371,13 @@ void GridLanesItemIterator::MaybeAdvanceLanesPastColumnSpanner(
 
   for (wtf_size_t lane_idx = lane_span.StartLine() + 1;
        lane_idx < lane_span.EndLine(); ++lane_idx) {
-    const GridLaneData* lane_data = grid_lanes_[lane_idx];
-    CHECK(lane_data);
+    const GridLaneData& lane_data = grid_lanes_[lane_idx];
 
     // A spanner has one entry in every lane it occupies; this lane may have
     // already resumed past it.
     for (ItemIndexPath path = FirstItemPath(lane_data); !path.empty();
          path = NextItemPath(lane_data, path)) {
-      if (GridLanesItemDataFromPath(*lane_data, path)->item == item_data.item) {
+      if (GridLanesItemDataFromPath(lane_data, path)->item == item_data.item) {
         next_item_index_path_for_lane_[lane_idx] =
             NextItemPath(lane_data, path);
         break;
@@ -392,16 +387,14 @@ void GridLanesItemIterator::MaybeAdvanceLanesPastColumnSpanner(
 }
 
 ItemIndexPath GridLanesItemIterator::FirstItemPath(
-    const GridLaneData* lane_data) const {
-  CHECK(lane_data);
+    const GridLaneData& lane_data) const {
   return traversal_order_ == kPreorder ? FirstPreorderItemPath(lane_data)
                                        : FirstPostorderItemPath(lane_data);
 }
 
 ItemIndexPath GridLanesItemIterator::NextItemPath(
-    const GridLaneData* lane_data,
+    const GridLaneData& lane_data,
     const ItemIndexPath& item_index_path) const {
-  CHECK(lane_data);
   return traversal_order_ == kPreorder
              ? NextPreorderItemPath(lane_data, item_index_path)
              : NextPostorderItemPath(lane_data, item_index_path);
@@ -411,12 +404,11 @@ bool GridLanesItemIterator::IsLastItemInLane(
     wtf_size_t grid_lane_idx,
     const ItemIndexPath& next_item_index_path) const {
   CHECK_LT(grid_lane_idx, grid_lanes_.size());
-  const GridLaneData* lane_data = grid_lanes_[grid_lane_idx];
-  CHECK(lane_data);
+  const GridLaneData& lane_data = grid_lanes_[grid_lane_idx];
 
   for (ItemIndexPath path = next_item_index_path; !path.empty();
        path = NextItemPath(lane_data, path)) {
-    if (GridLanesItemDataFromPath(*lane_data, path)->is_item_start) {
+    if (GridLanesItemDataFromPath(lane_data, path)->is_item_start) {
       return false;
     }
   }
@@ -425,8 +417,9 @@ bool GridLanesItemIterator::IsLastItemInLane(
 
 void GridLanesItemIterator::NextLane() {
   CHECK_LT(grid_lane_idx_, grid_lanes_.size());
-  const GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
-  if (lane_data && grid_lanes_item_index_path_ == FirstItemPath(lane_data)) {
+  const GridLaneData& lane_data = grid_lanes_[grid_lane_idx_];
+  if (!lane_data.item_data.empty() &&
+      grid_lanes_item_index_path_ == FirstItemPath(lane_data)) {
     return;
   }
 
@@ -438,12 +431,11 @@ void GridLanesItemIterator::NextLane() {
 }
 
 void GridLanesItemIterator::AdjustItemIndexForNewLane() {
-  if (grid_lane_idx_ < next_item_index_path_for_lane_.size() &&
-      grid_lanes_[grid_lane_idx_]) {
+  if (grid_lane_idx_ < next_item_index_path_for_lane_.size()) {
     std::optional<ItemIndexPath>& next_item_index_path =
         next_item_index_path_for_lane_[grid_lane_idx_];
     if (!next_item_index_path) {
-      next_item_index_path = FirstItemPath(grid_lanes_[grid_lane_idx_].Get());
+      next_item_index_path = FirstItemPath(grid_lanes_[grid_lane_idx_]);
     }
     grid_lanes_item_index_path_ = next_item_index_path.value();
   } else {

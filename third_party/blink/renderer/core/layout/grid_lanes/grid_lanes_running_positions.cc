@@ -120,18 +120,16 @@ ItemIndexPath NewItemIndexPath(const ItemIndexPath& item_below_index_path,
   CHECK_LT(lane_index, grid_lanes.size());
 
   ItemIndexPath item_index_path_result = item_below_index_path;
-  GridLaneData* lane_data = grid_lanes[lane_index];
+  const GridLaneData& lane_data = grid_lanes[lane_index];
 
   // Append the position where the new item will be stored. With no item below
   // the opening, it becomes the next lane root. Otherwise, it becomes the next
   // densely packed child of the item below.
   if (item_below_index_path.empty()) {
-    item_index_path_result.push_back(lane_data ? lane_data->item_data.size()
-                                               : 0);
+    item_index_path_result.push_back(lane_data.item_data.size());
   } else {
-    CHECK(lane_data);
     const GridLanesItemData* parent =
-        GridLanesItemDataFromPath(*lane_data, item_below_index_path);
+        GridLanesItemDataFromPath(lane_data, item_below_index_path);
     CHECK(parent);
     item_index_path_result.push_back(parent->items_densely_packed_above.size());
   }

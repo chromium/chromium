@@ -84,8 +84,8 @@ class CORE_EXPORT GridLanesItemIterator {
   void AdjustItemIndexForNewLane();
 
   // Selects the first and successor index paths in `traversal_order_`.
-  ItemIndexPath FirstItemPath(const GridLaneData* lane_data) const;
-  ItemIndexPath NextItemPath(const GridLaneData* lane_data,
+  ItemIndexPath FirstItemPath(const GridLaneData& lane_data) const;
+  ItemIndexPath NextItemPath(const GridLaneData& lane_data,
                              const ItemIndexPath& item_index_path) const;
 
   // A spanner has one entry in every lane it occupies, but only the entry in

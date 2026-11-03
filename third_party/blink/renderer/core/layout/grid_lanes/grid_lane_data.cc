@@ -68,27 +68,24 @@ void AddItemToGridLanesData(
         /*is_item_start=*/track_index == span.StartLine());
 
     auto& lane_data = out_grid_lanes.at(track_index);
-    if (!lane_data) {
-      lane_data = MakeGarbageCollected<GridLaneData>();
-    }
 
     // Spanner layout happens in the first lane it occupies. If a lane only has
     // non-start entries for a spanner, it effectively has no unfinished items.
     if (item_data->is_item_start) {
-      lane_data->has_unfinished_items = true;
+      lane_data.has_unfinished_items = true;
     }
 
     GridLanesItemData* spanner_below = nullptr;
     if (!parent_item_index_path_per_lane.empty()) {
       spanner_below = GridLanesItemDataFromPath(
-          *lane_data,
+          lane_data,
           parent_item_index_path_per_lane[track_index - span.StartLine()]);
     }
 
     if (spanner_below) {
       spanner_below->AddDenselyPackedItem(item_data);
     } else {
-      lane_data->AddItem(item_data);
+      lane_data.AddItem(item_data);
     }
   }
 }
@@ -105,11 +102,10 @@ GridLanesItemPlacementData* FindGridLanesItemPlacementData(
   const wtf_size_t start_lane = item.StartLine(grid_axis_direction);
   CHECK_LT(start_lane, grid_lanes->size());
 
-  const GridLaneData* lane_data = grid_lanes->at(start_lane);
-  CHECK(lane_data);
+  const GridLaneData& lane_data = grid_lanes->at(start_lane);
 
   const GridLanesItemData* item_data =
-      GridLanesItemDataFromPath(*lane_data, item_index_path);
+      GridLanesItemDataFromPath(lane_data, item_index_path);
   CHECK(item_data);
   return item_data->grid_lanes_placement_data;
 }
@@ -121,11 +117,8 @@ void AdjustGridLanesItemPlacementOffsets(LayoutUnit offset_adjustment,
     return;
   }
 
-  for (GridLaneData* lane_data : grid_lanes) {
-    if (!lane_data) {
-      continue;
-    }
-    for (GridLanesItemData* item_data : lane_data->item_data) {
+  for (const GridLaneData& lane_data : grid_lanes) {
+    for (GridLanesItemData* item_data : lane_data.item_data) {
       AdjustItemPlacementOffset(offset_adjustment, is_block_direction,
                                 *item_data);
     }
@@ -133,12 +126,9 @@ void AdjustGridLanesItemPlacementOffsets(LayoutUnit offset_adjustment,
 }
 
 void ReverseGridLanesItemOrder(GridLanesDataVector& grid_lanes) {
-  for (GridLaneData* lane_data : grid_lanes) {
-    if (!lane_data) {
-      continue;
-    }
-    lane_data->item_data.Reverse();
-    for (GridLanesItemData* item_data : lane_data->item_data) {
+  for (GridLaneData& lane_data : grid_lanes) {
+    lane_data.item_data.Reverse();
+    for (GridLanesItemData* item_data : lane_data.item_data) {
       ReverseDenselyPackedItemOrder(*item_data);
     }
   }
