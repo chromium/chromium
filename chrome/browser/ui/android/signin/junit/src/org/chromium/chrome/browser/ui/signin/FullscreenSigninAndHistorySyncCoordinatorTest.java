@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,6 +17,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,6 +39,8 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -102,6 +108,31 @@ public class FullscreenSigninAndHistorySyncCoordinatorTest {
         coordinator.destroy();
 
         verify(mTrackerMock, never()).dismissed(FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE);
+    }
+
+    @Test
+    public void testDisplayDeviceLockPage_resultCanceled_keepsSigninScreen() {
+        FullscreenSigninAndHistorySyncCoordinator coordinator =
+                createCoordinator(/* shouldCallTrackerDismissed= */ false);
+        // The sign-in screen must be showing, so the result reaches a sign-in coordinator.
+        assertNotNull(coordinator.getView().findViewById(R.id.fullscreen_signin));
+        CoreAccountId accountId = new CoreAccountId(new GaiaId("gaia-id"));
+        coordinator.displayDeviceLockPage(accountId);
+        ArgumentCaptor<WindowAndroid.IntentCallback> callbackCaptor =
+                ArgumentCaptor.forClass(WindowAndroid.IntentCallback.class);
+        verify(mDeviceLockActivityLauncherMock)
+                .launchDeviceLockActivity(
+                        eq(mActivity),
+                        eq(accountId),
+                        eq(true),
+                        eq(mWindowAndroidMock),
+                        callbackCaptor.capture(),
+                        eq(DeviceLockActivityLauncher.Source.FULLSCREEN_SIGNIN));
+
+        callbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
+
+        verify(mDelegateMock, never()).onFlowComplete(any());
+        assertNotNull(coordinator.getView().findViewById(R.id.fullscreen_signin));
     }
 
     private FullscreenSigninAndHistorySyncCoordinator createCoordinator(

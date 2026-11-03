@@ -122,7 +122,7 @@ public abstract class SigninAndHistorySyncCoordinator {
     public abstract int handleBackPress();
 
     /**
-     * Called when an Google Play Services "add account" flow started at the activity level has
+     * Called when a Google Play Services "add account" flow started at the activity level has
      * finished with a result.
      */
     public final void onAddAccountResult(int resultCode, @Nullable Intent data) {
@@ -148,13 +148,13 @@ public abstract class SigninAndHistorySyncCoordinator {
     }
 
     /**
-     * Called by {@link onAddAccountResult} when an Google Play Services "add account" flow started
-     * at the activity level has finished without being completed.
+     * Called when a Google Play Services "add account" flow started at the activity level has
+     * finished without being completed.
      */
-    protected abstract void onAddAccountCanceled();
+    public abstract void onAddAccountCanceled();
 
     /**
-     * Called by {@link onAddAccountResult} when an Google Play Services "add account" flow started
+     * Called by {@link onAddAccountResult} when a Google Play Services "add account" flow started
      * at the activity level has finished after being completed.
      *
      * @param accountEmail the email of the added account.

@@ -282,8 +282,11 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
                 /* requireDeviceLockReauthentication= */ true,
                 mWindowAndroid,
                 (resultCode, data) -> {
-                    if (resultCode == Activity.RESULT_OK && mSigninCoordinator != null) {
+                    if (mSigninCoordinator == null) return;
+                    if (resultCode == Activity.RESULT_OK) {
                         mSigninCoordinator.continueSignIn();
+                    } else {
+                        mSigninCoordinator.onDeviceLockCanceled();
                     }
                 },
                 DeviceLockActivityLauncher.Source.FULLSCREEN_SIGNIN);

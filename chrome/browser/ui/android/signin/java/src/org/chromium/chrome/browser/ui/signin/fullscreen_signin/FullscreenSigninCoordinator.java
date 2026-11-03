@@ -251,6 +251,14 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         mMediator.onAddAccountCanceled();
     }
 
+    /**
+     * Called when the device lock activity launched via {@link Delegate#displayDeviceLockPage}
+     * finishes without a device lock being set (e.g. the user backs out).
+     */
+    public void onDeviceLockCanceled() {
+        mMediator.onDeviceLockCanceled();
+    }
+
     /** Continue the sign-in process with the currently selected account. */
     public void continueSignIn() {
         mMediator.proceedWithSignIn();

@@ -30,6 +30,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -186,14 +187,16 @@ public class SigninFirstRunFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE
-                && resultCode == Activity.RESULT_OK
-                && data != null) {
-            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            if (addedAccountName != null) {
-                mFullscreenSigninCoordinator.onAccountAdded(addedAccountName);
-            }
+        if (requestCode != ADD_ACCOUNT_REQUEST_CODE) return;
+        String accountEmail =
+                data == null
+                        ? null
+                        : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
+        if (resultCode != Activity.RESULT_OK || accountEmail == null) {
+            mFullscreenSigninCoordinator.onAddAccountCanceled();
+            return;
         }
+        mFullscreenSigninCoordinator.onAccountAdded(accountEmail);
     }
 
     /** Implements {@link FirstRunFragment}. */
@@ -229,6 +232,7 @@ public class SigninFirstRunFragment extends Fragment
                             // AccountManagerFacade couldn't create intent, use SigninUtils to open
                             // settings instead.
                             SigninUtils.openSettingsForAllAccounts(getActivity());
+                            mFullscreenSigninCoordinator.onAddAccountCanceled();
                         });
     }
 

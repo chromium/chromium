@@ -358,6 +358,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                                 // to open settings instead.
                                 SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
                                 SigninUtils.openSettingsForAllAccounts(this);
+                                assumeNonNull(mCoordinator);
+                                mCoordinator.onAddAccountCanceled();
                                 return;
                             }
                             SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);

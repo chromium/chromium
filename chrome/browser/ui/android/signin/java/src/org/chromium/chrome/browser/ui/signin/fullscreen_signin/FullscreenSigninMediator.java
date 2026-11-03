@@ -526,6 +526,11 @@ public class FullscreenSigninMediator
         mDelegate.abortFlow();
     }
 
+    void onDeviceLockCanceled() {
+        // No-op: onContinueAsClicked() launches device lock without disabling the screen, so it is
+        // still interactive.
+    }
+
     /** Observes the continue button cache for both account list and profile data changes. */
     private class ContinueButtonProfileDataCacheObserver implements ProfileDataCache.Observer {
         @Override
