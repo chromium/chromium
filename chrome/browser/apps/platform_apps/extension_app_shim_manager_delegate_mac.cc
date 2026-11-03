@@ -36,7 +36,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using extensions::AppWindowRegistry;
 using extensions::Extension;
@@ -201,7 +201,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
 
   if (extension->is_hosted_app()) {
     auto params = CreateAppLaunchParamsUserContainer(
-        profile, extension, WindowOpenDisposition::kNewForegroundTab,
+        profile, extension, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         apps::LaunchSource::kFromCommandLine);
     params.launch_files = files;
     web_app::LaunchExtensionOrWebApp(profile, std::move(params),

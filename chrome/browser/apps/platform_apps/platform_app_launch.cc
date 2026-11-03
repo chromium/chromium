@@ -18,8 +18,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/extensions/chrome_app_deprecation.h"
@@ -101,7 +101,7 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   RecordCmdLineAppHistogram(app->GetType());
 
   apps::AppLaunchParams params(app_id, launch_container,
-                               WindowOpenDisposition::kNewWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
                                apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
@@ -135,7 +135,7 @@ content::WebContents* OpenExtensionApplicationTab(Profile* profile,
   content::WebContents* app_tab = ::OpenApplication(
       profile,
       apps::AppLaunchParams(app_id, apps::LaunchContainer::kLaunchContainerTab,
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             apps::LaunchSource::kFromCommandLine));
   return app_tab;
 }
@@ -159,7 +159,7 @@ bool OpenDeprecatedApplicationPrompt(Profile* profile,
   }
 
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.tabstrip_add_types = AddTabTypes::ADD_ACTIVE;
   Navigate(&params);
 
@@ -184,9 +184,10 @@ bool OpenExtensionApplicationWithReenablePrompt(
 #endif
 
   RecordCmdLineAppHistogram(extensions::Manifest::Type::kPlatformApp);
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromCommandLine);
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerNone,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
+                               apps::LaunchSource::kFromCommandLine);
   params.command_line = command_line;
   params.current_directory = current_directory;
   ::OpenApplicationWithReenablePrompt(profile, std::move(params));

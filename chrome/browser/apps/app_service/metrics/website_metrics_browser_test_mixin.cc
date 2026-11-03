@@ -24,8 +24,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
 
@@ -87,7 +87,7 @@ BrowserWindowInterface* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::NavigateAndWait(
     BrowserWindowInterface* browser,
     const std::string& url,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   NavigateParams params(browser, GURL(url),
                         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = disposition;
@@ -104,21 +104,21 @@ BrowserWindowInterface* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
 void WebsiteMetricsBrowserTestMixin::NavigateActiveTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
-  NavigateAndWait(browser, url, WindowOpenDisposition::kCurrentTab);
+  NavigateAndWait(browser, url, ui::mojom::WindowOpenDisposition::kCurrentTab);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertForegroundTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
-                         WindowOpenDisposition::kNewForegroundTab);
+                         ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 ::content::WebContents* WebsiteMetricsBrowserTestMixin::InsertBackgroundTab(
     BrowserWindowInterface* browser,
     const std::string& url) {
   return NavigateAndWait(browser, url,
-                         WindowOpenDisposition::kNewBackgroundTab);
+                         ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 }
 
 AppPlatformMetricsService* WebsiteMetricsBrowserTestMixin::metrics_service() {

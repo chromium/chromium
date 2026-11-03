@@ -16,8 +16,8 @@
 #include "extensions/browser/webstore_install_result.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using extensions::ExtensionRegistry;
 
@@ -87,7 +87,8 @@ void InstallChromeApp(const std::string& app_id,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GetAppInstallUrl(app_id), WindowOpenDisposition::kNewForegroundTab,
+          GetAppInstallUrl(app_id),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
 

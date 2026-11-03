@@ -23,7 +23,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
@@ -217,7 +217,7 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
     CHECK(proxy_);
     proxy_->LaunchAppWithUrl(
         launch_name,
-        GetEventFlags(WindowOpenDisposition::kNewWindow,
+        GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                       /*prefer_container=*/true),
         url, LaunchSource::kFromLink,
         std::make_unique<WindowInfo>(display::kDefaultDisplayId),

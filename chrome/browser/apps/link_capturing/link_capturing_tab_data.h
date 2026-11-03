@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "components/webapps/common/web_app_id.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 class WebContents;
@@ -15,14 +15,14 @@ class WebContents;
 
 namespace apps {
 
-// Returns the WindowOpenDisposition of the link click used to open this tab.
-// Returns UNKNOWN if the disposition is unavailable.
-WindowOpenDisposition GetLinkCapturingSourceDisposition(
+// Returns the ui::mojom::WindowOpenDisposition of the link click used to open
+// this tab. Returns UNKNOWN if the disposition is unavailable.
+ui::mojom::WindowOpenDisposition GetLinkCapturingSourceDisposition(
     content::WebContents* contents);
 
 void SetLinkCapturingSourceDisposition(
     content::WebContents* contents,
-    WindowOpenDisposition source_disposition);
+    ui::mojom::WindowOpenDisposition source_disposition);
 
 }  // namespace apps
 

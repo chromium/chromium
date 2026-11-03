@@ -70,7 +70,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -219,8 +219,9 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithFiles(
             extension->id(),
-            apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                true /* preferred_container */),
+            apps::GetEventFlags(
+                ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                true /* preferred_container */),
             apps::LaunchSource::kFromTest, std::move(launch_files));
     ASSERT_TRUE(catcher.GetNextResult());
   }
@@ -238,9 +239,10 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
       return false;
     }
 
-    apps::AppLaunchParams params(
-        extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(extension->id(),
+                                 apps::LaunchContainer::kLaunchContainerNone,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromTest);
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
@@ -941,7 +943,8 @@ void MAYBE_PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            apps::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
     window = GetFirstAppWindow();
     ASSERT_TRUE(window);
@@ -1129,7 +1132,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1152,7 +1156,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   ASSERT_FALSE(should_not_install.seen());
@@ -1189,7 +1194,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          apps::LaunchSource::kFromTest));
 
   ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
 }
@@ -1213,7 +1219,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-            WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            apps::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
   }
 
@@ -1327,8 +1334,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   registry->AddObserver(this);
   apps::AppServiceProxyFactory::GetForProfile(incognito_profile)
       ->Launch(file_manager->id(),
-               apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                   true /* prefer_container */),
+               apps::GetEventFlags(
+                   ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                   true /* prefer_container */),
                apps::LaunchSource::kFromTest);
 
   while (!opener_app_ids_.contains(file_manager->id())) {

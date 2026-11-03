@@ -15,7 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -31,7 +31,7 @@ class LaunchUtilsTest : public testing::Test {
  protected:
   apps::AppLaunchParams CreateLaunchParams(
       apps::LaunchContainer container,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       bool preferred_container,
       int64_t display_id = display::kInvalidDisplayId,
       apps::LaunchContainer fallback_container =
@@ -49,7 +49,7 @@ class LaunchUtilsTest : public testing::Test {
 
 TEST_F(LaunchUtilsTest, WindowContainerAndWindowDisposition) {
   auto container = apps::LaunchContainer::kLaunchContainerWindow;
-  auto disposition = WindowOpenDisposition::kNewWindow;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   auto params = CreateLaunchParams(container, disposition, false);
 
   EXPECT_EQ(container, params.container);
@@ -58,7 +58,7 @@ TEST_F(LaunchUtilsTest, WindowContainerAndWindowDisposition) {
 
 TEST_F(LaunchUtilsTest, TabContainerAndForegoundTabDisposition) {
   auto container = apps::LaunchContainer::kLaunchContainerTab;
-  auto disposition = WindowOpenDisposition::kNewForegroundTab;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   auto params = CreateLaunchParams(container, disposition, false);
 
   EXPECT_EQ(container, params.container);
@@ -67,7 +67,7 @@ TEST_F(LaunchUtilsTest, TabContainerAndForegoundTabDisposition) {
 
 TEST_F(LaunchUtilsTest, TabContainerAndBackgoundTabDisposition) {
   auto container = apps::LaunchContainer::kLaunchContainerTab;
-  auto disposition = WindowOpenDisposition::kNewBackgroundTab;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   auto params = CreateLaunchParams(container, disposition, false);
 
   EXPECT_EQ(container, params.container);
@@ -76,7 +76,7 @@ TEST_F(LaunchUtilsTest, TabContainerAndBackgoundTabDisposition) {
 
 TEST_F(LaunchUtilsTest, PreferContainerWithTab) {
   auto container = apps::LaunchContainer::kLaunchContainerNone;
-  auto disposition = WindowOpenDisposition::kNewForegroundTab;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   auto preferred_container = apps::LaunchContainer::kLaunchContainerWindow;
   auto params =
       CreateLaunchParams(container, disposition, true,
@@ -88,18 +88,19 @@ TEST_F(LaunchUtilsTest, PreferContainerWithTab) {
 
 TEST_F(LaunchUtilsTest, PreferContainerWithWindow) {
   auto container = apps::LaunchContainer::kLaunchContainerNone;
-  auto disposition = WindowOpenDisposition::kNewWindow;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   auto preferred_container = apps::LaunchContainer::kLaunchContainerWindow;
   auto params =
       CreateLaunchParams(container, disposition, true,
                          display::kInvalidDisplayId, preferred_container);
 
   EXPECT_EQ(preferred_container, params.container);
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            params.disposition);
 }
 
 TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
-  auto disposition = WindowOpenDisposition::kNewWindow;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
 
   const GURL url = GURL("https://example.com/?query=1#frag");
   auto intent =
@@ -115,7 +116,7 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 }
 
 TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
-  auto disposition = WindowOpenDisposition::kNewWindow;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
 
   std::vector<apps::IntentFilePtr> files;
   std::string file_path = "filesystem:http://foo.com/test/foo.txt";

@@ -56,8 +56,8 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -377,9 +377,9 @@ bool ChromeOsReimplNavigationCapturingThrottle::MaybeCreateAndAdd(
   // Never link capture links that open in a popup window. Popups are closely
   // associated with the tab that opened them, so the popup should open in the
   // same (app/non-app) context as its opener.
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       GetLinkCapturingSourceDisposition(contents);
-  if (disposition == WindowOpenDisposition::kNewPopup &&
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPopup &&
       !contents->GetLastCommittedURL().is_valid()) {
     return false;
   }
@@ -604,8 +604,9 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
 
   // NOTE: `this` MIGHT BE DESTROYED HERE BY THE `ClosePage()` ABOVE.
   // Do not use `this` or any fields in the code below.
-  const int32_t event_flags = GetEventFlags(WindowOpenDisposition::kNewWindow,
-                                            /*prefer_container=*/true);
+  const int32_t event_flags =
+      GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
+                    /*prefer_container=*/true);
   auto launch_callback = base::DoNothingWithBoundArgs(
       std::move(browser_keep_alive), std::move(profile_keep_alive));
   if (app_type == AppType::kArc) {

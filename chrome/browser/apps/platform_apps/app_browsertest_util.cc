@@ -31,7 +31,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -173,16 +173,17 @@ const Extension* PlatformAppBrowserTest::InstallAndLaunchPlatformApp(
 
 void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
-      apps::AppLaunchParams(
-          extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+      apps::AppLaunchParams(extension->id(),
+                            apps::LaunchContainer::kLaunchContainerNone,
+                            ui::mojom::WindowOpenDisposition::kNewWindow,
+                            apps::LaunchSource::kFromTest));
 }
 
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
       CreateAppLaunchParamsUserContainer(
           browser()->GetProfile(), extension,
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           apps::LaunchSource::kFromCommandLine));
 }
 

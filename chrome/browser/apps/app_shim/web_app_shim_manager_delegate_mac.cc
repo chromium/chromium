@@ -29,7 +29,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "net/base/filename_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace web_app {
 
@@ -269,9 +269,9 @@ void WebAppShimManagerDelegate::LaunchApp(
     launch_source = apps::LaunchSource::kFromOsLogin;
   }
 
-  apps::AppLaunchParams params(app_id, launch_container,
-                               WindowOpenDisposition::kNewForegroundTab,
-                               launch_source);
+  apps::AppLaunchParams params(
+      app_id, launch_container,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, launch_source);
   // Don't assign `files` to `params.launch_files` until we're sure this is a
   // permitted file launch.
   std::vector<base::FilePath> launch_files = files;

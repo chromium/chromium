@@ -16,7 +16,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "extensions/common/constants.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -71,7 +71,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source);
 // Returns event flag for |disposition|. If |prefer_container|
 // is true, |disposition| will be ignored. Otherwise, an event flag based on
 // |disposition| will be returned.
-int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container);
+int GetEventFlags(ui::mojom::WindowOpenDisposition disposition,
+                  bool prefer_container);
 
 // Returns the browser's session id for restoration if |web_contents| is valid
 // for a system web app, or for a web app not opened in tab. Otherwise, returns

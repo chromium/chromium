@@ -32,7 +32,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/display_switches.h"
 #include "url/gurl.h"
 
@@ -246,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
   apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
       ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          apps::LaunchSource::kFromTest));
 
   ExtensionTestMessageListener geometry_listener("ListenGeometryChange",
                                                  ReplyBehavior::kWillReply);

@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace apps {
 
@@ -20,11 +20,11 @@ class LinkCapturingUserData
  public:
   ~LinkCapturingUserData() override = default;
 
-  WindowOpenDisposition source_disposition() const {
+  ui::mojom::WindowOpenDisposition source_disposition() const {
     return source_disposition_;
   }
 
-  void set_source_disposition(WindowOpenDisposition disposition) {
+  void set_source_disposition(ui::mojom::WindowOpenDisposition disposition) {
     source_disposition_ = disposition;
   }
 
@@ -44,7 +44,7 @@ class LinkCapturingUserData
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   // The disposition of the navigation which caused this tab to open.
-  WindowOpenDisposition source_disposition_;
+  ui::mojom::WindowOpenDisposition source_disposition_;
 #if BUILDFLAG(IS_CHROMEOS)
   // If non-empty, the App ID of the web app where the link that caused this tab
   // to open was clicked.
@@ -56,18 +56,18 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(LinkCapturingUserData);
 
 }  // namespace
 
-WindowOpenDisposition GetLinkCapturingSourceDisposition(
+ui::mojom::WindowOpenDisposition GetLinkCapturingSourceDisposition(
     content::WebContents* contents) {
   auto* helper = LinkCapturingUserData::FromWebContents(contents);
   if (!helper) {
-    return WindowOpenDisposition::kUnknown;
+    return ui::mojom::WindowOpenDisposition::kUnknown;
   }
   return helper->source_disposition();
 }
 
 void SetLinkCapturingSourceDisposition(
     content::WebContents* contents,
-    WindowOpenDisposition source_disposition) {
+    ui::mojom::WindowOpenDisposition source_disposition) {
   LinkCapturingUserData::CreateForWebContents(contents);
   auto* helper = LinkCapturingUserData::FromWebContents(contents);
   helper->set_source_disposition(source_disposition);

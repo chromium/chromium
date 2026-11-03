@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(
   // navigation causes `IsEmptyDanglingWebContentsAfterLinkCapture()` to return
   // true and `ClosePage()` to close the navigating tab.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), AttackerUrl(), WindowOpenDisposition::kNewForegroundTab,
+      browser(), AttackerUrl(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
   content::WebContents* attacker_contents =

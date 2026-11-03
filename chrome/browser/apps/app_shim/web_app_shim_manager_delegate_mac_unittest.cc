@@ -20,7 +20,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -149,7 +149,7 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
       const GURL& override_url) {
     apps::AppLaunchParams params(app_id_,
                                  apps::LaunchContainer::kLaunchContainerWindow,
-                                 WindowOpenDisposition::kNewWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
                                  apps::LaunchSource::kFromCommandLine);
 
     params.launch_files = launch_files;

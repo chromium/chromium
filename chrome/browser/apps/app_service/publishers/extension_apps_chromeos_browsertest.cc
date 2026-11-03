@@ -37,7 +37,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/types/display_constants.h"
 
 namespace apps {
@@ -70,7 +70,7 @@ class ExtensionAppsChromeOsBrowserTest
     // Launch app with intent.
     Profile* const profile = browser()->GetProfile();
     const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+        apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                             /*prefer_container=*/true);
     apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
         extension.id(), event_flags, std::move(intent),

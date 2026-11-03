@@ -11,8 +11,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace extensions {
 
@@ -83,7 +83,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowFrameBrowserTest, IncognitoOpenUrl) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::kOffTheRecord,
+          GURL(url::kAboutBlankURL),
+          ui::mojom::WindowOpenDisposition::kOffTheRecord,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* new_contents =
       app_contents->OpenURL(params, /*navigation_handle_callback=*/{});

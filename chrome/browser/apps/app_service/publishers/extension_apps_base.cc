@@ -56,8 +56,8 @@
 #include "extensions/common/manifest_handlers/description_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/switches.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
@@ -455,7 +455,7 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   NavigateParams params(
       profile(), extension_urls::GetWebstoreReportAbuseUrl(app_id, kReferrerId),
       ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

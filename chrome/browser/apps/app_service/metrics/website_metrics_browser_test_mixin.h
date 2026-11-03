@@ -10,7 +10,7 @@
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 
@@ -38,9 +38,10 @@ class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
 
   // Navigates to a given URL in the specified browser instance using the given
   // disposition.
-  ::content::WebContents* NavigateAndWait(BrowserWindowInterface* browser,
-                                          const std::string& url,
-                                          WindowOpenDisposition disposition);
+  ::content::WebContents* NavigateAndWait(
+      BrowserWindowInterface* browser,
+      const std::string& url,
+      ui::mojom::WindowOpenDisposition disposition);
 
   // Navigates to the given URL in the specified browser instance active tab.
   void NavigateActiveTab(BrowserWindowInterface* browser,
