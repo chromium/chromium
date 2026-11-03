@@ -895,4 +895,45 @@ public class ActorForegroundServiceManagerTest {
                         eq(true));
         verify(mNotificationService).repostNotification(taskId, /* isWarning= */ false);
     }
+
+    @Test
+    public void testExternalTriggerPendingTask_NoFcmBeforeTimeout_StopsService() {
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        when(mKeyedService.getActiveTasksCount()).thenReturn(0);
+
+        // The external trigger intent adds a pending task, which starts the service with the
+        // placeholder notification.
+        mManager.onPendingTaskCountChanged(1);
+        ShadowLooper.idleMainLooper();
+        assertTrue(
+                "Service should be bound while a pending task exists.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController)
+                .startOrUpdateForegroundService(
+                        eq(ActorNotificationFactory.TASK_STARTS_SOON_NOTIFICATION_ID),
+                        any(),
+                        anyInt(),
+                        anyBoolean());
+
+        // The manager has no timeout of its own. The service stays bound for the whole window
+        // that ActorKeyedService waits for the FCM message.
+        ShadowLooper.idleMainLooper(
+                ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs() - 1,
+                TimeUnit.MILLISECONDS);
+        assertTrue(
+                "Service should stay bound while the pending task remains.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController, never()).stopActorForegroundService(anyInt());
+        verify(mServiceController, never()).unbindService();
+
+        // No FCM message arrived, so ActorKeyedService removes the pending task.
+        mManager.onPendingTaskCountChanged(0);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(
+                "Service should stop and unbind once the pending count drops to 0.",
+                mManager.isServiceBoundForTesting());
+        verify(mServiceController).stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
+        verify(mServiceController).unbindService();
+    }
 }
