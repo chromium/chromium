@@ -15,13 +15,14 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.view.ViewGroup;
 
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -33,6 +34,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -49,15 +52,20 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageStateHandler;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link MismatchNotificationController} */
@@ -239,7 +247,7 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
-    public void testDismissalByGesture() {
+    public void testDismissalByGesture() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mMismatchNotificationController.showSignedOutMessage(
@@ -249,10 +257,31 @@ public class MismatchNotificationControllerTest {
         // Verify that the message is displayed.
         onView(withText(titleRes)).check(matches(isDisplayed()));
 
-        // Swipe away the UI
-        onView(withText(titleRes)).perform(ViewActions.swipeRight());
+        // Dismiss the message as if it were swiped away. A real Espresso swipe is flaky here: the
+        // message banner ignores swipes until its enter animation has finished, which is not
+        // observable by Espresso's idle sync (see also b/329707221). The gesture handling itself
+        // is covered by the messages component's own tests.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MessageDispatcher dispatcher =
+                            MessageDispatcherProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                    List<MessageStateHandler> messages =
+                            MessagesTestHelper.getEnqueuedMessages(
+                                    dispatcher, MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE);
+                    assertEquals(1, messages.size());
+                    dispatcher.dismissMessage(
+                            MessagesTestHelper.getCurrentMessage(messages.get(0)),
+                            DismissReason.GESTURE);
+                });
+        mCloseCallbackHelper.waitForOnly();
 
-        // Verify that the message was dismissed.
+        // Verify that the message was dismissed. The view is removed from the hierarchy once the
+        // exit animation ends, which happens asynchronously even with animations disabled.
+        ViewGroup messageContainer =
+                mActivityTestRule.getActivity().findViewById(R.id.message_container);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(messageContainer.getChildCount(), is(0)));
         onView(withText(titleRes)).check(doesNotExist());
 
         assertEquals(
