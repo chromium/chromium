@@ -53,12 +53,72 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/i18n/break_iterator.h"
+#include "base/i18n/char_iterator.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
+#endif
+
 namespace {
 constexpr int kIconSize = 16;
 constexpr int kFocusRingInset = 2;
 constexpr int kAttentionIndicatorWidth = 8;
 // The amount of padding between the label and any sync icon.
 constexpr int kSyncIconLabelPadding = 2;
+
+#if BUILDFLAG(IS_MAC)
+// Returns true if `text` renders with Apple Color Emoji on macOS.
+// This intentionally uses a conservative heuristic: only default
+// emoji-presentation codepoints and regional indicators (flag sequences).
+//
+// We intentionally do not treat Variation Selector-16 (U+FE0F) alone as a
+// trigger. Some text-default symbols followed by VS-16 can still render with
+// text-like metrics in this UI context (e.g. U+2666 U+FE0F), and applying the
+// 1px compensation to them introduces a visible right bias.
+bool RendersAsColorEmoji(std::u16string_view text) {
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
+    const UChar32 codepoint = iter.get();
+    if (u_hasBinaryProperty(codepoint, UCHAR_EMOJI_PRESENTATION) ||
+        u_hasBinaryProperty(codepoint, UCHAR_REGIONAL_INDICATOR)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Returns true if `text` consists of exactly one grapheme cluster (a single
+// user-perceived character). This includes multi-codepoint sequences such as
+// emoji with skin tone modifiers, ZWJ sequences, and regional indicator
+// pairs.
+bool IsSingleGrapheme(std::u16string_view text) {
+  if (text.empty()) {
+    return false;
+  }
+  base::i18n::BreakIterator graphemes(
+      text, base::i18n::BreakIterator::BREAK_CHARACTER);
+  if (!graphemes.Init() || !graphemes.Advance()) {
+    return false;
+  }
+  return !graphemes.Advance();
+}
+#endif
+
+// Returns a horizontal pixel offset to apply to the tab group title for
+// visual centering, accounting for RTL. Most titles return 0 (advance-width
+// centering is correct). On macOS, Apple Color Emoji glyphs have asymmetric
+// side bearings — the colored ink sits slightly left of the glyph's advance
+// box — so a single-emoji title centered using advance-width metrics looks
+// ~1px left of the chip's geometric center. Shift such titles right by 1px
+// to compensate. Under RTL the offset is negated so the on-screen visual
+// direction (rightward shift) is preserved after framework mirroring.
+int GetTitleVisualCenteringOffset(std::u16string_view title) {
+#if BUILDFLAG(IS_MAC)
+  if (IsSingleGrapheme(title) && RendersAsColorEmoji(title)) {
+    return base::i18n::IsRTL() ? -1 : 1;
+  }
+#endif
+  return 0;
+}
 
 views::ScrollView* GetScrollView(views::View* view) {
   views::View* ancestor = view;
@@ -819,20 +879,34 @@ int TabGroupHeaderView::GetHorizontalInset() const {
   return TabGroupStyle::GetInsetsForHeaderChip(orientation_).left();
 }
 
-gfx::Insets TabGroupHeaderView::GetTargetHeaderInsets() const {
-  if (orientation_ == TabStripOrientation::kHorizontal &&
-      delegate_->IsGroupFocused()) {
-    return TabGroupStyle::GetInsetsForFocusedHeaderChip();
+gfx::Insets TabGroupHeaderView::ApplyTitleVisualCenteringOffset(
+    gfx::Insets insets) const {
+  if (orientation_ == TabStripOrientation::kHorizontal && !is_shared_ &&
+      (!attention_indicator_ || !attention_indicator_->GetVisible())) {
+    const int offset =
+        GetTitleVisualCenteringOffset(tab_group_visual_data_.title());
+    return gfx::Insets::TLBR(insets.top(), insets.left() + offset,
+                             insets.bottom(), insets.right() - offset);
   }
-  return gfx::Insets::VH(0, GetHorizontalInset());
+  return insets;
+}
+
+gfx::Insets TabGroupHeaderView::GetTargetHeaderInsets() const {
+  return ApplyTitleVisualCenteringOffset(
+      orientation_ == TabStripOrientation::kHorizontal &&
+              delegate_->IsGroupFocused()
+          ? TabGroupStyle::GetInsetsForFocusedHeaderChip()
+          : gfx::Insets::VH(0, GetHorizontalInset()));
 }
 
 gfx::Insets TabGroupHeaderView::GetHeaderInsets() const {
   if (orientation_ == TabStripOrientation::kHorizontal &&
       focus_animation_progress_.has_value()) {
     const float p = *focus_animation_progress_;
-    const gfx::Insets unfocused = gfx::Insets::VH(0, GetHorizontalInset());
-    const gfx::Insets focused = TabGroupStyle::GetInsetsForFocusedHeaderChip();
+    const gfx::Insets unfocused = ApplyTitleVisualCenteringOffset(
+        gfx::Insets::VH(0, GetHorizontalInset()));
+    const gfx::Insets focused = ApplyTitleVisualCenteringOffset(
+        TabGroupStyle::GetInsetsForFocusedHeaderChip());
     return gfx::Insets::TLBR(
         gfx::Tween::LinearIntValueBetween(p, unfocused.top(), focused.top()),
         gfx::Tween::LinearIntValueBetween(p, unfocused.left(), focused.left()),

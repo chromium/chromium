@@ -153,6 +153,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
 
   int GetCornerRadius() const;
   int GetHorizontalInset() const;
+  gfx::Insets ApplyTitleVisualCenteringOffset(gfx::Insets insets) const;
   gfx::Insets GetTargetHeaderInsets() const;
   gfx::Insets GetHeaderInsets() const;
   void UpdateBackground();
