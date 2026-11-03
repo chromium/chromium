@@ -132,9 +132,9 @@ TEST_F(BookmarkBarPreloadPipelineManagerTest,
 
   SimulateNavigationCommitted(preloading_url);
   {
-    auto attempt_ukm_entries =
-        ukm_recorder().GetEntries(ukm::builders::Preloading_Attempt::kEntryName,
-                                  content::test::kPreloadingAttemptUkmMetrics);
+    auto attempt_ukm_entries = ukm_recorder().GetEntries(
+        ukm::builders::Preloading_Attempt::kEntryName,
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
 
     ukm::SourceId ukm_source_id =
@@ -176,9 +176,9 @@ TEST_F(BookmarkBarPreloadPipelineManagerTest, PrefetchDisallowSearchUrl) {
 
   SimulateNavigationCommitted(prefetch_url);
   {
-    auto attempt_ukm_entries =
-        ukm_recorder().GetEntries(ukm::builders::Preloading_Attempt::kEntryName,
-                                  content::test::kPreloadingAttemptUkmMetrics);
+    auto attempt_ukm_entries = ukm_recorder().GetEntries(
+        ukm::builders::Preloading_Attempt::kEntryName,
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     ukm::SourceId ukm_source_id =

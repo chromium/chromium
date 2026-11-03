@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(ukm_entries.size(), 1u);
 
     std::vector<UkmEntry> expected_entries = {
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
         browser(), http_test_server()->GetURL("/empty.html")));
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     UkmEntry expected_entry = ukm_entry_builder().BuildEntry(

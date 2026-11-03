@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchWithoutPrefetchingBrowserTest,
     // disabled.
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 0u);
   }
 }
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchHoldbackBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that PreloadingHoldbackStatus is set to kHoldback as
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Since we navigated to a different URL, prefetch attempt should record
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that TriggeringOutcome should be set to kFailure in case of
@@ -1237,7 +1237,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
 
     // Four attempts should be recorded for Prefetch.
     EXPECT_EQ(attempt_ukm_entries.size(), 4u);
@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that TriggeringOutcome should be marked as kFailure in case of
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
 
     // Check that TriggeringOutcome should be marked as duplicate for the second
@@ -1470,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that we set PreloadingEligibility to kNoSearchTerms when no search
@@ -1518,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that we set the eligibility reason to kPreloadingDisabled when
@@ -1598,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Prerender should succeed and should be used for the next navigation.
@@ -2206,7 +2206,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
 
     // Check that we store two preloading attempts, where the first one fails
@@ -2812,7 +2812,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 1u);
 
     // Check that we set the correct EligibilityReason in case prefetch is
@@ -3963,10 +3963,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Prediction::kEntryName,
-        content::test::kPreloadingPredictionUkmMetrics);
+        content::test::GetPreloadingPredictionUkmMetrics());
 
     // Check that we store one PreloadingPrediction and PreloadingAttempt for
     // kOmniboxMousePredictor.
@@ -4047,10 +4047,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Prediction::kEntryName,
-        content::test::kPreloadingPredictionUkmMetrics);
+        content::test::GetPreloadingPredictionUkmMetrics());
 
     // Check that we store one PreloadingPrediction and PreloadingAttempt for
     // kOmniboxSearchPredictor.
@@ -4130,10 +4130,10 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Prediction::kEntryName,
-        content::test::kPreloadingPredictionUkmMetrics);
+        content::test::GetPreloadingPredictionUkmMetrics());
 
     // Check that we store one PreloadingPrediction and PreloadingAttempt for
     // kOmniboxTouchDownPredictor.
@@ -4434,7 +4434,7 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
 
     // Check that we store one PreloadingAttempt for kOmniboxSearchPredictor in
     // case of Holdback.

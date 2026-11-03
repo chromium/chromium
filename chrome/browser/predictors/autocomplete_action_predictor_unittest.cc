@@ -586,7 +586,7 @@ TEST_P(AutocompleteActionPredictorTest, RecommendActionURL) {
   // TestUrlDb.
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Prediction::kEntryName,
-      content::test::kPreloadingPredictionUkmMetrics);
+      content::test::GetPreloadingPredictionUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), std::size(TestUrlDb()));
   // Cross-check that we have logged the correct metrics for Prediction,
   // confidence, accurate_prediction on successful activation.

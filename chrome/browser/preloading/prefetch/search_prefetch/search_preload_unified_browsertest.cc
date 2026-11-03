@@ -622,10 +622,10 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Prediction::kEntryName,
-        content::test::kPreloadingPredictionUkmMetrics);
+        content::test::GetPreloadingPredictionUkmMetrics());
     EXPECT_EQ(attempt_ukm_entries.size(), 2u);
     EXPECT_EQ(prediction_ukm_entries.size(), 2u);
 
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(ukm_entries.size(), 3u);
 
     // Prerender should succeed and should be used for the next navigation.
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
         GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(ukm_entries.size(), 2u);
 
     // DispatchDelayedResponseTask will dispatch
@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, DoNotRefetchSameTerms) {
     // Check that we log the correct PreloadingEligibility metrics.
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(ukm_entries.size(), 4u);
 
     ukm::SourceId ukm_source_id =
@@ -1272,7 +1272,7 @@ class HoldbackSearchPreloadUnifiedBrowserTest
           activation_observer.next_page_ukm_source_id();
       auto ukm_entries = test_ukm_recorder()->GetEntries(
           Preloading_Attempt::kEntryName,
-          content::test::kPreloadingAttemptUkmMetrics);
+          content::test::GetPreloadingAttemptUkmMetrics());
       EXPECT_EQ(ukm_entries.size(), 3u);
 
       // Prerender should be under holdback and not succeed.
@@ -1694,7 +1694,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
-        content::test::kPreloadingAttemptUkmMetrics);
+        content::test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(ukm_entries.size(), 2u);
 
     // Prerender should be used for the next navigation as it won't be cancelled

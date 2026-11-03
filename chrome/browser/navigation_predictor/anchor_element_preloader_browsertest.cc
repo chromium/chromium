@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchor) {
   ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
       ukm_source_id, content::PreloadingType::kPreconnect,
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, OneAnchorInaccurate) {
   ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
       ukm_source_id, content::PreloadingType::kPreconnect,
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, MAYBE_Duplicates) {
   ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 3u);
   std::vector<UkmEntry> expected_entries = {
       // Successful preconnect to first origin.
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest, InvalidHref) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 0u);
 }
 
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderBrowserTest,
   ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
       ukm_source_id, content::PreloadingType::kPreconnect,
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementPreloaderHoldbackBrowserTest,
   ukm::SourceId ukm_source_id = GetPrimaryMainFrame()->GetPageUkmSourceId();
   auto ukm_entries = test_ukm_recorder()->GetEntries(
       Preloading_Attempt::kEntryName,
-      content::test::kPreloadingAttemptUkmMetrics);
+      content::test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(ukm_entries.size(), 1u);
   UkmEntry expected_entry = ukm_entry_builder().BuildEntry(
       ukm_source_id, content::PreloadingType::kPreconnect,
