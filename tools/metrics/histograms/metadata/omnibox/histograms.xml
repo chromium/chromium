@@ -5720,6 +5720,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.VoiceSearch.VoicePlateEligibility"
+    enum="VoicePlateEligibility" expires_after="2027-10-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether a voice search request is eligible to use the Google app
+    Voice Plate, or the reason it is ineligible.
+
+    Recorded on Android once per voice search initiation when the
+    OmniboxVoicePlateIntent feature flag is enabled. Not recorded when the
+    feature flag is disabled.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.VoiceSearch.VoicePlateResult" enum="VoicePlateResult"
+    expires_after="2027-10-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the outcome returned by the Google app Voice Plate activity (success
+    with transcription, user-initiated cancellation reason, or service refusal
+    reason).
+
+    Recorded on Android once per Voice Plate activity result.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.AutocompleteResultSequenceIdMatched"
     enum="Boolean" expires_after="2027-03-21">
   <owner>orinj@chromium.org</owner>

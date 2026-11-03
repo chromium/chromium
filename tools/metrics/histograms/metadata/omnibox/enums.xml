@@ -824,6 +824,31 @@ chromium-metrics-reviews@google.com.
 
 <!-- TODO(b/501544449): Remove NewTabPageVoiceAction and NewTabPageVoiceError in tools/metrics/histograms/metadata/new_tab_page/enums.xml. -->
 
+<enum name="VoicePlateEligibility">
+  <summary>
+    Eligibility of a voice search request to use the Google app Voice Plate.
+  </summary>
+  <int value="0" label="Eligible"/>
+  <int value="1" label="No profile"/>
+  <int value="2" label="Incognito profile"/>
+  <int value="3" label="Non-Google default search engine"/>
+  <int value="4" label="AGSA not installed"/>
+  <int value="5" label="AGSA version below minimum"/>
+  <int value="6" label="Service previously refused"/>
+</enum>
+
+<enum name="VoicePlateResult">
+  <summary>Outcome returned by the Google app Voice Plate activity.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted: User canceled"/>
+  <int value="2" label="Aborted: Navigated away"/>
+  <int value="3" label="Aborted: Permission denied"/>
+  <int value="4" label="Refused: Account consent declined"/>
+  <int value="5" label="Refused: Account mismatch"/>
+  <int value="6" label="Refused: Error"/>
+  <int value="7" label="Refused: Other or missing reason"/>
+</enum>
+
 <!-- LINT.IfChange(VoiceSearchAction) -->
 
 <enum name="VoiceSearchAction">
