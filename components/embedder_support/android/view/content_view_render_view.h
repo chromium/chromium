@@ -28,8 +28,9 @@ class ContentViewRenderView : public content::CompositorClient {
   ContentViewRenderView(const ContentViewRenderView&) = delete;
   ContentViewRenderView& operator=(const ContentViewRenderView&) = delete;
 
+  ~ContentViewRenderView() override;
+
   // Methods called from Java via JNI -----------------------------------------
-  void Destroy(JNIEnv* env);
   void SetCurrentWebContents(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents);
@@ -55,8 +56,6 @@ class ContentViewRenderView : public content::CompositorClient {
   void DidSwapFrame(int pending_frames) override;
 
  private:
-  ~ContentViewRenderView() override;
-
   void InitCompositor();
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;

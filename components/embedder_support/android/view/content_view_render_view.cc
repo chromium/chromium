@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,19 +39,13 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
 ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
-static int64_t JNI_ContentViewRenderView_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jroot_window_android) {
+static jni_zero::JniUniquePtr<ContentViewRenderView>
+JNI_ContentViewRenderView_Init(JNIEnv* env,
+                               const JavaRef<jobject>& obj,
+                               const JavaRef<jobject>& jroot_window_android) {
   gfx::NativeWindow root_window =
       ui::WindowAndroid::FromJavaWindowAndroid(jroot_window_android);
-  ContentViewRenderView* content_view_render_view =
-      new ContentViewRenderView(env, obj, root_window);
-  return reinterpret_cast<intptr_t>(content_view_render_view);
-}
-
-void ContentViewRenderView::Destroy(JNIEnv* env) {
-  delete this;
+  return jni_zero::MakeUnique<ContentViewRenderView>(env, obj, root_window);
 }
 
 void ContentViewRenderView::SetCurrentWebContents(
