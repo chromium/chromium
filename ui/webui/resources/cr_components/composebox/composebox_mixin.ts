@@ -383,6 +383,7 @@ export const ComposeboxEmbedderMixin =
         accessor tabSuggestions: TabInfo[] = [];
         accessor tabSuggestionsState: TabSuggestionsState =
             TabSuggestionsState.NOT_STARTED;
+        private pendingTabSuggestionNeedsRefresh_: boolean = false;
         accessor transcript: string = '';
         private fuseboxChipHint_: string|null = null;
         private selectAllOnStateUpdate_: boolean = false;
@@ -3091,77 +3092,89 @@ export const ComposeboxEmbedderMixin =
          * cache to minimize Mojo overhead.
          */
         async refreshTabSuggestions(forceRefresh: boolean = false) {
-          if (this.tabSuggestionsState === TabSuggestionsState.LOADING ||
-              (this.tabSuggestionsState === TabSuggestionsState.LOADED &&
-               !forceRefresh)) {
+          // If a refresh is already in flight, wait for it unless a forced
+          // refresh is requested, in which case queue another loop iteration.
+          if (this.tabSuggestionsState === TabSuggestionsState.LOADING) {
+            if (forceRefresh) {
+              this.pendingTabSuggestionNeedsRefresh_ = true;
+            }
+            return;
+          }
+          if (this.tabSuggestionsState === TabSuggestionsState.LOADED &&
+              !forceRefresh) {
             return;
           }
           this.tabSuggestionsState = TabSuggestionsState.LOADING;
+          this.pendingTabSuggestionNeedsRefresh_ = true;
           try {
-            const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-            this.recentTabId = tabs[0]?.tabId ?? null;
+            while (this.pendingTabSuggestionNeedsRefresh_) {
+              this.pendingTabSuggestionNeedsRefresh_ = false;
+              const {tabs} = await this.getSearchboxHandler().getRecentTabs();
+              this.recentTabId = tabs[0]?.tabId ?? null;
 
-            const openTabsMap = new Map(tabs.map(t => [t.tabId, t]));
+              const openTabsMap = new Map(tabs.map(t => [t.tabId, t]));
 
-            // Gather UUIDs in a temporary array to prevent modifying
-            // `this.attachedContext` mid-iteration, since `deleteFile()`
-            // replaces the Map reference.
-            const uuidsToDelete: UnguessableToken[] = [];
+              // Gather UUIDs in a temporary array to prevent modifying
+              // `this.attachedContext` mid-iteration, since `deleteFile()`
+              // replaces the Map reference.
+              const uuidsToDelete: UnguessableToken[] = [];
 
-            this.attachedContext.forEach((file, uuid) => {
-              if (file.tabId) {
-                const freshTab = openTabsMap.get(file.tabId);
-                if (!freshTab || (file.url && file.url !== freshTab.url)) {
-                  uuidsToDelete.push(uuid);
-                }
-              }
-            });
-            uuidsToDelete.forEach(uuid => {
-              this.deleteFile(uuid, /*fromUserAction=*/ false);
-            });
-
-            if (this.tabDeselectionEnabled) {
-              const closedOrNavigatedRestoredTabs =
-                  this.aimThreadRestoredTabs.filter(tab => {
-                    const currentTab = openTabsMap.get(tab.tabId);
-                    return !currentTab || currentTab.url !== tab.url;
-                  });
-              closedOrNavigatedRestoredTabs.forEach(tab => {
-                if (isValidTabId(tab.tabId)) {
-                  this.getSearchboxHandler().deleteTabContext(tab.tabId);
+              this.attachedContext.forEach((file, uuid) => {
+                if (file.tabId) {
+                  const freshTab = openTabsMap.get(file.tabId);
+                  if (!freshTab || (file.url && file.url !== freshTab.url)) {
+                    uuidsToDelete.push(uuid);
+                  }
                 }
               });
-              this.aimThreadRestoredTabs =
-                  this.aimThreadRestoredTabs.filter(tab => {
-                    const currentTab = openTabsMap.get(tab.tabId);
-                    return currentTab && currentTab.url === tab.url;
-                  });
-            }
+              uuidsToDelete.forEach(uuid => {
+                this.deleteFile(uuid, /*fromUserAction=*/ false);
+              });
 
-            const restored = this.contextManagementInComposeboxEnabled ?
-                (this.aimThreadRestoredTabs || []) :
-                [];
+              if (this.tabDeselectionEnabled) {
+                const closedOrNavigatedRestoredTabs =
+                    this.aimThreadRestoredTabs.filter(tab => {
+                      const currentTab = openTabsMap.get(tab.tabId);
+                      return !currentTab || currentTab.url !== tab.url;
+                    });
+                closedOrNavigatedRestoredTabs.forEach(tab => {
+                  if (isValidTabId(tab.tabId)) {
+                    this.getSearchboxHandler().deleteTabContext(tab.tabId);
+                  }
+                });
+                this.aimThreadRestoredTabs =
+                    this.aimThreadRestoredTabs.filter(tab => {
+                      const currentTab = openTabsMap.get(tab.tabId);
+                      return currentTab && currentTab.url === tab.url;
+                    });
+              }
 
-            const processedRecentTabs = dedupeTabs(restored, tabs);
+              const restored = this.contextManagementInComposeboxEnabled ?
+                  (this.aimThreadRestoredTabs || []) :
+                  [];
 
-            this.tabSuggestions = this.getSortedTabSuggestions_([
-              ...processedRecentTabs,
-              ...restored,
-            ]);
-            this.tabSuggestionsState = TabSuggestionsState.LOADED;
+              const processedRecentTabs = dedupeTabs(restored, tabs);
 
-            if (this.inputState) {
-              const {allowedInputTypes, disabledInputTypes} = this.inputState;
-              if (allowedInputTypes.includes(InputType.kBrowserTab) &&
-                  !disabledInputTypes.includes(InputType.kBrowserTab)) {
-                const filteredSuggestions = this.tabSuggestions;
+              this.tabSuggestions = this.getSortedTabSuggestions_([
+                ...processedRecentTabs,
+                ...restored,
+              ]);
 
-                if (filteredSuggestions.length > 0) {
-                  recordInputTypeShown(
-                      InputType.kBrowserTab, this.composeboxSource, 'AimPopup');
+              if (this.inputState) {
+                const {allowedInputTypes, disabledInputTypes} = this.inputState;
+                if (allowedInputTypes.includes(InputType.kBrowserTab) &&
+                    !disabledInputTypes.includes(InputType.kBrowserTab)) {
+                  const filteredSuggestions = this.tabSuggestions;
+
+                  if (filteredSuggestions.length > 0) {
+                    recordInputTypeShown(
+                        InputType.kBrowserTab, this.composeboxSource,
+                        'AimPopup');
+                  }
                 }
               }
             }
+            this.tabSuggestionsState = TabSuggestionsState.LOADED;
           } finally {
             if (this.tabSuggestionsState === TabSuggestionsState.LOADING) {
               this.tabSuggestionsState = TabSuggestionsState.NOT_STARTED;

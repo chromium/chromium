@@ -151,6 +151,7 @@ class TabContextualizationController : public content::WebContentsObserver {
                   tabs::TabInterface::DetachReason reason);
 
   PageContextAvailability GetPageContextAvailability() const;
+  bool ReloadTabIfPossible();
   void MaybeCompleteDeferredPageContextRequests();
   void CompleteDeferredPageContextRequests(bool should_extract);
   GetPageContextCallback WrapInFlightPageContextCallback(
