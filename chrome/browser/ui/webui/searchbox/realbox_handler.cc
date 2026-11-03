@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -52,6 +54,18 @@ class RealboxOmniboxClient final : public ContextualOmniboxClient {
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
   void OnBookmarkLaunched() override;
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      omnibox::AutocompleteMatchType match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match) override;
 };
 
 RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
@@ -70,6 +84,33 @@ void RealboxOmniboxClient::OnBookmarkLaunched() {
   RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                        profile_metrics::GetBrowserProfileType(profile_));
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void RealboxOmniboxClient::OnAutocompleteAccept(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    omnibox::AutocompleteMatchType match_type,
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match) {
+  // Tells Search when the query matches text the user recently copied, so it
+  // can slice metrics by it.
+  GURL url = destination_url;
+  if (contextual_tasks::SearchJourneyTracker* tracker =
+          contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(
+              profile_)) {
+    url = tracker->MaybeAppendCopyMatchParam(destination_url);
+  }
+  ContextualOmniboxClient::OnAutocompleteAccept(
+      url, post_content, disposition, transition, match_type,
+      match_selection_timestamp, destination_url_entered_without_scheme,
+      destination_url_entered_with_http_scheme, text, match,
+      alternative_nav_match);
 }
 
 }  // namespace

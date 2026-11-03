@@ -34,6 +34,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker.h"
+#include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
@@ -966,9 +968,26 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
                     {header.first, ": ", header.second, "\r\n"});
   }
 
+  // Tells Search when the query matches text the user recently copied, so it
+  // can slice metrics by it.
+  GURL url = destination_url;
+  // `match` with `url`, if that differs. Code that runs after the navigation
+  // finds this search by the match's URL, e.g. to remove it from history if the
+  // user picks the "Did you mean" infobar instead.
+  std::optional<AutocompleteMatch> match_with_url;
+  if (contextual_tasks::SearchJourneyTracker* tracker =
+          contextual_tasks::SearchJourneyTrackerFactory::GetForProfile(
+              profile_)) {
+    url = tracker->MaybeAppendCopyMatchParam(destination_url);
+    if (url != destination_url) {
+      match_with_url = match;
+      match_with_url->destination_url = url;
+    }
+  }
+
   // Store the details necessary to open the omnibox match via browser commands.
   location_bar_->set_navigation_params(LocationBar::NavigationParams(
-      destination_url, disposition, transition, match_selection_timestamp,
+      url, disposition, transition, match_selection_timestamp,
       destination_url_entered_without_scheme,
       destination_url_entered_with_http_scheme, extra_headers));
 
@@ -985,8 +1004,9 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
             chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
       }
     }
-    ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,
-                                            match, alternative_nav_match);
+    ChromeOmniboxNavigationObserver::Create(
+        navigation.get(), profile_, text,
+        match_with_url ? *match_with_url : match, alternative_nav_match);
     search_engines::MaybeShowSearchEngineResetNotification(browser_,
                                                            match_type);
   }

@@ -747,6 +747,7 @@ if (!is_android) {
       "//components/tabs:test_support",
       "//content/test:test_support",
       "//google_apis",
+      "//net",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/lens_server_proto:lens_overlay_proto",
