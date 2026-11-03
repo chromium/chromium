@@ -151,6 +151,8 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_LEGACY_ALPHA_RUNS
 
+#define SK_LEGACY_LINEAR_INSET
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
