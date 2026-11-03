@@ -1281,24 +1281,6 @@
             ]
         }
     ],
-    "ApiGlicAccessFromPromotionPage": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ApiGlicAccessFromPromotionPage"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [

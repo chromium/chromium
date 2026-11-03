@@ -42,8 +42,7 @@ BASE_FEATURE(kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled,
 BASE_FEATURE(kApiGlicAccessFromGoogleWebpage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApiGlicAccessFromPromotionPage,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kApiGlicAccessFromPromotionPage, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApiGlicAccessFromWebContinuity,
              base::FEATURE_DISABLED_BY_DEFAULT);
