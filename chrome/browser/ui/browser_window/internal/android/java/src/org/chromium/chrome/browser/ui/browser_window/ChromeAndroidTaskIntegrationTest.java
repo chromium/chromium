@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
@@ -1087,6 +1089,69 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Act.
         mFreshCtaTransitTestRule.finishActivity();
+    }
+
+    /**
+     * Regression test for b/578132340.
+     *
+     * <p>When the last tab in a dedicated incognito window closes, its {@link
+     * org.chromium.chrome.browser.tabmodel.IncognitoTabModel} synchronously destroys the native
+     * {@code TabListInterface}, while the Activity is finished asynchronously and destroyed in a
+     * later UI thread task. If another incognito window keeps the incognito Profile alive, nothing
+     * else removes the browser window. By then, the {@link ChromeAndroidTask} must no longer expose
+     * the incognito browser window.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void closeLastIncognitoTab_otherIncognitoWindowOpen_destroysBrowserWindow() {
+        // Arrange: open two incognito windows. The second one keeps the incognito Profile alive
+        // after the first one's last tab closes.
+        IncognitoNewTabPageStation incognitoStation =
+                mFreshCtaTransitTestRule.startOnBlankPage().openNewIncognitoWindowFast();
+        ChromeTabbedActivity activity = incognitoStation.getActivity();
+        ChromeTabbedActivity secondIncognitoActivity =
+                incognitoStation.openNewIncognitoWindowFast().getActivity();
+        assertTrue(activity.isIncognitoWindow());
+        assertTrue(secondIncognitoActivity.isIncognitoWindow());
+        assertNotEquals(activity.getTaskId(), secondIncognitoActivity.getTaskId());
+        var activityWindowAndroid = activity.getWindowAndroid();
+        assertNotNull(activityWindowAndroid);
+        var chromeAndroidTask = getChromeAndroidTask(activity.getTaskId());
+        assertNotNull(chromeAndroidTask);
+        TabModel incognitoTabModel = activity.getTabModelSelector().getModel(/* incognito= */ true);
+
+        List<Long> browserWindowPtrsAfterClose =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            // Precondition: this is a dedicated incognito window with one tab.
+                            List<Profile> profiles =
+                                    chromeAndroidTask.getValidProfilesForActivity(
+                                            activityWindowAndroid);
+                            assertEquals(1, profiles.size());
+                            assertTrue(profiles.get(0).isOffTheRecord());
+                            assertEquals(
+                                    1, chromeAndroidTask.getAllNativeBrowserWindowPtrs().size());
+                            assertEquals(1, incognitoTabModel.getCount());
+
+                            // Act: close the last incognito tab.
+                            Tab tab = assumeNonNull(incognitoTabModel.getTabAt(0));
+                            incognitoTabModel
+                                    .getTabRemover()
+                                    .forceCloseTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .build());
+
+                            // Record the state in the same UI task.
+                            return chromeAndroidTask.getAllNativeBrowserWindowPtrs();
+                        });
+
+        // Assert: the incognito browser window is gone along with its TabModel.
+        assertEquals(Collections.emptyList(), browserWindowPtrsAfterClose);
+
+        secondIncognitoActivity.finish();
+        activity.finish();
     }
 
     @Test
