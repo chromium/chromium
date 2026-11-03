@@ -774,13 +774,18 @@ class ContextualTasksLensInteractionBrowserTest
     for (auto& feature : GetAdditionalEnabledFeatures()) {
       enabled_features.push_back(std::move(feature));
     }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features, GetAdditionalDisabledFeatures());
     InProcessBrowserTest::SetUp();
   }
 
  protected:
   virtual std::vector<base::test::FeatureRefAndParams>
   GetAdditionalEnabledFeatures() {
+    return {};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetAdditionalDisabledFeatures() {
     return {};
   }
 
@@ -820,6 +825,14 @@ class ContextualTasksLensInteractionSeparateViewportRequestIdsBrowserTest
   std::vector<base::test::FeatureRefAndParams> GetAdditionalEnabledFeatures()
       override {
     return {{lens::features::kLensUseSeparateRequestIdForViewportImages, {}}};
+  }
+
+  std::vector<base::test::FeatureRef> GetAdditionalDisabledFeatures() override {
+    // Disable kContextualTasksUpdatedEntryPoints because this test verifies the
+    // upload flow that sends both the viewport image and page content when
+    // invoked from the app menu, whereas kContextualTasksUpdatedEntryPoints
+    // treats the app menu invocation as region-only.
+    return {contextual_tasks::kContextualTasksUpdatedEntryPoints};
   }
 
   lens::LensOverlayContextualInputs GetContextualInputsFromUrl(
