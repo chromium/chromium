@@ -15,6 +15,7 @@
 #include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -33,8 +34,8 @@ namespace android {
 LayerTitleCache* LayerTitleCache::FromJavaObject(const JavaRef<jobject>& jobj) {
   if (jobj.is_null())
     return nullptr;
-  return reinterpret_cast<LayerTitleCache*>(Java_LayerTitleCache_getNativePtr(
-      base::android::AttachCurrentThread(), jobj));
+  return Java_LayerTitleCache_getNativePtr(base::android::AttachCurrentThread(),
+                                           jobj);
 }
 
 LayerTitleCache::LayerTitleCache(JNIEnv* env,
@@ -63,12 +64,7 @@ LayerTitleCache::LayerTitleCache(JNIEnv* env,
       bubble_outer_tint_(bubble_outer_tint),
       resource_manager_(resource_manager) {}
 
-void LayerTitleCache::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-void LayerTitleCache::UpdateLayer(JNIEnv* env,
-                                  int32_t tab_id,
+void LayerTitleCache::UpdateLayer(int32_t tab_id,
                                   int32_t title_resource_id,
                                   int32_t icon_resource_id,
                                   bool is_incognito,
@@ -125,19 +121,14 @@ void LayerTitleCache::UpdateGroupLayer(
   }
 }
 
-void LayerTitleCache::UpdateIcon(JNIEnv* env,
-                                 int32_t tab_id,
-                                 int32_t icon_resource_id,
-                                 bool show_bubble) {
+void LayerTitleCache::UpdateIcon(int32_t tab_id, int32_t icon_resource_id) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer && icon_resource_id != ui::Resource::kInvalidResourceId) {
     title_layer->SetIconResourceId(icon_resource_id);
   }
 }
 
-void LayerTitleCache::UpdateTabBubble(JNIEnv* env,
-                                      int32_t tab_id,
-                                      bool show_bubble) {
+void LayerTitleCache::UpdateTabBubble(int32_t tab_id, bool show_bubble) {
   DecorationTabTitle* title_layer = layer_cache_.Lookup(tab_id);
   if (title_layer) {
     title_layer->SetShowBubble(show_bubble);
@@ -178,7 +169,7 @@ LayerTitleCache::~LayerTitleCache() = default;
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static int64_t JNI_LayerTitleCache_Init(
+static jni_zero::JniUniquePtr<LayerTitleCache> JNI_LayerTitleCache_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     int32_t fade_width,
@@ -194,12 +185,11 @@ static int64_t JNI_LayerTitleCache_Init(
     const JavaRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  LayerTitleCache* cache = new LayerTitleCache(
+  return jni_zero::MakeUnique<LayerTitleCache>(
       env, obj, fade_width, icon_start_padding, icon_end_padding,
       spinner_resource_id, spinner_incognito_resource_id,
       bubble_inner_dimension, bubble_outer_dimension, bubble_offset,
       bubble_inner_tint, bubble_outer_tint, resource_manager);
-  return reinterpret_cast<intptr_t>(cache);
 }
 
 }  // namespace android

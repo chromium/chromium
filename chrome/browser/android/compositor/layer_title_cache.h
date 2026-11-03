@@ -52,13 +52,11 @@ class LayerTitleCache {
 
   LayerTitleCache(const LayerTitleCache&) = delete;
   LayerTitleCache& operator=(const LayerTitleCache&) = delete;
-
-  void Destroy(JNIEnv* env);
+  virtual ~LayerTitleCache();
 
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
-  void UpdateLayer(JNIEnv* env,
-                   int32_t tab_id,
+  void UpdateLayer(int32_t tab_id,
                    int32_t title_resource_id,
                    int32_t icon_resource_id,
                    bool is_incognito,
@@ -76,14 +74,11 @@ class LayerTitleCache {
                         bool is_rtl);
 
   // Called from Java, updates icon.
-  void UpdateIcon(JNIEnv* env,
-                  int32_t tab_id,
-                  int32_t icon_resource_id,
-                  bool show_bubble);
+  void UpdateIcon(int32_t tab_id, int32_t icon_resource_id);
 
   // Called from Java, updates tab bubble if a shared tab is updated by
   // collaborators.
-  void UpdateTabBubble(JNIEnv* env, int32_t tab_id, bool show_bubble);
+  void UpdateTabBubble(int32_t tab_id, bool show_bubble);
 
   // Returns the layer that represents the title of tab of tab_id.
   // Returns NULL if no layer can be found.
@@ -97,8 +92,6 @@ class LayerTitleCache {
 
  private:
   const int kEmptyWidth = 0;
-
-  virtual ~LayerTitleCache();
 
   base::IDMap<std::unique_ptr<DecorationTabTitle>> layer_cache_;
   std::unordered_map<tab_groups::TabGroupId,

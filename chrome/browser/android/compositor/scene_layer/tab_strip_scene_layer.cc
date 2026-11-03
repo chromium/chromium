@@ -23,6 +23,7 @@
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/base/l10n/l10n_util_android.h"
@@ -249,8 +250,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
 
 TabStripSceneLayer::~TabStripSceneLayer() = default;
 
-void TabStripSceneLayer::SetConstants(JNIEnv* env,
-                                      int32_t reorder_background_top_margin,
+void TabStripSceneLayer::SetConstants(int32_t reorder_background_top_margin,
                                       int32_t reorder_background_bottom_margin,
                                       int32_t reorder_background_padding_short,
                                       int32_t reorder_background_padding_long,
@@ -298,7 +298,6 @@ void TabStripSceneLayer::SetContentTree(JNIEnv* env,
 }
 
 void TabStripSceneLayer::BeginBuildingFrame(
-    JNIEnv* env,
     bool visible,
     const JavaRef<jobject>& jresource_manager,
     const JavaRef<jobject>& jlayer_title_cache) {
@@ -310,7 +309,7 @@ void TabStripSceneLayer::BeginBuildingFrame(
   layer_title_cache_ = LayerTitleCache::FromJavaObject(jlayer_title_cache);
 }
 
-void TabStripSceneLayer::FinishBuildingFrame(JNIEnv* env) {
+void TabStripSceneLayer::FinishBuildingFrame() {
   resource_manager_ = nullptr;
   layer_title_cache_ = nullptr;
   if (background_layer_->hide_layer_and_subtree()) {
@@ -336,8 +335,7 @@ void TabStripSceneLayer::UpdateOffsetTag(JNIEnv* env,
   layer()->SetOffsetTag(tag);
 }
 
-void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
-                                             int32_t width,
+void TabStripSceneLayer::UpdateTabStripLayer(int32_t width,
                                              int32_t height,
                                              float y_offset,
                                              int32_t background_color,
@@ -396,7 +394,6 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
 }
 
 void TabStripSceneLayer::UpdateNewTabButton(
-    JNIEnv* env,
     int32_t resource_id,
     int32_t bg_resource_id,
     float x,
@@ -433,8 +430,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
   }
 }
 
-void TabStripSceneLayer::UpdateNtbWebUi(JNIEnv* env,
-                                        int64_t native_host,
+void TabStripSceneLayer::UpdateNtbWebUi(int64_t native_host,
                                         float x,
                                         float y,
                                         float width,
@@ -491,14 +487,12 @@ void TabStripSceneLayer::UpdateNtbWebUi(JNIEnv* env,
 //   * e = button_width: The total dynamic width of the button, calculated to
 //         wrap the icons, text, and paddings.
 void TabStripSceneLayer::UpdateGlicButton(
-    JNIEnv* env,
     int32_t resource_id,
     float x,
     float y,
     float button_width,
     float button_height,
     bool visible,
-    bool should_apply_hover_highlight,
     int32_t tint,
     bool should_tint,
     int32_t background_tint,
@@ -551,7 +545,6 @@ void TabStripSceneLayer::UpdateGlicButton(
 }
 
 void TabStripSceneLayer::UpdateModelSelectorButton(
-    JNIEnv* env,
     int32_t resource_id,
     int32_t bg_resource_id,
     float x,
@@ -583,7 +576,6 @@ void TabStripSceneLayer::UpdateModelSelectorButton(
 }
 
 void TabStripSceneLayer::UpdateTabSearchButton(
-    JNIEnv* env,
     int32_t resource_id,
     int32_t bg_resource_id,
     float x,
@@ -613,8 +605,7 @@ void TabStripSceneLayer::UpdateTabSearchButton(
                          is_keyboard_focused, keyboard_focus_ring_drawable);
 }
 
-void TabStripSceneLayer::UpdateLinkDropIndicator(JNIEnv* env,
-                                                 int32_t resource_id,
+void TabStripSceneLayer::UpdateLinkDropIndicator(int32_t resource_id,
                                                  float center_x_px,
                                                  bool visible,
                                                  int32_t tint) {
@@ -643,14 +634,12 @@ void TabStripSceneLayer::UpdateLinkDropIndicator(JNIEnv* env,
 }
 
 void TabStripSceneLayer::UpdateGlicActorButton(
-    JNIEnv* env,
     int32_t resource_id,
     float x,
     float y,
     float button_width,
     float button_height,
     bool visible,
-    bool should_apply_hover_highlight,
     int32_t tint,
     bool should_tint,
     int32_t background_tint,
@@ -883,8 +872,7 @@ void TabStripSceneLayer::UpdateCompositorButton(
   }
 }
 
-void TabStripSceneLayer::UpdateTabStripFade(JNIEnv* env,
-                                            bool is_left,
+void TabStripSceneLayer::UpdateTabStripFade(bool is_left,
                                             int32_t fade_color,
                                             float opacity,
                                             float gradient_width,
@@ -931,7 +919,6 @@ void TabStripSceneLayer::UpdateTabStripFade(JNIEnv* env,
 }
 
 void TabStripSceneLayer::PutStripTabLayer(
-    JNIEnv* env,
     int32_t id,
     int32_t close_resource_id,
     int32_t close_hover_bg_resource_id,
@@ -1166,11 +1153,11 @@ SkColor TabStripSceneLayer::GetBackgroundColor() {
   return SceneLayer::GetBackgroundColor();
 }
 
-static int64_t JNI_TabStripSceneLayer_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jobj) {
+static jni_zero::JniRawPtr<TabStripSceneLayer> JNI_TabStripSceneLayer_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
-  TabStripSceneLayer* scene_layer = new TabStripSceneLayer(env, jobj);
-  return reinterpret_cast<intptr_t>(scene_layer);
+  return jni_zero::MakeRaw(new TabStripSceneLayer(env, jobj));
 }
 
 }  // namespace android

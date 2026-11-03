@@ -515,16 +515,11 @@ public class StripLayoutHelperManagerTest {
     @Config(sdk = 30)
     public void testGetUpdatedSceneOverlayTree() {
         // Setup and stub required mocks.
-        int hoveredTabId = 1;
         int selectedTabId = 2;
 
         when(mStandardTabModel.index()).thenReturn(selectedTabId);
         when(mStandardTabModel.getTabAt(selectedTabId)).thenReturn(mSelectedTab);
         when(mSelectedTab.getId()).thenReturn(selectedTabId);
-
-        when(mHoveredStripTab.getTabId()).thenReturn(hoveredTabId);
-        var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
-        activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
 
         // Update the paddings.
         int leftPadding = 10;
@@ -559,7 +554,6 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         eq(0f),
                         eq(selectedTabId),
-                        eq(hoveredTabId),
                         anyInt(),
                         anyFloat(),
                         eq((float) leftPadding),
@@ -1217,7 +1211,6 @@ public class StripLayoutHelperManagerTest {
                         /* yOffset= */ eq(0f),
                         anyInt(),
                         anyInt(),
-                        anyInt(),
                         /* scrimOpacity= */ scrimOpacityCaptor.capture(),
                         anyFloat(),
                         anyFloat(),
@@ -1240,7 +1233,6 @@ public class StripLayoutHelperManagerTest {
                         any(),
                         any(),
                         /* yOffset= */ eq(0f),
-                        anyInt(),
                         anyInt(),
                         anyInt(),
                         /* scrimOpacity= */ scrimOpacityCaptor.capture(),

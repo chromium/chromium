@@ -80,15 +80,15 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
   if (id != -1 && can_use_live_layer) {
     // StaticLayout may not know that the live layer cannot draw. Ensure it gets
     // a thumbnail if needed.
+    TabAndroid* tab = tab_content_manager_->GetTab(id);
     bool update_visible_ids = true;
-    if (auto live_layer = tab_content_manager_->GetLiveLayer(id)) {
+    if (auto live_layer = tab ? tab->GetContentLayer() : nullptr) {
       live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
       update_visible_ids = !LayerDraws(live_layer);
     }
     if (update_visible_ids) {
       tab_content_manager_->UpdateVisibleIds({id}, id);
     }
-    TabAndroid* tab = tab_content_manager_->GetTab(id);
     if (tab && tab->web_contents() && tab->web_contents()->GetNativeView()) {
       tab->web_contents()->GetNativeView()->set_content_offset_x(x);
     }
