@@ -40,6 +40,9 @@ class NtpSyncedThemeBridge {
   // Called when the default theme is restored from Chrome Sync.
   virtual void OnDefaultThemeSynced();
 
+  // Called when the underlying Android theme sync bridge reaches readiness.
+  virtual void OnThemeSyncReady();
+
   // Called when the theme collection background in preferences was updated
   // either by sync (`is_sync` is true) or by the local daily refresh
   // pre-fetching the next image (`is_sync` is false).

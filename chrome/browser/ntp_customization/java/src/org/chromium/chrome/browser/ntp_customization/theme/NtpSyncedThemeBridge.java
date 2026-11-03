@@ -53,6 +53,9 @@ public class NtpSyncedThemeBridge {
 
         /** Dispatched when the theme is reset to default from sync. */
         void onDefaultThemeSynced();
+
+        /** Dispatched when the underlying Android theme sync bridge reaches readiness. */
+        default void onThemeSyncReady() {}
     }
 
     /** Holds a {@link CustomBackgroundInfo} along with its optional synced primary color. */
@@ -176,6 +179,11 @@ public class NtpSyncedThemeBridge {
                         isDailyRefresh);
     }
 
+    /** Exposes whether the underlying Android theme sync bridge is ready. */
+    public boolean isThemeSyncReady() {
+        return NtpSyncedThemeBridgeJni.get().isThemeSyncReady(mProfile);
+    }
+
     /**
      * Callback from native code, triggered when the theme collection background in preferences was
      * updated by sync, or by the local daily refresh pre-fetching the next image.
@@ -220,6 +228,18 @@ public class NtpSyncedThemeBridge {
         if (mObserver == null) return;
 
         mObserver.onDefaultThemeSynced();
+    }
+
+    /**
+     * Called by native code when the underlying Android theme sync bridge reaches readiness.
+     * Dispatches the event to the registered observer.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onThemeSyncReady() {
+        if (mObserver == null) return;
+
+        mObserver.onThemeSyncReady();
     }
 
     /**
@@ -271,6 +291,8 @@ public class NtpSyncedThemeBridge {
                 @JniType("Profile*") Profile profile);
 
         void getStoredContinuousThemeAndNotify(@JniType("Profile*") Profile profile);
+
+        boolean isThemeSyncReady(@JniType("Profile*") Profile profile);
 
         void setChromeColor(@JniType("Profile*") Profile profile, @NtpThemeColorId int colorId);
 

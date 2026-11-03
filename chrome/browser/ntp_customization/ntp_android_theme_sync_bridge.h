@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/data_type_store.h"
@@ -28,11 +29,13 @@ class NtpAndroidThemeSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   using ThemeChangedCallback =
       base::RepeatingCallback<void(const sync_pb::ThemeAndroidSpecifics&)>;
+  using SyncReadyCallback = base::RepeatingClosure;
 
   NtpAndroidThemeSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       syncer::OnceDataTypeStoreFactory store_factory,
-      ThemeChangedCallback theme_changed_callback);
+      ThemeChangedCallback theme_changed_callback,
+      SyncReadyCallback sync_ready_callback = base::DoNothing());
   ~NtpAndroidThemeSyncBridge() override;
 
   NtpAndroidThemeSyncBridge(const NtpAndroidThemeSyncBridge&) = delete;
@@ -42,7 +45,12 @@ class NtpAndroidThemeSyncBridge : public syncer::DataTypeSyncBridge {
   // Updates the local theme data and commits the change to Sync.
   void UpdateTheme(const sync_pb::ThemeAndroidSpecifics& specifics);
 
+  // Returns whether initial sync readiness has been reached.
+  bool IsSyncReady() const { return is_sync_ready_; }
+
   // syncer::DataTypeSyncBridge:
+  void OnSyncStarting(
+      const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -81,6 +89,9 @@ class NtpAndroidThemeSyncBridge : public syncer::DataTypeSyncBridge {
   void ApplyThemeSpecifics(const sync_pb::ThemeAndroidSpecifics& specifics,
                            syncer::DataTypeStore::WriteBatch* write_batch);
 
+  // Marks the bridge as ready and notifies `sync_ready_callback_`.
+  void MarkSyncReady();
+
   // The local LevelDB storage instance used for persisting entity data and metadata.
   std::unique_ptr<syncer::DataTypeStore> store_;
 
@@ -89,6 +100,12 @@ class NtpAndroidThemeSyncBridge : public syncer::DataTypeSyncBridge {
 
   // Callback invoked when incoming sync changes arrive to notify downstream services.
   ThemeChangedCallback theme_changed_callback_;
+
+  // Callback invoked when initial sync readiness is reached.
+  SyncReadyCallback sync_ready_callback_;
+
+  bool sync_starting_called_ = false;
+  bool is_sync_ready_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<NtpAndroidThemeSyncBridge> weak_factory_{this};

@@ -58,6 +58,11 @@ void NtpSyncedThemeBridge::OnDefaultThemeSynced() {
   Java_NtpSyncedThemeBridge_onDefaultThemeSynced(env, j_java_obj_);
 }
 
+void NtpSyncedThemeBridge::OnThemeSyncReady() {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_NtpSyncedThemeBridge_onThemeSyncReady(env, j_java_obj_);
+}
+
 void NtpSyncedThemeBridge::OnThemeCollectionUpdated(bool is_sync) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   Java_NtpSyncedThemeBridge_onThemeCollectionUpdated(env, j_java_obj_, is_sync);
@@ -108,6 +113,12 @@ static void JNI_NtpSyncedThemeBridge_GetStoredContinuousThemeAndNotify(
     JNIEnv* env,
     Profile* profile) {
   GetService(profile)->GetStoredContinuousThemeAndNotify();
+}
+
+// Exposes whether the underlying Android theme sync bridge is ready.
+static bool JNI_NtpSyncedThemeBridge_IsThemeSyncReady(JNIEnv* env,
+                                                      Profile* profile) {
+  return GetService(profile)->IsThemeSyncReady();
 }
 
 // Sets the Chrome color ID on NtpAndroidCustomBackgroundService.

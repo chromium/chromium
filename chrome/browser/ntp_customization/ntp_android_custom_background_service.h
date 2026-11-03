@@ -73,6 +73,12 @@ class NtpAndroidCustomBackgroundService
   // type, or nullptr if sync is disabled.
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
+  // Exposes whether the underlying Android theme sync bridge is ready.
+  bool IsThemeSyncReady() const { return is_theme_sync_ready_; }
+
+  // Callback invoked when the underlying theme sync bridge reaches readiness.
+  void OnThemeSyncReady();
+
   // NtpCustomBackgroundServiceBase:
   void SetCustomBackgroundInfo(const GURL& background_url,
                                const GURL& thumbnail_url,
@@ -183,6 +189,10 @@ class NtpAndroidCustomBackgroundService
   // dictionary. Used to suppress re-entrant NotifyAboutBackgrounds() calls
   // from PrefChangeRegistrar.
   bool updating_color_pref_ = false;
+
+  // True once the underlying theme sync bridge has reached initial readiness
+  // (or immediately if theme sync is disabled).
+  bool is_theme_sync_ready_ = true;
 
   base::WeakPtrFactory<NtpAndroidCustomBackgroundService> weak_ptr_factory_{
       this};

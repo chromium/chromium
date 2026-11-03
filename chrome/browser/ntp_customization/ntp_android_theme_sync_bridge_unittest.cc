@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -42,6 +43,11 @@ class NtpAndroidThemeSyncBridgeTest : public testing::Test {
     callback_count_++;
   }
 
+  void OnSyncReady() {
+    sync_ready_count_++;
+    theme_changed_count_at_sync_ready_ = callback_count_;
+  }
+
  protected:
   NtpAndroidThemeSyncBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
@@ -53,6 +59,8 @@ class NtpAndroidThemeSyncBridgeTest : public testing::Test {
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         base::BindRepeating(&NtpAndroidThemeSyncBridgeTest::OnThemeChanged,
+                            base::Unretained(this)),
+        base::BindRepeating(&NtpAndroidThemeSyncBridgeTest::OnSyncReady,
                             base::Unretained(this)));
   }
 
@@ -75,6 +83,8 @@ class NtpAndroidThemeSyncBridgeTest : public testing::Test {
   std::unique_ptr<NtpAndroidThemeSyncBridge> bridge_;
   std::optional<sync_pb::ThemeAndroidSpecifics> last_received_specifics_;
   int callback_count_ = 0;
+  int sync_ready_count_ = 0;
+  int theme_changed_count_at_sync_ready_ = 0;
 };
 
 TEST_F(NtpAndroidThemeSyncBridgeTest, UpdateTheme_Success) {
@@ -380,6 +390,95 @@ TEST_F(NtpAndroidThemeSyncBridgeTest, OnDataLoaded_CorruptedData) {
       bridge->GetDataForCommit({kTestStorageKey});
   ASSERT_TRUE(data_batch);
   EXPECT_FALSE(data_batch->HasNext());
+}
+
+TEST_F(NtpAndroidThemeSyncBridgeTest,
+       OnSyncStarting_NotTrackingMetadata_ReadyAfterMergeFullSyncData) {
+  ON_CALL(mock_processor_, IsTrackingMetadata())
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_FALSE(bridge_->IsSyncReady());
+  bridge_->OnSyncStarting(syncer::DataTypeActivationRequest());
+  EXPECT_FALSE(bridge_->IsSyncReady());
+  EXPECT_EQ(0, sync_ready_count_);
+
+  sync_pb::ThemeAndroidSpecifics specifics;
+  specifics.mutable_ntp_background()->set_url(kTestImageUrl);
+
+  std::optional<syncer::ModelError> error = bridge_->MergeFullSyncData(
+      bridge_->CreateMetadataChangeList(), CreateEntityChangeList({specifics}));
+
+  EXPECT_FALSE(error.has_value());
+  EXPECT_TRUE(bridge_->IsSyncReady());
+  EXPECT_EQ(1, sync_ready_count_);
+  // OnThemeChanged must run before OnSyncReady.
+  EXPECT_EQ(1, theme_changed_count_at_sync_ready_);
+}
+
+TEST_F(NtpAndroidThemeSyncBridgeTest,
+       OnSyncStarting_AlreadyTrackingMetadata_ImmediatelyReady) {
+  ON_CALL(mock_processor_, IsTrackingMetadata())
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_FALSE(bridge_->IsSyncReady());
+  bridge_->OnSyncStarting(syncer::DataTypeActivationRequest());
+  EXPECT_TRUE(bridge_->IsSyncReady());
+  EXPECT_EQ(1, sync_ready_count_);
+}
+
+TEST_F(NtpAndroidThemeSyncBridgeTest,
+       OnSyncStarting_BeforeDataLoaded_MarksReadyWhenDataLoaded) {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor;
+  syncer::DataTypeStore::InitCallback store_init_callback;
+  bool tracking_metadata = false;
+  ON_CALL(mock_processor, IsTrackingMetadata())
+      .WillByDefault(testing::ReturnPointee(&tracking_metadata));
+  EXPECT_CALL(mock_processor, ModelReadyToSync(_))
+      .WillOnce([&tracking_metadata](std::unique_ptr<syncer::MetadataBatch>) {
+        tracking_metadata = true;
+      });
+
+  base::RunLoop run_loop;
+  std::unique_ptr<NtpAndroidThemeSyncBridge> bridge =
+      std::make_unique<NtpAndroidThemeSyncBridge>(
+          mock_processor.CreateForwardingProcessor(),
+          base::BindOnce(
+              [](syncer::DataTypeStore::InitCallback* out_cb, syncer::DataType,
+                 syncer::DataTypeStore::InitCallback cb) {
+                *out_cb = std::move(cb);
+              },
+              &store_init_callback),
+          base::BindRepeating(&NtpAndroidThemeSyncBridgeTest::OnThemeChanged,
+                              base::Unretained(this)),
+          base::BindRepeating(
+              [](NtpAndroidThemeSyncBridgeTest* self, base::RunLoop* loop) {
+                self->OnSyncReady();
+                loop->Quit();
+              },
+              base::Unretained(this), &run_loop));
+
+  // OnSyncStarting called before store finishes loading.
+  bridge->OnSyncStarting(syncer::DataTypeActivationRequest());
+  EXPECT_FALSE(bridge->IsSyncReady());
+  EXPECT_EQ(0, sync_ready_count_);
+
+  syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get())
+      .Run(syncer::THEMES_ANDROID, std::move(store_init_callback));
+  run_loop.Run();
+
+  EXPECT_TRUE(bridge->IsSyncReady());
+  EXPECT_EQ(1, sync_ready_count_);
+}
+
+TEST_F(NtpAndroidThemeSyncBridgeTest, ApplyDisableSyncChanges_MarksSyncReady) {
+  EXPECT_FALSE(bridge_->IsSyncReady());
+  bridge_->ApplyDisableSyncChanges(bridge_->CreateMetadataChangeList());
+  EXPECT_TRUE(bridge_->IsSyncReady());
+  EXPECT_EQ(1, sync_ready_count_);
+
+  // Subsequent readiness transitions are a no-op once already ready.
+  bridge_->ApplyDisableSyncChanges(bridge_->CreateMetadataChangeList());
+  EXPECT_EQ(1, sync_ready_count_);
 }
 
 }  // namespace

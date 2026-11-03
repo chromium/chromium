@@ -68,6 +68,7 @@ class MockSyncedThemeBridge : public NtpSyncedThemeBridge {
   MOCK_METHOD(void, OnThemeCollectionUpdated, (bool), (override));
   MOCK_METHOD(void, OnChromeColorSynced, (int), (override));
   MOCK_METHOD(void, OnDefaultThemeSynced, (), (override));
+  MOCK_METHOD(void, OnThemeSyncReady, (), (override));
 };
 
 class MockObserver : public NtpCustomBackgroundServiceObserver {
@@ -1425,6 +1426,20 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                          prefs::kNtpAndroidCustomBackgroundDict));
   EXPECT_FALSE(service->GetCustomBackground().has_value());
   EXPECT_TRUE(ReadSyncedTheme().has_chrome_color_info());
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       OnThemeSyncReady_NotifiesSyncedThemeBridge) {
+  std::unique_ptr<NtpAndroidCustomBackgroundService> service =
+      CreateServiceWithThemeSyncEnabled();
+  EXPECT_FALSE(service->IsThemeSyncReady());
+
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service.get());
+  EXPECT_CALL(*mock_synced_bridge, OnThemeSyncReady()).Times(1);
+  service->OnThemeSyncReady();
+  EXPECT_TRUE(service->IsThemeSyncReady());
+  service->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 }  // namespace

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -98,11 +99,13 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
         mNtpSyncedThemeBridge.onChromeColorSynced(THEME_COLOR_ID);
         mNtpSyncedThemeBridge.onDefaultThemeSynced();
+        mNtpSyncedThemeBridge.onThemeSyncReady();
 
         verify(mNatives, never()).getCustomBackgroundInfo(any());
         verify(mObserver, never()).onThemeCollectionImageAvailable(any(), any(), anyBoolean());
         verify(mObserver, never()).onChromeColorSynced(anyInt());
         verify(mObserver, never()).onDefaultThemeSynced();
+        verify(mObserver, never()).onThemeSyncReady();
     }
 
     @Test
@@ -116,6 +119,15 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.getStoredContinuousThemeAndNotify();
 
         verify(mNatives).getStoredContinuousThemeAndNotify(mProfile);
+    }
+
+    @Test
+    public void testIsThemeSyncReady() {
+        when(mNatives.isThemeSyncReady(mProfile)).thenReturn(true);
+        assertTrue(mNtpSyncedThemeBridge.isThemeSyncReady());
+
+        when(mNatives.isThemeSyncReady(mProfile)).thenReturn(false);
+        assertFalse(mNtpSyncedThemeBridge.isThemeSyncReady());
     }
 
     @Test
@@ -138,6 +150,9 @@ public class NtpSyncedThemeBridgeUnitTest {
 
         mNtpSyncedThemeBridge.onDefaultThemeSynced();
         verify(mObserver).onDefaultThemeSynced();
+
+        mNtpSyncedThemeBridge.onThemeSyncReady();
+        verify(mObserver).onThemeSyncReady();
     }
 
     @Test

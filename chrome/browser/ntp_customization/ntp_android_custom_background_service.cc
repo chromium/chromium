@@ -152,6 +152,7 @@ NtpAndroidCustomBackgroundService::NtpAndroidCustomBackgroundService(
   // finalized.
 #if !BUILDFLAG(ENABLE_WEBUI_NTP)
   if (base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync)) {
+    is_theme_sync_ready_ = false;
     theme_sync_bridge_ =
         std::make_unique<ntp_customization::NtpAndroidThemeSyncBridge>(
             std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -161,6 +162,9 @@ NtpAndroidCustomBackgroundService::NtpAndroidCustomBackgroundService(
             std::move(store_factory),
             base::BindRepeating(
                 &NtpAndroidCustomBackgroundService::OnThemeChangedFromSync,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &NtpAndroidCustomBackgroundService::OnThemeSyncReady,
                 weak_ptr_factory_.GetWeakPtr()));
   }
 #endif
@@ -193,6 +197,13 @@ NtpAndroidCustomBackgroundService::GetSyncControllerDelegate() {
     return nullptr;
   }
   return theme_sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+void NtpAndroidCustomBackgroundService::OnThemeSyncReady() {
+  is_theme_sync_ready_ = true;
+  if (synced_theme_bridge_) {
+    synced_theme_bridge_->OnThemeSyncReady();
+  }
 }
 
 void NtpAndroidCustomBackgroundService::SetThemeCollectionBridge(

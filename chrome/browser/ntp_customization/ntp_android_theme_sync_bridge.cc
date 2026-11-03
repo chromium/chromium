@@ -37,9 +37,11 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 NtpAndroidThemeSyncBridge::NtpAndroidThemeSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory,
-    ThemeChangedCallback theme_changed_callback)
+    ThemeChangedCallback theme_changed_callback,
+    SyncReadyCallback sync_ready_callback)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
-      theme_changed_callback_(std::move(theme_changed_callback)) {
+      theme_changed_callback_(std::move(theme_changed_callback)),
+      sync_ready_callback_(std::move(sync_ready_callback)) {
   CHECK(!theme_changed_callback_.is_null());
   std::move(store_factory)
       .Run(syncer::THEMES_ANDROID,
@@ -49,6 +51,16 @@ NtpAndroidThemeSyncBridge::NtpAndroidThemeSyncBridge(
 
 NtpAndroidThemeSyncBridge::~NtpAndroidThemeSyncBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void NtpAndroidThemeSyncBridge::OnSyncStarting(
+    const syncer::DataTypeActivationRequest& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  syncer::DataTypeSyncBridge::OnSyncStarting(request);
+  sync_starting_called_ = true;
+  if (change_processor()->IsTrackingMetadata()) {
+    MarkSyncReady();
+  }
 }
 
 void NtpAndroidThemeSyncBridge::UpdateTheme(
@@ -114,6 +126,8 @@ std::optional<syncer::ModelError> NtpAndroidThemeSyncBridge::MergeFullSyncData(
       base::BindOnce(&NtpAndroidThemeSyncBridge::OnCommitError,
                      weak_factory_.GetWeakPtr()));
 
+  MarkSyncReady();
+
   return std::nullopt;
 #endif
 }
@@ -167,6 +181,8 @@ void NtpAndroidThemeSyncBridge::ApplyDisableSyncChanges(
   // Android, signing out or disabling sync should preserve the current local
   // background rather than resetting it back to default.
   current_theme_.reset();
+  sync_starting_called_ = false;
+  MarkSyncReady();
 
   if (!store_) {
     return;
@@ -259,6 +275,9 @@ void NtpAndroidThemeSyncBridge::OnDataLoaded(
   }
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+  if (sync_starting_called_ && change_processor()->IsTrackingMetadata()) {
+    MarkSyncReady();
+  }
 }
 
 void NtpAndroidThemeSyncBridge::OnCommitError(
@@ -276,6 +295,16 @@ void NtpAndroidThemeSyncBridge::ApplyThemeSpecifics(
   write_batch->WriteData(kAndroidThemeStorageKey,
                          specifics.SerializeAsString());
   theme_changed_callback_.Run(specifics);
+}
+
+void NtpAndroidThemeSyncBridge::MarkSyncReady() {
+  if (is_sync_ready_) {
+    return;
+  }
+  is_sync_ready_ = true;
+  if (sync_ready_callback_) {
+    sync_ready_callback_.Run();
+  }
 }
 
 }  // namespace ntp_customization
