@@ -5347,6 +5347,7 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPHONE_14_PLUS_18_5",
+                "SIM_IPHONE_16_PLUS_26_5",
             ],
         ),
         targets.bundle(
@@ -5355,7 +5356,6 @@ targets.bundle(
                 "mac_26_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_16_PLUS_26_5",
                 "SIM_IPHONE_16_PLUS_27_0",
             ],
         ),
@@ -5374,12 +5374,21 @@ targets.bundle(
         targets.bundle(
             targets = "ios_eg2_cq_tests",
             mixins = [
+                "ci_only",
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_A16_27_0",
+                "SIM_IPHONE_16_26_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
                 "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_26_5",
-                "SIM_IPAD_A16_27_0",
-                "SIM_IPHONE_16_26_5",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -5397,12 +5406,21 @@ targets.bundle(
         targets.bundle(
             targets = "ios_eg2_tests",
             mixins = [
+                "ci_only",
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_A16_27_0",
+                "SIM_IPHONE_16_26_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
                 "xcodebuild_sim_runner",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_26_5",
-                "SIM_IPAD_A16_27_0",
-                "SIM_IPHONE_16_26_5",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -5414,7 +5432,9 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPAD_A16_27_0",
                 "SIM_IPHONE_15_18_5",
+                "SIM_IPHONE_16_26_5",
             ],
         ),
         targets.bundle(
@@ -5424,8 +5444,6 @@ targets.bundle(
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_26_5",
-                "SIM_IPAD_A16_27_0",
-                "SIM_IPHONE_16_26_5",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
