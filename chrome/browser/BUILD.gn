@@ -5151,6 +5151,7 @@ source_set("core_unit_tests") {
   if (is_chromeos) {
     sources += [ "shell_integration_chromeos_unittest.cc" ]
     deps += [
+      "//ash/constants",
       "//ash/webui/camera_app_ui",
       "//ash/webui/help_app_ui",
       "//ash/webui/media_app_ui",

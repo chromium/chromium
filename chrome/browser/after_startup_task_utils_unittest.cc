@@ -16,11 +16,13 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -29,6 +31,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#endif
 
 namespace {
 
@@ -845,5 +851,79 @@ TEST_P(StartupObserverTest, OneOfTwoVisibleTabsHidden) {
   page_node2->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   ExpectVisiblePageLoaded();
 }
+
+TEST_P(StartupObserverTest, NoStartupWindowCompletesImmediately) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoStartupWindow);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  FlushTasks();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester_.ExpectUniqueSample(
+      "Startup.BrowserStartupCompleteReason",
+      StartupIsCompleteReason::kStartupRegistrationDone, 1);
+}
+
+TEST_P(StartupObserverTest, NoStartupWindowStillWaitsForRegisteredRefs) {
+  if (AfterStartupTaskUtils::GetFailsafeTimeout().is_zero()) {
+    // kFeatureEnabledIgnoreVisibleTabs configures a 0ms failsafe timeout in
+    // SetUp(), which fires before registered refs can be released.
+    return;
+  }
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoStartupWindow);
+
+  auto first_idle_ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
+      StartupIsCompleteReason::kFirstIdle);
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  first_idle_ref.reset();
+  FlushTasks();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester_.ExpectUniqueSample("Startup.BrowserStartupCompleteReason",
+                                       StartupIsCompleteReason::kFirstIdle, 1);
+}
+
+TEST_P(StartupObserverTest, SilentLaunchCompletesImmediately) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kSilentLaunch);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  FlushTasks();
+  EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  histogram_tester_.ExpectUniqueSample(
+      "Startup.BrowserStartupCompleteReason",
+      StartupIsCompleteReason::kStartupRegistrationDone, 1);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(StartupObserverTest,
+       ChromeOSLoginManagerWithNoStartupWindowStillObservesPages) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kNoStartupWindow);
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kLoginManager);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !BUILDFLAG(IS_ANDROID)

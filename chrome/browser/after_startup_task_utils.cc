@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -27,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -35,6 +37,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #endif
 
@@ -335,10 +338,35 @@ class StartupObserver : public performance_manager::GraphOwned,
   base::OneShotTimer no_visible_tab_timer_;
 };
 
+bool IsSilentStartupWithoutWindow() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+#if BUILDFLAG(IS_CHROMEOS)
+  // On the ChromeOS login/OOBE screen (--login-manager), --no-startup-window
+  // may still be passed (e.g. by test harnesses) while OOBE WebUI loads in
+  // LoginDisplayHost. Non-WebUI login screens are already handled in
+  // FinishStartupRegistration().
+  if (command_line.HasSwitch(ash::switches::kLoginManager)) {
+    return false;
+  }
+#endif
+  return command_line.HasSwitch(switches::kNoStartupWindow) ||
+         command_line.HasSwitch(switches::kSilentLaunch);
+}
+
 // static
 void StartupObserver::Start(performance_manager::Graph* graph) {
   // Tests can pass a null `graph` to disable the StartupObserver.
   if (!graph) {
+    return;
+  }
+
+  // When startup suppresses opening an initial browser window (matching
+  // silent_launch in StartupBrowserCreator, e.g. ChromeOS Guest mode with
+  // --no-startup-window or desktop background launch), no visible tab will load
+  // at startup, so do not hold a page-load ref that would block BEST_EFFORT
+  // tasks until the 3-minute failsafe timeout.
+  if (IsSilentStartupWithoutWindow()) {
     return;
   }
 
