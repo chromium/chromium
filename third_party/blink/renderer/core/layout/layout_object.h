@@ -3118,6 +3118,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       SetShouldCheckForPaintInvalidation();
       layout_object_.SetShouldDoFullPaintInvalidation(reason);
     }
+    void SetSubtreeShouldDoFullPaintInvalidation(
+        PaintInvalidationReason reason = PaintInvalidationReason::kSubtree) {
+      DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),
+                DocumentLifecycle::kInPrePaint);
+      // Avoid marking ancestors for paint invalidation; see
+      // SetShouldDoFullPaintInvalidation() above.
+      SetShouldCheckForPaintInvalidation();
+      layout_object_.SetSubtreeShouldDoFullPaintInvalidation(reason);
+    }
     void SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason reason) {
       DCHECK_EQ(layout_object_.GetDocument().Lifecycle().GetState(),

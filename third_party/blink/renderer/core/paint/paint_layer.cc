@@ -2431,12 +2431,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   // See `CompositorMayHaveIncorrectDamageRect`.
   bool had_filter_that_moves_pixels = has_filter_that_moves_pixels_;
   has_filter_that_moves_pixels_ = ComputeHasFilterThatMovesPixels();
-  // To ensure proper tracking of reference filters, we must also note if one is
-  // added or all are removed for later action within `LayoutEmbeddedContent`.
-  bool had_reference_filter = has_reference_filter_;
-  has_reference_filter_ = ComputeHasReferenceFilter();
-  if (had_filter_that_moves_pixels != has_filter_that_moves_pixels_ ||
-      had_reference_filter != has_reference_filter_) {
+  if (had_filter_that_moves_pixels != has_filter_that_moves_pixels_) {
     // Force paint invalidation to update any potentially affected animations.
     GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
   }
@@ -2681,14 +2676,6 @@ bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   if (GetLayoutObject().HasReflection())
     return true;
   return false;
-}
-
-bool PaintLayer::ComputeHasReferenceFilter() const {
-  if (!HasFilterInducingProperty()) {
-    return false;
-  }
-  const ComputedStyle& style = GetLayoutObject().Style();
-  return style.HasFilter() && style.Filter().HasReferenceFilter();
 }
 
 void PaintLayer::SetNeedsRepaint() {

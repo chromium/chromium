@@ -2426,6 +2426,211 @@ TEST_P(ViewTransitionTest, ScopeSnapshotLayerWithoutSvgFilter_FeatureDisabled) {
       WebFeature::kViewTransitionPreventSvgFilterPaint));
 }
 
+// Tests that when an ancestor ::view-transition-group() acquires or loses an
+// SVG reference filter via late SVG resource resolution (in-place Filter node
+// update without a style change), cached ::view-transition-old/new()
+// subsequences are invalidated and re-parented above the reference filter.
+TEST_P(ViewTransitionTest, PseudoContentWithoutLateResolvedSvgFilter) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      ::view-transition-group(root) {
+        animation-duration: 300s;
+        filter: url(#late) blur(1px);
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: unset;
+      }
+    </style>
+    <svg id="svg" width="0" height="0"></svg>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  auto callback_lambda = [](const v8::FunctionCallbackInfo<v8::Value>&) {};
+  auto callback =
+      v8::Function::New(script_state->GetContext(), callback_lambda, {})
+          .ToLocalChecked();
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), V8ViewTransitionCallback::Create(callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  PseudoElement* vt = GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdViewTransition);
+  ASSERT_TRUE(vt);
+  PseudoElement* group =
+      vt->GetPseudoElement(kPseudoIdViewTransitionGroup, AtomicString("root"));
+  ASSERT_TRUE(group);
+  PseudoElement* image_pair = group->GetPseudoElement(
+      kPseudoIdViewTransitionImagePair, AtomicString("root"));
+  ASSERT_TRUE(image_pair);
+  PseudoElement* vt_old = image_pair->GetPseudoElement(
+      kPseudoIdViewTransitionOld, AtomicString("root"));
+  PseudoElement* vt_new = image_pair->GetPseudoElement(
+      kPseudoIdViewTransitionNew, AtomicString("root"));
+  ASSERT_TRUE(vt_old);
+  ASSERT_TRUE(vt_new);
+
+  // Initially #late does not exist, so only blur(1px) is on the Filter node.
+  const auto* group_filter =
+      group->GetLayoutObject()->FirstFragment().PaintProperties()->Filter();
+  ASSERT_TRUE(group_filter);
+  EXPECT_FALSE(group_filter->HasReferenceFilter());
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_old->GetLayoutObject()),
+            false);
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_new->GetLayoutObject()),
+            false);
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+
+  // Dynamically populate #late so the group's Filter node gains a reference
+  // filter in place while vt_old/vt_new would otherwise reuse cached
+  // subsequences.
+  Element* svg = GetDocument().getElementById(AtomicString("svg"));
+  svg->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <filter id="late"><feColorMatrix type="saturate" values="0"/></filter>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  group_filter =
+      group->GetLayoutObject()->FirstFragment().PaintProperties()->Filter();
+  ASSERT_TRUE(group_filter);
+  EXPECT_TRUE(group_filter->HasReferenceFilter());
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_old->GetLayoutObject()),
+            false);
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_new->GetLayoutObject()),
+            false);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+
+  // Removing #late drops the reference filter in place; vt_old should repaint
+  // back under the group's remaining blur(1px) Filter node.
+  svg->SetInnerHTMLWithoutTrustedTypes("");
+  UpdateAllLifecyclePhasesForTest();
+
+  group_filter =
+      group->GetLayoutObject()->FirstFragment().PaintProperties()->Filter();
+  ASSERT_TRUE(group_filter);
+  EXPECT_FALSE(group_filter->HasReferenceFilter());
+  bool under_group_filter = false;
+  const PaintArtifact& artifact = GetLocalFrameView()->GetPaintArtifact();
+  for (const PaintChunk& chunk : artifact.GetPaintChunks()) {
+    for (const DisplayItem& item : artifact.GetDisplayItemList().ItemsInRange(
+             chunk.begin_index, chunk.end_index)) {
+      if (item.GetType() == DisplayItem::kForeignLayerViewTransitionContent &&
+          item.ClientId() == vt_old->GetLayoutObject()->Id()) {
+        for (const EffectPaintPropertyNode* e =
+                 &chunk.properties.Effect().Unalias();
+             e; e = e->UnaliasedParent()) {
+          if (e == group_filter) {
+            under_group_filter = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  EXPECT_TRUE(under_group_filter);
+
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
+// Tests that swapping an unresolvable url(#bogus) to a valid url(#valid) on
+// ::view-transition-group() (where style-level HasReferenceFilter() is true
+// both before and after) still invalidates and re-parents cached
+// ::view-transition-old/new() subsequences.
+TEST_P(ViewTransitionTest, PseudoContentWithoutSwappedSvgFilterUrl) {
+  SetHtmlInnerHTML(R"HTML(
+    <style id="vt-style">
+      ::view-transition-group(root) {
+        animation-duration: 300s;
+        filter: url(#bogus) blur(1px);
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: unset;
+      }
+    </style>
+    <div id="bogus"></div>
+    <svg width="0" height="0">
+      <filter id="valid"><feColorMatrix type="saturate" values="0"/></filter>
+    </svg>
+  )HTML");
+
+  ScriptState* script_state = GetScriptState();
+  ScriptState::Scope scope(script_state);
+  auto callback_lambda = [](const v8::FunctionCallbackInfo<v8::Value>&) {};
+  auto callback =
+      v8::Function::New(script_state->GetContext(), callback_lambda, {})
+          .ToLocalChecked();
+  auto* transition = ViewTransitionSupplement::startViewTransition(
+      script_state, GetDocument(), V8ViewTransitionCallback::Create(callback),
+      ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  ASSERT_EQ(GetState(transition), State::kAnimating);
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  PseudoElement* vt = GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdViewTransition);
+  ASSERT_TRUE(vt);
+  PseudoElement* group =
+      vt->GetPseudoElement(kPseudoIdViewTransitionGroup, AtomicString("root"));
+  ASSERT_TRUE(group);
+  PseudoElement* image_pair = group->GetPseudoElement(
+      kPseudoIdViewTransitionImagePair, AtomicString("root"));
+  ASSERT_TRUE(image_pair);
+  PseudoElement* vt_old = image_pair->GetPseudoElement(
+      kPseudoIdViewTransitionOld, AtomicString("root"));
+  PseudoElement* vt_new = image_pair->GetPseudoElement(
+      kPseudoIdViewTransitionNew, AtomicString("root"));
+  ASSERT_TRUE(vt_old);
+  ASSERT_TRUE(vt_new);
+
+  const auto* group_filter =
+      group->GetLayoutObject()->FirstFragment().PaintProperties()->Filter();
+  ASSERT_TRUE(group_filter);
+  EXPECT_FALSE(group_filter->HasReferenceFilter());
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_old->GetLayoutObject()),
+            false);
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+
+  // Swap url(#bogus) -> url(#valid) while keeping blur(1px).
+  GetDocument().getElementById(AtomicString("vt-style"))->setTextContent(R"CSS(
+        ::view-transition-group(root) {
+          animation-duration: 300s;
+          filter: url(#valid) blur(1px);
+        }
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+          animation: unset;
+        }
+      )CSS");
+  UpdateAllLifecyclePhasesForTest();
+
+  group_filter =
+      group->GetLayoutObject()->FirstFragment().PaintProperties()->Filter();
+  ASSERT_TRUE(group_filter);
+  EXPECT_TRUE(group_filter->HasReferenceFilter());
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_old->GetLayoutObject()),
+            false);
+  EXPECT_EQ(ViewTransitionContentHasReferenceFilter(*vt_new->GetLayoutObject()),
+            false);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kViewTransitionPreventSvgFilterPaint));
+
+  FinishTransition();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+}
+
 TEST_P(ViewTransitionTest, ScopedViewTransitionRemoveChildDuringCallback) {
   SetHtmlInnerHTML(R"HTML(
     <style>

@@ -2716,8 +2716,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   DCHECK(properties_);
   bool was_tainted = properties_->Filter() && properties_->Filter()->Filter() &&
                      properties_->Filter()->Filter()->OriginTainted();
-  bool had_reference_filter =
-      properties_->Filter() && properties_->Filter()->HasReferenceFilter();
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsFilter(object_, full_context_)) {
       EffectPaintPropertyNode::State state;
@@ -2796,10 +2794,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   }
 
   bool is_tainted = false;
-  bool has_reference_filter = false;
   if (properties_->Filter()) {
     context_.current_effect = properties_->Filter();
-    has_reference_filter = properties_->Filter()->HasReferenceFilter();
     if (const auto* input_clip = properties_->PixelMovingFilterClipExpander()) {
       context_.current.clip = input_clip;
     }
@@ -2812,8 +2808,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
   } else {
     DCHECK(!properties_->PixelMovingFilterClipExpander());
   }
-  if (was_tainted != is_tainted ||
-      had_reference_filter != has_reference_filter) {
+  if (was_tainted != is_tainted) {
     full_context_.force_subtree_update_reasons |=
         PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
   }
@@ -4345,6 +4340,44 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
   return false;
 }
 
+namespace {
+
+// Bits identifying which effect nodes in ObjectPaintProperties have a
+// reference filter.
+enum ReferenceFilterNode : unsigned {
+  kReferenceFilterNone = 0,
+  kReferenceFilterOnFilter = 1 << 0,
+  kReferenceFilterOnEffect = 1 << 1,
+  kReferenceFilterOnViewTransitionEffect = 1 << 2,
+  kReferenceFilterOnViewTransitionScopeRootEffect = 1 << 3,
+};
+using ReferenceFilterNodes = unsigned;
+
+}  // namespace
+
+static ReferenceFilterNodes GetReferenceFilterNodes(
+    const ObjectPaintProperties* properties) {
+  if (!properties) {
+    return kReferenceFilterNone;
+  }
+  ReferenceFilterNodes nodes = kReferenceFilterNone;
+  if (properties->Filter() && properties->Filter()->HasReferenceFilter()) {
+    nodes |= kReferenceFilterOnFilter;
+  }
+  if (properties->Effect() && properties->Effect()->HasReferenceFilter()) {
+    nodes |= kReferenceFilterOnEffect;
+  }
+  if (properties->ViewTransitionEffect() &&
+      properties->ViewTransitionEffect()->HasReferenceFilter()) {
+    nodes |= kReferenceFilterOnViewTransitionEffect;
+  }
+  if (properties->ViewTransitionScopeRootEffect() &&
+      properties->ViewTransitionScopeRootEffect()->HasReferenceFilter()) {
+    nodes |= kReferenceFilterOnViewTransitionScopeRootEffect;
+  }
+  return nodes;
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #if DCHECK_IS_ON()
   bool should_check_paint_under_invalidation =
@@ -4404,6 +4437,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #endif
 
   if (properties_) {
+    const ReferenceFilterNodes old_reference_filter_nodes =
+        GetReferenceFilterNodes(properties_);
     if (full_context_.direct_compositing_reasons.Has(
             CompositingReason::kCanvasDrawableElement)) {
       context_.is_in_drawable_canvas_subtree = true;
@@ -4434,6 +4469,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     UpdateOverflowControlsClip();
     UpdateLineClampFloatClip();
     UpdateBackgroundClip();
+
+    if (old_reference_filter_nodes != GetReferenceFilterNodes(properties_)) {
+      // Cross-origin frames, plugins, and view-transition content layers strip
+      // ancestor SVG reference filters in PrePaint (`SetupContextForFrame`) or
+      // when recording foreign layers in Paint (`EmbeddedContentPainter`).
+      // Force both an isolation-piercing property update and full subtree paint
+      // invalidation so cached subsequences on stacked descendants repaint.
+      full_context_.force_subtree_update_reasons |=
+          PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
+        object_.GetMutableForPainting()
+            .SetSubtreeShouldDoFullPaintInvalidation();
+      }
+    }
   } else if (!object_.IsAnonymous()) {
     // 3D rendering contexts follow the DOM ancestor chain, so
     // flattening should apply regardless of presence of transform.
@@ -4671,12 +4720,20 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
+      const ReferenceFilterNodes reference_filter_nodes =
+          GetReferenceFilterNodes(properties);
       if ((properties->Effect() &&
            properties->Effect()->HasCanvasDrawableState()) ||
           (properties->Filter() && properties->Filter()->Filter() &&
-           properties->Filter()->Filter()->OriginTainted())) {
+           properties->Filter()->Filter()->OriginTainted()) ||
+          reference_filter_nodes != kReferenceFilterNone) {
         context_.force_subtree_update_reasons |=
             PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      }
+      if (reference_filter_nodes != kReferenceFilterNone &&
+          !PrePaintDisableSideEffectsScope::IsDisabled()) {
+        object_.GetMutableForPainting()
+            .SetSubtreeShouldDoFullPaintInvalidation();
       }
       UpdatePropertyChange(properties_changed_.effect_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
