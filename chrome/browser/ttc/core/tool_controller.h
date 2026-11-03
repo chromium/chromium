@@ -63,7 +63,9 @@ class ToolController : public content::WebContentsObserver {
   void ClickElement(const base::DictValue& arguments,
                     ToolResponseCallback callback);
   void CloseCurrentTab(ToolResponseCallback callback);
+  void CloseCurrentWindow(ToolResponseCallback callback);
   void CloseGeminiPanel(ToolResponseCallback callback);
+  void CreateNewWindow(ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,
                         ToolResponseCallback callback);
   void GetScreenshot(ToolResponseCallback callback);
