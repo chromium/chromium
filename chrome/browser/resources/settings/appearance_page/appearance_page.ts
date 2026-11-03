@@ -183,7 +183,6 @@ export class SettingsAppearancePageElement extends
       showResetPinnedActionsButton_: {type: Boolean},
       showCtrlTabMru_: {type: Boolean},
       tabStripUnificationEnabled_: {type: Boolean},
-      splitViewHorizontalEnabled_: {type: Boolean},
       sidePanelAlignmentOptions_: {type: Array},
       configurableSidePanels_: {type: Array},
     };
@@ -324,8 +323,6 @@ export class SettingsAppearancePageElement extends
       loadTimeData.getBoolean('showCtrlTabMru');
   protected accessor tabStripUnificationEnabled_: boolean =
       loadTimeData.getBoolean('tabStripUnificationEnabled');
-  protected accessor splitViewHorizontalEnabled_: boolean =
-      loadTimeData.getBoolean('splitViewHorizontalEnabled');
 
   protected accessor configurableSidePanels_:
       Array<{id: string, label: string}> =
