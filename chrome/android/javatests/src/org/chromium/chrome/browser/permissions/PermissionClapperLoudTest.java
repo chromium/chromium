@@ -83,7 +83,7 @@ public class PermissionClapperLoudTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         safelyClosePageInfo();
         clearPermissionDelegate();
         mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ false);
@@ -116,7 +116,7 @@ public class PermissionClapperLoudTest {
             String[] permissions, RuntimePermissionTestUtils.RuntimePromptResponse response) {
         RuntimePermissionTestUtils.TestAndroidPermissionDelegate testDelegate =
                 new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(permissions, response);
-        WindowAndroid windowAndroid = mPermissionRule.getActivity().getWindowAndroid();
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     windowAndroid.setAndroidPermissionDelegate(testDelegate);
@@ -125,7 +125,7 @@ public class PermissionClapperLoudTest {
 
     /** Clears the injected Android permission delegate. */
     private void clearPermissionDelegate() {
-        WindowAndroid windowAndroid = mPermissionRule.getActivity().getWindowAndroid();
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     windowAndroid.setAndroidPermissionDelegate(null);

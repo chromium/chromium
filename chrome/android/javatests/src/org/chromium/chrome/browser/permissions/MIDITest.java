@@ -39,7 +39,7 @@ public class MIDITest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test
@@ -47,9 +47,9 @@ public class MIDITest {
     @Feature({"MIDI"})
     @DisabledTest(message = "https://crbug.com/330692957")
     public void testMIDIDialog() throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
-                new PermissionUpdateWaiter("pass", mPermissionRule.getActivity());
+                new PermissionUpdateWaiter("pass", mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, "", 0, false);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));

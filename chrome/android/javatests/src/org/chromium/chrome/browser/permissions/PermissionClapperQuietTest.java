@@ -39,7 +39,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -99,7 +98,7 @@ public class PermissionClapperQuietTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ true);
     }
 
@@ -136,7 +135,7 @@ public class PermissionClapperQuietTest {
 
     private void setupPageAndTriggerNotificationPermissionRequest(String url) throws Exception {
         if (url.startsWith("http")) {
-            mPermissionRule.loadUrl(url);
+            mActivityTestRule.loadUrl(url);
         } else {
             mPermissionRule.setUpUrl(url);
         }
@@ -145,7 +144,7 @@ public class PermissionClapperQuietTest {
         waitForSecurityIcon();
 
         // Trigger notification permission with a gesture.
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "Notification.requestPermission()");
     }
 
@@ -159,7 +158,7 @@ public class PermissionClapperQuietTest {
                 () -> {
                     LocationBarCoordinator locationBarCoordinator =
                             (LocationBarCoordinator)
-                                    mPermissionRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getToolbarManager()
                                             .getLocationBar();
@@ -176,7 +175,7 @@ public class PermissionClapperQuietTest {
                 () -> {
                     LocationBarCoordinator locationBarCoordinator =
                             (LocationBarCoordinator)
-                                    mPermissionRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getToolbarManager()
                                             .getLocationBar();
@@ -203,7 +202,7 @@ public class PermissionClapperQuietTest {
                 () -> {
                     LocationBarCoordinator locationBarCoordinator =
                             (LocationBarCoordinator)
-                                    mPermissionRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getToolbarManager()
                                             .getLocationBar();
@@ -223,7 +222,7 @@ public class PermissionClapperQuietTest {
                 () -> {
                     LocationBarCoordinator locationBarCoordinator =
                             (LocationBarCoordinator)
-                                    mPermissionRule
+                                    mActivityTestRule
                                             .getActivity()
                                             .getToolbarManager()
                                             .getLocationBar();
@@ -243,19 +242,19 @@ public class PermissionClapperQuietTest {
     public void testPromiseLifetimeModulation() throws Exception {
         // Setup page and trigger request.
         if (PAGE_URL.startsWith("http")) {
-            mPermissionRule.loadUrl(PAGE_URL);
+            mActivityTestRule.loadUrl(PAGE_URL);
         } else {
             mPermissionRule.setUpUrl(PAGE_URL);
         }
         waitForSecurityIcon();
 
-        mPermissionRule.runJavaScriptCodeInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeInCurrentTab(
                 "window.promiseResolved = false; window.onclick = function() { if"
                         + " (window.functionToRun) { eval(window.functionToRun); } };");
 
         // We trigger the notification and immediately update window.promiseResolved when it
         // resolves/rejects
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "Notification.requestPermission().then(() => { window.promiseResolved = true;"
                         + " }).catch(() => { window.promiseResolved = true; })");
 
@@ -267,7 +266,7 @@ public class PermissionClapperQuietTest {
                 () -> {
                     try {
                         String result =
-                                mPermissionRule.runJavaScriptCodeInCurrentTab(
+                                mActivityTestRule.runJavaScriptCodeInCurrentTab(
                                         "window.promiseResolved");
                         Criteria.checkThat(result, Matchers.is("true"));
                     } catch (Exception e) {
@@ -437,7 +436,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Navigate away.
-        mPermissionRule.loadUrl(mPermissionRule.getURL("/content/test/data/android/simple.html"));
+        mActivityTestRule.loadUrl(mPermissionRule.getURL("/content/test/data/android/simple.html"));
 
         waitForQuietIconGone();
         // Navigation acts as an ignore. For clapper quiet, 1 ignore does not block the origin.
@@ -456,7 +455,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Reload the page.
-        mPermissionRule.loadUrl(mPermissionRule.getURL(PAGE_URL));
+        mActivityTestRule.loadUrl(mPermissionRule.getURL(PAGE_URL));
 
         waitForQuietIconGone();
         // Reload acts as an ignore. For clapper quiet, 1 ignore does not block the origin.
@@ -479,17 +478,15 @@ public class PermissionClapperQuietTest {
 
         // Enter Tab Switcher via UI.
 
-        TabUiTestHelper.enterTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mPermissionRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         onTabSwitchCallback.waitForCallback(0);
 
         histogramWatcher.assertExpected();
 
-        ChromeTabUtils.switchTabInCurrentTabModel(
-                (ChromeTabbedActivity) mPermissionRule.getActivity(), 0);
+        ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
 
         // The icon should reappear when switching back.
         waitForQuietIcon();
@@ -514,10 +511,10 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Enter Tab Switcher via UI.
-        TabUiTestHelper.enterTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         onTabSwitchCallback.waitForCallback(0);
 
-        TabUiTestHelper.leaveTabSwitcher((ChromeTabbedActivity) mPermissionRule.getActivity());
+        TabUiTestHelper.leaveTabSwitcher(mActivityTestRule.getActivity());
 
         // The icon should reappear when switching back.
         waitForQuietIcon();
@@ -552,7 +549,7 @@ public class PermissionClapperQuietTest {
 
         // Deny the prompt.
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
 
         mPermissionRule.waitForPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.BLOCK, PAGE_URL);
@@ -601,7 +598,7 @@ public class PermissionClapperQuietTest {
 
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mPermissionRule.getActivity(),
+                mActivityTestRule.getActivity(),
                 mPermissionRule.getURL(PAGE_URL),
                 /* incognito= */ false);
 
@@ -609,7 +606,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         ChromeTabUtils.closeCurrentTab(
-                InstrumentationRegistry.getInstrumentation(), mPermissionRule.getActivity());
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         waitForQuietIconGone();
 
@@ -628,7 +625,7 @@ public class PermissionClapperQuietTest {
         waitForQuietIcon();
 
         // Trigger a high-priority permission request (Microphone) to preempt the quiet one.
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
 
         // The Microphone prompt (Loud UI) should be shown.
@@ -655,7 +652,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger a high-priority permission request (Microphone) to preempt the quiet one.
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         // The Microphone prompt (Loud UI) should be shown.
         mPermissionRule.waitForDialogShownState(true);
@@ -676,7 +673,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoClose();
         // Close the microphone permission prompt.
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
 
         mPermissionRule.checkPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
@@ -695,7 +692,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         mPermissionRule.waitForDialogShownState(true);
 
@@ -715,7 +712,7 @@ public class PermissionClapperQuietTest {
         pressBack();
         mPermissionRule.waitForPageInfoClose();
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
 
         mPermissionRule.checkPermissionSettingForOrigin(
                 ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
@@ -733,7 +730,7 @@ public class PermissionClapperQuietTest {
         mPermissionRule.waitForPageInfoOpen();
 
         // Trigger preemption.
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "navigator.mediaDevices.getUserMedia({audio: true})");
         mPermissionRule.waitForDialogShownState(true);
 
@@ -745,7 +742,7 @@ public class PermissionClapperQuietTest {
 
         // Cleanup
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
 
         // Verify permission state remains ASK.
         mPermissionRule.checkPermissionSettingForOrigin(

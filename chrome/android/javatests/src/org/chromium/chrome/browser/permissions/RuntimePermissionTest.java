@@ -64,16 +64,16 @@ public class RuntimePermissionTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionTestRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    if (mPermissionTestRule.getActivity() != null
-                            && mPermissionTestRule.getActivity().getWindowAndroid() != null) {
-                        mPermissionTestRule
+                    if (mActivityTestRule.getActivity() != null
+                            && mActivityTestRule.getActivity().getWindowAndroid() != null) {
+                        mActivityTestRule
                                 .getActivity()
                                 .getWindowAndroid()
                                 .setAndroidPermissionDelegate(null);
@@ -99,6 +99,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -120,6 +121,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -141,6 +143,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -162,6 +165,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -196,6 +200,7 @@ public class RuntimePermissionTest {
                         .build();
 
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -220,6 +225,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.DENY);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -241,6 +247,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.DENY);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -270,6 +277,7 @@ public class RuntimePermissionTest {
 
         // TODO(crbug.com/531793849): See if we want to keep using ForgivingClickAction.
         RuntimePermissionTestUtils.runTestForgiving(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -293,6 +301,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.NEVER_ASK_AGAIN);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -308,6 +317,7 @@ public class RuntimePermissionTest {
 
         // Reload the page and ask again, this time no prompt at all should be shown.
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -331,6 +341,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.NEVER_ASK_AGAIN);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -346,6 +357,7 @@ public class RuntimePermissionTest {
 
         // Reload the page and ask again, this time no prompt at all should be shown.
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -373,6 +385,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.ALREADY_GRANTED);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -392,10 +405,11 @@ public class RuntimePermissionTest {
         ChromeActivity incognitoActivity = null;
         try {
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                incognitoActivity = mPermissionTestRule.newIncognitoWindowFromMenu();
+                incognitoActivity =
+                        mActivityTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
             } else {
-                mPermissionTestRule.newIncognitoTabFromMenu();
-                incognitoActivity = mPermissionTestRule.getActivity();
+                mActivityTestRule.newIncognitoTabFromMenu();
+                incognitoActivity = mActivityTestRule.getActivity();
             }
 
             String[] requestablePermission =
@@ -418,8 +432,7 @@ public class RuntimePermissionTest {
                     "initiate_geolocation()",
                     /* missingPermissionPromptTextId= */ 0);
         } finally {
-            if (incognitoActivity != null
-                    && incognitoActivity != mPermissionTestRule.getActivity()) {
+            if (incognitoActivity != null && incognitoActivity != mActivityTestRule.getActivity()) {
                 incognitoActivity.finish();
             }
         }
@@ -430,13 +443,14 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeCameraIncognito() throws Exception {
-        mPermissionTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
 
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -453,12 +467,13 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeMicrophoneIncognito() throws Exception {
-        mPermissionTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.newIncognitoTabFromMenu();
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -488,6 +503,7 @@ public class RuntimePermissionTest {
                                 "Permissions.AndroidSystemLevel.Mic.Prompt.Shown", true)
                         .build();
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -519,6 +535,7 @@ public class RuntimePermissionTest {
                                 "Permissions.AndroidSystemLevel.Location.Prompt.Shown", true)
                         .build();
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,
@@ -546,6 +563,7 @@ public class RuntimePermissionTest {
                                 "Permissions.AndroidSystemLevel.Camera.Prompt.Shown", false)
                         .build();
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -571,6 +589,7 @@ public class RuntimePermissionTest {
                         .expectNoRecords("Permissions.AndroidSystemLevel.Camera.Prompt.Shown")
                         .build();
         RuntimePermissionTestUtils.runTest(
+                mActivityTestRule.getActivity(),
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,

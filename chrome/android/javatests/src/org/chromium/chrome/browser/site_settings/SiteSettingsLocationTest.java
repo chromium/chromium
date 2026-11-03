@@ -124,9 +124,7 @@ public class SiteSettingsLocationTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionTestRule
-                                .getActivityTab()
-                                .removeObserver(mPermissionUpdateWaiter);
+                        mActivityTestRule.getActivityTab().removeObserver(mPermissionUpdateWaiter);
                     });
         }
         SiteSettingsTestHelper.cleanUpContentSettingsAndExceptions(new CallbackHelper());
@@ -136,16 +134,14 @@ public class SiteSettingsLocationTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionTestRule
-                                .getActivityTab()
-                                .removeObserver(mPermissionUpdateWaiter);
+                        mActivityTestRule.getActivityTab().removeObserver(mPermissionUpdateWaiter);
                     });
         }
-        Tab tab = mPermissionTestRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         mPermissionUpdateWaiter =
                 new PermissionUpdateWaiter(
-                        expectGranted ? "Granted" : "Denied", mPermissionTestRule.getActivity());
+                        expectGranted ? "Granted" : "Denied", mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
     }
 
@@ -153,8 +149,8 @@ public class SiteSettingsLocationTest {
         // Ignore notification request 4 times to enter embargo. 5th one ensures that notifications
         // are blocked by actually causing a deny-by-embargo.
         for (int i = 0; i < 5; i++) {
-            mPermissionTestRule.loadUrl(url);
-            mPermissionTestRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
+            mActivityTestRule.loadUrl(url);
+            mActivityTestRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
         }
     }
 

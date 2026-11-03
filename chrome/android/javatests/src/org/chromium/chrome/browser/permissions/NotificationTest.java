@@ -40,7 +40,7 @@ public class NotificationTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
     }
 
     @Test
@@ -48,10 +48,10 @@ public class NotificationTest {
     @Feature({"Notifications"})
     @DisableFeatures({"PermissionsAndroidClapperLoud", "PermissionsGestureGatedPrompts"})
     public void testNotificationDialog() throws Exception {
-        Tab tab = mPermissionRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(
-                        "request-callback-granted", mPermissionRule.getActivity());
+                        "request-callback-granted", mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(
                 updateWaiter,

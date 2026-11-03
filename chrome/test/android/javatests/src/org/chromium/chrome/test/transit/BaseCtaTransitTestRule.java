@@ -109,6 +109,12 @@ public abstract class BaseCtaTransitTestRule implements TestRule {
         return mActivityTestRule.runJavaScriptCodeInCurrentTab(code);
     }
 
+    // TODO(crbug.com/406324209): Use WebPageStation#runJsTo() to replace these calls.
+    public String runJavaScriptCodeWithUserGestureInCurrentTab(String code)
+            throws TimeoutException {
+        return mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(code);
+    }
+
     public int tabsCount(boolean incognito) {
         return mActivityTestRule.tabsCount(incognito);
     }

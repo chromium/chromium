@@ -127,7 +127,7 @@ public class PermissionUpdateMessageTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
     }
 
     /**
@@ -229,10 +229,10 @@ public class PermissionUpdateMessageTest {
         final String url = mPermissionRule.getURL(testPage);
         try {
             setNativeContentSetting(contentSettingsType, url, ContentSetting.ALLOW);
-            mPermissionRule.loadUrl(mPermissionRule.getURL(testPage));
+            mActivityTestRule.loadUrl(mPermissionRule.getURL(testPage));
 
             if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
-                mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascriptToExecute);
+                mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascriptToExecute);
             }
 
             expectMessagesCount(windowAndroid, 1);
@@ -366,8 +366,9 @@ public class PermissionUpdateMessageTest {
 
         try {
             setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.ALLOW);
-            mPermissionRule.loadUrl(mPermissionRule.getURL(GEOLOCATION_PAGE));
-            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab("initiate_geolocation()");
+            mActivityTestRule.loadUrl(mPermissionRule.getURL(GEOLOCATION_PAGE));
+            mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                    "initiate_geolocation()");
             CriteriaHelper.pollUiThread(
                     () -> {
                         Criteria.checkThat(

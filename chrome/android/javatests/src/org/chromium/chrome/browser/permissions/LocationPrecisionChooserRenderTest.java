@@ -102,7 +102,7 @@ public class LocationPrecisionChooserRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
     }
 
@@ -112,12 +112,12 @@ public class LocationPrecisionChooserRenderTest {
     }
 
     private void testPrompt(String goldenViewId) throws TimeoutException, IOException {
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
 
-        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        View modalDialogView = mActivityTestRule.getActivity().findViewById(R.id.modal_dialog_view);
         RenderTestRule.sanitize(modalDialogView);
 
         mRenderTestRule.render(modalDialogView, goldenViewId);
@@ -143,10 +143,10 @@ public class LocationPrecisionChooserRenderTest {
         mPermissionRule.setUpUrl(TEST_FILE_GEOLOCATION_ELEMENT);
         CountDownLatch latch = new CountDownLatch(1);
         latch.await(2, TimeUnit.SECONDS);
-        DOMUtils.clickNode(mPermissionRule.getWebContents(), "geolocation");
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), "geolocation");
         mPermissionRule.waitForDialogShownState(true);
 
-        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        View modalDialogView = mActivityTestRule.getActivity().findViewById(R.id.modal_dialog_view);
         RenderTestRule.sanitize(modalDialogView);
 
         mRenderTestRule.render(modalDialogView, "geolocation_element_prompt");

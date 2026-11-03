@@ -132,11 +132,10 @@ public class RuntimePermissionTestUtils {
     }
 
     private static void waitUntilDifferentDialogIsShowing(
-            final PermissionTestRule permissionTestRule, final PropertyModel previousDialog) {
+            final ChromeActivity activity, final PropertyModel previousDialog) {
         CriteriaHelper.pollUiThread(
                 () -> {
-                    final ModalDialogManager manager =
-                            permissionTestRule.getActivity().getModalDialogManager();
+                    final ModalDialogManager manager = activity.getModalDialogManager();
                     Criteria.checkThat(manager.isShowing(), Matchers.is(true));
                     Criteria.checkThat(
                             manager.getCurrentDialogForTest(), Matchers.not(previousDialog));
@@ -242,7 +241,7 @@ public class RuntimePermissionTestUtils {
 
             if (waitForMissingPermissionPrompt) {
                 // Wait for Chrome to inform user that a permission is missing --> different dialog
-                waitUntilDifferentDialogIsShowing(permissionTestRule, askPermissionDialogModel);
+                waitUntilDifferentDialogIsShowing(activity, askPermissionDialogModel);
             }
         }
 
@@ -253,7 +252,7 @@ public class RuntimePermissionTestUtils {
             // Wait for the dialog that informs the user permissions are missing, when the initial
             // prompt is rejected or expected to not be shown.
             if (promptDecision != PermissionTestRule.PromptDecision.ALLOW) {
-                waitUntilDifferentDialogIsShowing(permissionTestRule, askPermissionDialogModel);
+                waitUntilDifferentDialogIsShowing(activity, askPermissionDialogModel);
             }
 
             // Verify the correct missing permission string resource is displayed.
@@ -287,39 +286,11 @@ public class RuntimePermissionTestUtils {
     }
 
     /**
-     * This is a convenience method that automatically retrieves the {@link ChromeActivity} from the
-     * {@link PermissionTestRule} before running the test.
-     */
-    public static void runTest(
-            final PermissionTestRule permissionTestRule,
-            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
-            final String testUrl,
-            final boolean expectPermissionAllowed,
-            final @PermissionTestRule.PromptDecision int promptDecision,
-            final boolean waitForMissingPermissionPrompt,
-            final boolean waitForUpdater,
-            final String javascriptToExecute,
-            final @StringRes int missingPermissionPromptTextId)
-            throws Exception {
-        final ChromeActivity activity = permissionTestRule.getActivity();
-        runTest(
-                activity,
-                permissionTestRule,
-                testAndroidPermissionDelegate,
-                testUrl,
-                expectPermissionAllowed,
-                promptDecision,
-                waitForMissingPermissionPrompt,
-                waitForUpdater,
-                javascriptToExecute,
-                missingPermissionPromptTextId);
-    }
-
-    /**
      * Identical to {@link #runTest} but uses {@link PermissionTestRule#replyToDialogForgiving} to
      * bypass Espresso's default 90% visibility requirement for clicks.
      */
     public static void runTestForgiving(
+            final ChromeActivity activity,
             final PermissionTestRule permissionTestRule,
             final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
             final String testUrl,
@@ -330,7 +301,6 @@ public class RuntimePermissionTestUtils {
             final String javascriptToExecute,
             final @StringRes int missingPermissionPromptTextId)
             throws Exception {
-        final ChromeActivity activity = permissionTestRule.getActivity();
         runTestInternal(
                 activity,
                 permissionTestRule,

@@ -111,7 +111,7 @@ public class EmbeddedPermissionPromptTest {
         SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
         doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
         mPermissionRule.getEmbeddedTestServerRule().setServerPort(12345);
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
         LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(true, true, true);
 

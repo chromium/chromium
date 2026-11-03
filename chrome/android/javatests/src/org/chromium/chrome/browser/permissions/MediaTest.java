@@ -43,14 +43,14 @@ public class MediaTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
     }
 
     private void testMediaPermissionsPlumbing(
             String prefix, String script, int numUpdates, boolean withGesture) throws Exception {
-        Tab tab = mPermissionRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
-                new PermissionUpdateWaiter(prefix, mPermissionRule.getActivity());
+                new PermissionUpdateWaiter(prefix, mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(updateWaiter, TEST_FILE, script, numUpdates, withGesture);
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));

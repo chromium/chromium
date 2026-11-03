@@ -235,9 +235,7 @@ public class SiteSettingsTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionTestRule
-                                .getActivityTab()
-                                .removeObserver(mPermissionUpdateWaiter);
+                        mActivityTestRule.getActivityTab().removeObserver(mPermissionUpdateWaiter);
                     });
         }
         SiteSettingsTestHelper.cleanUpContentSettingsAndExceptions(new CallbackHelper());
@@ -253,16 +251,14 @@ public class SiteSettingsTest {
         if (mPermissionUpdateWaiter != null) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mPermissionTestRule
-                                .getActivityTab()
-                                .removeObserver(mPermissionUpdateWaiter);
+                        mActivityTestRule.getActivityTab().removeObserver(mPermissionUpdateWaiter);
                     });
         }
-        Tab tab = mPermissionTestRule.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         mPermissionUpdateWaiter =
                 new PermissionUpdateWaiter(
-                        expectGranted ? "Granted" : "Denied", mPermissionTestRule.getActivity());
+                        expectGranted ? "Granted" : "Denied", mActivityTestRule.getActivity());
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
     }
 
@@ -270,14 +266,14 @@ public class SiteSettingsTest {
         // Ignore notification request 4 times to enter embargo. 5th one ensures that notifications
         // are blocked by actually causing a deny-by-embargo.
         for (int i = 0; i < 5; i++) {
-            mPermissionTestRule.loadUrl(url);
-            mPermissionTestRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
+            mActivityTestRule.loadUrl(url);
+            mActivityTestRule.runJavaScriptCodeInCurrentTab("requestPermissionAndRespond()");
         }
     }
 
     private int getTabCount() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> mPermissionTestRule.getActivity().getTabModelSelector().getTotalTabCount());
+                () -> mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
     }
 
     private void testTwoStateToggleDisabledByPolicy(@SiteSettingsCategory.Type int type) {
@@ -317,7 +313,7 @@ public class SiteSettingsTest {
 
         // Test that the popup doesn't open.
         mPermissionTestRule.setUpUrl("/chrome/test/data/android/popup.html");
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(1, getTabCount());
@@ -339,7 +335,7 @@ public class SiteSettingsTest {
 
         // Test that a popup opens.
         mPermissionTestRule.setUpUrl("/chrome/test/data/android/popup.html");
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("openPopup();");
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         Assert.assertEquals(2, getTabCount());

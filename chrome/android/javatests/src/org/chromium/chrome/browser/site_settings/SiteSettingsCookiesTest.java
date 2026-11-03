@@ -63,7 +63,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.permissions.PermissionTestRule;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -162,19 +161,19 @@ public class SiteSettingsCookiesTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
-    public PermissionTestRule mPermissionTestRule = new PermissionTestRule(mActivityTestRule, true);
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     public AdvancedProtectionTestRule mAdvancedProtectionRule = new AdvancedProtectionTestRule();
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(mAdvancedProtectionRule)
-                    .around(mActivityTestRule)
-                    .around(mPermissionTestRule);
+            RuleChain.outerRule(mAdvancedProtectionRule).around(mActivityTestRule);
 
     @Mock private SettingsNavigation mSettingsNavigation;
+
+    public SiteSettingsCookiesTest() {
+        mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
+    }
 
     @Before
     public void setUp() throws TimeoutException {
@@ -358,21 +357,21 @@ public class SiteSettingsCookiesTest {
         setCookiesEnabled(settingsActivity, true);
         settingsActivity.finish();
 
-        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/cookie.html");
 
         // Load the page and clear any set cookies.
-        mPermissionTestRule.loadUrl(url);
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
         Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Load the page again and ensure the cookie still is set.
-        mPermissionTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /** Clicks on cookies radio buttons and verify the right FPS subpage is launched. */
@@ -401,33 +400,31 @@ public class SiteSettingsCookiesTest {
         SiteSettingsTestHelper.setGlobalToggleForCategory(
                 SiteSettingsCategory.Type.SITE_DATA, true);
 
-        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/cookie.html");
 
         // Load the page and clear any set cookies.
-        mPermissionTestRule.loadUrl(url);
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Check cookies can be set for this website when there is no rule.
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Set specific rule to block site and ensure it cannot set cookies.
-        mPermissionTestRule.loadUrl(url);
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
+        mActivityTestRule.loadUrl(url);
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("clearCookie()");
 
         SiteSettingsTestHelper.setGlobalToggleForCategory(
                 SiteSettingsCategory.Type.SITE_DATA, false);
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Load the page again and ensure the cookie remains unset.
-        mPermissionTestRule.loadUrl(url);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /** Set a cookie and check that it is removed when a site is cleared. */
@@ -436,14 +433,14 @@ public class SiteSettingsCookiesTest {
     @Feature({"Preferences"})
     @DisabledTest(message = "https://crbug.com/40709705")
     public void testClearCookies() throws Exception {
-        final String url = mPermissionTestRule.getURL("/chrome/test/data/android/cookie.html");
+        final String url =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/cookie.html");
 
-        mPermissionTestRule.loadUrl(url);
+        mActivityTestRule.loadUrl(url);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
         Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie()");
-        Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -453,9 +450,8 @@ public class SiteSettingsCookiesTest {
         SiteSettingsTestHelper.resetSite(WebsiteAddress.create(url));
 
         // Load the page again and ensure the cookie is gone.
-        mPermissionTestRule.loadUrl(url);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
     }
@@ -467,38 +463,41 @@ public class SiteSettingsCookiesTest {
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287320
     public void testClearCookiesGroup() throws Exception {
         final String url1 =
-                mPermissionTestRule.getURLWithHostName(
-                        "one.example.com", "/chrome/test/data/android/cookie.html");
+                mActivityTestRule
+                        .getTestServer()
+                        .getURLWithHostName(
+                                "one.example.com", "/chrome/test/data/android/cookie.html");
         final String url2 =
-                mPermissionTestRule.getURLWithHostName(
-                        "two.example.com", "/chrome/test/data/android/cookie.html");
+                mActivityTestRule
+                        .getTestServer()
+                        .getURLWithHostName(
+                                "two.example.com", "/chrome/test/data/android/cookie.html");
         final String url3 =
-                mPermissionTestRule.getURLWithHostName(
-                        "foo.com", "/chrome/test/data/android/cookie.html");
+                mActivityTestRule
+                        .getTestServer()
+                        .getURLWithHostName("foo.com", "/chrome/test/data/android/cookie.html");
 
-        mPermissionTestRule.loadUrl(url1);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        mActivityTestRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
-        mPermissionTestRule.loadUrl(url2);
+        mActivityTestRule.loadUrl(url2);
         Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
-        mPermissionTestRule.loadUrl(url3);
+        mActivityTestRule.loadUrl(url3);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
         Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
-        Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -508,15 +507,13 @@ public class SiteSettingsCookiesTest {
         resetGroup(Arrays.asList(WebsiteAddress.create(url1), WebsiteAddress.create(url2)));
 
         // 1 and 2 got cleared; 3 stays intact.
-        mPermissionTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url3);
         Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.loadUrl(url2);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.loadUrl(url3);
-        Assert.assertEquals(
-                "\"Foo=Bar\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                "\"Foo=Bar\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
@@ -529,24 +526,24 @@ public class SiteSettingsCookiesTest {
     @DisabledTest(message = "https://crbug.com/40842614")
     public void testClearDomainCookies() throws Exception {
         final String url =
-                mPermissionTestRule.getURLWithHostName(
-                        "test.example.com", "/chrome/test/data/android/cookie.html");
+                mActivityTestRule
+                        .getTestServer()
+                        .getURLWithHostName(
+                                "test.example.com", "/chrome/test/data/android/cookie.html");
 
-        mPermissionTestRule.loadUrl(url);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
-        mPermissionTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".test.example.com\")");
+        mActivityTestRule.loadUrl(url);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mActivityTestRule.runJavaScriptCodeInCurrentTab("setCookie(\".test.example.com\")");
         Assert.assertEquals(
                 "\"Foo=Bar; Foo=Bar\"",
-                mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+                mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
         SiteSettingsTestHelper.resetSite(WebsiteAddress.create("test.example.com"));
 
         // Load the page again and ensure the cookie is gone.
-        mPermissionTestRule.loadUrl(url);
-        Assert.assertEquals(
-                "\"\"", mPermissionTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mActivityTestRule.loadUrl(url);
+        Assert.assertEquals("\"\"", mActivityTestRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
     /**

@@ -80,7 +80,7 @@ public class PermissionGestureGatedTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         mPermissionRule.resetNotificationsSettingsForTest(/* enableQuietUi= */ false);
         mPermissionRule.setUpUrl(PAGE_URL);
         injectPermissionDelegate(
@@ -97,7 +97,7 @@ public class PermissionGestureGatedTest {
             String[] permissions, RuntimePermissionTestUtils.RuntimePromptResponse response) {
         RuntimePermissionTestUtils.TestAndroidPermissionDelegate testDelegate =
                 new RuntimePermissionTestUtils.TestAndroidPermissionDelegate(permissions, response);
-        WindowAndroid windowAndroid = mPermissionRule.getActivity().getWindowAndroid();
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     windowAndroid.setAndroidPermissionDelegate(testDelegate);
@@ -126,27 +126,27 @@ public class PermissionGestureGatedTest {
     private void triggerNotificationPermissionRequest(boolean withGesture) throws Exception {
         if (withGesture) {
             // Inject click handler.
-            mPermissionRule.runJavaScriptCodeInCurrentTab(
+            mActivityTestRule.runJavaScriptCodeInCurrentTab(
                     "window.onclick = function() { if (window.functionToRun) {"
                             + " eval(window.functionToRun); } };");
-            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+            mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                     "Notification.requestPermission()");
         } else {
-            mPermissionRule.runJavaScriptCodeInCurrentTab("Notification.requestPermission()");
+            mActivityTestRule.runJavaScriptCodeInCurrentTab("Notification.requestPermission()");
         }
     }
 
     private void triggerGeolocationPermissionRequest(boolean withGesture) throws Exception {
         if (withGesture) {
             // Inject click handler.
-            mPermissionRule.runJavaScriptCodeInCurrentTab(
+            mActivityTestRule.runJavaScriptCodeInCurrentTab(
                     "window.onclick = function() { if (window.functionToRun) {"
                             + " eval(window.functionToRun); } };");
-            mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+            mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                     "navigator.geolocation.getCurrentPosition(function(){})");
         } else {
             // Use setTimeout to ensure any transient user gesture from the test runner is lost.
-            mPermissionRule.runJavaScriptCodeInCurrentTab(
+            mActivityTestRule.runJavaScriptCodeInCurrentTab(
                     "setTimeout(function() { navigator.geolocation.getCurrentPosition(function(){})"
                             + " }, 0)");
         }
@@ -182,7 +182,7 @@ public class PermissionGestureGatedTest {
         mPermissionRule.waitForDialogShownState(true);
 
         PermissionTestRule.replyToDialog(
-                PermissionTestRule.PromptDecision.ALLOW, mPermissionRule.getActivity());
+                PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
         mPermissionRule.waitForDialogShownState(false);
         mPermissionRule.waitForGeolocationSettingForOrigin(
                 /* usePrecise= */ true, ContentSetting.ALLOW, PAGE_URL);

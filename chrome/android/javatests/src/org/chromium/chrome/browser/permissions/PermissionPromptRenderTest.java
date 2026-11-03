@@ -106,7 +106,7 @@ public class PermissionPromptRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        mPermissionRule.setUpActivity();
+        mActivityTestRule.startOnBlankPage();
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(mNightModeEnabled);
     }
 
@@ -116,11 +116,11 @@ public class PermissionPromptRenderTest {
     }
 
     private void testPrompt(String goldenViewId) throws TimeoutException, IOException {
-        mPermissionRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
-        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        View modalDialogView = mActivityTestRule.getActivity().findViewById(R.id.modal_dialog_view);
         RenderTestRule.sanitize(modalDialogView);
 
         mRenderTestRule.render(modalDialogView, goldenViewId);
@@ -271,11 +271,13 @@ public class PermissionPromptRenderTest {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClass(ContextUtils.getApplicationContext(), PermissionTestActivity.class);
         intent.setData(Uri.parse("about:blank"));
-        mPermissionRule.setActivity(
-                ApplicationTestUtils.waitForActivityWithClass(
-                        PermissionTestActivity.class,
-                        Stage.RESUMED,
-                        () -> ContextUtils.getApplicationContext().startActivity(intent)));
+        mActivityTestRule
+                .getActivityTestRule()
+                .setActivity(
+                        ApplicationTestUtils.waitForActivityWithClass(
+                                PermissionTestActivity.class,
+                                Stage.RESUMED,
+                                () -> ContextUtils.getApplicationContext().startActivity(intent)));
         mPermissionRule.setUpUrl(TEST_FILE);
         var histogramExpectation =
                 HistogramWatcher.newBuilder()

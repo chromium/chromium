@@ -35,15 +35,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -52,7 +49,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.WindowAndroid;
@@ -62,7 +58,6 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeoutException;
 
 /**
  * TestRule for permissions UI testing on Android.
@@ -252,53 +247,12 @@ public class PermissionTestRule implements TestRule {
                 description);
     }
 
-    // TODO(crbug.com/581036334): Inline BaseCtaTransitTestRule pass-through helpers into callers.
-    public ChromeTabbedActivity getActivity() {
-        return mCtaTestRule.getActivity();
-    }
-
     public EmbeddedTestServer getTestServer() {
         return mEmbeddedTestServerRule.getServer();
     }
 
     public EmbeddedTestServerRule getEmbeddedTestServerRule() {
         return mEmbeddedTestServerRule;
-    }
-
-    public LoadUrlResult loadUrl(String url) {
-        return mCtaTestRule.loadUrl(url);
-    }
-
-    public String runJavaScriptCodeInCurrentTab(String js) throws TimeoutException {
-        return mCtaTestRule.runJavaScriptCodeInCurrentTab(js);
-    }
-
-    public void runJavaScriptCodeWithUserGestureInCurrentTab(String js) throws TimeoutException {
-        mCtaTestRule.getActivityTestRule().runJavaScriptCodeWithUserGestureInCurrentTab(js);
-    }
-
-    public WebContents getWebContents() {
-        return mCtaTestRule.getWebContents();
-    }
-
-    public Tab getActivityTab() {
-        return mCtaTestRule.getActivityTab();
-    }
-
-    public void setActivity(ChromeTabbedActivity activity) {
-        mCtaTestRule.getActivityTestRule().setActivity(activity);
-    }
-
-    public Tab newIncognitoTabFromMenu() {
-        return mCtaTestRule.newIncognitoTabFromMenu();
-    }
-
-    public ChromeTabbedActivity newIncognitoWindowFromMenu() {
-        return mCtaTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
-    }
-
-    public WebPageStation setUpActivity() {
-        return mCtaTestRule.startOnBlankPage();
     }
 
     /**
@@ -309,7 +263,7 @@ public class PermissionTestRule implements TestRule {
      *     the current tab.
      */
     public void setUpUrl(final String relativeUrl) {
-        loadUrl(getURL(relativeUrl));
+        mCtaTestRule.loadUrl(getURL(relativeUrl));
     }
 
     /**
@@ -321,7 +275,7 @@ public class PermissionTestRule implements TestRule {
      * @param hostName The host name which should be used.
      */
     public void setupUrlWithHostName(String hostName, String relativeUrl) {
-        loadUrl(getURLWithHostName(hostName, relativeUrl));
+        mCtaTestRule.loadUrl(getURLWithHostName(hostName, relativeUrl));
     }
 
     public String getURL(String url) {
@@ -348,13 +302,14 @@ public class PermissionTestRule implements TestRule {
      */
     public void setupPageAndTriggerNotificationPermissionRequest(String url) throws Exception {
         if (url.startsWith("http")) {
-            loadUrl(url);
+            mCtaTestRule.loadUrl(url);
         } else {
             setUpUrl(url);
         }
 
         // Trigger notification permission with a gesture.
-        runJavaScriptCodeWithUserGestureInCurrentTab("Notification.requestPermission()");
+        mCtaTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(
+                "Notification.requestPermission()");
     }
 
     /** Waits for the Page Info UI to be opened. */
@@ -387,8 +342,8 @@ public class PermissionTestRule implements TestRule {
      * @param statusFormatId Resource ID for the status format string (e.g. "%s allowed").
      */
     public void verifyPageInfoPermissionsRow(int permissionNameId, int statusFormatId) {
-        String permissionName = getActivity().getString(permissionNameId);
-        String expectedText = getActivity().getString(statusFormatId, permissionName);
+        String permissionName = mCtaTestRule.getActivity().getString(permissionNameId);
+        String expectedText = mCtaTestRule.getActivity().getString(statusFormatId, permissionName);
         onViewWaiting(withText(expectedText));
     }
 
@@ -398,7 +353,7 @@ public class PermissionTestRule implements TestRule {
      * @param permissionNameId Resource ID for the permission name.
      */
     public void verifyNoPageInfoPermissionsRow(int permissionNameId) {
-        String permissionName = getActivity().getString(permissionNameId);
+        String permissionName = mCtaTestRule.getActivity().getString(permissionNameId);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {
@@ -612,9 +567,9 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
-            runJavaScriptCodeInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeInCurrentTab(javascript);
         }
         replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.ALLOW, nUpdates);
     }
@@ -640,9 +595,9 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
-            runJavaScriptCodeInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeInCurrentTab(javascript);
         }
         replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.DENY, nUpdates);
     }
@@ -668,9 +623,9 @@ public class PermissionTestRule implements TestRule {
             throws Exception {
         setUpUrl(url);
         if (withGesture) {
-            runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(javascript);
         } else {
-            runJavaScriptCodeInCurrentTab(javascript);
+            mCtaTestRule.runJavaScriptCodeInCurrentTab(javascript);
         }
         waitForUpdatesAndAssertNoPrompt(updateWaiter, nUpdates);
     }
@@ -700,13 +655,13 @@ public class PermissionTestRule implements TestRule {
             int nUpdates,
             final @PermissionTestRule.PromptDecision int decison)
             throws Exception {
-        replyToDialog(decison, getActivity());
+        replyToDialog(decison, mCtaTestRule.getActivity());
         updateWaiter.waitForNumUpdates(nUpdates);
     }
 
     /** Verify the shown state of the dialog. */
     protected void waitForDialogShownState(boolean expectedShowState) {
-        waitForDialogShownState(getActivity(), expectedShowState);
+        waitForDialogShownState(mCtaTestRule.getActivity(), expectedShowState);
     }
 
     /** Utility functions to support permissions testing in other contexts. */
@@ -767,7 +722,7 @@ public class PermissionTestRule implements TestRule {
 
     /** Verify the shown state of the message. */
     protected void waitForMessageShownState(boolean expectedShowState) {
-        waitForMessageShownState(getActivity(), expectedShowState);
+        waitForMessageShownState(mCtaTestRule.getActivity(), expectedShowState);
     }
 
     /** Wait for the message to be in the expected shown state. */
@@ -791,7 +746,7 @@ public class PermissionTestRule implements TestRule {
                 () -> {
                     LocationBarCoordinator locationBar =
                             (LocationBarCoordinator)
-                                    getActivity().getToolbarManager().getLocationBar();
+                                    mCtaTestRule.getActivity().getToolbarManager().getLocationBar();
                     int lastPermission =
                             locationBar
                                     .getStatusCoordinator()
