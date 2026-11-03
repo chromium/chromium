@@ -134,6 +134,7 @@ import org.chromium.components.tabs.TabAlert;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.EventForwarder;
@@ -1576,18 +1577,18 @@ public class StripLayoutHelperManagerTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         initializeTest();
 
-        verify(mNtbWebUiCoordinatorJniMock)
-                .init(
-                        eq(mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting()),
-                        eq(1),
-                        eq(0L));
+        NtbWebUiCoordinator coordinator =
+                mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting();
+        verify(mNtbWebUiCoordinatorJniMock).init(eq(coordinator), eq(1), eq(0L));
         assertEquals(1L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(1, mControlContainer.getChildCount());
+        assertTrue(AccessibilityState.getListeners().contains(coordinator));
 
         mStripLayoutHelperManager.destroy();
         verify(mNtbWebUiCoordinatorJniMock).destroy(1L);
         assertEquals(0L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(0, mControlContainer.getChildCount());
+        assertFalse(AccessibilityState.getListeners().contains(coordinator));
     }
 
     @Test

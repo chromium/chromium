@@ -211,6 +211,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
     /** Destroys the WebUI and removes the input view. */
     public void destroy() {
         if (mNativePtr == 0) return;
+        AccessibilityState.removeListener(this);
         mControlContainer.setTabStripInputView(null);
         NtbWebUiCoordinatorJni.get().destroy(mNativePtr);
         mNativePtr = 0;
