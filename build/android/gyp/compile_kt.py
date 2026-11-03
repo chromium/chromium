@@ -29,10 +29,6 @@ def _RunCompiler(
     logging.info('Starting _RunCompiler')
 
     source_files = source_files.copy()
-    kt_files = [f for f in source_files if f.endswith('.kt')]
-    assert len(kt_files) > 0, 'At least one .kt file must be passed in.'
-
-    java_srcjars = args.java_srcjars
 
     # Use jar_path's directory to ensure paths are relative (needed for rbe).
     temp_dir = jar_path + '.staging'
@@ -46,7 +42,7 @@ def _RunCompiler(
             intermediates_out_dir or temp_dir, 'input_srcjars'
         )
 
-        if java_srcjars:
+        if args.java_srcjars or args.kotlin_srcjars:
             logging.info('Extracting srcjars to %s', input_srcjars_dir)
             build_utils.MakeDirectory(input_srcjars_dir)
             for srcjar in args.java_srcjars:
@@ -56,46 +52,60 @@ def _RunCompiler(
                     path=input_srcjars_dir,
                     pattern='*.java',
                 )
+            for srcjar in args.kotlin_srcjars:
+                source_files += build_utils.ExtractAll(
+                    srcjar,
+                    no_clobber=True,
+                    path=input_srcjars_dir,
+                    pattern='*.kt',
+                )
             logging.info('Done extracting srcjars')
 
-        cmd = list(kotlinc_cmd)
-        cmd += ['-d', classes_dir]
+        kt_files = [f for f in source_files if f.endswith('.kt')]
+        if kt_files:
+            cmd = list(kotlinc_cmd)
+            cmd += ['-d', classes_dir]
 
-        if args.classpath:
-            cmd += ['-classpath', ':'.join(args.classpath)]
+            if args.classpath:
+                cmd += ['-classpath', ':'.join(args.classpath)]
 
-        # This a kotlinc plugin to generate header files for .kt files, similar to
-        # turbine for .java files.
-        jvm_abi_path = os.path.join(
-            build_utils.KOTLIN_HOME, 'lib', 'jvm-abi-gen.jar'
-        )
-        cmd += [
-            f'-Xplugin={jvm_abi_path}',
-            '-P',
-            'plugin:org.jetbrains.kotlin.jvm.abi:outputDir='
-            + args.interface_jar_path,
-        ]
+            # This a kotlinc plugin to generate header files for .kt files,
+            # similar to turbine for .java files.
+            jvm_abi_path = os.path.join(
+                build_utils.KOTLIN_HOME, 'lib', 'jvm-abi-gen.jar'
+            )
+            cmd += [
+                f'-Xplugin={jvm_abi_path}',
+                '-P',
+                'plugin:org.jetbrains.kotlin.jvm.abi:outputDir='
+                + args.interface_jar_path,
+            ]
 
-        # Pass source paths as response files to avoid extremely long command
-        # lines that are tedius to debug.
-        source_files_rsp_path = os.path.join(temp_dir, 'files_list.txt')
-        with open(source_files_rsp_path, 'w', encoding='utf-8') as f:
-            f.write(' '.join(source_files))
-        cmd += ['@' + source_files_rsp_path]
+            # Pass source paths as response files to avoid extremely long
+            # command lines that are tedius to debug.
+            source_files_rsp_path = os.path.join(temp_dir, 'files_list.txt')
+            with open(source_files_rsp_path, 'w', encoding='utf-8') as f:
+                f.write(' '.join(source_files))
+            cmd += ['@' + source_files_rsp_path]
 
-        # Explicitly set JAVA_HOME since some bots do not have this already set.
-        env = os.environ.copy()
-        env['JAVA_HOME'] = build_utils.JAVA_HOME
+            # Explicitly set JAVA_HOME since some bots do not have this already
+            # set.
+            env = os.environ.copy()
+            env['JAVA_HOME'] = build_utils.JAVA_HOME
 
-        logging.debug('Build command %s', cmd)
-        start = time.time()
-        build_utils.CheckOutput(
-            cmd,
-            env=env,
-            print_stdout=args.chromium_code,
-            fail_on_output=args.warnings_as_errors,
-        )
-        logging.info('Kotlin compilation took %ss', time.time() - start)
+            logging.debug('Build command %s', cmd)
+            start = time.time()
+            build_utils.CheckOutput(
+                cmd,
+                env=env,
+                print_stdout=args.chromium_code,
+                fail_on_output=args.warnings_as_errors,
+            )
+            logging.info('Kotlin compilation took %ss', time.time() - start)
+        else:
+            # Still need to create the unconditionally declared output when
+            # kotlinc (and jvm-abi-gen) does not run.
+            compile_java.CreateJarFile(args.interface_jar_path, classes_dir)
 
         compile_java.CreateJarFile(jar_path, classes_dir)
 
@@ -113,6 +123,12 @@ def _ParseOptions(argv):
         action='append',
         default=[],
         help='List of srcjars to include in compilation.',
+    )
+    parser.add_argument(
+        '--kotlin-srcjars',
+        action='append',
+        default=[],
+        help='List of kotlin srcjars to include in compilation.',
     )
     parser.add_argument(
         '--generated-dir',
@@ -144,6 +160,7 @@ def _ParseOptions(argv):
     args, extra_args = parser.parse_known_args(argv)
 
     args.classpath = action_helpers.parse_gn_list(args.classpath)
+    args.kotlin_srcjars = action_helpers.parse_gn_list(args.kotlin_srcjars)
     args.java_srcjars = action_helpers.parse_gn_list(args.java_srcjars)
 
     source_files = []

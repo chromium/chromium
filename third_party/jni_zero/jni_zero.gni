@@ -478,16 +478,6 @@ template("generate_jni_impl") {
     _subdir = rebase_path(target_gen_dir, root_gen_dir)
     _jni_output_dir = "$jni_headers_dir/$_subdir/$_target_name"
 
-    if (_from_source) {
-      # Kotlin inputs get a FooJni.kt (rather than FooJni.java in the srcjar),
-      # since kotlinc cannot resolve a Java FooJni.class against the Kotlin
-      # Foo.Natives that is being compiled alongside it. These are loose files
-      # because Kotlin sources are detected via "sources" rather than srcjars.
-      _kt_proxy_sources =
-          process_file_template(filter_include(invoker.sources, [ "*.kt" ]),
-                                "$_jni_output_dir/{{source_name_part}}Jni.kt")
-    }
-
     _invoke_jni_zero(_jni_zero_action_target_name) {
       forward_variables_from(invoker, [ "testonly" ])
 
@@ -568,7 +558,6 @@ template("generate_jni_impl") {
           _placeholder_srcjar_output,
           _type_catalog_output,
         ]
-        outputs += _kt_proxy_sources
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
         _input_names = invoker.sources
@@ -666,10 +655,8 @@ template("generate_jni_impl") {
       java_library("${_target_name}_java") {
         forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-        srcjars = [
-          _srcjar_output,
-          _placeholder_srcjar_output,
-        ]
+        srcjars = [ _placeholder_srcjar_output ]
+        srcjar_deps = [ ":$_target_name" ]
         supports_android = true
         jar_included_patterns = [
           "*Jni.class",
@@ -680,12 +667,9 @@ template("generate_jni_impl") {
           ":$_jni_zero_action_target_name",
           "//third_party/jni_zero:gendeps_java",
         ]
-        if (_kt_proxy_sources != []) {
-          sources = _kt_proxy_sources
+        if (filter_include(invoker.sources, [ "*.kt" ]) != []) {
+          kotlin_srcjar_deps = [ ":$_target_name" ]
           deps += [ "//third_party/android_deps:kotlin_stdlib_java" ]
-
-          # kotlinc gets java.* from the Android SDK (it runs with -no-jdk).
-          requires_android = true
         }
         if (defined(invoker.public_deps)) {
           public_deps = []
@@ -707,7 +691,12 @@ template("generate_jni_impl") {
       public_deps = [ ":$_jni_zero_action_target_name" ]
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (defined(visibility)) {
-        visibility += [ ":$target_name" ]
+        visibility += [
+          ":$target_name",
+          ":${_target_name}_java__compile_java",
+          ":${_target_name}_java__compile_kt",
+          ":${_target_name}_java__header",
+        ]
       }
     }
   }
@@ -715,8 +704,8 @@ template("generate_jni_impl") {
 
 # Given a set of Java or Kotlin files, generates a header file to call into Java
 # for all @CalledByNative functions. If @NativeMethods is present, also
-# generates <ClassName>Jni.java (in a .srcjar) or <ClassName>Jni.kt (for .kt
-# sources), which should be depended on via the generated GN target
+# generates a .srcjar containing <ClassName>Jni.java or <ClassName>Jni.kt files,
+# which should be depended on via the generated GN target
 # <generate_jni's target name>_java.
 #
 # Variables

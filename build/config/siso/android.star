@@ -191,8 +191,8 @@ def __step_config(ctx, step_config):
             # Don't include files under --generated-dir.
             # This is probably optimization for local incrmental builds.
             # However, this is harmful for remote build cache hits.
-            "ignore_extra_input_pattern": ".*srcjars.*\\.java",
-            "ignore_extra_output_pattern": ".*srcjars.*\\.java",
+            "ignore_extra_input_pattern": ".*srcjars.*\\.(java|kt)",
+            "ignore_extra_output_pattern": ".*srcjars.*\\.(java|kt)",
             "remote": remote_run,
             "restat_content": True,
             "platform_ref": "large",

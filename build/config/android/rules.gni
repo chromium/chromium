@@ -1937,9 +1937,12 @@ if (!is_robolectric && enable_java_templates) {
         requires_android = true
       }
 
-      # Using JNI Zero via srcjar_deps. jni_zero.gni enforces "jni" in the name.
-      if (defined(srcjar_deps) &&
-          filter_include(srcjar_deps, [ "*jni*" ]) != []) {
+      # Using JNI Zero via srcjar_deps or kotlin_srcjar_deps. jni_zero.gni
+      # enforces "jni" in the name.
+      if ((defined(srcjar_deps) &&
+           filter_include(srcjar_deps, [ "*jni*" ]) != []) ||
+          (defined(kotlin_srcjar_deps) &&
+           filter_include(kotlin_srcjar_deps, [ "*jni*" ]) != [])) {
         if (!defined(jar_excluded_patterns)) {
           jar_excluded_patterns = []
         }
