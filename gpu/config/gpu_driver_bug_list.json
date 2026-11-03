@@ -2,40 +2,6 @@
   "name": "gpu driver bug list",
   "entries": [
     {
-      "id": 1,
-      "description": "Imagination driver doesn't like uploading lots of buffer data constantly",
-      "cr_bugs": [178093],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_type": "gles",
-      "gl_version": {
-        "op": "<",
-        "value": "3.0"
-      },
-      "features": [
-        "use_client_side_arrays_for_stream_buffers"
-      ]
-    },
-    {
-      "id": 2,
-      "description": "ARM driver doesn't like uploading lots of buffer data constantly",
-      "cr_bugs": [178093],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_type": "gles",
-      "gl_version": {
-        "op": "<",
-        "value": "3.0"
-      },
-      "features": [
-        "use_client_side_arrays_for_stream_buffers"
-      ]
-    },
-    {
       "id": 17,
       "description": "Some drivers are unable to reset the D3D device in the GPU process sandbox",
       "os": {
@@ -91,19 +57,6 @@
       },
       "features": [
         "use_virtualized_gl_contexts"
-      ]
-    },
-    {
-      "id": 42,
-      "cr_bugs": [290876, 488463],
-      "description": "Framebuffer discarding causes flickering on older IMG drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR SGX 5.*",
-      "features": [
-        "disable_discard_framebuffer"
       ]
     },
     {
@@ -225,19 +178,6 @@
       ]
     },
     {
-      "id": 91,
-      "cr_bugs": [150500, 414816],
-      "description": "ETC1 non-power-of-two sized textures crash older IMG drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": ".*Imagination.*",
-      "gl_renderer": ".*PowerVR SGX 5.*",
-      "features": [
-        "etc1_power_of_two_only"
-      ]
-    },
-    {
       "id": 92,
       "description": "Old Intel drivers cannot reliably support D3D11",
       "cr_bugs": [363721],
@@ -292,19 +232,6 @@
       ]
     },
     {
-      "id": 98,
-      "description": "PowerVR SGX 540 drivers throw GL_OUT_OF_MEMORY error when a buffer object's size is set to 0",
-      "cr_bugs": [451501],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR SGX 540",
-      "features": [
-        "use_non_zero_size_for_client_side_stream_buffers"
-      ]
-    },
-    {
       "id": 102,
       "description": "Adreno 420 driver loses FBO attachment contents on bound FBO deletion",
       "cr_bugs": [457027],
@@ -326,18 +253,6 @@
       "gl_renderer": "Adreno \\(TM\\) 4.*",
       "features": [
         "disable_discard_framebuffer"
-      ]
-    },
-    {
-      "id": 106,
-      "description": "EXT_occlusion_query_boolean hangs on PowerVR SGX 544 (IMG) drivers",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR SGX 544",
-      "disabled_extensions": [
-        "GL_EXT_occlusion_query_boolean"
       ]
     },
     {
@@ -523,27 +438,6 @@
         "value": "346"
       },
       "disabled_extensions": ["GL_NV_path_rendering"]
-    },
-    {
-      "id": 139,
-      "description": "Mesa drivers wrongly report supporting GL_EXT_texture_rg with GLES 2.0 prior version 11.1",
-      "cr_bugs": [545904],
-      "os": {
-        "type": "linux"
-      },
-      "driver_vendor": "Mesa",
-      "driver_version": {
-        "op": "<",
-        "value": "11.1"
-      },
-      "gl_type": "angle_gles",
-      "gl_version": {
-        "op": "<",
-        "value": "3.0"
-      },
-      "disabled_extensions": [
-        "GL_EXT_texture_rg"
-      ]
     },
     {
       "id": 140,
@@ -1094,19 +988,6 @@
       },
       "gl_vendor": "Imagination.*",
       "gl_renderer": "PowerVR.*GX6250",
-      "features": [
-        "init_gl_position_in_vertex_shader"
-      ]
-    },
-    {
-      "id": 263,
-      "description": "Program fails in PowerVR SGX54x drivers if gl_Position is not set",
-      "cr_bugs": [286468, 416670],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "Imagination.*",
-      "gl_renderer": "PowerVR SGX 54.*",
       "features": [
         "init_gl_position_in_vertex_shader"
       ]
