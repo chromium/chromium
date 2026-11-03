@@ -196,8 +196,10 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   }
 
   // Returns the current mojo state for this page action to be sent to WebUI, or
-  // nullptr if the action is not visible.
-  toolbar_ui_api::mojom::PageActionStatePtr GetState();
+  // nullptr if the action is not visible. When `commit_to_cache` is true,
+  // updates `old_state_` to the returned state.
+  toolbar_ui_api::mojom::PageActionStatePtr GetState(
+      bool commit_to_cache = false);
 
   // Handles a user click on the page action from WebUI, triggering registered
   // click callbacks and invoking the underlying ActionItem.
@@ -376,6 +378,13 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
       (was_anchored_message_showing_ != is_anchored_message_showing);
   was_anchored_message_showing_ = is_anchored_message_showing;
 
+  // Only check for navigation URL changes if this action is currently visible
+  // or was previously visible. Actions that remain invisible have no WebUI
+  // icon element and cannot trigger spurious icon animations.
+  if (visible || old_state_) {
+    owner_->MaybeAdvanceTabSwitchTokenForActiveTab();
+  }
+
   toolbar_ui_api::mojom::PageActionStatePtr new_state = GetState();
 
   // An anchored message change alters the relative ordering of page action
@@ -419,12 +428,19 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
 }
 
 toolbar_ui_api::mojom::PageActionStatePtr
-WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
+WebUIPageActionControl::WebUIPageActionDelegate::GetState(
+    bool commit_to_cache) {
   if (!observation_.IsObserving()) {
+    if (commit_to_cache) {
+      old_state_ = nullptr;
+    }
     return nullptr;
   }
   const auto* model = observation_.GetSource();
   if (!model->GetVisible()) {
+    if (commit_to_cache) {
+      old_state_ = nullptr;
+    }
     return nullptr;
   }
 
@@ -511,6 +527,9 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState() {
   } else {
     state->trailing_icon = std::nullopt;
     cached_trailing_icon_ = {};
+  }
+  if (commit_to_cache && controller_ == owner_->active_controller_) {
+    old_state_ = state.Clone();
   }
   return state;
 }
@@ -742,20 +761,18 @@ page_actions::PageActionController* WebUIPageActionControl::GetController(
 
 void WebUIPageActionControl::UpdateController(
     content::WebContents* web_contents) {
-  page_actions::PageActionController* new_controller = nullptr;
-  if (web_contents) {
-    tabs::TabInterface* tab =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
-    if (tab) {
-      new_controller = page_actions::PageActionController::From(tab);
-    }
-  }
+  tabs::TabInterface* tab =
+      web_contents ? tabs::TabInterface::MaybeGetFromContents(web_contents)
+                   : nullptr;
+  page_actions::PageActionController* new_controller =
+      tab ? page_actions::PageActionController::From(tab) : nullptr;
 
   const bool tab_changed = active_controller_ != new_controller;
 
   if (tab_changed) {
     active_controller_subscription_ = {};
     active_controller_ = new_controller;
+    active_tab_ = active_controller_ ? tab : nullptr;
 
     if (active_controller_) {
       active_controller_subscription_ =
@@ -768,8 +785,11 @@ void WebUIPageActionControl::UpdateController(
     // active tab has changed. This allows the WebUI to suppress transition
     // icon animations and update chip states immediately on tab switches.
     ++tab_switch_token_;
-    last_url_spec_ =
-        web_contents ? web_contents->GetLastCommittedURL().spec() : "";
+    last_visible_url_spec_ =
+        web_contents ? web_contents->GetVisibleURL().spec() : std::string();
+    last_committed_url_spec_ = web_contents
+                                   ? web_contents->GetLastCommittedURL().spec()
+                                   : std::string();
 
     // Only re-initialize delegates if the tab (and controller) actually
     // changed.
@@ -779,19 +799,13 @@ void WebUIPageActionControl::UpdateController(
     return;
   }
 
-  // Same-tab navigation: notify WebUI when URL changes.
-  if (web_contents) {
-    const std::string current_url = web_contents->GetLastCommittedURL().spec();
-    if (current_url != last_url_spec_) {
-      last_url_spec_ = current_url;
-      // Increment the tab switch token and notify WebUI immediately on
-      // navigation so that page-load icon animations are suppressed while
-      // subsequent in-page user interactions (e.g. starring/unstarring via
-      // the bubble) can animate.
-      ++tab_switch_token_;
-      for (auto& [action_id, delegate] : delegates_) {
-        delegate->UpdateStateAndNotify();
-      }
+  // Same-tab navigation: increment the tab switch token and notify WebUI
+  // immediately when either the visible or committed URL changes so page-load
+  // icon animations are suppressed while subsequent in-page user interactions
+  // (e.g. starring/unstarring via the bubble) can animate.
+  if (web_contents && MaybeAdvanceTabSwitchTokenForUrlChange(*web_contents)) {
+    for (auto& [action_id, delegate] : delegates_) {
+      delegate->UpdateStateAndNotify();
     }
   }
 }
@@ -812,7 +826,7 @@ void WebUIPageActionControl::OnThemeChanged() {
 }
 
 std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
-WebUIPageActionControl::GetPageActionStates() {
+WebUIPageActionControl::GetPageActionStates(bool commit_to_cache) {
   // Three possible states of page actions: anchored message, chip, icon.
   // There can be multiple chips and/or icons, but at most one anchored message.
   // We place the anchored message action (if any) first, followed by chips in
@@ -825,7 +839,7 @@ WebUIPageActionControl::GetPageActionStates() {
   for (actions::ActionId action_id : page_actions::kActionIds) {
     auto it = delegates_.find(action_id);
     if (it != delegates_.end()) {
-      auto state = it->second->GetState();
+      auto state = it->second->GetState(commit_to_cache);
       if (state) {
         if (it->second->IsAnchoredMessageVisible() ||
             (it->second->GetObservedModel() &&
@@ -911,7 +925,8 @@ WebUIPageActionControl::GetAnchoredMessageForTesting(  // IN-TEST
 
 void WebUIPageActionControl::NotifyPageActionStateChanged() {
   if (webui_delegate_) {
-    webui_delegate_->OnPageActionChanged(GetPageActionStates());
+    webui_delegate_->OnPageActionChanged(
+        GetPageActionStates(/*commit_to_cache=*/true));
   }
 }
 
@@ -925,6 +940,27 @@ void WebUIPageActionControl::OnControllerDestroying(
     page_actions::PageActionController& controller) {
   CHECK_EQ(active_controller_, &controller);
   UpdateController(nullptr);
+}
+
+bool WebUIPageActionControl::MaybeAdvanceTabSwitchTokenForUrlChange(
+    content::WebContents& web_contents) {
+  const std::string& visible_url = web_contents.GetVisibleURL().spec();
+  const std::string& committed_url = web_contents.GetLastCommittedURL().spec();
+  if (visible_url == last_visible_url_spec_ &&
+      committed_url == last_committed_url_spec_) {
+    return false;
+  }
+  last_visible_url_spec_ = visible_url;
+  last_committed_url_spec_ = committed_url;
+  ++tab_switch_token_;
+  return true;
+}
+
+void WebUIPageActionControl::MaybeAdvanceTabSwitchTokenForActiveTab() {
+  if (content::WebContents* web_contents =
+          active_tab_ ? active_tab_->GetContents() : nullptr) {
+    MaybeAdvanceTabSwitchTokenForUrlChange(*web_contents);
+  }
 }
 
 }  // namespace page_actions

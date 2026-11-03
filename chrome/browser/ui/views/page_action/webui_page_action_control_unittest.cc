@@ -34,6 +34,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -893,6 +894,112 @@ TEST_F(WebUIPageActionControlTest, TabSwitchTokenUpdatesOnNavigation) {
   // Token should have incremented.
   EXPECT_EQ(notified_token, states[0]->tab_switch_token);
   EXPECT_NE(initial_token, states[0]->tab_switch_token);
+}
+
+TEST_F(WebUIPageActionControlTest,
+       TabSwitchTokenUpdatesWhenModelChangesBeforeUpdateController) {
+  NavigateAndCommit(GURL("https://example.test/initial"));
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  controller->Show(kActionAiMode);
+  controller->Show(kActionShowTranslate);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(2u, states.size());
+  const uint32_t initial_token = states[0]->tab_switch_token;
+
+  // Commit a same-tab navigation, then mutate a page action model *before*
+  // UpdateController() is called (matching WebContentsObserver ordering).
+  NavigateAndCommit(GURL("https://example.test/new_page"));
+
+  uint32_t notified_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&notified_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_EQ(2u, action_states.size());
+        notified_token = action_states[0]->tab_switch_token;
+        EXPECT_EQ(notified_token, action_states[1]->tab_switch_token);
+      });
+  controller->OverrideImage(kActionAiMode,
+                            ui::ImageModel::FromVectorIcon(kZoomInIcon));
+  EXPECT_NE(initial_token, notified_token);
+
+  // Subsequent UpdateController() for the same committed URL should not emit a
+  // redundant notification because all visible delegates already pushed the
+  // updated token.
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_)).Times(0);
+  control_->UpdateController(web_contents());
+}
+
+TEST_F(WebUIPageActionControlTest,
+       TabSwitchTokenUpdatesOnPendingNavigationVisibleUrlChange) {
+  NavigateAndCommit(GURL("https://example.test/initial"));
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  controller->Show(kActionAiMode);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  const uint32_t initial_token = states[0]->tab_switch_token;
+
+  // Start a browser-initiated navigation without committing yet. GetVisibleURL
+  // updates immediately (which BookmarkTabHelper::DidStartNavigation reads),
+  // while GetLastCommittedURL remains at the initial URL.
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.test/pending"), web_contents());
+  navigation->Start();
+  ASSERT_EQ(GURL("https://example.test/pending"),
+            web_contents()->GetVisibleURL());
+  ASSERT_EQ(GURL("https://example.test/initial"),
+            web_contents()->GetLastCommittedURL());
+
+  uint32_t pending_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&pending_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_EQ(1u, action_states.size());
+        pending_token = action_states[0]->tab_switch_token;
+      });
+  controller->OverrideImage(kActionAiMode,
+                            ui::ImageModel::FromVectorIcon(kZoomInIcon));
+  EXPECT_NE(initial_token, pending_token);
+
+  // Committing the pending navigation updates GetLastCommittedURL() and must
+  // advance the token once more.
+  navigation->Commit();
+  uint32_t committed_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&committed_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_EQ(1u, action_states.size());
+        committed_token = action_states[0]->tab_switch_token;
+      });
+  control_->UpdateController(web_contents());
+  EXPECT_NE(pending_token, committed_token);
+
+  // A subsequent in-page icon change (neither visible nor committed URL
+  // changed) must preserve the token so user interactions still animate.
+  uint32_t in_page_token = 0;
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .WillOnce([&in_page_token](
+                    std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+                        action_states) {
+        ASSERT_EQ(1u, action_states.size());
+        in_page_token = action_states[0]->tab_switch_token;
+      });
+  controller->ClearOverrideImage(kActionAiMode);
+  EXPECT_EQ(committed_token, in_page_token);
 }
 
 TEST_F(WebUIPageActionControlTest,

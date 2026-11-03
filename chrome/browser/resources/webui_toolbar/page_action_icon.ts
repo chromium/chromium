@@ -6,6 +6,7 @@ import '/shared/icon_from_table.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './toolbar_chip_button.js';
 
+import {assert} from '//resources/js/assert.js';
 import {skColorToRgba} from '//resources/js/color_utils.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {ensureTransitionEndEvent} from '//resources/js/util.js';
@@ -108,6 +109,11 @@ export class PageActionIconElement extends PageActionIconElementBase {
   // Reference to the SVG animation element that currently has a listener
   // attached.
   private animationElement_: Element|null = null;
+  // Pending requestAnimationFrame ID scheduled to start the SVG animation.
+  private animationFrameId_: number|null = null;
+  // Monotonically increasing token used to invalidate in-flight async
+  // playIconAnimation_() continuations on tab switch, navigation, or detach.
+  private animationGeneration_: number = 0;
 
   override focus() {
     this.$.button.focus();
@@ -115,10 +121,10 @@ export class PageActionIconElement extends PageActionIconElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    // Clean up animation event listeners on disconnect to prevent memory leaks
-    // when dynamic page action icons are detached from the DOM.
-    this.cleanupAnimationListener_();
-    this.activeIconAnimation_ = 'none';
+    // Cancel any pending or active icon animation on disconnect so detached
+    // elements do not leak listeners or fire stale requestAnimationFrame
+    // callbacks after <cr-icon id="animatedIcon"> unmounts.
+    this.cancelIconAnimation_();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -134,10 +140,12 @@ export class PageActionIconElement extends PageActionIconElementBase {
       // and reset the animation state to avoid carrying over animations.
       const isTabSwitch =
           !oldState || this.state.tabSwitchToken !== oldState.tabSwitchToken;
+      const resetIconAnimation =
+          isTabSwitch || oldState.pageActionId !== this.state.pageActionId;
 
-      if (isTabSwitch) {
-        this.cleanupAnimationListener_();
-        this.activeIconAnimation_ = 'none';
+      if (resetIconAnimation) {
+        this.cancelIconAnimation_();
+        this.currentIconName_ = '';
       }
       const styleOverrides: string[] = [];
       if (this.state.backgroundColorOverride) {
@@ -151,36 +159,16 @@ export class PageActionIconElement extends PageActionIconElementBase {
       this.chipStyleOverride_ =
           styleOverrides.length > 0 ? styleOverrides.join(' ') : null;
 
-      this.updateIconAnimationState_(isTabSwitch);
+      this.updateIconAnimationState_();
     }
   }
 
-  private updateIconAnimationState_(isTabSwitch: boolean) {
+  private updateIconAnimationState_() {
     const newIconName =
         IconTable.getInstance().getIconName(this.state.icon) || '';
     const newIconColor =
         IconTable.getInstance().getIconColor(this.state.icon) || '';
     const oldIconName = this.currentIconName_;
-
-    let playAnimation = false;
-    // Only play the bookmark transition icon animation if the feature is
-    // enabled, we have a previous icon state to compare against, and this
-    // update is not due to a tab switch.
-    if (this.state.pageActionId === PageActionId.kActionBookmarkThisTab &&
-        this.glowUpEnabled && oldIconName && !isTabSwitch) {
-      if (oldIconName !== newIconName) {
-        if (oldIconName === 'webui-toolbar:star' &&
-            newIconName === 'webui-toolbar:star_filled') {
-          this.activeIconAnimation_ = 'start';
-          playAnimation = true;
-        } else if (
-            oldIconName === 'webui-toolbar:star_filled' &&
-            newIconName === 'webui-toolbar:star') {
-          this.activeIconAnimation_ = 'end';
-          playAnimation = true;
-        }
-      }
-    }
 
     this.animatedIconColor_ = newIconColor;
 
@@ -188,8 +176,19 @@ export class PageActionIconElement extends PageActionIconElementBase {
       this.currentIconName_ = newIconName;
     }
 
-    if (playAnimation) {
-      this.playIconAnimation_();
+    // Only play the bookmark transition icon animation while connected if we
+    // have a previous icon state on the same tab and action to compare against.
+    if (this.isConnected &&
+        this.state.pageActionId === PageActionId.kActionBookmarkThisTab &&
+        this.glowUpEnabled && oldIconName && oldIconName !== newIconName) {
+      if (oldIconName === 'webui-toolbar:star' &&
+          newIconName === 'webui-toolbar:star_filled') {
+        this.playIconAnimation_('start');
+      } else if (
+          oldIconName === 'webui-toolbar:star_filled' &&
+          newIconName === 'webui-toolbar:star') {
+        this.playIconAnimation_('end');
+      }
     }
   }
   protected shouldShowLabel_(): boolean {
@@ -266,16 +265,44 @@ export class PageActionIconElement extends PageActionIconElementBase {
     return color ? `color: ${color};` : undefined;
   }
 
-  private async playIconAnimation_() {
+  private cancelIconAnimation_() {
+    ++this.animationGeneration_;
+    if (this.animationFrameId_ !== null) {
+      cancelAnimationFrame(this.animationFrameId_);
+      this.animationFrameId_ = null;
+    }
+    this.cleanupAnimationListener_();
+    this.activeIconAnimation_ = 'none';
+  }
+
+  private async playIconAnimation_(animation: 'start'|'end') {
+    this.cancelIconAnimation_();
+    this.activeIconAnimation_ = animation;
+    const generation = this.animationGeneration_;
+
     // Wait for Lit update to complete so the DOM has rendered the new
     // <cr-icon> containing the animated SVG, then wait for the cr-icon's
     // own update if necessary, and finally trigger the SVG animation.
     await this.updateComplete;
-    const crIcon = this.shadowRoot.querySelector<CrLitElement>('#animatedIcon');
-    if (crIcon) {
-      await crIcon.updateComplete;
+    if (generation !== this.animationGeneration_) {
+      return;
     }
-    requestAnimationFrame(() => {
+    const crIcon = this.shadowRoot.querySelector<CrLitElement>('#animatedIcon');
+    assert(crIcon);
+    await crIcon.updateComplete;
+    if (generation !== this.animationGeneration_) {
+      return;
+    }
+    this.animationFrameId_ = requestAnimationFrame(() => {
+      // Explicit cancellation is only needed before the animation starts (while
+      // awaiting Lit updates or this requestAnimationFrame), because unmounting
+      // #animatedIcon before playIconAnimation() runs would fail the
+      // assert(crIcon) inside playIconAnimation(). Once the SMIL animation has
+      // started,
+      // cancelIconAnimation_() removes the 'endEvent' listener and sets
+      // activeIconAnimation_ = 'none', which unmounts #animatedIcon from the
+      // shadow DOM and stops the SVG animation automatically.
+      this.animationFrameId_ = null;
       playIconAnimation(this);
       this.listenToAnimationEnd_();
     });
