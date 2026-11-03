@@ -10,10 +10,9 @@ import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/valu
 import {EventDispatcher} from './event_dispatcher.js';
 import type {EventDict, EventMap} from './event_dispatcher.js';
 import type {OnBeforeSendHeadersParams, OriginCheckParams} from './request_throttlers.js';
-import {PageHandler_PermissionResponseAction as PermissionResponseAction} from './slim_web_view.mojom-webui.js';
+import {browserProxyFactory, PageHandler_PermissionResponseAction as PermissionResponseAction} from './slim_web_view.mojom-webui.js';
 import {getCss} from './slim_webview.css.js';
 import {getHtml} from './slim_webview.html.js';
-import {BrowserProxyImpl} from './slim_webview_browser_proxy.js';
 
 const GUEST_INSTANCE_ID_PENDING: number = 0;
 
@@ -161,21 +160,22 @@ export class PermissionRequestEvent extends Event {
   private allow() {
     assert(!this.actionTaken);
     this.actionTaken = true;
-    BrowserProxyImpl.getInstance().handler.setPermission(
+    browserProxyFactory.getInstance().handler.setPermission(
         this.guestInstanceId, this.requestId, PermissionResponseAction.kAllow);
   }
 
   private deny() {
     assert(!this.actionTaken);
     this.actionTaken = true;
-    BrowserProxyImpl.getInstance().handler.setPermission(
+    browserProxyFactory.getInstance().handler.setPermission(
         this.guestInstanceId, this.requestId, PermissionResponseAction.kDeny);
   }
 
   private async defaultAction() {
-    const result = await BrowserProxyImpl.getInstance().handler.setPermission(
-        this.guestInstanceId, this.requestId,
-        PermissionResponseAction.kDefault);
+    const result =
+        await browserProxyFactory.getInstance().handler.setPermission(
+            this.guestInstanceId, this.requestId,
+            PermissionResponseAction.kDefault);
     if (!result.allowed) {
       console.warn(`Permission ${this.permission} denied`);
     }
@@ -377,7 +377,7 @@ export class SlimWebviewElement extends CrLitElement {
         this.guestInstanceId === GUEST_INSTANCE_ID_PENDING) {
       return;
     }
-    BrowserProxyImpl.getInstance().handler.setUserAgentOverride(
+    browserProxyFactory.getInstance().handler.setUserAgentOverride(
         this.guestInstanceId, userAgentOverride);
   }
 
@@ -459,8 +459,8 @@ export class SlimWebviewElement extends CrLitElement {
         stringValue: this.userAgentOverrideInternal,
       };
     }
-    const result =
-        await BrowserProxyImpl.getInstance().handler.createGuest(createParams);
+    const result = await browserProxyFactory.getInstance().handler.createGuest(
+        createParams);
     // We immediately attach the guest to the embedder frame. The browser knows
     // how to handle the guest's lifecycle after this, so we don't need to
     // handle its destruction explicitly here.
@@ -520,7 +520,7 @@ export class SlimWebviewElement extends CrLitElement {
     assert(
         url.protocol === 'https:' || url.protocol === 'http:' ||
         url.href === 'about:blank');
-    BrowserProxyImpl.getInstance().handler.navigate(
+    browserProxyFactory.getInstance().handler.navigate(
         this.guestInstanceId, url.href);
   }
 
@@ -540,7 +540,7 @@ export class SlimWebviewElement extends CrLitElement {
         height: this.maxheight,
       },
     };
-    BrowserProxyImpl.getInstance().handler.setSize(
+    browserProxyFactory.getInstance().handler.setSize(
         this.guestInstanceId, params);
   }
 
@@ -564,7 +564,7 @@ export class SlimWebviewElement extends CrLitElement {
         this.guestInstanceId === GUEST_INSTANCE_ID_PENDING) {
       return;
     }
-    BrowserProxyImpl.getInstance()
+    browserProxyFactory.getInstance()
         .handler.setZoom(this.guestInstanceId, zoomFactor)
         .then(() => {
           if (callback) {
@@ -579,7 +579,7 @@ export class SlimWebviewElement extends CrLitElement {
       callback(1.0);
       return;
     }
-    BrowserProxyImpl.getInstance()
+    browserProxyFactory.getInstance()
         .handler.getZoom(this.guestInstanceId)
         .then((result) => {
           callback(result.zoomFactor);

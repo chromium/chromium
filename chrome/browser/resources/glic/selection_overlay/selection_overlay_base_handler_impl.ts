@@ -9,7 +9,7 @@ import type {SelectedRegion} from '/lens/selection_overlay_base_handler.js';
 import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
-import {BrowserProxyImpl} from './browser_proxy.js';
+import {browserProxyFactory} from './selection_overlay.mojom-webui.js';
 import type {                                //
              InteractionOptions,             //
              SelectedRegionMojoType,         //
@@ -31,24 +31,24 @@ export class SelectionOverlayBaseHandlerImpl extends
   }
 
   closePreselectionBubble(): void {
-    BrowserProxyImpl.getInstance().handler.closePreselectionBubble();
+    browserProxyFactory.getInstance().handler.closePreselectionBubble();
   }
 
   notifyOverlayInitialized(): void {}
 
   addBackgroundBlur(): void {
-    BrowserProxyImpl.getInstance().handler.addBackgroundBlur();
+    browserProxyFactory.getInstance().handler.addBackgroundBlur();
   }
 
   setLiveBlur(enabled: boolean): void {
-    BrowserProxyImpl.getInstance().handler.setLiveBlur(enabled);
+    browserProxyFactory.getInstance().handler.setLiveBlur(enabled);
   }
 
   removeListener(id: number): boolean {
     if (id === -1) {
       return true;
     }
-    return BrowserProxyImpl.getInstance().callbackRouter.removeListener(id);
+    return browserProxyFactory.getInstance().callbackRouter.removeListener(id);
   }
 
   addOnOverlayReshownListener(
@@ -62,7 +62,7 @@ export class SelectionOverlayBaseHandlerImpl extends
           (screenshotData: BitmapMappedFromTrustedProcess,
            isSidePanelOpen: boolean) => void,
       ): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.screenshotReceived.addListener(
             (screenshotData: BitmapMappedFromTrustedProcess) => {
               callback(screenshotData, false);
@@ -71,17 +71,17 @@ export class SelectionOverlayBaseHandlerImpl extends
 
   addSetInteractionOptionsListener(
       callback: (options: InteractionOptions) => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setInteractionOptions.addListener(callback);
   }
 
   addSetSidePanelOpenListener(callback: (open: boolean) => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setSidePanelOpen.addListener(callback);
   }
 
   addClearRegionSelectionListener(callback: () => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               if (regions.length === 0) {
@@ -91,7 +91,7 @@ export class SelectionOverlayBaseHandlerImpl extends
   }
 
   addClearAllSelectionsListener(callback: () => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               if (regions.length === 0) {
@@ -107,7 +107,7 @@ export class SelectionOverlayBaseHandlerImpl extends
   }
 
   addSetPostRegionSelectionListener(callback: (region: RectF) => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               const firstRegion = regions[0];
@@ -119,7 +119,7 @@ export class SelectionOverlayBaseHandlerImpl extends
 
   addMultiRegionSelectionListener(
       callback: (regions: SelectedRegion[]) => void): number {
-    return BrowserProxyImpl.getInstance()
+    return browserProxyFactory.getInstance()
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               callback(regions.map(r => {
@@ -142,7 +142,7 @@ export class SelectionOverlayBaseHandlerImpl extends
   adjustRegionSelected(
       rect: RectF, source: RegionSource,
       id: string = this.activeRegionId || generateRandomHexId()): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.adjustRegion(
         {
           id: id,
@@ -154,7 +154,7 @@ export class SelectionOverlayBaseHandlerImpl extends
   adjustPolylineSelected(
       points: PointF[], source: RegionSource,
       id: string = this.activeRegionId || generateRandomHexId()): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.adjustRegion(
         {
           id: id,
@@ -164,38 +164,38 @@ export class SelectionOverlayBaseHandlerImpl extends
   }
 
   deleteRegion(id: string, source: RegionSource): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.deleteRegion(id, source === RegionSource.KEYBOARD);
   }
 
   submitPrompt(prompt: string): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.submitPrompt(prompt);
   }
 
   getSuggestedActions(listener: SuggestedActionsListenerRemote): void {
-    BrowserProxyImpl.getInstance().handler.getSuggestedActions(listener);
+    browserProxyFactory.getInstance().handler.getSuggestedActions(listener);
   }
 
   executeSuggestedAction(
       actionId: UnguessableToken,
       channel: GenericPendingAssociatedReceiver|null): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.executeSuggestedAction(actionId, channel);
   }
 
   dismissOverlay(reason: number): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.dismissOverlay(reason);
   }
 
   openSettings(): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.openSettings();
   }
 
   openDogfoodFeedback(): void {
-    const proxy = BrowserProxyImpl.getInstance();
+    const proxy = browserProxyFactory.getInstance();
     proxy.handler.openDogfoodFeedback();
   }
 }

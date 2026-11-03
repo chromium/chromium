@@ -4,8 +4,9 @@
 
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
+import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import type {ComposeboxElement} from 'chrome-untrusted://resources/cr_components/composebox/composebox.js';
 import {PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
@@ -18,7 +19,7 @@ import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_ut
 import {TestMock} from 'chrome-untrusted://webui-test/test_mock.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 // This is a slow function, but is guaranteed to return false if the element is
 // not actually visible. isVisible() is fast, but may return true even if the
@@ -50,7 +51,7 @@ function getTransitionEndPromise(
           }));
 }
 suite('Composebox', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let pageRemote: LensSidePanelPageRemote;
   let lensSidePanelElement: LensSidePanelAppElement;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
@@ -59,8 +60,10 @@ suite('Composebox', () => {
 
   // Returns the composebox element.
   async function setupTest(): Promise<ComposeboxElement> {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(new TestLensSidePanelPageHandler());
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
 
     // Mock the composebox handlers.
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
@@ -84,7 +87,7 @@ suite('Composebox', () => {
             'cr-composebox');
     assertTrue(!!composebox);
 
-    testBrowserProxy.page.setIsOverlayShowing(false);
+    pageRemote.setIsOverlayShowing(false);
     await waitAfterNextRender(lensSidePanelElement);
 
     return composebox;
@@ -657,13 +660,13 @@ suite('Composebox', () => {
     assertFalse(lensButton.hasAttribute('disabled'));
 
     // Setting the overlay to not showing should make the button enabled.
-    testBrowserProxy.page.setIsOverlayShowing(true);
+    pageRemote.setIsOverlayShowing(true);
     await waitAfterNextRender(lensSidePanelElement);
 
     assertTrue(lensButton.hasAttribute('disabled'));
 
     // Setting the overlay to showing should make the button disabled again.
-    testBrowserProxy.page.setIsOverlayShowing(false);
+    pageRemote.setIsOverlayShowing(false);
     await waitAfterNextRender(lensSidePanelElement);
 
     assertFalse(lensButton.hasAttribute('disabled'));
@@ -682,7 +685,7 @@ suite('Composebox', () => {
     assertNotEquals(input, composebox.shadowRoot.activeElement);
 
     // Trigger the mojom callback to focus the composebox.
-    testBrowserProxy.page.focusSearchbox();
+    pageRemote.focusSearchbox();
     await waitAfterNextRender(composebox);
 
     // Verify the input is now focused.

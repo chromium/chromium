@@ -5,21 +5,25 @@
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 suite('SearchboxBackButton', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let handler: TestLensSidePanelPageHandler;
+  let pageRemote: LensSidePanelPageRemote;
   let lensSidePanelElement: LensSidePanelAppElement;
 
   setup(() => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    handler = new TestLensSidePanelPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
 
     // This test can only be run with the AIM searchbox disabled, since the
     // back button is removed when the AIM searchbox is enabled.
@@ -35,16 +39,16 @@ suite('SearchboxBackButton', () => {
     await waitAfterNextRender(lensSidePanelElement);
     lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(
                                         '#backButton')!.click();
-    return testBrowserProxy.handler.whenCalled('popAndLoadQueryFromHistory');
+    return handler.whenCalled('popAndLoadQueryFromHistory');
   });
 
   test('set searchbox back button visible', async () => {
-    testBrowserProxy.page.setBackArrowVisible(true);
+    pageRemote.setBackArrowVisible(true);
     await waitAfterNextRender(lensSidePanelElement);
     assertTrue(
         isVisible(lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(
             '#backButton')));
-    testBrowserProxy.page.setBackArrowVisible(false);
+    pageRemote.setBackArrowVisible(false);
     await waitAfterNextRender(lensSidePanelElement);
     assertFalse(
         isVisible(lensSidePanelElement.shadowRoot!.querySelector<HTMLElement>(

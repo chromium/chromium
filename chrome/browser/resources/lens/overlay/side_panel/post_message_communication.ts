@@ -8,7 +8,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
+import type {BrowserProxy as SidePanelBrowserProxy} from '../lens_side_panel.mojom-webui.js';
 
 // Type of message to handle from the remote UI.
 export enum MessageType {

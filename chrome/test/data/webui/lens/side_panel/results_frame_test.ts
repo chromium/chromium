@@ -5,35 +5,39 @@
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
+import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 // The url query parameter keys for the viewport size.
 const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
 
 suite('SidePanelResultsFrame', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let handler: TestLensSidePanelPageHandler;
+  let pageRemote: LensSidePanelPageRemote;
   let lensSidePanelElement: LensSidePanelAppElement;
 
   setup(async () => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    handler = new TestLensSidePanelPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     // Side panel should call getIsContextualSearchbox on construction.
-    await testBrowserProxy.handler.whenCalled('getIsContextualSearchbox');
+    await handler.whenCalled('getIsContextualSearchbox');
     document.body.appendChild(lensSidePanelElement);
   });
 
   test('LoadResultsInFrame', async () => {
     const url: Url = 'https://www.google.com/';
-    testBrowserProxy.page.loadResultsInFrame(url);
+    pageRemote.loadResultsInFrame(url);
     await flushTasks();
     const loadedUrl = new URL(lensSidePanelElement.$.results.src);
     assertTrue(loadedUrl.searchParams.has(VIEWPORT_HEIGHT_KEY));
@@ -52,7 +56,7 @@ suite('SidePanelResultsFrame', () => {
         window.getComputedStyle(lensSidePanelElement.$.results).zIndex);
     assertTrue(loadingZIndex > resultsZIndex);
 
-    testBrowserProxy.page.setIsLoadingResults(false);
+    pageRemote.setIsLoadingResults(false);
     await waitAfterNextRender(lensSidePanelElement);
 
     loadingZIndex = parseInt(
@@ -61,7 +65,7 @@ suite('SidePanelResultsFrame', () => {
         window.getComputedStyle(lensSidePanelElement.$.results).zIndex);
     assertTrue(loadingZIndex < resultsZIndex);
 
-    testBrowserProxy.page.setIsLoadingResults(true);
+    pageRemote.setIsLoadingResults(true);
     await waitAfterNextRender(lensSidePanelElement);
 
     loadingZIndex = parseInt(

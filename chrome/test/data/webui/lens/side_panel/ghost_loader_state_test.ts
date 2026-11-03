@@ -5,17 +5,18 @@
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import type {SearchboxGhostLoaderElement} from 'chrome-untrusted://lens/lens/shared/searchbox_ghost_loader.js';
+import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 suite('GhostLoaderState', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let pageRemote: LensSidePanelPageRemote;
   let lensSidePanelElement: LensSidePanelAppElement;
 
   function getSearchboxGhostLoaderElement(): HTMLElement {
@@ -34,8 +35,10 @@ suite('GhostLoaderState', () => {
   }
 
   setup(async () => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(new TestLensSidePanelPageHandler());
+    browserProxyFactory.setInstance(instance);
+    pageRemote = remote;
 
     // This test can only be run with the AIM searchbox disabled, since the
     // ghost loader is removed when the AIM searchbox is enabled.
@@ -57,7 +60,7 @@ suite('GhostLoaderState', () => {
     assertTrue(isVisible(ghostLoader));
     await waitAfterNextRender(lensSidePanelElement);
     // Notify side panel to hide ghost loader.
-    testBrowserProxy.page.suppressGhostLoader();
+    pageRemote.suppressGhostLoader();
     await waitAfterNextRender(lensSidePanelElement);
     assertFalse(isVisible(ghostLoader));
   });

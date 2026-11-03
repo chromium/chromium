@@ -5,13 +5,14 @@
 import 'chrome-untrusted://lens/side_panel/post_message_communication.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {BrowserProxy, LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import {MessageType, ParamType, PostMessageReceiver} from 'chrome-untrusted://lens/side_panel/post_message_communication.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 const RESULTS_SEARCH_URL = 'https://www.google.com/search';
 const RESULTS_SEARCH_URL_ORIGIN = 'https://www.google.com';
@@ -19,7 +20,9 @@ const RESULTS_SEARCH_URL_ORIGIN = 'https://www.google.com';
 const SERIALIZED_HANDSHAKE_PING_MESSAGE = Uint8Array.from([10, 3, 10, 1, 0]);
 
 suite('PostMessageCommunication', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let handler: TestLensSidePanelPageHandler;
+  let browserProxy: BrowserProxy;
+  let pageRemote: LensSidePanelPageRemote;
   let postMessageReceiver: PostMessageReceiver;
   let resultsFrame: HTMLIFrameElement;
 
@@ -32,8 +35,11 @@ suite('PostMessageCommunication', () => {
   }
 
   setup(() => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    handler = new TestLensSidePanelPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxy = instance;
+    pageRemote = remote;
+    browserProxyFactory.setInstance(browserProxy);
 
     loadTimeData.overrideValues({
       'resultsSearchURL': RESULTS_SEARCH_URL,
@@ -43,8 +49,7 @@ suite('PostMessageCommunication', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     resultsFrame = document.createElement('iframe');
     document.body.appendChild(resultsFrame);
-    postMessageReceiver =
-        new PostMessageReceiver(testBrowserProxy, resultsFrame);
+    postMessageReceiver = new PostMessageReceiver(browserProxy, resultsFrame);
   });
 
   test('ListenCallsCorrectProxyFunctions', async () => {
@@ -57,9 +62,8 @@ suite('PostMessageCommunication', () => {
     });
 
     dispatchMessageEvent(data, RESULTS_SEARCH_URL_ORIGIN);
-    await testBrowserProxy.handler.whenCalled('onScrollToMessage');
-    const [fragment, page] =
-        testBrowserProxy.handler.getArgs('onScrollToMessage')[0];
+    await handler.whenCalled('onScrollToMessage');
+    const [fragment, page] = handler.getArgs('onScrollToMessage')[0];
     assertDeepEquals(textFragments, fragment);
     assertEquals(pdfPageNumber, page);
   });
@@ -70,8 +74,7 @@ suite('PostMessageCommunication', () => {
     });
     // Recreate post message receiver to use new load time data.
     postMessageReceiver.detach();
-    postMessageReceiver =
-        new PostMessageReceiver(testBrowserProxy, resultsFrame);
+    postMessageReceiver = new PostMessageReceiver(browserProxy, resultsFrame);
 
     const textFragments = ['hello', 'world'];
     const pdfPageNumber = 0;
@@ -82,9 +85,8 @@ suite('PostMessageCommunication', () => {
     });
 
     dispatchMessageEvent(data, RESULTS_SEARCH_URL_ORIGIN);
-    await testBrowserProxy.handler.whenCalled('onScrollToMessage');
-    const [fragment, page] =
-        testBrowserProxy.handler.getArgs('onScrollToMessage')[0];
+    await handler.whenCalled('onScrollToMessage');
+    const [fragment, page] = handler.getArgs('onScrollToMessage')[0];
     assertDeepEquals(textFragments, fragment);
     assertEquals(pdfPageNumber, page);
   });
@@ -99,7 +101,7 @@ suite('PostMessageCommunication', () => {
     });
 
     dispatchMessageEvent(data, 'https://www.example.com');
-    assertEquals(0, testBrowserProxy.handler.getCallCount('onScrollToMessage'));
+    assertEquals(0, handler.getCallCount('onScrollToMessage'));
   });
 
   test('DetachRemovesAllListeners', () => {
@@ -114,7 +116,7 @@ suite('PostMessageCommunication', () => {
     });
 
     dispatchMessageEvent(data, RESULTS_SEARCH_URL_ORIGIN);
-    assertEquals(0, testBrowserProxy.handler.getCallCount('onScrollToMessage'));
+    assertEquals(0, handler.getCallCount('onScrollToMessage'));
   });
 
   test('SendMessagePostMessagesToIframe', async () => {
@@ -130,7 +132,7 @@ suite('PostMessageCommunication', () => {
     };
 
     // Call onSendMessage to simulate a message being sent from the browser.
-    testBrowserProxy.page.sendClientMessageToAim(message);
+    pageRemote.sendClientMessageToAim(message);
     await flushTasks();
 
     // Verify that the message was sent to the iframe.
@@ -141,7 +143,7 @@ suite('PostMessageCommunication', () => {
 
 // Mock timer effects the testBrowserProxy, so create a separate suite for it.
 suite('PostMessageCommunicationWithMockTimer', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let pageRemote: LensSidePanelPageRemote;
   let postMessageReceiver: PostMessageReceiver;
   let resultsFrame: HTMLIFrameElement;
   const mockTimer = new MockTimer();
@@ -151,8 +153,10 @@ suite('PostMessageCommunicationWithMockTimer', () => {
   let lastReceivedPostMessageOrigin: string = '';
 
   setup(() => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(new TestLensSidePanelPageHandler());
+    pageRemote = remote;
+    browserProxyFactory.setInstance(instance);
 
     loadTimeData.overrideValues({
       'resultsSearchURL': RESULTS_SEARCH_URL,
@@ -168,8 +172,7 @@ suite('PostMessageCommunicationWithMockTimer', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     resultsFrame = document.createElement('iframe');
     document.body.appendChild(resultsFrame);
-    postMessageReceiver =
-        new PostMessageReceiver(testBrowserProxy, resultsFrame);
+    postMessageReceiver = new PostMessageReceiver(instance, resultsFrame);
 
     // Setup a mock post message method to spy on the post message calls.
     postMessageCallCount = 0;
@@ -203,8 +206,8 @@ suite('PostMessageCommunicationWithMockTimer', () => {
     assertEquals(2, postMessageCallCount);
 
     // Simulate handshake received.
-    testBrowserProxy.page.aimHandshakeReceived();
-    await testBrowserProxy.page.$.flushForTesting();
+    pageRemote.aimHandshakeReceived();
+    await pageRemote.$.flushForTesting();
 
     // Let a few more intervals pass and make sure post message is not called.
     mockTimer.tick(1000);
@@ -223,8 +226,8 @@ suite('PostMessageCommunicationWithMockTimer', () => {
     assertEquals(RESULTS_SEARCH_URL_ORIGIN, lastReceivedPostMessageOrigin);
 
     // Simulate handshake received.
-    testBrowserProxy.page.aimHandshakeReceived();
-    await testBrowserProxy.page.$.flushForTesting();
+    pageRemote.aimHandshakeReceived();
+    await pageRemote.$.flushForTesting();
 
     // Let another interval pass. Handhsake should not be sent again.
     mockTimer.tick(500);

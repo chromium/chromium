@@ -12,10 +12,11 @@ import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js'
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {browserProxyFactory} from '../lens_side_panel.mojom-webui.js';
+import type {BrowserProxy as SidePanelBrowserProxy} from '../lens_side_panel.mojom-webui.js';
+
 import {getCss} from './feedback_toast.css.js';
 import {getHtml} from './feedback_toast.html.js';
-import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
-import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
 
 export interface FeedbackToastElement {
   $: {
@@ -57,7 +58,7 @@ export class FeedbackToastElement extends CrLitElement {
       loadTimeData.getBoolean('updatedFeedbackEnabled');
 
   private browserProxy: SidePanelBrowserProxy =
-      SidePanelBrowserProxyImpl.getInstance();
+      browserProxyFactory.getInstance();
 
   show() {
     if (this.$.feedbackToast.open) {

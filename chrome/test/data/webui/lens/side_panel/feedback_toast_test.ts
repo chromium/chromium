@@ -5,8 +5,8 @@
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import type {LensSidePanelPageRemote} from 'chrome-untrusted://lens-overlay/lens_side_panel.mojom-webui.js';
+import {browserProxyFactory} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
-import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import type {CrButtonElement} from 'chrome-untrusted://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome-untrusted://resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -14,7 +14,7 @@ import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
+import {TestLensSidePanelPageHandler} from './test_side_panel_browser_proxy.js';
 
 // The delay in milliseconds to reshow the feedback toast after it was hidden by
 // another toast. This is only used if the feedback toast was not already
@@ -22,7 +22,7 @@ import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js'
 const RESHOW_FEEDBACK_TOAST_DELAY_MS = 4100;
 
 suite('FeedbackToast', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
+  let handler: TestLensSidePanelPageHandler;
   let lensSidePanelElement: LensSidePanelAppElement;
   let callbackRouterRemote: LensSidePanelPageRemote;
   let reshowFeedbackToastCallback: Function;
@@ -44,8 +44,10 @@ suite('FeedbackToast', () => {
   }
 
   setup(() => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    handler = new TestLensSidePanelPageHandler();
+    const {instance, remote} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
 
     // Enable the new feedback feature.
     loadTimeData.overrideValues(
@@ -65,8 +67,6 @@ suite('FeedbackToast', () => {
       return origSetTimeout(handler, timeout);
     };
 
-    callbackRouterRemote =
-        testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);
@@ -138,7 +138,7 @@ suite('FeedbackToast', () => {
     sendFeedbackButton.click();
 
     // Verify the handler method was called and toast was hidden.
-    await testBrowserProxy.handler.whenCalled('requestSendFeedback');
+    await handler.whenCalled('requestSendFeedback');
     assertFalse(isRendered(getFeedbackToast()));
   });
 
@@ -261,7 +261,6 @@ suite('FeedbackToast', () => {
 const UPDATED_FEEDBACK_TOAST_DELAY_MS = 9009;
 
 suite('FeedbackToastUpdated', () => {
-  let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
   let callbackRouterRemote: LensSidePanelPageRemote;
   let showFeedbackToastCallback: Function;
@@ -279,8 +278,10 @@ suite('FeedbackToastUpdated', () => {
   }
 
   setup(() => {
-    testBrowserProxy = new TestLensSidePanelBrowserProxy();
-    SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(new TestLensSidePanelPageHandler());
+    browserProxyFactory.setInstance(instance);
+    callbackRouterRemote = remote;
 
     // Enable the new feedback feature.
     loadTimeData.overrideValues({
@@ -304,7 +305,6 @@ suite('FeedbackToastUpdated', () => {
       return origSetTimeout(handler, timeout);
     };
 
-    callbackRouterRemote = testBrowserProxy.page;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
     document.body.appendChild(lensSidePanelElement);

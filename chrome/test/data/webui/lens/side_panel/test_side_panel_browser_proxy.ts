@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LensSidePanelPageCallbackRouter} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
-import type {LensSidePanelPageHandlerInterface, LensSidePanelPageRemote} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
-import type {SidePanelBrowserProxy} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
+import type {LensSidePanelPageHandlerInterface} from 'chrome-untrusted://lens/lens_side_panel.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 /**
@@ -52,17 +50,4 @@ export class TestLensSidePanelPageHandler extends TestBrowserProxy implements
   onImageQueryWithEmptyText() {
     this.methodCalled('onImageQueryWithEmptyText');
   }
-}
-
-/**
- * Test version of the BrowserProxy used in connecting Lens Side Panel to the
- * browser on start up.
- */
-export class TestLensSidePanelBrowserProxy extends TestBrowserProxy implements
-    SidePanelBrowserProxy {
-  callbackRouter: LensSidePanelPageCallbackRouter =
-      new LensSidePanelPageCallbackRouter();
-  handler: TestLensSidePanelPageHandler = new TestLensSidePanelPageHandler();
-  page: LensSidePanelPageRemote =
-      this.callbackRouter.$.bindNewPipeAndPassRemote();
 }

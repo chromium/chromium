@@ -19,7 +19,6 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "browser_proxy.ts",
     "explain_fulfillment.ts",
     "glic_selection_overlay.ts",
     "glic_selection_overlay.html.ts",

@@ -18,7 +18,6 @@ build_webui("build") {
     "request_throttlers.ts",
     "slim_webview.ts",
     "slim_webview.html.ts",
-    "slim_webview_browser_proxy.ts",
   ]
 
   ts_definitions =

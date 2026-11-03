@@ -84,7 +84,6 @@ build_webui("build_overlay") {
     "side_panel/feedback_toast.html.ts",
     "side_panel/feedback_toast.ts",
     "side_panel/post_message_communication.ts",
-    "side_panel/side_panel_browser_proxy.ts",
     "side_panel/side_panel_error_page.html.ts",
     "side_panel/side_panel_error_page.ts",
     "side_panel/side_panel_ghost_loader.html.ts",
