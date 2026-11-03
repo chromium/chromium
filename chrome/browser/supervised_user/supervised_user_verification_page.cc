@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/signin/signin_promo.h"  // nogncheck
+#include "components/signin/public/base/signin_switches.h"
 #endif
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -74,7 +76,10 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
       sign_in_continue_url_(GaiaUrls::GetInstance()->blank_page_url()),
 #if !BUILDFLAG(IS_ANDROID)
       reauth_url_(signin::GetChromeReauthURL(
-          {.email = email_to_reauth_, .continue_url = sign_in_continue_url_})),
+          {.email = email_to_reauth_,
+           .continue_url = sign_in_continue_url_,
+           .proceed_to_challenge = base::FeatureList::IsEnabled(
+               switches::kReauthSkipIdentifierPageFollowup)})),
 #endif
       child_account_service_(child_account_service) {
   if (child_account_service_) {

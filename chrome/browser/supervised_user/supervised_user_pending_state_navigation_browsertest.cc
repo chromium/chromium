@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -34,6 +36,7 @@
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -46,6 +49,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -486,5 +491,96 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 
   observer.Wait();
 }
+
+class SupervisedUserPendingStateReauthUrlTest
+    : public SupervisedUserPendingStateNavigationTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SupervisedUserPendingStateReauthUrlTest() {
+    feature_list_.InitWithFeatureState(
+        switches::kReauthSkipIdentifierPageFollowup, IsFollowupEnabled());
+  }
+
+  bool IsFollowupEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the blocked site re-authentication interstitial appends `ptc=1` to
+// the re-auth URL when `kReauthSkipIdentifierPageFollowup` is enabled.
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateReauthUrlTest,
+                       BlockedSiteReauthUrlProceedToChallenge) {
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+
+  const GURL url =
+      embedded_test_server()->GetURL("/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+  WaitForReauthenticationInterstitial();
+
+  ASSERT_TRUE(StartSignInFlowFromContent(contents()));
+  ASSERT_EQ(2, GetTabCount());
+
+  content::WebContents* signin_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
+  if (signin_contents->GetLastCommittedURL().is_empty()) {
+    content::TestNavigationObserver observer(signin_contents);
+    observer.WaitForNavigationFinished();
+  }
+
+  const GURL expected_reauth_url = signin::GetChromeReauthURL(
+      {.email = browser()->GetProfile()->GetProfileUserName(),
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url(),
+       .proceed_to_challenge = IsFollowupEnabled()});
+  EXPECT_EQ(expected_reauth_url, signin_contents->GetLastCommittedURL());
+
+  std::string ptc_value;
+  EXPECT_EQ(IsFollowupEnabled(),
+            net::GetValueForKeyInQuery(signin_contents->GetLastCommittedURL(),
+                                       "ptc", &ptc_value));
+  if (IsFollowupEnabled()) {
+    EXPECT_EQ("1", ptc_value);
+  }
+}
+
+// Tests that the YouTube re-authentication interstitial appends `ptc=1` to the
+// re-auth URL when `kReauthSkipIdentifierPageFollowup` is enabled.
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateReauthUrlTest,
+                       YouTubeReauthUrlProceedToChallenge) {
+  supervision_mixin_.SetPendingStateForPrimaryAccount();
+  kids_management_api_mock().AllowSubsequentClassifyUrl();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://youtube.com/")));
+  ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
+  WaitForPageTitle(
+      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
+
+  ASSERT_TRUE(StartSignInFlowFromContent(contents()));
+  ASSERT_EQ(2, GetTabCount());
+
+  content::WebContents* signin_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
+  if (signin_contents->GetLastCommittedURL().is_empty()) {
+    content::TestNavigationObserver observer(signin_contents);
+    observer.WaitForNavigationFinished();
+  }
+
+  const GURL expected_reauth_url = signin::GetChromeReauthURL(
+      {.email = browser()->GetProfile()->GetProfileUserName(),
+       .continue_url = GaiaUrls::GetInstance()->blank_page_url(),
+       .proceed_to_challenge = IsFollowupEnabled()});
+  EXPECT_EQ(expected_reauth_url, signin_contents->GetLastCommittedURL());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserPendingStateReauthUrlTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithProceedToChallenge"
+                                             : "WithoutProceedToChallenge";
+                         });
 
 }  // namespace
