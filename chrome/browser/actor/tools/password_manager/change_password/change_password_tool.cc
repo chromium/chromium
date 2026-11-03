@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -209,11 +210,15 @@ mojom::ActionResultPtr ChangePasswordTool::ExtractFieldIds(
 
 void ChangePasswordTool::OnChangePasswordFormFilled(
     ToolCallback callback,
-    // TODO(crbug.com/574401623): if a page has password inputs that do not
+    // TODO(crbug.com/580856538): if a page has password inputs that do not
     // share the same <form> element (or one is inside a <form> and another is
     // unowned), `FillChangePasswordForm()` only returns `FormData` which
     // contains part of what was actually filled.
     const std::optional<autofill::FormData>& form_data) {
+  // TODO(crbug.com/580865855): Tab & frame liveness checks. Handle general
+  // form-filling error reporting when a tab/frame is destroyed while
+  // `FillChangePasswordForm()` is in flight (returning `kTabWentAway` /
+  // `kFrameWentAway` instead of `kFormFillingUnknownAutofillError`)
   if (!form_data.has_value()) {
     PostResponseTask(
         std::move(callback),
@@ -263,10 +268,18 @@ void ChangePasswordTool::OnChangePasswordFormFilled(
                                    base::JoinString(unfilled_parts, " and "))));
     return;
   }
+  // TODO(crbug.com/581259748): preserve parent message on follow up actions
+  if (confirm_button_.has_value()) {
+    tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
+        actor_surface_handle_, *confirm_button_, mojom::ClickType::kLeft,
+        mojom::ClickCount::kSingle));
+    absl::StrAppendFormat(&message, " Triggered click on confirm button %s.",
+                          actor::DebugString(*confirm_button_));
+  }
 
-  PostResponseTask(
-      std::move(callback),
-      MakeOkResultWithMessage(/*requires_page_stabilization=*/true, message));
+  PostResponseTask(std::move(callback),
+                   MakeOkResultWithMessage(
+                       /*requires_page_stabilization=*/true, message));
 }
 
 std::string ChangePasswordTool::DebugString() const {
