@@ -2252,7 +2252,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillLabelSensitiveAutocomplete"
+                        "AutofillLabelSensitiveAutocomplete",
+                        "AutofillRecordAutocompleteTableStats"
                     ]
                 }
             ]
