@@ -189,8 +189,7 @@ suite('IPH', function() {
 
   test('PinnedToolbarAction', async () => {
     // Register an icon with an explicit color, so that the pinned toolbar
-    // action sets the icon color inline (see
-    // PinnedToolbarActionElement.getIconStyle_()).
+    // action sets the icon color inline.
     IconTable.getInstance().applyUpdates([{
       handleId: 1n,
       iconUrlOrName: 'cr:schedule',

@@ -92,8 +92,10 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   // Evaluates `script_body` against a pinned toolbar action in the WebUI
   // toolbar. `script_body` is run with `container` bound to the shadow root of
   // the pinned toolbar actions container, `actionEl` bound to the
-  // `pinned-toolbar-action` element for `action`, and `btn` bound to
-  // `actionEl`'s `cr-icon-button`. Evaluates to false without running
+  // `pinned-toolbar-action` element for `action`, `btn` bound to
+  // `actionEl`'s `toolbar-chip-button`, `innerBtn` bound to the native button
+  // inside `btn`, and `iconName` bound to the name of the iconset icon shown in
+  // `btn` (if any). Evaluates to false without running
   // `script_body` if the container or `actionEl` cannot be found.
   content::EvalJsResult EvalJsOnPinnedAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action,

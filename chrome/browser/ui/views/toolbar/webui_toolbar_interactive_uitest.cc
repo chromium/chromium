@@ -2799,7 +2799,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFocusFullInteractiveUiTest,
       // in test environments.
       ExecuteJsAt(WebUIToolbarId(),
                   {"toolbar-app", "#pinnedToolbarActions",
-                   "pinned-toolbar-action", "cr-icon-button"},
+                   "pinned-toolbar-action", "toolbar-chip-button"},
                   "el => el.focus()"),
       ExpectFocusedWebUIElement("pinnedToolbarActions"),
 

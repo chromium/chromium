@@ -299,6 +299,13 @@
   overflow: hidden;
 }
 
+/* Like cr-icon-button, ignore pointer events on the host while disabled, so a
+ * disabled chip shows no hover/pressed highlight and doesn't fire click or
+ * contextmenu events. */
+:host([disabled]) {
+  pointer-events: none;
+}
+
 #button:disabled {
   opacity: var(--cr-disabled-opacity, 0.38);
   pointer-events: none;

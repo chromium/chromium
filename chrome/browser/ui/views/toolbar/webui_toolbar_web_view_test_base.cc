@@ -163,7 +163,11 @@ content::EvalJsResult WebUIToolbarWebViewTestBase::EvalJsOnPinnedAction(
               if (!actionEl) {
                 return false;
               }
-              const btn = actionEl.shadowRoot.querySelector('cr-icon-button');
+              const btn =
+                  actionEl.shadowRoot.querySelector('toolbar-chip-button');
+              const innerBtn = btn?.shadowRoot?.querySelector('#button');
+              const iconName = btn?.querySelector('icon-from-table')
+                                   ?.shadowRoot?.querySelector('cr-icon')?.icon;
               %s
             })();
           )",

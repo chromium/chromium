@@ -8,20 +8,22 @@ import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
 
 export function getHtml(this: PinnedToolbarActionElement) {
   return html`<!--_html_template_start_-->
-<cr-icon-button id="button" class="iph-visual-target"
-    iron-icon="${this.getIronIcon_() ?? nothing}"
-    style="${this.getIconStyle_() ?? nothing}"
-    ?disabled="${!this.state.enabled}"
+<toolbar-chip-button id="button"
+    class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
+    .disabled="${!this.state.enabled}"
     ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
-    ?is-activated="${this.state.activated}" title="${this.getTooltip_()}"
-    aria-label="${this.state.accessibilityText || this.state.tooltip}"
-    aria-pressed="${this.state.highlighted || this.trackedHighlighted}"
+    ?is-activated="${this.state.activated}" .tooltip="${this.getTooltip_()}"
+    .ariaLabel="${this.state.accessibilityText || this.state.tooltip}"
+    .ariaPressed="${
+        this.state.highlighted || this.trackedHighlighted ? 'true' : 'false'}"
     draggable="${this.isDraggable()}" @dragstart="${this.onDragstart}"
     @dragend="${this.onDragend}" @keydown="${this.onKeydown}"
     @click="${this.onActionClick_}"
     @pointerdown="${this.highlightTracker.onPointerdown}"
     @contextmenu="${this.onContextmenu_}">
-</cr-icon-button>
+  <icon-from-table slot="prefix-icon" .iconHandle="${this.state.icon}">
+  </icon-from-table>
+</toolbar-chip-button>
 ${this.getProgressRingStatus_() ? html`
   <svg class="progress-ring" aria-hidden="true"
       status="${this.getProgressRingStatus_()}"

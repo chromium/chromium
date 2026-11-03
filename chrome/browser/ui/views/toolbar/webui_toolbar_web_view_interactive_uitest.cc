@@ -81,7 +81,7 @@ std::string GetPinnedButtonJS(
         Array.from(container.querySelectorAll('pinned-toolbar-action'))
              .find(el => el.state && el.state.action === action);
       if (!actionEl) return null;
-      return actionEl.shadowRoot.querySelector('cr-icon-button');
+      return actionEl.shadowRoot.querySelector('toolbar-chip-button');
     })(%d)
   )",
                             static_cast<int>(action));

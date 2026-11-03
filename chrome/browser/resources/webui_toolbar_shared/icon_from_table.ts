@@ -86,12 +86,16 @@ export class IconFromTableElement extends CrLitElement {
   //
   // Will be undefined if the icon doesn't request to be rendered in a specific
   // color (including when it's multicolor).
+  //
+  // Embedders may force a different color by setting the
+  // --icon-from-table-color-override CSS variable on this element.
   protected getIconColorCss_(): string|undefined {
     if (!this.iconInfo_ || !this.iconInfo_.color) {
       return undefined;
     }
     const rgba = skColorToRgba(this.iconInfo_.color);
-    return `color: ${rgba}; --iron-icon-fill-color: ${rgba};`;
+    const color = `var(--icon-from-table-color-override, ${rgba})`;
+    return `color: ${color}; --iron-icon-fill-color: ${color};`;
   }
 }
 

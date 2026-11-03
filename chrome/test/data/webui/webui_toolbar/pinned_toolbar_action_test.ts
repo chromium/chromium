@@ -6,7 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, DownloadProgressRingStatus, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
+import {BrowserProxyImpl, DownloadProgressRingStatus, IconTable, IconType, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
 suite('PinnedToolbarAction', function() {
   let action: any;
@@ -109,7 +109,7 @@ suite('PinnedToolbarAction', function() {
   });
 
   test('Sets draggable attribute based on enabled state', async () => {
-    const button = action.shadowRoot!.querySelector('cr-icon-button');
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button');
     assertEquals('true', button.getAttribute('draggable'));
 
     action.state = {
@@ -222,7 +222,7 @@ suite('PinnedToolbarAction', function() {
   });
 
   test('Sets draggable attribute based on poppedOut state', async () => {
-    const button = action.shadowRoot!.querySelector('cr-icon-button')!;
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
     assertEquals('true', button.getAttribute('draggable'));
 
     action.poppedOut = true;
@@ -251,7 +251,7 @@ suite('PinnedToolbarAction', function() {
     };
     BrowserProxyImpl.setInstance({toolbarUIHandler: mockHandler} as any);
 
-    const button = action.shadowRoot!.querySelector('cr-icon-button');
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button');
     button.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'ArrowLeft',
       ctrlKey: true,
@@ -274,7 +274,8 @@ suite('PinnedToolbarAction', function() {
   });
 
   test('Sets aria-pressed based on highlighted state', async () => {
-    const button = action.shadowRoot!.querySelector('cr-icon-button')!;
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!
+                       .shadowRoot!.querySelector('#button')!;
     assertEquals('false', button.getAttribute('aria-pressed'));
 
     action.state = {
@@ -344,7 +345,7 @@ suite('PinnedToolbarAction', function() {
     };
     BrowserProxyImpl.setInstance({toolbarUIHandler: mockHandler} as any);
 
-    const button = action.shadowRoot!.querySelector('cr-icon-button')!;
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
     // `HighlightTracker` initializes `lastUnhighlightedTime` to 0 and skips
     // clicks when `performance.now() - lastUnhighlightedTime < 100`. Ensure the
     // initial click is outside that 100ms suppression window even if the test
@@ -381,5 +382,60 @@ suite('PinnedToolbarAction', function() {
     button.dispatchEvent(new PointerEvent(
         'click', {button: 0, pointerType: 'mouse', bubbles: true}));
     assertEquals(2, invokeCalls);
+  });
+
+  test('Disabled action ignores pointer events', async () => {
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
+    assertFalse(getComputedStyle(button).pointerEvents === 'none');
+
+    action.state = {
+      ...action.state,
+      enabled: false,
+    };
+    await microtasksFinished();
+    // Prevents hover/pressed highlights, clicks and context menus.
+    assertEquals('none', getComputedStyle(button).pointerEvents);
+
+    action.state = {
+      ...action.state,
+      enabled: true,
+    };
+    await microtasksFinished();
+    assertFalse(getComputedStyle(button).pointerEvents === 'none');
+  });
+
+  test('Does not set an accessible description', () => {
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!
+                       .shadowRoot!.querySelector('#button')!;
+    assertEquals('', button.getAttribute('aria-description'));
+  });
+
+  test('Icon uses the button foreground color', async () => {
+    const iconTable = IconTable.getInstance();
+    iconTable.applyUpdates([{
+      handleId: 1n,
+      iconUrlOrName: 'puppy.svg',
+      iconType: IconType.kMaskUrl,
+      color: {value: 0xFFFF0000},
+    }]);
+
+    const button = action.shadowRoot!.querySelector('toolbar-chip-button')!;
+    button.style.setProperty('--toolbar-chip-fg-color', 'rgb(0, 255, 0)');
+    action.state = {
+      ...action.state,
+      icon: {handleId: 1n},
+    };
+    await microtasksFinished();
+
+    const iconFromTable = action.shadowRoot!.querySelector('icon-from-table')!;
+    await iconFromTable.updateComplete;
+    const renderer =
+        iconFromTable.shadowRoot!.querySelector('#maskIconContainer');
+    assertTrue(!!renderer);
+    // The icon table's color is ignored in favor of the button's foreground
+    // color, as in native PinnedActionToolbarButton.
+    assertEquals('rgb(0, 255, 0)', getComputedStyle(renderer).color);
+
+    iconTable.reset();
   });
 });

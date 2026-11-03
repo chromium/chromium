@@ -62,18 +62,6 @@ export class IconTable {
     this.icons_.clear();
   }
 
-  // If the icon with given handle has been registered as having a URL for
-  // a single-color mask image, returns that URL. Otherwise returns undefined.
-  //
-  // If defined, you'll want to set it on a --cr-icon-image attribute for
-  // a <cr-icon-button>, or use it as a mask image.
-  getIconMaskUrl(handle: IconHandle): string|undefined {
-    const maybeIcon = this.icons_.get(handle.handleId);
-    return maybeIcon && maybeIcon.type === IconType.kMaskUrl ?
-        maybeIcon.urlOrName :
-        undefined;
-  }
-
   // If the icon with given handle has been registered with a pen color,
   // returns it in CSS syntax.
   getIconColor(handle: IconHandle): string|undefined {

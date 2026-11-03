@@ -148,6 +148,18 @@ suite('IconFromTableTest', function() {
       const style = renderer.computedStyleMap();
       assertEquals('rgba(255, 0, 0, 0.5)', style.get('color')?.toString());
     }
+
+    // The embedder can override the color from the icon table.
+    {
+      iconFromTable.style.setProperty(
+          '--icon-from-table-color-override', 'rgb(0, 255, 0)');
+      await microtasksFinished();
+
+      const renderer =
+          iconFromTable.shadowRoot.querySelector('#maskIconContainer');
+      assertTrue(!!renderer);
+      assertEquals('rgb(0, 255, 0)', window.getComputedStyle(renderer).color);
+    }
   });
 
   test('RTL flipping', async function() {

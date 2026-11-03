@@ -55,6 +55,7 @@ export class ToolbarChipButtonElement extends CrLitElement {
       tooltip: {type: String},
       ariaHasPopup: {type: String},
       ariaExpanded: {type: String},
+      ariaPressed: {type: String},
       disabled: {
         type: Boolean,
         reflect: true,
@@ -100,6 +101,9 @@ export class ToolbarChipButtonElement extends CrLitElement {
 
   /** Indicates whether the popup triggered by the button is expanded. */
   override accessor ariaExpanded: string|null = null;
+
+  /** Indicates the current pressed state of a toggle button. */
+  override accessor ariaPressed: string|null = null;
 
   /** Whether the button is disabled. */
   accessor disabled: boolean = false;

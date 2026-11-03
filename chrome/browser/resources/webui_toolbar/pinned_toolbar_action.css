@@ -10,13 +10,35 @@
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
 
-/* getIconStyle_() may set the icon color inline from the icon table, which
- * would beat the IPH icon color from toolbar_button.css. Native
+/* Engaged actions paint their icon in the engaged color, as native
+ * PinnedActionToolbarButton does. */
+toolbar-chip-button[is-activated] {
+  --toolbar-chip-fg-color: var(--color-toolbar-action-item-engaged,
+      var(--google-blue-600));
+}
+
+/* Like native toolbar buttons, use the inactive icon color while the browser
+ * window is inactive on Mac (the browser sets controls-appear-inactive). This
+ * doesn't apply during an IPH, where native keeps the IPH color. */
+:host-context(toolbar-app[controls-appear-inactive])
+    toolbar-chip-button:not(.help-anchor-highlight) {
+  --toolbar-chip-fg-color: var(--color-toolbar-button-icon-inactive);
+}
+
+/* While an IPH is anchored to the button, paint the icon in the feature promo
+ * highlight color, matching native ToolbarButton::GetForegroundColor(). Engaged
+ * buttons keep the engaged color, as native PinnedActionToolbarButton does. */
+toolbar-chip-button.help-anchor-highlight:not([is-activated]) {
+  --toolbar-chip-fg-color: var(--color-toolbar-feature-promo-highlight);
+}
+
+/* icon-from-table sets the icon color inline from the icon table, which would
+ * otherwise beat the toolbar-chip-button foreground color chosen above. Native
  * PinnedActionToolbarButton::UpdateIcon() ignores the image color and uses
- * ToolbarButton::GetForegroundColor(), so let the IPH color win here too. */
-:host(.help-anchor-highlight) #button:not([is-activated]) {
-  --cr-icon-button-fill-color:
-      var(--color-toolbar-feature-promo-highlight) !important;
+ * ToolbarButton::GetForegroundColor(), so always paint the icon in the
+ * foreground color inherited from toolbar-chip-button. */
+icon-from-table {
+  --icon-from-table-color-override: currentColor;
 }
 
 /* The progress ring drawn around the button's icon. This mirrors the ring the

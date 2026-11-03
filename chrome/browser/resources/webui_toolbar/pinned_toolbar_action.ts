@@ -6,14 +6,13 @@
 import './internal/icons.js';
 // </if>
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './toolbar_chip_button.js';
+import '/shared/icon_from_table.js';
 
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {IconTable} from '/shared/icon_table.js';
 import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType, DownloadProgressRingStatus, PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -25,6 +24,7 @@ import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixi
 import {getCss} from './pinned_toolbar_action.css.js';
 import {getHtml} from './pinned_toolbar_action.html.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 const initialState: PinnedToolbarActionState = {
   action: PinnedToolbarAction.kUnspecified,
@@ -44,7 +44,7 @@ const PinnedToolbarActionElementBase = OverflowableToolbarActionMixin(
 
 export interface PinnedToolbarActionElement {
   $: {
-    button: CrIconButtonElement,
+    button: ToolbarChipButtonElement,
   };
 }
 
@@ -78,8 +78,6 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   accessor poppedOut: boolean = false;
 
-  private iconTable_: IconTable = IconTable.getInstance();
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -97,24 +95,6 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
 
   override getElementId(state: PinnedToolbarActionState): string|undefined {
     return state.elementId ?? undefined;
-  }
-
-  protected getIronIcon_(): string|undefined {
-    return this.iconTable_.getIconName(this.state.icon);
-  }
-
-  protected getIconStyle_(): string|undefined {
-    const providedIconUrl = this.iconTable_.getIconMaskUrl(this.state.icon);
-    const providedIconColor = this.iconTable_.getIconColor(this.state.icon);
-    let style = '';
-
-    if (providedIconUrl) {
-      style += `--cr-icon-image: url(${providedIconUrl});`;
-    }
-    if (providedIconColor) {
-      style += `--cr-icon-button-fill-color: ${providedIconColor};`;
-    }
-    return style.length > 0 ? style : undefined;
   }
 
   protected onActionClick_(e: PointerEvent) {

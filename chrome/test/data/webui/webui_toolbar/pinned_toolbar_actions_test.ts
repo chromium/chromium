@@ -261,7 +261,8 @@ suite('PinnedToolbarActions', function() {
     assertEquals(2, actionElements.length);
     for (const action of actionElements) {
       assertTrue(action.poppedOut);
-      assertFalse(action.shadowRoot.querySelector('cr-icon-button')!.draggable);
+      assertFalse(
+          action.shadowRoot.querySelector('toolbar-chip-button')!.draggable);
     }
 
     // Dragging an action over another one must not reorder them, either.
@@ -390,10 +391,10 @@ suite('PinnedToolbarActions', function() {
     firstAction.focus();
     assertEquals(
         firstAction.shadowRoot.activeElement,
-        firstAction.shadowRoot.querySelector('cr-icon-button'));
+        firstAction.shadowRoot.querySelector('toolbar-chip-button'));
 
     // Trigger keyboard reorder (Ctrl+ArrowRight)
-    const button = firstAction.shadowRoot.querySelector('cr-icon-button')!;
+    const button = firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
     button.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'ArrowRight',
       ctrlKey: true,
@@ -457,7 +458,7 @@ suite('PinnedToolbarActions', function() {
         1, newSecondAction.state.action);  // Verify it is indeed Action 1
     assertEquals(
         newSecondAction.shadowRoot.activeElement,
-        newSecondAction.shadowRoot.querySelector('cr-icon-button'));
+        newSecondAction.shadowRoot.querySelector('toolbar-chip-button'));
   });
 
   test('Cross-window dragover identifies action from broadcast', () => {
@@ -880,7 +881,7 @@ suite('PinnedToolbarActions', function() {
 
         // 1. Simulate local drag start of Action 1 on its internal button
         const firstActionButton =
-            firstAction.shadowRoot.querySelector('cr-icon-button')!;
+            firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
         const dragStartEvent = new DragEvent('dragstart', {
           bubbles: true,
           cancelable: true,
@@ -966,7 +967,7 @@ suite('PinnedToolbarActions', function() {
 
         // 1. Simulate local drag start of Action 1 on its internal button
         const firstActionButton =
-            firstAction.shadowRoot.querySelector('cr-icon-button')!;
+            firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
         const dragStartEvent = new DragEvent('dragstart', {
           bubbles: true,
           cancelable: true,
@@ -1032,7 +1033,7 @@ suite('PinnedToolbarActions', function() {
 
     // 1. Simulate local drag start of Action 1
     const firstActionButton =
-        firstAction.shadowRoot.querySelector('cr-icon-button')!;
+        firstAction.shadowRoot.querySelector('toolbar-chip-button')!;
     const dragStartEvent = new DragEvent('dragstart', {
       bubbles: true,
       cancelable: true,
