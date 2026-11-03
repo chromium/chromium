@@ -27,6 +27,8 @@ class PrefService;
 namespace policy {
 class ConfigurationPolicyProvider;
 class LocalTestPolicyProvider;
+enum class ManagementAuthorityTrustworthiness;
+class ManagementService;
 class ProxyPolicyProvider;
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -73,6 +75,12 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // --refresh-platform-policy command line switch to provide fast policy
   // updates without triggering network requests to cloud policy servers.
   void RefreshPlatformPolicies();
+
+  // Refreshes the cache of `management_service`. `management_service` must be
+  // non-null and must outlive the asynchronous refresh operation. On Windows,
+  // platform policies are reloaded if this changes whether sensitive policies
+  // are filtered.
+  void RefreshManagementServiceCache(ManagementService* management_service);
 
   ConfigurationPolicyProvider* local_test_policy_provider();
   void SetLocalTestPolicyProviderForTesting(
@@ -139,6 +147,16 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   base::flat_set<std::string> device_affiliation_ids_for_testing_;
 
  private:
+#if BUILDFLAG(IS_WIN)
+  // Reloads platform policies if the management authority trustworthiness
+  // changed.
+  void OnManagementServiceCacheRefreshed(
+      ManagementService* management_service,
+      ManagementAuthorityTrustworthiness previous_trustworthiness,
+      ManagementAuthorityTrustworthiness previous_highest_trustworthiness,
+      ManagementAuthorityTrustworthiness new_highest_trustworthiness);
+#endif
+
   // Returns the policy provider that supplies platform policies.
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 

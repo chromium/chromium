@@ -12,6 +12,8 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "build/branding_buildflags.h"
@@ -31,6 +33,7 @@
 #include "components/policy/core/common/command_line_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -184,6 +187,35 @@ void ChromeBrowserPolicyConnector::RefreshPlatformPolicies() {
     platform_provider->RefreshPolicies(policy::PolicyFetchReason::kUserRequest);
   }
 }
+
+void ChromeBrowserPolicyConnector::RefreshManagementServiceCache(
+    ManagementService* management_service) {
+#if BUILDFLAG(IS_WIN)
+  management_service->RefreshCache(base::BindOnce(
+      &ChromeBrowserPolicyConnector::OnManagementServiceCacheRefreshed,
+      weak_factory_.GetWeakPtr(),
+      // Safe because `management_service` cancels callbacks on destruction.
+      base::Unretained(management_service),
+      management_service
+          ->GetManagementAuthorityTrustworthinessForPolicyLoading()));
+#else
+  management_service->RefreshCache(base::NullCallback());
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+#if BUILDFLAG(IS_WIN)
+void ChromeBrowserPolicyConnector::OnManagementServiceCacheRefreshed(
+    ManagementService* management_service,
+    ManagementAuthorityTrustworthiness previous_trustworthiness,
+    ManagementAuthorityTrustworthiness /*previous_highest_trustworthiness*/,
+    ManagementAuthorityTrustworthiness /*new_highest_trustworthiness*/) {
+  if (management_service
+          ->GetManagementAuthorityTrustworthinessForPolicyLoading() !=
+      previous_trustworthiness) {
+    RefreshPlatformPolicies();
+  }
+}
+#endif
 
 ConfigurationPolicyProvider*
 ChromeBrowserPolicyConnector::local_test_policy_provider() {

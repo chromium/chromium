@@ -1186,7 +1186,8 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
       policy::ManagementServiceFactory::GetForPlatform();
   platform_management_service->UsePrefServiceAsCache(
       browser_process_->local_state());
-  platform_management_service->RefreshCache(base::NullCallback());
+  browser_process_->browser_policy_connector()->RefreshManagementServiceCache(
+      platform_management_service);
 
 #if BUILDFLAG(IS_WIN)
   if (first_run::IsChromeFirstRun()) {
