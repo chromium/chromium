@@ -81,7 +81,10 @@ class MockMojoMediaStreamDispatcherHost
                      const base::UnguessableToken&,
                      GetOpenDeviceCallback) override;
 
-  void ResetSessionId() { session_id_ = base::UnguessableToken::Create(); }
+  void ResetSessionId() {
+    session_id_ = base::UnguessableToken::Create();
+    session_id_was_explicitly_reset_ = true;
+  }
   void DoNotRunCallback() { do_not_run_cb_ = true; }
   const base::UnguessableToken& session_id() { return session_id_; }
 
@@ -101,9 +104,10 @@ class MockMojoMediaStreamDispatcherHost
     append_session_id_to_device_ids_ = append_session_id_to_device_ids;
   }
 
-  // Appends the `session_id_ to the passed `device_id` if
+  // Appends `session_id` to the passed `device_id` if
   // `append_session_id_to_device_ids_` is true.
-  std::string MaybeAppendSessionId(std::string device_id);
+  std::string MaybeAppendSessionId(std::string device_id,
+                                   const base::UnguessableToken& session_id);
 
   void SetAudioDeviceEffects(std::optional<int> effects) {
     audio_device_effects_ = effects;
@@ -115,6 +119,13 @@ class MockMojoMediaStreamDispatcherHost
   int stop_audio_device_counter_ = 0;
   int stop_video_device_counter_ = 0;
   base::UnguessableToken session_id_ = base::UnguessableToken::Create();
+  // True when a test explicitly called ResetSessionId() to force a new session
+  // ID on the next GenerateStreams() call even if `session_id_map` contains an
+  // existing session for the device.
+  bool session_id_was_explicitly_reset_ = false;
+  // Tracks all audio session IDs allocated across GenerateStreams() calls so
+  // StopStreamDevice() recognizes any active split session on teardown.
+  Vector<base::UnguessableToken> allocated_audio_session_ids_;
   bool do_not_run_cb_ = false;
   blink::mojom::blink::StreamDevices stream_devices_;
   GenerateStreamsCallback generate_stream_cb_;
