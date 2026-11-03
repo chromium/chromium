@@ -61,6 +61,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -823,6 +829,21 @@ TEST_F(DocumentPipHostTest, OpenerDestroyed_HostClosedCleanly) {
   // Destroy the opener; the host is destroyed as UserData without crashing.
   opener_web_contents_.reset();
 }
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(DocumentPipHostTest, LinuxFrameHintsAfterOpenerDestruction) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* native_host = static_cast<views::DesktopWindowTreeHostLinux*>(
+      host->GetWidget()->GetNativeWindow()->GetHost());
+  auto native_host_weak = native_host->GetWeakPtr();
+
+  opener_web_contents_.reset();
+
+  // The native host closes asynchronously and can still receive X11 events.
+  ASSERT_TRUE(native_host_weak);
+  native_host->UpdateFrameHints();
+}
+#endif
 
 // After the PiP window is closed, CreateAndShowPipWindow() can be called again
 // with a

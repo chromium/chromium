@@ -170,20 +170,26 @@ class DocumentPipFrameView : public views::FrameView,
 
   void set_close_reason(CloseReason reason) { close_reason_ = reason; }
 
+ protected:
+  // Returns the height of the top bar area, including the window top border.
+  int GetTopAreaHeight() const;
+
+  // Returns the insets of the window frame borders.
+  virtual gfx::Insets FrameBorderInsets() const;
+
+  // Returns the insets of the window frame borders for resizing.
+  virtual gfx::Insets ResizeBorderInsets() const;
+
+  views::FlexLayoutView* top_bar_container_view() {
+    return top_bar_container_view_;
+  }
+
  private:
   friend class DocumentPipFrameViewTest;
   friend class DocumentPipFrameViewTestApi;
   class WindowEventObserver;
   // Minimal LocationBarModelDelegate backed by the opener WebContents.
   class LocationBarModelDelegateImpl;
-  // Returns the height of the top bar area, including the window top border.
-  int GetTopAreaHeight() const;
-
-  // Returns the insets of the window frame borders.
-  gfx::Insets FrameBorderInsets() const;
-
-  // Returns the insets of the window frame borders for resizing.
-  gfx::Insets ResizeBorderInsets() const;
 
   // Returns the non-client view area size (border + top bar).
   gfx::Size GetNonClientViewAreaSize() const;

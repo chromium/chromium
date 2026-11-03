@@ -71,6 +71,10 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_mac.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_aura_linux.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -309,7 +313,11 @@ void DocumentPipHost::CreateAndShowPipWindow(
   // primary display's origin.
   params.bounds = initial_bounds;
 
+#if BUILDFLAG(IS_LINUX)
+  widget_ = CreateDocumentPipWidgetLinux(this, params);
+#else
   widget_ = std::make_unique<views::Widget>();
+#endif
 #if BUILDFLAG(IS_MAC)
   // Give the borderless PiP window the default macOS styling (rounded corners +
   // drop shadow) so it matches the Browser-backed Document PiP window. The

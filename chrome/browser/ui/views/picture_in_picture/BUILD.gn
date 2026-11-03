@@ -107,6 +107,28 @@ source_set("picture_in_picture") {
     sources += [ "document_pip_native_widget_mac.mm" ]
     deps += [ "//components/remote_cocoa/common:mojo" ]
   }
+
+  if (is_linux) {
+    public += [
+      "document_pip_frame_view_linux.h",
+      "document_pip_native_widget_aura_linux.h",
+    ]
+    sources += [
+      "document_pip_frame_view_linux.cc",
+      "document_pip_native_widget_aura_linux.cc",
+    ]
+    deps += [
+      "//base:i18n",
+      "//chrome/app/theme:theme_resources",
+      "//chrome/browser:shell_integration_linux",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/views:theme_profile_key",
+      "//ui/aura",
+      "//ui/linux:linux_ui",
+      "//ui/ozone",
+      "//ui/platform_window",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -156,6 +178,18 @@ source_set("unit_tests") {
     "//ui/views/controls/webview",
     "//url",
   ]
+
+  if (is_linux) {
+    deps += [
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views:theme_profile_key",
+      "//components/keyed_service/core",
+      "//ui/aura",
+      "//ui/linux:linux_ui",
+      "//ui/linux:test_support",
+    ]
+  }
 
   if (enable_extensions_core) {
     deps += [

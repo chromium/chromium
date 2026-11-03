@@ -67,6 +67,36 @@
 #include "google_apis/gaia/gaia_id.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
+#include "chrome/browser/themes/theme_helper.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_aura_linux.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view_linux.h"
+#include "chrome/browser/ui/views/theme_profile_key.h"  // nogncheck
+#include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/browser_context.h"
+#include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/shadow_value.h"
+#include "ui/linux/fake_linux_ui.h"
+#include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_getter.h"
+#include "ui/linux/window_frame_provider.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/window/frame_view_utils_linux.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -298,6 +328,21 @@ class DocumentPipFrameViewTest : public ChromeViewsTestBase {
   }
 
  protected:
+#if BUILDFLAG(IS_LINUX)
+  DocumentPipFrameViewLinux* CreateClassicLinuxFrame(
+      bool supports_client_frame_shadow) {
+    ThemeServiceFactory::GetForProfile(&profile_)->UseDefaultTheme();
+    CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+    auto* host = DocumentPipHost::FromWebContents(opener());
+    auto frame_view = std::make_unique<DocumentPipFrameViewLinux>(
+        host, supports_client_frame_shadow);
+    auto* frame = frame_view.get();
+    host->GetWidget()->non_client_view()->SetFrameView(std::move(frame_view));
+    frame->SetBoundsRect(gfx::Rect(620, 454));
+    return frame;
+  }
+#endif
+
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
   std::unique_ptr<views::Widget> opener_host_widget_;
@@ -419,7 +464,7 @@ TEST_F(DocumentPipFrameViewTest, HitTestTopBar_ReturnsCaption) {
   int spacer_x = (chip_right_pt.x() + container_left_pt.x()) / 2;
   ASSERT_GT(spacer_x, chip_right_pt.x());
   ASSERT_LT(spacer_x, container_left_pt.x());
-  gfx::Point top_bar_point(spacer_x, 17);
+  gfx::Point top_bar_point(spacer_x, GetTopAreaHeight(frame_view) - 17);
 
   EXPECT_EQ(HTCAPTION, frame_view->NonClientHitTest(top_bar_point));
 }
@@ -1276,15 +1321,183 @@ TEST_F(DocumentPipFrameViewTest, AutoPipOverlayLaidOutBelowTopBar) {
   widget->SetBounds(gfx::Rect(0, 0, 400, 300));
   widget->LayoutRootViewIfNecessary();
 
-  // FrameBorderInsets() is empty, so the content area equals the local bounds
-  // and the top bar occupies the top GetTopAreaHeight() px.
-  const gfx::Rect local_bounds = frame_view->GetLocalBounds();
-  const int top_height = GetTopAreaHeight(frame_view);
-  const gfx::Rect expected(local_bounds.x(), local_bounds.y() + top_height,
-                           local_bounds.width(),
-                           local_bounds.height() - top_height);
-  EXPECT_EQ(expected, overlay->bounds());
+  EXPECT_EQ(frame_view->GetBoundsForClientView(), overlay->bounds());
 }
+
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+class TestWindowFrameProvider : public ui::WindowFrameProvider {
+ public:
+  explicit TestWindowFrameProvider(int top_corner_radius)
+      : top_corner_radius_(top_corner_radius) {}
+
+  int GetTopCornerRadiusDip() override { return top_corner_radius_; }
+  bool IsTopFrameTranslucent() override { return false; }
+  gfx::Insets GetFrameThicknessDip() override { return gfx::Insets(12); }
+  int GetTopAreaMinHeightDip() override { return 24; }
+  gfx::Insets GetTopAreaPaddingDip() override { return gfx::Insets(); }
+  gfx::Insets GetTopAreaBorderDip() override { return gfx::Insets(); }
+  void PaintWindowFrame(gfx::Canvas* canvas,
+                        const gfx::Rect& rect,
+                        int top_area_height,
+                        bool focused,
+                        const gfx::Insets& input_insets) override {}
+
+ private:
+  const int top_corner_radius_;
+};
+
+class TestLinuxUiGetter : public ui::LinuxUiGetter {
+ public:
+  ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
+    return &linux_ui_;
+  }
+  ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
+    return &linux_ui_;
+  }
+
+ private:
+  class LinuxUiWithFrameProvider : public ui::FakeLinuxUi {
+   public:
+    ui::NativeTheme* GetNativeTheme() const override {
+      return ui::NativeTheme::GetInstanceForNativeUi();
+    }
+
+    ui::WindowFrameProvider* GetWindowFrameProvider(ui::FrameType type,
+                                                    bool solid_frame,
+                                                    bool tiled,
+                                                    bool maximized) override {
+      return tiled ? &tiled_frame_provider_ : &frame_provider_;
+    }
+
+   private:
+    TestWindowFrameProvider frame_provider_{12};
+    TestWindowFrameProvider tiled_frame_provider_{0};
+  };
+
+  LinuxUiWithFrameProvider linux_ui_;
+};
+
+// Exposes the protected ThemeService API needed to switch the profile to the
+// native Linux theme without a real GTK/QT UI.
+class TestThemeServiceAuraLinux : public ThemeServiceAuraLinux {
+ public:
+  explicit TestThemeServiceAuraLinux(Profile* profile)
+      : ThemeServiceAuraLinux(profile, GetThemeHelper()) {}
+
+  void UseNativeTheme() {
+    SetCustomDefaultTheme(base::MakeRefCounted<CustomThemeSupplier>(
+        CustomThemeSupplier::ThemeType::kNativeX11));
+  }
+
+ private:
+  static const ThemeHelper& GetThemeHelper() {
+    static base::NoDestructor<ThemeHelper> helper;
+    return *helper;
+  }
+};
+
+}  // namespace
+
+TEST_F(DocumentPipFrameViewTest, RefreshesFrameOnThemeChange) {
+  TestLinuxUiGetter linux_ui_getter;
+  auto* theme_service = static_cast<TestThemeServiceAuraLinux*>(
+      ThemeServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            auto service = std::make_unique<TestThemeServiceAuraLinux>(
+                Profile::FromBrowserContext(context));
+            service->Init();
+            return service;
+          })));
+  theme_service->UseDefaultTheme();
+  auto* frame = views::AsViewClass<DocumentPipFrameViewLinux>(
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false));
+  base::ScopedClosureRunner close_pip(
+      base::BindOnce(&DocumentPipHost::Close,
+                     DocumentPipHost::FromWebContents(opener())->GetWeakPtr()));
+  ASSERT_TRUE(frame);
+  auto* widget = frame->GetWidget();
+  const gfx::Insets classic_insets = frame->RestoredMirroredFrameBorderInsets();
+  base::HistogramTester histogram_tester;
+
+  theme_service->UseNativeTheme();
+  ASSERT_TRUE(theme_service->UsingSystemTheme());
+  widget->ThemeChanged();
+  ASSERT_EQ(frame, widget->non_client_view()->frame_view());
+  EXPECT_EQ(gfx::Insets(12), frame->RestoredMirroredFrameBorderInsets());
+
+  frame->SetTiled(true);
+  EXPECT_EQ(SkVector::Make(0, 0),
+            frame->GetRestoredClipRegion().radii(SkRRect::kUpperLeft_Corner));
+  frame->SetTiled(false);
+  EXPECT_EQ(SkVector::Make(12, 12),
+            frame->GetRestoredClipRegion().radii(SkRRect::kUpperLeft_Corner));
+
+  theme_service->UseDefaultTheme();
+  widget->ThemeChanged();
+  ASSERT_EQ(frame, widget->non_client_view()->frame_view());
+  EXPECT_EQ(classic_insets, frame->RestoredMirroredFrameBorderInsets());
+  histogram_tester.ExpectTotalCount(
+      "Media.DocumentPictureInPicture.CloseReason", 0);
+}
+
+TEST_F(DocumentPipFrameViewTest, LinuxWidgetUsesProfileTheme) {
+  auto* frame = CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  auto* widget = frame->GetWidget();
+  EXPECT_EQ(&ThemeService::GetThemeProviderForProfile(&profile_),
+            widget->GetThemeProvider());
+  EXPECT_EQ(profile_.GetOriginalProfile(),
+            GetThemeProfileForWindow(widget->GetNativeWindow()));
+  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(&profile_);
+  EXPECT_EQ(linux_ui_theme ? linux_ui_theme->GetNativeTheme()
+                           : ui::NativeTheme::GetInstanceForNativeUi(),
+            widget->GetNativeTheme());
+  const auto key = widget->GetColorProviderKeyForTesting();
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, key.color_mode);
+  EXPECT_EQ(ui::ColorProviderKey::FrameType::kChromium, key.frame_type);
+}
+
+TEST_F(DocumentPipFrameViewTest, LinuxClassicFrameWithoutShadow) {
+  auto* frame = CreateClassicLinuxFrame(/*supports_client_frame_shadow=*/false);
+
+  EXPECT_EQ(gfx::Insets::TLBR(0, 4, 4, 4),
+            frame->RestoredMirroredFrameBorderInsets());
+  EXPECT_TRUE(frame->GetInputInsets().IsEmpty());
+  EXPECT_EQ(gfx::Rect(4, 34, 612, 416), frame->GetBoundsForClientView());
+  EXPECT_EQ(gfx::Rect(620, 454), frame->GetWindowBoundsForClientBounds(
+                                     frame->GetBoundsForClientView()));
+  const SkRRect clip = frame->GetRestoredClipRegion();
+  EXPECT_EQ(SkRect::MakeWH(620, 454), clip.rect());
+  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+  EXPECT_EQ(SkVector::Make(radius, radius),
+            clip.radii(SkRRect::kUpperLeft_Corner));
+  EXPECT_EQ(SkVector::Make(0, 0), clip.radii(SkRRect::kLowerLeft_Corner));
+}
+
+TEST_F(DocumentPipFrameViewTest, LinuxClassicFrameWithShadow) {
+  auto* frame = CreateClassicLinuxFrame(/*supports_client_frame_shadow=*/true);
+
+  const auto shadows = gfx::ShadowValue::MakeMdShadowValues(
+      ChromeLayoutProvider::Get()->GetShadowElevationMetric(
+          views::Emphasis::kMaximum));
+  const gfx::Insets border = views::GetRestoredFrameBorderInsetsLinux(
+      /*showing_shadow=*/true, gfx::Insets(4), shadows, gfx::Insets(10));
+  EXPECT_EQ(border, frame->RestoredMirroredFrameBorderInsets());
+  EXPECT_EQ(border, frame->GetInputInsets());
+  const gfx::Rect client = frame->GetBoundsForClientView();
+  EXPECT_EQ(border.left(), client.x());
+  EXPECT_EQ(border.top() + 34, client.y());
+  EXPECT_EQ(gfx::Rect(620, 454), frame->GetWindowBoundsForClientBounds(client));
+
+  gfx::RectF expected_clip(frame->GetLocalBounds());
+  expected_clip.Inset(gfx::InsetsF(border));
+  EXPECT_EQ(expected_clip,
+            gfx::SkRectToRectF(frame->GetRestoredClipRegion().rect()));
+}
+#endif
 
 // IsOverlayViewVisible() reflects the overlay's own visibility.
 TEST_F(DocumentPipFrameViewTest, IsOverlayViewVisible_TracksOverlayVisibility) {

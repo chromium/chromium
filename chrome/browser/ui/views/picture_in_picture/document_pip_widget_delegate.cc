@@ -8,11 +8,18 @@
 
 #include "base/check_deref.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/view_utils.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view_linux.h"
+#include "ui/aura/window_tree_host_platform.h"
+#include "ui/platform_window/platform_window.h"  // nogncheck
+#endif
 
 DocumentPipWidgetDelegate::DocumentPipWidgetDelegate(
     DocumentPipHost* host,
@@ -49,5 +56,14 @@ std::u16string DocumentPipWidgetDelegate::GetWindowTitle() const {
 
 std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(
     views::Widget* widget) {
+#if BUILDFLAG(IS_LINUX)
+  auto* platform_window =
+      aura::WindowTreeHostPlatform::GetHostForWindow(widget->GetNativeWindow())
+          ->platform_window();
+  return std::make_unique<DocumentPipFrameViewLinux>(
+      &host_.get(), platform_window->CanSetDecorationInsets() &&
+                        views::Widget::IsWindowCompositingSupported());
+#else
   return std::make_unique<DocumentPipFrameView>(&host_.get());
+#endif
 }
