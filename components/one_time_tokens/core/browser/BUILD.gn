@@ -19,6 +19,9 @@ static_library("browser") {
     "gmail_otp_retriever.h",
     "gmail_otp_sender_domain_matcher.cc",
     "gmail_otp_sender_domain_matcher.h",
+    "gmail_otp_service.h",
+    "gmail_otp_service_impl.cc",
+    "gmail_otp_service_impl.h",
     "one_time_token.cc",
     "one_time_token.h",
     "one_time_token_backend_notification.cc",
@@ -85,6 +88,7 @@ source_set("unit_tests") {
     "gmail_otp_backend_impl_unittest.cc",
     "gmail_otp_retriever_unittest.cc",
     "gmail_otp_sender_domain_matcher_unittest.cc",
+    "gmail_otp_service_impl_unittest.cc",
     "one_time_token_unittest.cc",
     "sms_otp_service_impl_unittest.cc",
     "user_data_processing_consent_fetcher_unittest.cc",
@@ -109,6 +113,8 @@ static_library("test_support") {
   sources = [
     "fake_gmail_otp_backend.cc",
     "fake_gmail_otp_backend.h",
+    "fake_gmail_otp_service.cc",
+    "fake_gmail_otp_service.h",
     "fake_sms_otp_service.cc",
     "fake_sms_otp_service.h",
   ]

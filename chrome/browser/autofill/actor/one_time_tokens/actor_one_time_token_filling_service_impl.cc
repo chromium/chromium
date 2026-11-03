@@ -28,6 +28,7 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
+#include "chrome/browser/autofill/gmail_otp_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
@@ -47,6 +48,8 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
@@ -208,11 +211,11 @@ ActorOneTimeTokenFillingServiceImpl::ActorOneTimeTokenFillingServiceImpl(
     base::SafeRef<::actor::AggregatedJournal> journal,
     ::actor::TaskId task_id)
     : profile_(profile), journal_(journal), task_id_(task_id) {
-  if (one_time_tokens::GmailOtpBackend* backend =
-          GmailOtpBackendFactory::GetForProfile(profile);
-      backend && backend->GetLogSink()) {
+  if (one_time_tokens::GmailOtpService* service =
+          GmailOtpServiceFactory::GetForProfile(profile_);
+      service && service->GetLogSink()) {
     log_subscription_ =
-        backend->GetLogSink()->AddLogHandler(base::BindRepeating(
+        service->GetLogSink()->AddLogHandler(base::BindRepeating(
             &ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage,
             base::Unretained(this)));
   }
@@ -347,14 +350,14 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   // TODO(b/502907994): Do we want to check for incognito profiles here?
   // Gemini should not be available in incognito, but should we check just to
   // be sure (and future-proof)?
-  one_time_tokens::GmailOtpBackend* const backend =
-      GmailOtpBackendFactory::GetForProfile(profile_);
-  if (!backend) {
+  one_time_tokens::GmailOtpService* const service =
+      GmailOtpServiceFactory::GetForProfile(profile_);
+  if (!service || !service->GetBackend()) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kNoService);
     journal_->Log(url, task_id_,
                   "ActorOneTimeTokenFillingServiceImpl::RetrieveOtp",
                   ::actor::JournalDetailsBuilder()
-                      .AddError("GmailOtpBackend not available.")
+                      .AddError("GmailOtpService not available.")
                       .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -390,7 +393,8 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   auto checker = std::make_unique<affiliations::DomainRelationChecker>(
       CHECK_DEREF(AffiliationServiceFactory::GetForProfile(profile_)));
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
-      *backend, std::move(checker), otp_frame_origin, is_login_flow,
+      *service->GetBackend(), std::move(checker), otp_frame_origin,
+      is_login_flow,
       base::BindOnce(&ActorOneTimeTokenFillingServiceImpl::OnOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }

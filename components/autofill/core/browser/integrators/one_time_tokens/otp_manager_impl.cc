@@ -40,6 +40,8 @@
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
@@ -146,7 +148,7 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     }
   }
 
-  // Gmail OTPs are retrieved from the `GmailOtpBackend` via
+  // Gmail OTPs are retrieved from the `GmailOtpService` via
   // `GmailOtpRetriever` (verifying domain affiliation against the frame
   // origin). Therefore, only SMS OTPs are taken from the `SmsOtpService`
   // and any unverified Gmail OTPs returned by it are dropped.
@@ -196,11 +198,12 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
 
   affiliations::AffiliationService* affiliation_service =
       owner_->client().GetAffiliationService();
-  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
-      owner_->client().GetGmailOtpBackend();
+  one_time_tokens::GmailOtpService* gmail_otp_service =
+      owner_->client().GetGmailOtpService();
   if (std::optional<OneTimeToken> token = SelectMostRecentToken();
-      affiliation_service && gmail_otp_backend &&
-      (!token || token->value().empty()) && UserOptedIntoGmailOtpFilling()) {
+      affiliation_service && gmail_otp_service &&
+      gmail_otp_service->GetBackend() && (!token || token->value().empty()) &&
+      UserOptedIntoGmailOtpFilling()) {
     auto checker = std::make_unique<affiliations::DomainRelationChecker>(
         *affiliation_service);
     // On form detection or opt-in, this fetch can start while a non-OTP field
@@ -216,7 +219,7 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
             ? target_field->origin()
             : owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
     gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
-        *gmail_otp_backend, std::move(checker), frame_origin,
+        *gmail_otp_service->GetBackend(), std::move(checker), frame_origin,
         /*allow_psl_matching=*/true,
         base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -371,12 +374,13 @@ void OtpManagerImpl::OnTickleReceived() {
 
   affiliations::AffiliationService* affiliation_service =
       owner_->client().GetAffiliationService();
-  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
-      owner_->client().GetGmailOtpBackend();
-  if (!affiliation_service || !gmail_otp_backend) {
+  one_time_tokens::GmailOtpService* gmail_otp_service =
+      owner_->client().GetGmailOtpService();
+  if (!affiliation_service || !gmail_otp_service ||
+      !gmail_otp_service->GetBackend()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
-        << "OTP tickle received but AffiliationService or GmailOtpBackend is "
+        << "OTP tickle received but AffiliationService or GmailOtpService is "
            "missing. Skipping payload fetch.";
     return;
   }
@@ -391,7 +395,7 @@ void OtpManagerImpl::OnTickleReceived() {
           ? owner_->client().GetLastCommittedPrimaryMainFrameOrigin()
           : target_field->origin();
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
-      *gmail_otp_backend, std::move(checker), frame_origin,
+      *gmail_otp_service->GetBackend(), std::move(checker), frame_origin,
       /*allow_psl_matching=*/true,
       base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -400,15 +404,8 @@ void OtpManagerImpl::OnTickleReceived() {
 void OtpManagerImpl::OnGmailOtpRetrieved(
     base::expected<one_time_tokens::GmailOtpRetriever::Result,
                    OneTimeTokenRetrievalError> result) {
-  if (gmail_otp_retriever_) {
-    // OnGmailOtpRetrieved is invoked as a callback by gmail_otp_retriever_
-    // which means that gmail_otp_retriever_ is still on call stack at this
-    // point.
-    // Its deletion has to happen later, so we have to post a task instead of
-    // deleting it right here.
-    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(gmail_otp_retriever_));
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(gmail_otp_retriever_));
   // TODO(crbug.com/556170395): figure out correct behaviour for cases when OTP
   // values are absent, or fetching resulted in an error. Running the callback
   // right here has a potential of breaking the case when the page is actually

@@ -37,6 +37,7 @@
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
+#include "chrome/browser/autofill/gmail_otp_service_factory.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
 #include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -805,6 +806,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::PersonalContextEntityMetadataManagerFactory::GetInstance();
   autofill::PersonalDataManagerFactory::GetInstance();
   autofill::SmsOtpServiceFactory::GetInstance();
+  autofill::GmailOtpServiceFactory::GetInstance();
   autofill::ValuablesDataManagerFactory::GetInstance();
   autofill::WalletPassAccessManagerFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)

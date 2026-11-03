@@ -75,6 +75,14 @@ class OtpManagerImplTestApi {
 
   void OnTickleReceived() { manager_->OnTickleReceived(); }
 
+  bool has_gmail_otp_retriever() const {
+    return manager_->gmail_otp_retriever_ != nullptr;
+  }
+
+  bool has_gmail_otp_retrieval_subscription() const {
+    return has_gmail_otp_retriever();
+  }
+
   one_time_tokens::GmailOtpRetriever* gmail_otp_retriever() const {
     return manager_->gmail_otp_retriever_.get();
   }

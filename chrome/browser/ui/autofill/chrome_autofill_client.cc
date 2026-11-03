@@ -45,6 +45,7 @@
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
+#include "chrome/browser/autofill/gmail_otp_service_factory.h"
 #include "chrome/browser/autofill/personal_context_entity_metadata_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/sms_otp_service_factory.h"
@@ -1602,6 +1603,10 @@ FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
 one_time_tokens::SmsOtpService* ChromeAutofillClient::GetSmsOtpService() const {
   Profile* profile = GetProfile();
   return SmsOtpServiceFactory::GetForProfile(profile);
+}
+
+one_time_tokens::GmailOtpService* ChromeAutofillClient::GetGmailOtpService() {
+  return GmailOtpServiceFactory::GetForProfile(GetProfile());
 }
 
 one_time_tokens::GmailOtpBackend* ChromeAutofillClient::GetGmailOtpBackend()

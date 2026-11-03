@@ -531,6 +531,10 @@ one_time_tokens::SmsOtpService* AutofillClient::GetSmsOtpService() const {
   return nullptr;
 }
 
+one_time_tokens::GmailOtpService* AutofillClient::GetGmailOtpService() {
+  return nullptr;
+}
+
 one_time_tokens::GmailOtpBackend* AutofillClient::GetGmailOtpBackend() const {
   return nullptr;
 }

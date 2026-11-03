@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service_impl.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "content/public/browser/render_frame_host.h"
@@ -150,8 +151,14 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
     set_gmail_otp_backend(
         std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
     set_affiliation_service(&affiliation_service_);
+    set_gmail_otp_service(
+        std::make_unique<one_time_tokens::GmailOtpServiceImpl>(
+            GetGmailOtpBackend(), GetAffiliationService(), std::nullopt));
   }
-  ~OtpTestAutofillClient() override { set_affiliation_service(nullptr); }
+  ~OtpTestAutofillClient() override {
+    set_gmail_otp_service(nullptr);
+    set_affiliation_service(nullptr);
+  }
 
   // Prevents `PaymentMethodAccessoryControllerImpl` on Android from observing
   // `TestContentAutofillClient`'s member-owned data managers, which have

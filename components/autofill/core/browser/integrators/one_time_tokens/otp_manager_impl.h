@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
@@ -35,7 +36,7 @@ class FormFieldData;
 class FormStructure;
 
 // This class triggers the fetching of SMS OTPs from the `SmsOtpService`
-// and of Gmail OTPs from the `GmailOtpBackend` as soon as
+// and of Gmail OTPs from the `GmailOtpService` as soon as
 // `OnFieldTypesDetermined()` is notified about the classification of OTP
 // fields. OTPs are fetched only once per instantiation. This is ok if the
 // `OtpManagerImpl` is recreated on each frame navigation.
@@ -96,7 +97,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Called when `prefs::kAutofillGmailOtpFillingEnabled` changes.
   void OnGmailOtpFillingEnabledPrefChanged();
 
-  // Called when the `GmailOtpBackend` notifies about an incoming Gmail OTP
+  // Called when the `GmailOtpService` notifies about an incoming Gmail OTP
   // tickle push notification.
   //
   // Verifies preconditions before initiating retrieval:
@@ -104,7 +105,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // - No OTP field already contains user-typed input.
   // - The user has opted into Gmail OTP filling.
   // - No Gmail OTP retrieval is already in flight.
-  // - Both `AffiliationService` and `GmailOtpBackend` are available.
+  // - Both `AffiliationService` and `GmailOtpService` are available.
   //
   // If all preconditions are satisfied, starts an asynchronous retrieval via
   // `GmailOtpRetriever` using the target OTP field's frame origin (falling back
@@ -169,7 +170,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
 
   // Subscription to the `SmsOtpService` for incoming SMS OTPs.
   one_time_tokens::ExpiringSubscription sms_otp_subscription_;
-  // Subscription to the `GmailOtpBackend` for incoming Gmail OTP tickles.
+  // Subscription to the `GmailOtpService` for incoming Gmail OTP tickles.
   one_time_tokens::ExpiringSubscription gmail_otp_tickle_subscription_;
 
   // Observes `prefs::kAutofillGmailOtpFillingEnabled` so that when the user

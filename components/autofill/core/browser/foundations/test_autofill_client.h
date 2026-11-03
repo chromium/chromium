@@ -79,6 +79,7 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service.h"
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -797,6 +798,16 @@ class TestAutofillClientTemplate : public T {
     injected_sms_otp_service_ = std::move(sms_otp_service);
   }
 
+  one_time_tokens::GmailOtpService* GetGmailOtpService() override {
+    return injected_gmail_otp_service_ ? injected_gmail_otp_service_.get()
+                                       : T::GetGmailOtpService();
+  }
+
+  void set_gmail_otp_service(
+      std::unique_ptr<one_time_tokens::GmailOtpService> gmail_otp_service) {
+    injected_gmail_otp_service_ = std::move(gmail_otp_service);
+  }
+
   one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const override {
     return injected_gmail_otp_backend_ ? injected_gmail_otp_backend_.get()
                                        : T::GetGmailOtpBackend();
@@ -866,6 +877,7 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   std::unique_ptr<one_time_tokens::SmsOtpService> injected_sms_otp_service_;
+  std::unique_ptr<one_time_tokens::GmailOtpService> injected_gmail_otp_service_;
   std::unique_ptr<one_time_tokens::GmailOtpBackend> injected_gmail_otp_backend_;
 
   std::unique_ptr<FieldClassificationModelHandler>

@@ -402,6 +402,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   FormPredictionsTracker* GetFormPredictionsTracker() override;
 
   one_time_tokens::SmsOtpService* GetSmsOtpService() const final;
+  one_time_tokens::GmailOtpService* GetGmailOtpService() override;
   one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const final;
 
  protected:

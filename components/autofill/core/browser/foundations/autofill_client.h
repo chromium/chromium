@@ -64,6 +64,7 @@ class SharedURLLoaderFactory;
 
 namespace one_time_tokens {
 class GmailOtpBackend;
+class GmailOtpService;
 class SmsOtpService;
 }  // namespace one_time_tokens
 
@@ -1037,6 +1038,9 @@ class AutofillClient {
 
   // May return null on platforms where no SmsOtpService is supported.
   virtual one_time_tokens::SmsOtpService* GetSmsOtpService() const;
+
+  // May return null on platforms where no GmailOtpService is supported.
+  virtual one_time_tokens::GmailOtpService* GetGmailOtpService();
 
   // May return null on platforms where no GmailOtpBackend is supported.
   virtual one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const;

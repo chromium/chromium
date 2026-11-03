@@ -38,6 +38,8 @@ static_library("autofill") {
     "cross_tab_copy_paste_tracker_factory.h",
     "gmail_otp_backend_factory.cc",
     "gmail_otp_backend_factory.h",
+    "gmail_otp_service_factory.cc",
+    "gmail_otp_service_factory.h",
     "ml_log_router_factory.cc",
     "ml_log_router_factory.h",
     "otp_filling_safe_browsing_checker_client.cc",
@@ -80,6 +82,7 @@ static_library("autofill") {
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/account_settings",
+    "//chrome/browser/affiliations",
     "//chrome/browser/history",
     "//chrome/browser/metrics",
     "//chrome/browser/net",
