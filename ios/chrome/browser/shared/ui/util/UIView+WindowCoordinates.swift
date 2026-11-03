@@ -114,6 +114,11 @@ extension UIView {
   /// always has the same window coordinates as the receiver. The mirror view calls the
   /// `onWindowCoordinatesChanged` closure when its bounds change.
   private func addMirrorViewInWindow() {
+    guard let window = window else { fatalError() }
+    if let mirrorViewInWindow = self.mirrorViewInWindow, mirrorViewInWindow.superview == window {
+      return
+    }
+
     let mirrorViewInWindow = self.mirrorViewInWindow ?? NotifyingView()
     mirrorViewInWindow.backgroundColor = .clear
     mirrorViewInWindow.isUserInteractionEnabled = false
@@ -133,7 +138,6 @@ extension UIView {
       }
     }
 
-    guard let window = window else { fatalError() }
     window.insertSubview(mirrorViewInWindow, at: 0)
     NSLayoutConstraint.activate([
       mirrorViewInWindow.topAnchor.constraint(equalTo: topAnchor),
