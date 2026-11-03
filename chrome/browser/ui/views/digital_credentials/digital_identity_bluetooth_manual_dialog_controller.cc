@@ -48,7 +48,7 @@ void DigitalIdentityBluetoothManualDialogController::UpdateDialog(
   auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothCustomIcon),
       ui::ImageModel::FromVectorIcon(kPasskeyErrorBluetoothDarkCustomIcon),
-      dialog_->GetBackgroundColorCallback().Run());
+      dialog_->GetBackgroundColor());
 
   dialog_->TryShow(
       ok_button_params,

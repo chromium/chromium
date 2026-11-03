@@ -16,7 +16,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -408,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 }
 
 // Verify that theme changes occurring after the provider is destroyed (while
-// the widget is awaiting deferred close) safely resolve the background color
-// callback across all theme-tracking dialog steps.
+// the widget is awaiting deferred close) safely update theme-tracking
+// illustrations across all dialog steps.
 IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
                        ThemeChangedAfterProviderDestroyed) {
   auto run_step_and_destroy_provider =
@@ -425,11 +424,9 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
         std::move(show_step).Run(provider.get());
 
         views::Widget* widget = nullptr;
-        base::RepeatingCallback<ui::ColorVariant()> bg_color_callback;
         {
           DigitalIdentityMultiStepDialog* dialog = provider->GetDialog();
           ASSERT_TRUE(dialog);
-          bg_color_callback = dialog->GetBackgroundColorCallback();
           DigitalIdentityMultiStepDialog::TestApi dialog_test_api(dialog);
           widget = dialog_test_api.GetWidget();
         }
@@ -438,8 +435,6 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
 
         // Destroy the provider while the widget close is still pending.
         provider.reset();
-        EXPECT_EQ(ui::ColorVariant(gfx::kPlaceholderColor),
-                  bg_color_callback.Run());
 
         ASSERT_TRUE(weak_widget);
         weak_widget->SetColorModeOverride(
@@ -485,8 +480,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityMultiStepDialogBrowserTest,
   ASSERT_TRUE(widget);
   ASSERT_TRUE(widget_delegate);
 
-  EXPECT_EQ(widget_delegate->background_color(),
-            dialog->GetBackgroundColorCallback().Run());
+  EXPECT_EQ(widget_delegate->background_color(), dialog->GetBackgroundColor());
   widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
   widget->ThemeChanged();
   EXPECT_TRUE(widget->IsVisible());

@@ -368,7 +368,7 @@ void DigitalIdentityProviderDesktop::ShowContinueStepsOnThePhoneDialog() {
   auto illustration = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       ui::ImageModel::FromVectorIcon(kPasskeyPhoneCustomIcon),
       ui::ImageModel::FromVectorIcon(kPasskeyPhoneDarkCustomIcon),
-      dialog->GetBackgroundColorCallback().Run());
+      dialog->GetBackgroundColor());
 
   dialog->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
