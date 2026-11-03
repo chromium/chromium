@@ -1546,7 +1546,7 @@ TEST_F(VideoCaptureImplTest, SharedImageFrameReleaseReturnsBuffer) {
   EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
   EXPECT_CALL(mock_video_capture_host_, Stop(_));
   EXPECT_CALL(mock_video_capture_host_, ReleaseBuffer(_, kArbitraryBufferId, _))
-      .WillOnce(InvokeWithoutArgs([&]() { buffer_released_event.Signal(); }));
+      .WillOnce([&]() { buffer_released_event.Signal(); });
 
   auto client_shared_image = shared_image_interface()->CreateSharedImage(
       {viz::MultiPlaneFormat::kNV12, kFrameSize, gfx::ColorSpace(),

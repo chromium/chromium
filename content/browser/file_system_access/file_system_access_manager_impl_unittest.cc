@@ -3683,10 +3683,10 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_CALL(*read_grant,
               RequestPermission_(testing::_, testing::_, testing::_))
       .WillOnce(testing::DoAll(
-          testing::InvokeWithoutArgs([] {
+          [] {
             EXPECT_TRUE(storage::ExternalMountPoints::GetSystemInstance()
                             ->RevokeFileSystem(kTestMountPoint));
-          }),
+          },
           RunOnceCallback<2>(FileSystemAccessPermissionGrant::
                                  PermissionRequestOutcome::kUserGranted)));
   EXPECT_CALL(permission_context_,

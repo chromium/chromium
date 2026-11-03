@@ -1852,7 +1852,7 @@ TEST_F(FaviconHandlerTest, SetFaviconsForLastPageUrlAfterCandidatesReceived) {
               OnFaviconUpdated(kDifferentPageURL,
                                FaviconDriverObserver::NON_TOUCH_16_DIP,
                                kIconURL12x12, _, _))
-      .WillOnce(testing::InvokeWithoutArgs([&] { run_loop.Quit(); }));
+      .WillOnce([&] { run_loop.Quit(); });
 
   handler->FetchFavicon(kDifferentPageURL, /*is_same_document=*/true);
   handler->OnUpdateCandidates(
