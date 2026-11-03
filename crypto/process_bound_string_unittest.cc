@@ -64,6 +64,28 @@ TEST(ProcessBound, Copy) {
   EXPECT_EQ(str2.value(), str.value());
   EXPECT_EQ(str.value(), "hello");
   EXPECT_EQ(str2.is_encrypted(), str.is_encrypted());
+
+  // Copy assignment over non-empty encrypted and unencrypted instances.
+  crypto::ProcessBound<std::string> str3(std::string("longer initial value"));
+  str3 = str;
+  EXPECT_EQ(str3.value(), "hello");
+  EXPECT_EQ(str3.size(), 5u);
+  EXPECT_EQ(str3.is_encrypted(), str.is_encrypted());
+
+  crypto::ProcessBound<std::string> unencrypted1(
+      std::string("unencrypted secret"), /*encrypted=*/false);
+  crypto::ProcessBound<std::string> unencrypted2(std::string("other"),
+                                                 /*encrypted=*/false);
+  unencrypted1 = unencrypted2;
+  EXPECT_EQ(unencrypted1.value(), "other");
+  EXPECT_EQ(unencrypted1.size(), 5u);
+  EXPECT_FALSE(unencrypted1.is_encrypted());
+
+  // Indirect through a pointer so self-copy is not warned on at compile time.
+  crypto::ProcessBound<std::string>* alias = &str3;
+  str3 = *alias;
+  EXPECT_EQ(str3.value(), "hello");
+  EXPECT_EQ(str3.size(), 5u);
 }
 
 TEST(ProcessBound, Move) {
@@ -119,6 +141,17 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str3.size(), 5u);
   EXPECT_FALSE(str3.empty());
   EXPECT_EQ(str3.is_encrypted(), was_encrypted);
+
+  // Move assignment over a non-empty unencrypted instance.
+  crypto::ProcessBound<std::string> unencrypted_dst(
+      std::string("unencrypted destination"), /*encrypted=*/false);
+  crypto::ProcessBound<std::string> unencrypted_src(
+      std::string("unencrypted source"), /*encrypted=*/false);
+  unencrypted_dst = std::move(unencrypted_src);
+  EXPECT_EQ(unencrypted_dst.value(), "unencrypted source");
+  EXPECT_FALSE(unencrypted_dst.is_encrypted());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(unencrypted_src.empty());
 }
 
 using ProcessBoundEncryptionTest = ::testing::Test;
