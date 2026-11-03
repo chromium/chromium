@@ -5,36 +5,17 @@
 #ifndef CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_
 #define CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_
 
-#include <string>
-
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile.h"
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 class RecentTabsPagePrefs {
  public:
-  explicit RecentTabsPagePrefs(Profile* profile);
-  ~RecentTabsPagePrefs();
-
+  RecentTabsPagePrefs() = delete;
   RecentTabsPagePrefs(const RecentTabsPagePrefs&) = delete;
   RecentTabsPagePrefs& operator=(const RecentTabsPagePrefs&) = delete;
 
-  bool GetSnapshotDocumentCollapsed();
-  void SetSnapshotDocumentCollapsed(bool is_collapsed);
-
-  bool GetRecentlyClosedTabsCollapsed();
-  void SetRecentlyClosedTabsCollapsed(bool is_collapsed);
-
-  bool GetSyncPromoCollapsed();
-  void SetSyncPromoCollapsed(bool is_collapsed);
-
-  bool GetForeignSessionCollapsed(const std::string& session_tag);
-  void SetForeignSessionCollapsed(const std::string& session_tag,
-                                  bool is_collapsed);
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
- private:
-  raw_ptr<Profile> profile_;  // weak
 };
 
 #endif  // CHROME_BROWSER_ANDROID_NTP_RECENT_TABS_PAGE_PREFS_H_

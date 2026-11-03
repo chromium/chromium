@@ -121,8 +121,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
     @Override
     public void recordPageImpression(int tilesCount) {
         if (mNativeMostVisitedSitesBridge == null) return;
-        MostVisitedSitesBridgeJni.get()
-                .recordPageImpression(mNativeMostVisitedSitesBridge, tilesCount);
+        MostVisitedSitesBridgeJni.get().recordPageImpression(tilesCount);
     }
 
     @Override
@@ -130,7 +129,6 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         if (mNativeMostVisitedSitesBridge == null) return;
         MostVisitedSitesBridgeJni.get()
                 .recordTileImpression(
-                        mNativeMostVisitedSitesBridge,
                         tile.getIndex(),
                         tile.getType(),
                         tile.getIconType(),
@@ -144,11 +142,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
         if (mNativeMostVisitedSitesBridge == null) return;
         MostVisitedSitesBridgeJni.get()
                 .recordOpenedMostVisitedItem(
-                        mNativeMostVisitedSitesBridge,
-                        tile.getIndex(),
-                        tile.getType(),
-                        tile.getTitleSource(),
-                        tile.getSource());
+                        tile.getIndex(), tile.getType(), tile.getTitleSource(), tile.getSource());
     }
 
     @Override
@@ -243,10 +237,9 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
                 @JniType("GURL") GURL url,
                 boolean addUrl);
 
-        void recordPageImpression(JniPtr<NativeMostVisitedSitesBridge> self, int tilesCount);
+        void recordPageImpression(int tilesCount);
 
         void recordTileImpression(
-                JniPtr<NativeMostVisitedSitesBridge> self,
                 int index,
                 int type,
                 int iconType,
@@ -254,12 +247,7 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
                 int source,
                 @JniType("GURL") GURL url);
 
-        void recordOpenedMostVisitedItem(
-                JniPtr<NativeMostVisitedSitesBridge> self,
-                int index,
-                int tileType,
-                int titleSource,
-                int source);
+        void recordOpenedMostVisitedItem(int index, int tileType, int titleSource, int source);
 
         double getSuggestionScore(
                 JniPtr<NativeMostVisitedSitesBridge> self, @JniType("GURL") GURL url);

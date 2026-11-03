@@ -241,16 +241,18 @@ void MostVisitedSitesBridge::AddOrRemoveBlockedUrl(const GURL& url,
   most_visited_->AddOrRemoveBlockedUrl(url, add_url);
 }
 
-void MostVisitedSitesBridge::RecordPageImpression(int32_t jtiles_count) {
+static void JNI_MostVisitedSitesBridge_RecordPageImpression(
+    int32_t jtiles_count) {
   ntp_tiles::metrics::RecordPageImpression(jtiles_count);
 }
 
-void MostVisitedSitesBridge::RecordTileImpression(int32_t jindex,
-                                                  int32_t jvisual_type,
-                                                  int32_t jicon_type,
-                                                  int32_t jtitle_source,
-                                                  int32_t jsource,
-                                                  const GURL& url) {
+static void JNI_MostVisitedSitesBridge_RecordTileImpression(
+    int32_t jindex,
+    int32_t jvisual_type,
+    int32_t jicon_type,
+    int32_t jtitle_source,
+    int32_t jsource,
+    const GURL& url) {
   TileTitleSource title_source = static_cast<TileTitleSource>(jtitle_source);
   TileSource source = static_cast<TileSource>(jsource);
   TileVisualType visual_type = static_cast<TileVisualType>(jvisual_type);
@@ -261,10 +263,11 @@ void MostVisitedSitesBridge::RecordTileImpression(int32_t jindex,
       jindex, source, title_source, visual_type, icon_type, url));
 }
 
-void MostVisitedSitesBridge::RecordOpenedMostVisitedItem(int32_t index,
-                                                         int32_t tile_type,
-                                                         int32_t title_source,
-                                                         int32_t source) {
+static void JNI_MostVisitedSitesBridge_RecordOpenedMostVisitedItem(
+    int32_t index,
+    int32_t tile_type,
+    int32_t title_source,
+    int32_t source) {
   ntp_tiles::metrics::RecordTileClick(ntp_tiles::NTPTileImpression(
       index, static_cast<TileSource>(source),
       static_cast<TileTitleSource>(title_source),

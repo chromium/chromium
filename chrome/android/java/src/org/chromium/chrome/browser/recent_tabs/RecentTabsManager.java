@@ -212,7 +212,6 @@ public class RecentTabsManager
 
         mUpdatedCallback = null;
 
-        mPrefs.destroy();
         mPrefs = null;
 
         SessionsInvalidationManager.get(mProfile).onRecentTabsPageClosed();

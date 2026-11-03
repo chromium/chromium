@@ -56,17 +56,6 @@ class MostVisitedSitesBridge {
   bool ReorderCustomLink(const GURL& key_url, int32_t new_pos);
 
   void AddOrRemoveBlockedUrl(const GURL& url, bool add_url);
-  void RecordPageImpression(int32_t jtiles_count);
-  void RecordTileImpression(int32_t jindex,
-                            int32_t jvisual_type,
-                            int32_t jicon_type,
-                            int32_t jtitle_source,
-                            int32_t jsource,
-                            const GURL& url);
-  void RecordOpenedMostVisitedItem(int32_t index,
-                                   int32_t tile_type,
-                                   int32_t title_source,
-                                   int32_t source);
 
   double GetSuggestionScore(const GURL& url);
 
