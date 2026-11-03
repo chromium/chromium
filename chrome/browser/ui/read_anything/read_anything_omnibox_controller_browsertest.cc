@@ -550,6 +550,42 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       TabDetached_DoesNotUpdateIgnoredCountIfOmniboxUsed) {
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  MockLongDwellTime();
+  OpenRMWithOmnibox();
+  WaitForPageActionShowing(false);
+
+  browser()->GetTabStripModel()->GetActiveTab()->Close();
+
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    PrimaryPageChanged_DoesNotUpdateIgnoredCountIfOmniboxUsed) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  MockLongDwellTime();
+  OpenRMWithOmnibox();
+  VerifyUIState();
+  WaitForPageActionShowing(false);
+
+  // Closing RM re-shows the omnibox entry point.
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kOmniboxChip);
+  ExpectPageActionStateImmediate(true);
+
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
                        TabDetached_LogsNotOpenedAfterIPH) {
   base::HistogramTester histogram_tester;
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
