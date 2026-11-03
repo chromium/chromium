@@ -1761,10 +1761,7 @@ bool ContextualTasksUiService::HandleCitationClick(
     browser_window = tab->GetBrowserWindowInterface();
   }
 
-  base::UmaHistogramBoolean(
-      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true);
-  base::RecordAction(base::UserMetricsAction(
-      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"));
+  RecordSidePanelLinkClickedMetrics(url_params.disposition);
 
   if (browser_window) {
     if (auto* controller =
@@ -1796,8 +1793,11 @@ bool ContextualTasksUiService::HandleCitationClick(
 
   TabListInterface* tab_list =
       browser_window ? TabListInterface::From(browser_window) : nullptr;
+  const bool can_navigate_existing_tab =
+      url_params.disposition == WindowOpenDisposition::kCurrentTab ||
+      url_params.disposition == WindowOpenDisposition::kNewForegroundTab;
 
-  if (tab_list) {
+  if (tab_list && can_navigate_existing_tab) {
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     if (MaybeHandleVideoCitation(url, active_tab, task_id) ||
         MaybeHandlePdfCitation(url, active_tab, task_id) ||
@@ -1816,7 +1816,8 @@ bool ContextualTasksUiService::HandleCitationClick(
   // move tab-opening / existing-tab-focusing to
   // HandleSidePanelExternalNavigation / OpenUrl.
   tabs::TabInterface* existing_tab = nullptr;
-  if (tab_list && !contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick()) {
+  if (tab_list && can_navigate_existing_tab &&
+      !contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick()) {
     existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
   }
 
@@ -1825,7 +1826,8 @@ bool ContextualTasksUiService::HandleCitationClick(
 
   // Citation clobbering behavior matches pre-rearchitecture: if clobbering is
   // enabled, load the URL into the active tab.
-  if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
+  if (can_navigate_existing_tab &&
+      contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
       active_tab && active_tab->GetContents()) {
     if (task_id.is_valid()) {
       AssociateWebContentsToTask(active_tab->GetContents(), task_id);
@@ -1992,6 +1994,8 @@ bool ContextualTasksUiService::HandleSidePanelExternalNavigation(
   if (!browser_window && tab) {
     browser_window = tab->GetBrowserWindowInterface();
   }
+
+  RecordSidePanelLinkClickedMetrics(url_params.disposition);
 
   if (browser_window) {
     if (auto* controller =

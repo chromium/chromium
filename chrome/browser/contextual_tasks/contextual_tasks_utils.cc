@@ -8,6 +8,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -68,6 +70,7 @@
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -786,6 +789,38 @@ void RecordExtensionQueuedSearchMessagesDropped(size_t count) {
   base::UmaHistogramCounts100(
       "ContextualTasks.ExtensionPostMessage.QueuedSearchMessagesDropped",
       count);
+}
+
+void RecordSidePanelLinkClickedMetrics(WindowOpenDisposition disposition) {
+  ContextualTasksLinkOpenDisposition open_disposition =
+      ContextualTasksLinkOpenDisposition::kOther;
+  switch (disposition) {
+    case WindowOpenDisposition::kCurrentTab:
+      open_disposition = ContextualTasksLinkOpenDisposition::kCurrentTab;
+      break;
+    case WindowOpenDisposition::kNewForegroundTab:
+      open_disposition = ContextualTasksLinkOpenDisposition::kNewForegroundTab;
+      break;
+    case WindowOpenDisposition::kNewBackgroundTab:
+      open_disposition = ContextualTasksLinkOpenDisposition::kNewBackgroundTab;
+      break;
+    case WindowOpenDisposition::kNewWindow:
+      open_disposition = ContextualTasksLinkOpenDisposition::kNewWindow;
+      break;
+    case WindowOpenDisposition::kOffTheRecord:
+      open_disposition = ContextualTasksLinkOpenDisposition::kOffTheRecord;
+      break;
+    default:
+      open_disposition = ContextualTasksLinkOpenDisposition::kOther;
+      break;
+  }
+  base::UmaHistogramBoolean(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true);
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"));
+  base::UmaHistogramEnumeration(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition",
+      open_disposition);
 }
 
 bool ShouldUseDarkMode(Profile* profile, const GURL& url) {

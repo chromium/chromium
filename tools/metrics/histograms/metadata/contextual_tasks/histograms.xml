@@ -55,6 +55,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualTasks.AiResponse.UserAction.LinkClicked.Panel.OpenDisposition"
+    enum="ContextualTasksLinkOpenDisposition" expires_after="2027-06-18">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time a user clicks on a link in the contextual tasks side
+    panel. Records the requested window open disposition of the click (e.g.
+    plain click in current/foreground tab vs. explicit open in new background
+    tab or window via modifier keys or context menu).
+  </summary>
+</histogram>
+
+<histogram
     name="ContextualTasks.AiResponse.UserAction.LinkClicked.{ContextualTasksUiSurface}"
     enum="Boolean" expires_after="2027-03-07">
   <owner>sophiechang@chromium.org</owner>
