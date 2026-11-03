@@ -893,9 +893,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_FALSE(agent_host->GetWebContents());
 }
 
+// TODO(https://crbug.com/580985658): Re-enable after fixing OwningTestTabModel
+// outliving the disposed OTR Profile.
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
-    DisposeBrowserContextClosesFrozenTabsAcrossTabModelRemoval) {
+    DISABLED_DisposeBrowserContextClosesFrozenTabsAcrossTabModelRemoval) {
   AttachToBrowserTarget();
 
   const base::DictValue* result =

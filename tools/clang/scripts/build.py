@@ -1802,9 +1802,16 @@ def main():
         'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
         'COMPILER_RT_ENABLE_MACCATALYST=ON',
         'COMPILER_RT_ENABLE_IOS=ON',
-        'COMPILER_RT_ENABLE_WATCHOS=ON',
-        'COMPILER_RT_ENABLE_TVOS=ON',
-        'COMPILER_RT_ENABLE_XROS=ON',
+        # Only builtin libraries are packaged for watchOS, tvOS, and visionOS;
+        # pass them via BUILTINS_CMAKE_ARGS so runtimes skips their sanitizers.
+        'BUILTINS_CMAKE_ARGS='
+        + ';'.join(
+          [
+            '-DCOMPILER_RT_ENABLE_WATCHOS=ON',
+            '-DCOMPILER_RT_ENABLE_TVOS=ON',
+            '-DCOMPILER_RT_ENABLE_XROS=ON',
+          ]
+        ),
         'DARWIN_ios_ARCHS=arm64',
         'DARWIN_iossim_ARCHS=arm64;x86_64',
         'DARWIN_osx_ARCHS=arm64;x86_64',

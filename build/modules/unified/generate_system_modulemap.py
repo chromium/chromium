@@ -155,6 +155,9 @@ def _requires_met(require: str, os: str, cpu: str) -> bool:
     elif require == 'sve':
         # Assume chrome doesn't use SVE
         met = False
+    elif require == 'reflection':
+        # Triggered by -freflection. Not used in chromium.
+        met = False
     else:
         raise NotImplementedError(f'Unknown require: {require}')
 
