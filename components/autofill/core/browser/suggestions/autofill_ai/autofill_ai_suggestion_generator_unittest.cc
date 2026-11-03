@@ -250,8 +250,6 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client_.SetUpPrefsAndIdentityForAutofillAi();
     generator_ = std::make_unique<AutofillAiSuggestionGenerator>();
-    // Wait for `EntityDataManager`'s initial database load to finish.
-    task_environment_.RunUntilIdle();
   }
 
   AutofillAiSuggestionGeneratorTest()
@@ -3068,19 +3066,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                   Suggestion::Acceptability::kSelectableAndAcceptable)))));
 }
 
-class AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest
-    : public AutofillAiSuggestionGeneratorTest {
- public:
-  AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest() {
-    // `AutofillAiSuggestionGeneratorTest` opts the user in by default, which
-    // sets `kAutofillAiPrivateInferenceNoticeShownTimestamp`. Clear it to
-    // simulate a user who has not seen the notice yet (and is thus opted out).
-    client().GetPrefs()->ClearPref(
-        prefs::kAutofillAiPrivateInferenceNoticeShownTimestamp);
-  }
-};
-
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeShownWhenambientAutofillNoticeNeverShown) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3094,7 +3080,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeShownWhenAmbientNoticeAckedLongEnoughAgo) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3115,7 +3101,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenPersonalContextNoticeIsAdded) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3139,7 +3125,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
 }
 #endif
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenAmbientAutofillShownButNotAcked) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3158,7 +3144,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenAmbientAutofillAckedTooRecently) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3178,7 +3164,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenPrivateInferenceNoticeAcked) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3196,10 +3182,8 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kAutofillAiUsePrivateAi);
   SetEntities({GetPassportEntityInstanceWithRandomGuid()});
   SetForm({PASSPORT_NUMBER});
 
@@ -3210,7 +3194,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeShownEvenWhenNoEntitiesExist) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3224,7 +3208,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice)));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeNotShownWhenSeenTooRecently) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillAiUsePrivateAi);
@@ -3242,7 +3226,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
 
-TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+TEST_F(AutofillAiSuggestionGeneratorTest,
        PrivateInferenceNoticeShownWhenAlwaysShowFeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -3275,7 +3259,7 @@ TEST_F(AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
 }
 
 TEST_F(
-    AutofillAiPrivateInferenceNoticeSuggestionGeneratorTest,
+    AutofillAiSuggestionGeneratorTest,
     PrivateInferenceNoticeNotShownWhenMainFeatureDisabledEvenWithAlwaysShow) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
