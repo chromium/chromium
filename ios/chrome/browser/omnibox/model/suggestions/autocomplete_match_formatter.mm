@@ -89,10 +89,10 @@ UIColor* DimColorIncognito() {
 
 - (NSAttributedString*)detailText {
   // The detail text should be the URL (`_match.contents`) for non-search
-  // suggestions and the entity type (`_match.description`) for search entity
-  // suggestions. For all other search suggestions, `_match.description` is
-  // the name of the currently selected search engine, which for mobile we
-  // suppress.
+  // suggestions, the entity type (`_match.description`) for search entity
+  // suggestions, or secondary text from `_match.suggest_template` (e.g. for
+  // answers or rich suggestions). For regular search suggestions, the search
+  // engine name is suppressed on mobile in AutocompleteController.
   NSString* detailText = nil;
   if (self.isURL) {
     detailText = base::SysUTF16ToNSString(_match.contents);
