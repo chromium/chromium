@@ -83,8 +83,9 @@ class AppShimRegistry {
   };
 
   // The last known system level notification permission status for an app.
-  // This enum is persisted to disk. Do not delete or re-order entries. New
-  // entries should only be added at the end.
+  // This enum is persisted to disk and to logs. Do not delete or re-order
+  // entries. New entries should only be added at the end.
+  // LINT.IfChange(NotificationPermissionStatus)
   enum class NotificationPermissionStatus {
     // A permission prompt has never been shown for this application.
     kNotDetermined = 1,
@@ -103,6 +104,7 @@ class AppShimRegistry {
     kExplicitlyDenied = 5,
     kMaxValue = kExplicitlyDenied,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:MacAppShimNotificationPermissionStatus)
 
   AppShimRegistry(const AppShimRegistry& other) = delete;
   AppShimRegistry& operator=(const AppShimRegistry& other) = delete;

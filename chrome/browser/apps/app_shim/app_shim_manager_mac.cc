@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,8 +31,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/app_controller_mac.h"
@@ -72,6 +76,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -84,6 +89,31 @@
 #include "ui/base/page_transition_types.h"
 
 namespace {
+
+void RecordOSNotificationPermissionStatus(
+    ContentSetting chrome_setting,
+    AppShimRegistry::NotificationPermissionStatus status) {
+  std::string_view setting_variant;
+  switch (chrome_setting) {
+    case CONTENT_SETTING_ALLOW:
+      setting_variant = "Allow";
+      break;
+    case CONTENT_SETTING_BLOCK:
+      setting_variant = "Block";
+      break;
+    case CONTENT_SETTING_ASK:
+    case CONTENT_SETTING_DEFAULT:
+      setting_variant = "Ask";
+      break;
+    case CONTENT_SETTING_SESSION_ONLY:
+    case CONTENT_SETTING_NUM_SETTINGS:
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Notifications.Permissions.AppShim.OSStatus.Chrome",
+                    setting_variant}),
+      status);
+}
 
 // A crash key that is used when dumping because of errors when building and
 // verifying the app shim requirement.
@@ -473,6 +503,13 @@ ScopedAppShimKeepAlive::~ScopedAppShimKeepAlive() {
       app->second->keep_alive_count--;
     }
   }
+}
+
+std::optional<ContentSetting>
+AppShimManager::Delegate::GetChromeNotificationPermission(
+    Profile* profile,
+    const webapps::AppId& app_id) {
+  return std::nullopt;
 }
 
 AppShimManager::AppShimManager(std::unique_ptr<Delegate> delegate)
@@ -1767,6 +1804,39 @@ void AppShimManager::OnNotificationPermissionStatusChanged(
   }
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       host->GetAppId(), registry_status);
+
+  // Skip transient in-flight prompt states so they don't consume the daily
+  // sample and suppress the resulting post-prompt status.
+  if (registry_status == RegistryStatus::kPromptPending) {
+    return;
+  }
+
+  const base::Time now = base::Time::Now();
+  for (const base::FilePath& profile_path :
+       AppShimRegistry::Get()->GetInstalledProfilesForApp(host->GetAppId())) {
+    Profile* profile = ProfileForPath(profile_path);
+    if (!profile) {
+      continue;
+    }
+    // Roughly throttle emission to once per day per `(profile, app)` so
+    // frequently launched shims (e.g. from incoming push notifications) do not
+    // skew sample counts, while still re-emitting across multi-day browser
+    // sessions. Exact timing isn't required; `base::Time` is used so time spent
+    // asleep counts, and `now >= it->second` avoids getting stuck if the system
+    // clock moves backwards.
+    ProfileAndAppId key(profile_path, host->GetAppId());
+    auto it = last_recorded_os_notification_status_.find(key);
+    if (it != last_recorded_os_notification_status_.end() &&
+        now >= it->second && now - it->second < base::Days(1)) {
+      continue;
+    }
+    if (std::optional<ContentSetting> chrome_setting =
+            delegate_->GetChromeNotificationPermission(profile,
+                                                       host->GetAppId())) {
+      last_recorded_os_notification_status_[std::move(key)] = now;
+      RecordOSNotificationPermissionStatus(*chrome_setting, registry_status);
+    }
+  }
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {

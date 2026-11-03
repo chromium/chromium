@@ -90,6 +90,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsOptInTriggerReason) -->
 
+<!-- LINT.IfChange(MacAppShimNotificationPermissionStatus) -->
+
+<enum name="MacAppShimNotificationPermissionStatus">
+  <int value="1" label="NotDetermined"/>
+  <int value="2" label="PromptPending"/>
+  <int value="3" label="ImplicitlyDenied"/>
+  <int value="4" label="Granted"/>
+  <int value="5" label="ExplicitlyDenied"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/os_integration/mac/app_shim_registry.h:NotificationPermissionStatus) -->
+
 <!-- LINT.IfChange(MacNotificationDisplayResult) -->
 
 <enum name="MacNotificationDisplayResult">

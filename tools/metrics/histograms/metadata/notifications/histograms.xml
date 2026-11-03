@@ -1056,6 +1056,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Notifications.Permissions.AppShim.OSStatus.Chrome{ChromeSetting}"
+    enum="MacAppShimNotificationPermissionStatus" expires_after="2027-06-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The macOS system notification permission status of an installed web app's
+    app shim when Chrome's notification content setting for the app's start URL
+    is {ChromeSetting}. Recorded at most once per day per (profile, app) within
+    a browser session for each loaded profile where the app is installed with OS
+    integration when an app shim process reports a non-pending permission status
+    (macOS only). Note that if a user grants Chrome notification permission
+    while the app shim is not running, Chrome updates the content setting to
+    Allow and launches the shim in the background to request OS permission, so
+    that report on connect will record NotDetermined and suppress recording the
+    post-prompt status for the next day.
+  </summary>
+  <token key="ChromeSetting">
+    <variant name="Allow"/>
+    <variant name="Ask"/>
+    <variant name="Block"/>
+  </token>
+</histogram>
+
+<!-- LINT.IfChange(NotificationPermissionStatusVariant) -->
+
+<histogram
+    name="Notifications.Permissions.AppShim.StatusTransition.{OldStatus}"
+    enum="MacAppShimNotificationPermissionStatus" expires_after="2027-06-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The new macOS system notification permission status for an installed web
+    app's app shim when its status in AppShimRegistry changes from {OldStatus}
+    to a different status (macOS only). Apps without a previously persisted
+    status in Local State default to NotDetermined.
+  </summary>
+  <token key="OldStatus">
+    <variant name="ExplicitlyDenied"/>
+    <variant name="Granted"/>
+    <variant name="ImplicitlyDenied"/>
+    <variant name="NotDetermined"/>
+    <variant name="PromptPending"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/os_integration/mac/app_shim_registry.cc:NotificationPermissionStatusVariant) -->
+
 <histogram name="Notifications.Permissions.RevokeDeleteCount" units="units"
     expires_after="2027-04-18">
   <owner>knollr@chromium.org</owner>

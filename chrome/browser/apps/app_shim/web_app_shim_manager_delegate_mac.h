@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_APPS_APP_SHIM_WEB_APP_SHIM_MANAGER_DELEGATE_MAC_H_
 #define CHROME_BROWSER_APPS_APP_SHIM_WEB_APP_SHIM_MANAGER_DELEGATE_MAC_H_
 
-#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include <optional>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
+#include "components/content_settings/core/common/content_settings.h"
 
 namespace content {
 class WebContents;
@@ -63,6 +65,9 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
   GetAppShortcutsMenuItemInfos(Profile* profile,
                                const webapps::AppId& app_id) override;
+  std::optional<ContentSetting> GetChromeNotificationPermission(
+      Profile* profile,
+      const webapps::AppId& app_id) override;
 
  private:
   // Return true if |fallback_delegate_| should be used instead of |this|.

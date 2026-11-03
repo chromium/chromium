@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -14,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -51,6 +53,25 @@ const char kFileHandlerMimeTypes[] = "mime_types";
 const char kProtocolHandlers[] = "protocols";
 const char kCdHashHmac[] = "cdhash_hmac";
 const char kNotificationPermissionStatus[] = "notification_permission";
+
+// LINT.IfChange(NotificationPermissionStatusVariant)
+std::string_view PermissionStatusToHistogramVariant(
+    AppShimRegistry::NotificationPermissionStatus status) {
+  using PermissionStatus = AppShimRegistry::NotificationPermissionStatus;
+  switch (status) {
+    case PermissionStatus::kNotDetermined:
+      return "NotDetermined";
+    case PermissionStatus::kPromptPending:
+      return "PromptPending";
+    case PermissionStatus::kImplicitlyDenied:
+      return "ImplicitlyDenied";
+    case PermissionStatus::kGranted:
+      return "Granted";
+    case PermissionStatus::kExplicitlyDenied:
+      return "ExplicitlyDenied";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/histograms.xml:NotificationPermissionStatusVariant)
 
 base::ListValue SetToValueList(const std::set<std::string>& values) {
   base::ListValue result;
@@ -451,9 +472,23 @@ bool AppShimRegistry::DoVerifyCdHashForApp(
 void AppShimRegistry::SaveNotificationPermissionStatusForApp(
     const std::string& app_id,
     NotificationPermissionStatus status) {
+  if (GetInstalledProfilesForApp(app_id).empty()) {
+    return;
+  }
+
+  const NotificationPermissionStatus old_status =
+      GetNotificationPermissionStatusForApp(app_id);
+
   SetAppInfo(app_id, /*installed_profiles=*/nullptr,
              /*last_active_profiles=*/nullptr, /*handlers=*/nullptr,
              /*cd_hash_hmac_base64=*/nullptr, &status);
+
+  if (old_status != status) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Notifications.Permissions.AppShim.StatusTransition.",
+                      PermissionStatusToHistogramVariant(old_status)}),
+        status);
+  }
 }
 
 AppShimRegistry::NotificationPermissionStatus

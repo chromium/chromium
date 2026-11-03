@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -17,6 +18,9 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -499,6 +503,33 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
     EXPECT_EQ(shortcut_info3.name, shortcut_menu_items[2]->name);
     EXPECT_EQ(shortcut_info3.url, shortcut_menu_items[2]->url);
   }
+}
+
+TEST_F(WebAppShimManagerDelegateTest, GetChromeNotificationPermission) {
+  auto fallback_delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  WebAppShimManagerDelegate delegate(std::move(fallback_delegate));
+
+  EXPECT_EQ(std::nullopt, delegate.GetChromeNotificationPermission(
+                              profile(), "uninstalled_app"));
+
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            delegate.GetChromeNotificationPermission(profile(), AppId()));
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  const GURL app_url("https://testpwa.com/");
+
+  settings_map->SetContentSettingDefaultScope(
+      app_url, app_url, ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            delegate.GetChromeNotificationPermission(profile(), AppId()));
+
+  settings_map->SetContentSettingDefaultScope(
+      app_url, app_url, ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            delegate.GetChromeNotificationPermission(profile(), AppId()));
 }
 
 }  // namespace

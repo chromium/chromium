@@ -4,9 +4,13 @@
 
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 
+#include <array>
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -646,6 +650,8 @@ TEST_F(AppShimRegistryTest, CdHashKnownAnswers) {
 
 TEST_F(AppShimRegistryTest, NotificationPermissionStatus) {
   using PermissionStatus = AppShimRegistry::NotificationPermissionStatus;
+  constexpr char kTransitionPrefix[] =
+      "Notifications.Permissions.AppShim.StatusTransition.";
   const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   base::FilePath profile_path("/x/y/z/Profile A");
 
@@ -653,23 +659,48 @@ TEST_F(AppShimRegistryTest, NotificationPermissionStatus) {
             registry_->GetNotificationPermissionStatusForApp(app_id));
 
   // Saving permission status for an uninstalled app should be a no-op.
-  registry_->SaveNotificationPermissionStatusForApp(app_id,
-                                                    PermissionStatus::kGranted);
-  EXPECT_EQ(PermissionStatus::kNotDetermined,
-            registry_->GetNotificationPermissionStatusForApp(app_id));
+  {
+    base::HistogramTester histogram_tester;
+    registry_->SaveNotificationPermissionStatusForApp(
+        app_id, PermissionStatus::kGranted);
+    EXPECT_EQ(PermissionStatus::kNotDetermined,
+              registry_->GetNotificationPermissionStatusForApp(app_id));
+    EXPECT_EQ(0, histogram_tester.GetTotalCountForPrefix(kTransitionPrefix));
+  }
 
   registry_->OnAppInstalledForProfile(app_id, profile_path);
   EXPECT_EQ(PermissionStatus::kNotDetermined,
             registry_->GetNotificationPermissionStatusForApp(app_id));
 
-  // Every status round-trips through the registry unchanged.
-  for (PermissionStatus status :
-       {PermissionStatus::kPromptPending, PermissionStatus::kImplicitlyDenied,
-        PermissionStatus::kGranted, PermissionStatus::kExplicitlyDenied,
-        PermissionStatus::kImplicitlyDenied,
-        PermissionStatus::kNotDetermined}) {
-    registry_->SaveNotificationPermissionStatusForApp(app_id, status);
-    EXPECT_EQ(status, registry_->GetNotificationPermissionStatusForApp(app_id));
+  // Every status round-trips through the registry unchanged, and each change
+  // to a different status records a transition (while saving the same status
+  // again does not).
+  struct Step {
+    PermissionStatus status;
+    std::string_view expected_old_variant;
+  };
+  for (const Step& step : std::to_array<Step>({
+           {PermissionStatus::kNotDetermined, ""},
+           {PermissionStatus::kPromptPending, "NotDetermined"},
+           {PermissionStatus::kImplicitlyDenied, "PromptPending"},
+           {PermissionStatus::kGranted, "ImplicitlyDenied"},
+           {PermissionStatus::kExplicitlyDenied, "Granted"},
+           {PermissionStatus::kExplicitlyDenied, ""},
+           {PermissionStatus::kImplicitlyDenied, "ExplicitlyDenied"},
+           {PermissionStatus::kNotDetermined, "ImplicitlyDenied"},
+       })) {
+    base::HistogramTester histogram_tester;
+    registry_->SaveNotificationPermissionStatusForApp(app_id, step.status);
+    EXPECT_EQ(step.status,
+              registry_->GetNotificationPermissionStatusForApp(app_id));
+    if (step.expected_old_variant.empty()) {
+      EXPECT_EQ(0, histogram_tester.GetTotalCountForPrefix(kTransitionPrefix));
+    } else {
+      EXPECT_EQ(1, histogram_tester.GetTotalCountForPrefix(kTransitionPrefix));
+      histogram_tester.ExpectUniqueSample(
+          base::StrCat({kTransitionPrefix, step.expected_old_variant}),
+          step.status, 1);
+    }
   }
 }
 

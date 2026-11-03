@@ -22,7 +22,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/code_signature_mac.h"
@@ -36,6 +38,7 @@
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -80,6 +83,10 @@ class MockDelegate : public AppShimManager::Delegate {
                std::vector<chrome::mojom::ApplicationDockMenuItemPtr>(
                    Profile*,
                    const std::string&));
+  MOCK_METHOD(std::optional<ContentSetting>,
+              GetChromeNotificationPermission,
+              (Profile*, const std::string&),
+              (override));
 
   // Conditionally mock LaunchShim. Some tests will execute |launch_callback|
   // with a particular value.
@@ -411,7 +418,10 @@ class MockAppBrowserController : public web_app::AppBrowserController {
 
 class AppShimManagerTest : public testing::Test {
  protected:
-  AppShimManagerTest() = default;
+  explicit AppShimManagerTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : task_environment_(time_source) {}
   AppShimManagerTest(const AppShimManagerTest&) = delete;
   AppShimManagerTest& operator=(const AppShimManagerTest&) = delete;
   ~AppShimManagerTest() override = default;
@@ -491,6 +501,8 @@ class AppShimManagerTest : public testing::Test {
 
     EXPECT_CALL(*delegate_, AppUsesRemoteCocoa(_, _))
         .WillRepeatedly(Return(true));
+    EXPECT_CALL(*delegate_, GetChromeNotificationPermission(_, _))
+        .WillRepeatedly(Return(std::nullopt));
 
     {
       auto item_a = chrome::mojom::ProfileMenuItem::New();
@@ -2614,6 +2626,98 @@ TEST_F(AppShimManagerTest, OnShimFocusMultiProfileWithoutRemoteCocoa) {
   // no-op and must not call GetProfilePath() or ShowAppWindows().
   EXPECT_CALL(*delegate_, ShowAppWindows(_, _)).Times(0);
   ShimNormalFocus(host_aa_.get());
+}
+
+class AppShimManagerMockTimeTest : public AppShimManagerTest {
+ protected:
+  AppShimManagerMockTimeTest()
+      : AppShimManagerTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  }
+};
+
+TEST_F(AppShimManagerMockTimeTest, OSNotificationPermissionStatusMetrics) {
+  using PermissionStatus = mac_notifications::mojom::PermissionStatus;
+  using RegistryStatus = AppShimRegistry::NotificationPermissionStatus;
+
+  // App A is installed in profiles A (ALLOW), B (initially nullopt, then ASK),
+  // and C (initially unloaded, then BLOCK).
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_b_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_c_);
+  EXPECT_CALL(*manager_, ProfileForPath(profile_path_c_))
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(*delegate_,
+              GetChromeNotificationPermission(&profile_a_, kTestAppIdA))
+      .WillRepeatedly(Return(CONTENT_SETTING_ALLOW));
+  EXPECT_CALL(*delegate_,
+              GetChromeNotificationPermission(&profile_b_, kTestAppIdA))
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*delegate_,
+              GetChromeNotificationPermission(&profile_c_, kTestAppIdA))
+      .WillRepeatedly(Return(CONTENT_SETTING_BLOCK));
+
+  base::HistogramTester histogram_tester;
+
+  // Launch shim and report status (Denied -> ImplicitlyDenied). Only profile A
+  // records; profile B (nullopt) and profile C (unloaded) are skipped, and an
+  // immediate subsequent update does not re-record profile A.
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_, DoLaunchShim(&profile_a_, kTestAppIdA, _, _));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  host_aa_->NotificationPermissionStatusChanged(PermissionStatus::kDenied);
+  host_aa_->NotificationPermissionStatusChanged(PermissionStatus::kGranted);
+
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAllow",
+      RegistryStatus::kImplicitlyDenied, 1);
+  histogram_tester.ExpectTotalCount(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAsk", 0);
+  histogram_tester.ExpectTotalCount(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeBlock", 0);
+
+  // After 23 hours (< 1 day), profile A is still throttled, while profiles B
+  // (now returning ASK) and C (now loaded) each record once.
+  task_environment_.FastForwardBy(base::Hours(23));
+  EXPECT_CALL(*delegate_,
+              GetChromeNotificationPermission(&profile_b_, kTestAppIdA))
+      .WillRepeatedly(Return(CONTENT_SETTING_ASK));
+  EXPECT_CALL(*manager_, ProfileForPath(profile_path_c_))
+      .WillRepeatedly(Return(&profile_c_));
+  host_aa_->NotificationPermissionStatusChanged(PermissionStatus::kDenied);
+
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAllow",
+      RegistryStatus::kImplicitlyDenied, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAsk",
+      RegistryStatus::kExplicitlyDenied, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeBlock",
+      RegistryStatus::kExplicitlyDenied, 1);
+
+  // One hour later (24 hours since profile A recorded, 1 hour since B and C
+  // recorded), a transient kPromptPending report is ignored without consuming
+  // profile A's sample, and the subsequent kGranted report re-emits for profile
+  // A while B and C remain throttled.
+  task_environment_.FastForwardBy(base::Hours(1));
+  host_aa_->NotificationPermissionStatusChanged(
+      PermissionStatus::kPromptPending);
+  host_aa_->NotificationPermissionStatusChanged(PermissionStatus::kGranted);
+
+  histogram_tester.ExpectTotalCount(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAllow", 2);
+  histogram_tester.ExpectBucketCount(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAllow",
+      RegistryStatus::kGranted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeAsk",
+      RegistryStatus::kExplicitlyDenied, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.Permissions.AppShim.OSStatus.ChromeBlock",
+      RegistryStatus::kExplicitlyDenied, 1);
 }
 
 }  // namespace apps
