@@ -3516,7 +3516,7 @@ deps = {
        'version': 'S0FPOVKrgaiqyuR20SSHiPorLgYez29bfwEdKBobUMMC',
     }],
     'dep_type': 'cipd',
-    'condition': '(checkout_mac or checkout_ios) and non_git_source',
+    'condition': 'checkout_mac and non_git_source',
   },
   'src/buildtools/android/doclava': {
     'dep_type': 'gcs',
@@ -4306,7 +4306,7 @@ hooks = [
     # Update the Mac toolchain if necessary.
     'name': 'mac_toolchain',
     'pattern': '.',
-    'condition': 'checkout_mac or checkout_ios',
+    'condition': 'checkout_mac or (checkout_ios and host_os == "mac")',
     'action': ['python3', 'src/build/mac_toolchain.py'],
   },
   {
