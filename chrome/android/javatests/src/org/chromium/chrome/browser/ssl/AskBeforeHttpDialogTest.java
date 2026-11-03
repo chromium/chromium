@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -179,6 +180,7 @@ public class AskBeforeHttpDialogTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/581428041")
     public void testDialogIsShownAndClickLearnMoreWorks() {
         // Expect 0 = "TOTAL_VISITS" and 4 = "SHOW_LEARN_MORE" once, and 0 = "SHOW" once.
         var histogramWatcher =
