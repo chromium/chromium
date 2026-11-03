@@ -232,6 +232,24 @@ void TtcMesClient::Connect(Observer* observer) {
   setup->set_persona("standard");
   setup->set_audio_codec(optimization_guide::proto::AUDIO_CODEC_PCM16K16BIT);
   setup->set_enable_turn_metrics(true);
+
+  if (base::FeatureList::IsEnabled(kTtcLiveRecipe)) {
+    switch (kLiveRecipe.Get()) {
+      case TtcLiveRecipe::kFallback:
+        setup->set_model_preference(
+            optimization_guide::proto::MODEL_PREFERENCE_FALLBACK);
+        break;
+      case TtcLiveRecipe::kDefault:
+        setup->set_model_preference(
+            optimization_guide::proto::MODEL_PREFERENCE_DEFAULT);
+        break;
+      case TtcLiveRecipe::kUnspecified:
+        setup->set_model_preference(
+            optimization_guide::proto::MODEL_PREFERENCE_UNSPECIFIED);
+        break;
+    }
+  }
+
   SendFrame(setup_frame);
   setup_timer_.Start(
       FROM_HERE, kTtcSetupTimeout.Get(),
@@ -698,7 +716,10 @@ void TtcMesClient::LogClientFrame(
           .Add("audio_codec",
                EnumToString(setup.audio_codec(),
                             &optimization_guide::proto::AudioCodec_Name))
-          .Add("enable_turn_metrics", setup.enable_turn_metrics());
+          .Add("enable_turn_metrics", setup.enable_turn_metrics())
+          .Add("model_preference",
+               EnumToString(setup.model_preference(),
+                            &optimization_guide::proto::ModelPreference_Name));
       break;
     }
     case optimization_guide::proto::TtcClientFrame::kAudioInput:

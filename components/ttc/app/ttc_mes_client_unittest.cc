@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -101,12 +102,22 @@ class FakeRemoteModelExecutionSession
  public:
   void Send(const google::protobuf::MessageLite& message) override {
     ++sent_frame_count_;
+    optimization_guide::proto::TtcClientFrame frame;
+    if (frame.ParseFromString(message.SerializeAsString())) {
+      last_sent_frame_ = std::move(frame);
+    }
   }
   void AddObserver(Observer* observer) override { observer_ = observer; }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
 
+  const std::optional<optimization_guide::proto::TtcClientFrame>&
+  last_sent_frame() const {
+    return last_sent_frame_;
+  }
+
  private:
   int sent_frame_count_ = 0;
+  std::optional<optimization_guide::proto::TtcClientFrame> last_sent_frame_;
   raw_ptr<Observer> observer_ = nullptr;
 };
 
@@ -671,6 +682,73 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
 
   client.Close();
   client.SendAudioChunk(pcm);
+}
+
+TEST_F(TtcMesClientTest,
+       SetupRequestUsesUnspecifiedModelPreferenceWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kTtcLiveRecipe);
+
+  FakeRemoteModelExecutionSession* session = nullptr;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
+    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
+    session = fake_session.get();
+    return fake_session;
+  });
+
+  TestTtcMesClient local_client(&model_executor_);
+  local_client.Connect(&observer_);
+
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(session->last_sent_frame().has_value());
+  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
+  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+            optimization_guide::proto::MODEL_PREFERENCE_UNSPECIFIED);
+}
+
+TEST_F(TtcMesClientTest,
+       SetupRequestUsesFallbackModelPreferenceWhenConfigured) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(kTtcLiveRecipe,
+                                                  {{"LiveRecipe", "fallback"}});
+
+  FakeRemoteModelExecutionSession* session = nullptr;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
+    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
+    session = fake_session.get();
+    return fake_session;
+  });
+
+  TestTtcMesClient local_client(&model_executor_);
+  local_client.Connect(&observer_);
+
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(session->last_sent_frame().has_value());
+  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
+  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+            optimization_guide::proto::MODEL_PREFERENCE_FALLBACK);
+}
+
+TEST_F(TtcMesClientTest, SetupRequestUsesDefaultModelPreferenceWhenConfigured) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(kTtcLiveRecipe,
+                                                  {{"LiveRecipe", "default"}});
+
+  FakeRemoteModelExecutionSession* session = nullptr;
+  EXPECT_CALL(model_executor_, StartStreamingSession).WillOnce([&session] {
+    auto fake_session = std::make_unique<FakeRemoteModelExecutionSession>();
+    session = fake_session.get();
+    return fake_session;
+  });
+
+  TestTtcMesClient local_client(&model_executor_);
+  local_client.Connect(&observer_);
+
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(session->last_sent_frame().has_value());
+  ASSERT_TRUE(session->last_sent_frame()->has_setup_request());
+  EXPECT_EQ(session->last_sent_frame()->setup_request().model_preference(),
+            optimization_guide::proto::MODEL_PREFERENCE_DEFAULT);
 }
 
 }  // namespace ttc

@@ -1894,6 +1894,10 @@ inline constexpr char kActorNotificationIntentRoutingDescription[] =
 inline constexpr char kTtcName[] = "TTC";
 inline constexpr char kTtcDescription[] = "Enables the TTC feature.";
 
+inline constexpr char kTtcLiveRecipeName[] = "TTC Live Recipe";
+inline constexpr char kTtcLiveRecipeDescription[] =
+    "Selects the live streaming model recipe for TTC.";
+
 inline constexpr char kTtcFreName[] = "TTC FRE";
 inline constexpr char kTtcFreDescription[] =
     "Enables the first run experience for TTC.";

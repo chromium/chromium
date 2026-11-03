@@ -17295,6 +17295,7 @@ from previous Chrome versions.
   <int value="687883942" label="AndroidWindowPopupResizeAfterSpawn:enabled"/>
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
   <int value="688254068" label="AppCache:enabled"/>
+  <int value="688386385" label="TtcLiveRecipe:enabled"/>
   <int value="688710636" label="PickerGrid:disabled"/>
   <int value="689030249" label="glic-force-g1-for-mi:disabled"/>
   <int value="689117929" label="EarlyEstablishGpuChannel:disabled"/>
@@ -21569,6 +21570,7 @@ from previous Chrome versions.
   <int value="1957192097" label="WebViewLogFirstPartyPageTimeSpent:disabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
+  <int value="1957400667" label="TtcLiveRecipe:disabled"/>
   <int value="1957472162"
       label="AutofillUpstreamEditableExpirationDate:disabled"/>
   <int value="1958041903" label="LauncherKeyShortcutInBestMatch:disabled"/>

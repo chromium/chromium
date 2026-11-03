@@ -5320,6 +5320,16 @@ const FeatureEntry::Choice kPaymentHandlerCustomSizeChoices[] = {
      "PaymentHandlerStaticCustomSize,PaymentHandlerDynamicCustomSize"},
 };
 
+const FeatureEntry::FeatureParam kTtcLiveRecipeFallback[] = {
+    {"LiveRecipe", "fallback"}};
+const FeatureEntry::FeatureParam kTtcLiveRecipeDefault[] = {
+    {"LiveRecipe", "default"}};
+
+const FeatureEntry::FeatureVariation kTtcLiveRecipeVariations[] = {
+    {"Fallback model", kTtcLiveRecipeFallback, nullptr},
+    {"Default model", kTtcLiveRecipeDefault, nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -14235,6 +14245,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"ttc-fre", flag_descriptions::kTtcFreName,
      flag_descriptions::kTtcFreDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(ttc::kTtcFre)},
+
+    {"ttc-live-recipe", flag_descriptions::kTtcLiveRecipeName,
+     flag_descriptions::kTtcLiveRecipeDescription, kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ttc::kTtcLiveRecipe,
+                                    kTtcLiveRecipeVariations,
+                                    "TtcLiveRecipe")},
 
     {"force-webgpu-adapter", flag_descriptions::kForceWebGpuAdapterName,
      flag_descriptions::kForceWebGpuAdapterDescription,

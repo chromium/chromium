@@ -41,6 +41,8 @@ IN_PROC_BROWSER_TEST_F(TtcProtocolBrowserTest, StartSessionSendsSetupRequest) {
   ASSERT_TRUE(sent_frame.Get().has_setup_request());
   EXPECT_EQ(sent_frame.Get().setup_request().audio_codec(),
             proto::AUDIO_CODEC_PCM16K16BIT);
+  EXPECT_EQ(sent_frame.Get().setup_request().model_preference(),
+            proto::MODEL_PREFERENCE_UNSPECIFIED);
 
   // Note: the backend connected state is the transport layer; the session
   // isn't live until the server sets up the application.
