@@ -259,7 +259,7 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 
 # This test specifies to use GL for the ANGLE backend, which conflicts with
 # Graphite since Metal is required for that on Mac.
-[ mac graphite-enabled ] Pixel_OffscreenCanvasIBRCWorkerAngleGL [ Skip ]
+[ mac renderer-graphite-dawn-metal ] Pixel_OffscreenCanvasIBRCWorkerAngleGL [ Skip ]
 
 # Relies on WebglExtension_EXT_color_buffer_half_float, which is not available
 # on these devices.
@@ -357,8 +357,7 @@ crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
 crbug.com/486121429 [ mac intel release no-asan ] Pixel_SVGHuge [ Slow ]
 crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1474637 [ mac amd release no-asan graphite-disabled ] Pixel_SVGHuge [ Skip ]
-crbug.com/381211724 [ mac amd release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
+crbug.com/381211724 [ mac amd release no-asan renderer-graphite-dawn-metal ] Pixel_SVGHuge [ Slow ]
 crbug.com/486121429 [ mac apple ] Pixel_SVGHuge [ Slow ]
 # Win
 crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ Skip ]
@@ -485,7 +484,7 @@ crbug.com/370694819 [ win ] Pixel_WebGPUDestroyed_TransferToOffscreenCanvas* [ F
 # crbug.com/419469465 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ RetryOnFailure ]
 
 # Flaky Timeout on Mac ARM
-crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_ReflectedDiv [ Slow ]
+crbug.com/425739516 [ mac arch-arm64 renderer-graphite-dawn-metal ] Pixel_ReflectedDiv [ Slow ]
 
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ angle-vulkan arm fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
@@ -550,8 +549,8 @@ crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_ar_effect_rainbow_wi
 crbug.com/579078928 [ win target-cpu-32 ] Pixel_MeetEffects_web_gpu_background_blur_gpu_mid [ Failure ]
 
 # Mac AMD flaky directory failures
-crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
-crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
+crbug.com/444653106 [ mac amd-0x7340 renderer-graphite-dawn-metal ] Pixel_CSSFilterEffects [ Slow ]
+crbug.com/444653106 [ mac amd-0x7340 renderer-graphite-dawn-metal ] Pixel_CSSFilterEffects_NoOverlays [ Slow ]
 
 # Flaky all white image on multiple platforms
 crbug.com/510186413 [ linux ] Pixel_PaintWorkletTransform [ RetryOnFailure ]

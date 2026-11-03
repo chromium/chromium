@@ -158,7 +158,7 @@ crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-c
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/371802469 [ amd-0x7340 angle-metal graphite-enabled sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+crbug.com/371802469 [ amd-0x7340 renderer-graphite-dawn-metal sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 
 
 # Win11/AMD RDNA3/3.5 Failures
@@ -253,8 +253,7 @@ crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_o
 # Flakily times out on M2 devices.
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
 crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_1500000 [ Failure ]
-crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
-
+crbug.com/473593123 [ apple-angle-metal-renderer:-apple-m2 renderer-graphite-dawn-metal mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_*_prefer-software [ Failure ]
 

@@ -662,7 +662,7 @@ crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/f
 crbug.com/angleproject/6430 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ amd-0x67ef angle-metal passthrough sonoma ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
-crbug.com/328100306 [ amd angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328100306 [ amd renderer-graphite-dawn-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 ## Metal Intel ##
 
@@ -704,8 +704,8 @@ crbug.com/1334684 [ angle-metal intel sequoia ] deqp/functional/gles3/shaderbuil
 
 
 # WebGL: INVALID_ENUM: getShaderParameter
-crbug.com/444250724 [ amd-0x7340 angle-metal graphite-enabled sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
-crbug.com/444250724 [ angle-metal graphite-enabled intel-0x3e9b sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ amd-0x7340 renderer-graphite-dawn-metal sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ intel-0x3e9b renderer-graphite-dawn-metal sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 
 ## Mac / Apple Silicon ##

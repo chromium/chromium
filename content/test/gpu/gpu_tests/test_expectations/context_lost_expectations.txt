@@ -207,15 +207,15 @@ crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release qualcomm-0x36334330 graphite-enabled ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release qualcomm-0x36334330 graphite-enabled ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
+crbug.com/329145823 [ arch-x86_64 renderer-graphite-dawn-metal mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ arch-x86_64 renderer-graphite-dawn-metal mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 
 # Windows debug causes render process hangs due to slow gpu process restart.
 crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/1416920 [ win debug ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
-crbug.com/384605105 [ angle-metal debug graphite-enabled intel mac no-asan no-clang-coverage ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
+crbug.com/384605105 [ debug renderer-graphite-dawn-metal intel mac no-asan no-clang-coverage ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
 
 # Flakily fails on mac intel debug.
 crbug.com/545524962 [ mac intel-0x3e9b debug ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
@@ -224,7 +224,7 @@ crbug.com/545524962 [ mac intel-0x3e9b debug ] ContextLost_WebGPUUnblockedAfterU
 crbug.com/365565140 [ amd-0x7340 debug arch-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Renderer Hung Possibly just Slow
-crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
+crbug.com/338574390 [ amd-0x7340 debug renderer-graphite-dawn-metal mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 crbug.com/562979541 [ mac intel-0x3e9b debug ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
 
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
