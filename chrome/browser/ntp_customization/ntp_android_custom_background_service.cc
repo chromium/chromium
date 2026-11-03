@@ -5,6 +5,8 @@
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 
 #include <climits>
+#include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -140,7 +142,8 @@ NtpAndroidCustomBackgroundService::NtpAndroidCustomBackgroundService(
           profile->GetPrefs(),
           NtpAndroidBackgroundServiceFactory::GetForProfile(profile),
           prefs::kNtpAndroidCustomBackgroundDict,
-          prefs::kNtpAndroidCustomBackgroundLocalToDevice) {
+          prefs::kNtpAndroidCustomBackgroundLocalToDevice),
+      profile_(profile) {
   active_custom_background_ = GetCustomBackground();
 
   // TODO(crbug.com/488439751): Desktop Android devices manage NTP themes using
@@ -166,9 +169,6 @@ NtpAndroidCustomBackgroundService::NtpAndroidCustomBackgroundService(
 NtpAndroidCustomBackgroundService::~NtpAndroidCustomBackgroundService() {
   if (theme_collection_bridge_) {
     theme_collection_bridge_->DisconnectCustomBackgroundService();
-  }
-  if (synced_theme_bridge_) {
-    synced_theme_bridge_->DisconnectCustomBackgroundService();
   }
 }
 
@@ -200,9 +200,18 @@ void NtpAndroidCustomBackgroundService::SetThemeCollectionBridge(
   theme_collection_bridge_ = bridge;
 }
 
-void NtpAndroidCustomBackgroundService::SetSyncedThemeBridge(
-    NtpSyncedThemeBridge* bridge) {
-  synced_theme_bridge_ = bridge;
+NtpSyncedThemeBridge*
+NtpAndroidCustomBackgroundService::GetOrCreateSyncedThemeBridge() {
+  if (!synced_theme_bridge_) {
+    synced_theme_bridge_ = std::make_unique<NtpSyncedThemeBridge>(profile_);
+  }
+
+  return synced_theme_bridge_.get();
+}
+
+void NtpAndroidCustomBackgroundService::SetSyncedThemeBridgeForTesting(
+    std::unique_ptr<NtpSyncedThemeBridge> bridge) {
+  synced_theme_bridge_ = std::move(bridge);
 }
 
 void NtpAndroidCustomBackgroundService::GetStoredContinuousThemeAndNotify() {

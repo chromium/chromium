@@ -164,14 +164,24 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
   }
 
-  // Attaches `bridge` to `service`, has `service` deliver the stored theme to
-  // it and detaches it again. Tests pass a StrictMock, so any callback they
-  // don't expect fails them.
-  void DeliverStoredTheme(NtpAndroidCustomBackgroundService* service,
-                          MockSyncedThemeBridge* bridge) {
-    service->SetSyncedThemeBridge(bridge);
-    service->GetStoredContinuousThemeAndNotify();
-    service->SetSyncedThemeBridge(nullptr);
+  // Installs a mock synced theme bridge on `service`, which owns it, and
+  // returns it. `service` destroys the mock with itself or when
+  // SetSyncedThemeBridgeForTesting(nullptr) detaches it.
+  template <typename MockBridge = MockSyncedThemeBridge>
+  MockBridge* InstallMockSyncedBridge(
+      NtpAndroidCustomBackgroundService* service) {
+    std::unique_ptr<MockBridge> bridge = std::make_unique<MockBridge>();
+    MockBridge* bridge_ptr = bridge.get();
+    service->SetSyncedThemeBridgeForTesting(std::move(bridge));
+    return bridge_ptr;
+  }
+
+  // Installs a StrictMock synced theme bridge on `service`, so any callback a
+  // test doesn't expect fails it.
+  testing::StrictMock<MockSyncedThemeBridge>* InstallStrictMockSyncedBridge(
+      NtpAndroidCustomBackgroundService* service) {
+    return InstallMockSyncedBridge<testing::StrictMock<MockSyncedThemeBridge>>(
+        service);
   }
 
   std::map<std::string, sync_pb::ThemeAndroidSpecifics> ReadAllSyncData() {
@@ -198,11 +208,11 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
       const sync_pb::ThemeAndroidSpecifics& specifics) {
     service_->SetChromeColor(kTestColorId);
 
-    MockSyncedThemeBridge mock_synced_bridge;
-    service_->SetSyncedThemeBridge(&mock_synced_bridge);
+    MockSyncedThemeBridge* mock_synced_bridge =
+        InstallMockSyncedBridge(service_.get());
 
-    EXPECT_CALL(mock_synced_bridge, OnDefaultThemeSynced()).Times(1);
-    EXPECT_CALL(mock_synced_bridge, OnChromeColorSynced).Times(0);
+    EXPECT_CALL(*mock_synced_bridge, OnDefaultThemeSynced()).Times(1);
+    EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced).Times(0);
 
     service_->OnThemeChangedFromSync(specifics);
 
@@ -211,7 +221,7 @@ class NtpAndroidCustomBackgroundServiceTest : public testing::Test {
                     .empty());
     EXPECT_FALSE(service_->GetCustomBackground().has_value());
 
-    service_->SetSyncedThemeBridge(nullptr);
+    service_->SetSyncedThemeBridgeForTesting(nullptr);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -386,30 +396,30 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_RoutesToThemeCollectionBridge_OnStaticImage) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(1);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
       .Times(0);
 
   service_->SetCustomBackgroundInfo(GURL(kTestValidUrl), GURL(), "", "", GURL(),
                                     kTestCollectionId);
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(
     NtpAndroidCustomBackgroundServiceTest,
     NotifyAboutBackgrounds_RoutesToThemeCollectionBridge_OnInitialDailyRefreshSetup) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(1);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
       .Times(0);
 
   // Initial setup sets an empty URL for the collection.
@@ -427,16 +437,16 @@ TEST_F(
                                 std::move(background_info));
 
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(
     NtpAndroidCustomBackgroundServiceTest,
     NotifyAboutBackgrounds_RoutesToSyncedThemeBridge_OnNextDailyRefreshCycle) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
   // Setup initial active daily refresh with an empty URL first.
   service_->SetCustomBackgroundInfo(GURL(), GURL(), "", "", GURL(),
@@ -449,10 +459,10 @@ TEST_F(
                                 std::move(initial_info));
 
   testing::Mock::VerifyAndClearExpectations(&mock_theme_bridge);
-  testing::Mock::VerifyAndClearExpectations(&mock_synced_bridge);
+  testing::Mock::VerifyAndClearExpectations(mock_synced_bridge);
 
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(0);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/false))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/false))
       .Times(1);
 
   // Simulate subsequent daily refresh cycle image arrival.
@@ -464,13 +474,13 @@ TEST_F(
                                 std::move(background_info));
 
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_NullBridgesSafety) {
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
   // Should safely execute without crashing.
   service_->SetCustomBackgroundInfo(GURL(kTestValidUrl), GURL(), "", "", GURL(),
                                     kTestCollectionId);
@@ -611,9 +621,9 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   ASSERT_TRUE(service_->GetCustomBackground().has_value());
   ASSERT_TRUE(service_->GetCustomBackground()->daily_refresh_enabled);
 
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service_.get());
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
 
   sync_pb::ThemeAndroidSpecifics specifics = CreateTestThemeSpecifics();
   specifics.mutable_ntp_background()->set_refresh_timestamp_unix_epoch_seconds(
@@ -624,16 +634,16 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   std::optional<CustomBackground> bg = service_->GetCustomBackground();
   ASSERT_TRUE(bg.has_value());
   EXPECT_FALSE(bg->daily_refresh_enabled);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_SameBackgroundAfterLocalImage_KeepsLocalImage) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service_.get());
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
   service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
-  testing::Mock::VerifyAndClearExpectations(&mock_synced_bridge);
+  testing::Mock::VerifyAndClearExpectations(mock_synced_bridge);
 
   // A local image is not pushed to sync and leaves the last synced theme in
   // preferences, so MergeFullSyncData() handing over that same server theme
@@ -644,21 +654,20 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
 
   // A background newly chosen on another device does.
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
   sync_pb::ThemeAndroidSpecifics other_specifics = CreateTestThemeSpecifics();
   other_specifics.mutable_ntp_background()->set_url(kTestValidUrl2);
   service_->OnThemeChangedFromSync(other_specifics);
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_SameChromeColor_DoesNotNotifyBridge) {
   service_->SetChromeColor(kTestColorId);
 
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service_.get());
 
   service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
 
@@ -666,7 +675,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                 ->GetDict(prefs::kNtpAndroidChromeColorDict)
                 .FindInt(kNtpAndroidThemeColorIdKey),
             kTestColorId);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
@@ -674,8 +683,8 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service_->SetChromeColor(kTestColorId);
   service_->SelectLocalBackgroundImage(base::FilePath());
 
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service_.get());
 
   // A local image is not pushed to sync, so MergeFullSyncData() hands over the
   // color chosen before it. That must not overwrite the local image.
@@ -684,11 +693,11 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
 
   // A color newly chosen on another device does.
-  EXPECT_CALL(mock_synced_bridge, OnChromeColorSynced(kOtherColorId));
+  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kOtherColorId));
   service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kOtherColorId));
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
@@ -696,8 +705,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service_->SetChromeColor(kTestColorId);
   service_->SelectLocalBackgroundImage(base::FilePath());
 
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service_.get());
 
   // Like a replay of the color chosen before the local image, the default
   // theme must not overwrite it, whichever theme the local image replaced.
@@ -705,40 +713,38 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        OnThemeChangedFromSync_DefaultThemeAlreadyApplied_DoesNotNotifyBridge) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service_.get());
 
   service_->OnThemeChangedFromSync(sync_pb::ThemeAndroidSpecifics());
 
   EXPECT_FALSE(service_->GetCustomBackground().has_value());
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_RoutesToSyncedThemeBridge_OnSyncUpdate) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(0);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
       .Times(1);
 
   service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
 
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_ThemeCollection) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
       CreateServiceWithThemeSyncEnabled();
 
@@ -748,30 +754,32 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
   // Nothing changed in preferences, so the generic observers aren't notified.
   service->AddObserver(&observer_);
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service.get());
   EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated()).Times(0);
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true));
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  service->GetStoredContinuousThemeAndNotify();
 
   service->RemoveObserver(&observer_);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_ChromeColor) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
       CreateServiceWithThemeSyncEnabled();
 
   service->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
 
-  EXPECT_CALL(mock_synced_bridge, OnChromeColorSynced(kTestColorId));
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service.get());
+  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kTestColorId));
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  service->GetStoredContinuousThemeAndNotify();
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_DefaultTheme) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
       CreateServiceWithThemeSyncEnabled();
 
@@ -780,14 +788,15 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   ASSERT_FALSE(profile_->GetPrefs()->GetUserPrefValue(
       prefs::kNtpAndroidCustomBackgroundDict));
 
-  EXPECT_CALL(mock_synced_bridge, OnDefaultThemeSynced());
+  testing::StrictMock<MockSyncedThemeBridge>* mock_synced_bridge =
+      InstallStrictMockSyncedBridge(service.get());
+  EXPECT_CALL(*mock_synced_bridge, OnDefaultThemeSynced());
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  service->GetStoredContinuousThemeAndNotify();
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_InvalidBackgroundDict_DoesNotNotify) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
       CreateServiceWithThemeSyncEnabled();
 
@@ -799,12 +808,12 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                                 std::move(invalid_info));
   ASSERT_FALSE(service->GetCustomBackground().has_value());
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service.get());
+  service->GetStoredContinuousThemeAndNotify();
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_LocalToDevice_DoesNotNotify) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
       CreateServiceWithThemeSyncEnabled();
 
@@ -812,12 +821,12 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   ASSERT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kNtpAndroidCustomBackgroundLocalToDevice));
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service.get());
+  service->GetStoredContinuousThemeAndNotify();
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        GetStoredContinuousThemeAndNotify_FeatureDisabled_DoesNotNotify) {
-  testing::StrictMock<MockSyncedThemeBridge> mock_synced_bridge;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(syncer::kNewTabPageCustomizationThemeSync);
   std::unique_ptr<NtpAndroidCustomBackgroundService> service =
@@ -831,26 +840,26 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                                    kTestCollectionId);
   ASSERT_TRUE(service->GetCustomBackground().has_value());
 
-  DeliverStoredTheme(service.get(), &mock_synced_bridge);
+  InstallStrictMockSyncedBridge(service.get());
+  service->GetStoredContinuousThemeAndNotify();
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_RoutesPrefetchAfterSync_AsNotSync) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
-
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
       .Times(1);
   service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
-  testing::Mock::VerifyAndClearExpectations(&mock_synced_bridge);
+  testing::Mock::VerifyAndClearExpectations(mock_synced_bridge);
 
   // The user then enables daily refresh for another collection locally. The
   // first image is the initial setup, the second one is a pre-fetch. Neither
   // may be reported as a sync update.
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
       .Times(0);
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(1);
   base::DictValue first_image;
@@ -860,7 +869,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   profile_->GetPrefs()->SetDict(prefs::kNtpAndroidCustomBackgroundDict,
                                 std::move(first_image));
 
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/false))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/false))
       .Times(1);
   base::DictValue next_image;
   next_image.Set(kNtpCustomBackgroundURL, kTestValidUrl2);
@@ -870,22 +879,22 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                                 std::move(next_image));
 
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        NotifyAboutBackgrounds_RoutesLocalStaticImageAfterSync_ToThemeBridge) {
   MockThemeCollectionBridge mock_theme_bridge;
-  MockSyncedThemeBridge mock_synced_bridge;
   service_->SetThemeCollectionBridge(&mock_theme_bridge);
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(/*is_sync=*/true))
       .Times(1);
   service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
-  testing::Mock::VerifyAndClearExpectations(&mock_synced_bridge);
+  testing::Mock::VerifyAndClearExpectations(mock_synced_bridge);
 
-  EXPECT_CALL(mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
+  EXPECT_CALL(*mock_synced_bridge, OnThemeCollectionUpdated(testing::_))
       .Times(0);
   EXPECT_CALL(mock_theme_bridge, OnCustomBackgroundImageUpdated()).Times(1);
   service_->SetCustomBackgroundInfo(GURL(kTestValidUrl2), GURL(), "", "",
@@ -893,7 +902,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   EXPECT_TRUE(service_->GetCustomBackground().has_value());
 
   service_->SetThemeCollectionBridge(nullptr);
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
@@ -1192,11 +1201,11 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
                                     kTestCollectionId);
   EXPECT_TRUE(service_->GetCustomBackground().has_value());
 
-  MockSyncedThemeBridge mock_synced_bridge;
-  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  MockSyncedThemeBridge* mock_synced_bridge =
+      InstallMockSyncedBridge(service_.get());
 
-  EXPECT_CALL(mock_synced_bridge, OnChromeColorSynced(kTestColorId)).Times(1);
-  EXPECT_CALL(mock_synced_bridge, OnDefaultThemeSynced()).Times(0);
+  EXPECT_CALL(*mock_synced_bridge, OnChromeColorSynced(kTestColorId)).Times(1);
+  EXPECT_CALL(*mock_synced_bridge, OnDefaultThemeSynced()).Times(0);
 
   service_->OnThemeChangedFromSync(CreateChromeColorSpecifics(kTestColorId));
 
@@ -1208,7 +1217,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
       prefs::kNtpAndroidCustomBackgroundDict);
   EXPECT_TRUE(pref == nullptr || pref->GetDict().empty());
 
-  service_->SetSyncedThemeBridge(nullptr);
+  service_->SetSyncedThemeBridgeForTesting(nullptr);
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,

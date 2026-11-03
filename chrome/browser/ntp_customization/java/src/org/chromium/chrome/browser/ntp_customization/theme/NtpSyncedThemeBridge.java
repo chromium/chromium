@@ -8,14 +8,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
-import org.jni_zero.JniTypeToken;
-import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -24,12 +23,15 @@ import org.chromium.url.GURL;
  * The JNI bridge that deal with theme collections for the NTP. This class is used to store the most
  * up-to-date theme collection information, which can originate from the current manual settings, a
  * daily update, or a profile sync. The stored value will be used when Chrome is relaunched.
+ *
+ * <p>The C++ NtpSyncedThemeBridge creates and owns this object, and
+ * NtpAndroidCustomBackgroundService owns the C++ bridge for the lifetime of the profile. Java
+ * doesn't hold a native pointer: calls into native are keyed by the {@link Profile}, so there is
+ * nothing to destroy on the Java side, which the process-wide {@link NtpSyncedThemeManager}
+ * couldn't do in time anyway.
  */
 @NullMarked
 public class NtpSyncedThemeBridge {
-    @JniType("::NtpSyncedThemeBridge")
-    interface NativeNtpSyncedThemeBridge extends JniTypeToken {}
-
     /** Observer interface for synced theme updates. */
     public interface Observer {
         /**
@@ -47,7 +49,7 @@ public class NtpSyncedThemeBridge {
                 boolean isImageFromSync);
 
         /** Dispatched when a Chrome color arrives from sync. */
-        void onChromeColorSynced(int colorId);
+        void onChromeColorSynced(@NtpThemeColorId int colorId);
 
         /** Dispatched when the theme is reset to default from sync. */
         void onDefaultThemeSynced();
@@ -65,46 +67,61 @@ public class NtpSyncedThemeBridge {
         }
     }
 
-    private final Observer mObserver;
-    private @Nullable JniUniquePtr<NativeNtpSyncedThemeBridge> mNativeNtpSyncedThemeBridge;
+    private final Profile mProfile;
+    private @Nullable Observer mObserver;
 
     /**
-     * Constructs a new NtpSyncedThemeBridge with an Observer.
+     * Returns the bridge of the given profile, creating its C++ side on first use.
      *
-     * @param profile The profile for which this bridge is created.
-     * @param observer The observer to receive synced theme changes.
+     * @param profile The original (non-incognito) profile.
      */
-    public NtpSyncedThemeBridge(Profile profile, Observer observer) {
-        mObserver = observer;
-        mNativeNtpSyncedThemeBridge = NtpSyncedThemeBridgeJni.get().init(profile, this);
+    public static NtpSyncedThemeBridge getForProfile(Profile profile) {
+        ThreadUtils.assertOnUiThread();
+        return NtpSyncedThemeBridgeJni.get().getForProfile(profile);
     }
 
-    /** Cleans up the C++ side of this class. */
-    public void destroy() {
-        if (mNativeNtpSyncedThemeBridge != null) {
-            mNativeNtpSyncedThemeBridge.destroy();
-            mNativeNtpSyncedThemeBridge = null;
-        }
+    /**
+     * Called by the C++ bridge to create its Java peer.
+     *
+     * @param profile The profile the bridge belongs to.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    static NtpSyncedThemeBridge create(@JniType("Profile*") Profile profile) {
+        return new NtpSyncedThemeBridge(profile);
+    }
+
+    private NtpSyncedThemeBridge(Profile profile) {
+        mProfile = profile;
+    }
+
+    /**
+     * Sets the observer which receives the synced theme changes, replacing the previous one.
+     *
+     * @param observer The observer to receive synced theme changes.
+     */
+    public void setObserver(Observer observer) {
+        mObserver = observer;
+    }
+
+    /** Clears the observer so synced theme changes are no longer delivered. */
+    public void resetObserver() {
+        mObserver = null;
     }
 
     /** Fetches the next image for a theme collection with daily refresh enabled. */
     public void fetchNextThemeCollectionImage() {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
-        NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mNativeNtpSyncedThemeBridge);
+        NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mProfile);
     }
 
     /**
      * Delivers the theme stored in native preferences to the observer as if it had just arrived
      * from sync. Sync doesn't re-emit a theme that is already stored, e.g. one delivered in a
-     * previous session or before this bridge was attached, so the observer requests it once after
+     * previous session or before the observer was attached, so the observer requests it once after
      * attaching. The observer drops a theme that this device already shows.
      */
     public void getStoredContinuousThemeAndNotify() {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
-        NtpSyncedThemeBridgeJni.get()
-                .getStoredContinuousThemeAndNotify(mNativeNtpSyncedThemeBridge);
+        NtpSyncedThemeBridgeJni.get().getStoredContinuousThemeAndNotify(mProfile);
     }
 
     /**
@@ -112,24 +129,18 @@ public class NtpSyncedThemeBridge {
      *
      * @param colorId The ID of the Chrome color.
      */
-    public void setChromeColor(int colorId) {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
-        NtpSyncedThemeBridgeJni.get().setChromeColor(mNativeNtpSyncedThemeBridge, colorId);
+    public void setChromeColor(@NtpThemeColorId int colorId) {
+        NtpSyncedThemeBridgeJni.get().setChromeColor(mProfile, colorId);
     }
 
     /** Resets the New Tab Page theme to default and notifies the sync bridge. */
     public void resetCustomBackgroundInfo() {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
-        NtpSyncedThemeBridgeJni.get().resetCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
+        NtpSyncedThemeBridgeJni.get().resetCustomBackgroundInfo(mProfile);
     }
 
     /** Sets the user-uploaded background image and marks it local to the device. */
     public void selectLocalBackgroundImage() {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
-        NtpSyncedThemeBridgeJni.get().selectLocalBackgroundImage(mNativeNtpSyncedThemeBridge);
+        NtpSyncedThemeBridgeJni.get().selectLocalBackgroundImage(mProfile);
     }
 
     /**
@@ -152,12 +163,10 @@ public class NtpSyncedThemeBridge {
             GURL attributionActionUrl,
             @Nullable @ColorInt Integer primaryColor,
             boolean isDailyRefresh) {
-        if (mNativeNtpSyncedThemeBridge == null) return;
-
         int color = primaryColor != null ? primaryColor : 0;
         NtpSyncedThemeBridgeJni.get()
                 .updateCustomBackgroundPrefsWithColor(
-                        mNativeNtpSyncedThemeBridge,
+                        mProfile,
                         backgroundUrl,
                         collectionId,
                         attributionLine1,
@@ -177,12 +186,10 @@ public class NtpSyncedThemeBridge {
     @CalledByNative
     @VisibleForTesting
     void onThemeCollectionUpdated(boolean isImageFromSync) {
-        if (mNativeNtpSyncedThemeBridge == null) {
-            return;
-        }
+        if (mObserver == null) return;
 
         SyncedBackgroundInfo syncedBackgroundInfo =
-                NtpSyncedThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
+                NtpSyncedThemeBridgeJni.get().getCustomBackgroundInfo(mProfile);
         mObserver.onThemeCollectionImageAvailable(
                 syncedBackgroundInfo != null ? syncedBackgroundInfo.info : null,
                 syncedBackgroundInfo != null ? syncedBackgroundInfo.primaryColor : null,
@@ -197,7 +204,9 @@ public class NtpSyncedThemeBridge {
      */
     @CalledByNative
     @VisibleForTesting
-    void onChromeColorSynced(int colorId) {
+    void onChromeColorSynced(@NtpThemeColorId int colorId) {
+        if (mObserver == null) return;
+
         mObserver.onChromeColorSynced(colorId);
     }
 
@@ -208,6 +217,8 @@ public class NtpSyncedThemeBridge {
     @CalledByNative
     @VisibleForTesting
     void onDefaultThemeSynced() {
+        if (mObserver == null) return;
+
         mObserver.onDefaultThemeSynced();
     }
 
@@ -252,23 +263,23 @@ public class NtpSyncedThemeBridge {
 
     @NativeMethods
     public interface Natives {
-        JniUniquePtr<NativeNtpSyncedThemeBridge> init(Profile profile, NtpSyncedThemeBridge caller);
+        NtpSyncedThemeBridge getForProfile(@JniType("Profile*") Profile profile);
 
-        void fetchNextThemeCollectionImage(JniPtr<NativeNtpSyncedThemeBridge> self);
+        void fetchNextThemeCollectionImage(@JniType("Profile*") Profile profile);
 
         @Nullable SyncedBackgroundInfo getCustomBackgroundInfo(
-                JniPtr<NativeNtpSyncedThemeBridge> self);
+                @JniType("Profile*") Profile profile);
 
-        void getStoredContinuousThemeAndNotify(JniPtr<NativeNtpSyncedThemeBridge> self);
+        void getStoredContinuousThemeAndNotify(@JniType("Profile*") Profile profile);
 
-        void setChromeColor(JniPtr<NativeNtpSyncedThemeBridge> self, int colorId);
+        void setChromeColor(@JniType("Profile*") Profile profile, @NtpThemeColorId int colorId);
 
-        void resetCustomBackgroundInfo(JniPtr<NativeNtpSyncedThemeBridge> self);
+        void resetCustomBackgroundInfo(@JniType("Profile*") Profile profile);
 
-        void selectLocalBackgroundImage(JniPtr<NativeNtpSyncedThemeBridge> self);
+        void selectLocalBackgroundImage(@JniType("Profile*") Profile profile);
 
         void updateCustomBackgroundPrefsWithColor(
-                JniPtr<NativeNtpSyncedThemeBridge> self,
+                @JniType("Profile*") Profile profile,
                 @JniType("GURL") GURL backgroundUrl,
                 @JniType("std::string") String collectionId,
                 @JniType("std::string") @Nullable String attributionLine1,

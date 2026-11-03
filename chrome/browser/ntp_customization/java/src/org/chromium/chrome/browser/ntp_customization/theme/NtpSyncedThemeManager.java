@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformTyp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
-/** Manages the lifecycle of NtpSyncedThemeBridge and observes committed theme changes. */
+/** Observes the profile's NtpSyncedThemeBridge and reports committed theme changes to it. */
 @NullMarked
 public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
     private static @Nullable NtpSyncedThemeManager sInstanceForTesting;
@@ -98,9 +98,10 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
     }
 
     /**
-     * Attaches the manager to the given profile: creates the {@link NtpSyncedThemeBridge} and the
-     * {@link ImageFetcher}. Calling this again with the same profile is a no-op; calling it with a
-     * different profile releases the previous profile's state first.
+     * Attaches the manager to the given profile: observes the profile's {@link
+     * NtpSyncedThemeBridge} and creates the {@link ImageFetcher}. Calling this again with the same
+     * profile is a no-op; calling it with a different profile releases the previous profile's state
+     * first.
      *
      * @param profile The original (non-incognito) profile.
      */
@@ -114,21 +115,19 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         destroy();
         mProfile = profile;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
-        mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(profile, this);
-        // The singleton outlives a test, so detach it between tests. Otherwise the next test's
-        // activity would skip the attach above and keep the previous test's bridge.
-        ResettersForTesting.register(this::destroy);
-        // A theme synced before the bridge attached is only stored in native preferences.
+        mNtpSyncedThemeBridge = NtpSyncedThemeBridge.getForProfile(profile);
+        mNtpSyncedThemeBridge.setObserver(this);
+        // A theme synced before the observer attached is only stored in native preferences.
         mNtpSyncedThemeBridge.getStoredContinuousThemeAndNotify();
     }
 
     /**
-     * Releases the profile-dependent state: the C++ side of {@link NtpSyncedThemeBridge}, the
-     * {@link ImageFetcher}, and any in-flight download bookkeeping.
+     * Releases the profile-dependent state: stops observing the {@link NtpSyncedThemeBridge},
+     * destroys the {@link ImageFetcher}, and drops any in-flight download bookkeeping.
      */
     public void destroy() {
         if (mNtpSyncedThemeBridge != null) {
-            mNtpSyncedThemeBridge.destroy();
+            mNtpSyncedThemeBridge.resetObserver();
             mNtpSyncedThemeBridge = null;
         }
         if (mImageFetcher != null) {
@@ -273,7 +272,7 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
      * @param colorId The synced color ID.
      */
     @Override
-    public void onChromeColorSynced(int colorId) {
+    public void onChromeColorSynced(@NtpThemeColorId int colorId) {
         if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
             onDefaultThemeSynced();
             return;
