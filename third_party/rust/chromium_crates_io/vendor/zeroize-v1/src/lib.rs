@@ -273,7 +273,6 @@ where
 {
     fn zeroize(&mut self) {
         volatile_write(self, Z::default());
-        optimization_barrier(self);
     }
 }
 
@@ -307,7 +306,6 @@ macro_rules! impl_zeroize_for_non_zero {
                         None => unreachable!(),
                     };
                     volatile_write(self, ONE);
-                    optimization_barrier(self);
                 }
             }
         )+
@@ -401,8 +399,6 @@ where
         // already done semantically. Any value which needed to be dropped will have been
         // done so by take().
         unsafe { ptr::write_volatile(self, None) }
-
-        optimization_barrier(self);
     }
 }
 
@@ -415,10 +411,8 @@ impl<Z> ZeroizeOnDrop for Option<Z> where Z: ZeroizeOnDrop {}
 /// [`MaybeUninit`] removes all invariants.
 impl<Z> Zeroize for MaybeUninit<Z> {
     fn zeroize(&mut self) {
-        // Safety:
-        // `MaybeUninit` is valid for any byte pattern, including zeros.
+        // SAFETY: `MaybeUninit` is valid for any byte pattern, including zeros.
         unsafe { ptr::write_volatile(self, MaybeUninit::zeroed()) }
-        optimization_barrier(self);
     }
 }
 
@@ -444,7 +438,6 @@ impl<Z> Zeroize for [MaybeUninit<Z>] {
         // and 0 is a valid value for `MaybeUninit<Z>`
         // The memory of the slice should not wrap around the address space.
         unsafe { volatile_set(ptr, MaybeUninit::zeroed(), size) }
-        optimization_barrier(self);
     }
 }
 
@@ -470,7 +463,6 @@ where
         // `self.len()` is also not larger than an `isize`, because of the assertion above.
         // The memory of the slice should not wrap around the address space.
         unsafe { volatile_set(self.as_mut_ptr(), Z::default(), self.len()) };
-        optimization_barrier(self);
     }
 }
 
@@ -523,17 +515,20 @@ where
 {
     /// "Best effort" zeroization for `Vec`.
     ///
-    /// Ensures the entire capacity of the `Vec` is zeroed. Cannot ensure that
+    /// Call `Zeroize` on all `Vec` elements and spare capacity. Cannot ensure that
     /// previous reallocations did not leave values on the heap.
     fn zeroize(&mut self) {
+        // Zero the spare (uninitialized) capacity first, i.e. everything
+        // beyond `len`. This must happen before `clear()` resets `len` to 0,
+        // otherwise `spare_capacity_mut()` would cover the whole allocation
+        // and re-zero the initialized elements a second time below.
+        self.spare_capacity_mut().zeroize();
+
         // Zeroize all the initialized elements.
         self.iter_mut().zeroize();
 
-        // Set the Vec's length to 0 and drop all the elements.
+        // Set the Vec's length to 0 and drop all the (already-zeroized) elements.
         self.clear();
-
-        // Zero the full capacity of `Vec`.
-        self.spare_capacity_mut().zeroize();
     }
 }
 
@@ -599,9 +594,15 @@ impl Zeroize for CString {
 ///
 /// `Zeroizing<T>` is defined with `repr(transparent)`, which means it is
 /// guaranteed to have the same physical representation as the underlying type.
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Default, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Zeroizing<Z: Zeroize + ?Sized>(Z);
+
+impl<Z: Zeroize + ?Sized> core::fmt::Debug for Zeroizing<Z> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("Zeroizing").finish_non_exhaustive()
+    }
+}
 
 impl<Z> Zeroizing<Z>
 where
@@ -820,7 +821,6 @@ pub unsafe fn zeroize_flat_type<F: Sized>(data: *mut F) {
     unsafe {
         volatile_set(data.cast::<u8>(), 0, size);
     }
-    optimization_barrier(&data);
 }
 
 /// Internal module used as support for `AssertZeroizeOnDrop`.

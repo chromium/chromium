@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "zeroize"
-version = "1.9.0"
+version = "1.9.1"
 authors = ["The RustCrypto Project Developers"]
 build = false
 autolib = false
@@ -91,7 +91,6 @@ cast_precision_loss = "warn"
 cast_sign_loss = "warn"
 checked_conversions = "warn"
 doc_markdown = "warn"
-from_iter_instead_of_collect = "warn"
 implicit_saturating_sub = "warn"
 manual_assert = "warn"
 map_unwrap_or = "warn"

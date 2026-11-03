@@ -91,7 +91,9 @@ pub fn optimization_barrier<T: ?Sized>(val: &T) {
         /// `#[inline(never)]` and `read_volatile`.
         #[inline(never)]
         fn custom_black_box(p: *const u8) {
-            let _ = unsafe { core::ptr::read_volatile(p) };
+            use core::mem::MaybeUninit;
+
+            let _: MaybeUninit<u8> = unsafe { core::ptr::read_volatile(p.cast()) };
         }
 
         core::hint::black_box(val);

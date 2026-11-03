@@ -1,6 +1,6 @@
 [package]
 name = "zeroize"
-version = "1.9.0"
+version = "1.9.1"
 authors = ["The RustCrypto Project Developers"]
 edition = "2024"
 rust-version = "1.85"

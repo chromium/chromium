@@ -44,7 +44,7 @@ semantic versioning guarantees).
 
 ## Example
 
-```
+```rust
 use zeroize::Zeroize;
 
 // Protip: don't embed secrets in your source code.

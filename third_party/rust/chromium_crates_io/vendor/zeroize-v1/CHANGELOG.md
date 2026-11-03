@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.9.1 (2026-10-06)
+### Changed
+- Replace `Zeroizing`'s derived `Debug` with opaque impl ([#1497])
+
+### Removed
+- Internal use of `optimization_barrier` ([#1535])
+
+### Fixed
+- Avoid double-zeroizing `Vec`'s initialized elements ([#1525])
+- False positive failures in proxy allocator test ([#1538])
+- Potential uninitialized memory read in fallback code used by `optimization_barrier` ([#1551])
+
+[#1497]: https://github.com/RustCrypto/utils/pull/1497
+[#1525]: https://github.com/RustCrypto/utils/pull/1525
+[#1535]: https://github.com/RustCrypto/utils/pull/1535
+[#1538]: https://github.com/RustCrypto/utils/pull/1538
+[#1551]: https://github.com/RustCrypto/utils/pull/1551
+
 ## 1.9.0 (2026-06-12)
 ### Added
 - `Zeroizing` is now `repr(transparent)` ([#1253])

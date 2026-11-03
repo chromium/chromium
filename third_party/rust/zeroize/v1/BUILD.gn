@@ -31,7 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "zeroize"
   cargo_pkg_description = "Securely clear secrets from memory with a simple trait built on stable Rust primitives which guarantee memory is zeroed using an operation will not be 'optimized away' by the compiler. Uses a portable pure Rust implementation that works everywhere, even WASM!"
   cargo_pkg_repository = "https://github.com/RustCrypto/utils"
-  cargo_pkg_version = "1.9.0"
+  cargo_pkg_version = "1.9.1"
 
   allow_unsafe = true
 
