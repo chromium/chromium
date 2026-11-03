@@ -124,18 +124,7 @@ extension UIView {
     mirrorViewInWindow.isUserInteractionEnabled = false
     mirrorViewInWindow.translatesAutoresizingMaskIntoConstraints = false
     mirrorViewInWindow.onLayoutChanged = { [weak self] _ in
-      guard let self = self else { return }
-      if self.cr_forcesSynchronousLayoutUpdates == true {
-        self.cr_onWindowCoordinatesChanged?(self)
-      } else {
-        // Callback on the next turn of the run loop to wait for AutoLayout to have updated the
-        // entire hierarchy. (It can happen that AutoLayout updates the mirror view before the
-        // mirrored view.)
-        DispatchQueue.main.async { [weak self] in
-          guard let self = self else { return }
-          self.cr_onWindowCoordinatesChanged?(self)
-        }
-      }
+      self?.onMirrorViewLayoutChanged()
     }
 
     window.insertSubview(mirrorViewInWindow, at: 0)
@@ -147,6 +136,21 @@ extension UIView {
     ])
 
     self.mirrorViewInWindow = mirrorViewInWindow
+  }
+
+  /// Called when the mirror view's layout changes.
+  private func onMirrorViewLayoutChanged() {
+    if cr_forcesSynchronousLayoutUpdates {
+      cr_onWindowCoordinatesChanged?(self)
+    } else {
+      // Callback on the next turn of the run loop to wait for AutoLayout to have updated the
+      // entire hierarchy. (It can happen that AutoLayout updates the mirror view before the
+      // mirrored view.)
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else { return }
+        self.cr_onWindowCoordinatesChanged?(self)
+      }
+    }
   }
 
   /// Removes the mirror view added by a call to `addMirrorViewInWindow`.
