@@ -42,6 +42,8 @@ bool VerifyClosed(int fd) {
   return true;
 }
 
+// Retrieves the `PlatformFileAttachment` at `id` from `set` and takes ownership
+// of its underlying file descriptor.
 int GetFdAt(MessageAttachmentSet* set, int id) {
   return static_cast<internal::PlatformFileAttachment&>(
              *set->GetAttachmentAt(id))
@@ -53,6 +55,8 @@ int GetFdAt(MessageAttachmentSet* set, int id) {
 // that no real descriptor will accidentally be closed.
 static const int kFDBase = 50000;
 
+// Verifies that adding a non-owning `PlatformFileAttachment` updates the size
+// and emptiness of `MessageAttachmentSet`.
 TEST(MessageAttachmentSet, BasicAdd) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
@@ -68,6 +72,8 @@ TEST(MessageAttachmentSet, BasicAdd) {
   set->CommitAllDescriptors();
 }
 
+// Verifies that adding an owning `PlatformFileAttachment` and calling
+// `CommitAllDescriptors()` closes the underlying file descriptor.
 TEST(MessageAttachmentSet, BasicAddAndClose) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
@@ -83,6 +89,9 @@ TEST(MessageAttachmentSet, BasicAddAndClose) {
 
   ASSERT_TRUE(VerifyClosed(fd));
 }
+
+// Verifies that `MessageAttachmentSet` rejects file descriptor attachments
+// beyond `MessageAttachmentSet::kMaxDescriptorsPerMessage`.
 TEST(MessageAttachmentSet, MaxSize) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
@@ -96,6 +105,8 @@ TEST(MessageAttachmentSet, MaxSize) {
   set->CommitAllDescriptors();
 }
 
+// Verifies that attachments in `MessageAttachmentSet` can be retrieved in
+// sequential index order and cannot be re-read once consumed.
 TEST(MessageAttachmentSet, WalkInOrder) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
@@ -114,6 +125,8 @@ TEST(MessageAttachmentSet, WalkInOrder) {
   set->CommitAllDescriptors();
 }
 
+// Verifies that `GetAttachmentAt()` returns null when attempting to read
+// attachments out of sequential order.
 TEST(MessageAttachmentSet, WalkWrongOrder) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
@@ -130,12 +143,9 @@ TEST(MessageAttachmentSet, WalkWrongOrder) {
   set->CommitAllDescriptors();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DontClose DISABLED_DontClose
-#else
-#define MAYBE_DontClose DontClose
-#endif
-TEST(MessageAttachmentSet, MAYBE_DontClose) {
+// Verifies that `CommitAllDescriptors()` does not close a file descriptor
+// added via the non-owning `PlatformFileAttachment` constructor.
+TEST(MessageAttachmentSet, DontClose) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
   const int fd = GetSafeFd();
@@ -145,6 +155,8 @@ TEST(MessageAttachmentSet, MAYBE_DontClose) {
   ASSERT_FALSE(VerifyClosed(fd));
 }
 
+// Verifies that `CommitAllDescriptors()` closes a file descriptor added via
+// the owning `PlatformFileAttachment` constructor.
 TEST(MessageAttachmentSet, DoClose) {
   scoped_refptr<MessageAttachmentSet> set(new MessageAttachmentSet);
 
