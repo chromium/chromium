@@ -17,13 +17,16 @@ class FakeBrowserBoundKey : public BrowserBoundKey {
  public:
   // Constructs a fake browser bound key that returns `identifier`,
   // `public_key_as_cose_key`, and `signature` from the respective calls.
-  // `algorithm_identifier` is the COSE Algorithm identifier that
-  // `FakeBrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId()`
-  // will match. `Sign()` will compare its input, against
-  // `expected_client_data`, returning an empty signature when these do not
-  // match.
-  // Set `is_new` to false when the key is expected to be retrieved even when
-  // its algorithm is not listed.
+  // `algorithm_identifier` is the COSE Algorithm identifier matched by
+  // `FakeBrowserBoundKeyStore::GetOrCreateBrowserBoundKeyForCredentialId()`.
+  // `Sign()` compares its input against `expected_client_data`, returning an
+  // empty signature when these do not match.
+  //
+  // Because `FakeBrowserBoundKeyStore` requires keys to be pre-seeded via
+  // `PutFakeKey()`, `is_new` controls whether the store treats the key as newly
+  // created (true, requires `algorithm_identifier` to match
+  // `allowed_algorithms`) or pre-existing (false, returned regardless of
+  // `allowed_algorithms`).
   FakeBrowserBoundKey(std::vector<uint8_t> identifier,
                       std::vector<uint8_t> public_key_as_cose_key,
                       std::vector<uint8_t> signature,

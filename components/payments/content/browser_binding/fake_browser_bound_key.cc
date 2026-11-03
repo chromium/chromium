@@ -37,6 +37,7 @@ FakeBrowserBoundKey& FakeBrowserBoundKey::operator=(
   identifier_ = other.identifier_;
   public_key_as_cose_key_ = other.public_key_as_cose_key_;
   signature_ = other.signature_;
+  algorithm_identifier_ = other.algorithm_identifier_;
   expected_client_data_ = other.expected_client_data_;
   is_new_ = other.is_new_;
   return *this;

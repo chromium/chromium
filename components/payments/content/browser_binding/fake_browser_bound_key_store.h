@@ -7,6 +7,8 @@
 
 #include <cstdint>
 #include <map>
+#include <memory>
+#include <optional>
 #include <vector>
 
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
@@ -16,13 +18,19 @@ namespace payments {
 
 class BrowserBoundKey;
 
-// A fake used in tests to provide BrowserBoundKeyStore.
+// An in-memory BrowserBoundKeyStore fake that returns keys pre-populated via
+// `PutFakeKey()`. `GetOrCreateBrowserBoundKeyForCredentialId()` treats a stored
+// key as newly created (requiring `allowed_algorithms` to match) when
+// `FakeBrowserBoundKey::is_new()` is true, or as pre-existing (ignoring
+// `allowed_algorithms`) when false.
 //
-// scoped_refptr<FakeBrowserBoundKeyStore> fake_key_store =
-//     base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-// fake_key_store.PutFakeKey(
-//     FakeBrowserBoundKey(/*browser_bound_key_id=*/..., /*public_key=*/...,
-//         /*signature=*/..., expected_client_data=*/...);
+// Example usage:
+//   scoped_refptr<FakeBrowserBoundKeyStore> fake_key_store =
+//       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
+//   fake_key_store->PutFakeKey(FakeBrowserBoundKey(
+//       /*identifier=*/..., /*public_key_as_cose_key=*/...,
+//       /*signature=*/..., /*algorithm_identifier=*/...,
+//       /*expected_client_data=*/...));
 class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
  public:
   FakeBrowserBoundKeyStore();
@@ -30,18 +38,21 @@ class FakeBrowserBoundKeyStore : public BrowserBoundKeyStore {
   // BrowserBoundKeyStore:
   std::unique_ptr<BrowserBoundKey> GetOrCreateBrowserBoundKeyForCredentialId(
       const std::vector<uint8_t>& credential_id,
-      const std::vector<device::PublicKeyCredentialParams::CredentialInfo>&
-          allowed_algorithms) override;
+      const CredentialInfoList& allowed_algorithms) override;
   void DeleteBrowserBoundKey(std::vector<uint8_t> bbk_id) override;
   bool GetDeviceSupportsHardwareKeys() override;
 
-  // Insert a fake key. If the optional `bbk_id` is not provided, the key's own
-  // identifier will be used as the map key for retrieving the BBK.
-  void PutFakeKey(FakeBrowserBoundKey bbk,
-                  std::optional<std::vector<uint8_t>> bbk_id = std::nullopt);
+  // Inserts (or replaces) a fake key. By default, the key is indexed by
+  // `bbk.GetIdentifier()`. `requested_bbk_id` can be provided to simulate
+  // platforms (such as Desktop) where key creation ignores the ID passed to
+  // `GetOrCreateBrowserBoundKeyForCredentialId()` and generates a new
+  // `bbk.GetIdentifier()`.
+  void PutFakeKey(
+      FakeBrowserBoundKey bbk,
+      std::optional<std::vector<uint8_t>> requested_bbk_id = std::nullopt);
 
-  // Return whether the key with identifier `bbk_id` is present.
-  bool ContainsFakeKey(std::vector<uint8_t> bbk_id) const;
+  // Returns whether the key with identifier `bbk_id` is present.
+  bool ContainsFakeKey(const std::vector<uint8_t>& bbk_id) const;
 
   // Sets the value returned by GetDeviceSupportsHardwareKeys().
   void SetDeviceSupportsHardwareKeys(bool value) {
