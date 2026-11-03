@@ -205,8 +205,8 @@ crbug.com/329145823 [ win release intel ] GpuCrash_InfoForHardwareGpu [ Failure 
 crbug.com/329145823 [ win release intel ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ win release qualcomm-0x36334330 graphite-enabled ] GpuCrash_InfoForHardwareGpu [ Failure ]
-crbug.com/329145823 [ win release qualcomm-0x36334330 graphite-enabled ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
+crbug.com/329145823 [ win release qualcomm-0x36334330 renderer-graphite-dawn-d3d11 ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release qualcomm-0x36334330 renderer-graphite-dawn-d3d11 ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ arch-x86_64 renderer-graphite-dawn-metal mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ arch-x86_64 renderer-graphite-dawn-metal mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 

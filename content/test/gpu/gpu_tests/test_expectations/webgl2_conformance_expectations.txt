@@ -578,7 +578,7 @@ crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader
 crbug.com/angleproject/482223016 [ no-passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Skip ]
 
 # Persistent flaking on Windows and Mac/M1
-crbug.com/365680830 [ arch-x86_64 angle-d3d11 graphite-enabled win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+crbug.com/365680830 [ arch-x86_64 angle-d3d11 renderer-graphite-dawn-d3d11 win ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 crbug.com/365680830 [ angle-metal arch-arm64 no-asan sequoia ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 
@@ -613,7 +613,7 @@ crbug.com/401515599 [ win11 amd-0x7480 ] deqp/functional/gles3/transformfeedback
 
 # Win / Snapdragon X Elite / D3D11
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
-crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 graphite-disabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 renderer-skia-gl ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 crbug.com/41496016 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/shadertexturefunction/texelfetchoffset.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
 crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
