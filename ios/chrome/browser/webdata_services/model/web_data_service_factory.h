@@ -31,21 +31,33 @@ class WebDataServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForProfile(ProfileIOS* profile,
                                ServiceAccessType access_type);
+  static scoped_refptr<autofill::AutofillWebDataService>
+  GetAutofillWebDataForProfile(ProfileIOS& profile,
+                               ServiceAccessType access_type);
 
   // Returns the account-scoped AutofillWebDataService associated with the
   // `profile`.
   static scoped_refptr<autofill::AutofillWebDataService>
   GetAutofillWebDataForAccount(ProfileIOS* profile,
                                ServiceAccessType access_type);
+  static scoped_refptr<autofill::AutofillWebDataService>
+  GetAutofillWebDataForAccount(ProfileIOS& profile,
+                               ServiceAccessType access_type);
 
   // Returns the KeywordWebDataService associated with `profile`.
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);
+  static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForProfile(
+      ProfileIOS& profile,
+      ServiceAccessType access_type);
 
   // Returns the TokenWebData associated with `profile`.
   static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(
       ProfileIOS* profile,
+      ServiceAccessType access_type);
+  static scoped_refptr<TokenWebData> GetTokenWebDataForProfile(
+      ProfileIOS& profile,
       ServiceAccessType access_type);
 
   // Returns the default factory, useful in tests where it's null by default.

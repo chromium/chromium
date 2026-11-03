@@ -45,6 +45,17 @@ scoped_refptr<autofill::AutofillWebDataService>
 WebDataServiceFactory::GetAutofillWebDataForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
+  if (!profile) {
+    return nullptr;
+  }
+  return GetAutofillWebDataForProfile(*profile, access_type);
+}
+
+// static
+scoped_refptr<autofill::AutofillWebDataService>
+WebDataServiceFactory::GetAutofillWebDataForProfile(
+    ProfileIOS& profile,
+    ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetProfileAutofillWebData() : nullptr;
 }
@@ -53,6 +64,17 @@ WebDataServiceFactory::GetAutofillWebDataForProfile(
 scoped_refptr<autofill::AutofillWebDataService>
 WebDataServiceFactory::GetAutofillWebDataForAccount(
     ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  if (!profile) {
+    return nullptr;
+  }
+  return GetAutofillWebDataForAccount(*profile, access_type);
+}
+
+// static
+scoped_refptr<autofill::AutofillWebDataService>
+WebDataServiceFactory::GetAutofillWebDataForAccount(
+    ProfileIOS& profile,
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetAccountAutofillWebData() : nullptr;
@@ -63,6 +85,17 @@ scoped_refptr<KeywordWebDataService>
 WebDataServiceFactory::GetKeywordWebDataForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
+  if (!profile) {
+    return nullptr;
+  }
+  return GetKeywordWebDataForProfile(*profile, access_type);
+}
+
+// static
+scoped_refptr<KeywordWebDataService>
+WebDataServiceFactory::GetKeywordWebDataForProfile(
+    ProfileIOS& profile,
+    ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetKeywordWebData() : nullptr;
 }
@@ -70,6 +103,16 @@ WebDataServiceFactory::GetKeywordWebDataForProfile(
 // static
 scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
     ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  if (!profile) {
+    return nullptr;
+  }
+  return GetTokenWebDataForProfile(*profile, access_type);
+}
+
+// static
+scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
+    ProfileIOS& profile,
     ServiceAccessType access_type) {
   WebDataServiceWrapper* wrapper = GetForProfile(profile, access_type);
   return wrapper ? wrapper->GetTokenWebData() : nullptr;
