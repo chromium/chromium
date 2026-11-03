@@ -13,7 +13,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/regional_capabilities/regional_capabilities_metrics.h"
@@ -242,28 +241,18 @@ TEST_F(SearchEngineChoiceUtilTest,
 
 struct TaiyakiTestParam {
   std::string test_name;
-  // Whether switches::kTaiyakiAllSurfaces is enabled.
-  bool taiyaki_all_surfaces_enabled;
   // Triggering surface that calls ShouldDisplaySearchEngineChoiceScreen
   bool is_first_run_entrypoint;
-  // Whether the choice screen is expected to be shown
-  bool expected_should_display_choice_screen_output;
 };
 
-// Verifies if the search engine choice screen is shown for Taiyaki in various
-// flag configurations.
+// Verifies if the search engine choice screen is shown for Taiyaki on various
+// surfaces.
 class SearchEngineChoiceUtilShouldDisplayChoiceScreenTest
     : public SearchEngineChoiceUtilTest,
       public ::testing::WithParamInterface<TaiyakiTestParam> {
  public:
   SearchEngineChoiceUtilShouldDisplayChoiceScreenTest()
-      : SearchEngineChoiceUtilTest("JP") {
-    if (GetParam().taiyaki_all_surfaces_enabled) {
-      feature_list_.InitAndEnableFeature(switches::kTaiyakiAllSurfaces);
-    } else {
-      feature_list_.InitAndDisableFeature(switches::kTaiyakiAllSurfaces);
-    }
-  }
+      : SearchEngineChoiceUtilTest("JP") {}
 
   void SetUp() override {
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
@@ -271,35 +260,14 @@ class SearchEngineChoiceUtilShouldDisplayChoiceScreenTest
     }
     SearchEngineChoiceUtilTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
        SurfacesChoiceScreen) {
-  EXPECT_EQ(GetParam().expected_should_display_choice_screen_output,
-            ShouldDisplaySearchEngineChoiceScreen(
-                profile(), GetParam().is_first_run_entrypoint,
-                /*app_started_via_external_intent=*/false));
+  EXPECT_TRUE(ShouldDisplaySearchEngineChoiceScreen(
+      profile(), GetParam().is_first_run_entrypoint,
+      /*app_started_via_external_intent=*/false));
 
-  // Use histogram tester to verify the exact reason for not showing the
-  // choice screen.
-  if (!GetParam().taiyaki_all_surfaces_enabled &&
-      !GetParam().is_first_run_entrypoint) {
-    // Taiyaki is only enabled for FRE entrypoint, but choice screen was called
-    // from non-FRE entrypoint.
-    histogram_tester().ExpectUniqueSample(
-        "RegionalCapabilities.FunnelStage.Triggering",
-        SearchEngineChoiceScreenConditions::kIneligibleSurface, 1);
-    histogram_tester().ExpectUniqueSample(
-        "RegionalCapabilities.FunnelStage.Eligibility",
-        SearchEngineChoiceScreenConditions::kEligible, 1);
-    return;
-  }
-
-  // Taiyaki is enabled either everywhere or only for FRE, but the choice screen
-  // was called from the allowed entrypoint.
   histogram_tester().ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Eligibility",
       SearchEngineChoiceScreenConditions::kEligible, 1);
@@ -313,21 +281,9 @@ INSTANTIATE_TEST_SUITE_P(
     SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
     ::testing::ValuesIn<TaiyakiTestParam>({
         {.test_name = "TaiyakiEverywhere_FirstRunSurface",
-         .taiyaki_all_surfaces_enabled = true,
-         .is_first_run_entrypoint = true,
-         .expected_should_display_choice_screen_output = true},
+         .is_first_run_entrypoint = true},
         {.test_name = "TaiyakiEverywhere_NonFirstRunSurface",
-         .taiyaki_all_surfaces_enabled = true,
-         .is_first_run_entrypoint = false,
-         .expected_should_display_choice_screen_output = true},
-        {.test_name = "TaiyakiInFirstRunOnly_FirstRunSurface",
-         .taiyaki_all_surfaces_enabled = false,
-         .is_first_run_entrypoint = true,
-         .expected_should_display_choice_screen_output = true},
-        {.test_name = "TaiyakiInFirstRunOnly_NonFirstRunSurface",
-         .taiyaki_all_surfaces_enabled = false,
-         .is_first_run_entrypoint = false,
-         .expected_should_display_choice_screen_output = false},
+         .is_first_run_entrypoint = false},
     }),
     [](const ::testing::TestParamInfo<TaiyakiTestParam>& info) {
       return info.param.test_name;

@@ -9627,13 +9627,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "taiyaki-all-surfaces",
-    "owners": [
-      "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"
-    ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "terminal-dev",
     "owners": [ "joelhockey@chromium.org", "//chrome/browser/ash/guest_os/OWNERS" ],
     // This flag is used by CrOS Terminal developers for testing SSH on devices

@@ -53,7 +53,6 @@
       "=jp");
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
-  config.features_enabled.push_back(switches::kTaiyakiAllSurfaces);
   config.features_enabled.push_back(
       switches::kSearchEngineChoiceScreenSnackbar);
   // Relaunches the app at each test to re-display the choice screen.

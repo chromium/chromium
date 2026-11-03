@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
@@ -58,7 +57,6 @@ void PrintTo(const Program& program, std::ostream* os) {
 namespace {
 
 using ::country_codes::CountryId;
-using ::testing::get;
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 const ui::DeviceFormFactorSet kPhoneFormFactors{
@@ -255,43 +253,13 @@ struct ProgramDeterminationTestParam {
   base::flat_map<std::string, HistogramExpectation> expected_histograms;
 };
 
-using TestParamWithTaiyakiFeatureState =
-    ::testing::tuple<ProgramDeterminationTestParam, bool>;
-
-auto WithCompatibleTaiyakiFeatureState(
-    std::vector<ProgramDeterminationTestParam> params_to_combine) {
-  return ::testing::Combine(
-      ::testing::ValuesIn(params_to_combine),
-#if BUILDFLAG(IS_IOS)
-      ::testing::Bool()  // All feature states are supported
-#else
-      ::testing::Values(
-          false)  // The feature is not supported, consider it only disabled.
-#endif
-  );
-}
-
-
 class RegionalCapabilitiesServiceProgramDeterminationTest
     : public RegionalCapabilitiesServiceTest,
-      public testing::WithParamInterface<TestParamWithTaiyakiFeatureState> {
+      public testing::WithParamInterface<ProgramDeterminationTestParam> {
  public:
-  RegionalCapabilitiesServiceProgramDeterminationTest() {
-#if BUILDFLAG(IS_IOS)
-    scoped_feature_list_.InitWithFeatureState(
-        switches::kTaiyakiAllSurfaces, GetTaiyakiAllSurfacesFeatureEnabled());
-#else
-    EXPECT_FALSE(GetTaiyakiAllSurfacesFeatureEnabled());
-    scoped_feature_list_.Init();
-#endif
-  }
-
   static std::string GetTestName(
-      const testing::TestParamInfo<TestParamWithTaiyakiFeatureState>& info) {
-    return base::StrCat(
-        {get<0>(info.param).test_name, get<1>(info.param)
-                                           ? "_taiyaki_all_surfaces_enabled"
-                                           : "_taiyaki_all_surfaces_disabled"});
+      const testing::TestParamInfo<ProgramDeterminationTestParam>& info) {
+    return info.param.test_name;
   }
 
   void SetUp() override {
@@ -301,12 +269,7 @@ class RegionalCapabilitiesServiceProgramDeterminationTest
     }
   }
 
-  ProgramDeterminationTestParam GetTestParam() { return get<0>(GetParam()); }
-
-  bool GetTaiyakiAllSurfacesFeatureEnabled() { return get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ProgramDeterminationTestParam GetTestParam() { return GetParam(); }
 };
 
 TEST_P(RegionalCapabilitiesServiceProgramDeterminationTest, Run) {
@@ -346,7 +309,7 @@ TEST_P(RegionalCapabilitiesServiceProgramDeterminationTest, Run) {
 INSTANTIATE_TEST_SUITE_P(
     Common,
     RegionalCapabilitiesServiceProgramDeterminationTest,
-    WithCompatibleTaiyakiFeatureState({
+    testing::ValuesIn<ProgramDeterminationTestParam>({
         ProgramDeterminationTestParam{
             .test_name = "fr_to_waffle",
             .client_fetched_country = CountryId("FR"),
@@ -467,7 +430,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     FeatureStateSpecific,
     RegionalCapabilitiesServiceProgramDeterminationTest,
-    WithCompatibleTaiyakiFeatureState({
+    testing::ValuesIn<ProgramDeterminationTestParam>({
 #if BUILDFLAG(IS_IOS)
         ProgramDeterminationTestParam{
             .test_name = "jp_to_taiyaki",
@@ -517,7 +480,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     RegionalPresence,
     RegionalCapabilitiesServiceProgramDeterminationTest,
-    WithCompatibleTaiyakiFeatureState({
+    testing::ValuesIn<ProgramDeterminationTestParam>({
         ProgramDeterminationTestParam{
             .test_name = "in_scope_and_variations_country_match",
             .client_fetched_country = CountryId("FR"),
@@ -1203,23 +1166,9 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInSearchEngineChoiceScreenRegion) {
           CountryId("NC")));
 
 #if BUILDFLAG(IS_IOS)
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(switches::kTaiyakiAllSurfaces);
-    EXPECT_EQ(
-        RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
-            CountryId("JP")),
-        kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(switches::kTaiyakiAllSurfaces);
-    EXPECT_EQ(
-        RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
-            CountryId("JP")),
-        kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
-  }
+  EXPECT_EQ(RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(
+                CountryId("JP")),
+            kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
 #else
   EXPECT_FALSE(
       RegionalCapabilitiesService::IsInAnySearchEngineChoiceScreenRegion(

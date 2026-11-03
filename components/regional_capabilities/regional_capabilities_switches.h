@@ -40,10 +40,6 @@ inline constexpr char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline constexpr char kEeaListCountryOverride[] = "EEA_ALL";
 
 #if BUILDFLAG(IS_IOS)
-// Enables the Taiyaki regional program on all surfaces, including post-FRE
-// surfaces. When disabled, Taiyaki is only enabled on the FRE.
-BASE_DECLARE_FEATURE(kTaiyakiAllSurfaces);
-
 // Feature flag for SearchEngineChoiceScreenSnackbar.
 BASE_DECLARE_FEATURE(kSearchEngineChoiceScreenSnackbar);
 

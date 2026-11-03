@@ -63,14 +63,6 @@ constexpr ProgramSettings kTaiyakiSettings{
 };
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS)
-constexpr ProgramSettings kTaiyakiSettingsFreOnly = []() {
-  ProgramSettings ret = kTaiyakiSettings;
-  ret.choice_screen_eligibility_config->restrict_surfaces_to_fre_only = true;
-  return ret;
-}();
-#endif  // BUILDFLAG(IS_IOS)
-
 constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
     .associated_countries = base::raw_span<const country_codes::CountryId>(),
@@ -144,11 +136,6 @@ bool IsClientCompatibleWithProgram(Program program) {
 const ProgramSettings& GetSettingsForProgram(Program program) {
   switch (program) {
     case Program::kTaiyaki:
-#if BUILDFLAG(IS_IOS)
-      if (!base::FeatureList::IsEnabled(switches::kTaiyakiAllSurfaces)) {
-        return kTaiyakiSettingsFreOnly;
-      }
-#endif
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
       return kTaiyakiSettings;
 #else

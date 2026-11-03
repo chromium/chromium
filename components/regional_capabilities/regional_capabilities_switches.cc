@@ -11,8 +11,6 @@
 namespace switches {
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kTaiyakiAllSurfaces, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSearchEngineChoiceScreenSnackbar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
