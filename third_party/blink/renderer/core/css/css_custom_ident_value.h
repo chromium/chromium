@@ -63,8 +63,8 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
  private:
   WeakMember<const TreeScope> tree_scope_;
   Member<const CSSFunctionValue> ident_function_;
-  AtomicString string_;
   CSSPropertyID property_id_;
+  AtomicString string_;
 };
 
 template <>
