@@ -29,6 +29,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/font_list.h"
@@ -246,6 +248,35 @@ TEST_F(ContentSettingImageViewTest,
   view->Update();
   EXPECT_TRUE(view->GetVisible());
   EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+TEST_F(ContentSettingImageViewTest, SetIconColorWithColorVariant) {
+  auto [view, model] = AddContentSettingImageView();
+  model->set_visible(true);
+  view->Update();
+
+  const ui::ColorVariant color = ui::kColorDialogBackground;
+  view->SetIconColor(color);
+  EXPECT_EQ(view->GetIconColor(), color);
+}
+
+TEST_F(ContentSettingImageViewTest, SetIconColorWithColorVariantPreWidget) {
+  auto model = std::make_unique<FakeContentSettingImageModel>();
+  model->set_visible(true);
+  ContentSettingImageView unparented_view(
+      std::move(model), delegate_.get(), delegate_.get(), browser_window_.get(),
+      gfx::FontList());
+  EXPECT_FALSE(unparented_view.GetWidget());
+  unparented_view.Update();
+  // Calling `SetIconColor()` with a logical `ColorId` when unparented
+  // (`GetColorProvider()` is null) falls back to the default foreground color
+  // without crashing.
+  unparented_view.SetIconColor(ui::kColorDialogBackground);
+  EXPECT_EQ(unparented_view.GetIconColor(), ui::kColorDialogBackground);
+  std::optional<ui::ImageModel> image_model =
+      unparented_view.GetImageModel(views::Button::STATE_NORMAL);
+  ASSERT_TRUE(image_model.has_value());
+  EXPECT_FALSE(image_model->IsEmpty());
 }
 
 }  // namespace

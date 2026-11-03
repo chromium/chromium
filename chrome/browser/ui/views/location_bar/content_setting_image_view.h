@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -57,8 +58,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void Update();
 
   // Set the color of the button icon. Based on the text color by default.
-  void SetIconColor(std::optional<SkColor> color);
-  std::optional<SkColor> GetIconColor() const;
+  void SetIconColor(std::optional<ui::ColorVariant> color);
+  std::optional<ui::ColorVariant> GetIconColor() const;
 
   void disable_animation() { can_animate_ = false; }
 
@@ -136,7 +137,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   raw_ptr<ContentSettingImageViewDelegate> delegate_ = nullptr;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
   raw_ptr<views::BubbleDialogDelegateView> bubble_view_ = nullptr;
-  std::optional<SkColor> icon_color_;
+  std::optional<ui::ColorVariant> icon_color_;
   raw_ptr<BrowserWindowInterface> browser_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.

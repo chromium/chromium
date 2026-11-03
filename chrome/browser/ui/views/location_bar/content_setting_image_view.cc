@@ -27,6 +27,8 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -232,7 +234,8 @@ void ContentSettingImageView::UpdateElementIdentifier() {
               content_setting_image_model_->GetElementIdentifier());
 }
 
-void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
+void ContentSettingImageView::SetIconColor(
+    std::optional<ui::ColorVariant> color) {
   if (icon_color_ == color) {
     return;
   }
@@ -243,7 +246,7 @@ void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
   OnPropertyChanged(&icon_color_, views::PropertyEffects::kNone);
 }
 
-std::optional<SkColor> ContentSettingImageView::GetIconColor() const {
+std::optional<ui::ColorVariant> ContentSettingImageView::GetIconColor() const {
   return icon_color_;
 }
 
@@ -390,8 +393,11 @@ void ContentSettingImageView::CollapseKeptExpandedLabel(bool animate) {
 }
 
 void ContentSettingImageView::UpdateImage() {
-  gfx::Image icon = content_setting_image_model_->GetIcon(icon_color_.value_or(
-      color_utils::DeriveDefaultIconColor(GetForegroundColor())));
+  const SkColor color =
+      icon_color_ && (!icon_color_->IsLogical() || GetColorProvider())
+          ? icon_color_->ResolveToSkColor(GetColorProvider())
+          : color_utils::DeriveDefaultIconColor(GetForegroundColor());
+  gfx::Image icon = content_setting_image_model_->GetIcon(color);
   if (!icon.IsEmpty()) {
     SetImageModel(ui::ImageModel::FromImage(icon));
   }
@@ -421,5 +427,5 @@ void ContentSettingImageView::MaybeShowPromo(
 }
 
 BEGIN_METADATA(ContentSettingImageView)
-ADD_PROPERTY_METADATA(std::optional<SkColor>, IconColor)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorVariant>, IconColor)
 END_METADATA
