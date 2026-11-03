@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_section.h"
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -23,6 +24,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 
 namespace ash::settings {
 
@@ -88,8 +90,7 @@ class DeviceSectionTest : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile("name");
 
     // Mock Input method manager and register prefs for Inputs settings
-    input_method::InitializeForTesting(
-        new input_method::MockInputMethodManagerImpl());
+    input_method_manager_.emplace();
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kEmojiSuggestionEnterpriseAllowed, true);
     pref_service_.registry()->RegisterBooleanPref(
@@ -100,7 +101,7 @@ class DeviceSectionTest : public testing::Test {
     // Ensure `device_section_` is destroyed before `pref_service_`.
     device_section_.reset();
 
-    input_method::Shutdown();
+    input_method_manager_.reset();
 
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
@@ -123,6 +124,9 @@ class DeviceSectionTest : public testing::Test {
       local_search_service_proxy_;
   ash::settings::SearchTagRegistry search_tag_registry_;
   TestingPrefServiceSimple pref_service_;
+  std::optional<input_method::ScopedInputMethodManagerForTesting<
+      input_method::MockInputMethodManagerImpl>>
+      input_method_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
   FakeCupsPrintersManager printers_manager_;

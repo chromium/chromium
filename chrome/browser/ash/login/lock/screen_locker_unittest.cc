@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/login/test_login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
@@ -59,6 +60,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 
 namespace ash {
 namespace {
@@ -145,9 +147,7 @@ class ScreenLockerUnitTest : public testing::Test {
     // Initialize AssistantBrowserDelegate:
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
-    input_method::InputMethodManager::Initialize(
-        // Owned by InputMethodManager
-        new input_method::MockInputMethodManagerImpl());
+    input_method_manager_.emplace();
 
     // Initialize ScreenLocker dependencies:
     SystemSaltGetter::Initialize();
@@ -177,7 +177,7 @@ class ScreenLockerUnitTest : public testing::Test {
     user_profile_ = nullptr;
     testing_profile_manager_.reset();
 
-    input_method::InputMethodManager::Shutdown();
+    input_method_manager_.reset();
 
     user_session_manager_.reset();
     session_manager_.reset();
@@ -261,6 +261,9 @@ class ScreenLockerUnitTest : public testing::Test {
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   SessionTerminationManager session_termination_manager_;
+  std::optional<input_method::ScopedInputMethodManagerForTesting<
+      input_method::MockInputMethodManagerImpl>>
+      input_method_manager_;
   std::unique_ptr<ScreenLockerController> screen_locker_controller_;
 };
 

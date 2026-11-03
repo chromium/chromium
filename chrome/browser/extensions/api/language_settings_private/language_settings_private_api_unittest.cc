@@ -48,6 +48,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
 
@@ -561,7 +562,8 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
 }  // namespace
 
 TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
-  TestInputMethodManager::Initialize(new TestInputMethodManager);
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager;
 
   // Initialize relevant prefs.
   StringPrefMember enabled_imes;
@@ -612,12 +614,11 @@ TEST_F(LanguageSettingsPrivateApiTest, GetInputMethodListsTest) {
       }
     }
   }
-
-  TestInputMethodManager::Shutdown();
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
-  TestInputMethodManager::Initialize(new TestInputMethodManager);
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager;
 
   // Initialize relevant prefs.
   profile()->GetPrefs()->SetString(language::prefs::kPreferredLanguages,
@@ -698,12 +699,11 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
     EXPECT_EQ(GetComponentExtensionImeId(), preload_engines.GetValue());
     EXPECT_TRUE(language_menu_enabled.GetValue());
   }
-
-  TestInputMethodManager::Shutdown();
 }
 
 TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
-  TestInputMethodManager::Initialize(new TestInputMethodManager);
+  input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager;
 
   // Initialize relevant prefs.
   StringPrefMember enabled_imes;
@@ -748,8 +748,6 @@ TEST_F(LanguageSettingsPrivateApiTest, RemoveInputMethodTest) {
     EXPECT_TRUE(enabled_imes.GetValue().empty());
     EXPECT_TRUE(preload_engines.GetValue().empty());
   }
-
-  TestInputMethodManager::Shutdown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

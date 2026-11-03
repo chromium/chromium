@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -15,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,6 +26,7 @@
 #include "ui/base/ime/ash/mock_ime_candidate_window_handler.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/base_event_utils.h"
@@ -53,7 +54,8 @@ enum CallsBitmap {
   RESET = 16U
 };
 
-void InitInputMethod(const std::string& engine_id) {
+void InitInputMethod(MockInputMethodManagerImpl& manager,
+                     const std::string& engine_id) {
   auto delegate = std::make_unique<MockComponentExtensionIMEManagerDelegate>();
 
   ComponentExtensionIME ext1;
@@ -72,9 +74,7 @@ void InitInputMethod(const std::string& engine_id) {
   auto comp_ime_manager =
       std::make_unique<ComponentExtensionIMEManager>(std::move(delegate));
 
-  auto* manager = new MockInputMethodManagerImpl;
-  manager->SetComponentExtensionIMEManager(std::move(comp_ime_manager));
-  InitializeForTesting(manager);
+  manager.SetComponentExtensionIMEManager(std::move(comp_ime_manager));
 }
 
 class TestObserver : public StubInputMethodEngineObserver {
@@ -135,7 +135,8 @@ class InputMethodEngineTest : public testing::Test {
       : observer_(nullptr), input_view_("inputview.html") {
     languages_.emplace_back("en-US");
     layouts_.emplace_back("us");
-    InitInputMethod(engine_id);
+    input_method_manager_.emplace();
+    InitInputMethod(*input_method_manager_->get(), engine_id);
     mock_ime_input_context_handler_ =
         std::make_unique<MockIMEInputContextHandler>();
     IMEBridge::Get()->SetInputContextHandler(
@@ -154,7 +155,7 @@ class InputMethodEngineTest : public testing::Test {
     observer_.ExtractAsDangling();
     engine_.reset();
     chrome_keyboard_controller_client_test_helper_.reset();
-    Shutdown();
+    input_method_manager_.reset();
   }
 
  protected:
@@ -183,6 +184,8 @@ class InputMethodEngineTest : public testing::Test {
   GURL input_view_;
 
   content::BrowserTaskEnvironment task_environment_;
+  std::optional<ScopedInputMethodManagerForTesting<MockInputMethodManagerImpl>>
+      input_method_manager_;
   std::unique_ptr<MockIMEInputContextHandler> mock_ime_input_context_handler_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;

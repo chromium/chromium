@@ -49,6 +49,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ui_base_features.h"
 
@@ -181,13 +182,17 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
     auto fake_keyboard = std::make_unique<FakeImeKeyboard>();
     keyboard_ = fake_keyboard.get();
 
-    manager_ = new InputMethodManagerImpl(
+    // Install the manager as the global InputMethodManager before
+    // BrowserWithTestWindowTest::SetUp(), because components in ash need to be
+    // able to call InputMethodManager::Get() during initialization.
+    input_method_manager_.emplace(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
         std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),
         false, std::move(fake_keyboard));
+    manager_ = input_method_manager_->get();
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
     candidate_window_controller_ = new MockCandidateWindowController;
     manager_->SetCandidateWindowControllerForTesting(
@@ -197,10 +202,6 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
 
     menu_manager_ = ui::ime::InputMethodMenuManager::GetInstance();
 
-    // Let the global pointer own manager_. Components in ash need to be
-    // able to call InputMethodManager::Get() during initialization. Cleanup
-    // the pointer by calling ShutDown() in TearDown().
-    InputMethodManager::Initialize(manager_);
     BrowserWithTestWindowTest::SetUp();
 
     // Needs ash::Shell keyboard to be created first.
@@ -230,9 +231,9 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
     candidate_window_controller_ = nullptr;
     keyboard_ = nullptr;
 
-    // Cleanup the global manager and clear the member pointer.
-    InputMethodManager::Shutdown();
+    // Clear the member pointer and clean up the global manager.
     manager_ = nullptr;
+    input_method_manager_.reset();
   }
 
  private:
@@ -391,7 +392,9 @@ class InputMethodManagerImplTest : public BrowserWithTestWindowTest {
   ash::SessionTerminationManager session_termination_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  raw_ptr<InputMethodManagerImpl, DanglingUntriaged> manager_ = nullptr;
+  std::optional<ScopedInputMethodManagerForTesting<InputMethodManagerImpl>>
+      input_method_manager_;
+  raw_ptr<InputMethodManagerImpl> manager_ = nullptr;
   raw_ptr<MockCandidateWindowController> candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
   raw_ptr<FakeImeKeyboard> keyboard_ = nullptr;

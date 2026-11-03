@@ -14,6 +14,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -190,8 +191,6 @@ class InputConnectionImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    ash::input_method::InputMethodManager::Initialize(
-        new TestInputMethodManager);
     bridge_ = std::make_unique<TestInputMethodManagerBridge>();
     engine_ = std::make_unique<ash::input_method::InputMethodEngine>();
     engine_->Initialize(std::make_unique<DummyInputMethodEngineObserver>(),
@@ -210,11 +209,14 @@ class InputConnectionImplTest : public testing::Test {
     ash::IMEBridge::Get()->SetInputContextHandler(nullptr);
     engine_.reset();
     bridge_.reset();
-    ash::input_method::InputMethodManager::Shutdown();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
+  // Declared before the members that use the InputMethodManager, so that it
+  // outlives them.
+  ash::input_method::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager_;
   std::unique_ptr<TestInputMethodManagerBridge> bridge_;
   std::unique_ptr<ash::input_method::InputMethodEngine> engine_;
   MockTextInputClient text_input_client_;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
@@ -49,6 +51,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 
 namespace ash::settings {
 
@@ -94,8 +97,7 @@ class OsSettingsManagerTest : public testing::Test {
         pref_service_.registry());
     local_search_service::LocalSearchServiceProxyFactory::GetInstance()
         ->SetLocalState(&pref_service_);
-    input_method::MockInputMethodManager::Initialize(
-        new input_method::MockInputMethodManager);
+    input_method_manager_.emplace();
     statistics_provider_.SetMachineStatistic(ash::system::kRegionKey, "us");
     graduation_manager_ =
         std::make_unique<ash::graduation::GraduationManagerImpl>(
@@ -137,6 +139,11 @@ class OsSettingsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
+  // Declared before `profile_manager_` so that it outlives the profiles and
+  // their keyed services.
+  std::optional<input_method::ScopedInputMethodManagerForTesting<
+      input_method::MockInputMethodManager>>
+      input_method_manager_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_ =

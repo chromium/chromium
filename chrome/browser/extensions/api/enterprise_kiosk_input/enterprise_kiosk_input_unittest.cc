@@ -21,6 +21,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 
 namespace extensions {
 
@@ -122,19 +123,6 @@ class TestInputMethodManager : public im::MockInputMethodManagerImpl {
 }  // namespace
 
 class EnterpriseKioskInputTest : public ExtensionApiUnittest {
- public:
-  void SetUp() override {
-    // Inject InputMethodManager before parent's SetUp, so the injected
-    // instance will be used in the SetUp.
-    TestInputMethodManager::Initialize(new TestInputMethodManager());
-    ExtensionApiUnittest::SetUp();
-  }
-
-  void TearDown() override {
-    ExtensionApiUnittest::TearDown();
-    TestInputMethodManager::Shutdown();
-  }
-
  protected:
   base::ListValue CreateArgs(const std::string& input_method_id) {
     api::enterprise_kiosk_input::SetCurrentInputMethodOptions options;
@@ -143,6 +131,12 @@ class EnterpriseKioskInputTest : public ExtensionApiUnittest {
     args.Append(options.ToValue());
     return args;
   }
+
+ private:
+  // Inject InputMethodManager before parent's SetUp, so the injected
+  // instance will be used in the SetUp. It is shut down after TearDown.
+  im::ScopedInputMethodManagerForTesting<TestInputMethodManager>
+      input_method_manager_;
 };
 
 // Test for API enterprise.kioskInput.setCurrentInputMethod

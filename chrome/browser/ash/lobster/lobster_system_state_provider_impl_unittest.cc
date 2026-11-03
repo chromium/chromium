@@ -36,6 +36,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/display/tablet_state.h"
 #include "ui/display/test/test_screen.h"
@@ -110,14 +111,10 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(
         variations_service_.get());
 
-    // Sets up InputMethodManager
-    InputMethodManagerFake::Initialize(new InputMethodManagerFake);
-
     RegisterSystemStateProviderPrefs();
   }
 
   ~LobsterSystemStateProviderImplBaseTest() override {
-    InputMethodManagerFake::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     variations_service_.reset();
   }
@@ -208,6 +205,10 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
+  // Sets up InputMethodManager. Declared before `system_state_provider_`,
+  // which uses it, so that it outlives it.
+  ash::input_method::ScopedInputMethodManagerForTesting<InputMethodManagerFake>
+      input_method_manager_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_;
   TestingPrefServiceSimple pref_;

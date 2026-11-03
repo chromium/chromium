@@ -35,7 +35,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
-#include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -52,6 +51,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/shortcut_mapping_pref_delegate.h"
 #include "ui/events/ash/caps_lock_event_rewriter.h"
 #include "ui/events/ash/discard_key_event_rewriter.h"
@@ -671,9 +671,8 @@ class EventRewriterTestBase : public ChromeAshTestBase {
     });
     keyboard_capability_ =
         ui::KeyboardCapability::CreateStubKeyboardCapability();
-    input_method_manager_mock_ = new input_method::MockInputMethodManagerImpl;
-    input_method::InitializeForTesting(
-        input_method_manager_mock_);  // pass ownership
+    input_method_manager_.emplace();
+    input_method_manager_mock_ = input_method_manager_->get();
     auto deprecation_controller =
         std::make_unique<DeprecationNotificationController>(&message_center_);
     deprecation_controller_ = deprecation_controller.get();
@@ -742,8 +741,8 @@ class EventRewriterTestBase : public ChromeAshTestBase {
     input_device_settings_controller_mock_.reset();
     input_device_settings_controller_resetter_.reset();
     ChromeAshTestBase::TearDown();
-    // Shutdown() deletes the IME mock object.
-    input_method::Shutdown();
+    input_method_manager_mock_ = nullptr;
+    input_method_manager_.reset();
     keyboard_capability_.reset();
     keyboard_layout_engine_.reset();
   }
@@ -945,8 +944,11 @@ class EventRewriterTestBase : public ChromeAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
-  raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
-      input_method_manager_mock_;
+  std::optional<input_method::ScopedInputMethodManagerForTesting<
+      input_method::MockInputMethodManagerImpl>>
+      input_method_manager_;
+  raw_ptr<input_method::MockInputMethodManagerImpl> input_method_manager_mock_ =
+      nullptr;
   testing::FakeUdevLoader fake_udev_;
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
   std::unique_ptr<InputDeviceSettingsController::ScopedResetterForTest>

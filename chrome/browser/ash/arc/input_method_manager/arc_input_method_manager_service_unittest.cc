@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -37,6 +38,7 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
+#include "ui/base/ime/ash/scoped_input_method_manager_for_testing.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/display/test/test_screen.h"
@@ -246,7 +248,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
 
   TestInputMethodManagerBridge* bridge() { return test_bridge_; }
 
-  TestInputMethodManager* imm() { return input_method_manager_; }
+  TestInputMethodManager* imm() { return input_method_manager_->get(); }
 
   TestingProfile* profile() { return profile_.get(); }
 
@@ -278,8 +280,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    input_method_manager_ = new TestInputMethodManager();
-    im::InputMethodManager::Initialize(input_method_manager_);
+    input_method_manager_.emplace();
     profile_ = std::make_unique<TestingProfile>();
 
     input_method_bounds_tracker_ =
@@ -305,7 +306,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     chrome_keyboard_controller_client_test_helper_.reset();
     input_method_bounds_tracker_.reset();
     profile_.reset();
-    im::InputMethodManager::Shutdown();
+    input_method_manager_.reset();
   }
 
  private:
@@ -314,13 +315,15 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
+  // Declared before `profile_` so that it outlives the profile and its keyed
+  // services.
+  std::optional<im::ScopedInputMethodManagerForTesting<TestInputMethodManager>>
+      input_method_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
   std::unique_ptr<ash::ArcInputMethodBoundsTracker>
       input_method_bounds_tracker_;
-  raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_ =
-      nullptr;
   raw_ptr<TestInputMethodManagerBridge> test_bridge_ =
       nullptr;  // Owned by |service_|
   raw_ptr<ArcInputMethodManagerService, DanglingUntriaged> service_ = nullptr;
