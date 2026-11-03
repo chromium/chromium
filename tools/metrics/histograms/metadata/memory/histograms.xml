@@ -3261,6 +3261,95 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.SystemMemoryLists.IntervalsBelow{Threshold}"
+    units="intervals" expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The number of system memory list samples over the
+    course of 30s in which total Available physical memory (the sum of the Zero,
+    Free, and Standby lists) was strictly below {Threshold}. Based on samples
+    collected every 100ms, and emitted every 30s in the browser process after
+    main message loop start.
+  </summary>
+  <token key="Threshold">
+    <variant name="5Pct" summary="5% of total OS-visible physical memory"/>
+    <variant name="10Pct" summary="10% of total OS-visible physical memory"/>
+    <variant name="15Pct" summary="15% of total OS-visible physical memory"/>
+    <variant name="150MB" summary="150 MiB"/>
+    <variant name="250MB" summary="250 MiB"/>
+    <variant name="350MB" summary="350 MiB"/>
+  </token>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.MaxAvailableMemoryAfterMinMB"
+    units="MB" expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The maximum Available physical memory (Zero, Free,
+    and Standby lists) observed at or after the sample that recorded the minimum
+    Available physical memory within a 30s recording window. Note that if a
+    rebound is still in progress when the 30s window closes, this only captures
+    the level reached by the end of the window. Based on system memory list
+    samples collected every 100ms, and emitted every 30s in the browser process
+    after main message loop start.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.MaxAvailableMemoryAfterMinPercent"
+    units="%" expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The maximum Available physical memory (Zero, Free,
+    and Standby lists) as a percentage of total OS-visible physical memory
+    observed at or after the sample that recorded the minimum Available physical
+    memory within a 30s recording window. Note that if a rebound is still in
+    progress when the 30s window closes, this only captures the level reached by
+    the end of the window. Based on system memory list samples collected every
+    100ms, and emitted every 30s in the browser process after main message loop
+    start.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.MaxModifiedPageCount" units="pages"
+    expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The maximum number of pages observed in the
+    Modified page list over a 30s recording window. Based on system memory list
+    samples collected every 100ms, and emitted every 30s in the browser process
+    after main message loop start.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.MinAvailableMemoryMB" units="MB"
+    expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The minimum Available physical memory (Zero, Free,
+    and Standby lists) observed over a 30s recording window. Based on system
+    memory list samples collected every 100ms, and emitted every 30s in the
+    browser process after main message loop start.
+  </summary>
+</histogram>
+
+<histogram name="Memory.SystemMemoryLists.MinAvailableMemoryPercent" units="%"
+    expires_after="2027-04-11">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Recorded on Windows only. The minimum Available physical memory (Zero, Free,
+    and Standby lists) as a percentage of total OS-visible physical memory
+    observed over a 30s recording window. Based on system memory list samples
+    collected every 100ms, and emitted every 30s in the browser process after
+    main message loop start.
+  </summary>
+</histogram>
+
 <histogram name="Memory.SystemMemoryLists.QueryFailureStatus" enum="NTSTATUS"
     expires_after="2027-01-24">
   <owner>spvm@google.com</owner>

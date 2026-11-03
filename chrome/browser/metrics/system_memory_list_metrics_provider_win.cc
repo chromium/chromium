@@ -9,13 +9,19 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <limits>
 #include <optional>
+#include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 
 SystemMemoryListMetricsProvider::SystemMemoryListMetricsProvider(
@@ -106,6 +112,7 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
   // which is the size of one NT 'large page', the unit at which the memory
   // manager works.
   static constexpr int kLowMemoryPageThreshold = 512;
+  static constexpr base::ByteSize kPageSize = base::KiB(4);
   bool last_zero_interval_was_low = false;
   bool last_free_interval_was_low = false;
   bool last_standby_interval_was_low = false;
@@ -113,6 +120,21 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
   int free_list_low_interval_count = 0;
   int standby_list_low_interval_count = 0;
   int all_lists_low_interval_count = 0;
+
+  const base::ByteSize total_physical_memory =
+      base::SysInfo::AmountOfTotalPhysicalMemory();
+  const base::ByteSize threshold_5pct = total_physical_memory * 5 / 100;
+  const base::ByteSize threshold_10pct = total_physical_memory * 10 / 100;
+  const base::ByteSize threshold_15pct = total_physical_memory * 15 / 100;
+  int intervals_below_150mb = 0;
+  int intervals_below_250mb = 0;
+  int intervals_below_350mb = 0;
+  int intervals_below_5pct = 0;
+  int intervals_below_10pct = 0;
+  int intervals_below_15pct = 0;
+  uintptr_t min_available_pages = std::numeric_limits<uintptr_t>::max();
+  uintptr_t max_available_pages_after_min = 0;
+  uintptr_t max_modified_pages = 0;
 
   int total_intervals_recorded = 0;
   base::TimeTicks last_pressured_interval_emission_time =
@@ -205,6 +227,43 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
         ++standby_list_low_interval_count;
       }
 
+      const uintptr_t available_pages = memory_list_information.ZeroPageCount +
+                                        memory_list_information.FreePageCount +
+                                        total_standby_pages;
+      const uintptr_t modified_pages =
+          memory_list_information.ModifiedPageCount;
+      const base::ByteSize available_memory = kPageSize * available_pages;
+
+      if (available_memory < base::MiB(150)) {
+        ++intervals_below_150mb;
+      }
+      if (available_memory < base::MiB(250)) {
+        ++intervals_below_250mb;
+      }
+      if (available_memory < base::MiB(350)) {
+        ++intervals_below_350mb;
+      }
+      if (!total_physical_memory.is_zero()) {
+        if (available_memory < threshold_5pct) {
+          ++intervals_below_5pct;
+        }
+        if (available_memory < threshold_10pct) {
+          ++intervals_below_10pct;
+        }
+        if (available_memory < threshold_15pct) {
+          ++intervals_below_15pct;
+        }
+      }
+
+      if (available_pages < min_available_pages) {
+        min_available_pages = available_pages;
+        max_available_pages_after_min = available_pages;
+      } else {
+        max_available_pages_after_min =
+            std::max(max_available_pages_after_min, available_pages);
+      }
+      max_modified_pages = std::max(max_modified_pages, modified_pages);
+
       const base::TimeTicks now = base::TimeTicks::Now();
       if (last_pressured_interval_emission_time <=
           (now - recording_interval_)) {
@@ -241,6 +300,26 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
             "AllLists",
             all_lists_low_interval_count);
         base::UmaHistogramCounts1000(
+            "Memory.SystemMemoryLists.IntervalsBelow150MB",
+            intervals_below_150mb);
+        base::UmaHistogramCounts1000(
+            "Memory.SystemMemoryLists.IntervalsBelow250MB",
+            intervals_below_250mb);
+        base::UmaHistogramCounts1000(
+            "Memory.SystemMemoryLists.IntervalsBelow350MB",
+            intervals_below_350mb);
+        if (!total_physical_memory.is_zero()) {
+          base::UmaHistogramCounts1000(
+              "Memory.SystemMemoryLists.IntervalsBelow5Pct",
+              intervals_below_5pct);
+          base::UmaHistogramCounts1000(
+              "Memory.SystemMemoryLists.IntervalsBelow10Pct",
+              intervals_below_10pct);
+          base::UmaHistogramCounts1000(
+              "Memory.SystemMemoryLists.IntervalsBelow15Pct",
+              intervals_below_15pct);
+        }
+        base::UmaHistogramCounts1000(
             "Memory.SystemMemoryLists.TotalIntervalsRecorded",
             total_intervals_recorded);
         // Record a massively subsampled record of page counts.
@@ -257,6 +336,31 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
             base::saturated_cast<int>(
                 memory_list_information.ModifiedPageCount),
             1, 500000000, 75);
+        base::UmaHistogramCustomCounts(
+            "Memory.SystemMemoryLists.MaxModifiedPageCount",
+            base::saturated_cast<int>(max_modified_pages), 1, 500000000, 75);
+
+        const base::ByteSize min_available_memory =
+            kPageSize * min_available_pages;
+        const base::ByteSize max_available_memory_after_min =
+            kPageSize * max_available_pages_after_min;
+        base::UmaHistogramMemoryLargeMB(
+            "Memory.SystemMemoryLists.MinAvailableMemoryMB",
+            min_available_memory);
+        base::UmaHistogramMemoryLargeMB(
+            "Memory.SystemMemoryLists.MaxAvailableMemoryAfterMinMB",
+            max_available_memory_after_min);
+        if (!total_physical_memory.is_zero()) {
+          base::UmaHistogramPercentage(
+              "Memory.SystemMemoryLists.MinAvailableMemoryPercent",
+              base::saturated_cast<int>(min_available_memory.InBytes() * 100 /
+                                        total_physical_memory.InBytes()));
+          base::UmaHistogramPercentage(
+              "Memory.SystemMemoryLists.MaxAvailableMemoryAfterMinPercent",
+              base::saturated_cast<int>(
+                  max_available_memory_after_min.InBytes() * 100 /
+                  total_physical_memory.InBytes()));
+        }
 
         int priority_number = 1;
         for (uintptr_t standby_page_count :
@@ -279,6 +383,15 @@ void SystemMemoryListMetricsProvider::ExhaustedIntervalThreadDelegate::Run() {
         zero_list_low_interval_count = 0;
         standby_list_low_interval_count = 0;
         all_lists_low_interval_count = 0;
+        intervals_below_150mb = 0;
+        intervals_below_250mb = 0;
+        intervals_below_350mb = 0;
+        intervals_below_5pct = 0;
+        intervals_below_10pct = 0;
+        intervals_below_15pct = 0;
+        min_available_pages = std::numeric_limits<uintptr_t>::max();
+        max_available_pages_after_min = 0;
+        max_modified_pages = 0;
         total_intervals_recorded = 0;
         last_pressured_interval_emission_time = now;
       }
