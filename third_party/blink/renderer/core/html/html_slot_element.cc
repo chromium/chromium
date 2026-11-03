@@ -377,21 +377,17 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
   if (assigned_nodes_.empty()) {
     // Use children as fallback
     for (auto& child : NodeTraversal::ChildrenOf(*this)) {
-      if (child.IsSlotable())
+      if (child.IsSlotable()) {
         flat_tree_children_.push_back(child);
+      }
     }
   } else {
     flat_tree_children_ = assigned_nodes_;
-    for (auto& node : old_flat_tree_children) {
+    for (auto& child : NodeTraversal::ChildrenOf(*this)) {
       // Detach fallback nodes. Host children which are no longer slotted are
       // detached in SlotAssignment::RecalcAssignment().
-      if (node->parentNode() == this)
-        node->RemovedFromFlatTree();
-    }
-    // Inactive fallback elements must not have IsInCanvasSubtree set.
-    if (IsInCanvasSubtree()) {
-      for (auto& child : ElementTraversal::ChildrenOf(*this)) {
-        child.SetIsInCanvasSubtree(false);
+      if (child.IsSlotable()) {
+        child.RemovedFromFlatTree();
       }
     }
   }

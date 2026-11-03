@@ -279,13 +279,15 @@ void SlotAssignment::RecalcAssignment() {
     }
 
     if (owner_->IsManualSlotting()) {
-      // |children_to_clear| starts with the list of all light-dom children of
-      // the host that are *currently slotted*. Any of those that aren't slotted
-      // during this recalc will then have their flat tree data cleared.
+      // |children_to_clear| starts with the list of all slottable light-dom
+      // children of the host. Any of those that aren't slotted during this
+      // recalc will then have their flat tree data cleared and detach their
+      // layout trees.
       HeapHashSet<Member<Node>> children_to_clear;
       for (Node& child : NodeTraversal::ChildrenOf(owner_->host())) {
-        if (!child.GetFlatTreeNodeData())
+        if (!child.IsSlotable()) {
           continue;
+        }
         children_to_clear.insert(&child);
       }
 

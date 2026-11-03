@@ -1490,7 +1490,7 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   }
   if (!InActiveDocument())
     return;
-  if (Element* element = DynamicTo<Element>(this)) {
+  if (Element* element = inserted_node->ParentOrShadowHostElement()) {
     if (GetDocument().StatePreservingAtomicMoveInProgress()) {
       // This is always safe, since `inserted_node` is either an element or text
       // node, whose style can be dirtied.

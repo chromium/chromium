@@ -1484,9 +1484,15 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
     // mark dirty if it has a computed style.
     //
     // We may end up with a ComputedStyle outside the flat tree for moveBefore
-    // if we move an element under a shadow host but the moved element does
-    // not have a target slot in the host's shadow tree.
-    return !element->GetComputedStyle();
+    // if we move an element under a shadow host or a slot while slot assignment
+    // is pending recalc. If the element remains outside the flat tree after
+    // slot assignment recalc, it will be detached there.
+    const Element* parent = parentElement();
+    if (parent && parent->GetComputedStyle() &&
+        (GetSlotAssignmentRoot() ||
+         ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent))) {
+      return !element->GetComputedStyle();
+    }
   }
   // Node is outside the flat tree and does not need to be marked for style
   // recalc.
@@ -3766,20 +3772,18 @@ void Node::FlatTreeParentChanged() {
       // will skip MarkAncestorsWithChildNeedsStyleRecalc() if the node was
       // already dirty.
       MarkAncestorsWithChildNeedsStyleRecalc();
-    } else {
-      // We retain the ComputedStyles for elements moved with moveBefore(), but
-      // need to invalidate all styles in the subtree since any element in the
-      // subtree may have styles changed via e.g. selector matching changes or
-      // @container query changes. Also, DynamicRestyleFlags potentially need
-      // updating, which happens during style recalc.
-      StyleChangeType change_type =
-          GetDocument().StatePreservingAtomicMoveInProgress()
-              ? kSubtreeStyleChange
-              : kLocalStyleChange;
-      SetNeedsStyleRecalc(change_type,
-                          StyleChangeReasonForTracing::Create(
-                              style_change_reason::kFlatTreeChange));
     }
+    // We retain the ComputedStyles for elements moved with moveBefore(), but
+    // need to invalidate all styles in the subtree since any element in the
+    // subtree may have styles changed via e.g. selector matching changes or
+    // @container query changes. Also, DynamicRestyleFlags potentially need
+    // updating, which happens during style recalc.
+    StyleChangeType change_type =
+        GetDocument().StatePreservingAtomicMoveInProgress()
+            ? kSubtreeStyleChange
+            : kLocalStyleChange;
+    SetNeedsStyleRecalc(change_type, StyleChangeReasonForTracing::Create(
+                                         style_change_reason::kFlatTreeChange));
     // We also need to force a layout tree re-attach since the layout tree
     // parent box may have changed.
     SetForceReattachLayoutTree();

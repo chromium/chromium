@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -628,6 +630,174 @@ TEST_F(NodeTest, moveBefore_PreserveComputedStyleBetweenTrees) {
   GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   EXPECT_EQ(span->GetComputedStyle(), old_computed_style);
   EXPECT_TRUE(span->NeedsStyleRecalc());
+}
+
+TEST_F(NodeTest, moveBefore_ShadowDomInvalidationAndDetach) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <!DOCTYPE html>
+    <div id="visible_host">
+      <template shadowrootmode="open">
+        <style>#child1 { color: rgb(0, 128, 0); }</style>
+      </template>
+    </div>
+    <div id="hidden_host" style="display: none">
+      <template shadowrootmode="open"></template>
+    </div>
+    <div id="slotless_host">
+      <template shadowrootmode="open"><div>Shadow content</div></template>
+    </div>
+    <div id="slotted_host"><template shadowrootmode="open"><slot id="active_slot"></slot></template><span id="slotted_span">Assigned</span></div>
+    <div id="newly_slotted_host">
+      <template shadowrootmode="open"><slot id="newly_active_slot"></slot></template>
+    </div>
+    <div id="manual_host">
+      <template shadowrootmode="open" shadowrootslotassignment="manual">
+        <slot id="manual_slot"></slot>
+      </template>
+    </div>
+    <div id="roundtrip_host"><template shadowrootmode="open"><slot id="roundtrip_slot"></slot></template><div id="roundtrip_item">Hello</div></div>
+    <div id="other"></div>
+    <div id="item1"><span id="child1">Item 1</span></div>
+    <div id="item2">Item 2</div>
+    <div id="item3">Item 3</div>
+    <div id="item4">Item 4</div>
+    <div id="item5">Item 5</div>
+    <div id="item6">Item 6</div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* visible_host =
+      GetDocument().getElementById(AtomicString("visible_host"));
+  Element* hidden_host =
+      GetDocument().getElementById(AtomicString("hidden_host"));
+  Element* slotless_host =
+      GetDocument().getElementById(AtomicString("slotless_host"));
+  Element* active_slot = GetDocument()
+                             .getElementById(AtomicString("slotted_host"))
+                             ->GetShadowRoot()
+                             ->getElementById(AtomicString("active_slot"));
+  Element* slotted_span =
+      GetDocument().getElementById(AtomicString("slotted_span"));
+  Element* newly_slotted_host =
+      GetDocument().getElementById(AtomicString("newly_slotted_host"));
+  Element* newly_active_slot =
+      newly_slotted_host->GetShadowRoot()->getElementById(
+          AtomicString("newly_active_slot"));
+  Element* manual_host =
+      GetDocument().getElementById(AtomicString("manual_host"));
+  Element* roundtrip_host =
+      GetDocument().getElementById(AtomicString("roundtrip_host"));
+  Element* roundtrip_slot = roundtrip_host->GetShadowRoot()->getElementById(
+      AtomicString("roundtrip_slot"));
+  Element* roundtrip_item =
+      GetDocument().getElementById(AtomicString("roundtrip_item"));
+  Element* other = GetDocument().getElementById(AtomicString("other"));
+  Element* item1 = GetDocument().getElementById(AtomicString("item1"));
+  Element* child1 = GetDocument().getElementById(AtomicString("child1"));
+  Element* item2 = GetDocument().getElementById(AtomicString("item2"));
+  Element* item3 = GetDocument().getElementById(AtomicString("item3"));
+  Element* item4 = GetDocument().getElementById(AtomicString("item4"));
+  Element* item5 = GetDocument().getElementById(AtomicString("item5"));
+  Element* item6 = GetDocument().getElementById(AtomicString("item6"));
+
+  // 1. Moving into a visible ShadowRoot marks subtree style recalc (even if
+  // the moved element already had kLocalStyleChange) and force-reattach, and
+  // reattaches under the shadow host (crbug.com/575200203).
+  item1->SetInlineStyleProperty(CSSPropertyID::kColor, "blue");
+  EXPECT_EQ(item1->GetStyleChangeType(), kLocalStyleChange);
+  const ComputedStyle* old_style = item1->GetComputedStyle();
+  const ComputedStyle* old_child_style = child1->GetComputedStyle();
+  visible_host->GetShadowRoot()->moveBefore(item1, nullptr,
+                                            ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(item1->GetComputedStyle(), old_style);
+  EXPECT_EQ(item1->GetStyleChangeType(), kSubtreeStyleChange);
+  EXPECT_TRUE(item1->GetForceReattachLayoutTree());
+
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(item1->GetLayoutObject());
+  EXPECT_EQ(item1->GetLayoutObject()->Parent(),
+            visible_host->GetLayoutObject());
+  EXPECT_NE(child1->GetComputedStyle(), old_child_style);
+
+  // Moving into a display:none host's ShadowRoot while another element is the
+  // style recalc root detaches layout and style without crashing in
+  // StyleRecalcRoot::FlatTreePositionChanged.
+  item2->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  hidden_host->GetShadowRoot()->moveBefore(item1, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(item1->GetComputedStyle());
+  EXPECT_FALSE(item1->GetLayoutObject());
+
+  // 2. Moving into a slotless shadow host detaches layout and style
+  // (crbug.com/576136338, crbug.com/575200203).
+  slotless_host->moveBefore(item2, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(item2->GetComputedStyle());
+  EXPECT_FALSE(item2->GetLayoutObject());
+
+  // 3. Moving into a <slot> that already has assigned nodes detaches layout
+  // and style upon slot assignment recalc (crbug.com/576136338).
+  active_slot->moveBefore(item3, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_FALSE(item3->GetComputedStyle());
+  EXPECT_FALSE(item3->GetLayoutObject());
+
+  // 4. Moving into an empty <slot> while a host child is pending assignment
+  // detaches layout and style upon slot assignment recalc
+  // (crbug.com/577332970).
+  newly_slotted_host->AppendChild(
+      GetDocument().CreateRawElement(html_names::kSpanTag));
+  newly_active_slot->moveBefore(item4, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_FALSE(item4->GetComputedStyle());
+  EXPECT_FALSE(item4->GetLayoutObject());
+
+  // 5. Moving an unslotted element into a manual-slotting shadow host with a
+  // <slot> detaches layout and style upon slot assignment recalc.
+  manual_host->moveBefore(item5, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_FALSE(item5->GetComputedStyle());
+  EXPECT_FALSE(item5->GetLayoutObject());
+
+  // 6. Moving into a <slot> whose assigned node was removed in the same task
+  // preserves ComputedStyle and LayoutObject instead of detaching.
+  const ComputedStyle* old_item6_style = item6->GetComputedStyle();
+  const LayoutObject* old_item6_layout = item6->GetLayoutObject();
+  slotted_span->remove();
+  active_slot->moveBefore(item6, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(item6->GetComputedStyle(), old_item6_style);
+  EXPECT_EQ(item6->GetLayoutObject(), old_item6_layout);
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_EQ(item6->GetComputedStyle(), old_item6_style);
+  EXPECT_EQ(item6->GetLayoutObject(), old_item6_layout);
+  EXPECT_TRUE(item6->NeedsStyleRecalc());
+  EXPECT_TRUE(active_slot->ChildNeedsStyleRecalc());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // 7. Moving a slotted child out of its shadow host, mutating style, and
+  // moving it back into the same shadow host (or moving between assigned and
+  // fallback positions of the same slot) in the same task invalidates style.
+  const ComputedStyle* old_roundtrip_style = roundtrip_item->GetComputedStyle();
+  other->moveBefore(roundtrip_item, nullptr, ASSERT_NO_EXCEPTION);
+  roundtrip_item->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  roundtrip_host->moveBefore(roundtrip_item, nullptr, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(roundtrip_item->GetComputedStyle());
+  EXPECT_NE(roundtrip_item->GetComputedStyle(), old_roundtrip_style);
+
+  const ComputedStyle* assigned_style = roundtrip_item->GetComputedStyle();
+  roundtrip_item->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  roundtrip_slot->moveBefore(roundtrip_item, nullptr, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(roundtrip_item->GetComputedStyle());
+  EXPECT_NE(roundtrip_item->GetComputedStyle(), assigned_style);
+
+  const ComputedStyle* fallback_style = roundtrip_item->GetComputedStyle();
+  roundtrip_item->SetInlineStyleProperty(CSSPropertyID::kColor, "purple");
+  roundtrip_host->moveBefore(roundtrip_item, nullptr, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(roundtrip_item->GetComputedStyle());
+  EXPECT_NE(roundtrip_item->GetComputedStyle(), fallback_style);
 }
 
 #if DCHECK_IS_ON()

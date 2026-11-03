@@ -137,8 +137,8 @@ void StyleRecalcRoot::FlatTreePositionChanged(const Node& node) {
   if (GetRootNode()->IsDocumentNode()) {
     return;
   }
-  DCHECK(node.parentElement());
-  SubtreeModified(*node.parentElement());
+  DCHECK(node.parentNode());
+  SubtreeModified(*node.parentNode());
 }
 
 }  // namespace blink
