@@ -21,7 +21,7 @@ class MigratableSyncServiceCoordinatorFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace data_sharing

@@ -24,7 +24,7 @@ class HostContentSettingsMapFactory final
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const final;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace ios

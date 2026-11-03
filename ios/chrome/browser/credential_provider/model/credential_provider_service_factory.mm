@@ -35,7 +35,7 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store =
           IOSChromeProfilePasswordStoreFactory::GetForProfile(
@@ -59,7 +59,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   return std::make_unique<CredentialProviderService>(
-      profile->GetProfileName(), profile->GetPrefs(),
+      profile.GetProfileName(), profile.GetPrefs(),
       GetApplicationContext()->GetLocalState(), profile_password_store,
       account_password_store, passkeyModel, credential_store, identity_manager,
       sync_service, affiliation_service, favicon_loader);

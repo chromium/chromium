@@ -28,15 +28,15 @@ bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
 
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // TODO(crbug.com/40130635): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
-  const bool is_off_the_record = profile->IsOffTheRecord();
+  const bool is_off_the_record = profile.IsOffTheRecord();
   const bool should_record_metrics = !is_off_the_record;
   // Last-modified timestamps are needed so that time-ranged browsing data
   // deletion can clear site settings changed within the selected period.
   return base::MakeRefCounted<HostContentSettingsMap>(
-      profile->GetPrefs(), is_off_the_record, /*store_last_modified=*/true,
+      profile.GetPrefs(), is_off_the_record, /*store_last_modified=*/true,
       /*restore_session=*/false, should_record_metrics);
 }
 

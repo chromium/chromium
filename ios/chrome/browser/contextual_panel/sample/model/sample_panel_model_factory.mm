@@ -13,6 +13,6 @@ SamplePanelModelFactory::SamplePanelModelFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key), "SamplePanelModel") {}
 
 std::unique_ptr<KeyedService> SamplePanelModelFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SamplePanelModel>();
 }

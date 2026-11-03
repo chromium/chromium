@@ -24,7 +24,7 @@ ContentNotificationServiceFactory::ContentNotificationServiceFactory(
 
 std::unique_ptr<KeyedService>
 ContentNotificationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   ContentNotificationConfiguration* config =
       [[ContentNotificationConfiguration alloc] init];
 

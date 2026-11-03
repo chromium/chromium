@@ -24,7 +24,7 @@ ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory(
 
 std::unique_ptr<KeyedService>
 ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
 
   auto* sample_panel_model_factory =

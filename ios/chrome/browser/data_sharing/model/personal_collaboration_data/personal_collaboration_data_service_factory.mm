@@ -32,8 +32,8 @@ PersonalCollaborationDataServiceFactory::
 
 std::unique_ptr<KeyedService>
 PersonalCollaborationDataServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
   if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       !base::FeatureList::IsEnabled(
           features::kDataSharingAccountDataMigration)) {

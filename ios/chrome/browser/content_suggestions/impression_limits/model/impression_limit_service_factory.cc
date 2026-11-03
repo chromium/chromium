@@ -24,9 +24,9 @@ ImpressionLimitServiceFactory::ImpressionLimitServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ImpressionLimitServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ImpressionLimitService>(
-      profile->GetPrefs(), ios::HistoryServiceFactory::GetForProfile(profile),
+      profile.GetPrefs(), ios::HistoryServiceFactory::GetForProfile(profile),
       ios::BookmarkModelFactory::GetForProfile(profile),
       commerce::ShoppingServiceFactory::GetForProfile(profile));
 }

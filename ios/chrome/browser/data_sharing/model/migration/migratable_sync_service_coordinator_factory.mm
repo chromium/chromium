@@ -20,7 +20,7 @@ MigratableSyncServiceCoordinatorFactory::
 
 std::unique_ptr<KeyedService>
 MigratableSyncServiceCoordinatorFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<MigratableSyncServiceCoordinator>();
 }
 

@@ -18,7 +18,7 @@ BreadcrumbManagerKeyedServiceFactory::BreadcrumbManagerKeyedServiceFactory(
 
 std::unique_ptr<KeyedService>
 BreadcrumbManagerKeyedServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<breadcrumbs::BreadcrumbManagerKeyedService>(
-      profile->IsOffTheRecord());
+      profile.IsOffTheRecord());
 }
