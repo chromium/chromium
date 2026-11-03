@@ -25,13 +25,6 @@
 
 class TabModel;
 
-// Tab restore extra-data key holding the closed tab's Android tab id. Written
-// for tabs saved through AndroidLiveTabContextCloseWrapper and persisted with
-// the TabRestoreService entry. Used by undo restore to map restored tabs back
-// to their original positions; ignored by Recent Tabs restore. Only written
-// when kUndoableTabClosureRework is enabled.
-inline constexpr char kUndoOldTabIdKey[] = "android.undo.old_tab_id";
-
 // Subclass for supplying tabs and group data for bulk tab closures.
 class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
  public:
@@ -190,6 +183,71 @@ class AndroidLiveTabContextRestoreWrapper : public AndroidLiveTabContext {
  private:
   // Mapping of restored tab group ids to Android tab groups.
   std::map<tab_groups::TabGroupId, TabGroup> tab_groups_;
+};
+
+// Restores the tabs of one closed-tabs entry for undo, putting each tab back
+// at the model index and pinned state it had before it was closed. Each
+// restored tab is matched to its closed tab by the old tab id saved in its
+// extra data (kUndoOldTabIdKey). Unlike AndroidLiveTabContextRestoreWrapper,
+// which collects group data for Recent Tabs, this ignores groups; the caller
+// rebuilds them from the returned tab ids.
+class AndroidLiveTabContextUndoRestoreWrapper : public AndroidLiveTabContext {
+ public:
+  // Where one closed tab was before it was closed. Its position in the list
+  // passed to the constructor is its placement index.
+  struct ClosedTab {
+    // The tab's Android id before it was closed.
+    int old_tab_id;
+    // The tab model index to restore it at.
+    int model_index;
+    // Whether to restore it pinned.
+    bool pinned;
+  };
+
+  // `closed_tabs` lists the closed tabs in placement index order.
+  AndroidLiveTabContextUndoRestoreWrapper(TabModel* tab_model,
+                                          std::vector<ClosedTab> closed_tabs);
+  ~AndroidLiveTabContextUndoRestoreWrapper() override;
+
+  AndroidLiveTabContextUndoRestoreWrapper(
+      const AndroidLiveTabContextUndoRestoreWrapper&) = delete;
+  AndroidLiveTabContextUndoRestoreWrapper& operator=(
+      const AndroidLiveTabContextUndoRestoreWrapper&) = delete;
+
+  // Restored tab id for a placement index that no tab was restored into.
+  static constexpr int kNotRestored = -1;
+
+  // Creates the restored tab in the background at its closed tab's model index
+  // and pinned state, or appends it unpinned if it matches no closed tab.
+  sessions::LiveTab* AddRestoredTab(
+      const sessions::tab_restore::Tab& tab,
+      int tab_index,
+      bool select,
+      bool is_restoring_group_or_window,
+      sessions::tab_restore::Type original_session_type) override;
+
+  // Returns the new tab id for each placement index, or kNotRestored.
+  const std::vector<int>& GetRestoredIdsByPlacementIndex() const;
+
+  // Returns the placement index a restored tab belongs to, or nullopt to
+  // append it:
+  // 1. Its old tab id marker matches a closed tab not yet restored: that
+  //    closed tab's placement index.
+  // 2. A single-tab entry without a usable marker, when there is exactly one
+  //    closed tab and it is not yet restored: placement index 0.
+  // 3. Otherwise: nullopt.
+  static std::optional<size_t> ResolvePlacementIndex(
+      const std::map<std::string, std::string>& extra_data,
+      const base::flat_map<int, size_t>& placement_index_by_old_tab_id,
+      const std::vector<int>& restored_tab_ids,
+      sessions::tab_restore::Type original_session_type);
+
+ private:
+  const std::vector<ClosedTab> closed_tabs_;
+  // The new tab id for each placement index (kNotRestored if not restored).
+  std::vector<int> restored_tab_ids_;
+  // Map from old tab id to placement index.
+  base::flat_map<int, size_t> placement_index_by_old_tab_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_ANDROID_LIVE_TAB_CONTEXT_WRAPPER_H_

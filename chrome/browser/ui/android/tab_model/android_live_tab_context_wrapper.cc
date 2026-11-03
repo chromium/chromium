@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -18,6 +19,20 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
+
+namespace {
+std::optional<int> GetOldTabIdFromExtraData(
+    const std::map<std::string, std::string>& extra_data) {
+  const std::string* value = base::FindOrNull(extra_data, kUndoOldTabIdKey);
+  if (value) {
+    int old_tab_id;
+    if (base::StringToInt(*value, &old_tab_id)) {
+      return old_tab_id;
+    }
+  }
+  return std::nullopt;
+}
+}  // namespace
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
@@ -181,4 +196,103 @@ const std::map<tab_groups::TabGroupId,
                AndroidLiveTabContextRestoreWrapper::TabGroup>&
 AndroidLiveTabContextRestoreWrapper::GetTabGroups() {
   return tab_groups_;
+}
+
+AndroidLiveTabContextUndoRestoreWrapper::
+    AndroidLiveTabContextUndoRestoreWrapper(TabModel* tab_model,
+                                            std::vector<ClosedTab> closed_tabs)
+    : AndroidLiveTabContext(tab_model),
+      closed_tabs_(std::move(closed_tabs)),
+      restored_tab_ids_(closed_tabs_.size(), kNotRestored) {
+  std::vector<std::pair<int, size_t>> map_entries;
+  map_entries.reserve(closed_tabs_.size());
+  for (size_t i = 0; i < closed_tabs_.size(); ++i) {
+    map_entries.emplace_back(closed_tabs_[i].old_tab_id, i);
+  }
+  placement_index_by_old_tab_id_ =
+      base::flat_map<int, size_t>(std::move(map_entries));
+}
+
+AndroidLiveTabContextUndoRestoreWrapper::
+    ~AndroidLiveTabContextUndoRestoreWrapper() = default;
+
+// static
+std::optional<size_t>
+AndroidLiveTabContextUndoRestoreWrapper::ResolvePlacementIndex(
+    const std::map<std::string, std::string>& extra_data,
+    const base::flat_map<int, size_t>& placement_index_by_old_tab_id,
+    const std::vector<int>& restored_tab_ids,
+    sessions::tab_restore::Type original_session_type) {
+  std::optional<int> old_tab_id = GetOldTabIdFromExtraData(extra_data);
+  if (old_tab_id.has_value()) {
+    const size_t* placement_index =
+        base::FindOrNull(placement_index_by_old_tab_id, old_tab_id.value());
+    if (placement_index && restored_tab_ids[*placement_index] == kNotRestored) {
+      return *placement_index;
+    }
+  }
+  if (!old_tab_id.has_value() &&
+      original_session_type == sessions::tab_restore::Type::TAB &&
+      restored_tab_ids.size() == 1 && restored_tab_ids[0] == kNotRestored) {
+    return 0;
+  }
+  return std::nullopt;
+}
+
+sessions::LiveTab* AndroidLiveTabContextUndoRestoreWrapper::AddRestoredTab(
+    const sessions::tab_restore::Tab& tab,
+    int tab_index,
+    bool select,
+    bool is_restoring_group_or_window,
+    sessions::tab_restore::Type original_session_type) {
+  Profile* profile = tab_model()->GetProfile();
+
+  std::unique_ptr<content::WebContents> new_web_contents =
+      CreateRestoredWebContents(profile, tab);
+  content::WebContents* web_contents_ptr = new_web_contents.get();
+
+  std::optional<size_t> placement_index =
+      ResolvePlacementIndex(tab.extra_data, placement_index_by_old_tab_id_,
+                            restored_tab_ids_, original_session_type);
+
+  // `tab_index` (TabRestoreService passes the tab count) and
+  // `tab.tabstrip_index` (the position within the saved entry, shifted by
+  // save-time filtering and history deletion) are ignored. The closed tab's
+  // model index is used instead.
+  int insertion_index;
+  bool restore_pinned;
+  if (placement_index.has_value()) {
+    const ClosedTab& closed_tab = closed_tabs_[placement_index.value()];
+    insertion_index = closed_tab.model_index;
+    restore_pinned = closed_tab.pinned;
+  } else {
+    // Unmatched tabs are appended unpinned and not recorded.
+    insertion_index = tab_model()->GetTabCount();
+    restore_pinned = false;
+  }
+
+  if (!tab_model()->CreateTab(
+          nullptr, std::move(new_web_contents), insertion_index,
+          TabModel::TabLaunchType::FROM_UNDO_CLOSURE, restore_pinned)) {
+    return nullptr;
+  }
+
+  sessions::LiveTab* live_tab =
+      sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents_ptr);
+
+  if (placement_index.has_value()) {
+    TabAndroid* restored_tab = TabAndroid::FromWebContents(web_contents_ptr);
+    if (restored_tab) {
+      // Record the new tab id to map it back to its placement index.
+      restored_tab_ids_[placement_index.value()] = restored_tab->GetAndroidId();
+    }
+  }
+
+  return live_tab;
+}
+
+const std::vector<int>&
+AndroidLiveTabContextUndoRestoreWrapper::GetRestoredIdsByPlacementIndex()
+    const {
+  return restored_tab_ids_;
 }

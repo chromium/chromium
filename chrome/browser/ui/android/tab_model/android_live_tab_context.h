@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_ANDROID_LIVE_TAB_CONTEXT_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,16 @@ namespace content {
 class WebContents;
 }
 
+class Profile;
 class TabModel;
+
+// Tab restore extra-data key holding the closed tab's Android tab id. Written
+// for tabs saved through AndroidLiveTabContextCloseWrapper, and for a single
+// tab saved while it is still in its tab model; persisted with the
+// TabRestoreService entry. Used by undo restore to map restored tabs back to
+// their original positions; ignored by Recent Tabs restore. Only written when
+// kUndoableTabClosureRework is enabled.
+inline constexpr char kUndoOldTabIdKey[] = "android.undo.old_tab_id";
 
 // Implementation of LiveTabContext which is used by android.
 class AndroidLiveTabContext : public sessions::LiveTabContext {
@@ -91,6 +101,16 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   static LiveTabContext* FindContextForWebContents(
       const content::WebContents* contents);
   static sessions::LiveTabContext* FindContextWithID(SessionID desired_id);
+
+ protected:
+  // Returns the tab model this context restores into.
+  TabModel* tab_model() const { return tab_model_; }
+
+  // Builds a WebContents for the restored tab, including restoring its
+  // navigations and glic state. Shared by Recent Tabs and undo restore.
+  static std::unique_ptr<content::WebContents> CreateRestoredWebContents(
+      Profile* profile,
+      const sessions::tab_restore::Tab& tab);
 
  private:
   raw_ptr<TabModel> tab_model_;

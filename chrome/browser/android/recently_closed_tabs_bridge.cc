@@ -362,6 +362,43 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   return !restored_tabs.value_or({}).empty();
 }
 
+std::vector<int32_t> RecentlyClosedTabsBridge::RestoreForUndo(
+    JNIEnv* env,
+    TabModel* model,
+    int32_t entry_id,
+    const std::vector<int32_t>& tab_ids,
+    const std::vector<int32_t>& indices,
+    const std::vector<bool>& pinned) {
+  EnsureTabRestoreService();
+  if (!tab_restore_service_ || !model) {
+    // Return an empty vector if there is no service or model.
+    return {};
+  }
+
+  CHECK_EQ(tab_ids.size(), indices.size());
+  CHECK_EQ(tab_ids.size(), pinned.size());
+
+  std::vector<AndroidLiveTabContextUndoRestoreWrapper::ClosedTab> closed_tabs;
+  closed_tabs.reserve(tab_ids.size());
+  for (size_t i = 0; i < tab_ids.size(); ++i) {
+    closed_tabs.push_back({tab_ids[i], indices[i], pinned[i]});
+  }
+
+  AndroidLiveTabContextUndoRestoreWrapper restore_context(
+      model, std::move(closed_tabs));
+  std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
+      tab_restore_service_->RestoreEntryById(
+          &restore_context, SessionID::FromSerializedValue(entry_id),
+          WindowOpenDisposition::kNewBackgroundTab);
+
+  if (!restored_tabs.has_value()) {
+    // Return an empty vector if the entry does not exist.
+    return {};
+  }
+
+  return restore_context.GetRestoredIdsByPlacementIndex();
+}
+
 bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
                                                            TabModel* model) {
   EnsureTabRestoreService();

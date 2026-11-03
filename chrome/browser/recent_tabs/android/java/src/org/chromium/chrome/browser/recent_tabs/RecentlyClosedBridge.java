@@ -14,11 +14,13 @@ import org.jni_zero.JniTypeToken;
 import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -180,6 +182,38 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
                         mNativeBridge, tabModel, sessionRecentEntry.getSessionId());
     }
 
+    /**
+     * Restores a previously saved entry of closed tabs for an undo operation.
+     *
+     * <p>Unlike standard restore methods, this does not commit pending tab closures because doing
+     * so would dismiss other undo snackbars. Must be called on the UI thread.
+     *
+     * @param tabModel The {@link TabModel} to restore the tabs into.
+     * @param entryId The id of the TabRestoreService entry to restore, as returned when the tabs
+     *     were saved.
+     * @param tabIds The old id of each closed tab. This and the following arrays are parallel; an
+     *     index into them is the tab's placement index. Restored tabs are matched to placement
+     *     indices by their old id.
+     * @param indices The index at which each tab should be restored in the tab model.
+     * @param pinned The pinned state to restore for each tab.
+     * @return The new tab id per placement index (-1 if not restored), or an empty array if the
+     *     entry does not exist or there is no service.
+     */
+    public int[] restoreForUndo(
+            TabModel tabModel,
+            @TabRestoreEntryId int entryId,
+            int[] tabIds,
+            int[] indices,
+            boolean[] pinned) {
+        ThreadUtils.assertOnUiThread();
+        assert mNativeBridge != null;
+        assert mTabModelSelector.getModel(tabModel.isIncognitoBranded()) == tabModel;
+        assert tabIds.length == indices.length;
+        assert tabIds.length == pinned.length;
+        return RecentlyClosedBridgeJni.get()
+                .restoreForUndo(mNativeBridge, tabModel, entryId, tabIds, indices, pinned);
+    }
+
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
         assert mNativeBridge != null;
@@ -229,6 +263,15 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
                 JniPtr<NativeRecentlyClosedTabsBridge> self,
                 @JniType("TabModel*") TabModel tabModel,
                 int sessionId);
+
+        @JniType("std::vector<int32_t>")
+        int[] restoreForUndo(
+                JniPtr<NativeRecentlyClosedTabsBridge> self,
+                @JniType("TabModel*") TabModel tabModel,
+                int entryId,
+                @JniType("std::vector<int32_t>") int[] tabIds,
+                @JniType("std::vector<int32_t>") int[] indices,
+                @JniType("std::vector<bool>") boolean[] pinned);
 
         boolean openMostRecentlyClosedEntry(
                 JniPtr<NativeRecentlyClosedTabsBridge> self,

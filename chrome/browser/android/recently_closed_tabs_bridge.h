@@ -84,6 +84,15 @@ class RecentlyClosedTabsBridge : public sessions::TabRestoreServiceObserver {
   bool OpenRecentlyClosedEntry(JNIEnv* env,
                                TabModel* model,
                                int32_t session_id);
+  // Restores a previously saved entry of closed tabs for an undo operation.
+  // Returns the new tab id per placement index (-1 if not restored), or an
+  // empty vector if the entry does not exist or there is no service.
+  std::vector<int32_t> RestoreForUndo(JNIEnv* env,
+                                      TabModel* model,
+                                      int32_t entry_id,
+                                      const std::vector<int32_t>& tab_ids,
+                                      const std::vector<int32_t>& indices,
+                                      const std::vector<bool>& pinned);
   bool OpenMostRecentlyClosedEntry(JNIEnv* env, TabModel* model);
   void ClearRecentlyClosedEntries();
   void ClearLeastRecentlyUsedClosedEntries(int32_t num_to_remove);
