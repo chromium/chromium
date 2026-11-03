@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -235,7 +236,11 @@ void P2PSocketManager::ResumeNetworkChangeNotifications() {
 void P2PSocketManager::DestroySocket(P2PSocket* socket) {
   auto iter = sockets_.find(socket);
   CHECK(iter != sockets_.end());
+  std::unique_ptr<P2PSocket> owned = std::move(iter->second);
   sockets_.erase(iter);
+  // Delete `owned` after completing .erase() on the `sockets_` container.
+  // `~P2PSocket may trigger callbacks that would re-enter `P2PSocketManager`.
+  // `sockets_` should be in consistenct state if that happens.
 }
 
 void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
