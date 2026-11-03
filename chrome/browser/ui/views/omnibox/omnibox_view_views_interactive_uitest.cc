@@ -2047,7 +2047,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   chrome::FocusLocationBar(browser());
+// TODO(crbug.com/581293433): ViewAX blocks focusing omnibox on Mac.
+#if !BUILDFLAG(IS_MAC)
   ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+#endif  // !BUILDFLAG(IS_MAC)
   if (features::IsWebUILocationBarEnabled()) {
     if (auto* toolbar_webview = BrowserView::GetBrowserViewForBrowser(browser())
                                     ->toolbar()
