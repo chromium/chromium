@@ -8924,6 +8924,7 @@ from previous Chrome versions.
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
   <int value="-1818122802" label="GlicActorTransientTasks:disabled"/>
   <int value="-1817721380" label="RemoveCanceledTasksInTaskQueue2:disabled"/>
+  <int value="-1817412643" label="AndroidAdaptiveUiTransitions:enabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1817014232"
       label="IPH_DesktopRealboxContextualSearchFeature:enabled"/>
@@ -21629,6 +21630,7 @@ from previous Chrome versions.
   <int value="1974565950" label="enable-experimental-accessibility-labels"/>
   <int value="1974776131" label="MediaFeeds:disabled"/>
   <int value="1975327115" label="NewBaseUrlInheritanceBehavior:disabled"/>
+  <int value="1975587988" label="AndroidAdaptiveUiTransitions:disabled"/>
   <int value="1975657253" label="ScalableAppList:disabled"/>
   <int value="1975688036" label="UpdatePaddingForDisplayCalculation:disabled"/>
   <int value="1976441710" label="AllowSignedOutUserInDesktopAndroid:disabled"/>

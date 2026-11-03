@@ -8071,6 +8071,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidTabUiRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidTabUiRefactor)},
 
+    {"android-adaptive-ui-transitions",
+     flag_descriptions::kAndroidAdaptiveUiTransitionsName,
+     flag_descriptions::kAndroidAdaptiveUiTransitionsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAdaptiveUiTransitions)},
+
     {"android-vertical-tabs", flag_descriptions::kAndroidVerticalTabsName,
      flag_descriptions::kAndroidVerticalTabsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidVerticalTabs,

@@ -35,6 +35,7 @@ BASE_DECLARE_FEATURE(kAllocInstanceIdIncreasedDefaultRange);
 BASE_DECLARE_FEATURE(kAllowMultipleMediaNotifications);
 BASE_DECLARE_FEATURE(kAlwaysDrawCompositedToolbarHairline);
 BASE_DECLARE_FEATURE(kAndroidActorTaskTimeout);
+BASE_DECLARE_FEATURE(kAndroidAdaptiveUiTransitions);
 BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInViz);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
 BASE_DECLARE_FEATURE(kAndroidAppRatingPrompt);

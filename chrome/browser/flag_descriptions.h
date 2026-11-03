@@ -1461,6 +1461,12 @@ inline constexpr char kAndroidTabUiRefactorDescription[] =
     "Enables Tab UI refactoring on Android. For example, modeling tab group "
     "cards as first-class group items in the tab switcher.";
 
+inline constexpr char kAndroidAdaptiveUiTransitionsName[] =
+    "Android Adaptive UI Transitions";
+inline constexpr char kAndroidAdaptiveUiTransitionsDescription[] =
+    "Enables AdaptiveUiEntry transitions between bottom sheets and dialogs "
+    "on Android desktop.";
+
 inline constexpr char kAndroidVerticalTabsName[] = "Android Vertical Tabs";
 inline constexpr char kAndroidVerticalTabsDescription[] =
     "Enables the Vertical Tabs feature on Android.";
