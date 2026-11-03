@@ -562,24 +562,20 @@ records `TriggerHelpUIResult.FAILURE_BLOCKED_BY_ENTERPRISE_POLICY` to
 `BrowserFeaturePromoController` similarly checks `prefs::kPromotionsEnabled`
 via `DoesEnterprisePolicyBlockPromotions()` for low-priority non-toast
 promotions while exempting medium- and high-priority legal notices, keyed
-notices, and actionable alerts.
+notices, and actionable alerts. On Android, exemptions are defined centrally
+in `EnterprisePolicyBypassAllowlist.java` (`ALLOWLISTED_FEATURES`).
 
-### Bypassing the policy check
+### New Policy Exemptions
 
-On Android, exemptions are defined centrally in
-`EnterprisePolicyBypassAllowlist.java` (`ALLOWLISTED_FEATURES`):
-
-*   **Eligibility**: A feature may only be added if it is required for critical
-    legal, regulatory, privacy, or security reasons, or is part of a flow the
-    user explicitly initiated.
-*   **Owner approval**: Adding an entry requires review and approval from User
-    Education owners (`chrome/browser/user_education/OWNERS` or
-    `components/feature_engagement/OWNERS`).
-*   **Presubmit enforcement**: `components/feature_engagement/PRESUBMIT.py`
-    rejects unconditional `return true;` in `EnterprisePolicyBypassAllowlist`
-    and requires any CL that adds features to the allowlist (or alters policy
-    enforcement in `TrackerImpl.java`) to include the following tag in the CL
-    description:
+*   **Eligibility**: Features are typically only exempt from the policy if
+    they fit into high-priority categories, such as legal, regulatory,
+    privacy, or security. Exceptions are made case-by-case and must be
+    approved by leadership.
+*   **Approval**: New exemptions must be documented and justification needs
+    to be added to the CL description (we do this to ensure that surfaces
+    do not accidentally bypass the policy). When adding a new exemption,
+    the CL must be approved by owners, and the CL description must contain
+    the following tag:
 
 ```
 [UserEducation.BypassPolicyCheck]=<justification and link to approval>
