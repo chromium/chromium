@@ -5,6 +5,7 @@
 #include "remoting/host/linux/session_routing_config.h"
 
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <memory>
@@ -15,8 +16,13 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/json/string_escape.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +38,9 @@ namespace remoting {
 namespace {
 
 constexpr size_t kMaxConfigFileSizeBytes = 64 * 1024;  // 64 KB
+
+constexpr char kSessionUserKey[] = "sessionUser";
+constexpr char kCreateRemoteUserSessionsKey[] = "createRemoteUserSessions";
 
 bool IsValidUsername(std::string_view username) {
   if (username.empty() || username.length() > 256) {
@@ -86,7 +95,7 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
   }
   const auto& dict = json->GetDict();
 
-  const base::Value* session_user_value = dict.Find("sessionUser");
+  const base::Value* session_user_value = dict.Find(kSessionUserKey);
   std::string session_user;
   if (session_user_value) {
     if (!session_user_value->is_string()) {
@@ -106,7 +115,7 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
   }
 
   const base::Value* create_remote_value =
-      dict.Find("createRemoteUserSessions");
+      dict.Find(kCreateRemoteUserSessionsKey);
   bool create_remote = false;
   if (create_remote_value) {
     if (!create_remote_value->is_bool()) {
@@ -120,7 +129,7 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
   }
 
   for (const auto [key, value] : dict) {
-    if (key != "sessionUser" && key != "createRemoteUserSessions") {
+    if (key != kSessionUserKey && key != kCreateRemoteUserSessionsKey) {
       LOG(WARNING) << "Unknown key in session routing config: " << key;
     }
   }
@@ -136,6 +145,75 @@ SessionRoutingConfig::LoadAndValidate(const base::FilePath& path,
 
   return base::ok(SessionRoutingConfig(mode, std::move(session_user),
                                        create_remote, is_corp_host));
+}
+
+// static
+base::expected<void, Loggable> SessionRoutingConfig::WriteToFile(
+    const base::FilePath& path,
+    std::string_view session_user,
+    bool create_remote_user_sessions) {
+  // Never write a file that LoadAndValidate() would reject.
+  if (!session_user.empty() && !IsValidUsername(session_user)) {
+    return base::unexpected(Loggable(
+        FROM_HERE,
+        base::StrCat({"Not writing session routing config '", path.value(),
+                      "': ", base::GetQuotedJSONString(session_user),
+                      " is not a valid username."})));
+  }
+
+  // Files are created with the effective UID as the owner.
+  const uid_t owner_uid = geteuid();
+
+  // Unlike LoadAndValidate(), this fails if the directory doesn't exist.
+  auto directory = CheckSecureDirectory(path.DirName(), owner_uid);
+  if (!directory.has_value()) {
+    return std::move(directory).error().UnexpectedWithContext(
+        FROM_HERE, "While writing session routing config");
+  }
+
+  base::DictValue dict;
+  if (!session_user.empty()) {
+    dict.Set(kSessionUserKey, session_user);
+  }
+  if (create_remote_user_sessions) {
+    dict.Set(kCreateRemoteUserSessionsKey, true);
+  }
+  // Pretty-printed, since users may edit the file by hand.
+  std::optional<std::string> json =
+      base::WriteJsonWithOptions(dict, base::JSONWriter::OPTIONS_PRETTY_PRINT);
+  CHECK(json.has_value());
+
+  // WriteFileAtomically() writes to a temporary file created with mode 0600 in
+  // the same directory, then renames it over `path` (replacing rather than
+  // following any symlink there). Operating on paths here and in
+  // SetPosixFilePermissions() (which follows symlinks) is fine since the
+  // directory has just been verified to be owned by `owner_uid` and not
+  // writable by group or others, so no one else can replace `path`.
+  if (!base::ImportantFileWriter::WriteFileAtomically(path, *json)) {
+    return base::unexpected(Loggable(
+        FROM_HERE, base::StrCat({"Failed to write '", path.value(), "'."})));
+  }
+  if (!base::SetPosixFilePermissions(path, 0644)) {
+    return base::unexpected(Loggable(
+        FROM_HERE,
+        base::StrCat({"Failed to set permissions of '", path.value(), "': ",
+                      logging::SystemErrorCodeToString(
+                          logging::GetLastSystemErrorCode())})));
+  }
+
+  // Sanity check: make sure that the daemon will accept the written file.
+  auto loaded = LoadAndValidate(path, /*is_corp_host=*/false, owner_uid);
+  if (!loaded.has_value()) {
+    return std::move(loaded).error().UnexpectedWithContext(
+        FROM_HERE, "While verifying the written session routing config");
+  }
+  if (!loaded->has_value() || (*loaded)->session_user() != session_user ||
+      (*loaded)->create_remote_user_sessions() != create_remote_user_sessions) {
+    return base::unexpected(Loggable(
+        FROM_HERE, base::StrCat({"Session routing config '", path.value(),
+                                 "' doesn't match what was written."})));
+  }
+  return base::ok();
 }
 
 SessionRoutingConfig::SessionRoutingConfig() = default;

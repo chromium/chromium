@@ -211,6 +211,22 @@ source_set("secure_file_reader") {
   ]
 }
 
+source_set("session_routing_config") {
+  sources = [
+    "session_routing_config.cc",
+    "session_routing_config.h",
+  ]
+  public_deps = [
+    "//base",
+    "//remoting/base",
+    "//remoting/base:errors",
+  ]
+  deps = [
+    ":secure_file_reader",
+    "//remoting/signaling",
+  ]
+}
+
 source_set("remoting_migrate_host_main_impl") {
   sources = [ "migrate_host_main.cc" ]
   deps = [
@@ -365,8 +381,6 @@ static_library("platform_impls") {
     "scoped_portal_session.h",
     "screen_saver_inhibitor.cc",
     "screen_saver_inhibitor.h",
-    "session_routing_config.cc",
-    "session_routing_config.h",
     "systemd_user_env_setter.cc",
     "systemd_user_env_setter.h",
     "systemd_utils.cc",
@@ -381,6 +395,7 @@ static_library("platform_impls") {
     ":pipewire_loader",
     ":remote_session_info_main_headers",
     ":secure_file_reader",
+    ":session_routing_config",
     ":utils",
     ":x11",
     ":x11_display_utils",
@@ -536,6 +551,7 @@ source_set("unit_tests") {
   deps = [
     ":platform_impls",
     ":secure_file_reader",
+    ":session_routing_config",
     ":utils",
     ":x11_display_utils",
     "dbus_interfaces:interface_headers",

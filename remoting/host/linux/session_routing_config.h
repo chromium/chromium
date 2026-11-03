@@ -53,6 +53,22 @@ class SessionRoutingConfig {
                   bool is_corp_host = false,
                   uid_t expected_owner_uid = 0);
 
+  // Atomically writes a session routing config file to `path` with mode 0644.
+  // The file is owned by the effective user (root in production), and the
+  // parent directory of `path` must already exist, be owned by the effective
+  // user, and not be writable by group or others, so that LoadAndValidate()
+  // accepts the file. An empty `session_user` omits the `sessionUser` field,
+  // and `create_remote_user_sessions` is only written if it is true, so
+  // `WriteToFile(path, "", false)` writes `{}`.
+  // Returns an error without writing anything if `session_user` is not a valid
+  // username or the parent directory fails the checks above. Also returns an
+  // error if writing the file fails or the written file can't be loaded back.
+  // Performs blocking file I/O.
+  static base::expected<void, Loggable> WriteToFile(
+      const base::FilePath& path,
+      std::string_view session_user,
+      bool create_remote_user_sessions);
+
   SessionRoutingConfig();
   SessionRoutingConfig(RoutingMode mode,
                        std::string session_user,

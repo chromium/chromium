@@ -9,12 +9,15 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/values_test_util.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/loggable.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -50,6 +53,11 @@ class SessionRoutingConfigTest : public testing::Test {
     EXPECT_TRUE(base::WriteFile(file_path, content));
     EXPECT_TRUE(base::SetPosixFilePermissions(file_path, permissions));
     return file_path;
+  }
+
+  // Returns a path in the temp directory that WriteToFile() can write to.
+  base::FilePath GetWritableConfigFilePath() const {
+    return temp_dir_.GetPath().Append("session_routing.json");
   }
 
   base::ScopedTempDir temp_dir_;
@@ -290,6 +298,142 @@ TEST_F(SessionRoutingConfigTest, MatchCorpClientUsernameKeyIsIgnored) {
   ASSERT_TRUE(result2->has_value());
   EXPECT_EQ(result2->value().mode(),
             SessionRoutingConfig::RoutingMode::kMatchCorpClientUsername);
+}
+
+TEST_F(SessionRoutingConfigTest, WriteToFile_RoundTrip) {
+  struct TestCase {
+    std::string_view session_user;
+    bool create_remote_user_sessions;
+    std::string_view expected_json;
+    SessionRoutingConfig::RoutingMode expected_mode;
+  };
+  constexpr TestCase kTestCases[] = {
+      {"", false, "{}", SessionRoutingConfig::RoutingMode::kRejectAll},
+      {"alice", false, R"({"sessionUser": "alice"})",
+       SessionRoutingConfig::RoutingMode::kSessionUser},
+      {"", true, R"({"createRemoteUserSessions": true})",
+       SessionRoutingConfig::RoutingMode::kRejectAll},
+      {"alice", true,
+       R"({"sessionUser": "alice", "createRemoteUserSessions": true})",
+       SessionRoutingConfig::RoutingMode::kSessionUser},
+  };
+  base::FilePath config_file = GetWritableConfigFilePath();
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "session_user: '" << test_case.session_user
+                 << "', create_remote_user_sessions: "
+                 << test_case.create_remote_user_sessions);
+
+    auto write_result = SessionRoutingConfig::WriteToFile(
+        config_file, test_case.session_user,
+        test_case.create_remote_user_sessions);
+    ASSERT_TRUE(write_result.has_value()) << write_result.error().ToString();
+
+    // Fields are omitted rather than written with default values.
+    std::string content;
+    ASSERT_TRUE(base::ReadFileToString(config_file, &content));
+    EXPECT_THAT(content, base::test::IsJson(test_case.expected_json));
+
+    auto result = SessionRoutingConfig::LoadAndValidate(
+        config_file, /*is_corp_host=*/false, current_uid_);
+    ASSERT_TRUE(result.has_value()) << result.error().ToString();
+    ASSERT_TRUE(result->has_value());
+    EXPECT_EQ(result->value().mode(), test_case.expected_mode);
+    EXPECT_EQ(result->value().session_user(), test_case.session_user);
+    EXPECT_EQ(result->value().create_remote_user_sessions(),
+              test_case.create_remote_user_sessions);
+  }
+}
+
+TEST_F(SessionRoutingConfigTest, WriteToFile_SetsMode0644) {
+  base::FilePath config_file = GetWritableConfigFilePath();
+  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
+                  config_file, "alice", /*create_remote_user_sessions=*/true)
+                  .has_value());
+
+  int mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(config_file, &mode));
+  EXPECT_EQ(mode, 0644);
+}
+
+TEST_F(SessionRoutingConfigTest, WriteToFile_ReplacesExistingFile) {
+  base::FilePath config_file = CreateConfigFile(kUnknownKeysJson, 0600);
+  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
+                  config_file, "alice", /*create_remote_user_sessions=*/false)
+                  .has_value());
+
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(config_file, &content));
+  EXPECT_THAT(content, base::test::IsJson(kValidSessionUserJson));
+  int mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(config_file, &mode));
+  EXPECT_EQ(mode, 0644);
+}
+
+TEST_F(SessionRoutingConfigTest, WriteToFile_ReplacesSymlinkAtPath) {
+  base::FilePath target_file = CreateConfigFile(kUnknownKeysJson, 0600);
+  base::FilePath config_file = GetWritableConfigFilePath();
+  ASSERT_TRUE(base::CreateSymbolicLink(target_file, config_file));
+
+  ASSERT_TRUE(SessionRoutingConfig::WriteToFile(
+                  config_file, "alice", /*create_remote_user_sessions=*/false)
+                  .has_value());
+
+  EXPECT_FALSE(base::IsLink(config_file));
+  std::string content;
+  ASSERT_TRUE(base::ReadFileToString(config_file, &content));
+  EXPECT_THAT(content, base::test::IsJson(kValidSessionUserJson));
+  std::string target_content;
+  ASSERT_TRUE(base::ReadFileToString(target_file, &target_content));
+  EXPECT_EQ(target_content, kUnknownKeysJson);
+}
+
+TEST_F(SessionRoutingConfigTest,
+       WriteToFile_GroupWritableDirectoryFailsWithoutWriting) {
+  base::FilePath config_file = GetWritableConfigFilePath();
+  ASSERT_TRUE(base::SetPosixFilePermissions(temp_dir_.GetPath(), 0770));
+
+  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
+                   config_file, "alice", /*create_remote_user_sessions=*/false)
+                   .has_value());
+  EXPECT_FALSE(base::PathExists(config_file));
+}
+
+TEST_F(SessionRoutingConfigTest,
+       WriteToFile_OtherWritableDirectoryFailsWithoutWriting) {
+  base::FilePath config_file = GetWritableConfigFilePath();
+  ASSERT_TRUE(base::SetPosixFilePermissions(temp_dir_.GetPath(), 0707));
+
+  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
+                   config_file, "alice", /*create_remote_user_sessions=*/false)
+                   .has_value());
+  EXPECT_FALSE(base::PathExists(config_file));
+}
+
+TEST_F(SessionRoutingConfigTest,
+       WriteToFile_MissingDirectoryFailsWithoutCreatingIt) {
+  base::FilePath config_file =
+      temp_dir_.GetPath().Append("missing_dir").Append("session_routing.json");
+
+  EXPECT_FALSE(SessionRoutingConfig::WriteToFile(
+                   config_file, "alice", /*create_remote_user_sessions=*/false)
+                   .has_value());
+  EXPECT_FALSE(base::PathExists(config_file.DirName()));
+}
+
+TEST_F(SessionRoutingConfigTest,
+       WriteToFile_InvalidUsernameFailsWithoutWriting) {
+  base::FilePath config_file = GetWritableConfigFilePath();
+
+  EXPECT_FALSE(
+      SessionRoutingConfig::WriteToFile(config_file, "user/name",
+                                        /*create_remote_user_sessions=*/false)
+          .has_value());
+  EXPECT_FALSE(
+      SessionRoutingConfig::WriteToFile(config_file, "-baduser",
+                                        /*create_remote_user_sessions=*/false)
+          .has_value());
+  EXPECT_FALSE(base::PathExists(config_file));
 }
 
 TEST_F(SessionRoutingConfigTest, ResolveSessionUser_SessionUserMode) {
