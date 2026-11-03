@@ -3939,6 +3939,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // exceptions involving speculative RenderFrameHosts.
   bool ShouldResetDocumentAssociatedDataAtCommit() const;
 
+  // Resets state for renderer-side Document replacements (the result of a
+  // javascript: URL, XSLT or discard, and the synchronous about:blank commit
+  // that replaces the initial about:blank Document). This is state which is
+  // strictly coupled with the renderer's Document and should be reset for
+  // each Document change.
+  void ResetStateForReplacedRendererDocument();
+
   // Called when we received the confirmation a new document committed in the
   // renderer. It was created from the |navigation|.
   void DidCommitNewDocument(const mojom::DidCommitProvisionalLoadParams& params,

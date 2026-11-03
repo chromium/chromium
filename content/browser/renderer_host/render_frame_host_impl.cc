@@ -7029,12 +7029,7 @@ void RenderFrameHostImpl::DidOpenDocumentInputStream(const GURL& url) {
 }
 
 void RenderFrameHostImpl::DidCommitDocumentReplacement() {
-  // The renderer replaced its Document, so drop the replaced Document's
-  // ModelContextUserData.
-  // TODO(crbug.com/576419973): Do this for all Document scoped user data.
-  if (ModelContextUserData::GetForCurrentDocument(this)) {
-    ModelContextUserData::DeleteForCurrentDocument(this);
-  }
+  ResetStateForReplacedRendererDocument();
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetRenderWidgetHost() {
@@ -17109,6 +17104,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   bool navigated_to_new_document =
       created_new_document && navigation_request->IsWaitingToCommit();
 
+  if (created_new_document && !navigated_to_new_document) {
+    ResetStateForReplacedRendererDocument();
+  }
+
   if (navigated_to_new_document) {
     TRACE_EVENT("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
                 ChromeTrackEvent::kRenderFrameHost, this);
@@ -17353,6 +17352,16 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 bool RenderFrameHostImpl::ShouldResetDocumentAssociatedDataAtCommit() const {
   return lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
          !committed_speculative_rfh_before_navigation_commit_;
+}
+
+void RenderFrameHostImpl::ResetStateForReplacedRendererDocument() {
+  // Drop the replaced Document's ModelContextUserData. `ModelContextHost` is
+  // navigation-associated, so the binds from the replaced and the new Document
+  // are processed in order with the IPC that reports the replacement.
+  // TODO(crbug.com/576419973): Do this for all Document scoped user data.
+  if (ModelContextUserData::GetForCurrentDocument(this)) {
+    ModelContextUserData::DeleteForCurrentDocument(this);
+  }
 }
 
 // TODO(arthursonzogni): Investigate what must be done when
