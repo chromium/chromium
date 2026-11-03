@@ -57,6 +57,7 @@ class Page;
 
 class ContextualTasksUIInterface;
 class ContextualTasksService;
+class ContextualTasksWebContentsUserData;
 class AimMessagePoster;
 struct ContextualTaskContext;
 struct SiteExclusionDetail;
@@ -139,6 +140,9 @@ void RecordTabAddedMetric(
 // async page context extraction via TabContextualizationController, underlines
 // the tab strip if enabled, and on completion checks that the token is still an
 // uploaded context token before starting the upload.
+// If `user_data` is provided, marks the created token's upload as started
+// before invoking `GetPageContext()` and notifies `user_data` with a terminal
+// validation failure if `GetPageContext()` completes without page content.
 // If `on_context_uploaded` is provided, it is invoked after the upload starts.
 // Returns the created context token on success, or an error.
 // Not used for delayed (auto-suggested chip) tabs: those are recorded via
@@ -150,7 +154,8 @@ CaptureAndUploadTabContext(
     int32_t tab_id,
     contextual_search::ContextualSearchSessionHandle* session_handle,
     base::RepeatingClosure on_context_uploaded = base::DoNothing(),
-    BrowserWindowInterface* browser_window_interface = nullptr);
+    BrowserWindowInterface* browser_window_interface = nullptr,
+    ContextualTasksWebContentsUserData* user_data = nullptr);
 
 // Removes the local tab underline for `tab_id` if context management is
 // enabled.
