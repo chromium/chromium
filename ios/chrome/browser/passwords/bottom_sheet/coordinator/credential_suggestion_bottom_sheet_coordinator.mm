@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/ios/features.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -99,7 +99,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 - (void)start {
   if (!_params.has_value() && !_requestInfo.has_value()) {
     // Cleanup the coordinator if it couldn't be started.
-    [self dismissPasswordSuggestions];
+    [self dismissCredentialSuggestions];
     // Do not add any logic past this point in this specific context since the
     // the coordinator was torn down at this point hence now unusable.
     return;
@@ -167,7 +167,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     // If there is an active passkey request, defer it to the renderer.
     [_mediator deferPasskeyRequestToRenderer];
     // Cleanup the coordinator if it couldn't be started.
-    [self dismissPasswordSuggestions];
+    [self dismissCredentialSuggestions];
     // Do not add any logic past this point in this specific context since the
     // the coordinator was torn down at this point hence now unusable.
     return;
@@ -222,7 +222,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf showSavedPasswordsSettings];
-                           [weakSelf dismissPasswordSuggestions];
+                           [weakSelf dismissCredentialSuggestions];
                          }];
 }
 
@@ -246,7 +246,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                            base::UmaHistogramBoolean("IOS.PasswordBottomSheet."
                                                      "Details.ValidCredential",
                                                      credential.has_value());
-                           [weakSelf dismissPasswordSuggestions];
+                           [weakSelf dismissCredentialSuggestions];
                          }];
 }
 
@@ -274,7 +274,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       [weakSelf.navigationController.presentingViewController
           dismissViewControllerAnimated:YES
                              completion:^{
-                               [weakSelf dismissPasswordSuggestions];
+                               [weakSelf dismissCredentialSuggestions];
                              }];
     };
     [self didSelectSuggestion:formSuggestion
@@ -282,7 +282,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                    completion:completion];
   } else {
     ProceduralBlock completion = ^{
-      [weakSelf dismissPasswordSuggestions];
+      [weakSelf dismissCredentialSuggestions];
     };
     [_navigationController.presentingViewController
         dismissViewControllerAnimated:YES
@@ -340,7 +340,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // Disconnect as a last step of cleaning up the presentation. This should
   // always be kept as the last step.
   [_mediator disconnect];
-  [self dismissPasswordSuggestions];
+  [self dismissCredentialSuggestions];
 }
 
 #pragma mark - CredentialSuggestionBottomSheetPresenter
@@ -418,21 +418,21 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 }
 
 // Verifies whether the bottom sheet view controller was successfully presented.
-// If not, logs an exit reason and dismisses the password suggestions.
+// If not, logs an exit reason and dismisses the credential suggestions.
 - (void)verifyPresentation {
   if (!_navigationController.presentingViewController &&
       !_navigationController.beingPresented) {
     [_mediator logExitReason:kCouldNotPresent];
     [_mediator deferPasskeyRequestToRenderer];
-    [self dismissPasswordSuggestions];
+    [self dismissCredentialSuggestions];
   }
 }
 
-// Dismisses the password suggestions bottom sheet.
-- (void)dismissPasswordSuggestions {
-  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [browserCoordinatorHandler dismissPasswordSuggestions];
+// Dismisses the credential suggestions bottom sheet.
+- (void)dismissCredentialSuggestions {
+  id<IOSPasskeyClientCommands> passkeyClientHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), IOSPasskeyClientCommands);
+  [passkeyClientHandler dismissPasskeySuggestions];
 }
 
 @end

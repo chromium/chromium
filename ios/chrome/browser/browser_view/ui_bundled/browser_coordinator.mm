@@ -47,8 +47,6 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
-#import "components/webauthn/ios/ios_passkey_client.h"
-#import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
@@ -139,7 +137,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
@@ -1864,12 +1861,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
   // Calling showVoiceSearch stops TTS audio if it is playing.
   [_viewController startVoiceSearch];
-}
-
-- (void)dismissPasswordSuggestions {
-  // TODO(crbug.com/543354673): Remove this.
-  [HandlerForProtocol(self.dispatcher, IOSPasskeyClientCommands)
-      dismissPasskeySuggestions];
 }
 
 - (void)legacyDismissCardUnmaskAuthentication {

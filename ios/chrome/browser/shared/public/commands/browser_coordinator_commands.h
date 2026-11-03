@@ -114,10 +114,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // a scene, `stopAllVoiceSearch` from `SceneCommands` can be used.
 - (void)stopVoiceSearch;
 
-// Dismiss the password suggestions.
-// TODO(crbug.com/543354673): Remove this.
-- (void)dismissPasswordSuggestions;
-
 // Dismiss the card unmask authentication prompt.
 // Deprecated: use AutofillCommands instead.
 - (void)legacyDismissCardUnmaskAuthentication;
