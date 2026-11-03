@@ -1033,6 +1033,22 @@ targets.mixin(
     ],
 )
 
+targets.mixin(
+    name = "gpu_force_webgl_on_webgpu",
+    args = [
+        # --enable-unsafe-webgpu bypasses the WebGPU adapter blocklist so the
+        # suite can run on bots whose GPU/driver isn't allowlisted yet.
+        "--extra-browser-args=--enable-features=WebGLOnWebGPU --enable-unsafe-webgpu",
+    ],
+    linux_args = [
+        # Linux defaults to GL SharedImages, and webgpu_on_vk_via_gl_interop is
+        # blocklisted on AMD and Intel < Gen12. Enable Vulkan so Dawn can get a
+        # WebGPU adapter on all Linux GPU bots (Telemetry merges multiple
+        # --enable-features flags).
+        "--extra-browser-args=--enable-features=Vulkan",
+    ],
+)
+
 # Use of this mixin signals to the recipe that the test uploads its results
 # to result-sink and doesn't need to be wrapped by result_adapter.
 targets.mixin(

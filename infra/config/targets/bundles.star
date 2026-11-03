@@ -4333,6 +4333,8 @@ targets.bundle(
         "vulkan_pixel_skia_gold_test",
         "webcodecs_tests",
         "webgl2_conformance_gl_passthrough_tests",
+        "webgl2_conformance_webgl_on_webgpu_tests",
+        "webgl_conformance_webgl_on_webgpu_tests",
         "webrtc_tests",
     ],
 )
@@ -4369,6 +4371,12 @@ targets.bundle(
         ),
         "webgl2_conformance_gl_passthrough_tests": targets.remove(
             reason = "Wayland requires running tests with GLES, not GL",
+        ),
+        "webgl2_conformance_webgl_on_webgpu_tests": targets.remove(
+            reason = "WebGLOnWebGPU is only tested on X11 for now",
+        ),
+        "webgl_conformance_webgl_on_webgpu_tests": targets.remove(
+            reason = "WebGLOnWebGPU is only tested on X11 for now",
         ),
     },
 )
