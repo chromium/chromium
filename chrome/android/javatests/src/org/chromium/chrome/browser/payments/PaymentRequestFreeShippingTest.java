@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
@@ -28,8 +27,6 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -42,15 +39,10 @@ import java.util.concurrent.TimeoutException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestFreeShippingTest {
-    public final FreshCtaTransitTestRule mCtaTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    public final PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule(mCtaTestRule, "payment_request_free_shipping_test.html");
-
     @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
+    public PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(
+                    "payment_request_free_shipping_test.html", /* delayStartActivity= */ true);
 
     private static final int RENDER_TEST_REVISION = 3;
     private static final String RENDER_TEST_REVISION_DESCRIPTION =
@@ -82,7 +74,8 @@ public class PaymentRequestFreeShippingTest {
 
     @Before
     public void setUp() throws Exception {
-        mPaymentRequestTestRule.startOnTestPage();
+        mPaymentRequestTestRule.startMainActivity();
+        mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad();
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address on disk.
         helper.setProfile(

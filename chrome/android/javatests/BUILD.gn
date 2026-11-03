@@ -1214,7 +1214,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseUnsupportedTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestShowTwiceTest.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestTabTest.java",
-    "src/org/chromium/chrome/browser/payments/PaymentRequestTestRule.java",
     "src/org/chromium/chrome/browser/payments/PaymentRequestUpdateWithTest.java",
     "src/org/chromium/chrome/browser/payments/WebPaymentIntentHelperTest.java",
   ]
