@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -83,8 +84,12 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <shobjidl.h>
 #include <windows.h>
 
+#include <wrl/client.h>
+
+#include "ui/gfx/win/hwnd_util.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -269,6 +274,21 @@ class OmniboxEverywhereWidget : public views::Widget,
       theme_service_observation_{this};
 };
 
+#if BUILDFLAG(IS_WIN)
+bool IsOnCurrentVirtualDesktop(HWND hwnd) {
+  Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager;
+  if (FAILED(::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr,
+                                CLSCTX_ALL,
+                                IID_PPV_ARGS(&virtual_desktop_manager)))) {
+    return true;
+  }
+  // If this can't be determined, assume the window is on the current virtual
+  // desktop.
+  return gfx::IsWindowOnCurrentVirtualDesktop(hwnd, virtual_desktop_manager)
+      .value_or(true);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
@@ -282,7 +302,9 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
       ,
       shortcut_helper_(base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}))
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      is_on_current_virtual_desktop_(
+          base::BindRepeating(&IsOnCurrentVirtualDesktop))
 #endif
 {
 #if defined(USE_AURA)
@@ -353,6 +375,20 @@ content::WebContents* OmniboxEverywhereUIManager::web_contents() const {
 void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
                                                 gfx::NativeWindow context) {
   CancelPendingDeactivation();
+  std::optional<gfx::Rect> widget_bounds;
+#if BUILDFLAG(IS_WIN)
+  // Windows keeps a window on the virtual desktop it was last shown on, so if
+  // the widget is on another desktop, recreate it, which opens it on the
+  // current one. This falls through to the creation path below, which keeps
+  // its position and reuses the `WebContents`. Leave it alone while a dialog is
+  // open, since recreating it would dismiss the dialog.
+  if (widget_ && profile_ == profile && !HasOpenModalDialog() &&
+      !is_on_current_virtual_desktop_.Run(
+          views::HWNDForWidget(widget_.get()))) {
+    widget_bounds = widget_->GetRestoredBounds();
+    DestroyWidget();
+  }
+#endif
   last_shown_time_ = base::TimeTicks::Now();
   if (widget_ && profile_ == profile) {
     ActivateAndFocus();
@@ -413,7 +449,7 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   profile_ = profile;
 
   EnsureContentsWrapperInitialized(profile_);
-  CreateAndInitWidget(context);
+  CreateAndInitWidget(context, widget_bounds);
   ActivateAndFocus();
 
   if (web_contents()) {
@@ -544,7 +580,8 @@ void OmniboxEverywhereUIManager::ReleaseKeepAlives() {
 }
 
 void OmniboxEverywhereUIManager::CreateAndInitWidget(
-    gfx::NativeWindow context) {
+    gfx::NativeWindow context,
+    std::optional<gfx::Rect> bounds) {
   if (widget_) {
     return;
   }
@@ -577,12 +614,16 @@ void OmniboxEverywhereUIManager::CreateAndInitWidget(
     params.context = context;
   }
 
-  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
-  const bool is_fre_intro_modal =
-      service && service->fre_controller() &&
-      service->fre_controller()->GetCurrentStage() == FreStage::kIntroModal;
-  params.bounds = CalculateWidgetBounds(
-      is_fre_intro_modal ? kFreModalRestingHeight : kDefaultRestingHeight);
+  if (bounds) {
+    params.bounds = *bounds;
+  } else {
+    auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
+    const bool is_fre_intro_modal =
+        service && service->fre_controller() &&
+        service->fre_controller()->GetCurrentStage() == FreStage::kIntroModal;
+    params.bounds = CalculateWidgetBounds(
+        is_fre_intro_modal ? kFreModalRestingHeight : kDefaultRestingHeight);
+  }
 
   auto web_view = std::make_unique<views::WebView>(profile_);
   web_view->SetProperty(views::kElementIdentifierKey,
