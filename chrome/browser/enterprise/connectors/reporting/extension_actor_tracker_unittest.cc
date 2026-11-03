@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -192,6 +193,48 @@ TEST_F(ExtensionActorTrackerTest, ExtensionNavigationStartKeepsActor) {
   tracker()->DidStartNavigation(&reload_nav);
   EXPECT_EQ("extension_alpha",
             ExtensionActorTracker::GetActiveActor(web_contents()));
+}
+
+TEST_F(ExtensionActorTrackerTest, ExtensionHistoryNavigationKeepsActor) {
+  // These commands start browser-initiated navigations without
+  // `PAGE_TRANSITION_FROM_API`.
+  const ui::PageTransition kBackForward = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FORWARD_BACK);
+  const std::pair<const char*, ui::PageTransition> kCommands[] = {
+      {"tabs.reload", ui::PAGE_TRANSITION_RELOAD},
+      {"tabs.goBack", kBackForward},
+      {"tabs.goForward", kBackForward},
+  };
+  for (const auto& [command, transition] : kCommands) {
+    SCOPED_TRACE(command);
+    ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                          "Runtime.evaluate");
+    ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                          command);
+
+    NiceMock<content::MockNavigationHandle> history_nav(web_contents());
+    history_nav.set_url(GURL("https://example.com/previous"));
+    history_nav.set_is_in_primary_main_frame(true);
+    history_nav.set_is_renderer_initiated(false);
+    history_nav.set_page_transition(transition);
+    tracker()->DidStartNavigation(&history_nav);
+    EXPECT_EQ("extension_alpha",
+              ExtensionActorTracker::GetActiveActor(web_contents()));
+
+    history_nav.set_has_committed(true);
+    tracker()->DidFinishNavigation(&history_nav);
+    EXPECT_EQ("extension_alpha",
+              ExtensionActorTracker::GetActiveActor(web_contents()));
+
+    // The next browser-initiated navigation is user input again.
+    NiceMock<content::MockNavigationHandle> typed_nav(web_contents());
+    typed_nav.set_is_in_primary_main_frame(true);
+    typed_nav.set_is_renderer_initiated(false);
+    typed_nav.set_page_transition(ui::PAGE_TRANSITION_TYPED);
+    tracker()->DidStartNavigation(&typed_nav);
+    EXPECT_EQ(std::nullopt,
+              ExtensionActorTracker::GetActiveActor(web_contents()));
+  }
 }
 
 TEST_F(ExtensionActorTrackerTest, AboutBlankDoesNotConsumeInitialNavigation) {

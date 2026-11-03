@@ -34,6 +34,9 @@ bool IsExtensionOrigin(const std::optional<url::Origin>& origin) {
 bool IsNavigation(std::string_view command) {
   return command == extensions::TabsCreateFunction::static_function_name() ||
          command == extensions::TabsUpdateFunction::static_function_name() ||
+         command == extensions::TabsReloadFunction::static_function_name() ||
+         command == extensions::TabsGoBackFunction::static_function_name() ||
+         command == extensions::TabsGoForwardFunction::static_function_name() ||
          command == "Page.navigate" || command == "Page.reload";
 }
 

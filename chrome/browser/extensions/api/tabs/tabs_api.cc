@@ -2008,6 +2008,13 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
         Error(tabs_constants::kNotAllowedForPictureInPictureError));
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (extension()) {
+    enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+        web_contents, extension_id(), static_function_name());
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
   web_contents->GetController().Reload(
       bypass_cache ? content::ReloadType::BYPASSING_CACHE
                    : content::ReloadType::NORMAL,
@@ -3175,6 +3182,13 @@ ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
     return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
   }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (extension()) {
+    enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+        web_contents, extension_id(), static_function_name());
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
   controller.GoForward();
   return RespondNow(NoArguments());
 }
@@ -3196,6 +3210,13 @@ ExtensionFunction::ResponseAction TabsGoBackFunction::Run() {
   if (!controller.CanGoBack()) {
     return RespondNow(Error(tabs_constants::kNotFoundNextPageError));
   }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  if (extension()) {
+    enterprise_connectors::ExtensionActorTracker::SetActiveActor(
+        web_contents, extension_id(), static_function_name());
+  }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   controller.GoBack();
   return RespondNow(NoArguments());
