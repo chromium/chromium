@@ -372,16 +372,6 @@ void HTMLElementStack::InsertAbove(HTMLStackItem* item,
   NOTREACHED();
 }
 
-HTMLStackItem* HTMLElementStack::OneBelowTop() const {
-  // We should never call this if there are fewer than 2 elements on the stack.
-  DCHECK(top_);
-  DCHECK(top_->NextItemInStack());
-  if (top_->NextItemInStack()->IsElementNode()) {
-    return top_->NextItemInStack();
-  }
-  return nullptr;
-}
-
 void HTMLElementStack::RemoveHTMLHeadElement(Element* element) {
   DCHECK_EQ(head_element_, element);
   if (top_->GetElement() == element) {

@@ -280,7 +280,6 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 
-  void UpdateDescendantDirectionality(TextDirection direction);
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
   void AdjustDirectionAutoAfterRecalcAssignedNodes();
@@ -333,7 +332,6 @@ class CORE_EXPORT HTMLElement : public Element {
       HidePopoverFocusBehavior focus_behavior,
       HidePopoverTransitionBehavior event_firing,
       ExceptionState* exception_state);
-  void PopoverHideFinishIfNeeded(bool immediate);
   static HTMLElement* FindTopmostPopoverAncestor(
       Element& new_popover_or_top_layer_element,
       HeapVector<Member<HTMLElement>>* stack_to_check,

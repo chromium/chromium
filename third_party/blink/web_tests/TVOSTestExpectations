@@ -2060,7 +2060,6 @@ crbug.com/554992299 [ tvOS26-simulator ] gamepad/full-screen-gamepad.html [ Skip
 crbug.com/554992299 [ tvOS26-simulator ] harness-tests/timeout.html [ Skip Timeout ]
 crbug.com/554992299 [ tvOS26-simulator ] html/marquee/marquee-scroll.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] html/marquee/marquee-scrollamount.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] http/tests/auto-sizes-image-use-counter.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/cachestorage/serviceworker/ignore-search-with-credentials.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/cookies/same-site/popup-cross-site-post.https.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] http/tests/forms/color-picker-keyboard-cross-domain.php [ Skip Timeout ]

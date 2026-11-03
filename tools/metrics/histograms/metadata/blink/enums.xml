@@ -4982,7 +4982,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4348" label="OBSOLETE_DeferredShaping2ReshapedByLastResort"/>
   <int value="4349" label="AudioContextSinkId"/>
   <int value="4350" label="AudioContextSetSinkId"/>
-  <int value="4351" label="ViewportDependentLazyLoadedImageWithSizesAttribute"/>
+  <int value="4351"
+      label="OBSOLETE_ViewportDependentLazyLoadedImageWithSizesAttribute"/>
   <int value="4352" label="XRWebGLBindingGetCameraImage"/>
   <int value="4353" label="OBSOLETE_SelectiveInOrderScript"/>
   <int value="4354" label="V8AsyncStackTaggingCreateTaskCall"/>
@@ -5015,7 +5016,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4379" label="OBSOLETE_PerformanceEntryBufferSwaps"/>
   <int value="4380" label="ClearPerformanceEntries"/>
   <int value="4381"
-      label="ViewportDependentLazyLoadedImageWithoutSizesAttribute"/>
+      label="OBSOLETE_ViewportDependentLazyLoadedImageWithoutSizesAttribute"/>
   <int value="4382" label="V8MediaStreamTrack_ApplyConstraints_Method"/>
   <int value="4383" label="ViewTransition"/>
   <int value="4384" label="ElementTogglePopover"/>

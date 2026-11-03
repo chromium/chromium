@@ -56,7 +56,6 @@ class CORE_EXPORT VideoWakeLock final
   float visibility_threshold_for_tests() const { return visibility_threshold_; }
   bool active_for_tests() const { return active_; }
   float GetSizeThresholdForTests() const;
-  bool HasStrictWakeLockForTests() const;
 
   // Anecdotally, most screen timeouts are at least 5s, so we don't need high
   // frequency intersection updates. Choose a value such that we're never more

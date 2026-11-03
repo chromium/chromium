@@ -127,7 +127,6 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   LayoutEmbeddedContent* ExistingLayoutEmbeddedContent() const override;
 
   void UpdatePluginInternal() override;
-  void UpdateDocNamedItem();
 
   void ReattachFallbackContent();
 

@@ -58,9 +58,6 @@ class CORE_EXPORT ListItemOrdinal {
 
   // Invalidate items that are affected by an insertion or a removal.
   static void ItemInsertedOrRemoved(const LayoutObject*);
-  // Invalidate items that are affected by counter style update.
-  static void ItemCounterStyleUpdated(const LayoutObject&);
-
  private:
   enum ValueType { kNeedsUpdate, kUpdated, kExplicit };
   ValueType Type() const { return static_cast<ValueType>(type_); }

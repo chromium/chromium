@@ -46,7 +46,6 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
 
   bool IsAccelerated() const override;
 
-  bool IsImageElement() const override;
 
   bool IsOpaque() const override;
 

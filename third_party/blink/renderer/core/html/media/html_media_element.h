@@ -347,7 +347,6 @@ class CORE_EXPORT HTMLMediaElement
   using HTMLElement::GetExecutionContext;
 
   bool IsFullscreen() const;
-  virtual bool UsesOverlayFullscreenVideo() const { return false; }
 
   bool HasClosedCaptions() const;
   bool TextTracksVisible() const;

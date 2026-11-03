@@ -68,7 +68,6 @@ class HTMLElementStack {
     return top_.Get();
   }
 
-  HTMLStackItem* OneBelowTop() const;
   HTMLStackItem* Find(Element*) const;
   HTMLStackItem* FurthestBlockForFormattingElement(Element*) const;
   HTMLStackItem* Topmost(html_names::HTMLTag tag) const;

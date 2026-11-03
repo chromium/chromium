@@ -48,10 +48,6 @@ mojom::blink::PreferredColorScheme ImageElementBase::PreferredColorScheme()
       style);
 }
 
-bool ImageElementBase::IsImageElement() const {
-  return CachedImage() && !IsA<SVGImage>(CachedImage()->GetImage());
-}
-
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
     const gfx::SizeF& default_object_size) {

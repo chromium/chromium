@@ -144,7 +144,6 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   void NameRemoved(const AtomicString& name_value);
   void ProcessViewportContentAttribute(const String& content,
                                        ViewportDescription::Type origin);
-  void ProcessColorScheme(const AtomicString& content);
   bool IsAllowOrigins() const;
   void FinishParsingChildren() final;
 

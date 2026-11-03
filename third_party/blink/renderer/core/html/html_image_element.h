@@ -156,8 +156,6 @@ class CORE_EXPORT HTMLImageElement
   bool IsCollapsed() const;
   bool IsPrimaryContent() const;
 
-  void SetAutoSizesUsecounter();
-
   // CanvasImageSource interface implementation.
   gfx::SizeF DefaultDestinationSize(
       const gfx::SizeF&,
@@ -181,15 +179,6 @@ class CORE_EXPORT HTMLImageElement
   void AssociateWith(HTMLFormElement*) override;
 
   bool ElementCreatedByParser() const { return element_created_by_parser_; }
-
-  // Updates if any optimized image policy is violated. When any policy is
-  // violated, the image should be rendered as a placeholder image.
-  void SetImagePolicyViolated() {
-    is_legacy_format_or_unoptimized_image_ = true;
-  }
-  bool IsImagePolicyViolated() {
-    return is_legacy_format_or_unoptimized_image_;
-  }
 
   // Keeps track whether this image is an LCP element.
   // If the element is reused for loading another image, this flag might be
@@ -297,7 +286,6 @@ class CORE_EXPORT HTMLImageElement
   gfx::Size DensityCorrectedIntrinsicDimensions() const;
   HTMLImageLoader& GetImageLoader() const override { return *image_loader_; }
   void NotifyViewportChanged();
-  void CreateMediaQueryListIfDoesNotExist();
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLayout() override;
@@ -314,10 +302,6 @@ class CORE_EXPORT HTMLImageElement
   bool form_was_set_by_parser_ : 1;
   bool element_created_by_parser_ : 1;
   bool is_fallback_image_ : 1;
-  // This flag indicates if the image violates one or more optimized image
-  // policies. When any policy is violated, the image should be rendered as a
-  // placeholder image.
-  bool is_legacy_format_or_unoptimized_image_ : 1;
   bool is_ad_related_ : 1;
   bool is_lcp_element_ : 1;
   bool is_auto_sized_ : 1;

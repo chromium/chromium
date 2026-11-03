@@ -162,7 +162,6 @@ class HTMLConstructionSite final {
   HTMLStackItem* CurrentStackItem() const {
     return open_elements_.TopStackItem();
   }
-  HTMLStackItem* OneBelowTop() const { return open_elements_.OneBelowTop(); }
   Document& OwnerDocumentForCurrentNode();
   HTMLElementStack* OpenElements() const { return &open_elements_; }
   HTMLFormattingElementList* ActiveFormattingElements() const {

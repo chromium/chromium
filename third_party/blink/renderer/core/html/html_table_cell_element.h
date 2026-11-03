@@ -46,8 +46,6 @@ class CORE_EXPORT HTMLTableCellElement final : public HTMLTablePartElement {
   unsigned colSpan() const;
   unsigned rowSpan() const;
 
-  void SetCellIndex(int);
-
   const AtomicString& Abbr() const;
   const AtomicString& Axis() const;
   void setColSpan(unsigned);

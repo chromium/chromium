@@ -121,7 +121,6 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       form_was_set_by_parser_(false),
       element_created_by_parser_(created_by_parser),
       is_fallback_image_(false),
-      is_legacy_format_or_unoptimized_image_(false),
       is_lcp_element_(false),
       is_auto_sized_(false),
       is_predicted_lcp_element_(false),
@@ -1271,17 +1270,6 @@ bool HTMLImageElement::IsCollapsed() const {
 
 bool HTMLImageElement::IsPrimaryContent() const {
   return layout_disposition_ == LayoutDisposition::kPrimaryContent;
-}
-
-void HTMLImageElement::SetAutoSizesUsecounter() {
-  if (listener_ && HasLazyLoadingAttribute()) {
-    UseCounter::Count(
-        GetDocument(),
-        HasSizesAttribute()
-            ? WebFeature::kViewportDependentLazyLoadedImageWithSizesAttribute
-            : WebFeature::
-                  kViewportDependentLazyLoadedImageWithoutSizesAttribute);
-  }
 }
 
 void HTMLImageElement::SetLayoutDisposition(

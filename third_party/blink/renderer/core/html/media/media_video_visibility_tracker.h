@@ -174,9 +174,6 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   bool ComputeVisibility();
 
-  // Resets the various member variables used by `ComputeOcclusion()`.
-  void ResetMembers();
-
   // Computes the area of the video element that is occluded by the viewport.
   void ComputeAreaOccludedByViewport(const LocalFrameView& local_frame_view);
 

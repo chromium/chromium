@@ -474,9 +474,4 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
   ItemUpdated(layout_list_item, kInsertedOrRemoved);
 }
 
-void ListItemOrdinal::ItemCounterStyleUpdated(
-    const LayoutObject& layout_list_item) {
-  ItemUpdated(&layout_list_item, kCounterStyle);
-}
-
 }  // namespace blink

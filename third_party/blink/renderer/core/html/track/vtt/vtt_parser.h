@@ -74,11 +74,6 @@ class VTTParser final : public GarbageCollected<VTTParser> {
   VTTParser(VTTParserClient*, Document&);
   ~VTTParser() = default;
 
-  static inline bool IsRecognizedTag(const AtomicString& tag_name) {
-    return tag_name == html_names::kITag || tag_name == html_names::kBTag ||
-           tag_name == html_names::kUTag || tag_name == html_names::kRubyTag ||
-           tag_name == html_names::kRtTag;
-  }
   static inline bool IsASpace(UChar c) {
     // WebVTT space characters are U+0020 SPACE, U+0009 CHARACTER
     // TABULATION (tab), U+000A LINE FEED (LF), U+000C FORM FEED (FF), and

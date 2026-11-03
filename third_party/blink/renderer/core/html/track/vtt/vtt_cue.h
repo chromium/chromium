@@ -154,9 +154,6 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   void ParseSettings(const VTTRegionMap*, const String&);
 
-  // Applies CSS override style from user settings.
-  void ApplyUserOverrideCSSProperties();
-
   DocumentFragment* getCueAsHTML();
 
 

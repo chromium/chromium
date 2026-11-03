@@ -66,20 +66,6 @@ AtomicString HTMLSlotElement::NormalizeSlotName(const AtomicString& name) {
   return (name.IsNull() || name.empty()) ? g_empty_atom : name;
 }
 
-// static
-const AtomicString& HTMLSlotElement::UserAgentDefaultSlotName() {
-  DEFINE_STATIC_LOCAL(const AtomicString, user_agent_default_slot_name,
-                      ("user-agent-default-slot"));
-  return user_agent_default_slot_name;
-}
-
-// static
-const AtomicString& HTMLSlotElement::UserAgentCustomAssignSlotName() {
-  DEFINE_STATIC_LOCAL(const AtomicString, user_agent_custom_assign_slot_name,
-                      ("user-agent-custom-assign-slot"));
-  return user_agent_custom_assign_slot_name;
-}
-
 const HeapVector<Member<Node>>& HTMLSlotElement::AssignedNodes() const {
   if (!SupportsAssignment()) {
     DCHECK(assigned_nodes_.empty());
@@ -167,15 +153,6 @@ const HeapVector<Member<Node>> HTMLSlotElement::AssignedNodesForBinding(
   if (options->hasFlatten() && options->flatten())
     return FlattenedAssignedNodes();
   return AssignedNodes();
-}
-
-const HeapVector<Member<Element>> HTMLSlotElement::AssignedElements() {
-  HeapVector<Member<Element>> elements;
-  for (auto& node : AssignedNodes()) {
-    if (auto* element = DynamicTo<Element>(node.Get()))
-      elements.push_back(*element);
-  }
-  return elements;
 }
 
 const HeapVector<Member<Element>> HTMLSlotElement::AssignedElementsForBinding(

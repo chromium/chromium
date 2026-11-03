@@ -64,7 +64,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapVector<Member<Node>>& AssignedNodesNoRecalc() const {
     return assigned_nodes_;
   }
-  const HeapVector<Member<Element>> AssignedElements();
   const HeapVector<Member<Element>> AssignedElementsForBinding(
       const AssignedNodesOptions*);
 
@@ -76,9 +75,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
     auto& nodes = AssignedNodes();
     return nodes.empty() ? nullptr : nodes.back().Get();
   }
-
-  Node* AssignedNodeNextTo(const Node&) const;
-  Node* AssignedNodePreviousTo(const Node&) const;
 
   void AppendAssignedNode(Node&);
   void ClearAssignedNodes();
@@ -132,10 +128,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void RecalcStyleForSlotChildren(const StyleRecalcChange,
                                   const StyleRecalcContext&);
 
-  // For User-Agent Shadow DOM
-  static const AtomicString& UserAgentCustomAssignSlotName();
-  static const AtomicString& UserAgentDefaultSlotName();
-
   // For imperative Shadow DOM distribution APIs
   // IDL assign() implementation.
   void assign(HeapVector<Member<V8UnionElementOrText>>& nodes, ExceptionState&);
@@ -146,7 +138,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapLinkedHashSet<WeakMember<Node>>& ManuallyAssignedNodes() const {
     return manually_assigned_nodes_;
   }
-  void RemoveManuallyAssignedNode(Node&);
 
   // Override in order to defer this work when needed.
   bool CalculateAndAdjustAutoDirectionality() final;
@@ -175,7 +166,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
       const HeapVector<Member<Node>>& new_slotted);
 
   void SetShadowRootNeedsAssignmentRecalc();
-  bool CheckNodesValidity(HeapVector<Member<Node>> nodes, ExceptionState&);
 
   void RecalcFlatTreeChildren();
   void UpdateFlatTreeNodeDataForAssignedNodes();
