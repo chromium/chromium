@@ -2537,6 +2537,7 @@ class TabImpl implements Tab, TabInternal {
 
     @CalledByNative
     void clearNativePtr() {
+        ThreadUtils.assertOnUiThread();
         assert mNativeTabAndroid != 0;
         var oldValue = sTabMap.get(mNativeTabAndroid);
         sTabMap.remove(mNativeTabAndroid);
@@ -2546,6 +2547,7 @@ class TabImpl implements Tab, TabInternal {
 
     @CalledByNative
     private void setNativePtr(long nativePtr) {
+        ThreadUtils.assertOnUiThread();
         assert nativePtr != 0;
         assert mNativeTabAndroid == 0;
         assert sTabMap.get(nativePtr) == null;
@@ -2568,6 +2570,7 @@ class TabImpl implements Tab, TabInternal {
      */
     @CalledByNative
     private static @Nullable TabImpl getJavaObject(long nativePtr) {
+        ThreadUtils.assertOnUiThread();
         return sTabMap.get(nativePtr);
     }
 
@@ -3162,7 +3165,6 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
-    @CalledByNative
     public void setTabGroupId(@Nullable Token tabGroupId) {
         assert tabGroupId == null || !tabGroupId.isZero() : "A TabGroupId token must be non-zero.";
         if (Objects.equals(mTabGroupId, tabGroupId) || isDestroyed()) return;
@@ -3174,6 +3176,13 @@ class TabImpl implements Tab, TabInternal {
         if (mNativeTabAndroid != 0) {
             TabImplJni.get().notifyTabGroupChanged(mNativeTabAndroid, tabGroupId);
         }
+    }
+
+    @CalledByNative
+    private void updateParentCollectionProperties(
+            boolean isPinned, @Nullable @JniType("std::optional<base::Token>") Token tabGroupId) {
+        setIsPinned(isPinned);
+        setTabGroupId(tabGroupId);
     }
 
     @Override
@@ -3461,7 +3470,6 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
-    @CalledByNative
     public void setIsPinned(boolean isPinned) {
         if (mIsPinned == isPinned || isDestroyed()) return;
         mIsPinned = isPinned;

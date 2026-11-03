@@ -208,7 +208,7 @@ TEST_F(GlicTabObserverAndroidTest, TabWillDetachCleansUpObservation) {
                                       TabModel::TabLaunchType::FROM_CHROME_UI);
 
   tab->SendWillDetachUpdate(
-      nullptr, static_cast<int32_t>(tabs::TabInterface::DetachReason::kDelete));
+      static_cast<int32_t>(tabs::TabInterface::DetachReason::kDelete));
 
   // Destroying observer should safely clean up without accessing detached tab.
   observer.reset();

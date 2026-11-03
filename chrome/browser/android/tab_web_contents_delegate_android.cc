@@ -1082,7 +1082,6 @@ static void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
 }
 
 static void JNI_TabWebContentsDelegateAndroidImpl_OpenFile(
-    JNIEnv* env,
     content::WebContents* web_contents) {
   if (!web_contents) {
     return;

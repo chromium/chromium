@@ -422,6 +422,6 @@ public class TabFavicon extends TabWebContentsUserData {
 
         void resetWebContents(long nativeTabFavicon);
 
-        Bitmap getFavicon(long nativeTabFavicon);
+        @Nullable Bitmap getFavicon(long nativeTabFavicon);
     }
 }

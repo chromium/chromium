@@ -14,7 +14,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/token_android.h"
+#include "base/android/token_android.h"  // IWYU pragma: keep
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -582,23 +582,23 @@ void TabAndroid::UpdateDelegates(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 }
 
-void TabAndroid::SendDidActivateUpdate(JNIEnv* env) {
+void TabAndroid::SendDidActivateUpdate() {
   // On Android, visibility and activation are currently synonymous.
   did_become_visible_callback_list_.Notify(this);
   did_activate_callback_list_.Notify(this);
 }
 
-void TabAndroid::SendWillDeactivateUpdate(JNIEnv* env) {
+void TabAndroid::SendWillDeactivateUpdate() {
   // On Android, visibility and activation are currently synonymous.
   will_become_hidden_callback_list_.Notify(this);
   will_deactivate_callback_list_.Notify(this);
 }
 
-void TabAndroid::SendDidInsertUpdate(JNIEnv* env) {
+void TabAndroid::SendDidInsertUpdate() {
   did_insert_callback_list_.Notify(this);
 }
 
-void TabAndroid::SendWillDetachUpdate(JNIEnv* env, int32_t detach_reason) {
+void TabAndroid::SendWillDetachUpdate(int32_t detach_reason) {
   will_detach_callback_list_.Notify(
       this, static_cast<tabs::TabInterface::DetachReason>(detach_reason));
 }
@@ -1082,24 +1082,11 @@ void TabAndroid::UpdateProperties() {
     ancestor = ancestor->GetParentCollection();
   }
 
-  SetIsPinned(pinned);
-  SetTabGroupId(tab_group_id);
-}
-
-void TabAndroid::SetIsPinned(bool is_pinned) {
   JNIEnv* env = AttachCurrentThread();
-  Java_TabImpl_setIsPinned(env, GetJavaObject(env), is_pinned);
-}
-
-void TabAndroid::SetTabGroupId(
-    std::optional<tab_groups::TabGroupId> tab_group_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> java_token;
-  if (tab_group_id) {
-    java_token =
-        base::android::TokenAndroid::Create(env, tab_group_id->token());
-  }
-  Java_TabImpl_setTabGroupId(env, GetJavaObject(env), java_token);
+  std::optional<base::Token> tab_group_token =
+      tab_groups::TabGroupId::ToOptionalToken(tab_group_id);
+  Java_TabImpl_updateParentCollectionProperties(env, GetJavaObject(env), pinned,
+                                                tab_group_token);
 }
 
 ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject(JNIEnv* env) const {

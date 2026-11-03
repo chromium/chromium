@@ -216,7 +216,6 @@ class FakeTabModel : public OwningTestTabModel {
   void DestroyDeferredTabBeforeModelTeardown() {
     ASSERT_TRUE(deferred_tab_);
     deferred_tab_->SendWillDetachUpdate(
-        nullptr,
         static_cast<int32_t>(tabs::TabInterface::DetachReason::kDelete));
     observers_.Notify(&TabModelObserver::OnTabClosePending,
                       std::vector<TabAndroid*>{});
@@ -230,9 +229,8 @@ class FakeTabModel : public OwningTestTabModel {
   // destroyed before being re-inserted.
   void DetachDeferredTabForReparenting() {
     ASSERT_TRUE(deferred_tab_);
-    deferred_tab_->SendWillDetachUpdate(
-        nullptr, static_cast<int32_t>(
-                     tabs::TabInterface::DetachReason::kInsertIntoOtherWindow));
+    deferred_tab_->SendWillDetachUpdate(static_cast<int32_t>(
+        tabs::TabInterface::DetachReason::kInsertIntoOtherWindow));
   }
 
   // Destroys a detached deferred tab without any further WillDetach or
