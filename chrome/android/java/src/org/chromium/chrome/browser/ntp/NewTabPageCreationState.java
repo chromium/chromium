@@ -51,7 +51,7 @@ public class NewTabPageCreationState implements UserData {
     }
 
     /** Update the state when new NTPs opened in a new tab. */
-    void onNewTabCreated() {
+    void didAddTab() {
         mIsNewlyCreated = true;
         maybeFocusOmnibox();
     }

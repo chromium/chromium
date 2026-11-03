@@ -78,14 +78,16 @@ import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.components.VirtualView.VirtualViewPriority;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
@@ -198,6 +200,7 @@ public class CompositorViewHolder extends FrameLayout
     private @Nullable Runnable mPostHideKeyboardTask;
 
     private TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private @Nullable BrowserControlsManager mBrowserControlsManager;
     @VisibleForTesting @Nullable View mAccessibilityView;
     private @Nullable CompositorAccessibilityProvider mNodeProvider;
@@ -848,6 +851,10 @@ public class CompositorViewHolder extends FrameLayout
         }
         if (mSideUiStateProvider != null) {
             mSideUiStateProvider.removeObserver(this);
+        }
+        if (mTabModelSelectorTabModelObserver != null) {
+            mTabModelSelectorTabModelObserver.destroy();
+            mTabModelSelectorTabModelObserver = null;
         }
     }
 
@@ -2084,13 +2091,17 @@ public class CompositorViewHolder extends FrameLayout
 
         mTabModelSelector = tabModelSelector;
         mTabModelSelector.getCurrentTabSupplier().addSyncObserver((tab) -> onContentChanged());
-        tabModelSelector.addObserver(
-                new TabModelSelectorObserver() {
+        mTabModelSelectorTabModelObserver =
+                new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
-                    public void onNewTabCreated(Tab tab) {
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
                         initializeTab(tab);
                     }
-                });
+                };
 
         onContentChanged();
         mNativeInitialized = true;

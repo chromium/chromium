@@ -43,9 +43,10 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -80,6 +81,7 @@ public class LauncherShortcutTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private TabModelSelector mTabModelSelector;
+    private TabModelSelectorTabModelObserver mTabModelObserver;
     private final CallbackHelper mTabAddedCallback = new CallbackHelper();
 
     @Before
@@ -89,19 +91,28 @@ public class LauncherShortcutTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabModelSelectorObserver tabModelSelectorObserver =
-                            new TabModelSelectorObserver() {
+                    mTabModelObserver =
+                            new TabModelSelectorTabModelObserver(mTabModelSelector) {
                                 @Override
-                                public void onNewTabCreated(Tab tab) {
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
                                     mTabAddedCallback.notifyCalled();
                                 }
                             };
-                    mTabModelSelector.addObserver(tabModelSelectorObserver);
                 });
     }
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mTabModelObserver != null) {
+                        mTabModelObserver.destroy();
+                    }
+                });
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
         List<String> idsToRemove = new ArrayList<>();

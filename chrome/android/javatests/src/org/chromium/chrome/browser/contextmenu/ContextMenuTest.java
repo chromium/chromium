@@ -89,10 +89,12 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -173,7 +175,7 @@ public class ContextMenuTest {
     private String mTestUrl;
 
     private ContextMenuCoordinator mMenuCoordinator;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private TabModelSelectorTabModelObserver mTabModelSelectorObserver;
 
     private static final String FILENAME_GIF = "download.gif";
     private static final String FILENAME_PNG = "test_image.png";
@@ -229,10 +231,7 @@ public class ContextMenuTest {
                         mMenuCoordinator = null;
                     }
                     if (mTabModelSelectorObserver != null) {
-                        mActivityTestRule
-                                .getActivity()
-                                .getTabModelSelector()
-                                .removeObserver(mTabModelSelectorObserver);
+                        mTabModelSelectorObserver.destroy();
                         mTabModelSelectorObserver = null;
                     }
                 });
@@ -344,19 +343,20 @@ public class ContextMenuTest {
                 .when(mDataProtectionBridgeMock)
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onNewTabCreated(Tab tab) {
-                        Assert.fail();
-                    }
-                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .addObserver(mTabModelSelectorObserver);
+                    mTabModelSelectorObserver =
+                            new TabModelSelectorTabModelObserver(
+                                    mActivityTestRule.getActivity().getTabModelSelector()) {
+                                @Override
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
+                                    Assert.fail();
+                                }
+                            };
                 });
 
         ContextMenuUtils.selectContextMenuItem(
@@ -378,19 +378,20 @@ public class ContextMenuTest {
                 .when(mDataProtectionBridgeMock)
                 .verifyGenericCopyImageActionIsAllowedByPolicy(anyString(), any(), any());
 
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onNewTabCreated(Tab tab) {
-                        Assert.fail();
-                    }
-                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .addObserver(mTabModelSelectorObserver);
+                    mTabModelSelectorObserver =
+                            new TabModelSelectorTabModelObserver(
+                                    mActivityTestRule.getActivity().getTabModelSelector()) {
+                                @Override
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
+                                    Assert.fail();
+                                }
+                            };
                 });
 
         ContextMenuUtils.selectContextMenuItem(
@@ -422,25 +423,26 @@ public class ContextMenuTest {
 
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onNewTabCreated(Tab tab) {
-                        if (tab.getParentId() != activityTab.getId()) {
-                            return;
-                        }
-                        newTab.set(tab);
-                        newTabCallback.notifyCalled();
-
-                        mActivityTestRule.getActivity().getTabModelSelector().removeObserver(this);
-                    }
-                };
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .addObserver(mTabModelSelectorObserver);
+                    mTabModelSelectorObserver =
+                            new TabModelSelectorTabModelObserver(
+                                    mActivityTestRule.getActivity().getTabModelSelector()) {
+                                @Override
+                                public void didAddTab(
+                                        Tab tab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
+                                    if (tab.getParentId() != activityTab.getId()) {
+                                        return;
+                                    }
+                                    newTab.set(tab);
+                                    newTabCallback.notifyCalled();
+
+                                    destroy();
+                                }
+                            };
                 });
 
         int callbackCount = newTabCallback.getCallCount();

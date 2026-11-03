@@ -110,10 +110,11 @@ import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -599,6 +600,26 @@ public class UrlOverridingTest {
 
     private OverrideUrlLoadingResult loadUrlAndWaitForIntentUrl(
             TestParams params, CtaPageStation sourcePage) throws Exception {
+        AtomicReference<TabModelSelectorTabModelObserver> tabModelObserver =
+                new AtomicReference<>();
+        try {
+            return loadUrlAndWaitForIntentUrlInternal(params, sourcePage, tabModelObserver);
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        TabModelSelectorTabModelObserver observer = tabModelObserver.get();
+                        if (observer != null) {
+                            observer.destroy();
+                        }
+                    });
+        }
+    }
+
+    private OverrideUrlLoadingResult loadUrlAndWaitForIntentUrlInternal(
+            TestParams params,
+            CtaPageStation sourcePage,
+            AtomicReference<TabModelSelectorTabModelObserver> tabModelObserver)
+            throws Exception {
         final CallbackHelper finishCallback = new CallbackHelper();
         final CallbackHelper failCallback = new CallbackHelper();
         final CallbackHelper destroyedCallback = new CallbackHelper();
@@ -633,10 +654,15 @@ public class UrlOverridingTest {
                             new TestTabObserver(
                                     finishCallback, destroyedCallback, failCallback, loadCallback));
 
-                    TabModelSelectorObserver selectorObserver =
-                            new TabModelSelectorObserver() {
+                    tabModelObserver.set(
+                            new TabModelSelectorTabModelObserver(
+                                    sourcePage.getActivity().getTabModelSelector()) {
                                 @Override
-                                public void onNewTabCreated(Tab newTab) {
+                                public void didAddTab(
+                                        Tab newTab,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
+                                        boolean markedForSelection) {
                                     Assert.assertTrue(params.createsNewTab);
                                     latestTabHolder.value = newTab;
                                     newTabCallback.notifyCalled();
@@ -654,8 +680,7 @@ public class UrlOverridingTest {
                                                     finishCallback,
                                                     loadCallback);
                                 }
-                            };
-                    sourcePage.getActivity().getTabModelSelector().addObserver(selectorObserver);
+                            });
 
                     TestChildFrameNavigationObserver.createAndAttachToNativeWebContents(
                             tab.getWebContents(), failCallback, finishCallback, loadCallback);

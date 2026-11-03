@@ -50,7 +50,9 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -63,6 +65,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration tests for {@link ReengagementNotificationController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -282,39 +286,56 @@ public class ReengagementNotificationControllerIntegrationTest {
                         () -> blankPage.getTabModelSelector().getTotalTabCount());
 
         final CallbackHelper tabAddedCallback = new CallbackHelper();
-        TabModelSelectorObserver selectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onNewTabCreated(Tab tab) {
-                        tabAddedCallback.notifyCalled();
-                    }
-                };
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mTabbedActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .addObserver(selectorObserver);
-                });
+        AtomicReference<TabModelSelectorTabModelObserver> tabModelObserver =
+                new AtomicReference<>();
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        tabModelObserver.set(
+                                new TabModelSelectorTabModelObserver(
+                                        mTabbedActivityTestRule
+                                                .getActivity()
+                                                .getTabModelSelector()) {
+                                    @Override
+                                    public void didAddTab(
+                                            Tab tab,
+                                            @TabLaunchType int type,
+                                            @TabCreationState int creationState,
+                                            boolean markedForSelection) {
+                                        tabAddedCallback.notifyCalled();
+                                    }
+                                });
+                    });
 
-        Intent intent =
-                new Intent(ApplicationProvider.getApplicationContext(), ReengagementActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(ReengagementNotificationController.LAUNCH_NTP_ACTION);
-        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
+            Intent intent =
+                    new Intent(
+                            ApplicationProvider.getApplicationContext(),
+                            ReengagementActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setAction(ReengagementNotificationController.LAUNCH_NTP_ACTION);
+            InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
 
-        tabAddedCallback.waitForCallback(0);
-        Tab tab = mTabbedActivityTestRule.getActivityTab();
-        Assert.assertTrue(UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
-        Assert.assertFalse(tab.isIncognito());
-        int finalTotalTabCount =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                mTabbedActivityTestRule
-                                        .getActivity()
-                                        .getTabModelSelector()
-                                        .getTotalTabCount());
-        Assert.assertEquals(initialTabCount + 1, finalTotalTabCount);
+            tabAddedCallback.waitForCallback(0);
+            Tab tab = mTabbedActivityTestRule.getActivityTab();
+            Assert.assertTrue(UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
+            Assert.assertFalse(tab.isIncognito());
+            int finalTotalTabCount =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    mTabbedActivityTestRule
+                                            .getActivity()
+                                            .getTabModelSelector()
+                                            .getTotalTabCount());
+            Assert.assertEquals(initialTabCount + 1, finalTotalTabCount);
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        TabModelSelectorTabModelObserver observer = tabModelObserver.get();
+                        if (observer != null) {
+                            observer.destroy();
+                        }
+                    });
+        }
     }
 
     private void verifyNotification(@StringRes int title, @StringRes int description) {

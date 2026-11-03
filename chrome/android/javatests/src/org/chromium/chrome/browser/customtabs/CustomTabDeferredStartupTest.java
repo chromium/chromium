@@ -32,9 +32,10 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.url.GURL;
@@ -78,19 +79,12 @@ public class CustomTabDeferredStartupTest {
     }
 
     static class NewTabObserver
-            implements TabModelSelectorObserver,
-                    ApplicationStatus.ActivityStateListener,
-                    InflationObserver {
+            implements ApplicationStatus.ActivityStateListener, InflationObserver {
         private BaseCustomTabActivity mActivity;
         private final TabObserver mObserver;
 
         public NewTabObserver(TabObserver observer) {
             mObserver = observer;
-        }
-
-        @Override
-        public void onNewTabCreated(Tab tab) {
-            tab.addObserver(mObserver);
         }
 
         @Override
@@ -108,6 +102,22 @@ public class CustomTabDeferredStartupTest {
             mActivity
                     .getCustomTabActivityTabProvider()
                     .addObserver(new InitialTabCreationObserver(mObserver));
+            // The selector is created lazily, so wait for it to be available.
+            mActivity
+                    .getTabModelSelectorSupplier()
+                    .addSyncObserverAndCallIfNonNull(
+                            (selector) ->
+                                    new TabModelSelectorTabModelObserver(selector) {
+                                        @Override
+                                        public void didAddTab(
+                                                Tab tab,
+                                                @TabLaunchType int type,
+                                                @TabCreationState int creationState,
+                                                boolean markedForSelection) {
+                                            tab.addObserver(mObserver);
+                                            destroy();
+                                        }
+                                    });
         }
 
         @Override
@@ -185,7 +195,6 @@ public class CustomTabDeferredStartupTest {
                 () -> {
                     PageLoadFinishedTabObserver tabObserver = new PageLoadFinishedTabObserver();
                     mNewTabObserver = new NewTabObserver(tabObserver);
-                    TabModelSelectorBase.setObserverForTests(mNewTabObserver);
                     ApplicationStatus.registerStateListenerForAllActivities(mNewTabObserver);
                     PageIsLoadedDeferredStartupHandler handler =
                             new PageIsLoadedDeferredStartupHandler(

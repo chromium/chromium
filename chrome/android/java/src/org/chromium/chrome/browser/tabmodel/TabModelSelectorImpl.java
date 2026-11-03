@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBridge;
 import org.chromium.chrome.browser.recent_tabs.RecentlyClosedEntry;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -72,6 +73,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
     private @MonotonicNonNull TabContentManager mTabContentManager;
     private @MonotonicNonNull RecentlyClosedBridge mRecentlyClosedBridge;
     private @MonotonicNonNull TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @MonotonicNonNull TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private @Nullable Tab mVisibleTab;
 
     /**
@@ -221,10 +223,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         mTabContentManager = tabContentProvider;
         initialize(normalModel, incognitoModel);
 
-        addObserver(
-                new TabModelSelectorObserver() {
+        assert mTabModelSelectorTabModelObserver == null;
+        mTabModelSelectorTabModelObserver =
+                new TabModelSelectorTabModelObserver(this) {
                     @Override
-                    public void onNewTabCreated(Tab tab) {
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
                         // Only invalidate if the tab exists in the currently selected model.
                         if (getCurrentModel().getTabById(tab.getId()) != null
                                 && (!ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()
@@ -232,7 +239,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                             mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
                         }
                     }
-                });
+                };
 
         assert mTabModelSelectorTabObserver == null;
         mTabModelSelectorTabObserver =
@@ -305,10 +312,10 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
 
     @Override
     public @TabDestroyStatus int destroy() {
-        @TabDestroyStatus int status = super.destroy();
         if (mRecentlyClosedBridge != null) mRecentlyClosedBridge.destroy();
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
-        return status;
+        if (mTabModelSelectorTabModelObserver != null) mTabModelSelectorTabModelObserver.destroy();
+        return super.destroy();
     }
 
     /**

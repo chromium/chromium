@@ -86,7 +86,7 @@ public class NewTabPageCreationTest {
         // focused, which hides the toolbar buttons and the logo.
         ChromeTabUtils.waitForNtpLoaded(tab);
 
-        verify(mTestState).onNewTabCreated();
+        verify(mTestState).didAddTab();
         verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));
 
         mOmnibox.checkFocus(true);
@@ -106,7 +106,7 @@ public class NewTabPageCreationTest {
         new TabLoadObserver(tab).fullyLoadUrl(getOriginalNativeNtpUrl());
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 
-        verify(mTestState, never()).onNewTabCreated();
+        verify(mTestState, never()).didAddTab();
         verify(mTestState).onNtpLoaded(any(NewTabPageManager.class));
 
         mOmnibox.checkFocus(false);
