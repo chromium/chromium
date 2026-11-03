@@ -569,6 +569,21 @@ class EchoCancellationContainer {
         // support for simultaneous streams with and without hardware AEC on the
         // same device.
         true;
+#elif BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+        // Allowing it when the system echo cancellation is enforced via flag,
+        // for evaluation purposes, or when echo cancellation on this device is
+        // not platform-provided (since EchoCanceller::From(kDisabled, ...)
+        // returns Type::kNone, substitute kBrowserDecides when the active
+        // source has kDisabled to check whether enabling default AEC on the
+        // device would use platform AEC).
+        media::IsSystemEchoCancellationEnforced() ||
+        !EchoCanceller::From(
+             source_info->properties().echo_cancellation_mode ==
+                     EchoCancellationMode::kDisabled
+                 ? EchoCancellationMode::kBrowserDecides
+                 : source_info->properties().echo_cancellation_mode,
+             device_parameters.effects())
+             .IsPlatformProvided();
 #else
         // Allowing it when the system echo cancellation is enforced via flag,
         // for evaluation purposes.
@@ -611,19 +626,31 @@ class EchoCancellationContainer {
 
   bool IsEmpty() const { return ec_allowed_values_.IsEmpty(); }
 
+  bool AreAllAllowedModesIn(const Vector<EchoCancellationMode>& modes) const {
+    return !IsEmpty() && !ec_allowed_values_.is_universal() &&
+           std::ranges::all_of(ec_allowed_values_.elements(),
+                               [&modes](EchoCancellationMode mode) {
+                                 return modes.Contains(mode);
+                               });
+  }
+
   bool IsStrictlyRemoteOnly() const {
-    return ec_allowed_values_.Contains(EchoCancellationMode::kRemoteOnly) &&
-           !ec_allowed_values_.Contains(
-               EchoCancellationMode::kBrowserDecides) &&
-           !ec_allowed_values_.Contains(EchoCancellationMode::kAll) &&
-           !ec_allowed_values_.Contains(EchoCancellationMode::kDisabled);
+    return AreAllAllowedModesIn({EchoCancellationMode::kRemoteOnly});
+  }
+
+  void ExcludeModes(const Vector<EchoCancellationMode>& excluded_modes) {
+    Vector<EchoCancellationMode> modes = {
+        EchoCancellationMode::kBrowserDecides, EchoCancellationMode::kAll,
+        EchoCancellationMode::kRemoteOnly, EchoCancellationMode::kDisabled};
+    EraseIf(modes, [&excluded_modes](EchoCancellationMode mode) {
+      return excluded_modes.Contains(mode);
+    });
+    ec_allowed_values_ = ec_allowed_values_.Intersection(
+        EchoCancellationModeSet(std::move(modes)));
   }
 
   void ExcludeRemoteOnly() {
-    ec_allowed_values_ =
-        ec_allowed_values_.Intersection(EchoCancellationModeSet(
-            {EchoCancellationMode::kBrowserDecides, EchoCancellationMode::kAll,
-             EchoCancellationMode::kDisabled}));
+    ExcludeModes({EchoCancellationMode::kRemoteOnly});
   }
 
   // Audio-processing properties are disabled by default for content capture,
@@ -656,20 +683,6 @@ class EchoCancellationContainer {
     }
 
     return false;
-  }
-
- private:
-  static Score::EcModeScore GetEcModeScore(EchoCancellationMode ec_type) {
-    switch (ec_type) {
-      case EchoCancellationMode::kDisabled:
-        return Score::EcModeScore::kDisabled;
-      case EchoCancellationMode::kBrowserDecides:
-        return Score::EcModeScore::kBrowserDecides;
-      case EchoCancellationMode::kAll:
-        return Score::EcModeScore::kAll;
-      case EchoCancellationMode::kRemoteOnly:
-        return Score::EcModeScore::kRemoteOnly;
-    }
   }
 
   EchoCancellationMode SelectBestEcMode(const ConstraintSet& constraint_set,
@@ -721,6 +734,20 @@ class EchoCancellationContainer {
         }
         CHECK(candidates.Contains(EchoCancellationMode::kBrowserDecides));
         return EchoCancellationMode::kBrowserDecides;
+    }
+  }
+
+ private:
+  static Score::EcModeScore GetEcModeScore(EchoCancellationMode ec_type) {
+    switch (ec_type) {
+      case EchoCancellationMode::kDisabled:
+        return Score::EcModeScore::kDisabled;
+      case EchoCancellationMode::kBrowserDecides:
+        return Score::EcModeScore::kBrowserDecides;
+      case EchoCancellationMode::kAll:
+        return Score::EcModeScore::kAll;
+      case EchoCancellationMode::kRemoteOnly:
+        return Score::EcModeScore::kRemoteOnly;
     }
   }
 
@@ -878,7 +905,8 @@ class ProcessingBasedContainer {
       AudioCaptureApi api,
       const media::AudioParameters& device_parameters,
       bool is_full_reconfiguration_allowed,
-      std::optional<bool> voice_isolation_value) {
+      std::optional<bool> voice_isolation_value,
+      Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation) {
     Vector<EchoCancellationMode> echo_cancellation_modes;
     echo_cancellation_modes.push_back(EchoCancellationMode::kBrowserDecides);
     if (ShouldSupportExtendedEchoCancellationModes(api)) {
@@ -894,21 +922,37 @@ class ProcessingBasedContainer {
     echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
     BoolSet voice_isolation_set(
         GetSupportedVoiceIsolationValues(device_parameters.effects()));
+    CHECK(!voice_isolation_value.has_value() ||
+          voice_isolation_set.Contains(*voice_isolation_value));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    // Voice isolation can only be dynamically reconfigured if it was enabled
-    // when the source was initially started.
-    if (source_info && !source_info->voice_isolation_available()) {
-      voice_isolation_set = BoolSet({false});
+    if (!is_full_reconfiguration_allowed) {
+      ec_modes_disallowing_voice_isolation.clear();
+      // When full reconfiguration is not allowed, the track is bound to the
+      // active source and cannot open a separate source:
+      // - If the active source was initially started with voice isolation
+      //   disabled (`source_info->voice_isolation_available() == false`), voice
+      //   isolation cannot be enabled dynamically on it, so restrict
+      //   `voice_isolation_set` to `{false}`.
+      // - Otherwise, if the device supports voice isolation
+      //   (`voice_isolation_set.Contains(true)`) and a sibling track on the
+      //   active source holds an `exact` voice isolation constraint
+      //   (`voice_isolation_value.has_value()`), restrict `voice_isolation_set`
+      //   to that sibling track's value (`{*voice_isolation_value}`).
+      if (source_info && !source_info->voice_isolation_available()) {
+        voice_isolation_set = BoolSet({false});
+      } else if (voice_isolation_set.Contains(true) &&
+                 voice_isolation_value.has_value()) {
+        voice_isolation_set = BoolSet({*voice_isolation_value});
+      }
     }
-#endif
-
-    // Apply sibling track restriction if another track sharing the same source
-    // has an exact voice isolation constraint.
+#else
+    ec_modes_disallowing_voice_isolation.clear();
     if (voice_isolation_set.Contains(true) &&
         voice_isolation_value.has_value()) {
       voice_isolation_set = BoolSet({*voice_isolation_value});
     }
+#endif
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
         /*auto_gain_control_set=*/BoolSet(),
@@ -917,7 +961,8 @@ class ProcessingBasedContainer {
         /*channels_set=*/GetApmSupportedChannels(device_parameters),
         /*sample_rate_range=*/
         IntRangeSet::FromValue(media::WebRtcAudioProcessingSampleRateHz()),
-        source_info, api, device_parameters, is_full_reconfiguration_allowed);
+        source_info, api, device_parameters, is_full_reconfiguration_allowed,
+        std::move(ec_modes_disallowing_voice_isolation));
   }
 
   // Creates an instance of ProcessingBasedContainer for the processed
@@ -967,74 +1012,55 @@ class ProcessingBasedContainer {
   }
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
-    const char* failed_constraint_name = nullptr;
-
-    failed_constraint_name =
-        echo_cancellation_container_.ApplyConstraintSet(constraint_set);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
+    for (const char* failed_constraint_name : {
+             echo_cancellation_container_.ApplyConstraintSet(constraint_set),
+             auto_gain_control_container_.ApplyConstraintSet(constraint_set),
+             voice_isolation_container_.ApplyConstraintSet(constraint_set),
+             sample_size_container_.ApplyConstraintSet(
+                 constraint_set.sample_size),
+             channels_container_.ApplyConstraintSet(
+                 constraint_set.channel_count),
+             sample_rate_container_.ApplyConstraintSet(
+                 constraint_set.sample_rate),
+             latency_container_.ApplyConstraintSet(constraint_set.latency),
+             noise_suppression_container_.ApplyConstraintSet(
+                 constraint_set.noise_suppression),
+         }) {
+      if (failed_constraint_name) {
+        return failed_constraint_name;
+      }
     }
 
-    failed_constraint_name =
-        auto_gain_control_container_.ApplyConstraintSet(constraint_set);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
+    // Cross-constraint pruning between `echo_cancellation` and
+    // `voice_isolation` (see resolution matrix in `SelectSettingsAndScore`):
+    // `voice_isolation = true` cannot be paired with:
+    //   1. `EchoCancellationMode::kRemoteOnly` (Voice Isolation runs in the
+    //      Audio Service, whereas Remote-Only AEC runs in the Renderer).
+    //   2. Any mode in `ec_modes_disallowing_voice_isolation_` (an active
+    //      source's EC mode on the device, started with voice isolation
+    //      enabled, with a track reconfigured to `voiceIsolation: {exact:
+    //      false}`; selecting both would reuse that source and conflict with
+    //      that constraint).
+    Vector<EchoCancellationMode> modes_disallowing_voice_isolation =
+        ec_modes_disallowing_voice_isolation_;
+    modes_disallowing_voice_isolation.push_back(
+        EchoCancellationMode::kRemoteOnly);
+    const bool ec_strictly_disallows_voice_isolation =
+        echo_cancellation_container_.AreAllAllowedModesIn(
+            modes_disallowing_voice_isolation);
 
-    failed_constraint_name =
-        voice_isolation_container_.ApplyConstraintSet(constraint_set);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    // Cross-constraint validation and pruning: Voice Isolation (Audio Service)
-    // and Remote-Only Echo Cancellation (Renderer) cannot run concurrently.
-    // Prune mutually exclusive values and fail if any set becomes empty (see
-    // constraint matrix in SelectSettingsAndScore).
-    if (echo_cancellation_container_.IsStrictlyRemoteOnly()) {
+    if (ec_strictly_disallows_voice_isolation) {
       voice_isolation_container_.ExcludeEnabled();
       if (voice_isolation_container_.IsEmpty()) {
         return constraint_set.voice_isolation.GetName();
       }
-    }
-    if (voice_isolation_container_.IsStrictlyEnabled()) {
-      echo_cancellation_container_.ExcludeRemoteOnly();
-      if (echo_cancellation_container_.IsEmpty()) {
-        return constraint_set.echo_cancellation.GetName();
-      }
+    } else if (voice_isolation_container_.IsStrictlyEnabled()) {
+      echo_cancellation_container_.ExcludeModes(
+          modes_disallowing_voice_isolation);
+      CHECK(!echo_cancellation_container_.IsEmpty());
     }
 
-    failed_constraint_name =
-        sample_size_container_.ApplyConstraintSet(constraint_set.sample_size);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    failed_constraint_name =
-        channels_container_.ApplyConstraintSet(constraint_set.channel_count);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    failed_constraint_name =
-        sample_rate_container_.ApplyConstraintSet(constraint_set.sample_rate);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    failed_constraint_name =
-        latency_container_.ApplyConstraintSet(constraint_set.latency);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    failed_constraint_name = noise_suppression_container_.ApplyConstraintSet(
-        constraint_set.noise_suppression);
-    if (failed_constraint_name) {
-      return failed_constraint_name;
-    }
-
-    return failed_constraint_name;
+    return nullptr;
   }
 
   std::tuple<Score,
@@ -1121,10 +1147,30 @@ class ProcessingBasedContainer {
     // 6. VI=true + AEC="all" or AEC=false:
     //    Both are satisfied (both run in the Audio Service).
 
-    // Voice Isolation runs in Audio Service and cannot run concurrently with
-    // Remote-Only Echo Cancellation (Renderer). Select Voice Isolation first.
+    // Voice Isolation runs in the Audio Service and cannot run concurrently
+    // with Remote-Only Echo Cancellation (Renderer), so select Voice Isolation
+    // before Echo Cancellation.
+    // However, if an active source on the device, started with voice isolation
+    // enabled, has a track reconfigured to `voiceIsolation: {exact: false}`,
+    // and `echoCancellation` will resolve to that source's mode (in
+    // `ec_modes_disallowing_voice_isolation_`), enabling voice isolation would
+    // reuse that source and conflict with that `exact: false` constraint. In
+    // that case, exclude `voice_isolation = true` so ideal
+    // `voiceIsolation: true` downgrades to disabled (opening a separate
+    // source), while still allowing `voice_isolation = true` when
+    // `echoCancellation` prefers a different mode.
+    VoiceIsolationContainer voice_isolation_container =
+        voice_isolation_container_;
+    if (!ec_modes_disallowing_voice_isolation_.empty() &&
+        !echo_cancellation_container_.IsStrictlyRemoteOnly() &&
+        ec_modes_disallowing_voice_isolation_.Contains(
+            echo_cancellation_container_.SelectBestEcMode(
+                constraint_set, /*exclude_remote_only=*/true))) {
+      voice_isolation_container.ExcludeEnabled();
+      CHECK(!voice_isolation_container.IsEmpty());
+    }
     std::tie(sub_score, properties.voice_isolation) =
-        voice_isolation_container_.SelectSettingsAndScore(
+        voice_isolation_container.SelectSettingsAndScore(
             constraint_set, properties.voice_isolation);
     score += sub_score;
 
@@ -1179,19 +1225,23 @@ class ProcessingBasedContainer {
   // Private constructor intended to instantiate different variants of this
   // class based on the initial values provided. The appropriate way to
   // instantiate this class is via the three factory methods provided.
-  ProcessingBasedContainer(ProcessingType processing_type,
-                           Vector<EchoCancellationMode> echo_cancellation_modes,
-                           BoolSet auto_gain_control_set,
-                           BoolSet noise_suppression_set,
-                           BoolSet voice_isolation_set,
-                           IntRangeSet sample_size_range,
-                           Vector<int> channels_set,
-                           IntRangeSet sample_rate_range,
-                           std::optional<SourceInfo> source_info,
-                           AudioCaptureApi api,
-                           media::AudioParameters device_parameters,
-                           bool is_full_reconfiguration_allowed)
+  ProcessingBasedContainer(
+      ProcessingType processing_type,
+      Vector<EchoCancellationMode> echo_cancellation_modes,
+      BoolSet auto_gain_control_set,
+      BoolSet noise_suppression_set,
+      BoolSet voice_isolation_set,
+      IntRangeSet sample_size_range,
+      Vector<int> channels_set,
+      IntRangeSet sample_rate_range,
+      std::optional<SourceInfo> source_info,
+      AudioCaptureApi api,
+      media::AudioParameters device_parameters,
+      bool is_full_reconfiguration_allowed,
+      Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation = {})
       : processing_type_(processing_type),
+        ec_modes_disallowing_voice_isolation_(
+            std::move(ec_modes_disallowing_voice_isolation)),
         sample_size_container_(sample_size_range),
         channels_container_(std::move(channels_set)),
         sample_rate_container_(sample_rate_range),
@@ -1292,6 +1342,12 @@ class ProcessingBasedContainer {
   }
 
   ProcessingType processing_type_;
+  // EchoCancellationModes on this device that have an active source, started
+  // with voice isolation enabled, with a track reconfigured to
+  // `voiceIsolation: {exact: false}`. Selecting any of these modes together
+  // with `voice_isolation = true` is disallowed because it would reuse that
+  // source and conflict with that constraint.
+  Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation_;
   EchoCancellationContainer echo_cancellation_container_;
   AutoGainControlContainer auto_gain_control_container_;
   BooleanContainer noise_suppression_container_;
@@ -1374,7 +1430,8 @@ class DeviceContainer {
       processing_based_containers_.push_back(
           ProcessingBasedContainer::CreateApmProcessedContainer(
               source_info, api, device_parameters_,
-              is_full_reconfiguration_allowed, voice_isolation_value));
+              is_full_reconfiguration_allowed, voice_isolation_value,
+              capability.ec_modes_disallowing_voice_isolation()));
     }
 #if DCHECK_IS_ON()
     size_t expected_size = 3u;
@@ -1710,8 +1767,23 @@ AudioDeviceCaptureCapability::AudioDeviceCaptureCapability()
     : parameters_(media::AudioParameters::UnavailableDeviceParams()) {}
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
-    blink::MediaStreamAudioSource* source)
-    : source_(source) {}
+    blink::MediaStreamAudioSource* source,
+    Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation)
+    : source_(source),
+      ec_modes_disallowing_voice_isolation_(
+          std::move(ec_modes_disallowing_voice_isolation)) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (ec_modes_disallowing_voice_isolation_.empty() &&
+      IsVoiceIsolationInitiallyEnabled(source_) &&
+      GetVoiceIsolationExactConstraint() == false) {
+    if (std::optional<AudioProcessingProperties> properties =
+            source_->GetAudioProcessingProperties()) {
+      ec_modes_disallowing_voice_isolation_.push_back(
+          properties->echo_cancellation_mode);
+    }
+  }
+#endif
+}
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
     String device_id,

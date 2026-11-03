@@ -42,28 +42,44 @@
 //      Echo cancellation mode preference -> Audio processing priority.
 //
 // Multi-Track Source Sharing & Sibling Constraints:
-// - Tracks requiring WebRTC APM processing (kApmProcessed) share a single
-//   underlying ProcessedLocalAudioSource for a given physical device to avoid
-//   duplicate APM instances. An unprocessed track (kUnprocessed) can open a
-//   separate LocalMediaStreamAudioSource alongside the processed one.
-// - When resolving constraints for a new track attaching to an existing source,
-//   the solver inspects all active sibling tracks sharing that source. If an
-//   existing sibling has a mandatory exact constraint (e.g.
-//   voiceIsolation: {exact: true}), candidate settings contradicting that
-//   constraint are pruned.
-// - Only exact constraints from the mandatory Basic set are recorded on
-//   tracks and enforced against siblings (Advanced sets are optional and
-//   ignored if unsatisfied).
+// - Processed tracks (`kApmProcessed`, `kNoApmProcessed`) on a physical device
+//   share an underlying `ProcessedLocalAudioSource` when their session-identity
+//   properties (AEC mode, and `voice_isolation` under
+//   `CHROME_WIDE_ECHO_CANCELLATION`) match, and open a separate
+//   `ProcessedLocalAudioSource` when those properties differ. An unprocessed
+//   track (`kUnprocessed`) opens a separate `LocalMediaStreamAudioSource`.
+// - Only `exact` constraints from the mandatory `Basic` set are recorded on
+//   tracks and enforced against sibling tracks sharing the same source
+//   (`Advanced` sets are optional and ignored if unsatisfied).
 //
-// Dynamic Reconfiguration Asymmetry (`is_full_reconfiguration_allowed`):
-// - Initial `getUserMedia()` sets `is_full_reconfiguration_allowed = true`,
-//   allowing the engine to consider all processing pipelines (`kUnprocessed`,
-//   `kNoApmProcessed`, `kApmProcessed`).
-// - `MediaStreamTrack.applyConstraints()` sets
-//   `is_full_reconfiguration_allowed = false` because Chromium does not
-//   currently support dynamically reconfiguring a live audio source pipeline
-//   in-place (crbug.com/796964). The solver therefore confines candidates
-//   strictly to the active source's existing processing type.
+// Session Splitting vs. In-Place Reconfiguration
+// (`is_full_reconfiguration_allowed`):
+// When a device already has an active source, this flag distinguishes whether
+// the caller can open a separate capture session/source or is bound to the
+// existing source:
+// - When `is_full_reconfiguration_allowed = true` (used by `getUserMedia()`):
+//   * All processing pipelines (`kUnprocessed`, `kNoApmProcessed`,
+//     `kApmProcessed`) remain candidates. The caller can open a separate source
+//     when selecting a different pipeline, a different `echo_cancellation_mode`
+//     (when AEC reconfiguration is supported; see `EchoCancellationContainer`),
+//     or a different `voice_isolation` value (under
+//     `CHROME_WIDE_ECHO_CANCELLATION`), and reuses the active source when
+//     session-identity properties match.
+//   * Sibling track `exact` constraints on the active source only restrict
+//     candidate settings that would reuse the active source.
+//   * Device-interlocked properties (`auto_gain_control`, `noise_suppression`,
+//     `channels`, `sample_rate`, and `latency` for `kApmProcessed` and
+//     `kNoApmProcessed`; `disable_local_echo` and `render_to_associated_sink`
+//     for all pipelines) remain restricted to the active source's values.
+// - When `is_full_reconfiguration_allowed = false` (used by
+//   `MediaStreamTrack.applyConstraints()`):
+//   * The track is already attached to the active source and cannot switch to a
+//     different source or session (crbug.com/796964).
+//   * Candidates are confined strictly to the active source's processing type
+//     and startup configuration. Only properties that support dynamic in-place
+//     toggling on the active source (`voice_isolation` when the source was
+//     started with it enabled) can change, subject to sibling track `exact`
+//     constraints on the shared source.
 
 namespace blink {
 class MediaConstraints;
@@ -127,7 +143,14 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   // settings are restricted to the current settings of |source|. Intended to be
   // used by applyConstraints() for both device and content capture, and by
   // getUserMedia() with device capture for devices that are currently in use.
-  explicit AudioDeviceCaptureCapability(blink::MediaStreamAudioSource* source);
+  // |ec_modes_disallowing_voice_isolation| lists EchoCancellationModes on this
+  // device that have an active source, started with voice isolation enabled,
+  // with a track reconfigured to `voiceIsolation: {exact: false}`, disallowing
+  // `voiceIsolation = true` for those modes. If empty, it is populated from
+  // |source| when applicable.
+  explicit AudioDeviceCaptureCapability(
+      blink::MediaStreamAudioSource* source,
+      Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation = {});
 
   AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability&);
   AudioDeviceCaptureCapability& operator=(const AudioDeviceCaptureCapability&);
@@ -152,12 +175,22 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   const media::AudioParameters& Parameters() const;
   std::optional<bool> GetVoiceIsolationExactConstraint(
       const MediaStreamAudioTrack* current_track = nullptr) const;
+  const Vector<EchoCancellationMode>& ec_modes_disallowing_voice_isolation()
+      const {
+    return ec_modes_disallowing_voice_isolation_;
+  }
 
  private:
   raw_ptr<blink::MediaStreamAudioSource> source_ = nullptr;
   String device_id_;
   String group_id_;
   media::AudioParameters parameters_;
+  // EchoCancellationModes on this device that have an active source, started
+  // with voice isolation enabled, with a track reconfigured to
+  // `voiceIsolation: {exact: false}`. Selecting `voiceIsolation = true` with
+  // any of these modes would reuse that source and conflict with that
+  // constraint, so `voiceIsolation = true` is disallowed for these modes.
+  Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation_;
 };
 
 using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
@@ -217,9 +250,11 @@ using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
 //    Moreover, the echo_cancellation constraint influences most other
 //    audio-processing properties for which no explicit value is provided in
 //    their corresponding constraints.
-// |is_full_reconfiguration_allowed| indicates whether it is possible to
-// reconfigure settings on an open audio track.
-// TODO(crbug.com/796964): remove |is_full_reconfiguration_allowed| when both
+// When a capability in `capabilities` references an active source,
+// `is_full_reconfiguration_allowed` indicates whether the caller can open a
+// new source/session with different session-identity settings or is restricted
+// to reconfiguring the existing source in-place.
+// TODO(crbug.com/796964): remove `is_full_reconfiguration_allowed` when both
 // getUserMedia and applyConstraints code paths allow for reconfiguration.
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     const AudioDeviceCaptureCapabilities& capabilities,
@@ -229,11 +264,13 @@ MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     const MediaStreamAudioTrack* current_track = nullptr);
 
 // This variant of SelectSettings takes an existing MediaStreamAudioSource
-// as input in order to determine settings that are compatible with it.
-// This is intended to be used by applyConstraints().
-// The current implementation rejects constraints that would result in settings
-// different from those of |source| because it is currently not possible to
-// reconfigure audio tracks or sources.
+// as input in order to determine settings that are compatible with it
+// (`is_full_reconfiguration_allowed = false`). This is intended to be used by
+// applyConstraints().
+// Rejects constraints that would require settings different from those of
+// `source`, except for properties that support dynamic in-place toggling on
+// `source` (such as `voice_isolation` when `source` was started with it
+// enabled).
 // TODO(guidou): Allow reconfiguring audio tracks. https://crbug.com/796964
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     blink::MediaStreamAudioSource* source,

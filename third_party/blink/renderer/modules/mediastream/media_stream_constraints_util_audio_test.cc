@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
@@ -1865,10 +1866,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class TestAudioSource : public blink::MediaStreamAudioSource {
  public:
-  explicit TestAudioSource(bool voice_isolation_enabled = false)
+  explicit TestAudioSource(bool voice_isolation_enabled = false,
+                           EchoCancellationMode echo_cancellation_mode =
+                               EchoCancellationMode::kBrowserDecides)
       : blink::MediaStreamAudioSource(
             blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
             true /* is_local_source */) {
+    initial_properties_.echo_cancellation_mode = echo_cancellation_mode;
     initial_properties_.voice_isolation =
         voice_isolation_enabled
             ? AudioProcessingProperties::VoiceIsolationType::
@@ -1898,6 +1902,7 @@ class TestAudioSource : public blink::MediaStreamAudioSource {
   void SetFormatForTesting(const media::AudioParameters& params) {
     SetFormat(params);
   }
+  bool IsProcessedSource() const override { return is_processed_; }
   bool IsApmProcessedSource() const override { return is_processed_; }
   void SetIsApmProcessed(bool is_processed) { is_processed_ = is_processed; }
 
@@ -1907,89 +1912,22 @@ class TestAudioSource : public blink::MediaStreamAudioSource {
   bool is_processed_ = false;
 };
 
-TEST_P(MediaStreamConstraintsUtilAudioTest,
-       VoiceIsolationExactConstraintConflictChecking) {
-  if (!IsDeviceCapture()) {
-    return;
+struct ProcessedSourceWithTrack {
+  Persistent<MediaStreamSource> source;
+  Persistent<MediaStreamComponent> component;
+
+  MediaStreamAudioSource* platform_source() const {
+    return MediaStreamAudioSource::From(source.Get());
   }
+};
 
-  // 1. Create a running source with voice isolation enabled.
-  auto platform_source_unique =
-      std::make_unique<TestAudioSource>(/*voice_isolation_enabled=*/true);
-  TestAudioSource* platform_source = platform_source_unique.get();
-  platform_source->SetIsApmProcessed(true);
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                media::ChannelLayoutConfig::Stereo(),
-                                media::AudioParameters::kAudioCDSampleRate, 1000);
-  params.set_effects(media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
-  platform_source->SetFormatForTesting(params);
-  MediaStreamDevice device(mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                           "processed_source", "processed_source_name");
-  device.input = params;
-  platform_source->SetDevice(device);
-
-  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
-      "processed_source", MediaStreamSource::kTypeAudio,
-      "processed_source_name", false /* remote */,
-      std::move(platform_source_unique));
-
-  // 2. Create track 1 with voice isolation = true exact constraint, and
-  // connect to source.
-  auto platform_track1 =
-      std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
-  platform_track1->SetVoiceIsolationExactConstraint(true);
-  MediaStreamComponent* component1 =
-      MakeGarbageCollected<MediaStreamComponentImpl>(
-          source->Id(), source, std::move(platform_track1));
-  EXPECT_TRUE(platform_source->ConnectToInitializedTrack(component1));
-
-  // 3. Create capabilities based on this active source.
-  AudioDeviceCaptureCapabilities capabilities = {
-      AudioDeviceCaptureCapability(platform_source)};
-
-  // 4. Try to select settings with voice isolation = false exact. This should
-  // FAIL because it conflicts with Track 1's "true" exact constraint.
-  constraint_factory_.Reset();
-  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
-  constraint_factory_.basic().voice_isolation.SetExact(false);
-  AudioCaptureSettings settings = SelectSettings(true, capabilities);
-  EXPECT_FALSE(settings.HasValue());
-
-  // 5. Try to select settings with voice isolation = true exact. This should
-  // SUCCEED.
-  constraint_factory_.Reset();
-  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
-  constraint_factory_.basic().voice_isolation.SetExact(true);
-  settings = SelectSettings(true, capabilities);
-  EXPECT_TRUE(settings.HasValue());
-  EXPECT_EQ(
-      settings.audio_processing_properties().voice_isolation,
-      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
-
-  // 6. Try to select settings without voice isolation constraint. This should
-  // SUCCEED and resolve to VoiceIsolationEnabled (matching the active track).
-  constraint_factory_.Reset();
-  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
-  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
-  settings = SelectSettings(true, capabilities);
-  EXPECT_TRUE(settings.HasValue());
-  EXPECT_EQ(
-      settings.audio_processing_properties().voice_isolation,
-      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
-}
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-TEST_P(MediaStreamConstraintsUtilAudioTest,
-       ActiveProcessedSourceVoiceIsolationDisabledCannotReconfigureToEnabled) {
-  if (!IsDeviceCapture()) {
-    return;
-  }
-
-  // 1. Create a running processed source with voice isolation disabled.
-  auto platform_source_unique =
-      std::make_unique<TestAudioSource>(/*voice_isolation_enabled=*/false);
+ProcessedSourceWithTrack CreateProcessedSourceWithTrack(
+    bool voice_isolation_enabled,
+    std::optional<bool> voice_isolation_exact = std::nullopt,
+    EchoCancellationMode echo_cancellation_mode =
+        EchoCancellationMode::kBrowserDecides) {
+  auto platform_source_unique = std::make_unique<TestAudioSource>(
+      voice_isolation_enabled, echo_cancellation_mode);
   TestAudioSource* platform_source = platform_source_unique.get();
   platform_source->SetIsApmProcessed(true);
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -2008,15 +1946,481 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       "processed_source_name", false /* remote */,
       std::move(platform_source_unique));
 
-  auto platform_track =
+  auto platform_track_unique =
       std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
+  platform_track_unique->SetVoiceIsolationExactConstraint(
+      voice_isolation_exact);
   MediaStreamComponent* component =
-      MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source,
-                                                     std::move(platform_track));
+      MakeGarbageCollected<MediaStreamComponentImpl>(
+          source->Id(), source, std::move(platform_track_unique));
   EXPECT_TRUE(platform_source->ConnectToInitializedTrack(component));
+  return {source, component};
+}
 
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       VoiceIsolationExactConstraintConflictChecking) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running source with voice isolation enabled and a track with
+  // an exact:true voice isolation constraint.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/true);
   AudioDeviceCaptureCapabilities capabilities = {
-      AudioDeviceCaptureCapability(platform_source)};
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // 2. Reconfiguring in place (is_full_reconfiguration_allowed = false) with
+  // voice isolation = false exact should FAIL because it conflicts with Track
+  // 1's "true" exact constraint on the shared source.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
+  EXPECT_FALSE(settings.HasValue());
+
+  // 3. Reconfiguring with voice isolation = true exact should SUCCEED.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 4. Unconstrained voice isolation:
+  // - When full reconfiguration is not allowed, resolves to
+  //   kVoiceIsolationEnabled (matching the active track's exact constraint).
+  // - When full reconfiguration is allowed, resolves to the default
+  //   kVoiceIsolationDisabled under CHROME_WIDE_ECHO_CANCELLATION (opening a
+  //   separate source), or kVoiceIsolationEnabled otherwise.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+#else
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+#endif
+
+  // 5. Requesting voice isolation = false (exact or ideal) when full
+  // reconfiguration is allowed:
+  // - Under CHROME_WIDE_ECHO_CANCELLATION, voice isolation is a session
+  //   identity property, so selecting voice isolation = false succeeds by
+  //   opening a separate source.
+  // - Without CHROME_WIDE_ECHO_CANCELLATION, voice isolation is an
+  //   interlocking device property, so Track 1's exact:true constraint
+  //   restricts new requests on the same device.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+#else
+  EXPECT_FALSE(settings.HasValue());
+#endif
+
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(false);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+#else
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+#endif
+}
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourceVoiceIsolationEnabledWithExactFalseBlocksSameEcMode) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running source started with voice isolation enabled and
+  // EchoCancellationMode::kBrowserDecides, whose track holds an exact:false
+  // voice isolation constraint.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // 2. Requesting exact echoCancellation = true (kBrowserDecides) and exact
+  // voiceIsolation = true would reuse the active source and violate Track 1's
+  // exact:false constraint, so it should FAIL.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_FALSE(settings.HasValue());
+  EXPECT_EQ(settings.failed_constraint_name(),
+            constraint_factory_.basic().voice_isolation.GetName());
+
+  // 3. Requesting ideal echoCancellation = true (kBrowserDecides) and exact
+  // voiceIsolation = true satisfies the mandatory voiceIsolation constraint by
+  // excluding kBrowserDecides and selecting an alternative mode on a separate
+  // processed source (EchoCancellationMode::kAll when loopback AEC is enabled,
+  // or EchoCancellationMode::kDisabled otherwise).
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            media::IsSystemLoopbackAsAecReferenceEnabled()
+                ? EchoCancellationMode::kAll
+                : EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 4. Requesting exact echoCancellation = true (kBrowserDecides) and ideal
+  // voiceIsolation = true should SUCCEED by downgrading voice isolation to
+  // kVoiceIsolationDisabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+
+  // 5. Requesting ideal echoCancellation = true (kBrowserDecides) and ideal
+  // voiceIsolation = true should also SUCCEED by downgrading voice isolation
+  // to kVoiceIsolationDisabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourceVoiceIsolationEnabledWithExactFalseAllowsDisabledEcMode) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running source started with voice isolation enabled and
+  // EchoCancellationMode::kBrowserDecides, whose track holds an exact:false
+  // voice isolation constraint.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // 2. Requesting exact echoCancellation = false
+  // (EchoCancellationMode::kDisabled) with autoGainControl = true selects
+  // kApmProcessed with a different echo cancellation mode (opening a separate
+  // source), so exact voiceIsolation = true should SUCCEED.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetIdeal(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 3. Requesting ideal echoCancellation = false with autoGainControl = true
+  // and exact voiceIsolation = true should also SUCCEED with
+  // kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetIdeal(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 4. Requesting ideal echoCancellation = false with autoGainControl = true
+  // and ideal voiceIsolation = true should also SUCCEED with
+  // kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetIdeal(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 5. Requesting ideal echoCancellation = false with autoGainControl = true
+  // in Basic and exact voiceIsolation = true in Advanced (without
+  // echoCancellation in the Advanced set): ApplyConstraintSet excludes
+  // kBrowserDecides to satisfy the Advanced set's mandatory voiceIsolation =
+  // true constraint, selecting kApmProcessed with
+  // EchoCancellationMode::kDisabled and kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetIdeal(true);
+  constraint_factory_.AddAdvanced().voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 6. When the Advanced set also specifies echoCancellation = false alongside
+  // exact voiceIsolation = true, the Advanced set is satisfied and selects
+  // kApmProcessed with EchoCancellationMode::kDisabled and
+  // kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().auto_gain_control.SetIdeal(true);
+  auto& advanced = constraint_factory_.AddAdvanced();
+  advanced.echo_cancellation.SetExactBoolean(false);
+  advanced.voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+}
+
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourceWithEcDisabledAllowsEnablingEcWhenFullReconfigurationAllowed) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // Create a running processed source started with voice isolation enabled and
+  // EchoCancellationMode::kDisabled.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/true,
+      EchoCancellationMode::kDisabled);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // When full reconfiguration is allowed, requesting echoCancellation = true
+  // (kBrowserDecides) and voiceIsolation = false should SUCCEED by opening a
+  // separate processed source with EchoCancellationMode::kBrowserDecides.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(false);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kBrowserDecides);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourcesVoiceIsolationEnabledWithExactFalseOnMultipleEcModes) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // Simulate a device where active sources for both
+  // EchoCancellationMode::kBrowserDecides and EchoCancellationMode::kDisabled,
+  // started with voice isolation enabled, each have a track reconfigured to
+  // `voiceIsolation: {exact: false}`.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source(),
+                                   {EchoCancellationMode::kBrowserDecides,
+                                    EchoCancellationMode::kDisabled})};
+
+  // 1. Requesting exact voiceIsolation = true with echoCancellation = false
+  // and autoGainControl = true must FAIL because kDisabled is also disallowed
+  // for voiceIsolation = true.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetExact(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_FALSE(settings.HasValue());
+  EXPECT_EQ(settings.failed_constraint_name(),
+            constraint_factory_.basic().voice_isolation.GetName());
+
+  // 2. Requesting ideal voiceIsolation = true with echoCancellation = false
+  // and autoGainControl = true downgrades voice isolation to disabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(false);
+  constraint_factory_.basic().auto_gain_control.SetExact(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kDisabled);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+
+#if BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourceVoiceIsolationEnabledWithExactFalseAllowsAllEcMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kSystemLoopbackAsAecReference);
+  if (!IsDeviceCapture() || !media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    return;
+  }
+
+  // 1. Create a running source started with voice isolation enabled and
+  // EchoCancellationMode::kBrowserDecides, whose track holds an exact:false
+  // voice isolation constraint.
+  ProcessedSourceWithTrack source_with_track = CreateProcessedSourceWithTrack(
+      /*voice_isolation_enabled=*/true, /*voice_isolation_exact=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // 2. Requesting exact echoCancellation = "all" (EchoCancellationMode::kAll)
+  // selects kApmProcessed with a different echo cancellation mode (opening a
+  // separate source), so exact voiceIsolation = true should SUCCEED.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactString("all");
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kAll);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 3. Requesting ideal echoCancellation = "all" and exact
+  // voiceIsolation = true should also SUCCEED with kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kAll);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 4. Requesting ideal echoCancellation = "all" and ideal
+  // voiceIsolation = true should also SUCCEED with kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(settings.processing_type(), ProcessingType::kApmProcessed);
+  EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
+            EchoCancellationMode::kAll);
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+}
+#endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       ActiveProcessedSourceVoiceIsolationDisabledCannotReconfigureToEnabled) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running processed source with voice isolation disabled.
+  ProcessedSourceWithTrack source_with_track =
+      CreateProcessedSourceWithTrack(/*voice_isolation_enabled=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
 
   // 2. Applying voice isolation = true exact on an active source that was
   // started with voice isolation disabled should FAIL.
@@ -2024,7 +2428,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
   constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   constraint_factory_.basic().voice_isolation.SetExact(true);
-  AudioCaptureSettings settings = SelectSettings(false, capabilities);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
   EXPECT_FALSE(settings.HasValue());
   EXPECT_EQ(settings.failed_constraint_name(),
             constraint_factory_.basic().voice_isolation.GetName());
@@ -2034,11 +2439,52 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
   constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
   constraint_factory_.basic().voice_isolation.SetExact(false);
-  settings = SelectSettings(false, capabilities);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(
       settings.audio_processing_properties().voice_isolation,
       AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+}
+
+TEST_P(
+    MediaStreamConstraintsUtilAudioTest,
+    ActiveProcessedSourceVoiceIsolationDisabledAllowsEnablingWhenFullReconfigurationAllowed) {
+  if (!IsDeviceCapture()) {
+    return;
+  }
+
+  // 1. Create a running processed source with voice isolation disabled.
+  ProcessedSourceWithTrack source_with_track =
+      CreateProcessedSourceWithTrack(/*voice_isolation_enabled=*/false);
+  AudioDeviceCaptureCapabilities capabilities = {
+      AudioDeviceCaptureCapability(source_with_track.platform_source())};
+
+  // 2. When full reconfiguration is allowed, requesting voice isolation = true
+  // exact while a voice-isolation-disabled source is active should SUCCEED and
+  // select kVoiceIsolationEnabled.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetExact(true);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+
+  // 3. Same for voice isolation = true ideal.
+  constraint_factory_.Reset();
+  constraint_factory_.basic().device_id.SetExact(capabilities[0].DeviceID());
+  constraint_factory_.basic().echo_cancellation.SetExactBoolean(true);
+  constraint_factory_.basic().voice_isolation.SetIdeal(true);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
+  EXPECT_TRUE(settings.HasValue());
+  EXPECT_EQ(
+      settings.audio_processing_properties().voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
 }
 
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -2079,7 +2525,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.basic().auto_gain_control.SetExact(false);
   constraint_factory_.basic().noise_suppression.SetExact(false);
 
-  AudioCaptureSettings settings = SelectSettings(true, capabilities);
+  AudioCaptureSettings settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/true, capabilities);
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
             EchoCancellationMode::kDisabled);
@@ -2089,7 +2536,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   // (applyConstraints).
   // This should FAIL because we cannot change the source type of the existing
   // processed source to unprocessed.
-  settings = SelectSettings(false, capabilities);
+  settings =
+      SelectSettings(/*is_full_reconfiguration_allowed=*/false, capabilities);
   EXPECT_FALSE(settings.HasValue());
 }
 #endif
