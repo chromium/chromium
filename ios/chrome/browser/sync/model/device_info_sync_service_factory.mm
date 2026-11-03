@@ -229,7 +229,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   syncer::SyncInvalidationsService* const sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForProfile(profile);
   signin::IdentityManager* const identity_manager =
@@ -238,13 +238,13 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       personal_context_eligibility_service =
           IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile);
   auto device_info_sync_client = std::make_unique<DeviceInfoSyncClient>(
-      profile->GetPrefs(), sync_invalidations_service, identity_manager,
+      profile.GetPrefs(), sync_invalidations_service, identity_manager,
       personal_context_eligibility_service);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           ::GetChannel(), ::GetVersionString(), device_info_sync_client.get());
   auto device_prefs = std::make_unique<syncer::DeviceInfoPrefs>(
-      profile->GetPrefs(), base::DefaultClock::GetInstance());
+      profile.GetPrefs(), base::DefaultClock::GetInstance());
 
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),

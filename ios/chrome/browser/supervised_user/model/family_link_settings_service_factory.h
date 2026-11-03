@@ -23,7 +23,7 @@ class FamilyLinkSettingsServiceFactory final
   // ProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 }  // namespace supervised_user
 

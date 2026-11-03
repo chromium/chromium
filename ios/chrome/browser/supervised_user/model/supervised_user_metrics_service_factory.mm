@@ -24,9 +24,9 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory(
 
 std::unique_ptr<KeyedService>
 SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<SupervisedUserMetricsService>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       GetApplicationContext()->GetDeviceParentalControls(),

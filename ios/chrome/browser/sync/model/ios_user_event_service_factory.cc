@@ -31,8 +31,8 @@ IOSUserEventServiceFactory::IOSUserEventServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-IOSUserEventServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
-  if (profile->IsOffTheRecord()) {
+IOSUserEventServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
+  if (profile.IsOffTheRecord()) {
     return std::make_unique<syncer::NoOpUserEventService>();
   }
 

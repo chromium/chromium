@@ -24,7 +24,7 @@ class SupervisedUserUrlFilteringServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 }  // namespace supervised_user
 

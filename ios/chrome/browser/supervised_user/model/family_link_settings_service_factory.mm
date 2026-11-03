@@ -27,7 +27,7 @@ bool FamilyLinkSettingsServiceFactory::
 
 std::unique_ptr<KeyedService>
 FamilyLinkSettingsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<FamilyLinkSettingsService>();
 }
 }  // namespace supervised_user

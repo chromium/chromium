@@ -17,7 +17,7 @@ DataTypeStoreServiceFactory::DataTypeStoreServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 DataTypeStoreServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<syncer::DataTypeStoreServiceImpl>(
-      profile->GetStatePath(), profile->GetPrefs());
+      profile.GetStatePath(), profile.GetPrefs());
 }

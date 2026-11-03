@@ -30,10 +30,10 @@ CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // The factory configuration ensures this is only called for the original
   // profile.
-  CHECK(!profile->IsOffTheRecord());
+  CHECK(!profile.IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(
           sync_preferences::features::kEnableCrossDevicePrefTracker)) {
     return nullptr;
@@ -43,7 +43,7 @@ CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
 
   // The implementation in `components/sync_preferences` is platform-agnostic.
   return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
-      profile->GetSyncablePrefs(), GetApplicationContext()->GetLocalState(),
+      profile.GetSyncablePrefs(), GetApplicationContext()->GetLocalState(),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile), std::move(pref_provider));
 }

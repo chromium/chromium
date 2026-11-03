@@ -18,8 +18,8 @@ SubscriptionEligibilityServiceFactory::SubscriptionEligibilityServiceFactory(
 
 std::unique_ptr<KeyedService>
 SubscriptionEligibilityServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<
       subscription_eligibility::SubscriptionEligibilityService>(
-      profile->GetPrefs());
+      profile.GetPrefs());
 }

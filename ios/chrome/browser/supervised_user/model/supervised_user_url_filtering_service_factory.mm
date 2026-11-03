@@ -42,11 +42,11 @@ SupervisedUserUrlFilteringServiceFactory::
 
 std::unique_ptr<KeyedService>
 SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // TODO(crbug.com/297313665): Use command line hooks to enable substitution of
   // prod components with test components (with extended interfaces).
 
-  SupervisedUserServicePlatformDelegate platform_delegate(profile);
+  SupervisedUserServicePlatformDelegate platform_delegate(&profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
@@ -55,11 +55,11 @@ SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<SupervisedUserUrlFilteringService>(
       std::make_unique<FamilyLinkUrlFilter>(
           CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetForProfile(profile)),
-          CHECK_DEREF(profile->GetPrefs()),
+          CHECK_DEREF(profile.GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),
           std::make_unique<SupervisedUserUrlCheckerClient>(
               identity_manager, url_loader_factory,
-              CHECK_DEREF(profile->GetPrefs()),
+              CHECK_DEREF(profile.GetPrefs()),
               platform_delegate.GetCountryCode(),
               platform_delegate.GetChannel())),
       std::make_unique<DeviceParentalControlsUrlFilter>(

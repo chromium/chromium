@@ -29,15 +29,15 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 SupervisedUserServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-      std::make_unique<SupervisedUserServicePlatformDelegate>(profile);
+      std::make_unique<SupervisedUserServicePlatformDelegate>(&profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetSharedURLLoaderFactory();
+      profile.GetSharedURLLoaderFactory();
   return std::make_unique<SupervisedUserService>(
-      identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
+      identity_manager, url_loader_factory, CHECK_DEREF(profile.GetPrefs()),
       std::move(platform_delegate),
       GetApplicationContext()->GetDeviceParentalControls());
 }

@@ -27,7 +27,7 @@ ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
@@ -35,8 +35,8 @@ ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
   return std::make_unique<ListFamilyMembersService>(
-      CHECK_DEREF(identity_manager), profile->GetSharedURLLoaderFactory(),
-      CHECK_DEREF(profile->GetPrefs()));
+      CHECK_DEREF(identity_manager), profile.GetSharedURLLoaderFactory(),
+      CHECK_DEREF(profile.GetPrefs()));
 }
 
 }  // namespace supervised_user
