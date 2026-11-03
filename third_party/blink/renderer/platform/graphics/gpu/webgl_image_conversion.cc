@@ -901,8 +901,8 @@ void Unpack<WebGLImageConversion::kDataFormatBGRA8, uint8_t, uint8_t>(
     const uint8_t* source,
     uint8_t* destination,
     unsigned pixels_per_row) {
-  const uint32_t* source32 = reinterpret_cast_ptr<const uint32_t*>(source);
-  uint32_t* destination32 = reinterpret_cast_ptr<uint32_t*>(destination);
+  const uint32_t* source32 = reinterpret_cast<const uint32_t*>(source);
+  uint32_t* destination32 = reinterpret_cast<uint32_t*>(destination);
 
 #if defined(ARCH_CPU_X86_FAMILY)
   simd::UnpackOneRowOfBGRA8LittleToRGBA8(source32, destination32,

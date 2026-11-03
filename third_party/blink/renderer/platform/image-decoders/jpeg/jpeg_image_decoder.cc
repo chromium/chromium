@@ -223,7 +223,7 @@ class JPEGImageReader final {
     jpeg_create_decompress(&info_);
 
     // Initialize source manager.
-    info_.src = reinterpret_cast_ptr<jpeg_source_mgr*>(&src_);
+    info_.src = &src_.pub;
 
     // Set up callback functions.
     src_.pub.init_source = init_source;
@@ -303,7 +303,7 @@ class JPEGImageReader final {
 
     next_read_position_ += segment.size();
     info_.src->bytes_in_buffer = segment.size();
-    auto* next_byte = reinterpret_cast_ptr<const JOCTET*>(segment.data());
+    auto* next_byte = reinterpret_cast<const JOCTET*>(segment.data());
     info_.src->next_input_byte = next_byte;
     last_set_byte_ = next_byte;
     return true;
@@ -607,7 +607,7 @@ class JPEGImageReader final {
               all_components_seen(info_) ? info_.input_scan_number : 0;
           do {
             decoder_error_mgr* err =
-                reinterpret_cast_ptr<decoder_error_mgr*>(info_.err);
+                reinterpret_cast<decoder_error_mgr*>(info_.err);
             if (err->num_corrupt_warnings) {
               break;
             }
@@ -715,9 +715,8 @@ class JPEGImageReader final {
 #endif
 
     if (info_.out_color_space != JCS_YCbCr) {
-      return (*info_.mem->alloc_sarray)(
-          reinterpret_cast_ptr<j_common_ptr>(&info_), JPOOL_IMAGE,
-          4 * info_.output_width, 1);
+      return (*info_.mem->alloc_sarray)(reinterpret_cast<j_common_ptr>(&info_),
+                                        JPOOL_IMAGE, 4 * info_.output_width, 1);
     }
 
     // Compute the width of the Y plane in bytes.  This may be larger than the
@@ -727,9 +726,8 @@ class JPEGImageReader final {
     // reuse the same memory for the U and V planes, since we are guaranteed
     // that the Y plane width is at least as large as the U and V plane widths.
     int width_bytes = ComputeYUVWidthBytes(&info_, 0);
-    return (*info_.mem->alloc_sarray)(
-        reinterpret_cast_ptr<j_common_ptr>(&info_), JPOOL_IMAGE, width_bytes,
-        1);
+    return (*info_.mem->alloc_sarray)(reinterpret_cast<j_common_ptr>(&info_),
+                                      JPOOL_IMAGE, width_bytes, 1);
   }
 
   void UpdateRestartPosition() {
@@ -780,8 +778,7 @@ class JPEGImageReader final {
 void error_exit(
     j_common_ptr cinfo)  // Decoding failed: return control to the setjmp point.
 {
-  longjmp(reinterpret_cast_ptr<decoder_error_mgr*>(cinfo->err)->setjmp_buffer,
-          -1);
+  longjmp(reinterpret_cast<decoder_error_mgr*>(cinfo->err)->setjmp_buffer, -1);
 }
 
 void emit_message(j_common_ptr cinfo, int msg_level) {
@@ -789,7 +786,7 @@ void emit_message(j_common_ptr cinfo, int msg_level) {
     return;
   }
 
-  decoder_error_mgr* err = reinterpret_cast_ptr<decoder_error_mgr*>(cinfo->err);
+  decoder_error_mgr* err = reinterpret_cast<decoder_error_mgr*>(cinfo->err);
   err->pub.num_warnings++;
 
   // Detect and count corrupt JPEG warning messages.
@@ -806,19 +803,15 @@ void emit_message(j_common_ptr cinfo, int msg_level) {
 void init_source(j_decompress_ptr) {}
 
 void skip_input_data(j_decompress_ptr jd, long num_bytes) {
-  reinterpret_cast_ptr<decoder_source_mgr*>(jd->src)->reader->SkipBytes(
-      num_bytes);
+  reinterpret_cast<decoder_source_mgr*>(jd->src)->reader->SkipBytes(num_bytes);
 }
 
 boolean fill_input_buffer(j_decompress_ptr jd) {
-  return reinterpret_cast_ptr<decoder_source_mgr*>(jd->src)
-      ->reader->FillBuffer();
+  return reinterpret_cast<decoder_source_mgr*>(jd->src)->reader->FillBuffer();
 }
 
 void term_source(j_decompress_ptr jd) {
-  reinterpret_cast_ptr<decoder_source_mgr*>(jd->src)
-      ->reader->Decoder()
-      ->Complete();
+  reinterpret_cast<decoder_source_mgr*>(jd->src)->reader->Decoder()->Complete();
 }
 
 JPEGImageDecoder::JPEGImageDecoder(AlphaOption alpha_option,
@@ -1288,7 +1281,7 @@ bool JPEGImageDecoder::OutputScanlines() {
 #if defined(TURBO_JPEG_RGB_SWIZZLE)
   if (turboSwizzled(info->out_color_space)) {
     while (info->output_scanline < info->output_height) {
-      unsigned char* row = reinterpret_cast_ptr<unsigned char*>(
+      unsigned char* row = reinterpret_cast<unsigned char*>(
           buffer.GetAddr(0, info->output_scanline));
       if (jpeg_read_scanlines(info, &row, 1) != 1) {
         return false;

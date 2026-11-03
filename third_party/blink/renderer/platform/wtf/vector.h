@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"  // For default Vector template parameters.
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
+#include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -1065,9 +1066,11 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
   using Base::capacity_;
 
   static const wtf_size_t kInlineBufferSize = kInlineCapacity * sizeof(T);
-  T* InlineBuffer() { return unsafe_reinterpret_cast_ptr<T*>(inline_buffer_); }
-  const T* InlineBuffer() const {
-    return unsafe_reinterpret_cast_ptr<const T*>(inline_buffer_);
+  NO_SANITIZE_UNRELATED_CAST T* InlineBuffer() {
+    return reinterpret_cast<T*>(inline_buffer_);
+  }
+  NO_SANITIZE_UNRELATED_CAST const T* InlineBuffer() const {
+    return reinterpret_cast<const T*>(inline_buffer_);
   }
 
   void VerifyInlinedBuffer() {

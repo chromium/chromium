@@ -410,7 +410,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
           if (IsAlignedToMachineWord(source.data())) {
             while (source.data() < aligned_end) {
               MachineWord chunk =
-                  *reinterpret_cast_ptr<const MachineWord*>(source.data());
+                  *reinterpret_cast<const MachineWord*>(source.data());
               if (!IsAllAscii<LChar>(chunk)) {
                 break;
               }
@@ -500,7 +500,7 @@ upConvertTo16Bit:
           if (IsAlignedToMachineWord(source.data())) {
             while (source.data() < aligned_end) {
               MachineWord chunk =
-                  *reinterpret_cast_ptr<const MachineWord*>(source.data());
+                  *reinterpret_cast<const MachineWord*>(source.data());
               if (!IsAllAscii<LChar>(chunk)) {
                 break;
               }
