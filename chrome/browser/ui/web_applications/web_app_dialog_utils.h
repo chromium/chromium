@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOG_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_DIALOG_UTILS_H_
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -78,6 +79,12 @@ void CreateWebAppForManifestInstall(
 void ShowPwaInstallDialog(BrowserWindowInterface* bwi);
 
 void SetInstalledCallbackForTesting(WebAppInstalledCallback callback);
+
+// While the AutoReset is alive, every WebAppInstallFlowDialog Show() is stored
+// in `captured_show` instead of running. A later show overwrites a pending
+// callback. `captured_show` must outlive the guard.
+[[nodiscard]] base::AutoReset<base::OnceClosure*>
+CaptureInstallDialogShowForTesting(base::OnceClosure* captured_show);
 
 }  // namespace web_app
 

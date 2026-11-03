@@ -24,6 +24,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -182,20 +183,39 @@ constexpr char kVariantedInstallTypeUma[] =
 constexpr char kRequestingPageUkm[] = "ResultByRequestingPage";
 constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 
+// How the fixture should set features::kWebAppInstallDialog.
+enum class InstallDialogFeature {
+  kDisabled,
+  kUnspecified,
+  kEnabled,
+};
+
 // Browser tests for the navigator.install({manifest: ...}) flow.
 // These require a real renderer because manifest parsing uses the
 // ManifestManager mojo interface via ParseManifestFromStringJob.
 class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
  public:
   explicit WebInstallFromManifestBrowserTest(
-      bool disable_install_dialog = true) {
-    if (disable_install_dialog) {
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kWebAppInstallation},
-          {features::kWebAppInstallDialog});
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kWebAppInstallation);
+      InstallDialogFeature install_dialog_feature =
+          InstallDialogFeature::kDisabled) {
+    switch (install_dialog_feature) {
+      case InstallDialogFeature::kDisabled:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kWebAppInstallation},
+            {features::kWebAppInstallDialog});
+        break;
+      case InstallDialogFeature::kUnspecified:
+        // Leave kWebAppInstallDialog at its default so
+        // WithFeatureOverride can enable or disable it.
+        scoped_feature_list_.InitAndEnableFeature(
+            blink::features::kWebAppInstallation);
+        break;
+      case InstallDialogFeature::kEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kWebAppInstallation,
+             features::kWebAppInstallDialog},
+            {});
+        break;
     }
   }
 
@@ -1434,6 +1454,151 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+// Enables kWebAppInstallDialog and captures Show() after the dialog is fully
+// prepared.
+class WebInstallFlowDialogBrowserTest
+    : public WebInstallFromManifestBrowserTest {
+ public:
+  WebInstallFlowDialogBrowserTest()
+      : WebInstallFromManifestBrowserTest(InstallDialogFeature::kEnabled) {}
+};
+
+// The install API is page-scoped. A cross-document navigation before the
+// captured show runs must cancel the install and not show the dialog over
+// the new page.
+IN_PROC_BROWSER_TEST_F(WebInstallFlowDialogBrowserTest,
+                       InstallAPI_CrossDocumentNavigation_DoesNotShow) {
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL(kValidManifestWithId);
+  const GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+
+  // Capture the dialog show after the command's last page check.
+  base::OnceClosure captured_show;
+  auto capture = CaptureInstallDialogShowForTesting(&captured_show);
+  WebInstallDialogShownWatcher dialog_watcher("WebAppInstallFlowDialog");
+  base::HistogramTester histograms;
+
+  ASSERT_TRUE(FireInstallFromManifestNoResolve(manifest_url));
+
+  // Wait until the show is captured. The command has already passed its last
+  // page check.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !captured_show.is_null(); }));
+
+  // Navigate the initiating tab cross-origin before the captured show runs.
+  const GURL cross_origin_url = secondary_server_.GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_url));
+  EXPECT_NE(url::Origin::Create(manifest_url),
+            url::Origin::Create(cross_origin_url));
+
+  // Run the captured show. The acceptance callback is already cancelled, so
+  // the dialog must not appear.
+  std::move(captured_show).Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // No dialog was shown and no app was installed.
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallCommand.InstallFromManifestUrl.ResultCode",
+      webapps::InstallResultCode::kCancelledDueToMainFrameNavigation, 1);
+  EXPECT_FALSE(dialog_watcher.shown());
+  EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+// The install prompt allows same-origin navigations. A same-origin navigation
+// before the captured show runs should continue to show the dialog.
+IN_PROC_BROWSER_TEST_F(WebInstallFlowDialogBrowserTest,
+                       InstallPrompt_SameOriginNavigation_Shows) {
+  const GURL test_url =
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  // Capture the dialog show so a same-origin navigation can land first.
+  base::OnceClosure captured_show;
+  auto capture = CaptureInstallDialogShowForTesting(&captured_show);
+  WebInstallDialogShownWatcher dialog_watcher("WebAppInstallFlowDialog");
+  base::AutoReset<InstallDialogTestResponse> auto_accept =
+      SetPwaInstallationAutoRespondForTesting(
+          InstallDialogTestResponse::kAcceptAndLaunch);
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  ASSERT_TRUE(CreateWebAppFromManifest(
+      web_contents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback()));
+
+  // Wait until the show is captured.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !captured_show.is_null(); }));
+
+  // Navigate the initiating tab same-origin.
+  const GURL same_origin_url =
+      embedded_https_test_server().GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_origin_url));
+  EXPECT_EQ(url::Origin::Create(test_url),
+            url::Origin::Create(same_origin_url));
+
+  // Run the captured show. The acceptance callback is still valid, so the
+  // dialog should appear.
+  std::move(captured_show).Run();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return dialog_watcher.shown(); }));
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+}
+
+// The install prompt aborts cross-origin navigations. A cross-origin
+// navigation before the captured show runs must cancel the install and not
+// show the dialog over the new page.
+IN_PROC_BROWSER_TEST_F(WebInstallFlowDialogBrowserTest,
+                       InstallPrompt_CrossOriginNavigation_DoesNotShow) {
+  // Start on a.test so the later navigation to b.test is both cross-origin
+  // and cross-site.
+  const GURL test_url = embedded_https_test_server().GetURL(
+      "a.test", "/banners/manifest_test_page.html");
+  ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  // Capture the dialog show after the command's last page check.
+  base::OnceClosure captured_show;
+  auto capture = CaptureInstallDialogShowForTesting(&captured_show);
+  WebInstallDialogShownWatcher dialog_watcher("WebAppInstallFlowDialog");
+  base::HistogramTester histograms;
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  ASSERT_TRUE(CreateWebAppFromManifest(
+      web_contents(), webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback()));
+
+  // Wait until the show is captured. The command has already passed its last
+  // page check.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !captured_show.is_null(); }));
+
+  // Navigate the initiating tab cross-origin before the captured show runs.
+  const GURL cross_origin_url =
+      secondary_server_.GetURL("b.test", "/simple.html");
+  ASSERT_FALSE(url::Origin::Create(test_url).IsSameOriginWith(
+      url::Origin::Create(cross_origin_url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_origin_url));
+
+  // Run the captured show. The acceptance callback is already cancelled, so
+  // the dialog must not appear.
+  std::move(captured_show).Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // No dialog was shown and the install was cancelled.
+  histograms.ExpectUniqueSample(
+      "WebApp.InstallCommand.FetchManifestAndInstall.ResultCode",
+      webapps::InstallResultCode::kCancelledDueToMainFrameNavigation, 1);
+  EXPECT_FALSE(dialog_watcher.shown());
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2841,8 +3006,7 @@ class WebInstallFromManifestInstallDialogFeatureBrowserTest
  public:
   WebInstallFromManifestInstallDialogFeatureBrowserTest()
       : base::test::WithFeatureOverride(features::kWebAppInstallDialog),
-        WebInstallFromManifestBrowserTest(
-            /*disable_install_dialog=*/false) {}
+        WebInstallFromManifestBrowserTest(InstallDialogFeature::kUnspecified) {}
 };
 
 IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
