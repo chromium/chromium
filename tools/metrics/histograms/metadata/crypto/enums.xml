@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(MacKeyHardwareSupport) -->
+
+<enum name="MacKeyHardwareSupport">
+  <int value="0" label="NoSecureEnclave"/>
+  <int value="1" label="MissingEntitlement"/>
+  <int value="2" label="SecureEnclave"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/unexportable_key_metrics.h:MacKeyHardwareSupport) -->
+
 <!-- LINT.IfChange(SpareKeyPoolRetrievalResult) -->
 
 <enum name="SpareKeyPoolRetrievalResult">
@@ -902,6 +912,19 @@ chromium-metrics-reviews@google.com.
     An unexpected internal error has occurred in the Platform Crypto Provider.
   </int>
 </enum>
+
+<!-- LINT.IfChange(WinKeyHardwareSupport) -->
+
+<enum name="WinKeyHardwareSupport">
+  <int value="0" label="TbsUnavailable"/>
+  <int value="1" label="TpmNotFound"/>
+  <int value="2" label="GetDeviceInfoFailed"/>
+  <int value="3" label="Tpm12"/>
+  <int value="4" label="Tpm20"/>
+  <int value="5" label="UnknownTpmVersion"/>
+</enum>
+
+<!-- LINT.ThenChange(//crypto/unexportable_key_metrics.h:WinKeyHardwareSupport) -->
 
 </enums>
 

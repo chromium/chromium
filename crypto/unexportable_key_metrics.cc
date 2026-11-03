@@ -19,6 +19,12 @@
 #include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "crypto/unexportable_key_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "crypto/apple/unexportable_key_apple.h"
+#endif
+
 namespace crypto {
 
 namespace {
@@ -88,6 +94,15 @@ bool VerifySignature(sign::SignatureKind alg,
 }
 
 void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramEnumeration("Crypto.KeyHardwareSupport.Win",
+                                GetKeyHardwareSupportWin());
+#elif BUILDFLAG(IS_MAC)
+  base::UmaHistogramEnumeration(
+      "Crypto.KeyHardwareSupport.Mac",
+      apple::GetKeyHardwareSupportMac(config.keychain_access_group));
+#endif
+
 #if BUILDFLAG(IS_APPLE)
   // Keys on Apple platforms persist in the keychain. Give the benchmark keys
   // their own tag so that they can be told apart from keys of real features.

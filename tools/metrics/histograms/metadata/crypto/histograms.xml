@@ -110,6 +110,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/unexportable_keys/unexportable_key_service_impl.cc:GetSpareKeyPoolHistogramName) -->
 
+<histogram name="Crypto.KeyHardwareSupport.Mac" enum="MacKeyHardwareSupport"
+    expires_after="2027-04-25">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Mac at startup, together with Crypto.TPMSupport2 (same delay
+    and subsampling). Records whether there is a Secure Enclave and whether the
+    executable has the keychain-access-groups entitlement that unexportable keys
+    need.
+  </summary>
+</histogram>
+
+<histogram name="Crypto.KeyHardwareSupport.Win" enum="WinKeyHardwareSupport"
+    expires_after="2027-04-25">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>src/crypto/OWNERS</owner>
+  <summary>
+    Collected on Windows at startup, together with Crypto.TPMSupport2 (same
+    delay and subsampling). Records whether the machine has hardware for
+    unexportable keys: the TPM version that TPM Base Services (TBS) reports, or
+    why it reports none.
+  </summary>
+</histogram>
+
 <histogram name="Crypto.SecureEnclaveOperation.Apple.{Operation}.Error"
     enum="MacSecurityFrameworkOSStatus" expires_after="2027-01-14">
   <owner>seblalancette@chromium.org</owner>

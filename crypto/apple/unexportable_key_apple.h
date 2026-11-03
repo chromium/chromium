@@ -6,14 +6,22 @@
 #define CRYPTO_APPLE_UNEXPORTABLE_KEY_APPLE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 #if defined(__OBJC__)
 #import <LocalAuthentication/LocalAuthentication.h>
 #endif  // defined(__OBJC__)
 
 #include "crypto/unexportable_key.h"
+
+#if BUILDFLAG(IS_MAC)
+namespace crypto::internal {
+enum class MacKeyHardwareSupport;
+}  // namespace crypto::internal
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace crypto::apple {
 
@@ -94,6 +102,14 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
 
 std::unique_ptr<UnexportableKeyProviderApple> GetUnexportableKeyProviderApple(
     UnexportableKeyProvider::Config config);
+
+#if BUILDFLAG(IS_MAC)
+// Returns whether there is a Secure Enclave and the executable has the
+// keychain-access-groups entitlement for `keychain_access_group`, or which of
+// the two is missing. `GetUnexportableKeyProviderApple()` needs both.
+internal::MacKeyHardwareSupport GetKeyHardwareSupportMac(
+    const std::string& keychain_access_group);
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace crypto::apple
 

@@ -769,19 +769,28 @@ std::unique_ptr<UnexportableKeyProviderApple> GetUnexportableKeyProviderApple(
 #if !BUILDFLAG(IS_IOS)
   // Secure Enclave on iOS is available since the iPhone 5s (A7 chip). This
   // redundant check causes crashes because of the synchronous initialization of
-  // `TKTokenWatcher` on every call.
-  if (![KeychainV2::GetInstance().GetTokenIDs()
-          containsObject:CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]) {
-    return nullptr;
-  }
-  // Inspecting the binary for the entitlement is not available on iOS, assume
-  // it is available.
-  if (!ExecutableHasKeychainAccessGroupEntitlement(
-          config.keychain_access_group)) {
+  // `TKTokenWatcher` on every call. Inspecting the binary for the entitlement
+  // is not available on iOS either, so assume both are available.
+  if (GetKeyHardwareSupportMac(config.keychain_access_group) !=
+      internal::MacKeyHardwareSupport::kSecureEnclave) {
     return nullptr;
   }
 #endif  // !BUILDFLAG(IS_IOS)
   return std::make_unique<UnexportableKeyProviderApple>(std::move(config));
 }
+
+#if BUILDFLAG(IS_MAC)
+internal::MacKeyHardwareSupport GetKeyHardwareSupportMac(
+    const std::string& keychain_access_group) {
+  if (![KeychainV2::GetInstance().GetTokenIDs()
+          containsObject:CFToNSPtrCast(kSecAttrTokenIDSecureEnclave)]) {
+    return internal::MacKeyHardwareSupport::kNoSecureEnclave;
+  }
+  if (!ExecutableHasKeychainAccessGroupEntitlement(keychain_access_group)) {
+    return internal::MacKeyHardwareSupport::kMissingEntitlement;
+  }
+  return internal::MacKeyHardwareSupport::kSecureEnclave;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace crypto::apple

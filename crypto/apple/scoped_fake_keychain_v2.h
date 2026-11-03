@@ -35,6 +35,8 @@ class CRYPTO_EXPORT ScopedFakeKeychainV2 {
 
   void SetUVMethod(UVMethod uv_method);
 
+  void SetSecureEnclaveAvailable(bool is_secure_enclave_available);
+
   void SetFindGenericResult(OSStatus result);
 
   bool called_add_generic();

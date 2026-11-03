@@ -27,6 +27,11 @@ void ScopedFakeKeychainV2::SetUVMethod(FakeKeychainV2::UVMethod uv_method) {
   keychain_->set_uv_method(uv_method);
 }
 
+void ScopedFakeKeychainV2::SetSecureEnclaveAvailable(
+    bool is_secure_enclave_available) {
+  keychain_->set_secure_enclave_available(is_secure_enclave_available);
+}
+
 void ScopedFakeKeychainV2::SetFindGenericResult(OSStatus result) {
   keychain_->set_find_generic_result(result);
 }
