@@ -14456,6 +14456,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPreserveDownloadLastModifiedDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kPreserveDownloadLastModified)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"bookmark-bar-area-keyboard-navigation",
+     flag_descriptions::kBookmarkBarAreaKeyboardNavigationName,
+     flag_descriptions::kBookmarkBarAreaKeyboardNavigationDescription,
+     kOsWin | kOsLinux | kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kBookmarkBarAreaKeyboardNavigation)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

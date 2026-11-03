@@ -104,6 +104,13 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Returns the list of SavedTabGroupButtons in their current order.
   std::vector<SavedTabGroupButton*> GetSavedTabGroupButtons() const;
 
+  // Visible tab group buttons plus the everything menu button, in visual order.
+  std::vector<views::View*> GetVisibleKeyboardNavigationButtons() const;
+
+  // If enabled, only the first visible button is a Tab stop. Arrow keys are
+  // handled by BookmarkBarView.
+  void SetAreaKeyboardNavigationEnabled(bool enabled);
+
   // When called, display a menu that shows a "Create new tab group" option and
   // all the saved tab groups (if there are any). Pressing on the saved tab
   // groups opens the group into the tab strip.
@@ -166,6 +173,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void UpdateButtonVisibilities(bool should_show_overflow,
                                 int last_visible_button_index);
 
+  // Applies area focus behaviors if enabled. Call after visibilities update.
+  void UpdateButtonFocusBehaviors();
+
   // Returns true if we should show the overflow button because there is not
   // enough space to display all the buttons or if there are more buttons than
   // the maximum visible.
@@ -209,6 +219,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // this boolean lets the SavedTabGroupButton choose whether they want to
   // animate or not.
   const bool animations_enabled_ = true;
+
+  // See SetAreaKeyboardNavigationEnabled().
+  bool area_keyboard_navigation_enabled_ = false;
 
   // The button that opens the "Everything" menu for saved tab groups.
   raw_ptr<views::MenuButton> everything_menu_button_;

@@ -135,8 +135,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/metrics.h"
 #include "ui/views/property_effects.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_constants.h"
 #include "ui/views/view_utils.h"
@@ -282,6 +284,25 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
 BEGIN_METADATA(BookmarkFolderButton)
 END_METADATA
+
+// Single gate for kBookmarkBarAreaKeyboardNavigation. No-op on macOS, where bar
+// buttons aren't Tab-focusable by default.
+bool IsAreaKeyboardNavigationEnabled() {
+  return views::PlatformStyle::kDefaultFocusBehavior ==
+             views::View::FocusBehavior::ALWAYS &&
+         base::FeatureList::IsEnabled(
+             features::kBookmarkBarAreaKeyboardNavigation);
+}
+
+// Makes the first button a Tab stop; the rest are ACCESSIBLE_ONLY (reachable
+// via arrow keys or F6).
+void SetAreaFocusBehavior(const std::vector<views::View*>& buttons) {
+  for (size_t i = 0; i < buttons.size(); ++i) {
+    buttons[i]->SetFocusBehavior(
+        i == 0 ? views::PlatformStyle::kDefaultFocusBehavior
+               : views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  }
+}
 
 }  // namespace
 
@@ -904,6 +925,8 @@ void BookmarkBarView::Layout(PassKey) {
                                      button_height);
     x += all_bookmarks_pref.width();
   }
+
+  UpdateAreaFocusBehaviors();
 }
 
 void BookmarkBarView::ViewHierarchyChanged(
@@ -1555,6 +1578,8 @@ void BookmarkBarView::Init() {
             browser_, animations_enabled));
     saved_tab_group_bar_->SetVisible(
         chrome::ShouldShowTabGroupsInBookmarkBar(browser_->GetProfile()));
+    saved_tab_group_bar_->SetAreaKeyboardNavigationEnabled(
+        IsAreaKeyboardNavigationEnabled());
     saved_tab_groups_separator_view_ =
         AddChildView(std::make_unique<ButtonSeparatorView>());
     saved_tab_groups_separator_view_->SetVisible(true);
@@ -2385,6 +2410,88 @@ void BookmarkBarView::ShowFolderMenu(
                                               start_index, false);
   bookmark_menu_->set_observer(this);
   bookmark_menu_->RunMenuAt(this);
+}
+
+std::vector<views::View*> BookmarkBarView::GetVisiblePreButtons() const {
+  std::vector<views::View*> buttons;
+  if (apps_page_shortcut_->GetVisible()) {
+    buttons.push_back(apps_page_shortcut_);
+  }
+  if (managed_bookmarks_button_->GetVisible()) {
+    buttons.push_back(managed_bookmarks_button_);
+  }
+  return buttons;
+}
+
+std::vector<views::View*> BookmarkBarView::GetVisibleBookmarkButtons() const {
+  std::vector<views::View*> buttons;
+  for (const BookmarkButtonAndNode& pair : bookmark_buttons_) {
+    if (pair.first->GetVisible()) {
+      buttons.push_back(pair.first);
+    }
+  }
+  if (overflow_button_->GetVisible()) {
+    buttons.push_back(overflow_button_);
+  }
+  if (all_bookmarks_button_->GetVisible()) {
+    buttons.push_back(all_bookmarks_button_);
+  }
+  return buttons;
+}
+
+std::vector<views::View*> BookmarkBarView::GetAreaForView(
+    const views::View* view) const {
+  if (saved_tab_group_bar_ && saved_tab_group_bar_->Contains(view)) {
+    return saved_tab_group_bar_->GetVisibleKeyboardNavigationButtons();
+  }
+  std::vector<views::View*> pre_buttons = GetVisiblePreButtons();
+  if (std::ranges::find(pre_buttons, view) != pre_buttons.end()) {
+    return pre_buttons;
+  }
+  return GetVisibleBookmarkButtons();
+}
+
+void BookmarkBarView::UpdateAreaFocusBehaviors() {
+  if (!IsAreaKeyboardNavigationEnabled()) {
+    return;
+  }
+  SetAreaFocusBehavior(GetVisiblePreButtons());
+  SetAreaFocusBehavior(GetVisibleBookmarkButtons());
+}
+
+// Moves focus within the focused button's area, wrapping around. Skipped in F6
+// pane mode, where AccessiblePaneView handles arrows.
+bool BookmarkBarView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (!IsAreaKeyboardNavigationEnabled() || pane_has_focus() ||
+      (event.key_code() != ui::VKEY_LEFT &&
+       event.key_code() != ui::VKEY_RIGHT)) {
+    return AccessiblePaneView::OnKeyPressed(event);
+  }
+
+  views::FocusManager* focus_manager = GetFocusManager();
+  const views::View* focused =
+      focus_manager ? focus_manager->GetFocusedView() : nullptr;
+  if (!focused || !Contains(focused)) {
+    return AccessiblePaneView::OnKeyPressed(event);
+  }
+
+  const std::vector<views::View*> area = GetAreaForView(focused);
+  const auto it = std::ranges::find(area, focused);
+  if (it == area.end()) {
+    return AccessiblePaneView::OnKeyPressed(event);
+  }
+
+  // Buttons are mirrored in RTL, so Right moves backwards in logical order.
+  const bool forward =
+      (event.key_code() == ui::VKEY_RIGHT) != base::i18n::IsRTL();
+  const size_t size = area.size();
+  const size_t index = static_cast<size_t>(it - area.begin());
+  const size_t next_index =
+      forward ? (index + 1) % size : (index + size - 1) % size;
+  focus_manager->SetFocusedViewWithReason(
+      area[next_index],
+      views::FocusManager::FocusChangeReason::kFocusTraversal);
+  return true;
 }
 
 BEGIN_METADATA(BookmarkBarView)

@@ -27,6 +27,10 @@ BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 BASE_DECLARE_FEATURE(kBrowserWindowListenerObservation);
 bool IsBrowserWindowListenerObservationEnabled();
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kBookmarkBarAreaKeyboardNavigation);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kCtrlTabMru);
 
 BASE_DECLARE_FEATURE(kFastFaviconDisplay);

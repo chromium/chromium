@@ -203,6 +203,7 @@ class BookmarkBarView
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void AddedToWidget() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -282,6 +283,19 @@ class BookmarkBarView
   // Creates recent bookmark button and when visible button as well as
   // calculating the preferred height.
   void Init();
+
+  // Visible buttons of the Pre-buttons (Apps shortcut and Managed Bookmarks)
+  // and Bookmarks areas, in visual order.
+  std::vector<views::View*> GetVisiblePreButtons() const;
+  std::vector<views::View*> GetVisibleBookmarkButtons() const;
+
+  // Visible buttons of the keyboard navigation area (Pre-buttons, Saved Tab
+  // Groups, or Bookmarks) containing `view`, in visual order.
+  std::vector<views::View*> GetAreaForView(const views::View* view) const;
+
+  // Sets focus behaviors for the Pre-buttons and Bookmarks areas. The Tab
+  // Groups area is handled in SavedTabGroupBar::Layout(), which runs later.
+  void UpdateAreaFocusBehaviors();
 
   void AppsPageShortcutPressed(const ui::Event& event);
   void OnButtonPressed(const bookmarks::BookmarkNode* node,

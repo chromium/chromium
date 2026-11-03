@@ -44,6 +44,13 @@ bool IsBrowserWindowListenerObservationEnabled() {
   return base::FeatureList::IsEnabled(kBrowserWindowListenerObservation);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Splits the bookmark bar into three keyboard navigation areas. Tab stops only
+// at the first button of each area; Left/Right arrows move within the area. No
+// effect on macOS.
+BASE_FEATURE(kBookmarkBarAreaKeyboardNavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kCtrlTabMru, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Skip the UI update coalescing delay when the favicon arrives after a

@@ -20883,6 +20883,7 @@ from previous Chrome versions.
   <int value="1756003505" label="glic-reset-mi-enabled-by-tier:enabled"/>
   <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
   <int value="1756997013" label="TextSafetyClassifier:enabled"/>
+  <int value="1757498812" label="BookmarkBarAreaKeyboardNavigation:disabled"/>
   <int value="1757654890"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:disabled"/>
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
@@ -21168,6 +21169,7 @@ from previous Chrome versions.
   <int value="1833845461" label="OverviewDeskNavigation:disabled"/>
   <int value="1834481596"
       label="DeviceBoundSessionsFederatedRegistration:enabled"/>
+  <int value="1834541605" label="BookmarkBarAreaKeyboardNavigation:enabled"/>
   <int value="1834651417" label="GlicDetached:disabled"/>
   <int value="1834879433" label="CCTNavigationInfoScreenshot:disabled"/>
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>

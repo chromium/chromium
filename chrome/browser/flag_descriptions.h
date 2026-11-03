@@ -816,6 +816,13 @@ inline constexpr char kBookmarkBarPrefetchName[] = "BookmarkBarPrefetch";
 inline constexpr char kBookmarkBarPrefetchDescription[] =
     "If enabled, bookmarkbar can trigger prefetch";
 
+inline constexpr char kBookmarkBarAreaKeyboardNavigationName[] =
+    "Bookmark bar area keyboard navigation";
+inline constexpr char kBookmarkBarAreaKeyboardNavigationDescription[] =
+    "Splits the bookmarks bar into keyboard navigation areas (apps and managed "
+    "bookmarks, saved tab groups, bookmarks). Tab stops once per area and "
+    "Left/Right arrow keys move between buttons within the area.";
+
 inline constexpr char kNewTabPagePrefetchName[] = "NewTabPagePrefetch";
 inline constexpr char kNewTabPagePrefetchDescription[] =
     "If enabled, NewTabPage can trigger prefetch";

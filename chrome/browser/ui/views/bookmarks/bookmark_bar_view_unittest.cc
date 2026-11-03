@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/controllers/desktop_bookmark_bar_injector.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_menu_delegate.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
@@ -58,6 +59,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -66,6 +68,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -1260,6 +1263,133 @@ TEST_F(BookmarkBarViewFaviconTest,
             ui::ImageModel::FromImage(updated_favicon_));
   EXPECT_EQ(overflow_button->GetImageModel(views::Button::STATE_NORMAL),
             ui::ImageModel::FromImage(updated_favicon_));
+}
+
+class BookmarkBarViewAreaKeyboardNavigationTest
+    : public BookmarkBarViewInWidgetTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BookmarkBarViewAreaKeyboardNavigationTest() {
+    area_nav_feature_list_.InitWithFeatureState(
+        features::kBookmarkBarAreaKeyboardNavigation, GetParam());
+  }
+
+  // False on macOS even when the feature is enabled.
+  bool IsAreaNavigationActive() const {
+    return GetParam() && views::PlatformStyle::kDefaultFocusBehavior ==
+                             views::View::FocusBehavior::ALWAYS;
+  }
+
+  void ShowWithBookmarks(const std::string& model_string) {
+    widget()->Show();
+    AddNodesToBookmarkBarFromModelString(model_string);
+    bookmark_bar_view()->SetBounds(
+        0, 0, 5000, bookmark_bar_view()->GetPreferredSize().height());
+    views::test::RunScheduledLayout(bookmark_bar_view());
+  }
+
+  void PressKey(ui::KeyboardCode key_code) {
+    ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
+    widget()->OnKeyEvent(&event);
+  }
+
+  views::View* GetFocusedView() {
+    return widget()->GetFocusManager()->GetFocusedView();
+  }
+
+ private:
+  base::test::ScopedFeatureList area_nav_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BookmarkBarViewAreaKeyboardNavigationTest,
+                         testing::Bool());
+
+TEST_P(BookmarkBarViewAreaKeyboardNavigationTest, BookmarkAreaFocusBehavior) {
+  ShowWithBookmarks("a b c ");
+  ASSERT_EQ(3u, test_helper_->GetBookmarkButtonCount());
+
+  EXPECT_EQ(IsAreaNavigationActive()
+                ? views::PlatformStyle::kDefaultFocusBehavior
+                : views::View::FocusBehavior::ACCESSIBLE_ONLY,
+            test_helper_->GetBookmarkButton(0)->GetFocusBehavior());
+  EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
+            test_helper_->GetBookmarkButton(1)->GetFocusBehavior());
+  EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
+            test_helper_->GetBookmarkButton(2)->GetFocusBehavior());
+}
+
+TEST_P(BookmarkBarViewAreaKeyboardNavigationTest,
+       BookmarkAreaFocusBehaviorFollowsFirstVisible) {
+  if (!IsAreaNavigationActive()) {
+    GTEST_SKIP() << "Area keyboard navigation is not active.";
+  }
+  ShowWithBookmarks("a b c ");
+  ASSERT_EQ(3u, test_helper_->GetBookmarkButtonCount());
+
+  model()->Remove(model()->bookmark_bar_node()->children()[0].get(),
+                  bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  views::test::RunScheduledLayout(bookmark_bar_view());
+  ASSERT_EQ(2u, test_helper_->GetBookmarkButtonCount());
+
+  EXPECT_EQ(views::PlatformStyle::kDefaultFocusBehavior,
+            test_helper_->GetBookmarkButton(0)->GetFocusBehavior());
+  EXPECT_EQ(views::View::FocusBehavior::ACCESSIBLE_ONLY,
+            test_helper_->GetBookmarkButton(1)->GetFocusBehavior());
+}
+
+// The Tab Groups area has at most one Tab-focusable button.
+TEST_P(BookmarkBarViewAreaKeyboardNavigationTest, TabGroupAreaFocusBehavior) {
+  if (!IsAreaNavigationActive()) {
+    GTEST_SKIP() << "Area keyboard navigation is not active.";
+  }
+  ShowWithBookmarks("a ");
+  tab_groups::SavedTabGroupBar* stg_bar = test_helper_->saved_tab_group_bar();
+  ASSERT_TRUE(stg_bar);
+  views::test::RunScheduledLayout(stg_bar);
+
+  const std::vector<views::View*> buttons =
+      stg_bar->GetVisibleKeyboardNavigationButtons();
+  for (size_t i = 0; i < buttons.size(); ++i) {
+    EXPECT_EQ(i == 0 ? views::PlatformStyle::kDefaultFocusBehavior
+                     : views::View::FocusBehavior::ACCESSIBLE_ONLY,
+              buttons[i]->GetFocusBehavior());
+  }
+}
+
+// Left/Right arrows move focus within the Bookmarks area and wrap around.
+TEST_P(BookmarkBarViewAreaKeyboardNavigationTest, ArrowKeysWrapWithinArea) {
+  if (!IsAreaNavigationActive()) {
+    GTEST_SKIP() << "Area keyboard navigation is not active.";
+  }
+  ShowWithBookmarks("a b c ");
+  ASSERT_EQ(3u, test_helper_->GetBookmarkButtonCount());
+
+  views::View* a = test_helper_->GetBookmarkButton(0);
+  views::View* b = test_helper_->GetBookmarkButton(1);
+  views::View* c = test_helper_->GetBookmarkButton(2);
+  ASSERT_FALSE(bookmark_bar_view()->overflow_button()->GetVisible());
+  // The "All Bookmarks" button, if visible, is the last item of the area.
+  views::View* last = bookmark_bar_view()->all_bookmarks_button()->GetVisible()
+                          ? bookmark_bar_view()->all_bookmarks_button()
+                          : c;
+
+  a->RequestFocus();
+  ASSERT_EQ(a, GetFocusedView());
+
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(b, GetFocusedView());
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(c, GetFocusedView());
+  PressKey(ui::VKEY_LEFT);
+  EXPECT_EQ(b, GetFocusedView());
+  PressKey(ui::VKEY_LEFT);
+  EXPECT_EQ(a, GetFocusedView());
+
+  PressKey(ui::VKEY_LEFT);
+  EXPECT_EQ(last, GetFocusedView());
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_EQ(a, GetFocusedView());
 }
 
 }  // namespace
