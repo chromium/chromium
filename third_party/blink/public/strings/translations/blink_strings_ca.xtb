@@ -32,6 +32,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Introduïu un valor vàlid. El camp està incomplet o conté una data no vàlida.</translation>
 <translation id="310520048233152454">Introduïu un URL.</translation>
+<translation id="3137127353890528027">S'ha amagat la contrasenya</translation>
 <translation id="3321030238473337787">Velocitat de reproducció</translation>
 <translation id="3450233048674729344">El valor ha de ser igual o inferior a <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
@@ -71,6 +72,7 @@
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6070714301435004046">Consulta <ph name="ALERT_HUB_LINK" /> per obtenir més detalls.</translation>
 <translation id="6310801910862476708">Surt d'imatge sobre imatge</translation>
+<translation id="64261224118544870">S'ha mostrat la contrasenya</translation>
 <translation id="6484738902856791350">Aplica estils de format</translation>
 <translation id="6550675742724504774">Opcions</translation>
 <translation id="65574987622079584">instal·lar una extensió del navegador</translation>

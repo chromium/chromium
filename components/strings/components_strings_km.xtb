@@ -736,6 +736,7 @@
 <translation id="2215727959747642672">ការកែឯកសារ</translation>
 <translation id="2219658597883514593">ចាប់ផ្ដើម​មេរៀន​ឡើងវិញ</translation>
 <translation id="2219735899272417925">តម្រូវ​ឱ្យ​កំណត់​ឧបករណ៍​ឡើងវិញ</translation>
+<translation id="2221460252073828078">មើល​ចម្លើយ​ដែលបង្កើតដោយ AI សម្រាប់​ការស្វែងរក​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="2222604080869344662">ចូលគណនី OneDrive ដើម្បី​បន្ត​ទាញយក</translation>
 <translation id="2224337661447660594">គ្មាន​អ៊ីនធឺណិតទេ</translation>
 <translation id="2225927550500503913">បានបើក​កាតនិម្មិត</translation>
@@ -2076,6 +2077,7 @@
 <translation id="4412377069090572315">អ្វីដែលគេកំពុងនិយាយ</translation>
 <translation id="4414515549596849729">ទិន្នន័យ​គេហទំព័រ និងខូគី</translation>
 <translation id="4415156962929755728">ប្លាស្ទិក (រលោងខ្លាំង)</translation>
+<translation id="4415276339145661267">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>
 <translation id="4415426530740016218">អាសយដ្ឋាន​ទទួល</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2550,6 +2552,7 @@
 <translation id="5216942107514965959">បានចូលមើល​លើកចុងក្រោយ​នៅថ្ងៃនេះ</translation>
 <translation id="5217759126664161410">ទម្រង់​ប្រូតូកូល​មិន​ត្រឹមត្រូវ​ទេ។</translation>
 <translation id="5221377878828867877">ការប្រើពាក្យ​សម្ងាត់ឡើងវិញត្រូវបានឃ្លាំមើលដោយស្ថាប័នរបស់អ្នក</translation>
+<translation id="5222676887888702881">ចាកចេញ</translation>
 <translation id="5222812217790122047">តម្រូវ​ឲ្យ​មាន​អ៊ីមែល</translation>
 <translation id="5226979307236834587">តើខ្ញុំអាចបដិសេធគម្រោងដោយគួរសមយ៉ាងដូចម្ដេច?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />។ <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4677,6 +4680,7 @@
 <translation id="8800034312320686233">គេហទំព័រ​មិន​ដំណើរការ​?</translation>
 <translation id="8803251172194676606">រចនាទម្លាប់ហាត់ប្រាណផ្ទាល់ខ្លួន</translation>
 <translation id="8803526663383843427">នៅពេលបើក</translation>
+<translation id="8804164990146287819">គោលការណ៍ឯកជនភាព</translation>
 <translation id="8805819170075074995">ធាតុបញ្ជី "<ph name="LANGUAGE_ID" />"៖ ធាតុមិនត្រូវបាន​អើពើទេ ដោយសារធាតុនេះ​ក៏ត្រូវបានរួមបញ្ចូល​នៅក្នុងគោលការណ៍ SpellcheckLanguage ផងដែរ។</translation>
 <translation id="8806696968588872703">ប្លាស្ទិក (សាទីន)</translation>
 <translation id="8807160976559152894">តម្រឹម​បន្ទាប់ពី​ទំព័រ​នីមួយៗ</translation>
@@ -4740,6 +4744,7 @@
 <translation id="8903998444169664879">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីផ្លាស់ប្ដូរការកំណត់ការបង់ប្រាក់របស់អ្នក</translation>
 <translation id="890493561996401738">ប៊ូតុង​លុប​ការណែនាំ ចុច Enter ដើម្បីលុប, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 អ៊ីង</translation>
+<translation id="8912362522468806198">គណនី Google</translation>
 <translation id="8914504000324227558">ដំណើរការ Chrome ឡើងវិញ</translation>
 <translation id="8918062451146297192">CVC សម្រាប់កាតនិម្មិត</translation>
 <translation id="8919895429178014996">លាក់ធាតុទាំងអស់</translation>

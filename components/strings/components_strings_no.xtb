@@ -2073,6 +2073,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4412377069090572315">Dette sier andre</translation>
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415156962929755728">Plast (høy glans)</translation>
+<translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4415426530740016218">Henteadresse</translation>
 <translation id="4415748029120993980">SECG elliptisk kurve secp384r1 (også kjent som NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2546,6 +2547,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5216942107514965959">Sist besøkt i dag</translation>
 <translation id="5217759126664161410">Ugyldig protokollformat.</translation>
 <translation id="5221377878828867877">Organisasjonen din overvåker gjenbruk av passord</translation>
+<translation id="5222676887888702881">Logg av</translation>
 <translation id="5222812217790122047">E-post er obligatorisk</translation>
 <translation id="5226979307236834587">Hvordan kan jeg avvise planer på en høflig måte?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4670,6 +4672,7 @@ Mer informasjon:
 <translation id="8800034312320686233">Virker ikke nettstedet?</translation>
 <translation id="8803251172194676606">Lag en tilpasset treningsrutine</translation>
 <translation id="8803526663383843427">Når funksjonen er på</translation>
+<translation id="8804164990146287819">Personvernregler</translation>
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plast (sateng)</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
@@ -4733,6 +4736,7 @@ Mer informasjon:
 <translation id="8903998444169664879">Bekreft at det er deg for å endre betalingsinnstillingene</translation>
 <translation id="890493561996401738">Knapp for å fjerne forslag – trykk på Enter for å fjerne. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tommer</translation>
+<translation id="8912362522468806198">Google-konto</translation>
 <translation id="8914504000324227558">Start Chrome på nytt</translation>
 <translation id="8918062451146297192">Verifiseringskode for virtuelt kort</translation>
 <translation id="8919895429178014996">Skjul alle elementer</translation>

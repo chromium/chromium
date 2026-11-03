@@ -905,7 +905,6 @@
 <translation id="363473492175527493">फ़ोकस करने के लिए चुना गया टास्क: <ph name="TASK_NAME" />. टास्क में बदलाव करने के लिए Enter दबाएं.</translation>
 <translation id="3638400994746983214">निजता वाली स्क्रीन टॉगल करें. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">विंडो को छोटा करें</translation>
-<translation id="3650952250015018111">"<ph name="APP_NAME" />" को एक्सेस करने की मंज़ूरी दें:</translation>
 <translation id="3652817283076144888">शुरू हो रहा है</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1178,7 +1177,6 @@
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4412698727486357573">सहायता केंद्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद है.</translation>
-<translation id="44141919652824029">"<ph name="APP_NAME" />" को आपके अटैच किए हुए USB डिवाइसों की सूची पाने दें?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> को हटाने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="4417647906073317561">फ़ोकस मोड की सेटिंग. इस सेटिंग को आज़माने के लिए, टाइमर, टास्क, और संगीत सेट करें.</translation>
 <translation id="4418600384772451109">पैनल बंद करें</translation>
@@ -2592,7 +2590,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>
 <translation id="8477270416194247200">रद्द करने के लिए Alt+Search या Shift दबाएं.</translation>
 <translation id="8480418399907765580">टूलबार दिखाएं</translation>
-<translation id="8481187309597259238">USB अनुमति की पुष्टि करें</translation>
 <translation id="8487660088084188539">इन सुविधाओं को चालू करने पर यह जानकारी, Google के सर्वर पर भेजी जा सकती है: लिखा गया टेक्स्ट, दस्तावेज़ में मौजूद कॉन्टेंट, और वेब पेज का यूआरएल. इस जानकारी का इस्तेमाल लिखने से जुड़े सुझाव देने, खास जानकारी जनरेट करने, सवालों के जवाब देने, और प्रॉडक्ट को बेहतर बनाने के लिए किया जाता है. इस प्रोसेस पर <ph name="LINK_TO_SERVICE_TERMS" /> लागू होती हैं. अपने इनपुट में किसी भी तरह की निजी, संवेदनशील या गोपनीय जानकारी शामिल न करें.</translation>
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />जगह की जानकारी का डेटा इस्तेमाल करने वाली Google की सेवा, इस डिवाइस की जगह का पता लगाने के लिए वाई-फ़ाई, मोबाइल नेटवर्क, और सेंसर जैसे सोर्स का इस्तेमाल करती है.<ph name="END_PARAGRAPH1" />

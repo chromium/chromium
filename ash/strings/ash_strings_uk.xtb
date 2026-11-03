@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Для режиму концентрації уваги вибрано завдання "<ph name="TASK_NAME" />". Щоб його змінити, натисніть клавішу Enter.</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Згорнути вікно</translation>
-<translation id="3650952250015018111">Надати додатку "<ph name="APP_NAME" />" доступ:</translation>
 <translation id="3652817283076144888">Ініціалізація</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1179,7 +1178,6 @@
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412698727486357573">Довідковий центр</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
-<translation id="44141919652824029">Дозволити додатку <ph name="APP_NAME" /> отримувати список підключених пристроїв USB?</translation>
 <translation id="4414242853388122273">Не вдалося вилучити віртуальну машину <ph name="VM_NAME" />. Повторіть спробу.</translation>
 <translation id="4417647906073317561">Налаштування режиму концентрації уваги. Установіть таймер, виберіть завдання й музику та пориньте в роботу.</translation>
 <translation id="4418600384772451109">Закрити панель</translation>
@@ -2595,7 +2593,6 @@
 <translation id="8473301994082929012">На сайті <ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Щоб скасувати, натисніть Alt+Search або Shift.</translation>
 <translation id="8480418399907765580">Показати панель інструментів</translation>
-<translation id="8481187309597259238">Підтвердьте дозвіл USB</translation>
 <translation id="8487660088084188539">Коли ви вмикаєте ці функції, введений текст, вміст документа і URL-адреса вебсторінки можуть надсилатися на сервери Google. Ці дані використовуються, щоб генерувати пропозиції, підсумки й відповіді на запитання, а також удосконалювати наш продукт відповідно до <ph name="LINK_TO_SERVICE_TERMS" />. Не вказуйте особисту, чутливу чи конфіденційну інформацію.</translation>
 <translation id="8487699605742506766">Точка доступу</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Геолокація Google використовує такі джерела, як Wi-Fi, мобільні мережі й датчики, щоб визначати місцезнаходження цього пристрою.<ph name="END_PARAGRAPH1" />

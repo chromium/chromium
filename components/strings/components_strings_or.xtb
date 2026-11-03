@@ -2070,6 +2070,7 @@
 <translation id="4412377069090572315">ଲୋକମାନେ କଣ କୁହନ୍ତି</translation>
 <translation id="4414515549596849729">କୁକୀ ଏବଂ ସାଇଟ୍ ଡାଟା</translation>
 <translation id="4415156962929755728">ପ୍ଲାଷ୍ଟିକ (ହାଇ ଗ୍ଲସ)</translation>
+<translation id="4415276339145661267">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4415426530740016218">ପିକ୍‌ଅପ୍ ଠିକଣା</translation>
 <translation id="4415748029120993980">SECG ଅଣ୍ଡାକାର ବକ୍ର secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2234,6 +2235,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ଭାଷା ପେକକୁ ଡାଉନଲୋଡ କରାଯାଉଛି... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ଆପଣଙ୍କର ଡିଭାଇସ୍‌ର ଲୋକେସନ୍‌ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="473414950835101501">ଆପଣଙ୍କ କେମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="4735688073239574197">ତଳକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4736089601076994090">ମିଆଦ ଶେଷ ହେବ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="4736934858538408121">ଭର୍ଚୁଆଲ୍ କାର୍ଡ</translation>
@@ -2542,6 +2544,7 @@
 <translation id="5216942107514965959">ଆଜି ଶେଷ ଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="5217759126664161410">ଅବୈଧ ପ୍ରୋଟୋକଲ ଫର୍ମାଟ।</translation>
 <translation id="5221377878828867877">ପାସୱାର୍ଡକୁ ପୁଣି ବ୍ୟବହାର କରିବା ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ମନିଟର କରାଯାଉଛି</translation>
+<translation id="5222676887888702881">ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="5222812217790122047">ଇମେଲ୍‌ର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="5226979307236834587">ମୁଁ କିପରି ଏକ ଭଦ୍ର ଉପାୟରେ ପ୍ଲାନଗୁଡ଼ିକୁ ଅଗ୍ରାହ୍ୟ କରିପାରିବି?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />। <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3071,6 +3074,7 @@
 <translation id="6097297436119286254">ଆପଣଙ୍କ ପେମେଣ୍ଟ ସୂଚନା ପୂରଣ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6099269767116481177">22 x 29.5 ଇଞ୍ଚ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">ଏହି ନୀତି ମେସିନ ଲେଭେଲରେ ଲାଗୁ କରିବା ପାଇଁ ଉଦ୍ଦିଷ୍ଟ। ଏକ ୟୁଜର ନୀତି ଭାବେ ଲାଗୁ କରାଗଲେ ଏହାର ଆଚରଣ ଅଫିସିଆଲ ଭାବେ ସପୋର୍ଟ କରାଯାଏ ନାହିଁ ଏବଂ ଏହାକୁ ଡେପ୍ରିକେଟ କରାଯିବ।</translation>
 <translation id="6105460996796456817">ସାଇଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6105511947520166941">ପରବର୍ତ୍ତୀ ସମୟରେ Chromeରେ ସିଧାସଳଖ Pix ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6105745639559695088">ସାଇଡବାରକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
@@ -4665,6 +4669,7 @@
 <translation id="8800034312320686233">ସାଇଟ୍ କାମ କରୁନାହିଁ କି?</translation>
 <translation id="8803251172194676606">ଏକ କଷ୍ଟମ ଫିଟନେସ ରୁଟିନ ଡିଜାଇନ କରନ୍ତୁ</translation>
 <translation id="8803526663383843427">ଯେତେବେଳେ ଏହା ଚାଲୁ ଥାଏ</translation>
+<translation id="8804164990146287819">ଗୋପନୀୟତା ନୀତି</translation>
 <translation id="8805819170075074995">ତାଲିକା ଏଣ୍ଟ୍ରି "<ph name="LANGUAGE_ID" />": ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଗଲା କାରଣ ଏହାକୁ ମଧ୍ୟ SpellcheckLanguage ନୀତିରେ ସାମିଲ୍ କରାଯାଇଛି।</translation>
 <translation id="8806696968588872703">ପ୍ଲାଷ୍ଟିକ (ସାଟିନ)</translation>
 <translation id="8807160976559152894">ପ୍ରତ୍ୟେକ ଡକ୍ୟୁମେଣ୍ଟ ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
@@ -4728,6 +4733,7 @@
 <translation id="8903998444169664879">ଆପଣଙ୍କ ପେମେଣ୍ଟ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="890493561996401738">ପ୍ରସ୍ତାବ ବଟନ୍‍କୁ କାଢ଼ି ଦିଅନ୍ତୁ, କାଢ଼ିବା ପାଇଁ Enter ଦବାନ୍ତୁ, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ଇଞ୍ଚ</translation>
+<translation id="8912362522468806198">Google ଆକାଉଣ୍ଟ</translation>
 <translation id="8914504000324227558">Chrome ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8918062451146297192">ଭର୍ଚୁଆଲ କାର୍ଡ ପାଇଁ CVC</translation>
 <translation id="8919895429178014996">ସମସ୍ତ ଆଇଟମ ଲୁଚାନ୍ତୁ</translation>

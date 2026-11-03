@@ -7031,6 +7031,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6399675241776343019">Refusée</translation>
 <translation id="6399774419735315745">Espion</translation>
 <translation id="6400360390396538896">Toujours sur <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Annuler la mise en évidence du groupe d'onglets</translation>
 <translation id="6401118106417399952">L'EID de votre appareil est <ph name="EID_NUMBER" /> et le numéro de série de l'appareil est <ph name="SERIAL_NUMBER" />. Ces numéros peuvent être utilisés pour aider à activer le service.</translation>
 <translation id="6402042774506839496">Pour en savoir plus, communiquez avec le développeur de l'appli</translation>
 <translation id="6402921224457714577">Les sites peuvent demander de contrôler et de reprogrammer vos appareils MIDI</translation>
@@ -10076,6 +10077,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8708000541097332489">Effacement à la sortie</translation>
 <translation id="870805141700401153">Signature du code individuel Microsoft</translation>
 <translation id="8708671767545720562">Infor&amp;mation supplémentaire</translation>
+<translation id="8709234440040320647">(Mode Isolé)</translation>
 <translation id="8709368517685334931">Vous pouvez trouver des couleurs plus anciennes dans la boutique en ligne Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantastique</translation>
 <translation id="8711402221661888347">Hamburger</translation>
@@ -10239,6 +10241,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8836360711089151515"><ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici une semaine. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Quitter le groupe}one{Quitter le groupe}other{Quitter les groupes}}</translation>
 <translation id="8836782447513334597">continuer</translation>
+<translation id="8837072669197607689">Autoriser en mode Isolé</translation>
 <translation id="8837573527470979311">Échanger avec l'affichage du bas</translation>
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10529,6 +10532,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9043767139743235992">Communiquer avec l'assistance de Google dédiée aux personnes handicapées</translation>
 <translation id="9044646465488564462">Échec de connexion au réseau : <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée dans le nouveau panneau latéral. Essayez-la ici.</translation>
+<translation id="9046240419485318563">Parcourir la Mémoire</translation>
 <translation id="9048745018038487540">Sélectionner toutes les polices</translation>
 <translation id="9050666287014529139">Phrase de passe</translation>
 <translation id="905137631551495997">Extension(s)</translation>

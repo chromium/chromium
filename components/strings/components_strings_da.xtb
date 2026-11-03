@@ -2073,6 +2073,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4412377069090572315">Dette mener andre</translation>
 <translation id="4414515549596849729">cookies og websitedata</translation>
 <translation id="4415156962929755728">Plast (helblank)</translation>
+<translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4415426530740016218">Afhentningsadresse</translation>
 <translation id="4415748029120993980">SECG elliptisk kurve secp384r1 (også kaldet NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4732860731866514038">Downloader sprogpakken for <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> anmoder om at bruge enhedens placering</translation>
 <translation id="473414950835101501">Bruge dine kameraer</translation>
+<translation id="4735688073239574197">Gå til bunden</translation>
 <translation id="4736089601076994090">Udløber: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Genstart Chromium</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
@@ -2545,6 +2547,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
 <translation id="5217759126664161410">Ugyldigt protokolformat.</translation>
 <translation id="5221377878828867877">Genbrug af adgangskoder overvåges af din organisation</translation>
+<translation id="5222676887888702881">Log ud</translation>
 <translation id="5222812217790122047">Mail påkrævet</translation>
 <translation id="5226979307236834587">Hvordan kan jeg sige nej til planer på en høflig måde?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4672,6 +4675,7 @@ Yderligere oplysninger:
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8803251172194676606">Design en tilpasset træningsrutine</translation>
 <translation id="8803526663383843427">Når funktionen er aktiveret</translation>
+<translation id="8804164990146287819">Privatlivspolitik</translation>
 <translation id="8805819170075074995">Listepost "<ph name="LANGUAGE_ID" />": Posten blev ignoreret, fordi den også er inkluderet i politikken SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plast (satin)</translation>
 <translation id="8807160976559152894">Beskær efter hver side</translation>
@@ -4735,6 +4739,7 @@ Yderligere oplysninger:
 <translation id="8903998444169664879">Verificer din identitet for at ændre dine betalingsindstillinger</translation>
 <translation id="890493561996401738">Knappen Fjern forslag. Tryk på Enter for at fjerne, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tommer</translation>
+<translation id="8912362522468806198">Google-konto</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8918062451146297192">CVC til virtuelt kort</translation>
 <translation id="8919895429178014996">Skjul alle elementer</translation>

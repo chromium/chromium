@@ -905,7 +905,6 @@
 <translation id="363473492175527493">এটির উপরে ফোকাস করতে টাস্ক সেট করা হয়েছে: <ph name="TASK_NAME" />। টাস্ক এডিট করতে Enter 'কী' প্রেস করুন।</translation>
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">উইন্ডো সংক্ষিপ্তায়ন করুন</translation>
-<translation id="3650952250015018111">"<ph name="APP_NAME" />" অ্যাপকে এগুলি অ্যাক্সেস করতে দিন:</translation>
 <translation id="3652817283076144888">শুরু হচ্ছে</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@
 <translation id="4406883609789734330">লাইভ ক্যাপশন</translation>
 <translation id="4412698727486357573">সহায়তা কেন্দ্র</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
-<translation id="44141919652824029">"<ph name="APP_NAME" />" অ্যাপকে কানেক্ট করা ইউএসবি ডিভাইসগুলির তালিকা নিয়ে আসতে দেবেন?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> সরানোর সময় সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="4417647906073317561">ফোকাস মোড সংক্রান্ত সেটিংস। এটি ব্যবহার করতে, টাইমার, টাস্ক ও মিউজিক সেট করুন।</translation>
 <translation id="4418600384772451109">প্যানেল বন্ধ করুন</translation>
@@ -2592,7 +2590,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-এর <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />।</translation>
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
 <translation id="8480418399907765580">সরঞ্জামদণ্ড দেখান</translation>
-<translation id="8481187309597259238">ইউএসবি অ্যাক্সেস করার অনুমতি নিশ্চিত করুন</translation>
 <translation id="8487660088084188539">আপনি এইসব ফিচার চালু করলে Google সার্ভারে ইনপুট টেক্সট, ডকুমেন্ট কন্টেন্ট ও ওয়েব পৃষ্ঠার URL পাঠানো হতে পারে। <ph name="LINK_TO_SERVICE_TERMS" /> অনুযায়ী লেখার সাজেশন তৈরি করতে, সারসংক্ষেপ তৈরি করতে, প্রশ্নের উত্তর দিতে এবং প্রোডাক্ট উন্নত করতে এই তথ্য ব্যবহার করা হয়। ব্যক্তিগত, সংবেদনশীল বা গোপনীয় তথ্য দেবেন না।</translation>
 <translation id="8487699605742506766">হটস্পট</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google-এর লোকেশন পরিষেবা ওয়াই-ফাই, মোবাইল নেটওয়ার্ক এবং সেন্সরের মতো সোর্স ব্যবহার করে এই ডিভাইসের লোকেশন অনুমান করে।<ph name="END_PARAGRAPH1" />

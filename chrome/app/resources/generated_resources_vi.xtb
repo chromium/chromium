@@ -7044,6 +7044,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6399675241776343019">Bị từ chối</translation>
 <translation id="6399774419735315745">Điệp viên</translation>
 <translation id="6400360390396538896">Luôn cho phép trên <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Xoá tiêu điểm khỏi nhóm thẻ</translation>
 <translation id="6401118106417399952">Số EID (mã định danh dành cho eSIM) thiết bị của bạn là <ph name="EID_NUMBER" /> và số sê-ri thiết bị là <ph name="SERIAL_NUMBER" />. Những số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
 <translation id="6402042774506839496">Để tìm hiểu lý do, hãy liên hệ với nhà phát triển ứng dụng</translation>
 <translation id="6402921224457714577">Các trang web có thể yêu cầu cấp quyền điều khiển và lập trình lại thiết bị MIDI của bạn</translation>
@@ -10544,6 +10545,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9043767139743235992">Liên hệ với Nhóm hỗ trợ người khuyết tật của Google</translation>
 <translation id="9044646465488564462">Không kết nối được với mạng: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Danh sách đọc của bạn đã chuyển sang bảng điều khiển bên mới. Hãy thử tại đây.</translation>
+<translation id="9046240419485318563">Duyệt xem bộ nhớ</translation>
 <translation id="9048745018038487540">Chọn tất cả phông chữ</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>
 <translation id="905137631551495997">Tiện ích</translation>

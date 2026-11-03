@@ -186,6 +186,7 @@
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2803971713792056305">내 Chromium</translation>
 <translation id="2816462166102338036">이미지 검색으로 이 동영상 검색하기</translation>
+<translation id="2819844767470613567">경고: Chromium은 확장 프로그램이 방문 기록을 저장하지 못하도록 차단할 수 없습니다. 보안 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 이 옵션을 선택 해제하세요.</translation>
 <translation id="282591729717417030">iOS에서 Chromium을 사용해 카메라로 제품을 발견하고, 가격 인하를 추적하는 등 다양한 작업을 이동 중에 수행하세요.</translation>
 <translation id="2841525013647267359">출발어</translation>
 <translation id="2846251086934905009">설치 오류: 설치 프로그램이 완료되지 않았습니다. 설치가 중단되었습니다.</translation>
@@ -482,6 +483,7 @@
 <translation id="5889361821821684993">Chromium에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5896077214220653386">Chromium의 Gemini Enterprise</translation>
+<translation id="5900507321340749588">사기 탐지와 같은 기능을 지원하기 위해 Chromium은 기기에서 직접 실행되는 AI 모델을 사용할 수 있습니다. 이 기능이 사용 중지되면 이러한 기능이 작동하지 않을 수 있습니다. <ph name="BEGIN_LINK" />온디바이스 AI에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5924017743176219022">인터넷에 연결 중...</translation>
 <translation id="5941711191222866238">최소화</translation>

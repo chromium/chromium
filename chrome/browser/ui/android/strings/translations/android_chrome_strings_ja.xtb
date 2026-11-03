@@ -25,7 +25,7 @@
 <translation id="1086486568852410168">Google レンズで検索</translation>
 <translation id="1087799850623149508">アドレスバーを長押しすると、一番下に移動できます</translation>
 <translation id="1089606299949659462">確認が終わりました</translation>
-<translation id="1094555143448724771">他のデバイスのタブを表示するには、タブと履歴を同期します</translation>
+<translation id="1094555143448724771">他のデバイスのタブを表示するには、タブと履歴の同期をオンにしてください</translation>
 <translation id="1100066534610197918">新しいタブをグループで開く</translation>
 <translation id="1103142993930332957">Chrome の改善にご協力ください</translation>
 <translation id="1105960400813249514">スクリーン キャプチャ</translation>
@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">これらのサイトを翻訳するか尋ねない</translation>
 <translation id="1143193470214071120">ウィンドウを閉じるか、管理してください</translation>
 <translation id="1143486892058798649">名前を付けてリンクを保存…</translation>
+<translation id="1149644372535087155">Chrome でパスワードを保存</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> をスキャンしています</translation>
 <translation id="1150263420752757504">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。</translation>
 <translation id="1154555449933432029">パスワードは Google パスワード マネージャーに保存されていません。</translation>
@@ -299,6 +300,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2190355936436201913">(なし)</translation>
 <translation id="219283042927675668">グループ内のタブ</translation>
 <translation id="2194856509914051091">留意事項</translation>
+<translation id="2195339740518523951">Chrome の最高水準のセキュリティで保護する</translation>
 <translation id="2196695604589508993">履歴を開く</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />、固定の共有タブ</translation>
 <translation id="22091350895006575">ユーザー名を追加</translation>

@@ -7039,6 +7039,7 @@
 <translation id="6399675241776343019">Заборонено</translation>
 <translation id="6399774419735315745">Шпигунка</translation>
 <translation id="6400360390396538896">Завжди ввімкнено (<ph name="ORIGIN" />)</translation>
+<translation id="6400714103322134861">Скасувати виділення групи вкладок</translation>
 <translation id="6401118106417399952">EID пристрою: <ph name="EID_NUMBER" />; серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="6402042774506839496">Щоб дізнатися причину, зв’яжіться з розробником додатка</translation>
 <translation id="6402921224457714577">Сайти можуть запитувати дозвіл керувати пристроями MIDI й перепрограмовувати їх</translation>
@@ -10088,6 +10089,7 @@
 <translation id="8708000541097332489">Очищати під час виходу</translation>
 <translation id="870805141700401153">Підписання індивідуального коду Microsoft</translation>
 <translation id="8708671767545720562">&amp;Докладніше</translation>
+<translation id="8709234440040320647">(Ізольований режим)</translation>
 <translation id="8709368517685334931">Старі кольори можна знайти у Веб-магазині Chrome</translation>
 <translation id="8710414664106871428">Фентезі</translation>
 <translation id="8711402221661888347">Гамбургер</translation>
@@ -10252,6 +10254,7 @@
 <translation id="8836360711089151515">Адміністратор домену <ph name="MANAGER" /> вимагає, щоб ви створили резервну копію своїх даних і повернули цей пристрій <ph name="DEVICE_TYPE" /> упродовж 1 тижня. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Вийти з групи}one{Вийти з груп}few{Вийти з груп}many{Вийти з груп}other{Вийти з груп}}</translation>
 <translation id="8836782447513334597">продовжити</translation>
+<translation id="8837072669197607689">Дозволити в ізольованому режимі</translation>
 <translation id="8837573527470979311">Перемістити на нижній екран</translation>
 <translation id="8838601485495657486">Непрозоро</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
@@ -10542,6 +10545,7 @@
 <translation id="9043767139743235992">Зв’язатися зі службою підтримки Google із питань доступності</translation>
 <translation id="9044646465488564462">Помилка під’єднання до мережі: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список читання переміщено на нову бічну панель. Перегляньте його там.</translation>
+<translation id="9046240419485318563">Переглянути пам’ять</translation>
 <translation id="9048745018038487540">Вибрати всі шрифти</translation>
 <translation id="9050666287014529139">Парольна фраза</translation>
 <translation id="905137631551495997">Розширення</translation>

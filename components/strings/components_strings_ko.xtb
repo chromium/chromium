@@ -2073,6 +2073,7 @@
 <translation id="4412377069090572315">다른 사람들의 의견</translation>
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
+<translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4415426530740016218">픽업 주소</translation>
 <translation id="4415748029120993980">SECG 타원 곡선 secp384r1(또는 NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> 언어 팩 다운로드 중…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />에서 기기의 위치에 액세스하려고 합니다.</translation>
 <translation id="473414950835101501">카메라 사용</translation>
+<translation id="4735688073239574197">아래로 이동</translation>
 <translation id="4736089601076994090">만료일: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium 다시 시작</translation>
 <translation id="4736934858538408121">가상 카드</translation>
@@ -2545,6 +2547,7 @@
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
 <translation id="5217759126664161410">프로토콜 형식이 잘못되었습니다.</translation>
 <translation id="5221377878828867877">비밀번호 재사용은 조직에서 모니터링합니다</translation>
+<translation id="5222676887888702881">로그아웃</translation>
 <translation id="5222812217790122047">이메일은 필수입니다.</translation>
 <translation id="5226979307236834587">정중하게 계획을 거절하려면 어떻게 해야 해?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@
 <translation id="6097297436119286254">결제 정보를 입력하려면 본인 인증을 진행하세요.</translation>
 <translation id="6099269767116481177">22x29.5인치</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">이 정책은 머신 수준에서 적용되도록 마련되었습니다. 사용자 정책으로 적용될 때의 동작은 공식적으로 지원되지 않으며 지원 중단될 예정입니다.</translation>
 <translation id="6105460996796456817">사이트 만들기</translation>
 <translation id="6105511947520166941">다음번에는 Chrome에서 바로 Pix로 결제하세요</translation>
 <translation id="6105745639559695088">사이드바 펼치기/접기</translation>
@@ -4669,6 +4673,7 @@
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8803251172194676606">맞춤형 피트니스 루틴을 설계해 줘</translation>
 <translation id="8803526663383843427">켜졌을 때</translation>
+<translation id="8804164990146287819">개인정보처리방침</translation>
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8806696968588872703">플라스틱(새틴)</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
@@ -4732,6 +4737,7 @@
 <translation id="8903998444169664879">결제 설정을 변경하려면 본인 인증을 진행하세요.</translation>
 <translation id="890493561996401738">추천 삭제 버튼, Enter 키를 눌러 삭제, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10인치</translation>
+<translation id="8912362522468806198">Google 계정</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8918062451146297192">가상 카드용 CVC</translation>
 <translation id="8919895429178014996">모든 항목 숨기기</translation>

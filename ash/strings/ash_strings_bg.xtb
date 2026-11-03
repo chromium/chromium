@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Задача, над която да се концентрирате: <ph name="TASK_NAME" />. Натиснете Enter, за да я редактирате.</translation>
 <translation id="3638400994746983214">Превключване на екрана за поверителност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Намаляване на прозореца</translation>
-<translation id="3650952250015018111">Разрешаване на "<ph name="APP_NAME" />" да има достъп до:</translation>
 <translation id="3652817283076144888">Подготвя се за работа</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4412698727486357573">Помощен център</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
-<translation id="44141919652824029">Да се разреши ли на <ph name="APP_NAME" /> да получи списъка със свързани USB устройства?</translation>
 <translation id="4414242853388122273">Възникна грешка при премахването на <ph name="VM_NAME" />. Опитайте отново.</translation>
 <translation id="4417647906073317561">Настройки за режима за концентрация. Задайте таймер, задача и музика, за да се фокусирате.</translation>
 <translation id="4418600384772451109">Затваряне на панела</translation>
@@ -2590,7 +2588,6 @@
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
 <translation id="8480418399907765580">Показване на лентата с инструменти</translation>
-<translation id="8481187309597259238">Потвърждаване на разрешението за USB</translation>
 <translation id="8487660088084188539">Когато включите тези функции, въвежданият текст, съдържанието на документа и URL адресът на уеб страницата може да бъдат изпращани до сървърите на Google. Тази информация се използва за генериране на предложения за текст и на обобщения, отговаряне на въпроси и подобряване на продукта в съответствие с <ph name="LINK_TO_SERVICE_TERMS" />. Не включвайте лично, чувствително или поверително съдържание.</translation>
 <translation id="8487699605742506766">Точка за достъп</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да помага за определянето на местоположението на това устройство.<ph name="END_PARAGRAPH1" />

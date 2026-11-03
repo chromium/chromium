@@ -905,7 +905,6 @@
 <translation id="363473492175527493">집중하도록 설정된 할 일: <ph name="TASK_NAME" /> 할 일을 수정하려면 Enter 키를 누르세요.</translation>
 <translation id="3638400994746983214">개인 정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">창 최소화</translation>
-<translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
 <translation id="3652817283076144888">초기화 중</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4412698727486357573">고객센터</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> 기능이 꺼져 있습니다.</translation>
-<translation id="44141919652824029">'<ph name="APP_NAME" />'이(가) 연결된 USB 기기의 목록을 읽도록 허용하시겠습니까?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" />를 삭제하는 중에 오류가 발생했습니다. 다시 시도해 보세요.</translation>
 <translation id="4417647906073317561">집중 모드 설정. 타이머, 할 일, 음악을 설정하여 집중해 보세요.</translation>
 <translation id="4418600384772451109">패널 닫기</translation>
@@ -2589,7 +2587,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />에서 <ph name="FEATURE_NAME" /> 기능을 <ph name="FEATURE_STATE" /> 상태로 설정했습니다.</translation>
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
 <translation id="8480418399907765580">툴바 표시</translation>
-<translation id="8481187309597259238">USB 권한 확인</translation>
 <translation id="8487660088084188539">이 기능을 사용 설정하면 입력 텍스트, 문서 콘텐츠, 웹페이지 URL이 Google 서버로 전송될 수 있습니다. 이 정보는 <ph name="LINK_TO_SERVICE_TERMS" />에 따라 작성 제안 및 요약을 생성하고, 질문에 답변하며, 제품을 개선하는 데 사용됩니다. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="8487699605742506766">핫스팟</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 이 기기의 위치를 파악하는 데에 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />

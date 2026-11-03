@@ -2073,6 +2073,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4412377069090572315">Çfarë po thonë njerëzit</translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415156962929755728">Plastikë (me shkëlqim të lartë)</translation>
+<translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="4415426530740016218">Adresa e marrjes</translation>
 <translation id="4415748029120993980">Kurba eliptike SECG secp384r1 (e njohur edhe si NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2545,6 +2546,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
 <translation id="5217759126664161410">Format i pavlefshëm i protokollit.</translation>
 <translation id="5221377878828867877">Ripërdorimi i fjalëkalimeve monitorohet nga organizata jote</translation>
+<translation id="5222676887888702881">Dil</translation>
 <translation id="5222812217790122047">Email-i është i detyrueshëm</translation>
 <translation id="5226979307236834587">Si mund t'i refuzoj planet në mënyrë të sjellshme?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4669,6 +4671,7 @@ Detaje shtesë:
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8803251172194676606">Projekto një rutinë të personalizuar fitnesi</translation>
 <translation id="8803526663383843427">Kur është e aktive</translation>
+<translation id="8804164990146287819">Politika e privatësisë</translation>
 <translation id="8805819170075074995">Hyrja e listës "<ph name="LANGUAGE_ID" />": Hyrja është shpërfillur sepse është e përfshirë edhe në politikën e SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastikë (saten)</translation>
 <translation id="8807160976559152894">Prerje pas çdo faqeje</translation>
@@ -4732,6 +4735,7 @@ Detaje shtesë:
 <translation id="8903998444169664879">Verifiko që je ti për të ndryshuar cilësimet e pagesave</translation>
 <translation id="890493561996401738">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inç</translation>
+<translation id="8912362522468806198">Llogaria e Google</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8918062451146297192">Kodi CVC për kartën virtuale</translation>
 <translation id="8919895429178014996">Fshih të gjithë artikujt</translation>

@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Activitatea asupra căreia te concentrezi: <ph name="TASK_NAME" />. Apasă pe Enter pentru a edita activitatea.</translation>
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimizați fereastra</translation>
-<translation id="3650952250015018111">Permite accesul „<ph name="APP_NAME" />” la:</translation>
 <translation id="3652817283076144888">Se inițializează</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412698727486357573">Centrul de ajutor</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
-<translation id="44141919652824029">Permiți ca „<ph name="APP_NAME" />” să obțină lista dispozitivelor USB atașate?</translation>
 <translation id="4414242853388122273">Eroare la eliminarea <ph name="VM_NAME" />. Încearcă din nou.</translation>
 <translation id="4417647906073317561">Setări pentru Focus. Setează un temporizator, o activitate și muzică pentru a te concentra.</translation>
 <translation id="4418600384772451109">Închide panoul</translation>
@@ -2591,7 +2589,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> are <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8480418399907765580">Afișați bara de instrumente</translation>
-<translation id="8481187309597259238">Confirmă permisiunea pentru USB</translation>
 <translation id="8487660088084188539">Când activezi aceste funcții, textul introdus, conținutul documentului și adresa URL a paginii web pot fi trimise la serverele Google. Aceste informații sunt folosite pentru a genera sugestii de scris și rezumate, pentru a răspunde la întrebări și pentru a îmbunătăți produsul, în conformitate cu <ph name="LINK_TO_SERVICE_TERMS" />. Nu include conținut personal, sensibil sau confidențial.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Serviciul de localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația acestui dispozitiv.<ph name="END_PARAGRAPH1" />

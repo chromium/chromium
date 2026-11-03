@@ -185,6 +185,7 @@
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
 <translation id="2816462166102338036">Pretražite taj videozapis pomoću pretraživanja slika</translation>
+<translation id="2819844767470613567">Upozorenje: Chromium ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u izoliranom načinu rada, poništite odabir te opcije.</translation>
 <translation id="282591729717417030">Otkrivajte proizvode pomoću kamere, pratite sniženja cijena i još mnogo toga dok ste u pokretu uz Chromium na iOS-u.</translation>
 <translation id="2841525013647267359">Jezik izvornika</translation>
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
@@ -481,6 +482,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="5889361821821684993">Chromium redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5896077214220653386">Gemini Enterprise u Chromiumu</translation>
+<translation id="5900507321340749588">Da bi omogućio značajke kao što je otkrivanje prijevara, Chromium može upotrebljavati AI modele koji se izvode izravno na vašem uređaju. Kad je ta postavka isključena, te značajke možda neće funkcionirati. <ph name="BEGIN_LINK" />Saznajte više o AI-ju na uređaju<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava na mrežu</translation>
 <translation id="5924017743176219022">Povezivanje s internetom...</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>

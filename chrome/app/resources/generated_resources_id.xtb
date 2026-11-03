@@ -7043,6 +7043,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6399675241776343019">Ditolak</translation>
 <translation id="6399774419735315745">Mata-mata</translation>
 <translation id="6400360390396538896">Selalu di <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Batalkan fokus grup tab</translation>
 <translation id="6401118106417399952">EID perangkat Anda adalah <ph name="EID_NUMBER" /> dan nomor seri perangkat adalah <ph name="SERIAL_NUMBER" />. Nomor ini dapat digunakan untuk membantu mengaktifkan layanan.</translation>
 <translation id="6402042774506839496">Untuk mengetahui alasannya, hubungi developer aplikasi</translation>
 <translation id="6402921224457714577">Situs dapat meminta untuk mengontrol dan memprogram ulang perangkat MIDI Anda</translation>
@@ -10086,6 +10087,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8708000541097332489">Hapus saat keluar</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">Informasi Selengkapnya</translation>
+<translation id="8709234440040320647">(Mode terisolasi)</translation>
 <translation id="8709368517685334931">Anda dapat menemukan warna lama di Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasi</translation>
 <translation id="8711402221661888347">Burger</translation>
@@ -10250,6 +10252,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="8836360711089151515"><ph name="MANAGER" /> mengharuskan Anda mencadangkan data dan mengembalikan <ph name="DEVICE_TYPE" /> ini dalam 1 minggu. <ph name="LINK_BEGIN" />Lihat detailnya<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Keluar dari Grup}other{Keluar dari Grup}}</translation>
 <translation id="8836782447513334597">melanjutkan</translation>
+<translation id="8837072669197607689">Izinkan dalam mode Terisolasi</translation>
 <translation id="8837573527470979311">Tukar dengan Tampilan Bawah</translation>
 <translation id="8838601485495657486">Buram</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10540,6 +10543,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9043767139743235992">Hubungi Dukungan Disabilitas Google</translation>
 <translation id="9044646465488564462">Gagal menyambung ke jaringan: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Daftar bacaan Anda telah dipindahkan ke panel samping yang baru. Coba di sini.</translation>
+<translation id="9046240419485318563">Jelajahi Memori</translation>
 <translation id="9048745018038487540">Pilih semua font</translation>
 <translation id="9050666287014529139">Frasa sandi</translation>
 <translation id="905137631551495997">Ekstensi</translation>

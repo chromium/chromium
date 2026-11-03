@@ -7044,6 +7044,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6399675241776343019">Nekad</translation>
 <translation id="6399774419735315745">Spion</translation>
 <translation id="6400360390396538896">Alltid på <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Ta bort fokus för flikgruppen</translation>
 <translation id="6401118106417399952">Enhetens EID är <ph name="EID_NUMBER" /> och enhetens serienummer är <ph name="SERIAL_NUMBER" />. Dessa nummer kan användas för att aktivera tjänsten.</translation>
 <translation id="6402042774506839496">Kontakta apputvecklaren om du vill veta varför</translation>
 <translation id="6402921224457714577">Webbplatser kan begära tillstånd att styra och omprogrammera MIDI-enheter</translation>
@@ -10088,6 +10089,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8708000541097332489">Rensa vid avslut</translation>
 <translation id="870805141700401153">Microsofts individuella kodsignering</translation>
 <translation id="8708671767545720562">Mer information</translation>
+<translation id="8709234440040320647">(Isolerat läge)</translation>
 <translation id="8709368517685334931">Äldre färger finns i Chrome Web Store</translation>
 <translation id="8710414664106871428">Fantasy</translation>
 <translation id="8711402221661888347">Burgare</translation>
@@ -10252,6 +10254,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8836360711089151515"><ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> inom en vecka. <ph name="LINK_BEGIN" />Mer information<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Lämna gruppen}other{Lämna grupperna}}</translation>
 <translation id="8836782447513334597">fortsätta</translation>
+<translation id="8837072669197607689">Tillåt i isolerat läge</translation>
 <translation id="8837573527470979311">Byt med den nedre vyn</translation>
 <translation id="8838601485495657486">Ogenomskinlig</translation>
 <translation id="8838770651474809439">Hamburgare</translation>

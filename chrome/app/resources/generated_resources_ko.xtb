@@ -7043,6 +7043,7 @@
 <translation id="6399675241776343019">거부됨</translation>
 <translation id="6399774419735315745">스파이</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" />에서 항상 사용</translation>
+<translation id="6400714103322134861">탭 그룹 포커스 해제</translation>
 <translation id="6401118106417399952">기기 EID는 <ph name="EID_NUMBER" />이며 기기 일련번호는 <ph name="SERIAL_NUMBER" />입니다. 이 번호를 사용하여 서비스를 활성화할 수 있습니다.</translation>
 <translation id="6402042774506839496">이유를 알아보려면 앱 개발자에게 문의하세요.</translation>
 <translation id="6402921224457714577">사이트에서 MIDI 기기를 제어하고 다시 프로그래밍하도록 요청할 수 있음</translation>
@@ -10086,6 +10087,7 @@
 <translation id="8708000541097332489">종료 시 삭제</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">추가 정보</translation>
+<translation id="8709234440040320647">(보안 시크릿 모드)</translation>
 <translation id="8709368517685334931">Chrome 웹 스토어에서 이전 색상을 찾을 수 있습니다.</translation>
 <translation id="8710414664106871428">판타지</translation>
 <translation id="8711402221661888347">피클</translation>
@@ -10250,6 +10252,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" />에서 데이터를 백업하고 1주일 이내에 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다. <ph name="LINK_BEGIN" />세부정보 보기<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{그룹 탈퇴}other{그룹 탈퇴}}</translation>
 <translation id="8836782447513334597">계속</translation>
+<translation id="8837072669197607689">보안 시크릿 모드에서 허용</translation>
 <translation id="8837573527470979311">하단 뷰와 바꾸기</translation>
 <translation id="8838601485495657486">불투명</translation>
 <translation id="8838770651474809439">햄버거</translation>
@@ -10540,6 +10543,7 @@
 <translation id="9043767139743235992">Google 장애인 전담 지원팀에 문의</translation>
 <translation id="9044646465488564462">네트워크 연결 실패: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
+<translation id="9046240419485318563">메모리 둘러보기</translation>
 <translation id="9048745018038487540">모든 글꼴 선택</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="905137631551495997">확장 프로그램</translation>

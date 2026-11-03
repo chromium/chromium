@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
 <translation id="1143193470214071120">关闭窗口或管理窗口</translation>
 <translation id="1143486892058798649">链接另存为…</translation>
+<translation id="1149644372535087155">在 Chrome 中保存密码</translation>
 <translation id="1149725087019908252">正在扫描 <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1154555449933432029">您未在 Google 密码管理工具中保存任何密码。</translation>
@@ -299,6 +300,7 @@
 <translation id="2190355936436201913">（空）</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
+<translation id="2195339740518523951">获享 Chrome 的最强安全保护</translation>
 <translation id="2196695604589508993">打开历史记录</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，已固定的标签页，正在共享内容</translation>
 <translation id="22091350895006575">添加用户名</translation>

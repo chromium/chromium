@@ -2072,6 +2072,7 @@
 <translation id="4412377069090572315">Эл эмне дейт</translation>
 <translation id="4414515549596849729">cookie файлдары жана сайттын маалыматы</translation>
 <translation id="4415156962929755728">Пластик (өтө жылтырак)</translation>
+<translation id="4415276339145661267">Google аккаунтунун параметрлерине өтүү</translation>
 <translation id="4415426530740016218">Алып кете турган жердин дарегин тандоо</translation>
 <translation id="4415748029120993980">SECG эллиптикалык ийри сызыгы secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2544,6 +2545,7 @@
 <translation id="5216942107514965959">Бүгүн акыркы жолу кирген</translation>
 <translation id="5217759126664161410">Протоколдун форматы жараксыз.</translation>
 <translation id="5221377878828867877">Сырсөздү кайра колдонуу уюмуңуз тарабынан көзөмөлдөнөт</translation>
+<translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5222812217790122047">Электрондук почта дареги талап кылынат</translation>
 <translation id="5226979307236834587">Сунуштарды кантип сылык түрдө четке кагууга болот?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4668,6 +4670,7 @@
 <translation id="8800034312320686233">Сайт иштебей жатабы?</translation>
 <translation id="8803251172194676606">Жеке машыгуу программасын түз</translation>
 <translation id="8803526663383843427">Күйүп турганда</translation>
+<translation id="8804164990146287819">Купуялык эрежелери</translation>
 <translation id="8805819170075074995">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": SpellcheckLanguage саясатында камтылгандыктан, киргизүү этибарга алынган жок.</translation>
 <translation id="8806696968588872703">Пластик (сатин)</translation>
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
@@ -4731,6 +4734,7 @@
 <translation id="8903998444169664879">Төлөм параметрлерин өзгөртүү үчүн өзүңүздү ырастаңыз</translation>
 <translation id="890493561996401738">"Сунушту өчүрүү" баскычы. Өчүрүү үчүн "Enter" баскычын басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
+<translation id="8912362522468806198">Google аккаунту</translation>
 <translation id="8914504000324227558">Chrome'ду кайрадан ишке киргизүү</translation>
 <translation id="8918062451146297192">Виртуалдык картанын CVC коду</translation>
 <translation id="8919895429178014996">Бардык элементтерди жашыруу</translation>

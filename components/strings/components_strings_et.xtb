@@ -734,6 +734,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2215727959747642672">Failide muutmine</translation>
 <translation id="2219658597883514593">Alusta õpetusi uuesti</translation>
 <translation id="2219735899272417925">Nõutav on seadme lähtestamine</translation>
+<translation id="2221460252073828078">Otsingu AI vastus kuvatakse siin</translation>
 <translation id="2222604080869344662">Allalaadimise jätkamiseks logige OneDrive'i sisse</translation>
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="2225927550500503913">Virtuaalkaart on sisse lülitatud</translation>
@@ -2073,6 +2074,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4412377069090572315">Mida inimesed räägivad</translation>
 <translation id="4414515549596849729">küpsisefailid ja saidi andmed</translation>
 <translation id="4415156962929755728">Plast (kõrgläige)</translation>
+<translation id="4415276339145661267">Google'i konto haldamine</translation>
 <translation id="4415426530740016218">Kättesaamisaadress</translation>
 <translation id="4415748029120993980">SECG elliptilise kõveraga secp384r1 (ehk NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2239,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> keele paketi allalaadimine... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> soovib kasutada teie seadme asukohta</translation>
 <translation id="473414950835101501">Kasutada teie kaameraid</translation>
+<translation id="4735688073239574197">Liigu alla</translation>
 <translation id="4736089601076994090">Aegub: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Taaskäivitage Chromium</translation>
 <translation id="4736934858538408121">Virtuaalkaart</translation>
@@ -2545,6 +2548,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5216942107514965959">Viimati külastati täna</translation>
 <translation id="5217759126664161410">Vale protokolli vorming.</translation>
 <translation id="5221377878828867877">Teie organisatsioon jälgib paroolide korduvalt kasutamist</translation>
+<translation id="5222676887888702881">Logi välja</translation>
 <translation id="5222812217790122047">E-posti aadress on nõutav</translation>
 <translation id="5226979307236834587">Kuidas plaanidest viisakalt keelduda?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3078,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6097297436119286254">Makseteabe täitmiseks kinnitage oma isik.</translation>
 <translation id="6099269767116481177">22 × 29,5 tolli</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">See reegel on mõeldud rakendamiseks seadme tasemel. Kasutajareeglina rakendamist ametlikult ei toetata ja tulevikus selle tugi katkestatakse.</translation>
 <translation id="6105460996796456817">Loo sait</translation>
 <translation id="6105511947520166941">Makske järgmine kord Pixiga otse Chrome'is</translation>
 <translation id="6105745639559695088">Küljeriba lülitamine</translation>
@@ -4670,6 +4675,7 @@ Lisateave:
 <translation id="8800034312320686233">Kas sait ei tööta?</translation>
 <translation id="8803251172194676606">Loo kohandatud treeningkava</translation>
 <translation id="8803526663383843427">Kui on sisse lülitatud</translation>
+<translation id="8804164990146287819">Privaatsuseeskirjad</translation>
 <translation id="8805819170075074995">Loendikirje „<ph name="LANGUAGE_ID" />”: kirjet eiratakse, kuna seda hõlmab ka reegel SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plast (satiin)</translation>
 <translation id="8807160976559152894">Kärbi pärast iga lehte</translation>
@@ -4733,6 +4739,7 @@ Lisateave:
 <translation id="8903998444169664879">Makseseadete muutmiseks kinnitage oma isik.</translation>
 <translation id="890493561996401738">Soovituse eemaldamise nupp, vajutage eemaldamiseks sisestusklahvi, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tolli</translation>
+<translation id="8912362522468806198">Google'i konto</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8918062451146297192">CVC virtuaalkaardi jaoks</translation>
 <translation id="8919895429178014996">Kõigi üksuste peitmine</translation>

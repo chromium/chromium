@@ -7030,6 +7030,7 @@
 <translation id="6399675241776343019">Запрещено</translation>
 <translation id="6399774419735315745">Шпион</translation>
 <translation id="6400360390396538896">Всегда включено для <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Отменить фокус на группе вкладок</translation>
 <translation id="6401118106417399952">Идентификаторы вашего устройства: EID-код – <ph name="EID_NUMBER" />, серийный номер – <ph name="SERIAL_NUMBER" />. Их можно использовать для активации сервиса.</translation>
 <translation id="6402042774506839496">Чтобы узнать причину, свяжитесь с разработчиком приложения.</translation>
 <translation id="6402921224457714577">Позволить сайтам запрашивать разрешение на управление вашими MIDI-устройствами и их перепрограммирование</translation>
@@ -10079,6 +10080,7 @@
 <translation id="8708000541097332489">Удалять при выходе</translation>
 <translation id="870805141700401153">Подпись отдельного кода Microsoft</translation>
 <translation id="8708671767545720562">&amp;Дополнительная информация</translation>
+<translation id="8709234440040320647">(изолированный режим)</translation>
 <translation id="8709368517685334931">Другие цвета можно найти в интернет-магазине Chrome.</translation>
 <translation id="8710414664106871428">Фэнтези</translation>
 <translation id="8711402221661888347">Гамбургер</translation>
@@ -10243,6 +10245,7 @@
 <translation id="8836360711089151515">По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть это устройство <ph name="DEVICE_TYPE" /> в течение недели. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Выйти из группы}one{Выйти из групп}few{Выйти из групп}many{Выйти из групп}other{Выйти из групп}}</translation>
 <translation id="8836782447513334597">продолжить</translation>
+<translation id="8837072669197607689">Разрешить в изолированном режиме</translation>
 <translation id="8837573527470979311">Поменять местами с нижним окном</translation>
 <translation id="8838601485495657486">Непрозрачный</translation>
 <translation id="8838770651474809439">Гамбургер</translation>
@@ -10533,6 +10536,7 @@
 <translation id="9043767139743235992">Связаться со службой поддержки по вопросам о специальных возможностях</translation>
 <translation id="9044646465488564462">Не удалось подключиться к сети: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список для чтения перемещен на новую боковую панель. Посмотрите его.</translation>
+<translation id="9046240419485318563">Просмотреть память</translation>
 <translation id="9048745018038487540">Выбрать все шрифты</translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>
 <translation id="905137631551495997">Расширения</translation>

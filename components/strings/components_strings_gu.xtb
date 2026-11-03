@@ -2073,6 +2073,7 @@
 <translation id="4412377069090572315">લોકો શું કહી રહ્યાં છે</translation>
 <translation id="4414515549596849729">કુકી અને સાઇટ ડેટા</translation>
 <translation id="4415156962929755728">પ્લાસ્ટિક (હાઇ ગ્લોસ)</translation>
+<translation id="4415276339145661267">તમારું Google એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="4415426530740016218">પિકઅપ માટેનું સરનામું</translation>
 <translation id="4415748029120993980">SECG એલિપ્ટિક કર્વ secp384r1 (ઉર્ફ NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ભાષા પૅક ડાઉનલોડ કરી રહ્યાં છીએ... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> તમારા ઉપકરણના સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="473414950835101501">તમારા કૅમેરાનો ઉપયોગ કરો</translation>
+<translation id="4735688073239574197">સૌથી નીચે જાઓ</translation>
 <translation id="4736089601076994090">સમાપ્તિ તારીખ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium ને પુનઃપ્રારંભ કરો</translation>
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
@@ -2545,6 +2547,7 @@
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
 <translation id="5217759126664161410">પ્રોટોકૉલની ફૉર્મેટ અમાન્ય છે.</translation>
 <translation id="5221377878828867877">તમારી સંસ્થા દ્વારા પાસવર્ડના પુનઃઉપયોગનું નિરીક્ષણ કરવામાં આવે છે</translation>
+<translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5222812217790122047">ઇમેઇલ આવશ્યક છે</translation>
 <translation id="5226979307236834587">હું નમ્રતાથી પ્લાન કેવી રીતે નકારી શકું?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@
 <translation id="6097297436119286254">તમારી ચુકવણીની માહિતી ભરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6099269767116481177">22 x 29.5 ઇંચ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">આ પૉલિસી મશીનના લેવલ પર લાગુ કરવા માટે છે. વપરાશકર્તા પૉલિસી તરીકે લાગુ કરવામાં આવે ત્યારે તેની વર્તણૂકને આધિકારિક રીતે સપોર્ટ કરવામાં આવતી નથી અને તેને કાયમ માટે બંધ કરવામાં આવશે.</translation>
 <translation id="6105460996796456817">સાઇટ બનાવો</translation>
 <translation id="6105511947520166941">આગલી વખતે Chromeમાં સીધા જ Pix વડે ચુકવણી કરો</translation>
 <translation id="6105745639559695088">સાઇડબાર ટૉગલ કરો</translation>
@@ -4670,6 +4674,7 @@
 <translation id="8800034312320686233">સાઇટ કામ નથી કરતી?</translation>
 <translation id="8803251172194676606">કસ્ટમ ફિટનેસ રૂટિન ડિઝાઇન કરો</translation>
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
+<translation id="8804164990146287819">પ્રાઇવસી પૉલિસી</translation>
 <translation id="8805819170075074995">સૂચિ એન્ટ્રી "<ph name="LANGUAGE_ID" />": એન્ટ્રીને અવગણવામાં આવી, કારણ કે તેનો SpellcheckLanguage નીતિમાં પણ સમાવેશ કરવામાં આવ્યો છે.</translation>
 <translation id="8806696968588872703">પ્લાસ્ટિક (સાટિન)</translation>
 <translation id="8807160976559152894">પ્રત્યેક પેજ પછી ટ્રિમ કરો</translation>
@@ -4733,6 +4738,7 @@
 <translation id="8903998444169664879">તમારા ચુકવણીઓ માટેના સેટિંગ બદલવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="890493561996401738">સૂચન કાઢી નાખો બટન, આ કાઢી નાખવા માટે Enter દબાવો, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ઇંચ</translation>
+<translation id="8912362522468806198">Google એકાઉન્ટ</translation>
 <translation id="8914504000324227558">Chrome ફરીથી લોંચ કરો</translation>
 <translation id="8918062451146297192">વર્ચ્યુઅલ કાર્ડ માટે CVC | કાર્ડ ચકાસણી કોડ (CVC)</translation>
 <translation id="8919895429178014996">બધી આઇટમો છુપાવો</translation>

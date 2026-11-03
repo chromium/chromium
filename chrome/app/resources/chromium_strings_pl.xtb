@@ -184,6 +184,7 @@
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2803971713792056305">Twoja przeglądarka Chromium</translation>
 <translation id="2816462166102338036">Wyszukaj na tym filmie za pomocą wyszukiwania obrazów</translation>
+<translation id="2819844767470613567">Ostrzeżenie: Chromium nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie izolowanym, odznacz tę opcję.</translation>
 <translation id="282591729717417030">Odkrywaj produkty za pomocą aparatu, śledź obniżki cen i korzystaj z innych funkcji w Chromium na iOS.</translation>
 <translation id="2841525013647267359">Tłumacz z</translation>
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
@@ -478,6 +479,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5889361821821684993">Chromium regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5896077214220653386">Gemini Enterprise w Chromium</translation>
+<translation id="5900507321340749588">Aby obsługiwać funkcje takie jak wykrywanie oszustw, Chromium może używać modeli AI, które działają bezpośrednio na Twoim urządzeniu. Gdy ta opcja jest wyłączona, te funkcje mogą nie działać. <ph name="BEGIN_LINK" />Więcej informacji o AI na urządzeniu<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – logowanie do sieci</translation>
 <translation id="5924017743176219022">Łączę z internetem…</translation>
 <translation id="5941711191222866238">Minimalizuj</translation>

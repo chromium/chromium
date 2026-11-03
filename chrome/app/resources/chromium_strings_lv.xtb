@@ -184,6 +184,7 @@
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2803971713792056305">Jūsu Chromium</translation>
 <translation id="2816462166102338036">Meklēt šo videoklipu, izmantojot attēlu meklēšanas funkciju</translation>
+<translation id="2819844767470613567">Brīdinājums! Chromium nevar novērst to, ka paplašinājumi ieraksta jūsu pārlūkošanas vēsturi. Lai atspējotu šo paplašinājumu izolētajā režīmā, noņemiet šīs opcijas atlasi.</translation>
 <translation id="282591729717417030">Izmantojiet pārlūku Chromium operētājsistēmā iOS, lai atklātu produktus, izmantojot kameru, izsekotu cenu samazinājumam un veiktu citas darbības, atrodoties ceļā</translation>
 <translation id="2841525013647267359">Tulkot no šādas valodas:</translation>
 <translation id="2846251086934905009">Instalēšanas kļūda: instalēšanas programma nepabeidza darbu. Instalēšana ir priekšlaikus pārtraukta.</translation>
@@ -480,6 +481,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="5889361821821684993">Chromium regulāri pārbauda, vai pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5896077214220653386">Gemini Enterprise pārlūkā Chromium</translation>
+<translation id="5900507321340749588">Lai nodrošinātu tādas funkcijas kā krāpniecības noteikšana, pārlūkā Chromium var tikt izmantoti MI modeļi, kas darbojas tieši jūsu ierīcē. Ja šī opcija ir izslēgta, šīs funkcijas var nedarboties. <ph name="BEGIN_LINK" />Uzziniet vairāk par ierīcē iebūvētu MI<ph name="END_LINK" />.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — pierakstīšanās tīklā</translation>
 <translation id="5924017743176219022">Notiek savienojuma izveide ar internetu...</translation>
 <translation id="5941711191222866238">Minimizēt</translation>

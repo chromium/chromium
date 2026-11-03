@@ -2074,6 +2074,7 @@
 <translation id="4412377069090572315">Τι λένε οι χρήστες</translation>
 <translation id="4414515549596849729">cookie και δεδομένα ιστοτόπου</translation>
 <translation id="4415156962929755728">Πλαστικό (Υψηλής στιλπνότητας)</translation>
+<translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4415426530740016218">Διεύθυνση παραλαβής</translation>
 <translation id="4415748029120993980">Ελλειπτική καμπύλη SECG secp384r1 (επίσης γνωστή ως NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2238,6 +2239,7 @@
 <translation id="4732860731866514038">Λήψη πακέτου γλώσσας για <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Ο ιστότοπος <ph name="URL" /> ζητά να χρησιμοποιήσει την τοποθεσία της συσκευής σας</translation>
 <translation id="473414950835101501">Χρήση των καμερών σας</translation>
+<translation id="4735688073239574197">Μετάβαση στο τέλος</translation>
 <translation id="4736089601076994090">Λήγει: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Επανεκκινήστε το Chromium</translation>
 <translation id="4736934858538408121">Εικονική κάρτα</translation>
@@ -2546,6 +2548,7 @@
 <translation id="5216942107514965959">Τελευταία επίσκεψη σήμερα</translation>
 <translation id="5217759126664161410">Μη έγκυρη μορφή πρωτοκόλλου.</translation>
 <translation id="5221377878828867877">Η επαναχρησιμοποίηση κωδικών πρόσβασης παρακολουθείται από τον οργανισμό σας</translation>
+<translation id="5222676887888702881">Έξοδος</translation>
 <translation id="5222812217790122047">Απαιτείται διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5226979307236834587">Πώς μπορώ να απορρίψω προτάσεις για συνάντηση με ευγενικό τρόπο;</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3075,6 +3078,7 @@
 <translation id="6097297436119286254">Επαληθεύστε την ταυτότητά σας, για να συμπληρώσετε τα στοιχεία πληρωμής</translation>
 <translation id="6099269767116481177">22 x 29,5 ίντσες</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Αυτή η πολιτική προορίζεται να εφαρμοστεί σε επίπεδο υπολογιστή. Η συμπεριφορά της όταν εφαρμόζεται ως πολιτική χρήστη δεν υποστηρίζεται επίσημα και θα καταργηθεί.</translation>
 <translation id="6105460996796456817">Δημιουργία ιστοτόπου</translation>
 <translation id="6105511947520166941">Πληρώστε με το Pix απευθείας στο Chrome την επόμενη φορά</translation>
 <translation id="6105745639559695088">Εναλλαγή πλευρικής γραμμής</translation>
@@ -4673,6 +4677,7 @@
 <translation id="8800034312320686233">Δεν λειτουργεί ο ιστότοπος;</translation>
 <translation id="8803251172194676606">Σχεδίασε ένα προσαρμοσμένο πρόγραμμα γυμναστικής</translation>
 <translation id="8803526663383843427">Όταν είναι ενεργή</translation>
+<translation id="8804164990146287819">Πολιτική απορρήτου</translation>
 <translation id="8805819170075074995">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Η καταχώριση παραβλέπεται επειδή περιλαμβάνεται επίσης στην πολιτική SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Πλαστικό (Σατέν)</translation>
 <translation id="8807160976559152894">Περικοπή μετά από κάθε σελίδα</translation>
@@ -4736,6 +4741,7 @@
 <translation id="8903998444169664879">Επαληθεύστε την ταυτότητά σας, για να αλλάξετε τις ρυθμίσεις πληρωμών</translation>
 <translation id="890493561996401738">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 ίντσες</translation>
+<translation id="8912362522468806198">Λογαριασμός Google</translation>
 <translation id="8914504000324227558">Επανεκκίνηση του Chrome</translation>
 <translation id="8918062451146297192">CVC για εικονική κάρτα</translation>
 <translation id="8919895429178014996">Απόκρυψη όλων των στοιχείων</translation>

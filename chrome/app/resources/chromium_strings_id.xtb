@@ -185,6 +185,7 @@
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2803971713792056305">Chromium Anda</translation>
 <translation id="2816462166102338036">Telusuri video ini dengan Penelusuran Gambar</translation>
+<translation id="2819844767470613567">Peringatan: Chromium tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Terisolasi, batalkan pilihan opsi ini.</translation>
 <translation id="282591729717417030">Temukan produk dengan kamera Anda, pantau penurunan harga, dan lainnya kapan saja di mana saja dengan Chromium di iOS.</translation>
 <translation id="2841525013647267359">Terjemahkan dari</translation>
 <translation id="2846251086934905009">Error penginstalan: Penginstal tidak selesai. Penginstalan telah dibatalkan.</translation>
@@ -481,6 +482,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5889361821821684993">Chromium memeriksa secara berkala untuk memastikan browser memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5896077214220653386">Gemini Enterprise di Chromium</translation>
+<translation id="5900507321340749588">Untuk mendukung fitur seperti deteksi scam, Chromium dapat menggunakan model AI yang berjalan langsung di perangkat Anda. Jika model AI ini nonaktif, fitur tersebut mungkin tidak berfungsi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut AI di perangkat<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login Jaringan</translation>
 <translation id="5924017743176219022">Menghubungkan ke internet...</translation>
 <translation id="5941711191222866238">Perkecil</translation>

@@ -905,7 +905,6 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="363473492175527493">Task set to focus on: <ph name="TASK_NAME" />. Press enter to edit the task.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimise window</translation>
-<translation id="3650952250015018111">Allow '<ph name="APP_NAME" />' to access:</translation>
 <translation id="3652817283076144888">Initialising</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412698727486357573">Help Centre</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
-<translation id="44141919652824029">Allow '<ph name="APP_NAME" />' to get the list of your attached USB devices?</translation>
 <translation id="4414242853388122273">Error removing <ph name="VM_NAME" />. Please try again.</translation>
 <translation id="4417647906073317561">Focus settings. Set a timer, task and music to get in the flow.</translation>
 <translation id="4418600384772451109">Close panel</translation>
@@ -2589,7 +2587,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
 <translation id="8480418399907765580">Show toolbar</translation>
-<translation id="8481187309597259238">Confirm USB permission</translation>
 <translation id="8487660088084188539">When you turn on these features, the input text, document content and web page URL may be sent to Google servers. This information is used to generate writing suggestions, generate summaries, answer questions and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS" />. Don't include anything personal, sensitive or confidential.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1" />

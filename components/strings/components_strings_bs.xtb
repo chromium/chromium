@@ -2073,6 +2073,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4412377069090572315">Šta kažu drugi o ovome</translation>
 <translation id="4414515549596849729">kolačići i podaci web lokacije</translation>
 <translation id="4415156962929755728">Plastika (visok sjaj)</translation>
+<translation id="4415276339145661267">Upravljajte Google računom</translation>
 <translation id="4415426530740016218">Adresa preuzimanja</translation>
 <translation id="4415748029120993980">SECG eliptična krivulja secp384r1 (poznata i kao NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4732860731866514038">Preuzimanje jezičkog paketa za <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> želi koristiti lokciju vašeg uređaja</translation>
 <translation id="473414950835101501">Koristiti vaše kamere</translation>
+<translation id="4735688073239574197">Preskoči na dno</translation>
 <translation id="4736089601076994090">Ističe: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Ponovo pokrenite Chromium</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
@@ -2545,6 +2547,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5216942107514965959">Posljednji put je posjećeno danas</translation>
 <translation id="5217759126664161410">Nevažeći format protokola.</translation>
 <translation id="5221377878828867877">Vaša organizacija nadzire ponovno korištenje lozinki</translation>
+<translation id="5222676887888702881">Odjava</translation>
 <translation id="5222812217790122047">Adresa e-pošte je obavezna</translation>
 <translation id="5226979307236834587">Kako mogu odbiti planove na pristojan način?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6097297436119286254">Potvrdite identitet da popunite podatke o plaćanju</translation>
 <translation id="6099269767116481177">22 x 29,5 in</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Ova pravila su namijenjena za primjenu na nivou uređaja. Njihovo ponašanje kada se primjenjuju kao korisnička pravila nije zvanično podržano i obustavit će se.</translation>
 <translation id="6105460996796456817">Kreiraj web lokaciju</translation>
 <translation id="6105511947520166941">Sljedeći put platite putem Pixa direktno u Chromeu</translation>
 <translation id="6105745639559695088">Uključi/isključi bočnu traku</translation>
@@ -4670,6 +4674,7 @@ Dodatni detalji:
 <translation id="8800034312320686233">Web lokacija ne funkcionira?</translation>
 <translation id="8803251172194676606">Osmisli prilagođenu rutinu vježbanja</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
+<translation id="8804164990146287819">Pravila privatnosti</translation>
 <translation id="8805819170075074995">Unos na listi "<ph name="LANGUAGE_ID" />": Unos je zanemaren jer je uključen i u pravilo SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastika (saten)</translation>
 <translation id="8807160976559152894">Skraćivanje nakon svake stranice</translation>
@@ -4733,6 +4738,7 @@ Dodatni detalji:
 <translation id="8903998444169664879">Potvrdite identitet da promijenite postavke plaćanja</translation>
 <translation id="890493561996401738">Dugme za uklanjanje prijedloga. Pritisnite Enter da uklonite, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8912362522468806198">Google račun</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8918062451146297192">CVC virtuelne kartice</translation>
 <translation id="8919895429178014996">Sakrij sve stavke</translation>

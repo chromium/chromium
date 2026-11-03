@@ -2072,6 +2072,7 @@
 <translation id="4412377069090572315">ความคิดเห็นจากผู้อื่น</translation>
 <translation id="4414515549596849729">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="4415156962929755728">พลาสติก (เงามาก)</translation>
+<translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4415426530740016218">ที่อยู่ในการรับ</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (เรียกอีกอย่างว่า NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2236,6 +2237,7 @@
 <translation id="4732860731866514038">กำลังดาวน์โหลดแพ็กภาษา<ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ต้องการใช้ตำแหน่งอุปกรณ์ของคุณ</translation>
 <translation id="473414950835101501">ใช้กล้อง</translation>
+<translation id="4735688073239574197">ข้ามไปด้านล่าง</translation>
 <translation id="4736089601076994090">หมดอายุ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">รีสตาร์ท Chromium</translation>
 <translation id="4736934858538408121">บัตรเสมือน</translation>
@@ -2544,6 +2546,7 @@
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>
 <translation id="5217759126664161410">รูปแบบโปรโตคอลไม่ถูกต้อง</translation>
 <translation id="5221377878828867877">องค์กรของคุณจะตรวจสอบการใช้รหัสผ่านซ้ำ</translation>
+<translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5222812217790122047">ต้องระบุอีเมล</translation>
 <translation id="5226979307236834587">ฉันจะปฏิเสธแผนอย่างสุภาพได้อย่างไร</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4671,6 +4674,7 @@
 <translation id="8800034312320686233">หากเว็บไซต์ไม่ทำงาน</translation>
 <translation id="8803251172194676606">ออกแบบกิจวัตรการออกกำลังกายที่กำหนดเอง</translation>
 <translation id="8803526663383843427">เมื่อเปิด</translation>
+<translation id="8804164990146287819">นโยบายความเป็นส่วนตัว</translation>
 <translation id="8805819170075074995">รายการ "<ph name="LANGUAGE_ID" />": ระบบไม่สนใจรายการนี้เพราะมีอยู่ในนโยบาย SpellcheckLanguage เช่นกัน</translation>
 <translation id="8806696968588872703">พลาสติก (ซาติน)</translation>
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
@@ -4734,6 +4738,7 @@
 <translation id="8903998444169664879">ยืนยันตัวตนเพื่อเปลี่ยนการตั้งค่าการชำระเงิน</translation>
 <translation id="890493561996401738">ปุ่ม "นำคำแนะนำออก" กด Enter เพื่อนำออก <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 นิ้ว</translation>
+<translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8914504000324227558">เปิด Chrome ขึ้นใหม่</translation>
 <translation id="8918062451146297192">CVC สำหรับบัตรเสมือน (Virtual Card)</translation>
 <translation id="8919895429178014996">ซ่อนรายการทั้งหมด</translation>

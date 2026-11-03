@@ -2068,6 +2068,7 @@
 <translation id="4412377069090572315">వ్యక్తులు ఏమి అంటున్నారు</translation>
 <translation id="4414515549596849729">కుక్కీలు, సైట్ డేటా</translation>
 <translation id="4415156962929755728">ప్లాస్టిక్ (హై గ్లాస్)</translation>
+<translation id="4415276339145661267">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4415426530740016218">పికప్ అడ్రస్‌</translation>
 <translation id="4415748029120993980">SECG దీర్ఘవృత్తాకార వక్రం secp384r1 (NIST P-384గా కూడా పిలువబడుతుంది)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2232,6 +2233,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> భాషకు సంబంధించిన ప్యాక్‌ను డౌన్‌లోడ్ చేస్తోంది... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> మీ పరికర లొకేషన్‌ను ఉపయోగించాలని అనుకుంటోంది</translation>
 <translation id="473414950835101501">మీ కెమెరాలను ఉపయోగించండి</translation>
+<translation id="4735688073239574197">కిందికి వెళ్లండి</translation>
 <translation id="4736089601076994090">గడువు ముగిసే సమయం: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromiumని పునఃప్రారంభించండి</translation>
 <translation id="4736934858538408121">వర్చువల్ కార్డ్</translation>
@@ -2540,6 +2542,7 @@
 <translation id="5216942107514965959">చివరిగా ఈరోజు సందర్శించారు</translation>
 <translation id="5217759126664161410">చెల్లని ప్రోటోకాల్ ఫార్మాట్.</translation>
 <translation id="5221377878828867877">పాస్‌వర్డ్‌ను తిరిగి ఉపయోగించడాన్ని మీ సంస్థ పర్యవేక్షిస్తుంది</translation>
+<translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5222812217790122047">ఈమెయిల్‌ అవ‌స‌రం</translation>
 <translation id="5226979307236834587">నేను ప్లాన్‌లను మర్యాదపూర్వకంగా ఎలా తిరస్కరించగలను?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3069,6 +3072,7 @@
 <translation id="6097297436119286254">మీ పేమెంట్ సమాచారాన్ని ఫిల్ చేయడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6099269767116481177">22 x 29.5 అంగుళాలు</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">ఈ పాలసీని మెషిన్ స్థాయిలో మాత్రమే వర్తింపజేయాల్సి ఉంటుంది. యూజర్ పాలసీగా వర్తింపజేసినప్పుడు దాని పనితీరుకు అధికారికంగా సపోర్ట్ లేదు, అది విస్మరించబడుతుంది.</translation>
 <translation id="6105460996796456817">సైట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6105511947520166941">తదుపరి సారి Chromeలో నేరుగా Pixతో పేమెంట్ చేయండి</translation>
 <translation id="6105745639559695088">సైడ్‌బార్‌ను టోగుల్ చేయండి</translation>
@@ -4665,6 +4669,7 @@
 <translation id="8800034312320686233">సైట్ పని చేయడం లేదా?</translation>
 <translation id="8803251172194676606">అనుకూల ఫిట్‌నెస్ రొటీన్‌ను డిజైన్ చేయి</translation>
 <translation id="8803526663383843427">ఆన్‌లో ఉన్నప్పుడు</translation>
+<translation id="8804164990146287819">గోప్యతా పాలసీ</translation>
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8806696968588872703">ప్లాస్టిక్ (శాటిన్)</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
@@ -4728,6 +4733,7 @@
 <translation id="8903998444169664879">మీ పేమెంట్ సెట్టింగ్‌లను మార్చడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="890493561996401738">సూచన బటన్‌ను తీసివేయండి, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />ను తీసివేయడానికి ఎంటర్ నొక్కండి</translation>
 <translation id="8910898109640902752">8 x 10 అం.</translation>
+<translation id="8912362522468806198">Google ఖాతా</translation>
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>
 <translation id="8918062451146297192">వర్చువల్ కార్డ్ కోసం CVC</translation>
 <translation id="8919895429178014996">ఐటెమ్‌లన్నింటిని దాచండి</translation>

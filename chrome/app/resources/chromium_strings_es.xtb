@@ -187,6 +187,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">Tu Chromium</translation>
 <translation id="2816462166102338036">Busca este vídeo con la búsqueda por imágenes</translation>
+<translation id="2819844767470613567">Advertencia: Chromium no puede evitar que las extensiones registren el historial de navegación. Para inhabilitar esta extensión en modo Aislado, desactiva esta opción.</translation>
 <translation id="282591729717417030">Descubre productos con tu cámara, monitoriza las bajadas de precio y disfruta de otras ventajas en cualquier lugar con Chromium en iOS.</translation>
 <translation id="2841525013647267359">Traducir del</translation>
 <translation id="2846251086934905009">Error de instalación: no se ha completado el proceso de instalación. Se ha cancelado la instalación.</translation>
@@ -483,6 +484,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="5889361821821684993">Chromium comprueba de forma periódica si tu navegador tiene la configuración más segura. Te avisaremos si tienes que revisar algo.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896077214220653386">Gemini Enterprise en Chromium</translation>
+<translation id="5900507321340749588">Para ofrecer funciones como la detección de estafas, Chromium puede usar modelos de IA que se ejecutan directamente en tu dispositivo. Si esta opción está desactivada, es posible que estas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información sobre la IA en el dispositivo<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />, inicio de sesión en la red</translation>
 <translation id="5924017743176219022">Conectando a Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>

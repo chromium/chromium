@@ -905,7 +905,6 @@
 <translation id="363473492175527493">फोकस गर्न सेट गरिएको कार्य: <ph name="TASK_NAME" />। यो कार्य परिवर्तन गर्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">सन्झ्याल सानो बनाउनुहोस्</translation>
-<translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
 <translation id="3652817283076144888">सुरुवात गर्दै</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
 <translation id="4412698727486357573">मद्दत केन्द्र</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> अफ छ।</translation>
-<translation id="44141919652824029">"<ph name="APP_NAME" />" लाई तपाईंको संलग्न USB डिभाइसहरूको सूची प्राप्त गर्न अनुमति दिने हो?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> हटाउने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4417647906073317561">फोकस मोडका सेटिङ। यो सेटिङ प्रयोग गरी टाइमर, कार्य र सङ्गीत सेट गर्नुहोस्।</translation>
 <translation id="4418600384772451109">प्यानल बन्द गर्नुहोस्</translation>
@@ -2589,7 +2587,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> सँग <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> छ।</translation>
 <translation id="8477270416194247200">रद्द गर्न Alt+Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="8480418399907765580">टुलबार देखाउनुहोस्</translation>
-<translation id="8481187309597259238">USB अनुमति निश्चित गर्नुहोस्</translation>
 <translation id="8487660088084188539">तपाईंले यी सुविधाहरू अन गरेका खण्डमा इन्पुट टेक्स्ट, डकुमेन्टमा भएको कन्टेन्ट र वेबपेजको URL Google का सर्भरहरूमा पठाइन सक्छ। यो जानकारी <ph name="LINK_TO_SERVICE_TERMS" />बमोजिम लेखनसम्बन्धी सुझाव दिन, सारांश बनाउन, प्रश्नहरूको जवाफ दिन र उत्पादनको गुणस्तर सुधार गर्न प्रयोग गरिन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="8487699605742506766">हटस्पट</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google को लोकेसनमा आधारित सेवाले यो डिभाइसको लोकेसन पत्ता लगाउने प्रयोजनका लागि Wi-Fi, मोबाइल नेटवर्क र सेन्सरलगायतका स्रोतहरू प्रयोग गर्छ।<ph name="END_PARAGRAPH1" />

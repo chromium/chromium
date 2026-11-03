@@ -905,7 +905,6 @@ U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za <ph name="TIM
 <translation id="363473492175527493">Zadatak za način rada za koncentraciju postavljen je na: <ph name="TASK_NAME" />. Pritisnite Enter da biste uredili zadatak.</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimiziranje prozora</translation>
-<translation id="3650952250015018111">Dopusti aplikaciji "<ph name="APP_NAME" />" da pristupi:</translation>
 <translation id="3652817283076144888">Inicijalizacija</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1178,7 +1177,6 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4412698727486357573">Centar za pomoć</translation>
 <translation id="4412944820643904175">Značajka <ph name="FEATURE_NAME" /> je isključena.</translation>
-<translation id="44141919652824029">Dopustiti aplikaciji "<ph name="APP_NAME" />" pristup popisu vaših spojenih USB uređaja?</translation>
 <translation id="4414242853388122273">Pogreška uklanjanja <ph name="VM_NAME" />. Pokušajte ponovno.</translation>
 <translation id="4417647906073317561">Postavke načina rada za koncentraciju. Postavite mjerač vremena, zadatak i glazbu za bolju koncentraciju.</translation>
 <translation id="4418600384772451109">Zatvori ploču</translation>
@@ -2593,7 +2591,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ima <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pritisnite Alt + Pretraživanje ili Shift da biste otkazali.</translation>
 <translation id="8480418399907765580">Prikaži alatnu traku</translation>
-<translation id="8481187309597259238">Potvrda dopuštenja USB-a</translation>
 <translation id="8487660088084188539">Kad uključite te značajke, tekst unosa, sadržaj dokumenta i URL web-stranice mogu se poslati Googleovim poslužiteljima. Ti se podaci upotrebljavaju za generiranje prijedloga za pisanje, generiranje sažetaka, odgovaranje na pitanja i poboljšanje proizvoda, u skladu s <ph name="LINK_TO_SERVICE_TERMS" />. Nemojte navoditi ništa osobno, osjetljivo ni povjerljivo.</translation>
 <translation id="8487699605742506766">Žarišna točka</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Za procjenu lokacije ovog uređaja Googleova geolokacijska usluga upotrebljava izvore kao što su Wi-Fi, mobilne mreže i senzori.<ph name="END_PARAGRAPH1" />

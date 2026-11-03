@@ -7045,6 +7045,7 @@
 <translation id="6399675241776343019">மறுக்கப்பட்டது</translation>
 <translation id="6399774419735315745">உளவாளி</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> இல் எப்போதும் ஆனில் வைத்திரு</translation>
+<translation id="6400714103322134861">பக்கக் குழுவின் ஃபோகஸை அகற்று</translation>
 <translation id="6401118106417399952">உங்கள் சாதனத்தின் EID <ph name="EID_NUMBER" /> மற்றும் வரிசை எண் <ph name="SERIAL_NUMBER" />. சேவையைச் செயல்படுத்த இந்த எண்களைப் பயன்படுத்தலாம்.</translation>
 <translation id="6402042774506839496">ஏன் என்று தெரிந்துகொள்ள, ஆப்ஸ் டெவெலப்பரைத் தொடர்புகொள்ளுங்கள்</translation>
 <translation id="6402921224457714577">MIDI சாதனங்களைக் கட்டுப்படுத்தவும் மீண்டும் புரோகிராம் செய்யவும் தளங்கள் அனுமதி கேட்கலாம்</translation>
@@ -10089,6 +10090,7 @@
 <translation id="8708000541097332489">வெளியேறும் போது அழி</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;மேலும் தகவல்</translation>
+<translation id="8709234440040320647">(ஐசோலேட்டட் மோட்)</translation>
 <translation id="8709368517685334931">Chrome ஆன்லைன் ஸ்டோரில் முந்தைய வண்ணங்களைப் பார்க்கலாம்</translation>
 <translation id="8710414664106871428">ஃபேன்டஸி</translation>
 <translation id="8711402221661888347">பிக்கிள்ஸ்</translation>
@@ -10253,6 +10255,7 @@
 <translation id="8836360711089151515">உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை ஒரு வாரத்திற்குள் திருப்பியளிக்குமாறு <ph name="MANAGER" /> கோருகிறது. <ph name="LINK_BEGIN" />விவரங்களைக் காட்டு<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{குழுவிலிருந்து வெளியேறு}other{குழுக்களிலிருந்து வெளியேறு}}</translation>
 <translation id="8836782447513334597">தொடர</translation>
+<translation id="8837072669197607689">ஐசோலேட்டட் மோடில் அனுமதி</translation>
 <translation id="8837573527470979311">கீழ்ப்புறக் காட்சியை மாற்று</translation>
 <translation id="8838601485495657486">ஒளிபுகாத்தன்மை</translation>
 <translation id="8838770651474809439">ஹம்பர்கர்</translation>
@@ -10543,6 +10546,7 @@
 <translation id="9043767139743235992">மாற்றுத்திறனாளிகளுக்கான Google உதவிக் குழுவைத் தொடர்புகொள்ளுங்கள்</translation>
 <translation id="9044646465488564462">நெட்வொர்க்குடன் இணைப்பதில் தோல்வி: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">உங்கள் வாசிப்புப் பட்டியல் புதிய பக்கவாட்டுப் பேனலுக்கு நகர்த்தப்பட்டுள்ளது. அதை இங்கே பாருங்கள்.</translation>
+<translation id="9046240419485318563">நினைவுகளில் தேடு</translation>
 <translation id="9048745018038487540">அனைத்து எழுத்துருக்களையும் தேர்ந்தெடு</translation>
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>
 <translation id="905137631551495997">நீட்டிப்புகள்</translation>

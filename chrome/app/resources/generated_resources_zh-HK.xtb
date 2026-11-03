@@ -7036,6 +7036,7 @@
 <translation id="6399675241776343019">已拒絕</translation>
 <translation id="6399774419735315745">間諜</translation>
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
+<translation id="6400714103322134861">取消聚焦分頁群組</translation>
 <translation id="6401118106417399952">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，而裝置序號係 <ph name="SERIAL_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
 <translation id="6402042774506839496">請聯絡應用程式開發人員瞭解原因</translation>
 <translation id="6402921224457714577">可要求控制 MIDI 裝置及將其重新編程</translation>
@@ -10077,6 +10078,7 @@
 <translation id="8708000541097332489">退出時清除</translation>
 <translation id="870805141700401153">Microsoft 個別程式碼簽署</translation>
 <translation id="8708671767545720562">更多資料(&amp;M)</translation>
+<translation id="8709234440040320647">(隔離模式)</translation>
 <translation id="8709368517685334931">你可在 Chrome 網上應用程式商店找到舊版色彩主題</translation>
 <translation id="8710414664106871428">奇幻</translation>
 <translation id="8711402221661888347">漢堡</translation>
@@ -10239,6 +10241,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> 要求您備份資料，並在 1 星期內歸還此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看詳情<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{離開群組}other{離開群組}}</translation>
 <translation id="8836782447513334597">繼續</translation>
+<translation id="8837072669197607689">允許在隔離模式使用</translation>
 <translation id="8837573527470979311">與底部檢視畫面交換</translation>
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡包</translation>
@@ -10529,6 +10532,7 @@
 <translation id="9043767139743235992">聯絡 Google 殘疾支援團隊</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">閱讀清單已移動至新的側面板。按這裡即可試用。</translation>
+<translation id="9046240419485318563">瀏覽回憶</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
 <translation id="905137631551495997">擴充程式</translation>

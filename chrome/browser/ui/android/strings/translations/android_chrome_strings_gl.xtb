@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">Non ofrecer a opción de traducir estes sitios</translation>
 <translation id="1143193470214071120">Pecha unha ou xestiona as ventás</translation>
 <translation id="1143486892058798649">Gardar ligazón como…</translation>
+<translation id="1149644372535087155">Gardar os contrasinais en Chrome</translation>
 <translation id="1149725087019908252">Analizando <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Non tes ningún contrasinal gardado no xestor de contrasinais de Google.</translation>
@@ -299,6 +300,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2190355936436201913">(baleiro)</translation>
 <translation id="219283042927675668">Pestanas no grupo</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
+<translation id="2195339740518523951">Goza da máxima seguranza de Chrome</translation>
 <translation id="2196695604589508993">Abrir historial</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pestana de uso compartido fixada</translation>
 <translation id="22091350895006575">Engadir nome de usuario</translation>
@@ -1680,6 +1682,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, pestana fixada e silenciada</translation>
 <translation id="7500851014030446046">Descargando PDF</translation>
 <translation id="7501135638693251872">Todos os marcadores</translation>
+<translation id="7504076214066136798">Non se poden gardar os cambios</translation>
 <translation id="7507207699631365376">Consulta a <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> deste fornecedor</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
 <translation id="7514365320538308">Descargar</translation>

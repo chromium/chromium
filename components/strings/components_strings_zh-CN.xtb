@@ -2069,6 +2069,7 @@
 <translation id="4412377069090572315">其他用户的评价</translation>
 <translation id="4414515549596849729">Cookie 和网站数据</translation>
 <translation id="4415156962929755728">塑料（高光）</translation>
+<translation id="4415276339145661267">管理您的 Google 账号</translation>
 <translation id="4415426530740016218">取货地址</translation>
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2233,6 +2234,7 @@
 <translation id="4732860731866514038">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 想使用您设备的位置信息</translation>
 <translation id="473414950835101501">使用摄像头</translation>
+<translation id="4735688073239574197">跳转到底部</translation>
 <translation id="4736089601076994090">到期日期：<ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">重新启动 Chromium</translation>
 <translation id="4736934858538408121">虚拟卡</translation>
@@ -2541,6 +2543,7 @@
 <translation id="5216942107514965959">上次访问时间：今天</translation>
 <translation id="5217759126664161410">协议格式无效。</translation>
 <translation id="5221377878828867877">您的组织会监控密码重复使用情况</translation>
+<translation id="5222676887888702881">退出</translation>
 <translation id="5222812217790122047">需要提供电子邮件地址</translation>
 <translation id="5226979307236834587">如何礼貌地拒绝邀约？</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />。<ph name="LOGO_DESCRIPTION" /></translation>
@@ -4666,6 +4669,7 @@
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8803251172194676606">设计一套专属健身计划</translation>
 <translation id="8803526663383843427">开启时</translation>
+<translation id="8804164990146287819">隐私权政策</translation>
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8806696968588872703">塑料（磨光）</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
@@ -4729,6 +4733,7 @@
 <translation id="8903998444169664879">请验证您的身份，以更改支付设置</translation>
 <translation id="890493561996401738">“移除建议”按钮，按 Enter 键即可移除“<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />”</translation>
 <translation id="8910898109640902752">8 x 10 英寸</translation>
+<translation id="8912362522468806198">Google 账号</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8918062451146297192">虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="8919895429178014996">隐藏所有项</translation>

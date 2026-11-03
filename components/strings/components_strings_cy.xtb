@@ -734,6 +734,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2215727959747642672">Golygu ffeiliau</translation>
 <translation id="2219658597883514593">Ailddechrau'r tiwtorial</translation>
 <translation id="2219735899272417925">Mae angen oilosod y ddyfais</translation>
+<translation id="2221460252073828078">Gweld eich ateb Search AI yma</translation>
 <translation id="2222604080869344662">Mewngofnodwch i OneDrive i barhau i lawrlwytho</translation>
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="2225927550500503913">Cerdyn rhithwir wedi'i droi ymlaen</translation>
@@ -2073,6 +2074,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4412377069090572315">Beth mae pobl yn ei ddweud</translation>
 <translation id="4414515549596849729">cwcis a data gwefan</translation>
 <translation id="4415156962929755728">Plastig (Sglein Uchel)</translation>
+<translation id="4415276339145661267">Rheoli'ch Cyfrif Google</translation>
 <translation id="4415426530740016218">Cyfeiriad Casglu</translation>
 <translation id="4415748029120993980">Cromlin eliptig SECG secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2239,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4732860731866514038">Wrthi'n lawrlwytho'r pecyn iaith <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Mae <ph name="URL" /> eisiau defnyddio lleoliad eich dyfais</translation>
 <translation id="473414950835101501">Defnyddio eich camerâu</translation>
+<translation id="4735688073239574197">Neidio i’r gwaelod</translation>
 <translation id="4736089601076994090">Yn darfod: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Ailgychwyn Chromium</translation>
 <translation id="4736934858538408121">Cerdyn rhithwir</translation>
@@ -2545,6 +2548,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5216942107514965959">Ymwelwyd ddiwethaf heddiw</translation>
 <translation id="5217759126664161410">Fformat protocol annilys.</translation>
 <translation id="5221377878828867877">Mae ailddefnyddio cyfrinair yn cael ei fonitro gan eich sefydliad</translation>
+<translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="5222812217790122047">Mae angen e-bost</translation>
 <translation id="5226979307236834587">Sut alla i wrthod cynlluniau mewn ffordd gwrtais?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4670,6 +4674,7 @@ Manylion ychwanegol:
 <translation id="8800034312320686233">Gwefan ddim yn gweithio?</translation>
 <translation id="8803251172194676606">Dylunio trefn ffitrwydd bersonol</translation>
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
+<translation id="8804164990146287819">Polisi Preifatrwydd</translation>
 <translation id="8805819170075074995">Cofnod rhestr "<ph name="LANGUAGE_ID" />": Cafodd y cofnod ei anwybyddu gan ei fod wedi'i gynnwys yn y polisi Iaith Gwirio Sillafu hefyd.</translation>
 <translation id="8806696968588872703">Plastig (Satin)</translation>
 <translation id="8807160976559152894">Tocio ar ôl pob tudalen</translation>
@@ -4733,6 +4738,7 @@ Manylion ychwanegol:
 <translation id="8903998444169664879">Cadarnhewch mai chi sydd yno i newid eich gosodiadau talu</translation>
 <translation id="890493561996401738">Tynnwch y botwm Awgrym, pwyswch Enter i dynnu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 modfedd</translation>
+<translation id="8912362522468806198">Cyfrif Google</translation>
 <translation id="8914504000324227558">Ail-lansio Chrome</translation>
 <translation id="8918062451146297192">CVC ar gyfer cerdyn rhithwir</translation>
 <translation id="8919895429178014996">Cuddio pob eitem</translation>

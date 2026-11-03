@@ -931,6 +931,7 @@
 <translation id="1703666494654169921">ပကတိအသွင်ကိရိယာများ (သို့) ဒေတာများသုံးရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
 <translation id="1704097193565924901">ထိပ်စာလုံး အကြီးပြောင်းခြင်း</translation>
 <translation id="1704230497453185209">အသံဖွင့်ရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="170494114379308411">Gemini နှင့် သင်၏ စကားဝိုင်းများ (သို့) သင်၏ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ဒေတာ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> တို့ကို စိစစ်မည်မဟုတ်သလို Generative AI မိုဒယ်များ လေ့ကျင့်ရန်လည်း အသုံးပြုမည်မဟုတ်ပါ။ Gemini သည် AI ဖြစ်ပြီး အမှားများ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="170658918174941828">သင်ရွေးချယ်သည့် အထက်ပါအချက်အလက်များနှင့်အတူ
     သင့် Chrome ဗားရှင်း၊ လည်ပတ်သည့်စနစ် ဗားရှင်း၊ ကာစ်ဆက်တင်များ၊
     စခရင်ပွားခြင်း စွမ်းဆောင်ရည် စာရင်းအင်းများနှင့် ဆက်သွယ်ရေးချန်နယ်
@@ -1164,6 +1165,7 @@
 <translation id="1881445033931614352">လက်ကွက် အပြင်အဆင်</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Gemini မှတ်တမ်း</translation>
 <translation id="1884340228047885921">လက်ရှိ မြင်နိုင်မှုဆက်တင်ကို အချို့သော အဆက်အသွယ်များ အဖြစ်သတ်မှတ်ထားသည်</translation>
 <translation id="1884705339276589024">Linux ဒစ်ခ်ကို အရွယ်အစားပြန်ပြင်ခြင်း</translation>
 <translation id="1885066963699478692">မူဝါဒများသတ်မှတ်ရန် သုံးနေသော XML ဖိုင်များ။</translation>
@@ -1629,6 +1631,7 @@
 <translation id="2246549592927364792">Google မှ ပုံအကြောင်းအရာများ ရယူမလား။</translation>
 <translation id="2247738527273549923">သင်၏စက်ပစ္စည်းကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
 <translation id="2247870315273396641">အသံ အစမ်းနားထောင်ခြင်း</translation>
+<translation id="2247960558975094922">Gemini မှတ်တမ်း</translation>
 <translation id="224835741840550119">သင့်စက်ကို သန့်စင်ခြင်း</translation>
 <translation id="2249111429176737533">တဘ်ဝင်းဒိုးအဖြစ် ဖွင့်ရန်</translation>
 <translation id="2249605167705922988">ဥပမာ၊ ၁-၅၊ ၈၊ ၁၁-၁၃</translation>
@@ -2684,6 +2687,7 @@
 <translation id="3030772324014024606">တည်းဖြတ်ရန်</translation>
 <translation id="3030795534674718505">၎င်းတို့ သိမ်းထားသော သင့်အချက်အလက်ကို အမြဲသုံးခွင့်ပြုထားသည်</translation>
 <translation id="3030967311408872958">နေဝင်ချိန်မှ နေထွက်ချိန်</translation>
+<translation id="3030970046240311592">Gemini မှတ်တမ်း ကြည့်ရှုစီမံရန်</translation>
 <translation id="3031417829280473749">ကိုယ်စားလှယ် X</translation>
 <translation id="3031532026314193077">ညာဘက်ခလုတ်ကို နှိပ်ရန်အတွက် တာ့ချ်ပက်နှင့် ကီးဘုတ်သုံးရန်</translation>
 <translation id="3031557471081358569">တင်သွင်းရန် အရာများကို ရွေးပါ:</translation>
@@ -4133,6 +4137,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> လုပ်ဆောင်ချက်အတွက် ဖြတ်လမ်းလင့်ခ်ရွေးပါ</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) သို့ဝင်းဒိုးအား ရွှေ့ရန်</translation>
 <translation id="4110485659976215879">သတိပေးချက် ပြန်ယူခြင်း</translation>
+<translation id="4110984310437592352">Gemini နှင့် ချတ်လုပ်ရန် သင်၏မိုက်ခရိုဖုန်းကို သုံးပါ။ Gemini နှင့် ပြောဆိုသောအခါ အသံကို ‘Gemini မှတ်တမ်း’ (၎င်းကို ဖွင့်ထားပါက) တွင် သိမ်းဆည်းပါသည်။</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (အော့ဖ်လိုင်း)</translation>
 <translation id="4112282889480354965">နောက်ဆက်တွဲနှင့် စွမ်းရည်များ</translation>
 <translation id="4113743276555482284">ဖိုင်စကားဝှက်</translation>
@@ -4222,6 +4227,7 @@
 <translation id="419427585139779713">တစ်ကြိမ်လျှင် ဝဏ္ဏသံတစ်ခု ထည့်ရန်</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4195814663415092787">သင်ချန်ထားသည့်နေရာမှ ဆက်မည်</translation>
+<translation id="4196632390211257612">Gemini နှင့် သင်၏ စကားဝိုင်းများ (သို့) သင်၏ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ဒေတာ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> တို့ကို စိစစ်မည်မဟုတ်သလို Generative AI မိုဒယ်များ လေ့ကျင့်ရန်လည်း အသုံးပြုမည်မဟုတ်ပါ။ Gemini သည် AI ဖြစ်ပြီး အမှားများ ပြုလုပ်နိုင်သည်။ အကြောင်းအရာအချို့သည် လူတိုင်းအတွက် မသင့်လျော်နိုင်ပါ။</translation>
 <translation id="4198268995694216131">နောက်ထပ် ဝဘ်ဆိုက်များ</translation>
 <translation id="4200609364258658652">ဗီဒီယိုဖရိမ် မိတ္တူကူးရန်</translation>
 <translation id="4200689466366162458">မိမိကိုယ်ပိုင်စကားလုံး</translation>
@@ -4822,6 +4828,7 @@
 <translation id="4665035764476941598">အခြားတဘ်များ ပြန်ယူရန် ဤနေရာကို နှိပ်ပါ</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> က သိမ်းဆည်းထားသည့် ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="4666472247053585787">သင့် <ph name="DEVICE_TYPE" /> တွင် သင်၏ဖုန်းမှ အကြောင်းကြားချက်များကို ကြည့်ခြင်း</translation>
+<translation id="4666483368282673356">သင်၏ Gemini မှတ်တမ်းကို စီမံရန်</translation>
 <translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">ပင်နံပါတ်တွင် ဂဏန်းများသာ သုံးရမည်</translation>
@@ -5293,6 +5300,7 @@
 <translation id="5012523644916800014">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်</translation>
 <translation id="501394389332262641">ဘက်ထရီအားနည်းသည့် အသံ</translation>
 <translation id="5014286001996333986">အုပ်စုကို အစားထိုးမလား (သို့) အသစ်ပြုလုပ်မလား</translation>
+<translation id="5014385104640320445">Gemini နှင့် ချတ်လုပ်ရန် သင်၏ မိုက်ခရိုဖုန်းကို သုံးပါ။ Gemini နှင့် ပြောဆိုသောအခါ အသံကို ‘Gemini မှတ်တမ်း’ (၎င်းကို ဖွင့်ထားပါက) တွင် သိမ်းဆည်းပါသည်။ သင့်ဒေတာကို Generative AI မိုဒယ်များ ပိုကောင်းအောင်လုပ်ရန် အသုံးမပြုပါ။</translation>
 <translation id="5015344424288992913">ပရောက်စီ ဆုံးဖြတ်နေ...</translation>
 <translation id="5016305686459575361">သင့်ဖုန်းနှင့် ချိတ်ဆက်ခြင်းဖြင့် အောက်ပါတို့ကို လုပ်ဆောင်နိုင်သည်-</translation>
 <translation id="5016491575926936899">သင်၏ဖုန်းဖြင့် ကွန်ပျူတာမှ စာတိုပို့ခြင်း၊ အင်တာနက်ချိတ်ဆက်မှု မျှဝေခြင်း၊ စကားဝိုင်းအကြောင်းကြားချက်များသို့ စာပြန်ခြင်းနှင့် သင့် <ph name="DEVICE_TYPE" /> ကို လော့ခ်ဖွင့်ခြင်းတို့ ပြုလုပ်နိုင်သည်။<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -5923,6 +5931,7 @@
 <translation id="5499634624419508916">ရှိပြီးသား တဘ်အုပ်စုကို အစားထိုးရန်</translation>
 <translation id="5500163593833085874">ဘယ်ဘက် မောက်စ်ခလုတ်ရွေးထားပြီးနောက် နှစ်ချက်နှိပ်ရန် “+” ကိုသုံးပါ</translation>
 <translation id="5500168250243071806">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK_SEARCH" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK_SEARCH" /> နှင့် <ph name="BEGIN_LINK_GOOGLE" />အခြားပုံစံသော လုပ်ဆောင်ချက်<ph name="END_LINK_GOOGLE" /> တို့ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
+<translation id="5500956227241240933">ထည့်သွင်းချက် လိုအပ်သည်</translation>
 <translation id="5501322521654567960">ဘယ်ဘက်ညှိထားသော ဘေးအကန့်</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}other{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}}</translation>
 <translation id="5501979953419946416">အသစ်တစ်ခုခု ရေးပါ</translation>
@@ -5990,6 +5999,7 @@
 <translation id="5558129378926964177">ဇူးမ်ဆွဲရန်</translation>
 <translation id="5558594314398017686">OS မူရင်း (ရနိုင်ပါက)</translation>
 <translation id="5559311991468302423">လိပ်စာကို ဖျက်ရန်</translation>
+<translation id="5559646482656763170">အသုံးမပြုချိန်တွင် အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="555968128798542113">ဤဝဘ်ဆိုက်က သင့် MIDI စက်များကို စီမံပြီး ပရိုဂရမ်ပြန်လုပ်နိုင်သည်</translation>
 <translation id="5559768063688681413">သိမ်းထားသည့် ပုံနှိပ်ထုတ်စက်မရှိပါ</translation>
 <translation id="55601339223879446">မျက်နှာပြင် ဖော်ပြမှုအတွင်း သင့်ဒက်စ်တော့ ဘောင်များကို ချိန်ညှိပါ</translation>
@@ -6488,6 +6498,7 @@
 <translation id="5964113968897211042">{COUNT,plural, =0{အားလုံးကို &amp;ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}=1{&amp;ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}other{({COUNT}) ခုလုံးကို &amp;ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်}}</translation>
 <translation id="5964247741333118902">မြှုပ်သွင်းထားသော အကြောင်းအရာ</translation>
 <translation id="5965607173855879702">ဒေတာကို ဖျက်နေသည်…</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> ကို <ph name="TOTAL_SHORTCUTS" /> ခုအနက် နေရာ <ph name="SHORTCUT_POSITION" /> သို့ ရွှေ့လိုက်သည်။</translation>
 <translation id="5966511985653515929">ဝင်းဒိုးအားလုံးပိတ်သောအခါ ဝဘ်ဆိုက်ဒေတာကို သင့်စက်မှ ဖျက်သည်</translation>
 <translation id="5968022600320704045">ရှာဖွေမှု ရလဒ်များ မရှိပါ</translation>
 <translation id="5968400720580217226">AI မုဒ်</translation>
@@ -7033,6 +7044,7 @@
 <translation id="6399675241776343019">ငြင်းပယ်ထားသည်</translation>
 <translation id="6399774419735315745">သူလျှို</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> အတွက် အမြဲဖွင့်ထားရန်</translation>
+<translation id="6400714103322134861">တဘ်အုပ်စုကို အထူးပြသမှုရပ်ရန်</translation>
 <translation id="6401118106417399952">သင့်စက် EID မှာ <ph name="EID_NUMBER" /> ဖြစ်ပြီး စက်အမှတ်စဉ်မှာ <ph name="SERIAL_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်များကို သုံးနိုင်သည်။</translation>
 <translation id="6402042774506839496">အကြောင်းရင်းကို လေ့လာရန် အက်ပ်ဆော့ဖ်ဝဲရေးသူကို ဆက်သွယ်ပါ</translation>
 <translation id="6402921224457714577">ဝဘ်ဆိုက်များက သင့် MIDI စက်များ စီမံရန်နှင့် ပရိုဂရမ်ပြန်လုပ်ရန် တောင်းဆိုနိုင်သည်</translation>
@@ -7137,6 +7149,7 @@
 <translation id="6476482583633999078">စကားသံ မြန်နှုန်း</translation>
 <translation id="6476671549211161535">သင့် <ph name="DEVICE_NAME" /> တွင် ဘယ်ဘက် (သို့) ညာဘက် မောက်စ်ခလုတ်မဟုတ်သည့် ခလုတ်တစ်ခုကို နှိပ်ပါ။</translation>
 <translation id="6477822444490674459">အလုပ်ပရိုဖိုင်တွင် အကြောင်းကြားချက်စင့်ခ်လုပ်ခြင်းကို ဖုန်းများအတွက် ပံ့ပိုးမထားပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="6479376214595342779">မသုံးတော့သည့် တဘ်များကို သင့်ရှာဖွေမှုတွင် ထည့်ရန် ပြန်လည်စတင်ပါ</translation>
 <translation id="6479881432656947268">Chrome Web Store သို့ ဝင်ကြည့်ရန်</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="6480532238409319936">အပ်ဒိတ်လုပ်ဆောင်ချက် မအောင်မြင်ပါ</translation>
@@ -7149,6 +7162,7 @@
 <translation id="6488266788670893993"><ph name="BRAND" /> သည် ဒေတာကျိုးပေါက်မှုများအတွက် သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="648927581764831596">မရနိုင်ပါ</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
+<translation id="6491890991754498129">၎င်းဖြင့် &amp;ဖွင့်ရန်…</translation>
 <translation id="649396225532207613">ဤဖိုင်သည် သင့်ကိုယ်ရေးကိုယ်တာနှင့် လူမှုကွန်ရက် အကောင့်များကို ထိခိုက်စေနိုင်သည်</translation>
 <translation id="6493991254603208962">တောက်ပမှု လျှော့ချပါ</translation>
 <translation id="6494327278868541139">အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု အသေးစိတ်ကို ပြရန်</translation>
@@ -7964,6 +7978,7 @@
 <translation id="710224247908684995">နောက်ဆက်တွဲတစ်ခုက ‘လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း’ ကိုပိတ်ထားသည်</translation>
 <translation id="7102832101143475489">တောင်းဆိုချက် အချိန်ကုန်သွားသည်</translation>
 <translation id="7103944802169726298">PC နှင့် ကာစ်လုပ်နေသည့် စက်သည် Wi-Fi ကွန်ရက်တစ်ခုတည်းတွင် ရှိသည်</translation>
+<translation id="7104134653119992646">ချတ်များကို စိစစ်ပြီး Generative AI မိုဒယ်များ လေ့ကျင့်ရန် အသုံးပြုသည်။ Gemini သည် AI ဖြစ်ပြီး အမှားများ ပြုလုပ်နိုင်သည်။ သင်၏ တည်နေရာအချက်အလက် အပါအဝင် <ph name="BEGIN_LINK_MANAGE_HISTORY" />သင့်မှတ်တမ်းကို စီမံ<ph name="END_LINK_MANAGE_HISTORY" /> နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />သင့်ရွေးချယ်မှုများအကြောင်း ပိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" />။</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />။ Google စာရင်းသွင်းမှု</translation>
 <translation id="7107609441453408294">စပီကာအားလုံးမှ တူညီသည့် အသံကိုဖွင့်ပါ</translation>
 <translation id="7108338896283013870">ဝှက်ထားရန်</translation>
@@ -8988,6 +9003,7 @@
 <translation id="7903925330883316394">ဝန်ဆောင်မှုလုပ်ငန်းများ- <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">ကသကန</translation>
 <translation id="7904492297081735975">&amp;ဝဘ်လိပ်စာ စီမံစနစ် ဖွင့်ရန်</translation>
+<translation id="7904508617992122201">ချတ်များကို စိစစ်ပြီး Generative AI မိုဒယ်များ လေ့ကျင့်ရန် အသုံးပြုသည်။ Gemini သည် AI ဖြစ်ပြီး အမှားများ ပြုလုပ်နိုင်သည်။ အကြောင်းအရာအချို့သည် လူတိုင်းအတွက် မသင့်လျော်နိုင်ပါ။ သင်၏ တည်နေရာအချက်အလက် အပါအဝင် <ph name="BEGIN_LINK_MANAGE_HISTORY" />သင့်မှတ်တမ်းကို စီမံ<ph name="END_LINK_MANAGE_HISTORY" /> နိုင်သည်။ <ph name="BEGIN_LINK_LEARN_MORE" />သင့်ရွေးချယ်မှုများအကြောင်း ပိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" />။</translation>
 <translation id="7904526211178107182">သင့်ကွန်ရက်ရှိ အခြားစက်ပစ္စည်းများသည် Linux ပို့တ်များကို အသုံးပြုနိုင်အောင် ပြုလုပ်ပါ။</translation>
 <translation id="7907312522152480478">အခြားစက်များမှ သင်၏တဘ်များ ရယူရန် သင်ဖြစ်ကြောင်း အတည်ပြုပြီး မှတ်တမ်းနှင့် တဘ်များကို စင့်ခ်လုပ်ပါ။ စင့်ခ်လုပ်ခြင်းကို ဆက်တင်များတွင် အချိန်မရွေး ရပ်နိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="7907502219904644296">အသုံးပြုခွင့် ပြောင်းရန်</translation>
@@ -9017,6 +9033,7 @@
 <translation id="7921782882718083488">ဤစာမျက်နှာကို အနှစ်ချုပ်ရန်</translation>
 <translation id="7921901223958867679">ဤနောက်ဆက်တွဲသည် <ph name="HOST" /> ကို ဖတ်ပြီးပြောင်းနိုင်သည်</translation>
 <translation id="7922606348470480702">နောက်ဆက်တွဲ ၁ ခု</translation>
+<translation id="792402788739682108">တဘ်များ ပြန်လည်စတင်ရန်</translation>
 <translation id="7924075559900107275">ရေရှည်အကူအညီတွင် ပါဝင်နိုင်ဖွယ်ရှိခြင်း</translation>
 <translation id="7924358170328001543">ပို့တ်ထပ်ဆင့်ပို့ရာတွင် အမှားဖြစ်သွားသည်</translation>
 <translation id="7925108652071887026">အလိုအလျောက်ဖြည့် ဒေတာ</translation>
@@ -10006,6 +10023,7 @@
 <translation id="8666268818656583275">ယခုအခါ F ကီးများသည် ထိပ်ဆုံးအတန်းကီးများကဲ့သို့ လုပ်ဆောင်ပါမည်</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> အတွက် ခွင့်ပြုချက်များ ပြန်ပေးလိုက်သည်</translation>
 <translation id="8667261224612332309">ပိုလုံခြုံအောင်လုပ်နိုင်သော စကားဝှက်များ ရှိသည်</translation>
+<translation id="8667543835349994431">၎င်းဖြင့် &amp;ဖွင့်ရန်…</translation>
 <translation id="8668378421690365723">သင့်စက် မှန်ကန်စွာ အလုပ်မလုပ်ဘဲ လုံခြုံရေးနှင့် စွမ်းဆောင်မှုပြဿနာများ ကြုံတွေ့ရနိုင်သည်။</translation>
 <translation id="8669284339312441707">ပိုနွေးသည့် အရောင်</translation>
 <translation id="8670537393737592796">ဤနေရာသို့ အမြန်ပြန်လာရန်အတွက် ထည့်သွင်းရန်ခလုတ်ကို နှိပ်ပြီး <ph name="APP_NAME" /> ကို ထည့်သွင်းပါ</translation>
@@ -10068,6 +10086,7 @@
 <translation id="8708000541097332489">ထွက်လျှင် ရှင်းရန်</translation>
 <translation id="870805141700401153">Microsoft သီးသန့်ကုဒ်လက်မှတ်ထိုးခြင်း</translation>
 <translation id="8708671767545720562">&amp;နောက်ထပ် အချက်အလက်များ</translation>
+<translation id="8709234440040320647">(သီးခြားမုဒ်)</translation>
 <translation id="8709368517685334931">Chrome Web Store တွင် အရောင်ဟောင်းများကို ရှာနိုင်သည်</translation>
 <translation id="8710414664106871428">စိတ်ကူးယဉ်</translation>
 <translation id="8711402221661888347">ဆားရည်စိမ်အရွက်</translation>
@@ -10114,6 +10133,7 @@
 <translation id="8738418093147087440">နိုင်ငံ၊ ဘာသာစကား (သို့) လက်ကွက်အမည်များအလိုက် ရှာပါ</translation>
 <translation id="8741944563400125534">‘ခလုတ်သုံးခြင်း’ စနစ်ထည့်သွင်းမှုလမ်းညွှန်</translation>
 <translation id="8743357966416354615">စီမံထားသော ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင် (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">၎င်းအစား <ph name="URL" /> သို့ သွားမလား</translation>
 <translation id="8744641000906923997">ရိုမာဂျိ</translation>
 <translation id="8744913471985800082">အပ်ဒိတ်မလုပ်မီ URL ပြောင်းလဲမှုက သင်နှင့်အဆင်ပြေကြောင်း သေချာစေရန် ၎င်းကို ပြန်ကြည့်ပါ။</translation>
 <translation id="8745034592125932220">သင့်စက်တွင် ဒေတာသိမ်းရန် ခွင့်ပြုမထားပါ</translation>
@@ -10231,6 +10251,7 @@
 <translation id="8836360711089151515">သင့်ဒေတာများ အရန်သိမ်းပြီး ဤ <ph name="DEVICE_TYPE" /> ကို ၁ ပတ်အတွင်း ပြန်ပို့ရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ <ph name="LINK_BEGIN" />အသေးစိတ် ကြည့်ရန်<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{အုပ်စုမှထွက်ရန်}other{အုပ်စုများမှ ထွက်ရန်}}</translation>
 <translation id="8836782447513334597">ရှေ့ဆက်ရန်</translation>
+<translation id="8837072669197607689">‘သီးခြားမုဒ်’ တွင် ခွင့်ပြုရန်</translation>
 <translation id="8837573527470979311">အောက်ခြေမြင်ကွင်းဖြင့် လဲလှယ်ရန်</translation>
 <translation id="8838601485495657486">အလင်းပိတ်သည်</translation>
 <translation id="8838770651474809439">ဟမ်ဘာဂါ</translation>
@@ -10521,6 +10542,7 @@
 <translation id="9043767139743235992">Google မသန်စွမ်းသူဆိုင်ရာ အကူအညီပေးရေးအဖွဲ့ကို ဆက်သွယ်ရန်</translation>
 <translation id="9044646465488564462">ကွန်ရက်သို့ ချိတ်ဆက် မရခဲ့ပါ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">သင့်ဖတ်ရန် စာရင်းကို ဘေးအကန့်အသစ်သို့ ရွှေ့ထားသည်။ ဤနေရာတွင် စမ်းကြည့်ပါ။</translation>
+<translation id="9046240419485318563">မှတ်ဉာဏ် ကြည့်ရန်</translation>
 <translation id="9048745018038487540">ဖောင့်အားလုံးကို ရွေးရန်</translation>
 <translation id="9050666287014529139">စကားစုဝှက်</translation>
 <translation id="905137631551495997">နောက်ဆက်တွဲ(များ)</translation>
@@ -10577,6 +10599,7 @@
 <translation id="9089416786594320554">ထည့်သွင်းနည်းများ</translation>
 <translation id="9090044809052745245">အခြားသူများက သင့်စက်ကို မြင်ရပုံ</translation>
 <translation id="9090295708045818045">{NUM_OF_FILES,plural, =1{ဖိုင်ကို <ph name="CLOUD_PROVIDER" /> သို့ ရွှေ့၍မရပါ}other{ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> သို့ ရွှေ့၍မရပါ}}</translation>
+<translation id="9092594036947304891">တုံ့ပြန်မှု အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="9093470422440389061">WiFi စွမ်းဆောင်ရည် မက်ထရစ်များ</translation>
 <translation id="9094033019050270033">စကားဝှက် အပ်ဒိတ် လုပ်ပါ</translation>
 <translation id="9094038138851891550">အသုံးပြုသူအမည် မမှန်ပါ</translation>

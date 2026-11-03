@@ -7045,6 +7045,7 @@
 <translation id="6399675241776343019">Απορρίφθηκε</translation>
 <translation id="6399774419735315745">Κατάσκοπος</translation>
 <translation id="6400360390396538896">Πάντα σε <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Κατάργηση εστίασης στην ομάδα καρτελών</translation>
 <translation id="6401118106417399952">Το EID της συσκευής σας είναι <ph name="EID_NUMBER" /> και ο σειριακός αριθμός της συσκευής είναι <ph name="SERIAL_NUMBER" />. Αυτοί οι αριθμοί μπορούν να χρησιμοποιηθούν για βοήθεια σχετικά με την ενεργοποίηση της υπηρεσίας.</translation>
 <translation id="6402042774506839496">Για να μάθετε τον λόγο, επικοινωνήστε με τον προγραμματιστή της εφαρμογής</translation>
 <translation id="6402921224457714577">Οι ιστότοποι μπορούν να ζητούν να ελέγχουν και να επαναπρογραμματίζουν τις συσκευές MIDI</translation>
@@ -10089,6 +10090,7 @@
 <translation id="8708000541097332489">Διαγραφή κατά την έξοδο</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;Περισσότερες πληροφορίες</translation>
+<translation id="8709234440040320647">(Λειτουργία απομόνωσης)</translation>
 <translation id="8709368517685334931">Μπορείτε να βρείτε παλαιότερα χρώματα στο Chrome Web Store</translation>
 <translation id="8710414664106871428">Φαντασίας</translation>
 <translation id="8711402221661888347">Πίκλες</translation>
@@ -10251,6 +10253,7 @@
 <translation id="8836360711089151515">Ο τομέας <ph name="MANAGER" /> απαιτεί τη δημιουργία αντιγράφου ασφαλείας για τα δεδομένα σας και την επιστροφή της συσκευής <ph name="DEVICE_TYPE" /> εντός 1 εβδομάδας. <ph name="LINK_BEGIN" />Εμφάνιση λεπτομερειών<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Αποχώρηση από την ομάδα}other{Αποχώρηση από τις ομάδες}}</translation>
 <translation id="8836782447513334597">συνέχεια</translation>
+<translation id="8837072669197607689">Να επιτρέπεται στη Λειτουργία απομόνωσης</translation>
 <translation id="8837573527470979311">Αντικατάσταση με την προβολή στο κάτω μέρος</translation>
 <translation id="8838601485495657486">Αδιαφανές</translation>
 <translation id="8838770651474809439">Χάμπουργκερ</translation>
@@ -10541,6 +10544,7 @@
 <translation id="9043767139743235992">Επικοινωνία με την Υποστήριξη Google για άτομα με αναπηρία</translation>
 <translation id="9044646465488564462">Η σύνδεση στο δίκτυο απέτυχε: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Η λίστα ανάγνωσής σας μετακινήθηκε στο νέο πλαϊνό πλαίσιο. Δοκιμάστε το εδώ.</translation>
+<translation id="9046240419485318563">Περιήγηση στις αναμνήσεις</translation>
 <translation id="9048745018038487540">Επιλογή όλων των γραμματοσειρών</translation>
 <translation id="9050666287014529139">Φράση πρόσβασής σας</translation>
 <translation id="905137631551495997">Επεκτάσεις</translation>

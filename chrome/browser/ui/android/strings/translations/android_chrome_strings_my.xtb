@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">ဤဝဘ်ဆိုက်များကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="1143193470214071120">ဝင်းဒိုးတစ်ခုပိတ်ပါ (သို့) ဝင်းဒိုးများကို စီမံပါ</translation>
 <translation id="1143486892058798649">လင့်ခ် အမည်ပေးသိမ်းရန်…</translation>
+<translation id="1149644372535087155">Chrome တွင် စကားဝှက်များ သိမ်းခြင်း</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ကို စစ်ဆေးနေသည်</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
 <translation id="1154555449933432029">Google Password Manager တွင် သိမ်းထားသောစကားဝှက် မရှိပါ။</translation>
@@ -299,6 +300,7 @@
 <translation id="2190355936436201913">(ဗလာ)</translation>
 <translation id="219283042927675668">အုပ်စုလိုက် တဘ်များ</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
+<translation id="2195339740518523951">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
 <translation id="2196695604589508993">မှတ်တမ်းဖွင့်ရန်</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="22091350895006575">အသုံးပြုသူအမည် ထည့်ရန်</translation>
@@ -1679,6 +1681,7 @@
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="7500851014030446046">PDF ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="7501135638693251872">စာညှပ်များအားလုံး</translation>
+<translation id="7504076214066136798">တည်းဖြတ်မှုများကို သိမ်း၍မရလိုက်ပါ</translation>
 <translation id="7507207699631365376">ဤဝန်ဆောင်မှုပေးသူ၏ <ph name="BEGIN_LINK" />ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK" /> ကို ကြည့်ရန်</translation>
 <translation id="750886945254958667">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို မသုံးလိုတော့ပါက ထွက်နိုင်သည်</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>

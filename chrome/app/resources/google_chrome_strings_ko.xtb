@@ -235,6 +235,7 @@
 <translation id="3037517125981011456">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
+<translation id="304285957253771186">경고: Chrome은 확장 프로그램이 방문 기록을 저장하지 못하도록 차단할 수 없습니다. 보안 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 이 옵션을 선택 해제하세요.</translation>
 <translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">의견 닫기 대화상자</translation>
 <translation id="306179102415443347">바로가기를 사용하여 Google 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>

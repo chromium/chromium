@@ -2070,6 +2070,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4412377069090572315">Mit mondanak mások?</translation>
 <translation id="4414515549596849729">cookie-k és webhelyadatok</translation>
 <translation id="4415156962929755728">Műanyag (magas fényű)</translation>
+<translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
 <translation id="4415748029120993980">SECG elliptikus görbe secp384r1 (vagyis NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2542,6 +2543,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5216942107514965959">Utolsó látogatás: ma</translation>
 <translation id="5217759126664161410">Érvénytelen protokollformátum.</translation>
 <translation id="5221377878828867877">A jelszavak újrafelhasználását figyeli a szervezete</translation>
+<translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5222812217790122047">Az e-mail-cím megadása kötelező</translation>
 <translation id="5226979307236834587">Hogyan utasíthatom el udvariasan a terveket?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4668,6 +4670,7 @@ További részletek:
 <translation id="8800034312320686233">Nem működik a webhely?</translation>
 <translation id="8803251172194676606">Készíts személyre szabott edzéstervet</translation>
 <translation id="8803526663383843427">Amikor be van kapcsolva</translation>
+<translation id="8804164990146287819">Adatvédelmi irányelvek</translation>
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
 <translation id="8806696968588872703">Műanyag (szatén)</translation>
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
@@ -4731,6 +4734,7 @@ További részletek:
 <translation id="8903998444169664879">A fizetési beállítások módosításához igazolja személyazonosságát</translation>
 <translation id="890493561996401738">Javaslat eltávolítása gomb. Nyomja meg az Entert a következő eltávolításához: <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 hüvelyk</translation>
+<translation id="8912362522468806198">Google Fiókjába</translation>
 <translation id="8914504000324227558">A Chrome újraindítása</translation>
 <translation id="8918062451146297192">CVC virtuális kártyához</translation>
 <translation id="8919895429178014996">Összes elem elrejtése</translation>

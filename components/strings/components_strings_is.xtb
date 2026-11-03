@@ -2073,6 +2073,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4412377069090572315">Það sem aðrir segja</translation>
 <translation id="4414515549596849729">fótspor og gögn vefsvæða</translation>
 <translation id="4415156962929755728">Plast (háglans)</translation>
+<translation id="4415276339145661267">Stjórna Google-reikningnum</translation>
 <translation id="4415426530740016218">Heimilisfang afhendingar</translation>
 <translation id="4415748029120993980">SECG sporger ferill secp384r1 (e.þ.s. NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4732860731866514038">Sækir tungumálapakka fyrir „<ph name="LANGUAGE" />“... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vill nota staðsetningu tækisins</translation>
 <translation id="473414950835101501">Notaðu myndavélarnar</translation>
+<translation id="4735688073239574197">Fara neðst</translation>
 <translation id="4736089601076994090">Rennur út: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Endurræsa Chromium</translation>
 <translation id="4736934858538408121">Sýndarkort</translation>
@@ -2545,6 +2547,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5216942107514965959">Síðast opnað í dag</translation>
 <translation id="5217759126664161410">Ógilt snið samskiptareglu.</translation>
 <translation id="5221377878828867877">Fyrirtækið þitt hefur eftirlit með endurnotkun aðgangsorða</translation>
+<translation id="5222676887888702881">Skrá út</translation>
 <translation id="5222812217790122047">Netfang er nauðsynlegt</translation>
 <translation id="5226979307236834587">Hvernig get ég afþakkað áætlanir á kurteisan hátt?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6097297436119286254">Staðfestu að þetta sért þú til að fylla út greiðsluupplýsingarnar þínar</translation>
 <translation id="6099269767116481177">22 x 29,5 to.</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Þessi regla er ætluð til notkunar á vélarstigi. Virkni hennar þegar hún er notuð sem notendaregla er ekki opinberlega studd og verður úrelt.</translation>
 <translation id="6105460996796456817">Búa til Site</translation>
 <translation id="6105511947520166941">Borgaðu næst beint í Chrome með Pix</translation>
 <translation id="6105745639559695088">Sýna/fela hliðarstiku</translation>
@@ -4669,6 +4673,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8800034312320686233">Virkar vefsvæðið ekki?</translation>
 <translation id="8803251172194676606">Hannaðu sérsniðna líkamsræktaráætlun</translation>
 <translation id="8803526663383843427">Þegar kveikt er á þessu</translation>
+<translation id="8804164990146287819">Persónuverndarstefna</translation>
 <translation id="8805819170075074995">Listafærslan „<ph name="LANGUAGE_ID" />“: Færslan er hunsuð því hún kemur einnig fram í reglunni „SpellcheckLanguage“.</translation>
 <translation id="8806696968588872703">Plast (satín)</translation>
 <translation id="8807160976559152894">Klippa eftir hverja síðu</translation>
@@ -4732,6 +4737,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8903998444169664879">Staðfestu að þetta sért þú til að breyta greiðslustillingunum þínum</translation>
 <translation id="890493561996401738">Hnappur til að fjarlægja tillögu, ýttu á færslulykilinn til að fjarlægja, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 to.</translation>
+<translation id="8912362522468806198">Google-reikningur</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8918062451146297192">CVC-númer fyrir sýndarkort</translation>
 <translation id="8919895429178014996">Fela öll atriði</translation>

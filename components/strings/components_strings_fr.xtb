@@ -2073,6 +2073,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4412377069090572315">Avis des internautes</translation>
 <translation id="4414515549596849729">cookies et infos liées aux sites</translation>
 <translation id="4415156962929755728">Plastique (haute brillance)</translation>
+<translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4415426530740016218">Adresse d'enlèvement</translation>
 <translation id="4415748029120993980">Courbe elliptique SECG secp384r1 (également appelée "NIST P-384")</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2545,6 +2546,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
 <translation id="5217759126664161410">Format de protocole non valide.</translation>
 <translation id="5221377878828867877">La réutilisation des mots de passe est gérée par votre organisation</translation>
+<translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5222812217790122047">Veuillez saisir une adresse e-mail</translation>
 <translation id="5226979307236834587">Comment puis-je refuser poliment une invitation ?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4671,6 +4673,7 @@ Informations supplémentaires :
 <translation id="8800034312320686233">Impossible d'accéder au site ?</translation>
 <translation id="8803251172194676606">Crée une routine de fitness personnalisée</translation>
 <translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
+<translation id="8804164990146287819">Règles de confidentialité</translation>
 <translation id="8805819170075074995">Entrée de la liste "<ph name="LANGUAGE_ID" />" : entrée ignorée, car elle est aussi incluse dans la règle SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastique (satiné)</translation>
 <translation id="8807160976559152894">Couper après chaque page</translation>
@@ -4734,6 +4737,7 @@ Informations supplémentaires :
 <translation id="8903998444169664879">Validez votre identité pour modifier vos paramètres de paiement</translation>
 <translation id="890493561996401738">Bouton "Supprimer la suggestion" (appuyez sur Entrée pour supprimer <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />)</translation>
 <translation id="8910898109640902752">8 x 10 pouces</translation>
+<translation id="8912362522468806198">Compte Google</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8918062451146297192">Code CVC pour la carte virtuelle</translation>
 <translation id="8919895429178014996">Masquer tous les éléments</translation>

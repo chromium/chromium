@@ -2073,6 +2073,7 @@
 <translation id="4412377069090572315">Шта кажу људи</translation>
 <translation id="4414515549596849729">колачићи и подаци о сајтовима</translation>
 <translation id="4415156962929755728">Пластика (високи сјај)</translation>
+<translation id="4415276339145661267">Управљајте Google налогом</translation>
 <translation id="4415426530740016218">Адреса преузимања</translation>
 <translation id="4415748029120993980">Елиптична крива SECG secp384r1 (такође позната као NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2545,6 +2546,7 @@
 <translation id="5216942107514965959">Последњи посећен данас</translation>
 <translation id="5217759126664161410">Неважећи формат протокола.</translation>
 <translation id="5221377878828867877">Организација надгледа поновно коришћење лозинке</translation>
+<translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5222812217790122047">Имејл је обавезан</translation>
 <translation id="5226979307236834587">Како да љубазно одбијем позив?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3076,7 @@
 <translation id="6097297436119286254">Потврдите идентитет да бисте попунили информације о плаћању</translation>
 <translation id="6099269767116481177">22×29,5 in</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Ове смернице су намењене за примену на нивоу уређаја. Њихово понашање када се примене као смернице за корисника није званично подржано и та опција ће бити повучена.</translation>
 <translation id="6105460996796456817">Направите сајт</translation>
 <translation id="6105511947520166941">Следећи пут платите помоћу Pix-а директно у Chrome-у</translation>
 <translation id="6105745639559695088">Укључи/искључи бочну траку</translation>
@@ -4670,6 +4673,7 @@
 <translation id="8800034312320686233">Да ли сајт не ради?</translation>
 <translation id="8803251172194676606">Осмисли прилагођену фитнес рутину</translation>
 <translation id="8803526663383843427">Када је укључено</translation>
+<translation id="8804164990146287819">Политика приватности</translation>
 <translation id="8805819170075074995">Унос на листи „<ph name="LANGUAGE_ID" />“: Унос се занемарује јер је обухваћен и смерницама SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Пластика (сатен)</translation>
 <translation id="8807160976559152894">Скраћивање после сваке странице</translation>
@@ -4733,6 +4737,7 @@
 <translation id="8903998444169664879">Потврдите идентитет да бисте променили подешавања плаћања</translation>
 <translation id="890493561996401738">Дугме Уклони предлог, притисните Enter да бисте уклонили, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8×10 in</translation>
+<translation id="8912362522468806198">Google налога</translation>
 <translation id="8914504000324227558">Поново покрени Chrome</translation>
 <translation id="8918062451146297192">CVC за виртуелну картицу</translation>
 <translation id="8919895429178014996">Сакриј све ставке</translation>

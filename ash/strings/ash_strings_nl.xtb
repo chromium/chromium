@@ -905,7 +905,6 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="363473492175527493">Taak ingesteld om te focussen op: <ph name="TASK_NAME" />. Druk op Enter om de taak te bewerken.</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Venster minimaliseren</translation>
-<translation id="3650952250015018111">"<ph name="APP_NAME" />" toegang verlenen:</translation>
 <translation id="3652817283076144888">Initialiseren</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
 <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412698727486357573">Helpcentrum</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
-<translation id="44141919652824029"><ph name="APP_NAME" /> toestaan om de lijst met je aangesloten USB-apparaten op te halen?</translation>
 <translation id="4414242853388122273">Fout bij het verwijderen van <ph name="VM_NAME" />. Probeer het opnieuw.</translation>
 <translation id="4417647906073317561">Focusinstellingen. Stel een timer, taak en muziek in om in de flow te komen.</translation>
 <translation id="4418600384772451109">Deelvenster sluiten</translation>
@@ -2589,7 +2587,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> heeft <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
 <translation id="8480418399907765580">Werkbalk tonen</translation>
-<translation id="8481187309597259238">USB-rechten bevestigen</translation>
 <translation id="8487660088084188539">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van dit apparaat te schatten.<ph name="END_PARAGRAPH1" />

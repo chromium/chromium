@@ -905,7 +905,6 @@
 <translation id="363473492175527493">ഇനിപ്പറയുന്നതിൽ ഫോക്കസ് ചെയ്യാൻ സജ്ജീകരിച്ചിരിക്കുന്ന ടാസ്‌ക്: <ph name="TASK_NAME" />. ടാസ്‌ക് എഡിറ്റ് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">വിൻഡോ ചെറുതാക്കുക</translation>
-<translation id="3650952250015018111">ആക്‌സസ് ചെയ്യാൻ "<ph name="APP_NAME" />" ആപ്പിനെ അനുവദിക്കുക:</translation>
 <translation id="3652817283076144888">സമാരംഭിക്കുന്നു</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">തത്സമയ ക്യാപ്ഷൻ</translation>
 <translation id="4412698727486357573">സഹായ കേന്ദ്രം</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ഓഫാണ്.</translation>
-<translation id="44141919652824029">നിങ്ങളുടെ അറ്റാച്ച് ചെയ്‌തിട്ടുള്ള USB ഉപകരണങ്ങളുടെ ഒരു ലിസ്റ്റ് സ്വീകരിക്കാൻ "<ph name="APP_NAME" />" ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> നീക്കം ചെയ്യുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4417647906073317561">ഫോക്കസ് ക്രമീകരണം. ഫ്ലോയിൽ ചേരാൻ ടൈമർ, ടാസ്‌ക്, സംഗീതം എന്നിവ സജ്ജീകരിക്കുക.</translation>
 <translation id="4418600384772451109">പാനൽ അടയ്‌ക്കുക</translation>
@@ -2590,7 +2588,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> എന്ന സ്ഥാപനം <ph name="FEATURE_NAME" /> എന്ന ഫീച്ചർ <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="8480418399907765580">ഉപകരണബാര്‍‌ കാണിക്കുക</translation>
-<translation id="8481187309597259238">USB അനുമതി സ്ഥിരീകരിക്കുക</translation>
 <translation id="8487660088084188539">നിങ്ങൾ ഈ ഫീച്ചറുകൾ ഓണാക്കുമ്പോൾ, ഇൻപുട്ട് ടെക്സ്റ്റ്, ഡോക്യുമെന്റിലെ ഉള്ളടക്കം, വെബ്‌പേജ് URL എന്നിവ Google സെർവറുകളിലേക്ക് അയച്ചേക്കാം. <ph name="LINK_TO_SERVICE_TERMS" /> എന്നതിന് വിധേയമായി, എഴുത്ത് നിർദ്ദേശങ്ങളും സംഗ്രഹങ്ങളും ജനറേറ്റ് ചെയ്യാനും ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകാനും ഉൽപ്പന്നങ്ങൾ മെച്ചപ്പെടുത്താനും ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രസഹ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തരുത്.</translation>
 <translation id="8487699605742506766">ഹോട്ട്‌സ്‌പോട്ട്</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />ഈ ഉപകരണത്തിന്റെ ലൊക്കേഷൻ നിർണ്ണയിക്കാൻ വൈഫൈയും മൊബൈൽ നെറ്റ്‌വർക്കുകളും സെൻസറുകളും പോലുള്ള ഉറവിടങ്ങളെ Google-ന്റെ ലൊക്കേഷൻ സേവനം ഉപയോഗിക്കുന്നു.<ph name="END_PARAGRAPH1" />

@@ -2071,6 +2071,7 @@
 <translation id="4412377069090572315">मान्छेहरू के भनिरहेका छन्</translation>
 <translation id="4414515549596849729">कुकीहरू र साइटका डाटा</translation>
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लस)</translation>
+<translation id="4415276339145661267">आफ्नो Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4415426530740016218">पिकअप गर्ने ठेगाना</translation>
 <translation id="4415748029120993980">SECG अण्डाकार कर्भ secp384r1 (NIST P-521 पनि भनिन्छ)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2235,6 +2236,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ.. .<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> तपाईंको डिभाइसको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="473414950835101501">क्यामेरा प्रयोग गर्न</translation>
+<translation id="4735688073239574197">सीधै पुछारमा जानुहोस्</translation>
 <translation id="4736089601076994090">म्याद सकिने मिति: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium लाई पुनः सुरु गर्नुहोस्</translation>
 <translation id="4736934858538408121">भर्चुअल कार्ड</translation>
@@ -2543,6 +2545,7 @@
 <translation id="5216942107514965959">पछिल्लो पटक आज खोलिएको</translation>
 <translation id="5217759126664161410">प्रोटोकोलको फर्म्याट अवैध छ।</translation>
 <translation id="5221377878828867877">तपाईंको सङ्गठनले पासवर्ड पुनः प्रयोग गरिएको छ कि छैन भन्ने कुराको निगरानी गर्छ</translation>
+<translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5222812217790122047">इमेल आवश्यक छ</translation>
 <translation id="5226979307236834587">म कसरी विनम्र तरिकाले योजनाहरू अस्वीकार गर्न सक्छु?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />। <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3072,6 +3075,7 @@
 <translation id="6097297436119286254">आफ्नो भुक्तानीसम्बन्धी जानकारी भर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="6099269767116481177">२२ x २९.५ इन्च</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">यो नीति मेसिनको स्तरमा लागू गर्ने उद्देश्यले बनाइएको हो। यसलाई प्रयोगकर्ता नीतिअन्तर्गत लागू गर्दा यसले देखाउने व्यवहार आधिकारिक रूपमा उपलब्ध छैन र यसलाई चल्तीबाट हटाइने छ।</translation>
 <translation id="6105460996796456817">साइट बनाउनुहोस्</translation>
 <translation id="6105511947520166941">अर्को पटक Chrome बाटै Pix मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="6105745639559695088">साइडबार टगल गर्नुहोस्</translation>
@@ -4667,6 +4671,7 @@
 <translation id="8800034312320686233">साइटले काम गरिरहेको छैन?</translation>
 <translation id="8803251172194676606">कस्टम फिटनेस रुटिन डिजाइन गर्नुहोस्</translation>
 <translation id="8803526663383843427">अन भएका बेला</translation>
+<translation id="8804164990146287819">गोपनीयता नीति</translation>
 <translation id="8805819170075074995">सूचीको प्रविष्टि "<ph name="LANGUAGE_ID" />": प्रविष्टिलाई SpellcheckLanguage नीतिमा पनि समावेश गरिएका कारण यसलाई बेवास्ता गरियो।</translation>
 <translation id="8806696968588872703">प्लास्टिक (स्याटिन)</translation>
 <translation id="8807160976559152894">हरेक पृष्ठपछि छाँटकाँट गर्नुहोस्</translation>
@@ -4730,6 +4735,7 @@
 <translation id="8903998444169664879">भुक्तानीसम्बन्धी सेटिङ परिवर्तन गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="890493561996401738">सुझावको बटन हटाउनुहोस्, हटाउन Enter थिच्नुहोस्, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इन्च</translation>
+<translation id="8912362522468806198">Google खाता</translation>
 <translation id="8914504000324227558">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="8918062451146297192">भर्चुअल कार्डको CVC</translation>
 <translation id="8919895429178014996">सबै सामग्रीहरू लुकाउनुहोस्</translation>

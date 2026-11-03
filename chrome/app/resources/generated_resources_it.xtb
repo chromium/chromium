@@ -7026,6 +7026,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6399675241776343019">Autorizzazione rifiutata</translation>
 <translation id="6399774419735315745">Spia</translation>
 <translation id="6400360390396538896">Sempre su <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Annulla selezione gruppo di schede</translation>
 <translation id="6401118106417399952">Il numero di serie del dispositivo è <ph name="SERIAL_NUMBER" />, mentre il numero EID è <ph name="EID_NUMBER" />. Questi numeri possono essere utilizzati per attivare il servizio.</translation>
 <translation id="6402042774506839496">Per scoprire perché, contatta lo sviluppatore di app</translation>
 <translation id="6402921224457714577">I siti possono chiedere di controllare e riprogrammare i tuoi dispositivi MIDI</translation>
@@ -10524,6 +10525,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9043767139743235992">Contatta il team di assistenza per l'accessibilità di Google</translation>
 <translation id="9044646465488564462">Connessione alla rete non riuscita: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Il tuo elenco di lettura è passato al nuovo riquadro laterale. Provalo qui.</translation>
+<translation id="9046240419485318563">Sfoglia memoria</translation>
 <translation id="9048745018038487540">Seleziona tutti i caratteri</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="905137631551495997">Estensioni</translation>

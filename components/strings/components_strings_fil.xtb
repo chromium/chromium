@@ -2073,6 +2073,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4412377069090572315">Ang sinasabi ng mga tao</translation>
 <translation id="4414515549596849729">cookies at data ng site</translation>
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
+<translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4415426530740016218">Address sa Pag-pick up</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (na tinatawag ding NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4732860731866514038">Dina-download ang <ph name="LANGUAGE" /> language pack... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Gustong gamitin ng <ph name="URL" /> ang lokasyon ng iyong device</translation>
 <translation id="473414950835101501">Gamitin ang iyong mga camera</translation>
+<translation id="4735688073239574197">Pumunta sa ibaba</translation>
 <translation id="4736089601076994090">Mag-e-expire sa: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">I-restart ang Chromium</translation>
 <translation id="4736934858538408121">Virtual na card</translation>
@@ -2545,6 +2547,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5217759126664161410">Invalid na format ng protocol.</translation>
 <translation id="5221377878828867877">Sinusubaybayan ng iyong organisasyon ang paggamit ulit ng password</translation>
+<translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5222812217790122047">Kailangan ng email</translation>
 <translation id="5226979307236834587">Paano ako makakatanggi sa mga plano sa magalang na paraan?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4671,6 +4674,7 @@ Mga karagdagang detalye:
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
 <translation id="8803251172194676606">Magdisenyo ng custom na fitness routine</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
+<translation id="8804164990146287819">Patakaran sa Privacy</translation>
 <translation id="8805819170075074995">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Binalewala ang entry dahil kasama rin ito sa patakarang SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastic (Satin)</translation>
 <translation id="8807160976559152894">Paikliin pagkatapos ng bawat page</translation>
@@ -4734,6 +4738,7 @@ Mga karagdagang detalye:
 <translation id="8903998444169664879">I-verify na ikaw ito para mabago ang iyong mga setting ng pagbabayad</translation>
 <translation id="890493561996401738">Button na Alisin ang Suhestyon, pindutin ang Enter para alisin, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8912362522468806198">Google Account</translation>
 <translation id="8914504000324227558">Muling ilunsad ang Chrome</translation>
 <translation id="8918062451146297192">CVC para sa virtual card</translation>
 <translation id="8919895429178014996">I-hide ang lahat ng item</translation>

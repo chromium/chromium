@@ -235,6 +235,7 @@
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
+<translation id="304285957253771186">သတိပေးချက်- Google Chrome သည် နောက်ဆက်တွဲများက သင့်ဝဘ်ကြည့်ရှုမှုမှတ်တမ်းကို မှတ်တမ်းတင်ခြင်းအား တားဆီးမပေးနိုင်ပါ။ သီးခြားမုဒ်တွင် ဤနောက်ဆက်တွဲကို ပိတ်ရန် ဤရွေးချယ်မှုကို အမှန်ခြစ်ဖြုတ်ပါ။</translation>
 <translation id="3045032126857188731">ပြန်ဆိုထားသော ဘာသာစကား- <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">အကြံပြုချက် ဒိုင်ယာလော့ ပိတ်ရန်</translation>
 <translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
@@ -532,6 +533,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5940385492829620908">သင်၏ ဝဘ်၊ စာညှပ်များ၊ နှင့် အခြားသော Chrome အရာများဟာ ဒီမှာ နေထိုင်ကြပါသည်။</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
+<translation id="5944731887996253728">သင့်စခရင်ကို အသုံးမပြုချိန်တွင် Chrome က အပ်ဒိတ်လုပ်ပါမည်</translation>
 <translation id="5947104538377036631">Chrome ဖြတ်လမ်းလင့်ခ်</translation>
 <translation id="5960071705175224773">သင့်ဆက်တင်များကို အမည်မသိအက်ပ်က ပြောင်းထားသည်</translation>
 <translation id="5980111191913430208">မူရင်းမသိရှိသော ရင်းမြစ်များမှ နောက်ဆက်တွဲများ၊ အက်ပ်နှင့် အပြင်အဆင်များသည် သင့်စက်ကို ထိခိုက်စေနိုင်သည်။ ၎င်းတို့ကို <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> မှသာ ထည့်သွင်းရန် Chrome က အကြံပြုပါသည်</translation>
@@ -834,6 +836,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8367950957770994118">လိုအပ်ချိန်တိုင်းတွင် Chrome ရှိ Gemini ကို အမြန်ဖွင့်ရန်</translation>
 <translation id="8370517070665726704">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>
 <translation id="8370748943308169953"><ph name="USER_NAME" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ရန် QR ကုဒ်</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> အသင့်ဖြစ်ပါပြီ။ ယခု ပြန်ဖွင့်နိုင်သည် (သို့) သင့်စခရင်ကို <ph name="IDLE_DURATION" /> ကြာ မသုံးဘဲ ဖွင့်ထားချိန်တွင် Chrome ကို အပ်ဒိတ်လုပ်ရန် သတ်မှတ်နိုင်သည်။</translation>
 <translation id="8376752431516546391">Google Search ဘေးအကန့်</translation>
 <translation id="8377158135256176353">Chrome Canary ရှိ Gemini ကို ဖွင့်/ပိတ်နိုင်သည်</translation>
 <translation id="8380754585531979907">Chrome ရှိ Gemini နှင့် သင်ဖွင့်ထားသောတဘ်အကြား ရွှေ့ကြည့်ရန် ကီးဘုတ်သုံးပါ။</translation>
@@ -877,6 +880,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8669527147644353129">Google Chrome ကူညီပေးသူ</translation>
 <translation id="8679801911857917785">သင်က Chrome ကို စတင်စဉ် ဘယ်စာမျက်နှာ ပြကြောင်းကိုပါ ၎င်းက ထိန်းချုပ်ပါသည်။</translation>
 <translation id="8689408573494410517">ကိရိယာဘားရှိ “ဘေးအကန့်ရှိ Google Search” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် ဘေးအကန့်ရှိ Google Search ဖြင့် မေးခွန်းများမေးရန် ၎င်းကို နှိပ်ပါ။</translation>
+<translation id="8699232386626916686">လုံခြုံမှုရှိနေစေရန် Chrome ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8712767363896337380">အပ်ဒိတ်ဖြစ်ပါတော့မည်။ အပ်ဒိတ်လုပ်ခြင်း အပြီးသတ်ရန် Chrome ပြန်ဖွင့်ပါ။</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> သည် လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည်။ သင်၏ ဘရောက်စ်လုပ်ခြင်းကို ခွဲခြားထားရန်အတွက် သင့်ကိုယ်ပိုင်ပရိုဖိုင်တွင် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ <ph name="DEVICE" /> မှ ဖတ်ရန်စာရင်းနှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>

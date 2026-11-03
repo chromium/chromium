@@ -7023,6 +7023,7 @@
 <translation id="6399675241776343019">已被拒</translation>
 <translation id="6399774419735315745">间谍</translation>
 <translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
+<translation id="6400714103322134861">取消聚焦标签页分组</translation>
 <translation id="6401118106417399952">您的设备 EID 为 <ph name="EID_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="6402042774506839496">如需了解原因，请与应用开发者联系</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
@@ -10521,6 +10522,7 @@
 <translation id="9043767139743235992">联系 Google 残障人士支持团队</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
+<translation id="9046240419485318563">浏览内存</translation>
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="905137631551495997">扩展程序</translation>

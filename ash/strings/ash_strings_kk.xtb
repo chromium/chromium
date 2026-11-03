@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Зейін қойылатын тапсырма: <ph name="TASK_NAME" />. Тапсырманы өзгерту үшін Enter пернесін басыңыз.</translation>
 <translation id="3638400994746983214">Құпиялық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Терезені жию</translation>
-<translation id="3650952250015018111">"<ph name="APP_NAME" />" қолданбасына кіруге рұқсат беру:</translation>
 <translation id="3652817283076144888">Жұмысқа дайындалуда</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">Автоматты субтитр</translation>
 <translation id="4412698727486357573">Анықтама орталығы</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
-<translation id="44141919652824029">"<ph name="APP_NAME" />" қолданбасына тіркелген USB құрылғыларыңыздың тізімін алуға рұқсат берілсін бе?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> машинасын өшіру кезінде қате шықты. Қайталап көріңіз.</translation>
 <translation id="4417647906073317561">Зейін қою режимінің параметрлері. Іске кірісу үшін таймер, тапсырма және музыка орнатыңыз.</translation>
 <translation id="4418600384772451109">Панельді жабу</translation>
@@ -2589,7 +2587,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ұйымы <ph name="FEATURE_NAME" /> функциясын <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Бас тарту үшін Alt+Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="8480418399907765580">Құралдар тақтасын көрсету</translation>
-<translation id="8481187309597259238">USB рұқсатын растау</translation>
 <translation id="8487660088084188539">Бұл функцияларды қосқан кезде, енгізілетін мәтін, құжат контенті және веб-беттің URL мекенжайы Google серверлеріне жіберілуі мүмкін. Бұл ақпарат <ph name="LINK_TO_SERVICE_TERMS" /> ережелеріне сәйкес жазу ұсыныстары мен қорытындылар жасау, сұрақтарға жауап беру және өнімді жақсарту үшін қолданылады. Жеке, шетін не құпия деректерді қоспаңыз.</translation>
 <translation id="8487699605742506766">Хотспот</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google локация қызметі Wi-Fi, мобильдік желілер және датчиктер сияқты дереккөздерді пайдаланып, осы құрылғының локациясын анықтауға мүмкіндік береді.<ph name="END_PARAGRAPH1" />

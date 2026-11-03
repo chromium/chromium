@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">이 사이트 번역 옵션 제공 안 함</translation>
 <translation id="1143193470214071120">창을 닫거나 열려있는 창을 관리하세요.</translation>
 <translation id="1143486892058798649">다른 이름으로 링크 저장…</translation>
+<translation id="1149644372535087155">Chrome에 비밀번호 저장</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> 검사 중</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
 <translation id="1154555449933432029">Google 비밀번호 관리자에 저장된 비밀번호가 없습니다.</translation>
@@ -299,6 +300,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2190355936436201913">(비어있음)</translation>
 <translation id="219283042927675668">그룹에 포함된 탭</translation>
 <translation id="2194856509914051091">고려사항</translation>
+<translation id="2195339740518523951">Chrome의 가장 강력한 보안 기능 사용하기</translation>
 <translation id="2196695604589508993">기록 열기</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, 고정되고 공유 중인 탭</translation>
 <translation id="22091350895006575">사용자 이름 추가</translation>

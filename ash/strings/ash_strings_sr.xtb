@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Задатак који је подешен за фокусирање: <ph name="TASK_NAME" />. Притисните Enter да бисте изменили задатак.</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Смањивање прозора</translation>
-<translation id="3650952250015018111">Дозволите да „<ph name="APP_NAME" />“ приступа:</translation>
 <translation id="3652817283076144888">Покреће се</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1179,7 +1178,6 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412698727486357573">Центар за помоћ</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
-<translation id="44141919652824029">Желите ли да дозволите да „<ph name="APP_NAME" />“ добије листу прикључених USB уређаја?</translation>
 <translation id="4414242853388122273">Грешка при уклањању виртуелне машине <ph name="VM_NAME" />. Пробајте поново.</translation>
 <translation id="4417647906073317561">Подешавања фокуса. Подесите тајмер, задатак и музику да бисте се фокусирали.</translation>
 <translation id="4418600384772451109">Затворите окно</translation>
@@ -2595,7 +2593,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> – <ph name="FEATURE_STATE" />: <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
 <translation id="8480418399907765580">Прикажи траку с алаткама</translation>
-<translation id="8481187309597259238">Потврдите дозволу за USB</translation>
 <translation id="8487660088084188539">Када укључите ове функције, текст уноса, садржај документа и URL веб-странице могу да се шаљу Google серверима. Ове информације се користе за генерисање предлога за писање, генерисање резимеа, одговарање на питања и побољшање производа, у складу са <ph name="LINK_TO_SERVICE_TERMS" />. Немојте да наводите никакве личне, осетљиве или поверљиве информације.</translation>
 <translation id="8487699605742506766">Хотспот</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google услуга локације користи изворе као што су WiFi, мобилне мреже и сензори да би одредила приближну локацију овог уређаја.<ph name="END_PARAGRAPH1" />

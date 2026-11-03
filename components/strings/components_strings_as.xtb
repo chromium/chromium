@@ -2069,6 +2069,7 @@
 <translation id="4412377069090572315">লোকসকলে কি কৈছে</translation>
 <translation id="4414515549596849729">কুকি আৰু ছাইটৰ ডেটা</translation>
 <translation id="4415156962929755728">প্লাষ্টিক (হাই গ্লছ)</translation>
+<translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4415426530740016218">পিকআপ কৰাৰ ঠিকনা</translation>
 <translation id="4415748029120993980">SECG উপবৃত্তাকাৰ লেখ secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2233,6 +2234,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ভাষাৰ পেক ডাউনল’ড কৰি থকা হৈছে...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />এ আপোনাৰ ডিভাইচৰ অৱস্থান জানিব বিচাৰে</translation>
 <translation id="473414950835101501">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰক</translation>
+<translation id="4735688073239574197">একেবাৰে তললৈ যাওক</translation>
 <translation id="4736089601076994090">ম্যাদ উকলিবলগীয়া তাৰিখ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="4736934858538408121">ভাৰ্চুৱেল কাৰ্ড</translation>
@@ -2541,6 +2543,7 @@
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
 <translation id="5217759126664161410">প্ৰট’কলৰ ফৰ্মেট মান্য নহয়।</translation>
 <translation id="5221377878828867877">পাছৱৰ্ড পুনৰ ব্যৱহাৰ কৰাটো আপোনাৰ প্ৰতিষ্ঠানে নিৰীক্ষণ কৰে</translation>
+<translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5222812217790122047">ইমেইল বাধ্যতামূলক</translation>
 <translation id="5226979307236834587">মই কেনেকৈ নম্ৰভাৱে কোনো কামৰ পৰিকল্পনা প্ৰত্যাখ্যান কৰিব পাৰোঁ?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />। <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3070,6 +3073,7 @@
 <translation id="6097297436119286254">আপোনাৰ পৰিশোধৰ তথ্য পূৰ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="6099269767116481177">২২ x ২৯.৫ ইঞ্চি</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">এই নীতিটো মেচিনৰ স্তৰত প্ৰয়োগ কৰাৰ উদ্দেশ্যে প্ৰস্তুত কৰা হৈছে। ব্যৱহাৰকাৰীৰ নীতি হিচাপে প্ৰয়োগ কৰিলে ইয়াৰ কাৰ্যকাৰিতা আনুষ্ঠানিকভাৱে সমৰ্থিত নহয় আৰু ভৱিষ্যতে এইটো অপ্ৰচলিত হৈ পৰিব।</translation>
 <translation id="6105460996796456817">ছাইট সৃষ্টি কৰক</translation>
 <translation id="6105511947520166941">পৰৱৰ্তী সময়ত Chromeত Pixৰ জৰিয়তে পোনপটীয়াকৈ পৰিশোধ কৰক</translation>
 <translation id="6105745639559695088">ছাইডবাৰ ট’গল কৰক</translation>
@@ -4664,6 +4668,7 @@
 <translation id="8800034312320686233">ছাইটটোৱে কাম কৰা নাই নেকি?</translation>
 <translation id="8803251172194676606">এটা কাষ্টম সুস্থতাৰ ৰুটিন ডিজাইন কৰক</translation>
 <translation id="8803526663383843427">অন কৰা থাকিলে</translation>
+<translation id="8804164990146287819">গোপনীয়তা নীতি</translation>
 <translation id="8805819170075074995">তালিকাৰ অন্তৰ্ভুক্তি "<ph name="LANGUAGE_ID" />": অন্তৰ্ভুক্তি অৱজ্ঞা কৰা হৈছে কাৰণ এইটো SpellcheckLanguage নীতিতো আছে।</translation>
 <translation id="8806696968588872703">প্লাষ্টিক (ৰেচমী)</translation>
 <translation id="8807160976559152894">প্ৰতিটো পৃষ্ঠাৰ পাছত ট্ৰিম কৰক</translation>
@@ -4727,6 +4732,7 @@
 <translation id="8903998444169664879">আপোনাৰ পৰিশোধৰ ছেটিং সলনি কৰিবলৈ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="890493561996401738">পৰামৰ্শৰ বুটামটো আঁতৰাওক, আঁতৰাবলৈ এণ্টাৰ টিপক, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">৮ x ১০ ইঞ্চি</translation>
+<translation id="8912362522468806198">Google একাউণ্ট</translation>
 <translation id="8914504000324227558">Chrome পুনৰ লঞ্চ কৰক</translation>
 <translation id="8918062451146297192">ভাৰ্ছুৱেল কাৰ্ডৰ বাবে CVC</translation>
 <translation id="8919895429178014996">আটাইবোৰ বস্তু লুকুৱাওক</translation>

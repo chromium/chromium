@@ -905,7 +905,6 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="363473492175527493">Gawain kung saan nakatakdang mag-focus: <ph name="TASK_NAME" />. Pindutin ang enter para i-edit ang gawain.</translation>
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">I-minimize ang window</translation>
-<translation id="3650952250015018111">Payagan ang "<ph name="APP_NAME" />" na ma-access ang:</translation>
 <translation id="3652817283076144888">Sinisimulan</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4412698727486357573">Help center</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
-<translation id="44141919652824029">Payagan ang "<ph name="APP_NAME" />" na makuha ang listahan ng iyong mga naka-attach na USB device?</translation>
 <translation id="4414242853388122273">Nagka-error sa pagtanggal sa <ph name="VM_NAME" />. Pakisubukan ulit.</translation>
 <translation id="4417647906073317561">Mga setting ng Pag-focus. Magtakda ng timer, gawain, at musika para makapag-focus.</translation>
 <translation id="4418600384772451109">Isara ang Panel</translation>
@@ -2590,7 +2588,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8480418399907765580">Ipakita ang toolbar</translation>
-<translation id="8481187309597259238">Kumpirmahin ang Pahintulot sa USB</translation>
 <translation id="8487660088084188539">Kapag na-on mo ang mga feature na ito, puwedeng ipadala ang text ng input, content ng dokumento, at URL ng web page sa mga server ng Google. Ginagamit ang impormasyong ito para bumuo ng mga writing suggestion, bumuo ng mga buod, sumagot ng mga tanong, at pahusayin ang produkto, nang napapailalim sa <ph name="LINK_TO_SERVICE_TERMS" />. Huwag maglagay ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Ang serbisyo sa lokasyon ng Google ay gumagamit ng mga source gaya ng Wi-Fi, mga mobile network, at mga sensor para makatulong na tantyahin ang lokasyon ng device na ito.<ph name="END_PARAGRAPH1" />

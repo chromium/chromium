@@ -905,7 +905,6 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="363473492175527493">Se estableció la tarea en la que te concentrarás: <ph name="TASK_NAME" />. Presiona Intro para editar la tarea.</translation>
 <translation id="3638400994746983214">Activa o desactiva la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimizar ventana</translation>
-<translation id="3650952250015018111">Permitir que "<ph name="APP_NAME" />" acceda a:</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4412698727486357573">Centro de ayuda</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
-<translation id="44141919652824029">¿Deseas permitir que "<ph name="APP_NAME" />" obtenga la lista de los dispositivos USB conectados?</translation>
 <translation id="4414242853388122273">Se produjo un error al quitar <ph name="VM_NAME" />. Vuelve a intentarlo.</translation>
 <translation id="4417647906073317561">Configuración del Modo sin distracciones. Establece un temporizador, una tarea y música para concentrarte.</translation>
 <translation id="4418600384772451109">Cerrar panel</translation>
@@ -2590,7 +2588,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
 <translation id="8480418399907765580">Mostrar barra de herramientas</translation>
-<translation id="8481187309597259238">Confirmar el permiso para USB</translation>
 <translation id="8487660088084188539">Cuando activas estas funciones, el texto de entrada, el contenido del documento y la URL de la página web pueden enviarse a los servidores de Google. Esta información se usa para generar sugerencias de escritura, hacer resúmenes, responder preguntas y mejorar el producto, sujeto a las <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="8487699605742506766">Hotspot</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como Wi-Fi, redes móviles y sensores para determinar la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />

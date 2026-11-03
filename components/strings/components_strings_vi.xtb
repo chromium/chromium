@@ -2073,6 +2073,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4412377069090572315">Nhận xét của mọi người</translation>
 <translation id="4414515549596849729">cookie và dữ liệu trang web</translation>
 <translation id="4415156962929755728">Nhựa (Độ bóng cao)</translation>
+<translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4415426530740016218">Địa chỉ nhận hàng</translation>
 <translation id="4415748029120993980">Đường cong elip SECG secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4732860731866514038">Đang tải gói ngôn ngữ <ph name="LANGUAGE" /> xuống... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> muốn sử dụng thông tin vị trí thiết bị của bạn</translation>
 <translation id="473414950835101501">Sử dụng camera của bạn</translation>
+<translation id="4735688073239574197">Chuyển xuống dưới cùng</translation>
 <translation id="4736089601076994090">Hết hạn: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Khởi động lại Chromium</translation>
 <translation id="4736934858538408121">Thẻ ảo</translation>
@@ -2545,6 +2547,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="5217759126664161410">Định dạng giao thức không hợp lệ.</translation>
 <translation id="5221377878828867877">Tổ chức của bạn giám sát việc sử dụng lại mật khẩu</translation>
+<translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="5222812217790122047">Cần có email</translation>
 <translation id="5226979307236834587">Làm cách nào để từ chối lời mời một cách lịch sự?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4671,6 +4674,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8800034312320686233">Trang web không hoạt động?</translation>
 <translation id="8803251172194676606">Thiết kế lịch tập thể dục tuỳ chỉnh</translation>
 <translation id="8803526663383843427">Khi bật</translation>
+<translation id="8804164990146287819">Chính sách quyền riêng tư</translation>
 <translation id="8805819170075074995">Mục nhập danh sách "<ph name="LANGUAGE_ID" />": Mục nhập bị bỏ qua vì cũng được bao gồm trong chính sách SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Nhựa (Satin)</translation>
 <translation id="8807160976559152894">Cắt bỏ sau mỗi trang</translation>
@@ -4734,6 +4738,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8903998444169664879">Xác minh danh tính của bạn để thay đổi chế độ cài đặt thông tin thanh toán</translation>
 <translation id="890493561996401738">Nút Xóa đề xuất, nhấn Enter để xóa, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inch</translation>
+<translation id="8912362522468806198">Tài khoản Google</translation>
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8918062451146297192">CVC của thẻ ảo</translation>
 <translation id="8919895429178014996">Ẩn tất cả các mục</translation>

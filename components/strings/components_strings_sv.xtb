@@ -2073,6 +2073,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4412377069090572315">Så tycker andra</translation>
 <translation id="4414515549596849729">cookies och webbplatsdata</translation>
 <translation id="4415156962929755728">Plast (högblank)</translation>
+<translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4415426530740016218">Hämtningsadress</translation>
 <translation id="4415748029120993980">SECG med elliptisk kurva secp384r1 (kallas även NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2546,6 +2547,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5216942107514965959">Besöktes senast i dag</translation>
 <translation id="5217759126664161410">Ogiltigt protokollformat.</translation>
 <translation id="5221377878828867877">Återanvändning av lösenord övervakas av din organisation</translation>
+<translation id="5222676887888702881">Logga ut</translation>
 <translation id="5222812217790122047">E-postadress måste anges</translation>
 <translation id="5226979307236834587">Hur kan jag tacka nej till planer på ett artigt sätt?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3075,6 +3077,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6097297436119286254">Verifiera din identitet för att fylla i dina betalningsuppgifter</translation>
 <translation id="6099269767116481177">22 x 29,5 tum</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Den här principen är avsedd att tillämpas på maskinnivå. Det finns inget officiellt stöd för dess beteende när den tillämpas som en användarprincip och den kommer att fasas ut.</translation>
 <translation id="6105460996796456817">Skapa webbplats</translation>
 <translation id="6105511947520166941">Betala med Pix direkt i Chrome nästa gång</translation>
 <translation id="6105745639559695088">Aktivera eller inaktivera sidofält</translation>
@@ -4672,6 +4675,7 @@ Mer information:
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>
 <translation id="8803251172194676606">Designa en anpassad träningsrutin</translation>
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
+<translation id="8804164990146287819">Integritetspolicy</translation>
 <translation id="8805819170075074995">Listposten <ph name="LANGUAGE_ID" />: Posten ignorerades eftersom den även ingår i principen SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plast (satäng)</translation>
 <translation id="8807160976559152894">Beskär efter varje sida</translation>
@@ -4735,6 +4739,7 @@ Mer information:
 <translation id="8903998444169664879">Verifiera din identitet för att ändra betalningsinställningarna</translation>
 <translation id="890493561996401738">Knappen Ta bort förslag, tryck på retur om du vill ta bort förslaget, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 tum</translation>
+<translation id="8912362522468806198">Google-konto</translation>
 <translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8918062451146297192">CVC för virtuellt kort</translation>
 <translation id="8919895429178014996">Dölj alla objekt</translation>

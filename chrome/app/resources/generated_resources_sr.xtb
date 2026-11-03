@@ -7029,6 +7029,7 @@
 <translation id="6399675241776343019">Одбијено</translation>
 <translation id="6399774419735315745">Шпијунка</translation>
 <translation id="6400360390396538896">Увек на <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Уклони фокус са групе картица</translation>
 <translation id="6401118106417399952">EID уређаја је <ph name="EID_NUMBER" />, а серијски број уређаја је <ph name="SERIAL_NUMBER" />. Ове бројеве можете да користите да бисте активирали услугу.</translation>
 <translation id="6402042774506839496">Да бисте сазнали зашто, обратите се програмеру апликације</translation>
 <translation id="6402921224457714577">Сајтови могу да траже да контролишу и репрограмирају MIDI уређаје</translation>
@@ -10077,6 +10078,7 @@
 <translation id="8708000541097332489">Обриши при затварању</translation>
 <translation id="870805141700401153">Microsoft потписивање појединачних кодова</translation>
 <translation id="8708671767545720562">&amp;Више информација</translation>
+<translation id="8709234440040320647">(Изоловани режим)</translation>
 <translation id="8709368517685334931">Старе боје можете да пронађете у Chrome веб-продавници</translation>
 <translation id="8710414664106871428">Фантастика</translation>
 <translation id="8711402221661888347">Краставчић</translation>
@@ -10241,6 +10243,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" /> у року од недељу дана. <ph name="LINK_BEGIN" />Погледајте детаље<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Изађи из групе}one{Изађи из група}few{Изађи из група}other{Изађи из група}}</translation>
 <translation id="8836782447513334597">наставили</translation>
+<translation id="8837072669197607689">Дозволи у изолованом режиму</translation>
 <translation id="8837573527470979311">Замени доњим приказом</translation>
 <translation id="8838601485495657486">Непрозирно</translation>
 <translation id="8838770651474809439">Хамбургер</translation>

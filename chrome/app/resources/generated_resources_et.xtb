@@ -521,6 +521,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1384849755549338773">Paku Google'i tõlget muudes keeltes olevate veebisaitide puhul</translation>
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
 <translation id="1386966479075994683">Vahelehtede laiendamine</translation>
+<translation id="1387227841274754059">Küsige Google Lensiga oma ekraanikuva kohta</translation>
 <translation id="1388253969141979417">Lubatud kasutada teie mikrofoni</translation>
 <translation id="139013308650923562">Võivad kasutada teie seadmesse installitud fonte</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> on teie seadmesse <ph name="DEVICE_TYPE" /> eelinstallitud</translation>
@@ -4752,6 +4753,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4610637590575890427">Kas soovisite minna aadressile <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">Kui valitud on vasak hiirenupp, kasutage topeltklikkimiseks klahvi „/“</translation>
 <translation id="4613271546271159013">Laiendus muutis lehte, mis kuvatakse uue vahelehe avamisel.</translation>
+<translation id="4616024182698834938">Pukseerige failid siia</translation>
 <translation id="461613135510474570">Lause</translation>
 <translation id="461661862154729886">Energiaallikas</translation>
 <translation id="4617001782309103936">Liiga lühike</translation>
@@ -5582,6 +5584,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5230190638672215545">Tähemärkide „uow“ tippimisel sisestatakse tähemärgid „ươ“</translation>
 <translation id="5230516054153933099">Aken</translation>
 <translation id="5231255476752743708">Chrome vajab teie parooli muutmiseks abi</translation>
+<translation id="5232607425694431024">Küsige faili või pildi kohta</translation>
 <translation id="5232714764496316200">Tehke koduseid ülesandeid Google Lensi abil</translation>
 <translation id="5233231016133573565">Protsessi ID</translation>
 <translation id="5233638681132016545">Uus vaheleht</translation>
@@ -7035,6 +7038,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6399675241776343019">Tagasi lükatud</translation>
 <translation id="6399774419735315745">Spioon</translation>
 <translation id="6400360390396538896">Alati saidil <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Tühista vahelehegrupi esile tõstmine</translation>
 <translation id="6401118106417399952">Teie seadme EID on <ph name="EID_NUMBER" /> ja seadme seerianumber on <ph name="SERIAL_NUMBER" />. Need numbrid on abiks teenuse aktiveerimisel.</translation>
 <translation id="6402042774506839496">Põhjuse teadasaamiseks võtke ühendust rakenduse arendajaga.</translation>
 <translation id="6402921224457714577">Sait saab küsida luba teie MIDI-seadmete juhtimiseks ja ümberprogrammeerimiseks</translation>
@@ -7729,6 +7733,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6913051485529944333">Te ei näe enam sellel lehel Google'i kalendrit</translation>
 <translation id="6914812290245989348">Enne ebaturvalistele saitidele minemist ei kuvata hoiatusi</translation>
 <translation id="6916590542764765824">Laienduste haldamine</translation>
+<translation id="6916630302999048499">Gemini ülesanne on pooleli</translation>
 <translation id="6916676294509106572">Outlook Calendar on peidetud</translation>
 <translation id="6916818963747321523">Laienda kõik</translation>
 <translation id="6917873303492266709">Vahelehegruppide jagamiseks, nendega liitumiseks ja nendes koos töötamiseks avage seaded ja lülitage sisse valik Luba Chrome'i sisselogimine</translation>
@@ -8258,6 +8263,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="733058866272972585">Sellel saidil on blokeeritud identifikaatorite kasutamine kaitstud sisu esitamiseks.</translation>
 <translation id="7331646370422660166">alt + allanool</translation>
 <translation id="7332053360324989309">Spetsiaalne töötaja: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">Algatatud</translation>
 <translation id="7333388112938984914">Faile ei saa mahupõhise ühenduse kasutamise ajal üles laadida.</translation>
 <translation id="7335974957018254119">Kasuta õigekirjakontrolli:</translation>
 <translation id="7336799713063880535">Märguanded on blokeeritud.</translation>
@@ -10079,6 +10085,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8708000541097332489">Tühjenda väljumisel</translation>
 <translation id="870805141700401153">Microsofti individuaalne koodsigneerimine</translation>
 <translation id="8708671767545720562">&amp;Lisateave</translation>
+<translation id="8709234440040320647">(Isoleeritud režiim)</translation>
 <translation id="8709368517685334931">Vanemad värvid leiate Chrome’i veebipoest</translation>
 <translation id="8710414664106871428">Fantaasia</translation>
 <translation id="8711402221661888347">Burger</translation>
@@ -10243,6 +10250,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8836360711089151515"><ph name="MANAGER" /> nõuab, et varundaksite oma andmed ja tagastaksite selle seadme <ph name="DEVICE_TYPE" /> ühe nädala jooksul. <ph name="LINK_BEGIN" />Kuva üksikasjad<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Lahku grupist}other{Lahku gruppidest}}</translation>
 <translation id="8836782447513334597">jätkamine</translation>
+<translation id="8837072669197607689">Luba isoleeritud režiimis</translation>
 <translation id="8837573527470979311">Vaheta alumise vaatega</translation>
 <translation id="8838601485495657486">Läbipaistmatu</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10301,6 +10309,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8876307312329369159">Seda seadet ei saa demoseansis muuta.</translation>
 <translation id="8876965259056847565">Funktsioon <ph name="FEATURE_NAME" /> kasutab läheduses olevate seadmete leidmiseks Bluetoothi skannimist.</translation>
 <translation id="8877448029301136595">[emakataloog]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: alustatud</translation>
 <translation id="8879284080359814990">&amp;Kuva vahelehena</translation>
 <translation id="8879921471468674457">Jäta sisselogimisandmed meelde</translation>
 <translation id="8880009256105053174">Sellelt lehelt otsimine Google'iga …</translation>
@@ -10533,6 +10542,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9043767139743235992">Võtke ühendust Google’i puuetega inimeste tugitiimiga</translation>
 <translation id="9044646465488564462">Võrguga ühenduse loomine ebaõnnestus: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lugemisloend teisaldati külgpaneelile. Proovige seda siin.</translation>
+<translation id="9046240419485318563">Sirvi mälu</translation>
 <translation id="9048745018038487540">Vali kõik fondid</translation>
 <translation id="9050666287014529139">Parool</translation>
 <translation id="905137631551495997">Laiendus(ed)</translation>

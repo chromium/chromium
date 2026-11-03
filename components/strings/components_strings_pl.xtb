@@ -734,6 +734,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2215727959747642672">Edytowanie pliku</translation>
 <translation id="2219658597883514593">Ponownie wyświetl samouczek</translation>
 <translation id="2219735899272417925">Wymagane zresetowanie urządzenia</translation>
+<translation id="2221460252073828078">Tutaj zobaczysz odpowiedź AI z wyszukiwarki</translation>
 <translation id="2222604080869344662">Aby kontynuować pobieranie, zaloguj się w OneDrive</translation>
 <translation id="2224337661447660594">Brak internetu</translation>
 <translation id="2225927550500503913">Karta wirtualna została włączona</translation>
@@ -2073,6 +2074,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4412377069090572315">Opinie użytkowników</translation>
 <translation id="4414515549596849729">pliki cookie i dane witryn</translation>
 <translation id="4415156962929755728">Plastik (wysoki połysk)</translation>
+<translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4415426530740016218">Adres odbioru</translation>
 <translation id="4415748029120993980">Kryptografia krzywych eliptycznych SECG secp384r1 (inna nazwa: NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2239,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4732860731866514038">Pobieram pakiet językowy dla języka <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> chce używać lokalizacji Twojego urządzenia</translation>
 <translation id="473414950835101501">Korzystanie z kamer</translation>
+<translation id="4735688073239574197">Przejdź na koniec</translation>
 <translation id="4736089601076994090">Wygasa: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Uruchom ponownie Chromium</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
@@ -2545,6 +2548,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
 <translation id="5217759126664161410">Nieprawidłowy format protokołu.</translation>
 <translation id="5221377878828867877">Ponowne używanie haseł jest monitorowane przez Twoją organizację</translation>
+<translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5222812217790122047">E-mail jest wymagany</translation>
 <translation id="5226979307236834587">Jak mogę uprzejmie odmówić spotkania?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3078,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6097297436119286254">Aby uzupełnić dane do płatności, potwierdź swoją tożsamość</translation>
 <translation id="6099269767116481177">22 x 29,5 cala</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Ta zasada powinna być stosowana na poziomie komputera. Jej działanie po zastosowaniu jako zasady dotyczącej użytkowników nie jest oficjalnie obsługiwane i zostanie wycofane.</translation>
 <translation id="6105460996796456817">Utwórz witrynę</translation>
 <translation id="6105511947520166941">Następnym razem zapłać Pixem bezpośrednio w Chrome</translation>
 <translation id="6105745639559695088">Wyświetl/ukryj pasek boczny</translation>
@@ -4670,6 +4675,7 @@ Dodatkowe informacje:
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8803251172194676606">Opracuj niestandardowy plan treningowy</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
+<translation id="8804164990146287819">Polityka prywatności</translation>
 <translation id="8805819170075074995">Pozycja na liście „<ph name="LANGUAGE_ID" />”: pozycja została zignorowana, ponieważ występuje też w zasadzie SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastik (satyna)</translation>
 <translation id="8807160976559152894">Przycięcie po każdej stronie</translation>
@@ -4733,6 +4739,7 @@ Dodatkowe informacje:
 <translation id="8903998444169664879">Aby zmienić ustawienia płatności, potwierdź swoją tożsamość</translation>
 <translation id="890493561996401738">Usuń przycisk sugestii. Naciśnij Enter, by usunąć, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 cali</translation>
+<translation id="8912362522468806198">Konta Google</translation>
 <translation id="8914504000324227558">Uruchom Chrome ponownie</translation>
 <translation id="8918062451146297192">Kod CVC karty wirtualnej</translation>
 <translation id="8919895429178014996">Ukryj wszystkie elementy</translation>

@@ -2073,6 +2073,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4412377069090572315">Pendapat orang lain</translation>
 <translation id="4414515549596849729">cookie dan data situs</translation>
 <translation id="4415156962929755728">Plastik (Kilap Tinggi)</translation>
+<translation id="4415276339145661267">Kelola Akun Google Anda</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
 <translation id="4415748029120993980">Kurva eliptis SECG secp384r1 (alias NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4732860731866514038">Mendownload paket bahasa <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ingin menggunakan lokasi perangkat Anda</translation>
 <translation id="473414950835101501">Menggunakan kamera Anda</translation>
+<translation id="4735688073239574197">Langsung ke bagian bawah</translation>
 <translation id="4736089601076994090">Kedaluwarsa: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Buka Ulang Chromium</translation>
 <translation id="4736934858538408121">Kartu virtual</translation>
@@ -2545,6 +2547,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
 <translation id="5217759126664161410">Format protokol tidak valid.</translation>
 <translation id="5221377878828867877">Penggunaan ulang sandi dipantau oleh organisasi Anda</translation>
+<translation id="5222676887888702881">Logout</translation>
 <translation id="5222812217790122047">Email wajib diisi</translation>
 <translation id="5226979307236834587">Bagaimana cara menolak ajakan dengan sopan?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6097297436119286254">Verifikasi diri Anda untuk mengisikan info pembayaran</translation>
 <translation id="6099269767116481177">22 x 29,5 inci (55 x 74 cm)</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Kebijakan ini ditujukan untuk diterapkan di tingkat perangkat. Fungsinya saat diterapkan sebagai kebijakan pengguna tidak didukung secara resmi dan akan segera dihentikan.</translation>
 <translation id="6105460996796456817">Buat situs</translation>
 <translation id="6105511947520166941">Bayar dengan Pix langsung di Chrome lain kali</translation>
 <translation id="6105745639559695088">Tombol sidebar</translation>
@@ -4666,6 +4670,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8803251172194676606">Buatkan rutinitas kebugaran khusus</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
+<translation id="8804164990146287819">Kebijakan Privasi</translation>
 <translation id="8805819170075074995">Entri daftar "<ph name="LANGUAGE_ID" />": Entri diabaikan karena entri tersebut juga disertakan dalam kebijakan SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastik (Satin)</translation>
 <translation id="8807160976559152894">Trim setelah setiap halaman tercetak</translation>
@@ -4729,6 +4734,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8903998444169664879">Verifikasi diri Anda untuk mengubah setelan pembayaran</translation>
 <translation id="890493561996401738">Hapus tombol Saran, tekan Enter untuk menghapus, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 inci (20 x 25 cm)</translation>
+<translation id="8912362522468806198">Akun Google</translation>
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8918062451146297192">CVC untuk kartu virtual</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>

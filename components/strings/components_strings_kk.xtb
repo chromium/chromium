@@ -2072,6 +2072,7 @@
 <translation id="4412377069090572315">Адамдардың пікірі</translation>
 <translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415156962929755728">Пластик (жылтырлығы жоғары)</translation>
+<translation id="4415276339145661267">Google аккаунтын басқару</translation>
 <translation id="4415426530740016218">Алып кету мекенжайы</translation>
 <translation id="4415748029120993980">SECG эллипстік қисық сызығы, secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2544,6 +2545,7 @@
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
 <translation id="5217759126664161410">Протокол форматы жарамсыз.</translation>
 <translation id="5221377878828867877">Құпия сөздің қайта пайдаланылуын ұйымыңыз бақылайды</translation>
+<translation id="5222676887888702881">Шығу</translation>
 <translation id="5222812217790122047">Электрондық пошта мекенжайы көрсетілуі қажет</translation>
 <translation id="5226979307236834587">Жоспарларды қалай сыпайы түрде қабылдамауға болады?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4668,6 +4670,7 @@
 <translation id="8800034312320686233">Сайт жұмыс істемей ме?</translation>
 <translation id="8803251172194676606">Арнаулы фитнес жаттығулары режимін жаса</translation>
 <translation id="8803526663383843427">Қосулы кезде</translation>
+<translation id="8804164990146287819">Құпиялық саясаты</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
 <translation id="8806696968588872703">Пластик (сәтен)</translation>
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
@@ -4731,6 +4734,7 @@
 <translation id="8903998444169664879">Төлем параметрлерін өзгерту үшін жеке басыңызды растаңыз.</translation>
 <translation id="890493561996401738">"Ұсынысты өшіру" түймесі: өшіру үшін Enter пернесін басыңыз, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 дюйм</translation>
+<translation id="8912362522468806198">Google аккаунты</translation>
 <translation id="8914504000324227558">Chrome қолданбасын қайта іске қосу</translation>
 <translation id="8918062451146297192">Виртуалдық картаға арналған CVC</translation>
 <translation id="8919895429178014996">Барлық элементті жасыру</translation>

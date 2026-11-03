@@ -2067,6 +2067,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4412377069090572315">Čo hovoria ľudia</translation>
 <translation id="4414515549596849729">Súbory cookie a dáta webov</translation>
 <translation id="4415156962929755728">Plast (vysoký lesk)</translation>
+<translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4415426530740016218">Adresa vyzdvihnutia</translation>
 <translation id="4415748029120993980">Eliptická krivka SECG secp384r1 (známa tiež ako NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2539,6 +2540,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5216942107514965959">Naposledy navštívený dnes</translation>
 <translation id="5217759126664161410">Neplatný formát protokolu.</translation>
 <translation id="5221377878828867877">Opätovné použitie hesla sleduje vaša organizácia</translation>
+<translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5222812217790122047">E-mailová adresa je povinný údaj</translation>
 <translation id="5226979307236834587">Ako môžem zdvorilo odmietnuť plány?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4661,6 +4663,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8803251172194676606">Navrhni mi cvičebný plán na mieru</translation>
 <translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
+<translation id="8804164990146287819">Pravidlá ochrany súkromia</translation>
 <translation id="8805819170075074995">Položka zoznamu <ph name="LANGUAGE_ID" />: položka bola ignorovaná, pretože je tiež zahrnutá v pravidle SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plast (saténový)</translation>
 <translation id="8807160976559152894">Orezať po každej strane</translation>
@@ -4724,6 +4727,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8903998444169664879">Overte svoju totožnosť, aby ste mohli zmeniť nastavenia platieb</translation>
 <translation id="890493561996401738">Tlačidlo odstránenia návrhu, odstránenie vykonáte stlačením klávesa Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 × 10 palcov</translation>
+<translation id="8912362522468806198">účtu Google</translation>
 <translation id="8914504000324227558">Znova spustiť prehliadač Chrome</translation>
 <translation id="8918062451146297192">Overovací kód virtuálnej karty</translation>
 <translation id="8919895429178014996">Skryť všetky položky</translation>

@@ -905,7 +905,6 @@
 <translation id="363473492175527493">இதில் கவனம் செலுத்தும் வகையில் பணி அமைக்கப்பட்டுள்ளது: <ph name="TASK_NAME" />. பணியை மாற்ற enter பட்டனை அழுத்தவும்.</translation>
 <translation id="3638400994746983214">தனிப்பட்ட திரையை நிலைமாற்றும். <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">சாளரத்தை சிறிதாக்கு</translation>
-<translation id="3650952250015018111">இவற்றை அணுக "<ph name="APP_NAME" />"ஐ அனுமதி:</translation>
 <translation id="3652817283076144888">துவக்குகிறது</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">உடனடி வசனம்</translation>
 <translation id="4412698727486357573">உதவி மையம்</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> முடக்கப்பட்டுள்ளது.</translation>
-<translation id="44141919652824029">உங்கள் இணைத்த USB சாதனங்களின் பட்டியலைப் பெற, "<ph name="APP_NAME" />"ஐ அனுமதிக்க வேண்டுமா?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> ஐ அகற்ற முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="4417647906073317561">ஃபோகஸ் பயன்முறை அமைப்புகள். டைமர், பணி, இசை ஆகியவற்றை அமைத்து உங்கள் செயல்களைத் திறம்பட நிர்வகிக்கலாம்.</translation>
 <translation id="4418600384772451109">பேனலை மூடும்</translation>
@@ -2589,7 +2587,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ஐ கொண்டுள்ளது.</translation>
 <translation id="8477270416194247200">ரத்துசெய்ய, Alt+தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>
 <translation id="8480418399907765580">கருவிப்பட்டியைக் காண்பி</translation>
-<translation id="8481187309597259238">USB அனுமதியை உறுதிப்படுத்தவும்</translation>
 <translation id="8487660088084188539">இந்த அம்சங்களை இயக்கினால் நீங்கள் டைப் செய்பவை, ஆவண உள்ளடக்கம், இணையப் பக்கத்தின் URL ஆகியவை Google சேவையகங்களுக்கு அனுப்பப்படலாம். <ph name="LINK_TO_SERVICE_TERMS" />க்கு உட்பட்டு எழுதுவதற்கான பரிந்துரைகளை வழங்கவும், சுருக்க விவரங்களை உருவாக்கவும், கேள்விகளுக்குப் பதிலளிக்கவும், தயாரிப்பை மேம்படுத்தவும் இந்தத் தகவல்கள் பயன்படுத்தப்படும். தனிப்பட்ட, பாதுகாக்கவேண்டிய அல்லது ரகசியத் தகவல்களைச் சேர்க்க வேண்டாம்.</translation>
 <translation id="8487699605742506766">ஹாட்ஸ்பாட்</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />இந்தச் சாதனத்தின் இருப்பிடத்தைக் கணிக்க வைஃபை, மொபைல் நெட்வொர்க்குகள், சென்சார்கள் போன்றவற்றை Googleளின் இருப்பிடச் சேவை பயன்படுத்தும்.<ph name="END_PARAGRAPH1" />

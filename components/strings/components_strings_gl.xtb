@@ -934,6 +934,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2535585790302968248">Abrir unha nova pestana do modo de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
+<translation id="2536852576044236667">Elemento anterior fóra da vista</translation>
 <translation id="2537931901612099523">As demais persoas que usen este dispositivo non verán a túa actividade, polo que podes navegar de forma máis privada. Isto non afectará ao modo no que os sitios web que visites e os servizos que uses (por exemplo, Google) recompilan os datos. Non obstante, gardaranse as descargas e os marcadores.</translation>
 <translation id="2541219929084442027">As páxinas que ves nas pestanas do modo de incógnito non se conservarán no historial do teu navegador, no almacenamento de cookies nin no historial de busca unha vez pechadas todas as pestanas do modo de incógnito. Conservaranse todos os ficheiros que descargues ou os marcadores que crees.</translation>
 <translation id="2541474152868747095">Para obter o historial dos teus outros dispositivos, verifica a túa identidade. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
@@ -1091,6 +1092,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2826760142808435982">A conexión cífrase e autentícase con <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
 <translation id="2828797285817981634">Permiso concedido para usar os sensores por agora</translation>
 <translation id="2835907903001172712">Vista xeral do navegador</translation>
+<translation id="2836653778330912701">Elemento seguinte fóra da vista</translation>
 <translation id="2837891525090413132">Pode pedir permiso para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
 <translation id="2839501879576190149">O sitio ao que te dirixes é falso</translation>
@@ -2071,6 +2073,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4412377069090572315">O que di a xente</translation>
 <translation id="4414515549596849729">cookies e datos dos sitios</translation>
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
+<translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4415426530740016218">Enderezo de recollida</translation>
 <translation id="4415748029120993980">SECG Elliptic Curve secp384r1 (tamén se denomina NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2446,6 +2449,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5053116470141135293">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
 <translation id="5056587122125565772">Crear imaxe</translation>
+<translation id="5056908537436373373">Abrir a ventá <ph name="WINDOW_INDEX" /> (1 pestana) nunha ventá nova</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
 <translation id="5058282932481719070">máis información sobre a función de autocompletar mellorada en Configuración</translation>
 <translation id="5061227663725596739">Querías dicir "<ph name="LOOKALIKE_DOMAIN" />"?</translation>
@@ -2542,6 +2546,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5216942107514965959">Visitouse hoxe por última vez</translation>
 <translation id="5217759126664161410">O formato de protocolo non é válido.</translation>
 <translation id="5221377878828867877">A túa organización supervisa a reutilización de contrasinais</translation>
+<translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5222812217790122047">É obrigatorio introducir o correo electrónico</translation>
 <translation id="5226979307236834587">Como podo rexeitar plans de forma educada?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3071,6 +3076,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6097297436119286254">Verifica a túa identidade para completar a túa información de pago</translation>
 <translation id="6099269767116481177">22 x 29,5 polgadas</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Esta política está pensada para aplicarse no nivel de máquina. O seu comportamento cando se aplica como política de usuario non se admite oficialmente e quedará obsoleto.</translation>
 <translation id="6105460996796456817">Crear sitio</translation>
 <translation id="6105511947520166941">Paga con Pix directamente en Chrome a próxima vez</translation>
 <translation id="6105745639559695088">Activar/desactivar barra lateral</translation>
@@ -3182,6 +3188,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6284292079994426700">26 × 38 in</translation>
 <translation id="6284517535531159884">Tipo de orixe das variacións</translation>
 <translation id="6287197303017372967">Obter indicacións paso a paso ata o teu destino mediante a función de navegación.</translation>
+<translation id="6287497864845330943">Ventá <ph name="WINDOW_NUMBER" /> · <ph name="NUM_TABS" /> pestanas</translation>
 <translation id="628877850550444614">Desconto atopado</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6292819926564202163">O teu buscador en Chrome</translation>
@@ -3220,6 +3227,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6342069812937806050">Agora mesmo</translation>
 <translation id="6342171901363060580">Móstrase esta advertencia porque este sitio non é compatible con HTTPS e estás no modo de incógnito. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Indicacións</translation>
+<translation id="6345664705388712774">Engadir as imaxes á busca</translation>
 <translation id="6348220984832452017">Variacións activas</translation>
 <translation id="6349101878882523185">Instalar a aplicación <ph name="APP_NAME" /></translation>
 <translation id="6350739641326887427">Paga sen copiar e pegar o código de Pix. <ph name="BEGIN_LINK1" />Ver como funciona<ph name="END_LINK1" /></translation>
@@ -3612,6 +3620,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7013835112918108252">Podes pedir permiso para bloquear e usar o rato</translation>
 <translation id="7013844825046560088">Chrome rexistra como usas a función (por exemplo, as solicitudes que fas e o comportamento que tes cando aceptas ou ignoras suxestións)</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
+<translation id="7016016144157344115">Ventá <ph name="WINDOW_NUMBER" /> · 1 pestana</translation>
 <translation id="7016992613359344582">Ten en conta que estes cargos poden ser únicos ou periódicos e que quizais non se indiquen de forma evidente.</translation>
 <translation id="7020464868401003526">O URL do atallo supera a lonxitude máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="7020581144940000377">Usar localización aproximada</translation>
@@ -4161,6 +4170,7 @@ Detalles adicionais:
 <translation id="7911651285409665023">Pechar e volver a <ph name="TAB_TITLE" /></translation>
 <translation id="7912924955815015552">Importados de Safari</translation>
 <translation id="7916162853251942238">Base flexográfica</translation>
+<translation id="7916802424606434188">Abrir a ventá <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> pestanas) nunha ventá nova</translation>
 <translation id="791698251820376781">A túa organización non permite que inicies sesión</translation>
 <translation id="7927046851848613453">Garda entradas, eventos e outra información das páxinas que consultes, non só dos formularios que completes. Despois, accede rapidamente aos teus pases, como entradas de eventos e tarxetas de fidelidade. A información que gardes pode mostrarse nos teus dispositivos e nos produtos de Google.</translation>
 <translation id="7930282586031445870">Pantalla das condicións de servizo do pago aprazado pechada.</translation>
@@ -4662,6 +4672,7 @@ Detalles adicionais:
 <translation id="8800034312320686233">O sitio non funciona?</translation>
 <translation id="8803251172194676606">Deseña unha rutina de exercicios personalizada</translation>
 <translation id="8803526663383843427">Se a función está activada</translation>
+<translation id="8804164990146287819">Política de privacidade</translation>
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": ignorouse a entrada debido a que tamén está incluída na política SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plástico (satinado)</translation>
 <translation id="8807160976559152894">Recorte despois de cada páxina</translation>
@@ -4725,6 +4736,7 @@ Detalles adicionais:
 <translation id="8903998444169664879">Verifica a túa identidade para cambiar a configuración de pago</translation>
 <translation id="890493561996401738">Botón Quitar suxestión, preme Intro para quitala, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 in</translation>
+<translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8918062451146297192">CVC da tarxeta virtual</translation>
 <translation id="8919895429178014996">Ocultar todos os elementos</translation>

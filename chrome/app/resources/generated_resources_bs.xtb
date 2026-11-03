@@ -7041,6 +7041,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6399675241776343019">Odbijeno</translation>
 <translation id="6399774419735315745">Špijunka</translation>
 <translation id="6400360390396538896">Uvijek na <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Ukloni fokus s grupe kartica</translation>
 <translation id="6401118106417399952">EID uređaja je <ph name="EID_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ovi brojevi mogu pomoći prilikom aktiviranja usluge.</translation>
 <translation id="6402042774506839496">Da saznate zašto, kontaktirajte programera aplikacije</translation>
 <translation id="6402921224457714577">Web lokacije mogu zatražiti da kontroliraju i reprogramiraju MIDI uređaje</translation>
@@ -10089,6 +10090,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8708000541097332489">Obriši pri zatvaranju</translation>
 <translation id="870805141700401153">Microsoft pojedinačno potpisivanje izvršnog koda</translation>
 <translation id="8708671767545720562">&amp;Više informacija</translation>
+<translation id="8709234440040320647">(Izolirani način rada)</translation>
 <translation id="8709368517685334931">Starije boje možete pronaći u Chrome Web trgovini</translation>
 <translation id="8710414664106871428">Fantastika</translation>
 <translation id="8711402221661888347">Krastavčići</translation>
@@ -10253,6 +10255,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="8836360711089151515">Domena <ph name="MANAGER" /> zahtijeva da napravite sigurnosnu kopiju podataka i vratite ovaj uređaj <ph name="DEVICE_TYPE" /> u roku od 1 sedmice. <ph name="LINK_BEGIN" />Prikaži detalje<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{Napusti grupu}one{Napusti grupe}few{Napusti grupe}other{Napusti grupe}}</translation>
 <translation id="8836782447513334597">nastavite</translation>
+<translation id="8837072669197607689">Dozvoli u izoliranom načinu rada</translation>
 <translation id="8837573527470979311">Zamijeni donjim prikazom</translation>
 <translation id="8838601485495657486">Neprovidno</translation>
 <translation id="8838770651474809439">Hamburger</translation>
@@ -10543,6 +10546,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="9043767139743235992">Kontaktirajte Googleovu podršku za osobe s invaliditetom</translation>
 <translation id="9044646465488564462">Povezivanje na mrežu nije uspjelo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lista za čitanje je premještena na novu bočnu ploču. Isprobajte je ovdje.</translation>
+<translation id="9046240419485318563">Pregledajte Pamćenje</translation>
 <translation id="9048745018038487540">Odaberi sve fontove</translation>
 <translation id="9050666287014529139">Pristupni izraz</translation>
 <translation id="905137631551495997">Ekstenzije</translation>

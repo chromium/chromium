@@ -2071,6 +2071,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4412377069090572315">Lietotāju atsauksmes</translation>
 <translation id="4414515549596849729">sīkfaili un vietņu dati</translation>
 <translation id="4415156962929755728">Plastmasa (augsti glancēta)</translation>
+<translation id="4415276339145661267">Google konta pārvaldība</translation>
 <translation id="4415426530740016218">Saņemšanas adrese</translation>
 <translation id="4415748029120993980">SECG eliptiska līkne secp384r1 (jeb NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2235,6 +2236,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4732860731866514038">Notiek šādas valodas pakotnes lejupielāde: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu ierīces atrašanās vietu.</translation>
 <translation id="473414950835101501">Izmantot jūsu kameras</translation>
+<translation id="4735688073239574197">Pāriet uz leju</translation>
 <translation id="4736089601076994090">Derīguma termiņš: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Restartējiet pārlūku Chromium</translation>
 <translation id="4736934858538408121">Virtuāla karte</translation>
@@ -2543,6 +2545,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5216942107514965959">Pēdējoreiz apmeklēta šodien</translation>
 <translation id="5217759126664161410">Nederīgs protokola formāts.</translation>
 <translation id="5221377878828867877">Paroles atkārtotu lietošanu pārrauga jūsu organizācija</translation>
+<translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5222812217790122047">Jānorāda e-pasta adrese.</translation>
 <translation id="5226979307236834587">Kā pieklājīgi noraidīt plānus?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3072,6 +3075,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6097297436119286254">Verificējiet savu identitāti, lai varētu aizpildīt maksājumu informāciju.</translation>
 <translation id="6099269767116481177">22 x 29,5 collas</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Šī politika ir paredzēta piemērošanai ierīces līmenī. Ja tā tiek piemērota kā lietotāja politika, tās darbība netiek oficiāli atbalstīta un tiks pārtraukta.</translation>
 <translation id="6105460996796456817">Izveidot vietni</translation>
 <translation id="6105511947520166941">Nākamreiz maksājiet ar Pix tieši pārlūkā Chrome</translation>
 <translation id="6105745639559695088">Pārslēgt sānjoslu</translation>
@@ -4669,6 +4673,7 @@ Papildu informācija:
 <translation id="8800034312320686233">Vai vietne nedarbojas?</translation>
 <translation id="8803251172194676606">Izveido pielāgotu fitnesa nodarbību</translation>
 <translation id="8803526663383843427">Ja ieslēgta</translation>
+<translation id="8804164990146287819">Konfidencialitātes politika</translation>
 <translation id="8805819170075074995">Saraksta ieraksts “<ph name="LANGUAGE_ID" />”: ieraksts tiek ignorēts, jo tas ir iekļauts arī SpellcheckLanguage politikā.</translation>
 <translation id="8806696968588872703">Plastmasa (satinēta)</translation>
 <translation id="8807160976559152894">Apgriešana pēc katras lapas</translation>
@@ -4732,6 +4737,7 @@ Papildu informācija:
 <translation id="8903998444169664879">Verificējiet savu identitāti, lai varētu mainīt maksājumu iestatījumus.</translation>
 <translation id="890493561996401738">Ieteikuma noņemšanas poga, nospiediet ievadīšanas taustiņu, lai noņemtu, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 collas</translation>
+<translation id="8912362522468806198">Google konts</translation>
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>
 <translation id="8918062451146297192">Virtuālās kartes CVC</translation>
 <translation id="8919895429178014996">Paslēpt visus vienumus</translation>

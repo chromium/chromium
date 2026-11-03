@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">ផ្ដល់ជូន Google បកប្រែសម្រាប់​គេហទំព័រជាភាសាផ្សេងទៀត</translation>
 <translation id="1384959399684842514">បានផ្អាកការទាញយក</translation>
 <translation id="1386966479075994683">ពង្រីកផ្ទាំង</translation>
+<translation id="1387227841274754059">សួរ​អំពី​អេក្រង់​របស់អ្នក​ដោយប្រើ Google Lens</translation>
 <translation id="1388253969141979417">អនុញ្ញាតឱ្យប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
 <translation id="139013308650923562">អនុញ្ញាតឱ្យប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="1390306150250850355">បានដំឡើង<ph name="APP_TYPE" /> ជាមុន​នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក</translation>
@@ -4759,6 +4760,7 @@
 <translation id="4610637590575890427">តើអ្នកពិតជាចង់ទៅ <ph name="SITE" />?</translation>
 <translation id="4611619000650855880">នៅពេលប៊ូតុងម៉ៅស៍ខាងឆ្វេងត្រូវបានជ្រើសរើស ប្រើ “/” ដើម្បីចុចពីរដង</translation>
 <translation id="4613271546271159013">កម្មវិធីបន្ថែមបានប្តូរអ្វីដែលទំព័របានបង្ហាញ នៅពេលអ្នកបើកផ្ទាំងថ្មី។</translation>
+<translation id="4616024182698834938">អូស​ហើយ​ទម្លាក់​ឯកសារ​នៅទីនេះ</translation>
 <translation id="461613135510474570">ឃ្លា</translation>
 <translation id="461661862154729886">ប្រភព​ថាមពល</translation>
 <translation id="4617001782309103936">ខ្លី​ពេក</translation>
@@ -5588,6 +5590,7 @@
 <translation id="5230190638672215545">វាយបញ្ចូល "uow" ដើម្បីទទួលបាន "ươ"</translation>
 <translation id="5230516054153933099">វិនដូ</translation>
 <translation id="5231255476752743708">Chrome ត្រូវការ​ជំនួយ​ក្នុងការ​ប្ដូរពាក្យសម្ងាត់​របស់អ្នក</translation>
+<translation id="5232607425694431024">សួរអំពី​ឯកសារ ឬ​រូបភាព</translation>
 <translation id="5232714764496316200">ទទួលបានជំនួយកិច្ចការសាលាដោយប្រើ Google Lens</translation>
 <translation id="5233231016133573565">លេខសម្គាល់ដំណើរការ</translation>
 <translation id="5233638681132016545">ផ្ទាំងថ្មី</translation>
@@ -7041,6 +7044,7 @@
 <translation id="6399675241776343019">បាន​បដិសេធ</translation>
 <translation id="6399774419735315745">អ្នកស៊ើបការ</translation>
 <translation id="6400360390396538896">នៅ​លើ <ph name="ORIGIN" /> ជានិច្ច</translation>
+<translation id="6400714103322134861">ឈប់ផ្ដោតលើ​ក្រុមផ្ទាំង</translation>
 <translation id="6401118106417399952">EID ឧបករណ៍​របស់អ្នក​គឺ <ph name="EID_NUMBER" /> ហើយលេខស៊េរី​ឧបករណ៍គឺ <ph name="SERIAL_NUMBER" />។ លេខ​ទាំង​នេះ​អាច​ត្រូវ​បាន​ប្រើប្រាស់​ដើម្បី​ជួយ​បើក​ដំណើរការ​សេវាកម្ម។</translation>
 <translation id="6402042774506839496">ដើម្បី​ស្វែងយល់​អំពី​មូលហេតុ សូម​ទាក់ទងទៅ​អ្នក​អភិវឌ្ឍន៍​កម្មវិធី</translation>
 <translation id="6402921224457714577">គេហទំព័រ​អាចស្នើសុំ​គ្រប់គ្រង និង​សរសេរកម្មវិធី​ឧបករណ៍ MIDI របស់អ្នក​ឡើងវិញ</translation>
@@ -7735,6 +7739,7 @@
 <translation id="6913051485529944333">អ្នកនឹង​មិនឃើញ Google ប្រតិទិន​នៅលើ​ទំព័រនេះ​ទៀត​ទេ</translation>
 <translation id="6914812290245989348">មិនមើលឃើញ​សារប្រុងប្រយ័ត្ន មុនពេល​ចូលទៅកាន់​គេហទំព័រ​ដែលគ្មានសុវត្ថិភាព</translation>
 <translation id="6916590542764765824">គ្រប់គ្រងកម្មវិធីបន្ថែម</translation>
+<translation id="6916630302999048499">កិច្ចការ Gemini កំពុង​ដំណើរការ</translation>
 <translation id="6916676294509106572">បានលាក់ប្រតិទិន Outlook</translation>
 <translation id="6916818963747321523">ពង្រីក​ទាំងអស់</translation>
 <translation id="6917873303492266709">ដើម្បី​ចែករំលែក ចូលរួម និង​សហការ​នៅក្នុង​ក្រុមផ្ទាំង សូមបើកការកំណត់ រួចបើក "អនុញ្ញាតការចូល Chrome"</translation>
@@ -8263,6 +8268,7 @@
 <translation id="733058866272972585">គេហទំព័រនេះ​ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ប្រើប្រាស់​លេខកូដ​សម្គាល់ ដើម្បី​ចាក់​ខ្លឹមសារដែល​ទទួលបាន​ការការពារទេ។</translation>
 <translation id="7331646370422660166">alt + ព្រួញចុះក្រោម</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">បានចាប់ផ្ដើម</translation>
 <translation id="7333388112938984914">មិនអាច​បង្ហោះ​ឯកសារ នៅពេលប្រើ​ការ​តភ្ជាប់អ៊ីនធឺណិតផ្អែកតាមទិន្នន័យដែលប្រើ​បានទេ។</translation>
 <translation id="7335974957018254119">ប្រើ​ការពិនិត្យអក្ខរាវិរុទ្ធ​សម្រាប់</translation>
 <translation id="7336799713063880535">បានទប់ស្កាត់ការជូនដំណឹង។</translation>
@@ -10309,6 +10315,7 @@
 <translation id="8876307312329369159">ការកំណត់នេះ​មិនអាចប្ដូរ​នៅក្នុងរយៈពេលចូលប្រើសាកល្បង​បានទេ។</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ប្រើការស្កេនរកប៊្លូធូស ដើម្បីស្វែងរកឧបករណ៍នៅជិត។</translation>
 <translation id="8877448029301136595">[ថតឯកសារមេ]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />៖ បាន​ចាប់ផ្ដើម</translation>
 <translation id="8879284080359814990">បង្ហាញជាផ្ទាំង</translation>
 <translation id="8879921471468674457">ចងចាំព័ត៌មាន​ចូលគណនី</translation>
 <translation id="8880009256105053174">&amp;ស្វែងរក​ទំព័រនេះ​តាមរយៈ Google...</translation>

@@ -7045,6 +7045,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6399675241776343019">Afvist</translation>
 <translation id="6399774419735315745">Spion</translation>
 <translation id="6400360390396538896">Altid på <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">Fjern fokus fra fanegruppe</translation>
 <translation id="6401118106417399952">Din enheds EID-nummer er <ph name="EID_NUMBER" />, og enhedens serienummer er <ph name="SERIAL_NUMBER" />. Disse numre kan bruges til at aktivere tjenesten.</translation>
 <translation id="6402042774506839496">Kontakt appudvikleren for at få flere oplysninger</translation>
 <translation id="6402921224457714577">Websites kan anmode om at styre og omprogrammere dine MIDI-enheder</translation>
@@ -10548,6 +10549,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9043767139743235992">Kontakt Googles support til brugere med handicap</translation>
 <translation id="9044646465488564462">Det var ikke muligt at oprette forbindelse til netværket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Din læseliste er blevet flyttet til det nye sidepanel. Prøv det her.</translation>
+<translation id="9046240419485318563">Gennemse referencehukommelse</translation>
 <translation id="9048745018038487540">Vælg alle skrifttyper</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
 <translation id="905137631551495997">Udvidelser</translation>

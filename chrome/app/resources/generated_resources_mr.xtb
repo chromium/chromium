@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">इतर भाषांमधील वेबसाइटसाठी Google Translate ची सुविधा द्या</translation>
 <translation id="1384959399684842514">डाउनलोडला विराम दिला</translation>
 <translation id="1386966479075994683">टॅबचा विस्तार करा</translation>
+<translation id="1387227841274754059">Google Lens वापरून तुमच्या स्क्रीनबद्दल विचारा</translation>
 <translation id="1388253969141979417">तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
 <translation id="139013308650923562">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्याची अनुमती द्या</translation>
 <translation id="1390306150250850355">तुमच्या <ph name="DEVICE_TYPE" /> वर <ph name="APP_TYPE" /> प्रीइंस्टॉल केले आहे</translation>
@@ -4759,6 +4760,7 @@
 <translation id="4610637590575890427">तुम्हाला <ph name="SITE" /> कडे जायचे असे म्हणायचे होते काय?</translation>
 <translation id="4611619000650855880">डावे माउस बटण निवडले जाते, तेव्हा डबल-क्लिक करण्यासाठी “/” वापरा</translation>
 <translation id="4613271546271159013">तुम्ही नवीन टॅब उघडता तेव्हा कोणते पेज दर्शविले जाते हे एक्स्टेंशनने बदलले आहे.</translation>
+<translation id="4616024182698834938">फाइल ड्रॅग करून इथे ड्रॉप करा</translation>
 <translation id="461613135510474570">वाक्य</translation>
 <translation id="461661862154729886">ऊर्जा स्रोत</translation>
 <translation id="4617001782309103936">खूपच लहान</translation>
@@ -5589,6 +5591,7 @@
 <translation id="5230190638672215545">"ươ" मिळवण्यासाठी "uow" टाइप करा</translation>
 <translation id="5230516054153933099">विंडो</translation>
 <translation id="5231255476752743708">Chrome ला तुमचा पासवर्ड बदलण्यात मदत हवी आहे</translation>
+<translation id="5232607425694431024">फाइल किंवा इमेज यांबद्दल विचारा</translation>
 <translation id="5232714764496316200">Google Lens वापरून गृहपाठासंबंधित मदत मिळवा</translation>
 <translation id="5233231016133573565">प्रक्रिया आयडी</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
@@ -7044,6 +7047,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6399675241776343019">नाकारला</translation>
 <translation id="6399774419735315745">गुप्तचर</translation>
 <translation id="6400360390396538896">नेहमी सुरू <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">टॅब गट यावरील फोकस काढून टाका</translation>
 <translation id="6401118106417399952">तुमच्या डिव्हाइसचे EID <ph name="EID_NUMBER" /> आहे आणि डिव्हाइसचा सिरीअल नंबर <ph name="SERIAL_NUMBER" /> आहे. हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात.</translation>
 <translation id="6402042774506839496">कारण जाणून घेण्यासाठी, अ‍ॅप डेव्हलपरशी संपर्क साधा</translation>
 <translation id="6402921224457714577">साइट या तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याची विनंती करू शकतात</translation>
@@ -7738,6 +7742,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6913051485529944333">तुम्हाला या पेजवर Google Calendar पुन्हा दिसणार नाही</translation>
 <translation id="6914812290245989348">असुरक्षित साइटवर जाण्यापूर्वी कोणत्याही चेतावण्या पाहू नका</translation>
 <translation id="6916590542764765824">विस्तार व्यवस्थापित करा</translation>
+<translation id="6916630302999048499">Gemini टास्क रन होत आहे</translation>
 <translation id="6916676294509106572">Outlook Calendar लपवले आहे</translation>
 <translation id="6916818963747321523">सर्व विस्तृत करा</translation>
 <translation id="6917873303492266709">टॅब गटांमध्ये शेअर करण्यासाठी, सामील होण्यासाठी आणि सहयोग करण्यासाठी, सेटिंग्ज उघडा व Chrome मध्ये साइन-इन करण्याची अनुमती द्या</translation>
@@ -8267,6 +8272,7 @@ I feel - विटांची इमारत</translation>
 <translation id="733058866272972585">या साइटला संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्यापासून ब्लॉक केले आहे.</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
 <translation id="7332053360324989309">समर्पित कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">सुरू केली आहे</translation>
 <translation id="7333388112938984914">मीटर्ड कनेक्शनवर असताना फाइल अपलोड करू शकत नाही.</translation>
 <translation id="7335974957018254119">यासाठी स्पेल चेक वापरा</translation>
 <translation id="7336799713063880535">सूचना ब्लॉक केल्या.</translation>
@@ -10312,6 +10318,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8876307312329369159">हे सेटिंग डेमो सत्रामध्ये बदलले जाऊ शकत नाही.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> हे जवळपासची डिव्हाइस शोधण्यासाठी ब्लूटूथ स्कॅनिंग वापरते.</translation>
 <translation id="8877448029301136595">[मूळ डिरेक्टरी]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: सुरू केली आहे</translation>
 <translation id="8879284080359814990">टॅब म्हणून &amp;दर्शवा</translation>
 <translation id="8879921471468674457">साइन इन माहिती लक्षात ठेवा</translation>
 <translation id="8880009256105053174">हे पेज Google वर शोधा…</translation>

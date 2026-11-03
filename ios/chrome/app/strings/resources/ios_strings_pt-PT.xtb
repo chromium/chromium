@@ -40,6 +40,7 @@
 <translation id="1085677983426914530">Não foi possível abrir o ficheiro <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
 <translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
+<translation id="1096245844813536669">Envia a sua pesquisa automaticamente quando para de falar</translation>
 <translation id="1096992026380844478">As definições de sincronização vão ser restauradas com base na última cópia de segurança. <ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloqueie com o Face ID</translation>
@@ -718,6 +719,7 @@
 <translation id="3186796054637504691">Limpar histórico e dados dos sites</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
 <translation id="3190736958609431397">Desativar acompanhamento</translation>
+<translation id="3192820089569442694">Algo correu mal com o seu pedido de exclusão de dados</translation>
 <translation id="3208260410153224535">A sua organização desativou o início de sessão. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
 <translation id="3211969308836412674">Desafixar site</translation>
 <translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
@@ -784,6 +786,7 @@
 <translation id="344589138074534176">Saiba mais acerca do Google Lens</translation>
 <translation id="3449029510150690417">Crie o seu novo grupo de separadores atribuindo-lhe um nome e uma cor</translation>
 <translation id="345348365500626747">Morada encontrada</translation>
+<translation id="3453878468834191501">O separador atual é partilhado com o Gemini quando inicia um novo chat. <ph name="BEGIN_LINK" />Saiba mais sobre a IA e a privacidade<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Use o Live com o Gemini para fazer perguntas sobre uma página, debater ideias em voz alta e conversar.</translation>
 <translation id="3462768334899086950">Isto significa que vai perder o ficheiro não guardado e os separadores atuais</translation>
 <translation id="3464194322481586217">Não foi possível acompanhar o preço.</translation>
@@ -847,6 +850,7 @@
 <translation id="3641456520301071208">Os sites podem solicitar a sua localização</translation>
 <translation id="3642060527569456384">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {email}.}other{{count} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {email}.}}</translation>
+<translation id="3657176844107584515"><ph name="EMAIL" />, subscrição da Google.</translation>
 <translation id="3659297405161482746">Não foram encontrados métodos de pagamento</translation>
 <translation id="3662966164093827811">{count,plural, =1{1 selecionado}other{# selecionados}}</translation>
 <translation id="3668035568083954765">Proteja a sua privacidade e mantenha-se em segurança</translation>
@@ -943,6 +947,7 @@
 <translation id="3955740319737378355">Concluir</translation>
 <translation id="3955822496205734389">Tem palavras-passe fracas.</translation>
 <translation id="3957016963627617921">Faça mais com o Gemini no Chrome</translation>
+<translation id="3957737662589242353"><ph name="NAME" />, <ph name="EMAIL" />, subscrição da Google.</translation>
 <translation id="3958312024468322930">Arraste-o para a dock na parte inferior do ecrã principal</translation>
 <translation id="3962326069546168954">Guardar</translation>
 <translation id="3967327056943561740">Marcadores</translation>
@@ -1618,6 +1623,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6078236141387574983">Reajuste a altura da página</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6089212833343035912">PIN do Gestor de Palavras-passe da Google</translation>
+<translation id="6090690847556987004">Algo correu mal com esta definição. Atualize o Chrome e o iPadOS, e reinicie o dispositivo para tentar novamente. Se isto continuar a acontecer, o seu iPhone pode não ser compatível com esta definição.</translation>
 <translation id="6090760257419195752">Avisos ignorados</translation>
 <translation id="6094325891006032858">Ative a Navegação segura melhorada</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado(s)</translation>
@@ -1939,7 +1945,6 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="6979737339423435258">Sempre</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6983306615164277634">Também pode tocar sem soltar na barra de endereço para alterar a posição.</translation>
-<translation id="6987201788018524855">Explore funcionalidades úteis que ainda não conhece</translation>
 <translation id="6989636517316575338">Faça perguntas sobre qualquer página</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">Todas as tarefas</translation>
@@ -2089,6 +2094,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7486006552035434095">Mantenha os seus dispositivos sincronizados</translation>
 <translation id="7491131399623468277">Aceder às Definições…</translation>
 <translation id="7491161827858509164">Para ver os ficheiros que transferiu anteriormente, abra a app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
+<translation id="7496554840683586365">Este site está a tentar abrir a App Store. Esta ação faz com que saia da navegação anónima.</translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
 <translation id="7500244509706269886">Preencher automaticamente formulário</translation>
 <translation id="750493650310597496">0 selecionados</translation>
@@ -2112,6 +2118,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
+<translation id="7562347727679121642">Adicionar imagem à pesquisa</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo partilhado de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Os marcadores estão ocultos</translation>
 <translation id="7575664680938145959">Abertura de links com um toque</translation>
@@ -2623,6 +2630,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9090979472668095374">Ouvir respostas</translation>
 <translation id="9094033019050270033">Atualizar a palavra-passe</translation>
 <translation id="9098541895599151034">Apagar <ph name="NUMBER_OF_ACCOUNTS" /> palavras-passe?</translation>
+<translation id="909874878420399003">Envio automático</translation>
 <translation id="9099233023029360602">Perguntar sempre que conta usar</translation>
 <translation id="9099821309562615674">Certifique-se de que o texto que está a traduzir é nítido e está enquadrado.</translation>
 <translation id="9100610230175265781">Frase de acesso obrigatória</translation>
@@ -2656,6 +2664,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9203951165704618409">Mude a barra de endereço de cima para baixo para ter uma experiência de navegação personalizada.</translation>
 <translation id="9205189991633470489">Bloqueio da Navegação anónima</translation>
 <translation id="9206887540681440657">Velocidade</translation>
+<translation id="9218088788182688902">Algo correu mal com esta definição. Atualize o Chrome e o iPadOS, e reinicie o dispositivo para tentar novamente. Se isto continuar a acontecer, o seu iPad pode não ser compatível com esta definição.</translation>
 <translation id="9218430445555521422">Predefinir</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219154867334666734">Pesquisar separadores…</translation>

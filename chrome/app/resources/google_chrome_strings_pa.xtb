@@ -22,6 +22,7 @@
 <translation id="1125124144982679672">Chrome ਕੌਣ ਵਰਤ ਰਿਹਾ ਹੈ?</translation>
 <translation id="1142745911746664600">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1148360048981192980">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chrome ਖੋਲ੍ਹੋਗੇ, ਤਾਂ ਤੁਹਾਨੂੰ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਇੱਕ ਪ੍ਰੋਂਪਟ ਦਿਖਾਈ ਦੇਵੇਗਾ।</translation>
+<translation id="1150418667633096194">ਟੂਲਬਾਰ 'ਤੇ "Google Search ਸਾਈਡ ਪੈਨਲ" ਬਟਨ ਵਿੱਚ ਇੱਕ ਨਵਾਂ ਪ੍ਰਤੀਕ ਹੈ। Google Search ਸਾਈਡ ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="1152920704813762236">ChromeOS ਬਾਰੇ</translation>
 <translation id="1154147086299354128">&amp;Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1157952955648710254">Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -52,11 +53,13 @@
 <translation id="1439793550875056299">Chrome ਨੂੰ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="1446616215961349840">{COUNT,plural, =1{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀ ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹੇਗੀ।}one{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀ # ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹੇਗੀ।}other{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀਆਂ # ਆਇਸੋਲੇਟਿਡ ਵਿੰਡੋਆਂ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੀਆਂ।}}</translation>
 <translation id="146866447420868597">ਕੀ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1470136641087909499">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Chrome ਵਿੱਚ Google Search ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="1476347941828409626">Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਦਾ &amp;ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1492280395845991349">Chrome ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="1497802159252041924">ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">ਆਪਣੇ ਨਵੇਂ Chrome ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="1518627427551567882">ਇਹ ਪੰਨਾ ਸੁਰੱਖਿਅਤ ਹੈ</translation>
+<translation id="15408169957028265">Chrome ਵਿੱਚ Google Search ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
 <translation id="1547295885616600893">ChromeOS ਨੂੰ ਵਧੀਕ <ph name="BEGIN_LINK_CROS_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_CROS_OSS" /> ਕਰਕੇ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="1547469039832541117">ਉਜਾਗਰ ਕੀਤੇ ਕਾਰਜ ਨੂੰ ਸਮਾਪਤ ਕਰਦਾ ਹੈ।</translation>
 <translation id="1553358976309200471">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
@@ -89,6 +92,7 @@
 <translation id="1713301662689114961">{0,plural, =1{Chrome ਇੱਕ ਘੰਟੇ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}one{Chrome # ਘੰਟੇ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}other{Chrome # ਘੰਟਿਆਂ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}}</translation>
 <translation id="1722488837206509557">ਇਹ ਤੁਹਾਨੂੰ ਉਪਲਬਧ ਡੀਵਾਈਸਾਂ ਵਿੱਚੋਂ ਚੁਣਨ ਅਤੇ ਉਨ੍ਹਾਂ 'ਤੇ ਸਮੱਗਰੀ ਦਿਖਾਉਣ ਦੀ ਆਗਿਆ ਦੇਵੇਗਾ।</translation>
 <translation id="1724094881572874997">Chrome 'ਤੇ ਤੁਹਾਡੇ ਕੰਮ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ 'ਤੇ ਕੁਝ ਖਾਸ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖ ਸਕੇਗੀ ਜਾਂ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕੇਗੀ।</translation>
+<translation id="1769661297620183092">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="177180974022074201">Chrome ਵਿੱਚ Gemini ਨਾਲ ਅਜ਼ਮਾਓ</translation>
 <translation id="1786003790898721085">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਆਪਣੇ <ph name="TARGET_DEVICE_NAME" /> 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਭੇਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1786044937610313874">ਸ਼ਾਰਟਕੱਟ Chrome ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ</translation>
@@ -107,6 +111,7 @@
 <translation id="1880677175115548835">ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="1896602904211344018">Chrome ਐਪ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1919130412786645364">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
+<translation id="1925069572871307609">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ Windows 10 ਵਰਜਨ 1809 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ Windows 10 ਦਾ ਪੁਰਾਣਾ ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="1953553007165777902">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="MINUTE" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="1975400514743766362">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chrome ਐਪ ਨਾਲ ਤੁਰਦੇ-ਫਿਰਦੇ Google ਦੀ ਸੁਰੱਖਿਆ ਦਾ ਲਾਹਾ ਲਓ</translation>
 <translation id="1979600810166324878">iOS ਲਈ Chrome 'ਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨਾਲ ਤੁਰਦੇ-ਫਿਰਦੇ ਸੁਰੱਖਿਅਤ ਰਹੋ</translation>
@@ -120,6 +125,7 @@
 <translation id="2040220733769034247">Chrome ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਅਤੇ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ QR ਕੋਡ ਸਕੈਨ ਕਰੋ।</translation>
 <translation id="2044908892530830113">Mac ਦੇ ਮੀਨੂ ਬਾਰ ਵਿੱਚ 'Chrome ਨਾਲ ਖੋਜੋ' ਨੂੰ ਦਿਖਾਓ ਅਤੇ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2050189601866423230">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search AI ਮੋਡ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="2060311596979880693">ਸਫਲਤਾ! ਤੁਸੀਂ ਹੁਣ Chrome ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="2091012649849228750">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ Windows 10 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ Windows 8 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2094648590148273905">ChromeOS Flex ਦੇ ਨਿਯਮ</translation>
 <translation id="2094919256425865063">ਕੀ ਫਿਰ ਵੀ Chrome ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
@@ -145,6 +151,7 @@
 <translation id="2216543877350048334">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="22791603784558743">Chrome Dev ਵਿੱਚ Gemini ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="2283228908180457226">ਨਵਾਂ ਪ੍ਰਤੀਕ, ਉਹੀ ਸ਼ਾਰਟਕੱਟ: Google Search ਸਾਈਡ ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2290014774651636340">Google API ਕੁੰਜੀਆਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ। Google Chrome ਦੀ ਕੁਝ ਫੰਕਸ਼ਨੈਲਿਟੀ ਬੰਦ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="2290095356545025170">ਕੀ ਤੁਸੀਂ ਪੱਕਾ Google Chrome ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2295218613066132598">Chrome ਸਾਈਟ ਦੇ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
@@ -207,6 +214,7 @@
 <translation id="2861074815332034794">Chrome ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2869959624320573933">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2875053229394024379">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ Gemini ਨਾਲ ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। <ph name="BEGIN_LINK" />Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="2876152561415416331">Google Search ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਨਿੱਜੀ ਕਿਵੇਂ ਰੱਖਦਾ ਹੈ<ph name="END_LINK" /> ਇਸ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="2885378588091291677">ਕੰਮ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="2888126860611144412">Chrome ਬਾਰੇ</translation>
@@ -222,9 +230,12 @@
 <translation id="3003694935412297923">ਸਾਰੇ ਕਾਰਜ</translation>
 <translation id="3018957014024118866">ਨਾਲ ਹੀ Chrome (<ph name="URL" />) ਤੋਂ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
+<translation id="3034219227076811559">Chrome ਵਿੱਚ Google Search</translation>
+<translation id="3037190258341683404">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Chrome ਵਿੱਚ Google Search ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3037517125981011456">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਪ੍ਰੋਂਪਟਾਂ ਨੂੰ ਦਿਖਾਉਂਦਾ ਹੈ</translation>
 <translation id="3037838751736561277">Google Chrome ਬੈਕਗ੍ਰਾਊਂਡ ਮੋਡ ਵਿੱਚ ਹੈ।</translation>
 <translation id="3038232873781883849">ਸਥਾਪਤ ਕਰਨ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
+<translation id="304285957253771186">ਚਿਤਾਵਨੀ: Google Chrome ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਤੋਂ ਨਹੀਂ ਰੋਕ ਸਕਦਾ। ਆਈਸੋਲੇਟਿਡ ਮੋਡ ਵਿੱਚ ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਇਸ ਵਿਕਲਪ ਨੂੰ ਅਣਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="3045032126857188731">ਅਨੁਵਾਦਿਤ ਭਾਸ਼ਾ: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ਵਿਚਾਰ ਵਿੰਡੋ ਬੰਦ ਕਰੋ</translation>
 <translation id="306179102415443347">Google Password Manager ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚਣ ਲਈ ਆਪਣਾ ਸ਼ਾਰਟਕੱਟ ਵਰਤੋ। ਤੁਸੀਂ ਆਪਣੇ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦੀ ਹੋਮ ਸਕ੍ਰੀਨ ਜਾਂ ਐਪ ਲਾਂਚਰ 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ।</translation>
@@ -328,6 +339,7 @@
 <translation id="3967822245660637423">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3968962723676998462">ਆਪਣੇ ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3973161977468201858">Google Chrome ਤੁਹਾਡੇ Password Manager ਡਾਟੇ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
+<translation id="3984557288004650913">ਟੂਲਬਾਰ 'ਤੇ "Chrome ਵਿੱਚ Google Search" ਬਟਨ ਤੋਂ, ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Chrome ਵਿੱਚ Google Search ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="400161754580828648">ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਵਾਸਤੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="4012899077942246412">ਜਦੋਂ ਤੁਸੀਂ ਸਾਈਨ-ਇਨ ਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਬਦਲਣ ਲਈ, “Chrome ਵਿੱਚ ਤੁਹਾਡਾ ਖਾਤਾ” 'ਤੇ ਜਾਓ।</translation>
 <translation id="4022972681110646219">ਸਕ੍ਰੀਨ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -402,6 +414,7 @@
 <translation id="4768676935374695498">Google Lens ਨਾਲ ਇਸ ਵੀਡੀਓ ਨੂੰ ਖੋਜੋ</translation>
 <translation id="479167709087336770">ਇਹ Google Search ਵੇਲੇ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਸਪੈੱਲ-ਚੈਕਰ ਨੂੰ ਹੀ ਵਰਤਦਾ ਹੈ। ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ। ਤੁਸੀਂ ਹਮੇਸ਼ਾਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸ ਵਤੀਰੇ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4793679854893018356">ਜਾਣੋ ਕਿ Chrome ਤੁਹਾਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
+<translation id="4803313124144656665">Chrome ਵਿੱਚ Google Search ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4828579605166583682">Google Chrome ਮੌਜੂਦਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="4836321460899997044">Chrome ਪ੍ਰੋਫਾਈਲ</translation>
 <translation id="4839733921943823254">ਸ਼ਾਰਟਕੱਟ ਪਿੰਨ ਕਰੋ</translation>
@@ -452,6 +465,7 @@
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="5239627039202700673">ਸੁਨੇਹਿਆਂ, ਦਸਤਾਵੇਜ਼ਾਂ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਦਿੱਤੇ ਲਿੰਕਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰਨ ਵੇਲੇ Chrome ਵਰਤੋ</translation>
 <translation id="524751727772074981">Chrome ਵਿੱਚ Gemini ਨਾਲ, ਕਿਤੇ ਵੀ, ਕਦੇ ਵੀ, ਕੁਝ ਵੀ ਪੁੱਛੋ</translation>
+<translation id="5247617065091903691">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="5251420635869119124">ਮਹਿਮਾਨ ਕੁਝ ਵੀ ਪਿੱਛੇ ਛੱਡੇ ਬਿਨਾਂ Chrome ਵਰਤ ਸਕਦੇ ਹਨ।</translation>
 <translation id="5271833978500241046">ਉਨ੍ਹਾਂ ਨੂੰ Chrome ਵਿੱਚ ਹੋਰ Gemini ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੇ ਨਾਲ-ਨਾਲ ਵਰਤੋ</translation>
 <translation id="5286907366254680517">ਪਤਾ ਲੱਗਿਆ</translation>
@@ -473,6 +487,7 @@
 Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾਸਲ ਨਹੀਂ ਕਰ ਸਕਿਆ।</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ਨਾਲ ਵਰਤਣ ਲਈ Chrome ਪ੍ਰੋਫਾਈਲ ਚੁਣੋ</translation>
 <translation id="547202872422499512">ਹੁਣ Windows ਚਾਲੂ ਹੋਣ 'ਤੇ Chrome ਲਾਂਚ ਹੁੰਦਾ ਹੈ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਤੁਰੰਤ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰ ਸਕੋ। ਤੁਸੀਂ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="5482575505313585759">Google Search ਪੈਨਲ ਬੰਦ ਕਰੋ</translation>
 <translation id="5486346529181556467">ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਅਜਿਹੀ ਸਾਈਟ ਦੀ ਰਿਪੋਰਟ ਕਰਦੇ ਹੋ, ਜਿਸ ਬਾਰੇ ਤੁਹਾਨੂੰ ਲੱਗਦਾ ਹੈ ਕਿ ਇਹ ਨੁਕਸਾਨਦੇਹ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਹਰੇਕ ਲਈ ਆਨਲਾਈਨ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਂਦੇ ਹੋ। <ph name="BEGIN_LINK" />Google ਦੀ ਅਸੁਰੱਖਿਅਤ ਸਾਈਟ ਨੀਤੀ<ph name="END_LINK" /> ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
 <translation id="5503069778428381665">ਜਦੋਂ ਤੁਸੀਂ ਡੈਸਕਟਾਪ 'ਤੇ Google Lens ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋ, ਤਾਂ ਪੰਨਾ ਸਿਰਲੇਖ, URL ਅਤੇ ਸਮੱਗਰੀ, Google ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ, ਇਸ ਵਿੱਚ PDF ਵੀ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="5524890928877629608">ਖੋਜ ਖੇਤਰ ਦਾ ਸਿਖਰਲਾ ਖੱਬਾ ਕੋਨਾ: ਖੱਬੇ ਤੋਂ <ph name="LEFT" />%, ਸਿਖਰ ਤੋਂ <ph name="TOP" />%</translation>
@@ -490,6 +505,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="566568153320186256">Chrome ਸਮੂਥ ਸਕ੍ਰੋਲਿੰਗ ਕਰਨ ਅਤੇ ਵੀਡੀਓ ਫ੍ਰੇਮ ਰੇਟ ਵਰਗੀ ਬੈਕਗ੍ਰਾਊਂਡ ਸਰਗਰਮੀ ਅਤੇ ਦ੍ਰਿਸ਼ਟੀਗਤ ਪ੍ਰਭਾਵਾਂ ਨੂੰ ਸੀਮਤ ਕਰ ਕੇ ਬੈਟਰੀ ਪਾਵਰ ਬਚਾਉਂਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਊਰਜਾ ਸੇਵਰ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕਹਿੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ}=1{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕਹਿੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹੇਗੀ।}other{ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕਹਿੰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਅੱਪਡੇਟ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ। ਤੁਹਾਡੀਆਂ # ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਦੁਬਾਰਾ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੀਆਂ।}}</translation>
+<translation id="568656514202614970">ਸਫਲਤਾ! ਤੁਸੀਂ ਹੁਣ Google Search ਸਾਈਡ ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="5686916850681061684">Google Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਕੇ ਕੰਟਰੋਲ ਕਰੋ। ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ - ਵੇਰਵਿਆਂ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਨੂੰ ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
@@ -566,11 +582,14 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6288580400488258237">Google Chrome ਨੂੰ ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਵਜੋਂ ਸੈੱਟ ਕਰੋ ਅਤੇ ਇਸਨੂੰ ਆਪਣੇ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰੋ</translation>
 <translation id="6291089322031436445">Chrome Dev ਐਪਾਂ</translation>
 <translation id="6291549208091401781">Google Chrome ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
+<translation id="6294638840436017818">ਟੂਲਬਾਰ 'ਤੇ "Google Search ਸਾਈਡ ਪੈਨਲ" ਬਟਨ ਤੋਂ, ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
+<translation id="6308106880471005841">ਟੂਲਬਾਰ 'ਤੇ "Google Search ਪੈਨਲ" ਬਟਨ ਵਿੱਚ ਇੱਕ ਨਵਾਂ ਪ੍ਰਤੀਕ ਹੈ। Google Search ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6311220991371174222">ਤੁਹਾਡਾ ਪ੍ਰੋਫ਼ਾਈਲ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੁਝ ਗੜਬੜ ਵਾਪਰਨ ਕਾਰਨ Chrome ਨੂੰ ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। Chrome ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6319856120645568262">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ ਨਕਸ਼ਾ ਬਣਾਉਣ ਅਤੇ ਤੁਹਾਡੇ ਹੱਥਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6321592572353357376">ਐਕਸਟੈਂਸ਼ਨ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6326175484149238433">Chrome ਤੋਂ ਹਟਾਓ</translation>
 <translation id="6334815226785304306">Google Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਓ ਅਤੇ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰੋ</translation>
+<translation id="6339888439788291743">ਨਵਾਂ ਪ੍ਰਤੀਕ, ਉਹੀ ਸ਼ਾਰਟਕੱਟ: Google Search AI ਮੋਡ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="63540178978900677">Chrome ਹੁਣ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਹੈ। ਕੀ Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਉਣਾ ਹੈ?</translation>
 <translation id="6357670763064300993">Chrome ਵਿੱਚ Gemini Enterprise</translation>
 <translation id="6360449101159168105">ਜਦੋਂ ਇਹ ਟੈਬ ਅਕਿਰਿਆਸ਼ੀਲ ਸੀ, ਤਾਂ Chrome ਨੂੰ ਤੇਜ਼ ਚੱਲਦਾ ਰੱਖਣ ਲਈ ਮੈਮੋਰੀ ਖਾਲੀ ਕੀਤੀ ਗਈ। ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਤੋਂ ਹਮੇਸ਼ਾਂ ਬਾਹਰ ਰੱਖਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -620,6 +639,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6723445727540769832">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਐਪ ਨਾਲ Google ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓ</translation>
 <translation id="6734827584173583205">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="COUNT" /> ਹੋਰ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="6735387454586646204">ChromeOS Flex ਸਿਸਟਮ</translation>
+<translation id="674891594898436429">ਇਸ ਟੈਬ ਵਿੱਚ ਕਿਰਿਆਸ਼ੀਲ ਖੋਜ ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="6750954913813541382">ਸ਼ਬਦ-ਜੋੜ ਗੜਬੜੀਆਂ ਠੀਕ ਕਰਨ ਲਈ, Chrome, ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਾਈਪ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਲਿਖਤ Google ਨੂੰ ਭੇਜਦਾ ਹੈ</translation>
 <translation id="6760235774835597023">ਇਸ ਨਾਲ Chrome ਦੇ V8 ਇੰਜਣ ਨਾਲ ਸਾਈਟਾਂ ਦੀ ਗਤੀ ਵਧ ਜਾਂਦੀ ਹੈ, ਪਰ Chrome 'ਤੇ ਹਮਲਿਆਂ ਤੋਂ ਸੁਰੱਖਿਆ ਘਟ ਜਾਂਦੀ ਹੈ। ਇਹ ਸੈਟਿੰਗ ਚਾਲੂ ਹੈ।</translation>
 <translation id="677276454032249905">ਕੀ ਫਿਰ ਵੀ Chrome ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
@@ -638,6 +658,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="689368324615299626">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chrome ਐਪ ਨਾਲ Google ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲਓ</translation>
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6908182077349113099">ਆਪਣੇ ਪਾਸਵਰਡ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਡੀਵਾਈਸਾਂ ਵਿਚਕਾਰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸਿੰਕ ਰੱਖੋ। ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ Chrome 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਕੇ ਉਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੱਕ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ, ਜਿਨ੍ਹਾਂ ਬਾਰੇ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ ਅਤੇ ਪਸੰਦ ਕਰਦੇ ਹੋ।</translation>
+<translation id="6926772305569367352">ਟੂਲਬਾਰ 'ਤੇ "Chrome ਵਿੱਚ Google Search" ਬਟਨ ਦਾ ਇੱਕ ਨਵਾਂ ਪ੍ਰਤੀਕ ਹੈ। Chrome ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6930294499209825">ਤੁਹਾਡੇ Google ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਅੱਪ-ਟੂ-ਡੇਟ ਰੱਖਦਾ ਹੈ। ਜੇ ਇਹ ਸੇਵਾ ਅਸਮਰੱਥ ਜਾਂ ਬੰਦ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਤੁਹਾਡੇ Google ਸਾਫ਼ਟਵੇਅਰ ਨੂੰ ਅੱਪ-ਟੂ-ਡੇਟ ਨਹੀਂ ਰੱਖਿਆ ਜਾਵੇਗਾ, ਮਤਲਬ ਕਿ ਪੇਸ਼ ਆਉਣ ਵਾਲੀਆਂ ਸੁਰੱਖਿਆ ਕਮਜ਼ੋਰੀਆਂ ਸ਼ਾਇਦ ਹੱਲ ਨਹੀਂ ਹੋ ਸਕਣਗੀਆਂ ਅਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਣਗੀਆਂ। ਇਹ ਸੇਵਾ ਖੁਦ ਨੂੰ ਅਣਸਥਾਪਤ ਕਰ ਦਿੰਦੀ ਹੈ, ਜਦੋਂ ਕੋਈ Google ਸਾਫ਼ਟਵੇਅਰ ਇਸਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰਦਾ।</translation>
 <translation id="6933858244219479645">ChromeOS ਸਿਸਟਮ</translation>
 <translation id="6938166777909186039">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ Windows 10 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ Windows 8.1 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
@@ -674,6 +695,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7285616922384953075">Chrome ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਕਰਦਾ ਹੈ</translation>
 <translation id="7285990705317078173">ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨ ਅਤੇ ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤ ਘੱਟ ਹੋਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7288567540154601580">ਟੈਬਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
+<translation id="7290997427370476749">ਟੂਲਬਾਰ 'ਤੇ "Google Search ਪੈਨਲ" ਬਟਨ ਤੋਂ, ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="7296210096911315575">ਵਰਤੋਂ ਅਤੇ ਸੁਰੱਖਿਆ ਬਾਰੇ ਮਹੱਤਵਪੂਰਨ ਜਾਣਕਾਰੀ</translation>
 <translation id="7299899569525778554">ਡੈਸਕਟਾਪ ਤੋਂ ਖੋਜੋ</translation>
 <translation id="7302361266603927550">ਤੁਹਾਡੇ ਕੁਝ Chrome ਡਾਟੇ ਨੂੰ ਹਾਲੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਾਈਨ-ਆਊਟ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰ ਕੇ ਦੇਖੋ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਸ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
@@ -681,6 +703,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7308322188646931570">Chrome ਨੂੰ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਸਟੋਰੋਜ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7352651011704765696">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="7371412052245999753">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਹੋਰ ਐਪਲੀਕੇਸ਼ਨਾਂ ਤੋਂ Chrome ਦੀ ਮੈਮੋਰੀ ਦੀ ਰੱਖਿਆ ਕਰਦਾ ਹੈ।</translation>
+<translation id="7374061268215476070">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="73786666777299047">'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਲ੍ਹੋ</translation>
 <translation id="7386878009611068389">ਆਪਣੇ ਮਾਂ-ਪਿਓ ਦੀ ਚੋਣ ਵਾਲੇ ਵਿਕਲਪਾਂ ਨਾਲ ਆਨਲਾਈਨ ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ, ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਸਵਿੱਚ ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="7398801000654795464">ਤੁਸੀਂ <ph name="USER_EMAIL_ADDRESS" /> ਵਜੋਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਓਹੀ ਖਾਤਾ ਵਰਤੋ।</translation>
@@ -734,6 +757,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="778331955594035129">Chrome ਨੂੰ ਇਸ ਸਾਈਟ ਲਈ ਟਿਕਾਣਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7787950393032327779">ਪ੍ਰੋਫਾਈਲ ਦੂਜੇ ਕੰਪਿਊਟਰ (<ph name="HOST_NAME" />) 'ਤੇ ਦੂਜੀ Google Chrome ਪ੍ਰਕਿਰਿਆ (<ph name="PROCESS_ID" />) ਵਰਤੋਂ ਵਿੱਚ ਜਾਪਦੀ ਹੈ। Chrome ਨੇ ਪ੍ਰੋਫਾਈਲ ਲਾਕ ਕਰ ਦਿੱਤੀ ਹੈ ਤਾਂ ਜੋ ਇਹ ਖਰਾਬ ਹੋਣ ਤੋਂ ਬਚ ਸਕੇ। ਜੇਕਰ ਤੁਸੀਂ ਨਿਸ਼ਚਿਤ ਹੋ ਕਿ ਕੋਈ ਹੋਰ ਪ੍ਰਕਿਰਿਆਵਾਂ ਇਹ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਵਰਤ ਰਹੀਆਂ ਹਨ, ਤਾਂ ਤੁਸੀਂ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਅਣਲਾਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7800043020703832708">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ Google Search ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="7801317262080715012">ਨਵਾਂ ਪ੍ਰਤੀਕ, ਉਹੀ ਸ਼ਾਰਟਕੱਟ: Google Search ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="7801699035218095297">Google Chrome ਪਾਸਵਰਡ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="7804364787702057554">Chrome ਵਿੱਚ ਤੁਹਾਡਾ ਖਾਤਾ</translation>
 <translation id="7804947029129221742">ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ Chrome ਤੋਂ ਬਾਹਰ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, Chrome ਨੇ ਇਸਨੂੰ ਇਸਦੇ ਮੂਲ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ 'ਤੇ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਹੈ। <ph name="LEARN_MORE_LINK" /></translation>
@@ -788,7 +812,9 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8162006532256575008">ਖਾਤੇ ਤੋਂ ਬਿਨਾਂ Chrome ਨੂੰ ਵਰਤੋ</translation>
 <translation id="8172231188687329735">ਤੁਰਦੇ-ਫਿਰਦੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਲਈ Chrome ਐਪ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8177472873527554730">ਪੰਨੇ ਵਿੱਚ ਸਮੱਗਰੀ ਨੂੰ ਲੱਭਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
+<translation id="818985547157682832">ਟੂਲਬਾਰ 'ਤੇ "Google Search AI ਮੋਡ" ਬਟਨ ਵਿੱਚ ਇੱਕ ਨਵਾਂ ਪ੍ਰਤੀਕ ਹੈ। Google Search AI ਮੋਡ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8196526165798579689">Chrome Dev ਨਾਲ ਖੋਜੋ</translation>
+<translation id="8203105157044679380">Google Search ਪੈਨਲ</translation>
 <translation id="8221491193165283816">ਆਮ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬਲਾਕ ਕਰਦੇ ਹੋ। ਇਹ ਸਾਈਟ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰ ਸਕੇ, ਇਸ ਲਈ ਇੱਥੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8227493674161801700">Chrome ਬੀਟਾ ਨਾਲ ਖੋਜੋ</translation>
 <translation id="8233224921566021881">Chrome ਨੂੰ ਨਜ਼ਦੀਕੀ ਡੀਵਾਈਸਾਂ ਨੂੰ ਖੋਜਣ ਅਤੇ ਵਰਤਣ ਲਈ ਤੁਹਾਡੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ ਤੱਕ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
@@ -800,6 +826,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8291415872436043161">Chrome ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="829923460755755423">Google Password Manager ਦਾ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8313851650939857356">ਸਟਾਰਟ-ਅੱਪ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="STARTUP_ERROR" />.</translation>
+<translation id="8321058241987390452">ਸਫਲਤਾ! ਤੁਸੀਂ ਹੁਣ Google Search ਪੈਨਲ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="8321888067342493336">ਚਿੱਤਰ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8336463659890584292">ਜਦੋਂ ਕੋਈ ਸਾਈਟ ਆਪਣੇ ਪੰਨੇ 'ਤੇ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਲਿੰਕਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਕਹਿੰਦੀ ਹੈ, ਤਾਂ Chrome Google ਸਰਵਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। ਇਹ ਪ੍ਰੀਲੋਡ ਕੀਤੀ ਸਾਈਟ ਤੋਂ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਲੁਕਾਉਂਦਾ ਹੈ, ਪਰ Google ਨੂੰ ਪਤਾ ਲੱਗ ਜਾਂਦਾ ਹੈ ਕਿ ਕਿਹੜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8342675569599923794">ਇਹ ਫ਼ਾਈਲ ਖਤਰਨਾਕ ਹੈ, ਇਸ ਲਈ Chrome ਨੇ ਇਸਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -826,10 +853,12 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 
 ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਕੁਝ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਮਿਟਾ ਨਹੀਂ ਦਿੰਦੇ, ਉਦੋਂ ਤੱਕ ਨਵੇਂ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਜੇ ਤੁਸੀਂ ਹੁਣੇ ਸਾਈਨ-ਆਊਟ ਕਰਦੇ ਹੋ, ਤਾਂ ਅਣਰੱਖਿਅਤ ਬੁੱਕਮਾਰਕ ਮਿਟ ਜਾਣਗੇ।</translation>
 <translation id="8458117863387545390">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8467931559764188481">ਕਿਰਿਆਸ਼ੀਲ Google Search ਨੂੰ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="848851325211467878"><ph name="USER_NAME" />, <ph name="USER_EMAIL" />, Google ਮੈਂਬਰਸ਼ਿਪ ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਖਾਤਾ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">Google Chrome ਲਈ ਇੱਕ ਖਾਸ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਹੁਣੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਸੀ। ਹੁਣ ਇਸਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਅਸੀਂ ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਾਂਗੇ।</translation>
 <translation id="8502181052659370">Google Lens ਨਾਲ ਇਸ ਟੈਬ ਨੂੰ ਖੋਜੋ</translation>
+<translation id="8520489851087523435">Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
 <translation id="8521348052903287641">mDNS ਟ੍ਰੈਫਿਕ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਸਤੇ Google Chrome Dev ਲਈ ਇਨਬਾਊਂਡ ਨਿਯਮ।</translation>
 <translation id="852529348814672339">Chrome ਨੂੰ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="8525579356836940628">ਸਥਾਪਨਾ ਨੂੰ ਰੋਕਿਆ ਗਿਆ</translation>
@@ -838,6 +867,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8555465886620020932">ਸੇਵਾ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="8564408666201523086">ਸਫਲਤਾ! ਤੁਸੀਂ ਹੁਣ ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
 <translation id="856656450041460113">ਭਾਸ਼ਾ ਸੂਚੀ ਖੋਜੋ</translation>
+<translation id="8568499811906962479">ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search ਪੈਨਲ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="8575047640889685742">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਰੇ Chrome ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਆਪਣੇ <ph name="BEGIN_LINK" />ਖੁਦ ਦੇ ਪਾਸਫਰੇਜ਼<ph name="END_LINK" /> ਦੀ ਵਰਤੋਂ ਕਰੋ। Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8590782867495422699">Google Search AI ਮੋਡ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
 <translation id="8598779894319572882">ਟੂਲਬਾਰ 'ਤੇ "Google Search AI ਮੋਡ" ਬਟਨ ਤੋਂ, ਤੁਸੀਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ Google Search AI ਮੋਡ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
@@ -850,6 +880,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8656634243791296665">Chrome Dev ਵਿੱਚ Gemini ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8669527147644353129">Google Chrome ਸਹਾਇਕ</translation>
 <translation id="8679801911857917785">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
+<translation id="8689408573494410517">ਟੂਲਬਾਰ 'ਤੇ "ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ Google Search" ਬਟਨ ਦਾ ਨਵਾਂ ਪ੍ਰਤੀਕ ਹੈ। ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8699232386626916686">ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8712767363896337380">ਲਗਭਗ ਅੱਪ-ਟੂ-ਡੇਟ! ਅੱਪਡੇਟ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
@@ -870,8 +901,10 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8834965163890861871">Google Chrome ਪਾਸਵਰਡਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ। ਇਸਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ਆਪਣਾ Windows ਪਾਸਵਰਡ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="8841151363570555833">Mac ਦੇ ਮੀਨੂ ਬਾਰ ਵਿੱਚ Chrome ਵਿੱਚ Gemini ਦਿਖਾਓ</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}one{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਹਟਾ ਦਿਓ}other{Chrome ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਨ੍ਹਾਂ ਨੂੰ ਹਟਾ ਦਿਓ}}</translation>
+<translation id="8861692536395317751">Google Chrome ਨੂੰ Windows 10 ਦੇ 1809 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="8862326446509486874">ਤੁਹਾਡੇ ਕੋਲ ਸਿਸਟਮ-ਪੱਧਰ ਸਥਾਪਤ ਕਰਨ ਲਈ ਉਚਿਤ ਅਧਿਕਾਰ ਨਹੀਂ ਹਨ। ਪ੍ਰਬੰਧਕ ਦੇ ਤੌਰ 'ਤੇ ਦੁਬਾਰਾ ਸਥਾਪਨਾਕਾਰ ਚਲਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="8865415417596392024">ਤੁਹਾਡੇ ਖਾਤੇ ਵਿਚਲਾ Chrome ਡਾਟਾ</translation>
+<translation id="8897637834206928776">ਨਵਾਂ ਪ੍ਰਤੀਕ, ਉਹੀ ਸ਼ਾਰਟਕੱਟ: ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8914504000324227558">Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="8920304659326707347">iOS 'ਤੇ Chrome ਨਾਲ ਜਿੱਥੇ ਛੱਡਿਆ ਸੀ, ਉੱਥੋਂ ਹੀ ਦੇਖਣਾ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="8922998289262614701">Chrome ਤੋਂ ਇਸ ਐਪ ਦੇ ਡਾਟੇ ਨੂੰ ਹਟਾਓ</translation>
@@ -897,6 +930,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="9018218886431812662">ਸਥਾਪਨਾ ਮੁਕੰਮਲ ਹੋਈ</translation>
 <translation id="9066987883552592250">Chrome Canary ਵਿੱਚ Gemini ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="9074041031320636790">ਸਫਲਤਾ! ਤੁਸੀਂ ਹੁਣ Google Search AI ਮੋਡ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਆਸਾਨੀ ਨਾਲ ਸਵਾਲ ਪੁੱਛ ਸਕਦੇ ਹੋ</translation>
+<translation id="9074163480955555019">ਨਵਾਂ ਪ੍ਰਤੀਕ, ਉਹੀ ਸ਼ਾਰਟਕੱਟ: Chrome ਵਿੱਚ Google Search ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵੇਲੇ ਸਵਾਲ ਪੁੱਛਣ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="9090566250983691233">ਜਾਣੋ ਕਿ Chrome ਕੁਝ ਫ਼ਾਈਲਾਂ ਨੂੰ ਬਲਾਕ ਕਿਉਂ ਕਰਦਾ ਹੈ</translation>
 <translation id="9106236359747881194">ਖੋਜਣ ਲਈ ਲਿਖਤ ਚੁਣੋ</translation>
 <translation id="911206726377975832">ਕੀ ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਵੀ ਮਿਟਾਉਣਾ ਹੈ?</translation>

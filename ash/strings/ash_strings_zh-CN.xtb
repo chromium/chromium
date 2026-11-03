@@ -905,7 +905,6 @@
 <translation id="363473492175527493">设为要专注处理的任务：<ph name="TASK_NAME" />。按 Enter 键即可修改任务。</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649256019230929621">最小化窗口</translation>
-<translation id="3650952250015018111">允许“<ph name="APP_NAME" />”访问：</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />，
@@ -1175,7 +1174,6 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4412698727486357573">帮助中心</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
-<translation id="44141919652824029">允许“<ph name="APP_NAME" />”获取您所连接的 USB 设备的列表？</translation>
 <translation id="4414242853388122273">卸载 <ph name="VM_NAME" /> 时出错。请重试。</translation>
 <translation id="4417647906073317561">专注模式设置。您可以设置定时器、任务和音乐，让自己进入状态。</translation>
 <translation id="4418600384772451109">关闭面板</translation>
@@ -2587,7 +2585,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
 <translation id="8480418399907765580">显示工具栏</translation>
-<translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8487660088084188539">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="8487699605742506766">热点</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器等来源协助推测此设备所在的位置。<ph name="END_PARAGRAPH1" />

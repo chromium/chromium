@@ -905,7 +905,6 @@
 <translation id="363473492175527493">ଏହି ଟାସ୍କରେ ଫୋକସ ଚାଲୁ କରିବା ପାଇଁ ସେଟ କରାହୋଇଛି: <ph name="TASK_NAME" />। ଟାସ୍କକୁ ଏଡିଟ କରିବା ପାଇଁ ଏଣ୍ଟର କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="3638400994746983214">ଗୋପନୀୟତା ସ୍କ୍ରିନ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649256019230929621">ୱିଣ୍ଡୋ ଛୋଟ କରନ୍ତୁ</translation>
-<translation id="3650952250015018111">ଆକ୍ସେସ୍ କରିବା ପାଇଁ "<ph name="APP_NAME" />"କୁ ଅନୁମତି ଦିଅନ୍ତୁ:</translation>
 <translation id="3652817283076144888">ଆରମ୍ଭ କରୁଛି</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4412698727486357573">ସହାୟତା କେନ୍ଦ୍ର</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
-<translation id="44141919652824029">ଆପଣଙ୍କର ସଂଯୁକ୍ତ USB ଡିଭାଇସ୍‍ଗୁଡ଼ିକର ତାଲିକା ପ୍ରାପ୍ତ କରିବାକୁ <ph name="APP_NAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" />କୁ କାଢ଼ି ଦେବାରେ ତ୍ରୁଟି। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4417647906073317561">ଫୋକସ ସେଟିଂସ। ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରିବା ପାଇଁ ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="4418600384772451109">ପେନେଲ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -2588,7 +2586,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />ର <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />ଅଛି।</translation>
 <translation id="8477270416194247200">Alt+Search ଦବାନ୍ତୁ କିମ୍ବା ବାତିଲ୍‌କୁ ଶିଫ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8480418399907765580">ଟୁଲବାର ଦେଖାନ୍ତୁ</translation>
-<translation id="8481187309597259238">USB ଅନୁମତି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8487660088084188539">ଆପଣ ଏହି ଫିଚରଗୁଡ଼ିକୁ ଚାଲୁ କଲେ, Google ସର୍ଭରକୁ ଇନପୁଟ ଟେକ୍ସଟ, ଡକ୍ୟୁମେଣ୍ଟ ବିଷୟବସ୍ତୁ ଏବଂ ୱେବ ପୃଷ୍ଠା URL ପଠାଯାଇପାରେ। ଏହି ସୂଚନାକୁ <ph name="LINK_TO_SERVICE_TERMS" /> ଅନୁଯାୟୀ ଲେଖିବା ପରାମର୍ଶ ଜେନେରେଟ କରିବା, ସାରାଂଶ ଜେନେରେଟ କରିବା, ପ୍ରଶ୍ନଗୁଡ଼ିକର ଉତ୍ତର ଦେବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।</translation>
 <translation id="8487699605742506766">ହଟସ୍ପଟ</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Googleର ଲୋକେସନ ସର୍ଭିସ, ଏହି ଡିଭାଇସର ଲୋକେସନକୁ ଆକଳନ କରିବାରେ ସହାୟତା କରିବା ପାଇଁ ୱାଇ-ଫାଇ, ମୋବାଇଲ ନେଟୱାର୍କ ଓ ସେନ୍ସରଗୁଡ଼ିକ ପରି ସୋର୍ସଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ।<ph name="END_PARAGRAPH1" />

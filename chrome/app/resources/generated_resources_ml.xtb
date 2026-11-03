@@ -7029,6 +7029,7 @@
 <translation id="6399675241776343019">നിരസിച്ചു</translation>
 <translation id="6399774419735315745">ചാരവനിത</translation>
 <translation id="6400360390396538896">എല്ലായ്‌പ്പോഴും <ph name="ORIGIN" /> -ൽ</translation>
+<translation id="6400714103322134861">ടാബ് ഗ്രൂപ്പ് ഫോക്കസ് ചെയ്യുന്നത് മാറ്റുക</translation>
 <translation id="6401118106417399952">നിങ്ങളുടെ ഉപകരണത്തിന്റെ EID നമ്പർ <ph name="EID_NUMBER" /> ആണ്, ഉപകരണത്തിന്റെ സീരിയൽ നമ്പർ <ph name="SERIAL_NUMBER" /> എന്നതും ആണ്. സേവനം സജീവമാക്കാൻ സഹായിക്കുന്നതിന് ഈ നമ്പറുകൾ ഉപയോഗിക്കാം.</translation>
 <translation id="6402042774506839496">എന്തുകൊണ്ടാണെന്ന് അറിയാൻ, ആപ്പ് ഡെവലപ്പറെ ബന്ധപ്പെടുക</translation>
 <translation id="6402921224457714577">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ നിയന്ത്രിക്കാനും റീപ്രോഗ്രാം ചെയ്യാനും സൈറ്റുകൾക്ക് ആവശ്യപ്പെടാം</translation>
@@ -10072,6 +10073,7 @@
 <translation id="8708000541097332489">പുറത്തുകടക്കുമ്പോൾ മായ്‌ക്കുക</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;കൂടുതൽ വിവരങ്ങൾ</translation>
+<translation id="8709234440040320647">(ഐസൊലേറ്റഡ് മോഡ്)</translation>
 <translation id="8709368517685334931">Chrome വെബ് സ്റ്റോറിൽ പഴയ നിറങ്ങൾ കണ്ടെത്താം</translation>
 <translation id="8710414664106871428">ഫാന്റസി</translation>
 <translation id="8711402221661888347">പിക്കിൾസ്</translation>
@@ -10235,6 +10237,7 @@
 <translation id="8836360711089151515">നിങ്ങളുടെ ഡാറ്റ ബാക്കപ്പ് ചെയ്‌ത് ഒരാഴ്‌ചയ്ക്കുള്ളിൽ ഈ <ph name="DEVICE_TYPE" /> തിരികെ നൽകാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. <ph name="LINK_BEGIN" />വിശദാംശങ്ങൾ കാണുക<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ഗ്രൂപ്പിൽ നിന്ന് പുറത്ത് കടക്കുക}other{ഗ്രൂപ്പുകളിൽ നിന്ന് പുറത്ത് കടക്കുക}}</translation>
 <translation id="8836782447513334597">തുടരുക</translation>
+<translation id="8837072669197607689">ഐസൊലേറ്റഡ് മോഡിൽ അനുവദിക്കുക</translation>
 <translation id="8837573527470979311">താഴെയുള്ള കാഴ്‌ച ഉപയോഗിച്ച് സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="8838601485495657486">അതാര്യം</translation>
 <translation id="8838770651474809439">ഹാംബർഗർ</translation>
@@ -10525,6 +10528,7 @@
 <translation id="9043767139743235992">Google ഭിന്നശേഷി പിന്തുണയെ ബന്ധപ്പെടൂ</translation>
 <translation id="9044646465488564462">നെറ്റ്‌വര്‍‌ക്കിലേക്ക് കണക്റ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്റ്റ് പുതിയ സൈഡ് പാനലിലേക്ക് നീക്കി. ഇത് ഇവിടെ പരീക്ഷിക്കൂ.</translation>
+<translation id="9046240419485318563">മെമ്മറി ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="9048745018038487540">എല്ലാ ഫോണ്ടുകളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="9050666287014529139">പാസ്ഫ്രെയ്‍സ്</translation>
 <translation id="905137631551495997">വിപുലീകരണം(ങ്ങൾ)</translation>

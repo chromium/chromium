@@ -2074,6 +2074,7 @@
 <translation id="4412377069090572315">لوگ کیا کہہ رہے ہیں</translation>
 <translation id="4414515549596849729">کوکیز اور سائٹ کا ڈیٹا</translation>
 <translation id="4415156962929755728">پلاسٹک (ہائی گلوس)</translation>
+<translation id="4415276339145661267">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="4415426530740016218">پک اپ کا پتہ</translation>
 <translation id="4415748029120993980">‏SECG elliptic curve secp384r1 (المعروف NIST P-384)</translation>
 <translation id="4418150423720608641">‫ML-DSA-87</translation>
@@ -2238,6 +2239,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> زبان کا پیک ڈاؤن لوڈ ہو رہا ہے... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> آپ کے آلے کا مقام استعمال کرنا چاہتا ہے</translation>
 <translation id="473414950835101501">اپنے کیمرے کا استعمال کریں</translation>
+<translation id="4735688073239574197">نیچے جائیں</translation>
 <translation id="4736089601076994090">اختتامی تاریخ: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">‏Chromium کو دوبارہ شروع کریں</translation>
 <translation id="4736934858538408121">ورچوئل کارڈ</translation>
@@ -2546,6 +2548,7 @@
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
 <translation id="5217759126664161410">پروٹوکول کا فارمیٹ غلط ہے۔</translation>
 <translation id="5221377878828867877">پاس ورڈ کے دوبارہ استعمال کی نگرانی آپ کی تنظیم کرتی ہے</translation>
+<translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5222812217790122047">ای میل مطلوب ہے</translation>
 <translation id="5226979307236834587">میں منصوبوں کو شائستہ طریقے سے کیسے مسترد کر سکتا ہوں؟</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />۔ <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4672,6 +4675,7 @@
 <translation id="8800034312320686233">سائٹ کام نہیں کر رہی ہے؟</translation>
 <translation id="8803251172194676606">حسب ضرورت فٹنس روٹین ڈیزائن کریں</translation>
 <translation id="8803526663383843427">آن ہونے پر</translation>
+<translation id="8804164990146287819">راز داری کی پالیسی</translation>
 <translation id="8805819170075074995">‏فہرست کا اندراج "<ph name="LANGUAGE_ID" />": اندراج کو نظر انداز کیا گیا کیونکہ یہ SpellcheckLanguage پالیسی میں بھی شامل ہے۔</translation>
 <translation id="8806696968588872703">پلاسٹک (ساٹن)</translation>
 <translation id="8807160976559152894">ہر صفحہ کے بعد تراشیں</translation>
@@ -4735,6 +4739,7 @@
 <translation id="8903998444169664879">اپنی ادائیگیوں کی ترتیبات کو تبدیل کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="890493561996401738">‏تجویز کا بٹن ہٹائیں، ہٹانے کے لیے Enter دبائیں، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‏x 10 ‏8 انچ</translation>
+<translation id="8912362522468806198">‏Google اکاؤنٹ</translation>
 <translation id="8914504000324227558">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="8918062451146297192">‏CVC برائے ورچوئل کارڈ</translation>
 <translation id="8919895429178014996">تمام آئٹمز چھپائیں</translation>

@@ -734,6 +734,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2215727959747642672">Edició de fitxers</translation>
 <translation id="2219658597883514593">Reinicia el tutorial</translation>
 <translation id="2219735899272417925">Cal restablir el dispositiu</translation>
+<translation id="2221460252073828078">Consulta la teva resposta de la IA de la Cerca aquí</translation>
 <translation id="2222604080869344662">Inicia la sessió a OneDrive per continuar la baixada</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2225927550500503913">La targeta virtual s'ha activat</translation>
@@ -2073,6 +2074,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4412377069090572315">Què en diuen altres persones</translation>
 <translation id="4414515549596849729">dades de llocs web i galetes</translation>
 <translation id="4415156962929755728">Plàstic (brillantor alta)</translation>
+<translation id="4415276339145661267">Gestiona el teu Compte de Google</translation>
 <translation id="4415426530740016218">Adreça de recollida</translation>
 <translation id="4415748029120993980">Corba el·líptica secp384r1 d'SECG (també coneguda com a NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2546,6 +2548,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5216942107514965959">Darrera visita: avui</translation>
 <translation id="5217759126664161410">El format del protocol no és vàlid.</translation>
 <translation id="5221377878828867877">La teva organització supervisa la reutilització de contrasenyes</translation>
+<translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5222812217790122047">El correu electrònic és obligatori</translation>
 <translation id="5226979307236834587">Com puc rebutjar plans de manera educada?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" /> <ph name="LOGO_DESCRIPTION" />.</translation>
@@ -3075,6 +3078,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6097297436119286254">Verifica la teva identitat per emplenar la informació de pagament</translation>
 <translation id="6099269767116481177">22 x 29,5 polzades</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Aquesta política està concebuda per aplicar-se al nivell d'equip. El seu comportament quan s'aplica com a política d'usuari no s'admet oficialment i es discontinuarà.</translation>
 <translation id="6105460996796456817">Crea un lloc web</translation>
 <translation id="6105511947520166941">La propera vegada, paga amb Pix directament a Chrome</translation>
 <translation id="6105745639559695088">Commuta la barra lateral</translation>
@@ -4671,6 +4675,7 @@ Detalls addicionals:
 <translation id="8800034312320686233">El lloc web no funciona?</translation>
 <translation id="8803251172194676606">Dissenya una rutina de fitnes personalitzada</translation>
 <translation id="8803526663383843427">Quan està activada</translation>
+<translation id="8804164990146287819">Política de privadesa</translation>
 <translation id="8805819170075074995">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'entrada s'ha ignorat perquè també s'inclou a la política SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plàstic (setinat)</translation>
 <translation id="8807160976559152894">Retalla després de cada pàgina</translation>
@@ -4734,6 +4739,7 @@ Detalls addicionals:
 <translation id="8903998444169664879">Verifica la teva identitat per canviar la configuració de pagament</translation>
 <translation id="890493561996401738">Botó Suprimeix el suggeriment, prem Retorn per suprimir, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 polzades</translation>
+<translation id="8912362522468806198">Compte de Google</translation>
 <translation id="8914504000324227558">Torna a iniciar Chrome</translation>
 <translation id="8918062451146297192">CVC de la targeta virtual</translation>
 <translation id="8919895429178014996">Amaga tots els elements</translation>

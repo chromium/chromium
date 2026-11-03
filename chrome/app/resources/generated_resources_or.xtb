@@ -7028,6 +7028,7 @@
 <translation id="6399675241776343019">ଅଗ୍ରାହ୍ୟ କରାଯାଇଛି</translation>
 <translation id="6399774419735315745">ଗୁପ୍ତଚର</translation>
 <translation id="6400360390396538896">ସର୍ବଦା <ph name="ORIGIN" />ରେ</translation>
+<translation id="6400714103322134861">ଟାବ ଗ୍ରୁପରେ ଫୋକସ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6401118106417399952">ଆପଣଙ୍କ ଡିଭାଇସ EID ହେଉଛି <ph name="EID_NUMBER" /> ଏବଂ ଡିଭାଇସ ସିରିଏଲ ନମ୍ବର <ph name="SERIAL_NUMBER" /> ଅଟେ। ସେବାକୁ ସକ୍ରିୟ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଏହି ନମ୍ବରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ।</translation>
 <translation id="6402042774506839496">ଏହା କାହିଁକି କରାଯାଇଛି ତାହା ଜାଣିବା ପାଇଁ, ଆପ ଡେଭେଲପରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6402921224457714577">ଆପଣଙ୍କ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ କହିପାରିବ</translation>
@@ -10072,6 +10073,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8708000541097332489">ପ୍ରସ୍ଥାନରେ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="870805141700401153">Microsoft ବ୍ୟକ୍ତିଗତ କୋଡ୍ ଦସ୍ତଖତ</translation>
 <translation id="8708671767545720562">&amp;ଅଧିକ ସୂଚନା</translation>
+<translation id="8709234440040320647">(ଆଇସୋଲେଟେଡ ମୋଡ)</translation>
 <translation id="8709368517685334931">ଆପଣ Chrome Web Storeରେ ପୁରୁଣା ରଙ୍ଗଗୁଡ଼ିକୁ ଖୋଜିପାରିବେ</translation>
 <translation id="8710414664106871428">କାଳ୍ପନିକ</translation>
 <translation id="8711402221661888347">ପିକ୍‌ଲ୍ସ</translation>
@@ -10236,6 +10238,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8836360711089151515">ଆପଣ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେଇ ଏହି <ph name="DEVICE_TYPE" />କୁ 1 ସପ୍ତାହ ଭିତରେ ଫେରସ୍ତ କରନ୍ତୁ ବୋଲି <ph name="MANAGER" /> ଆବଶ୍ୟକ କରେ। <ph name="LINK_BEGIN" />ବିବରଣୀ ଦେଖନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ଗ୍ରୁପରୁ ବାହାରି ଯାଆନ୍ତୁ}other{ଗ୍ରୁପରୁ ବାହାରି ଯାଆନ୍ତୁ}}</translation>
 <translation id="8836782447513334597">ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="8837072669197607689">ଆଇସୋଲେଟେଡ ମୋଡରେ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8837573527470979311">ବଟମ ଭ୍ୟୁ ସହ ସ୍ୱାପ କରନ୍ତୁ</translation>
 <translation id="8838601485495657486">ଅସ୍ୱଚ୍ଛ</translation>
 <translation id="8838770651474809439">ହାମ୍‌ବର୍ଗର୍</translation>
@@ -10526,6 +10529,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9043767139743235992">Google ଅକ୍ଷମତା ସପୋର୍ଟ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="9044646465488564462">ନେଟ୍‌ୱାର୍କ ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ନୂଆ ସାଇଡ୍ ପ୍ୟାନେଲକୁ ମୁଭ୍ କରାଯାଇଛି। ଏଠାରେ ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
+<translation id="9046240419485318563">ମେମୋରୀ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="9048745018038487540">ସମସ୍ତ ଫଣ୍ଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="9050666287014529139">ପାସ୍‌ଫ୍ରେଜ୍</translation>
 <translation id="905137631551495997">ଏକ୍ସଟେନସନ(ଗୁଡ଼ିକ)</translation>

@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">სხვაენოვანი ვებსაიტებისთვის Google Translate-ის გამოყენების შემოთავაზება</translation>
 <translation id="1384959399684842514">ჩამოტვირთვა დაპაუზებულია</translation>
 <translation id="1386966479075994683">ჩანართების გაფართოება</translation>
+<translation id="1387227841274754059">იკითხეთ თქვენი ეკრანის შესახებ Google Lens-ით</translation>
 <translation id="1388253969141979417">თქვენი მიკროფონის გამოყენება დაშვებულია</translation>
 <translation id="139013308650923562">დაშვებულია თქვენს მოწყობილობაზე დაინსტალირებული შრიფტების გამოყენება</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> წინასწარ დაინსტალირებულია თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
@@ -4748,6 +4749,7 @@
 <translation id="4610637590575890427">ხომ არ გსურდათ <ph name="SITE" />-ზე შესვლა?</translation>
 <translation id="4611619000650855880">როცა მაუსის მარცხენა ღილაკია არჩეული, გამოიყენეთ „/“ ორმაგად დაწკაპუნებისთვის</translation>
 <translation id="4613271546271159013">გაფართოებამ შეცვალა გვერდი, რომელიც გამოჩნდება ახალი ჩანართის გახსნისას.</translation>
+<translation id="4616024182698834938">ჩავლებით გადაიტანეთ ფაილები აქ</translation>
 <translation id="461613135510474570">წინანადება</translation>
 <translation id="461661862154729886">ელკვების წყარო</translation>
 <translation id="4617001782309103936">ძალიან მოკლეა</translation>
@@ -5578,6 +5580,7 @@
 <translation id="5230190638672215545">„uow“-ის აკრეფით „ươ“-ს მიღება</translation>
 <translation id="5230516054153933099">ფანჯარა</translation>
 <translation id="5231255476752743708">Chrome-ს სჭირდება დახმარება თქვენი პაროლის შეცვლაში</translation>
+<translation id="5232607425694431024">იკითხეთ ფაილის ან სურათის შესახებ</translation>
 <translation id="5232714764496316200">დაიხმარეთ Google Lens საშინაო დავალების შესრულებაში</translation>
 <translation id="5233231016133573565">პროცესის ID</translation>
 <translation id="5233638681132016545">ახალი ჩანართი</translation>
@@ -7031,6 +7034,7 @@
 <translation id="6399675241776343019">უარყოფილია</translation>
 <translation id="6399774419735315745">ჯაშუში</translation>
 <translation id="6400360390396538896">ყოველთვის <ph name="ORIGIN" />-ზე</translation>
+<translation id="6400714103322134861">ჩანართების ჯგუფზე ფოკუსის მოხსნა</translation>
 <translation id="6401118106417399952">თქვენი მოწყობილობის EID არის <ph name="EID_NUMBER" />, ხოლო მისი სერიული ნომერი არის <ph name="SERIAL_NUMBER" />. აღნიშნული ნომრები დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
 <translation id="6402042774506839496">მიზეზის გასაგებად დაუკავშირდით აპის დეველოპერს</translation>
 <translation id="6402921224457714577">საიტებს შეუძლია MIDI-მოწყობილობების მართვისა და გადაპროგრამების თხოვნა</translation>
@@ -7725,6 +7729,7 @@
 <translation id="6913051485529944333">ამ გვერდზე ვეღარ ნახავთ Google Calendar-ს</translation>
 <translation id="6914812290245989348">არ მსურს გაფრთხილებების ნახვა დაუცველ საიტებზე გადასვლამდე</translation>
 <translation id="6916590542764765824">პროგრამული გაფართოებები</translation>
+<translation id="6916630302999048499">Gemini-ს ამოცანა დაიწყო</translation>
 <translation id="6916676294509106572">Outlook Calendar დამალულია</translation>
 <translation id="6916818963747321523">ყველას გაფართოება</translation>
 <translation id="6917873303492266709">ჩანართების ჯგუფების გასაზიარებლად, მათში გასაწევრიანებლად ან თანამშრომლობისთვის გახსენით პარამეტრები და ჩართეთ Chrome-ით შესვლის დაშვება</translation>
@@ -8253,6 +8258,7 @@
 <translation id="733058866272972585">დაბლოკილია ამ საიტის წვდომა იდენტიფიკატორების გამოყენებაზე დაცული კონტენტის დასაკრავად</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">დაიწყო</translation>
 <translation id="7333388112938984914">ფაილები ვერ აიტვირთება, სანამ ლიმიტირებულ კავშირს იყენებთ.</translation>
 <translation id="7335974957018254119">მართლწერის შემოწმების გამოყენება შემდეგისთვის:</translation>
 <translation id="7336799713063880535">შეტყ.-ბი დაბლოკილია.</translation>
@@ -10073,6 +10079,7 @@
 <translation id="8708000541097332489">გასუფთავება გასვლისას</translation>
 <translation id="870805141700401153">Microsoft ის ინდივიდუალური კოდური ხელმოწერა</translation>
 <translation id="8708671767545720562">&amp;დამატებითი ინფორმაცია</translation>
+<translation id="8709234440040320647">(იზოლირებული რეჟიმი)</translation>
 <translation id="8709368517685334931">უფრო ძველი ფერების პოვნა შეგიძლიათ Chrome Web Store-ში</translation>
 <translation id="8710414664106871428">ფენტეზი</translation>
 <translation id="8711402221661888347">პიკულები</translation>
@@ -10237,6 +10244,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> ითხოვს თქვენი მონაცემების სარეზერვო ასლების შექმნას და ამ <ph name="DEVICE_TYPE" />-ის დაბრუნებას 1 კვირის განმავლობაში. <ph name="LINK_BEGIN" />დეტალების ნახვა<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ჯგუფიდან გასვლა}other{ჯგუფებიდან გასვლა}}</translation>
 <translation id="8836782447513334597">გაგრძელება</translation>
+<translation id="8837072669197607689">იზოლირებულ რეჟიმში დაშვება</translation>
 <translation id="8837573527470979311">ქვედა ხედის ჩანაცვლება</translation>
 <translation id="8838601485495657486">გაუმჭვირვალე</translation>
 <translation id="8838770651474809439">ჰამბურგერი</translation>
@@ -10295,6 +10303,7 @@
 <translation id="8876307312329369159">ამ პარამეტრის შეცვლა ვერ მოხერხდება დემო-სესიისას.</translation>
 <translation id="8876965259056847565">ფუნქცია „<ph name="FEATURE_NAME" />“ იყენებს Bluetooth-ით სკანირებას ახლომახლო მოწყობილობების საპოვნელად.</translation>
 <translation id="8877448029301136595">[მშობლის დირექტორია]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: დაიწყო</translation>
 <translation id="8879284080359814990">&amp;ჩანართის სახით ჩვენება</translation>
 <translation id="8879921471468674457">სისტემაში შესვლის ინფორმაციის დამახსოვრება</translation>
 <translation id="8880009256105053174">ამ გვერდზე ძიებ&amp;ა Google-ით...</translation>
@@ -10527,6 +10536,7 @@
 <translation id="9043767139743235992">Google-ის შშმ პირთა მხარდაჭერის გუნდთან დაკავშირება</translation>
 <translation id="9044646465488564462">ვერ დაუკავშირდა ქსელს: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">თქვენმა საკითხავმა სიამ გადაინაცვლა ახალ გვერდით პანელზე. ცადეთ ის აქ.</translation>
+<translation id="9046240419485318563">მეხსიერების დათვალიერება</translation>
 <translation id="9048745018038487540">ყველა შრიფტის არჩევა</translation>
 <translation id="9050666287014529139">საიდუმლო ფრაზა</translation>
 <translation id="905137631551495997">გაფართოება(ები)</translation>

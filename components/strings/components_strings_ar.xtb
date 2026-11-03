@@ -2073,6 +2073,7 @@
 <translation id="4412377069090572315">آراء الأشخاص</translation>
 <translation id="4414515549596849729">ملفات تعريف الارتباط وبيانات الموقع الإلكتروني</translation>
 <translation id="4415156962929755728">بلاستيك (شديد اللمعان)</translation>
+<translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4415426530740016218">عنوان الاستلام</translation>
 <translation id="4415748029120993980">‏منحنى SECG ناقص المقطع secp384r1‏ (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@
 <translation id="4732860731866514038">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />… %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992">يريد <ph name="URL" /> استخدام الموقع الجغرافي لجهازك</translation>
 <translation id="473414950835101501">استخدام الكاميرات</translation>
+<translation id="4735688073239574197">الانتقال للأسفل</translation>
 <translation id="4736089601076994090">‏تاريخ انتهاء الصلاحية: ‎<ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">‏إعادة تشغيل Chromium</translation>
 <translation id="4736934858538408121">البطاقة الافتراضية</translation>
@@ -2545,6 +2547,7 @@
 <translation id="5216942107514965959">تمّت زيارة الموقع الإلكتروني آخر مرّة اليوم</translation>
 <translation id="5217759126664161410">تنسيق البروتوكول غير صالح.</translation>
 <translation id="5221377878828867877">ترصد مؤسستك إعادة استخدام كلمة المرور</translation>
+<translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5222812217790122047">البريد الإلكتروني مطلوب</translation>
 <translation id="5226979307236834587">كيف يمكنني رفض الخطط بطريقة مهذبة؟</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4674,6 +4677,7 @@
 <translation id="8800034312320686233">هل الموقع الإلكتروني لا يعمل؟</translation>
 <translation id="8803251172194676606">أريد تصميم برنامج لياقة بدنية مخصّصًا</translation>
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
+<translation id="8804164990146287819">سياسة الخصوصية</translation>
 <translation id="8805819170075074995">‏إدخال في القائمة "<ph name="LANGUAGE_ID" />": تم تجاهل الإدخال لأنه مضمّن في سياسة SpellcheckLanguage أيضًا.</translation>
 <translation id="8806696968588872703">بلاستيك (برّاق)</translation>
 <translation id="8807160976559152894">القطع بعد كل صفحة</translation>
@@ -4737,6 +4741,7 @@
 <translation id="8903998444169664879">يجب إثبات هويتك لتغيير إعدادات الدفع</translation>
 <translation id="890493561996401738">‏إزالة زر "الاقتراحات"، اضغط على مفتاح Enter لإزالة، <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">‫8 × 10 بوصة</translation>
+<translation id="8912362522468806198">‏حساب Google‏</translation>
 <translation id="8914504000324227558">‏إعادة تشغيل Chrome</translation>
 <translation id="8918062451146297192">‏رمز التحقق من البطاقة (CVC) للبطاقة الافتراضية</translation>
 <translation id="8919895429178014996">إخفاء جميع العناصر</translation>

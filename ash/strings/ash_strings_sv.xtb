@@ -905,7 +905,6 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="363473492175527493">Uppgiften som du vill fokusera på är inställd på: <ph name="TASK_NAME" />. Tryck på Retur för att redigera uppgiften.</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Minimera fönstret</translation>
-<translation id="3650952250015018111">Ge ”<ph name="APP_NAME" />” åtkomstbehörighet till:</translation>
 <translation id="3652817283076144888">Initierar</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4406883609789734330">Livetextning</translation>
 <translation id="4412698727486357573">Hjälpcenter</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
-<translation id="44141919652824029">Vill du ge <ph name="APP_NAME" /> åtkomstbehörighet till listan med anslutna USB-enheter?</translation>
 <translation id="4414242853388122273">Det gick inte att ta bort <ph name="VM_NAME" />. Försök igen.</translation>
 <translation id="4417647906073317561">Fokusinställningar. Ställ in en timer, uppgift och musik för att komma igång.</translation>
 <translation id="4418600384772451109">Stäng panel</translation>
@@ -2589,7 +2587,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Avbryt genom att trycka på Alt + söktangenten eller Skift.</translation>
 <translation id="8480418399907765580">Visa verktygsfält</translation>
-<translation id="8481187309597259238">Bekräfta USB-behörighet</translation>
 <translation id="8487660088084188539">När du aktiverar dessa funktioner kan inmatad text, dokumentinnehåll och webbadressen till sidan skickas till Googles servrar. Informationen används för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="8487699605742506766">Surfzon</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobilnätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />

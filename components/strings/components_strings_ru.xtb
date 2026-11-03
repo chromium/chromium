@@ -2072,6 +2072,7 @@
 <translation id="4412377069090572315">Отзывы</translation>
 <translation id="4414515549596849729">Файлы cookie и данные сайтов</translation>
 <translation id="4415156962929755728">Пластик (глянцевый)</translation>
+<translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4415426530740016218">Адрес получения</translation>
 <translation id="4415748029120993980">Эллиптическая кривая SECG secp384r1 (она же NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2236,6 +2237,7 @@
 <translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего устройства.</translation>
 <translation id="473414950835101501">Использование камер.</translation>
+<translation id="4735688073239574197">Перейти вниз</translation>
 <translation id="4736089601076994090">Действителен до <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Перезапустить Chromium</translation>
 <translation id="4736934858538408121">Виртуальная карта</translation>
@@ -2544,6 +2546,7 @@
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
 <translation id="5217759126664161410">Недействительный формат протокола.</translation>
 <translation id="5221377878828867877">Ваша организация отслеживает повторное использование паролей</translation>
+<translation id="5222676887888702881">Выйти</translation>
 <translation id="5222812217790122047">Введите адрес электронной почты</translation>
 <translation id="5226979307236834587">Как вежливо отказаться от совместных планов?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3073,6 +3076,7 @@
 <translation id="6097297436119286254">Чтобы подставить платежные данные, подтвердите личность.</translation>
 <translation id="6099269767116481177">22 x 29,5 дюйма</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Это правило предназначено для применения на уровне устройства. Оно официально не поддерживается в качестве правила для пользователей и не будет применяться.</translation>
 <translation id="6105460996796456817">Создать сайт</translation>
 <translation id="6105511947520166941">Платите через Pix, не выходя из Chrome</translation>
 <translation id="6105745639559695088">Показать или скрыть боковую панель</translation>
@@ -4669,6 +4673,7 @@
 <translation id="8800034312320686233">Сайт не работает?</translation>
 <translation id="8803251172194676606">Создай индивидуальную программу тренировок</translation>
 <translation id="8803526663383843427">Если функция включена</translation>
+<translation id="8804164990146287819">Политика конфиденциальности</translation>
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Пластик (сатин)</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
@@ -4732,6 +4737,7 @@
 <translation id="8903998444169664879">Чтобы изменить платежные настройки, подтвердите личность.</translation>
 <translation id="890493561996401738">Кнопка удаления подсказки. Нажмите Ввод, чтобы удалить. <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />.</translation>
 <translation id="8910898109640902752">8 x 10 дюймов</translation>
+<translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8918062451146297192">CVC-код виртуальной карты</translation>
 <translation id="8919895429178014996">Скрыть все объекты</translation>

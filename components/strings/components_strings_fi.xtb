@@ -2074,6 +2074,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4412377069090572315">Mitä muut ovat mieltä</translation>
 <translation id="4414515549596849729">evästeet ja sivustodata</translation>
 <translation id="4415156962929755728">Muovi (erittäin kiiltävä)</translation>
+<translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
 <translation id="4415426530740016218">Nouto-osoite</translation>
 <translation id="4415748029120993980">SECG elliptinen käyrä secp384r1 (eli NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2546,6 +2547,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
 <translation id="5217759126664161410">Virheellinen protokollan muoto.</translation>
 <translation id="5221377878828867877">Organisaatiosi valvoo salasanojen uudelleenkäyttöä</translation>
+<translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5222812217790122047">Sähköposti vaaditaan</translation>
 <translation id="5226979307236834587">Miten voin kieltäytyä suunnitelmista kohteliaasti?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3075,6 +3077,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6097297436119286254">Vahvista henkilöllisyytesi, jotta voit täyttää maksutiedot</translation>
 <translation id="6099269767116481177">22 x 29,5 tuumaa</translation>
 <translation id="6104072995492677441">JIS B6 (128 mm x 182 mm)</translation>
+<translation id="6104418023125705346">Käytäntö on tarkoitettu sovellettavaksi konetasolla. Sen toimintaa käyttäjäkäytäntönä ei tueta virallisesti, ja se poistetaan käytöstä.</translation>
 <translation id="6105460996796456817">Luo sivusto</translation>
 <translation id="6105511947520166941">Maksa seuraavalla kerralla Pixillä suoraan Chromessa</translation>
 <translation id="6105745639559695088">Laajenna/tiivistä sivupalkki</translation>
@@ -4672,6 +4675,7 @@ Lisätietoja:
 <translation id="8800034312320686233">Eikö sivusto toimi?</translation>
 <translation id="8803251172194676606">Suunnittele oma treeniohjelma</translation>
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
+<translation id="8804164990146287819">Tietosuojakäytäntö</translation>
 <translation id="8805819170075074995">Luettelokohde <ph name="LANGUAGE_ID" />: Kohde on ohitettu, koska se sisältyy myös SpellcheckLanguage-käytäntöön.</translation>
 <translation id="8806696968588872703">Muovi (satiini)</translation>
 <translation id="8807160976559152894">Leikkaa jokaisen sivun jälkeen</translation>
@@ -4735,6 +4739,7 @@ Lisätietoja:
 <translation id="8903998444169664879">Vahvista henkilöllisyytesi, jotta voit muuttaa maksuasetuksia</translation>
 <translation id="890493561996401738">Ehdotuksen poistopainike, poista painamalla Enter, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 tuumaa</translation>
+<translation id="8912362522468806198">Google-tilisi avulla</translation>
 <translation id="8914504000324227558">Käynnistä Chrome uudelleen</translation>
 <translation id="8918062451146297192">Virtuaalikortin CVC</translation>
 <translation id="8919895429178014996">Piilota kaikki kohteet</translation>

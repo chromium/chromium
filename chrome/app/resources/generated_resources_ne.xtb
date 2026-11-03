@@ -7027,6 +7027,7 @@
 <translation id="6399675241776343019">अस्वीकार गरिएको</translation>
 <translation id="6399774419735315745">जासुस</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> मा सधैँ</translation>
+<translation id="6400714103322134861">ट्याब समूह अनफोकस गर्नुहोस्</translation>
 <translation id="6401118106417399952">तपाईंको डिभाइसको EID नम्बर <ph name="EID_NUMBER" /> र डिभाइसको सिरियल नम्बर <ph name="SERIAL_NUMBER" /> हो। यी नम्बरहरू सेवा एक्टिभेट गर्ने प्रयोजनका लागि प्रयोग गर्न सकिन्छ।</translation>
 <translation id="6402042774506839496">यसो गर्नुको कारण थाहा पाउन एपका विकासकर्तालाई सम्पर्क गर्नुहोस्</translation>
 <translation id="6402921224457714577">साइटहरूले तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति माग्न सक्छन्</translation>
@@ -10070,6 +10071,7 @@
 <translation id="8708000541097332489">निकासमा स्पष्ट</translation>
 <translation id="870805141700401153">Microsoft व्यक्तिगत कोड साइनिङ</translation>
 <translation id="8708671767545720562">&amp;थप जानकारी</translation>
+<translation id="8709234440040320647">(आइसोलेटेड मोड)</translation>
 <translation id="8709368517685334931">तपाईं Chrome वेब स्टोरमा पुराना रङहरू भेट्टाउन सक्नुहुन्छ</translation>
 <translation id="8710414664106871428">काल्पनिक</translation>
 <translation id="8711402221661888347">अचार</translation>
@@ -10234,6 +10236,7 @@
 <translation id="8836360711089151515"><ph name="MANAGER" /> का अनुसार तपाईंले एक हप्ताभित्र आफ्ना डेटा ब्याकअप गरी यो <ph name="DEVICE_TYPE" /> फिर्ता गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />विवरणहरू हेर्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{समूह छाड्नुहोस्}other{समूहहरू छाड्नुहोस्}}</translation>
 <translation id="8836782447513334597">जारी राख्नुहोस्</translation>
+<translation id="8837072669197607689">आइसोलेटेड मोडमा अनुमति दिनुहोस्</translation>
 <translation id="8837573527470979311">तल्लो भ्यूसँग अदलबदल गर्नुहोस्</translation>
 <translation id="8838601485495657486">अपारदर्शी</translation>
 <translation id="8838770651474809439">ह्यामबर्गर</translation>
@@ -10524,6 +10527,7 @@
 <translation id="9043767139743235992">अपाङ्गता भएका मान्छेप्रति समर्पित Google को ग्राहक सेवा विभागमा सम्पर्क गर्नुहोस्</translation>
 <translation id="9044646465488564462">सञ्जालमा जडान गर्न असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">पछि पढ्न सेभ गरिएका वेबपेजको तपाईंको सूची सारेर नयाँ साइड प्यानलमा लगिएको छ। यहाँ प्रयोग गरी हेर्नुहोस्।</translation>
+<translation id="9046240419485318563">मेमोरी ब्राउज गर्नुहोस्</translation>
 <translation id="9048745018038487540">सबै फन्ट चयन गर्नुहोस्</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>
 <translation id="905137631551495997">एक्स्टेन्सन(हरू)</translation>

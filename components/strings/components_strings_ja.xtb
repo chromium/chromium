@@ -734,6 +734,7 @@
 <translation id="2215727959747642672">ファイルの編集</translation>
 <translation id="2219658597883514593">チュートリアルをもう一度開始</translation>
 <translation id="2219735899272417925">デバイスのリセットが必要</translation>
+<translation id="2221460252073828078">検索 AI の回答をここで確認できます</translation>
 <translation id="2222604080869344662">ダウンロードを続行するには、OneDrive にログインしてください</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2225927550500503913">仮想カードは有効になっています</translation>
@@ -2073,6 +2074,7 @@
 <translation id="4412377069090572315">レビュー</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
 <translation id="4415156962929755728">プラスチック（高光沢）</translation>
+<translation id="4415276339145661267">Google アカウントの管理</translation>
 <translation id="4415426530740016218">受け取り場所の住所</translation>
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2239,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの位置情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="473414950835101501">カメラの使用</translation>
+<translation id="4735688073239574197">一番下に移動</translation>
 <translation id="4736089601076994090">有効期限: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>
@@ -2545,6 +2548,7 @@
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
 <translation id="5217759126664161410">プロトコルの形式が無効です。</translation>
 <translation id="5221377878828867877">パスワードの再利用は組織で監視されています</translation>
+<translation id="5222676887888702881">ログアウト</translation>
 <translation id="5222812217790122047">メールアドレスは必須です</translation>
 <translation id="5226979307236834587">予定を丁寧に断るにはどうすればいい？</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />。<ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3078,7 @@
 <translation id="6097297436119286254">お支払い情報を入力するには本人確認を行ってください</translation>
 <translation id="6099269767116481177">22x29.5 インチ</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">このポリシーはマシンレベルで適用されることを想定しています。ユーザー ポリシーとして適用した場合の動作は正式にサポートされておらず、非推奨となる予定です。</translation>
 <translation id="6105460996796456817">サイトを作成</translation>
 <translation id="6105511947520166941">次回以降 Chrome から直接 Pix でお支払い</translation>
 <translation id="6105745639559695088">サイドバーを切り替え</translation>
@@ -4671,6 +4676,7 @@
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8803251172194676606">カスタムのフィットネス ルーティンを作って</translation>
 <translation id="8803526663383843427">有効にした場合</translation>
+<translation id="8804164990146287819">プライバシー ポリシー</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8806696968588872703">プラスチック（サテン）</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
@@ -4734,6 +4740,7 @@
 <translation id="8903998444169664879">お支払い設定を変更するには本人確認を行ってください</translation>
 <translation id="890493561996401738">候補を削除するボタンです。Enter キーを押すと <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> を削除します</translation>
 <translation id="8910898109640902752">8x10 インチ</translation>
+<translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8914504000324227558">Chrome の再起動</translation>
 <translation id="8918062451146297192">仮想カードの CVC</translation>
 <translation id="8919895429178014996">すべてのアイテムを非表示にする</translation>

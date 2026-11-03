@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Առաջադրանքը, որի վրա պետք է կենտրոնանալ՝ <ph name="TASK_NAME" />։ Առաջադրանքը փոփոխելու համար սեղմեք Enter։</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649256019230929621">Նվազեցնել պատուհանը</translation>
-<translation id="3650952250015018111">«<ph name="APP_NAME" />» հավելվածին հասանելի դարձրեք հետևյալ սարք(եր)ը՝</translation>
 <translation id="3652817283076144888">Նախապատրաստվում է</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@
 <translation id="4406883609789734330">Կենդանի ենթագրեր</translation>
 <translation id="4412698727486357573">Օգնության կենտրոն</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
-<translation id="44141919652824029">Տրամադրե՞լ կցված USB սարքերի ցանկը «<ph name="APP_NAME" />» հավելվածին</translation>
 <translation id="4414242853388122273">Չհաջողվեց հեռացնել <ph name="VM_NAME" /> վիրտուալ մեքենան։ Նորից փորձեք։</translation>
 <translation id="4417647906073317561">Առանց շեղումների ռեժիմի կարգավորումներ։ Սահմանեք ժամանակաչափ, առաջադրանք և երաժշտություն, որոնք կօգնեն ձեզ կենտրոնանալ։</translation>
 <translation id="4418600384772451109">Փակել վահանակը</translation>
@@ -2591,7 +2589,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>
 <translation id="8477270416194247200">Չեղարկելու համար սեղմեք Alt+Search կամ Shift:</translation>
 <translation id="8480418399907765580">Ցույց տալ գործիքագոտին</translation>
-<translation id="8481187309597259238">Հաստատեք USB-ի թույլտվությունները</translation>
 <translation id="8487660088084188539">Եթե այս գործառույթները միացված են, մուտքագրված տեքստը, փաստաթղթի բովանդակությունը և վեբ էջի URL-ը կարող են ուղարկվել Google-ի սերվերներին։ Այս տեղեկություններն օգտագործվում են տեքստագրման հուշումներ և ամփոփագրեր գեներացնելու, հարցերին պատասխանելու և պրոդուկտը բարելավելու համար՝ համաձայն <ph name="LINK_TO_SERVICE_TERMS" />։ Մի ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="8487699605742506766">Թեժ կետ</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Google-ի տեղորոշման ծառայությունն օգտագործում է Wi-Fi, բջջային ցանցեր և սենսորներ՝ այս սարքի տեղադրությունը որոշելու համար։<ph name="END_PARAGRAPH1" />

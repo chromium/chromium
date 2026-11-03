@@ -1828,7 +1828,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4067774859633143413">Per uscire dalla modalità a schermo intero e visualizzare il download, tieni premuto |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Aggiungi un indirizzo valido</translation>
 <translation id="4072486802667267160">Si è verificato un errore durante l'elaborazione dell'ordine. Riprova.</translation>
-<translation id="4073293290376142777">Vuoi accedere?</translation>
+<translation id="4073293290376142777">Accedere?</translation>
 <translation id="4073376909608563327">Impossibile usare lo sblocco del dispositivo</translation>
 <translation id="4073797364926776829">Visualizza carta</translation>
 <translation id="4075732493274867456">Il client e il server non supportano una suite di crittografia o una versione del protocollo SSL comuni.</translation>
@@ -2070,6 +2070,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4412377069090572315">Cosa dicono le persone</translation>
 <translation id="4414515549596849729">cookie e dati dei siti</translation>
 <translation id="4415156962929755728">Plastica (lucida)</translation>
+<translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
 <translation id="4415426530740016218">Indirizzo di ritiro</translation>
 <translation id="4415748029120993980">Curva ellittica SECG secp384r1 (anche nota come NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2234,6 +2235,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4732860731866514038">Download del language pack <ph name="LANGUAGE" /> in corso… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vuole usare la posizione del dispositivo</translation>
 <translation id="473414950835101501">Utilizzare le fotocamere</translation>
+<translation id="4735688073239574197">Vai alla fine</translation>
 <translation id="4736089601076994090">Scadenza: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Riavvia Chromium</translation>
 <translation id="4736934858538408121">Carta virtuale</translation>
@@ -2542,6 +2544,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
 <translation id="5217759126664161410">Formato del protocollo non valido.</translation>
 <translation id="5221377878828867877">Il riutilizzo delle password è monitorato dalla tua organizzazione</translation>
+<translation id="5222676887888702881">Esci</translation>
 <translation id="5222812217790122047">Email obbligatoria</translation>
 <translation id="5226979307236834587">Come posso rifiutare un invito in modo educato?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4666,6 +4669,7 @@ Ulteriori dettagli:
 <translation id="8800034312320686233">Il sito non funziona?</translation>
 <translation id="8803251172194676606">Crea una routine di allenamento personalizzata</translation>
 <translation id="8803526663383843427">Quando attiva</translation>
+<translation id="8804164990146287819">Norme sulla privacy</translation>
 <translation id="8805819170075074995">Voce "<ph name="LANGUAGE_ID" />": voce ignorata perché è inclusa anche nella norma SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plastica (satinata)</translation>
 <translation id="8807160976559152894">Taglia dopo ciascuna pagina</translation>
@@ -4729,6 +4733,7 @@ Ulteriori dettagli:
 <translation id="8903998444169664879">Verifica la tua identità per modificare le impostazioni di pagamento</translation>
 <translation id="890493561996401738">Rimuovi il pulsante Suggerimento, premi INVIO per rimuovere, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 in</translation>
+<translation id="8912362522468806198">Google Account</translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8918062451146297192">CVC della carta virtuale</translation>
 <translation id="8919895429178014996">Nascondi tutti gli elementi</translation>

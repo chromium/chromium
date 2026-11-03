@@ -905,7 +905,6 @@
 <translation id="363473492175527493">Задача за концентрација е поставена: <ph name="TASK_NAME" />. Притиснете го копчето Enter за да ја измените задачата.</translation>
 <translation id="3638400994746983214">Вклучете/исклучете го екранот за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Минимизира прозорец</translation>
-<translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
 <translation id="3652817283076144888">Се иницијализира</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1178,7 +1177,6 @@
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4412698727486357573">Центар за помош</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
-<translation id="44141919652824029">Дали дозволувате <ph name="APP_NAME" /> да го преземе списокот со прикачените USB-уреди?</translation>
 <translation id="4414242853388122273">Грешка при отстранувањето на <ph name="VM_NAME" />. Обидете се повторно.</translation>
 <translation id="4417647906073317561">Поставки за „Режим за концентрација“. Поставете тајмер, задача и музика за да влезете во текот.</translation>
 <translation id="4418600384772451109">Затвори ја таблата</translation>
@@ -2592,7 +2590,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> има <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>
 <translation id="8480418399907765580">Прикажете го алатникот</translation>
-<translation id="8481187309597259238">Потврда на дозволата за USB</translation>
 <translation id="8487660088084188539">Кога ќе ги вклучите функцииве, внесениот текст, содржините на документот и URL-адресата на веб-страницата може да се испраќаат до серверите на Google. Податоциве се користат за да се генерираат предлози за пишување, да се генерираат резимеа, да се одговара на прашања и да се подобрува производот, што подлежи на <ph name="LINK_TO_SERVICE_TERMS" />. Не внесувајте лични, чувствителни или доверливи податоци.</translation>
 <translation id="8487699605742506766">Точка на пристап</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Локациската услуга на Google користи извори како што се Wi-Fi, мобилни мрежи и сензори за да помогне да се процени локацијата на уредов.<ph name="END_PARAGRAPH1" />

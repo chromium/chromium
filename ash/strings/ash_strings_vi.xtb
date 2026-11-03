@@ -905,7 +905,6 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="363473492175527493">Việc cần làm được thiết lập ở chế độ tập trung: <ph name="TASK_NAME" />. Nhấn phím Enter để chỉnh sửa việc cần làm.</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">Thu nhỏ cửa sổ</translation>
-<translation id="3650952250015018111">Cho phép "<ph name="APP_NAME" />" truy cập vào:</translation>
 <translation id="3652817283076144888">Đang khởi chạy</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4412698727486357573">Trung tâm trợ giúp</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
-<translation id="44141919652824029">Cho phép "<ph name="APP_NAME" />" nhận danh sách các thiết bị USB đính kèm?</translation>
 <translation id="4414242853388122273">Đã xảy ra lỗi khi xoá <ph name="VM_NAME" />. Vui lòng thử lại.</translation>
 <translation id="4417647906073317561">Chế độ cài đặt Tập trung. Bạn có thể đặt đồng hồ hẹn giờ, việc cần làm và nhạc để dễ dàng tập trung cao độ.</translation>
 <translation id="4418600384772451109">Đóng bảng điều khiển</translation>
@@ -2589,7 +2587,6 @@ Mới cài đặt</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> đã <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Nhấn phím Alt+Search hoặc Shift để hủy.</translation>
 <translation id="8480418399907765580">Hiển thị thanh công cụ</translation>
-<translation id="8481187309597259238">Xác nhận quyền đối với USB</translation>
 <translation id="8487660088084188539">Khi bạn bật các tính năng này, hệ thống có thể gửi văn bản bạn nhập, nội dung tài liệu và URL trang web đến máy chủ của Google. Thông tin này được dùng để tạo ra gợi ý viết, tóm tắt, trả lời câu hỏi và cải thiện sản phẩm theo <ph name="LINK_TO_SERVICE_TERMS" />. Đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc bí mật.</translation>
 <translation id="8487699605742506766">Điểm phát sóng</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />Dịch vụ vị trí của Google sử dụng các nguồn như mạng Wi-Fi, mạng di động và cảm biến để giúp ước tính vị trí của thiết bị này.<ph name="END_PARAGRAPH1" />

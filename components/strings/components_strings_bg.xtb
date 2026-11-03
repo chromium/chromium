@@ -2073,6 +2073,7 @@
 <translation id="4412377069090572315">Какво казват хората</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415156962929755728">Пластмаса (силно гланцирана)</translation>
+<translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
 <translation id="4415748029120993980">Елиптична крива secp384r1 по SECG (позната и като NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2546,6 +2547,7 @@
 <translation id="5216942107514965959">Последно посещение: днес</translation>
 <translation id="5217759126664161410">Форматът на протокола е невалиден.</translation>
 <translation id="5221377878828867877">Повторното използване на пароли се наблюдава от организацията ви</translation>
+<translation id="5222676887888702881">Изход</translation>
 <translation id="5222812217790122047">Имейл адресът е задължителен</translation>
 <translation id="5226979307236834587">Как мога да откажа планове по учтив начин?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4671,6 +4673,7 @@
 <translation id="8800034312320686233">Сайтът не работи?</translation>
 <translation id="8803251172194676606">Създай персонализирана фитнес програма</translation>
 <translation id="8803526663383843427">Когато е включено</translation>
+<translation id="8804164990146287819">Декларация за поверителност</translation>
 <translation id="8805819170075074995">Списъчен запис „<ph name="LANGUAGE_ID" />“: Записът е пренебрегнат, защото е включен и в правилото SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Пластмаса (сатен)</translation>
 <translation id="8807160976559152894">Отрязване след всяка страница</translation>
@@ -4734,6 +4737,7 @@
 <translation id="8903998444169664879">Потвърдете самоличността си, за да промените настройките си за плащане</translation>
 <translation id="890493561996401738">Бутон за премахване на предложенията. Натиснете Enter, за да премахнете – <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 инча</translation>
+<translation id="8912362522468806198">Профил в Google</translation>
 <translation id="8914504000324227558">Повторно стартиране на Chrome</translation>
 <translation id="8918062451146297192">Код за проверка на виртуалната карта</translation>
 <translation id="8919895429178014996">Скриване на всички елементи</translation>

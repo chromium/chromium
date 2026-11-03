@@ -905,7 +905,6 @@
 <translation id="363473492175527493">ఫోకస్ చేయడాన్ని ఆన్ చేయడానికి టాస్క్ సెట్ చేయబడింది: <ph name="TASK_NAME" />. టాస్క్‌ను ఎంటర్ చేయడానికి ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">విండోను కుదించు</translation>
-<translation id="3650952250015018111">యాక్సెస్ చేయడానికి "<ph name="APP_NAME" />"ని అనుమతించండి:</translation>
 <translation id="3652817283076144888">ప్రారంభిస్తోంది</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4412698727486357573">సహాయ కేంద్రం</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
-<translation id="44141919652824029">మీ జోడించబడిన USB పరికరాల లిస్ట్‌ను పొందడానికి "<ph name="APP_NAME" />"ని అనుమతించాలా?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" />‌ను తీసివేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4417647906073317561">సెట్టింగ్‌లను ఫోకస్ చేయండి. ఫ్లోలో పొందడానికి టైమర్, టాస్క్, అలాగే మ్యూజిక్‌ను సెట్ చేయండి.</translation>
 <translation id="4418600384772451109">ప్యానెల్‌ను మూసివేయండి</translation>
@@ -2590,7 +2588,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_NAME" />ను <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">రద్దు చేయడానికి Alt+Search లేదా Shiftను నొక్కండి.</translation>
 <translation id="8480418399907765580">టూల్‌బార్‌ను చూపించు</translation>
-<translation id="8481187309597259238">USB అనుమతిని నిర్ధారించండి</translation>
 <translation id="8487660088084188539">మీరు ఈ ఫీచర్‌లను ఆన్ చేసినప్పుడు, ఇన్‌పుట్ టెక్స్ట్, డాక్యుమెంట్ కంటెంట్, అలాగే వెబ్ పేజీ URLలు Google సర్వర్‌లకు పంపబడవచ్చు. ఈ సమాచారం <ph name="LINK_TO_SERVICE_TERMS" />‌కు లోబడి, టెక్స్ట్ సూచనలను, సారాంశాలను జెనరేట్ చేయడానికి, ప్రశ్నలకు సమాధానమివ్వడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ఉపయోగించబడుతుంది. అందులో వ్యక్తిగతమైన వాటిని, సున్నితమైన, లేదా గోప్యమైన అంశాలను చేర్చకండి.</translation>
 <translation id="8487699605742506766">హాట్‌స్పాట్</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />ఈ డివైజ్ లొకేషన్‌ను అంచనా వేయడంలో సహాయపడటానికి Wi-Fi, మొబైల్ నెట్‌వర్క్‌లు, సెన్సర్‌ల లాంటి సోర్స్‌లను Google లొకేషన్ సర్వీస్ ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />

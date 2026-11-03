@@ -2073,6 +2073,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4412377069090572315">Comentarios de usuarios</translation>
 <translation id="4414515549596849729">cookies y datos de sitios</translation>
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
+<translation id="4415276339145661267">Gestionar tu cuenta de Google</translation>
 <translation id="4415426530740016218">Dirección de recogida</translation>
 <translation id="4415748029120993980">Curva elíptica SECG secp384r1 (también denominada NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2237,6 +2238,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4732860731866514038">Descargando el paquete de idioma <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quiere usar la ubicación de tu dispositivo</translation>
 <translation id="473414950835101501">Usar tus cámaras</translation>
+<translation id="4735688073239574197">Ir al final</translation>
 <translation id="4736089601076994090">Fecha de caducidad: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
@@ -2545,6 +2547,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5216942107514965959">Última visita: hoy</translation>
 <translation id="5217759126664161410">Formato de protocolo no válido.</translation>
 <translation id="5221377878828867877">Tu organización monitoriza la reutilización de contraseñas</translation>
+<translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="5222812217790122047">Correo electrónico obligatorio</translation>
 <translation id="5226979307236834587">¿Cómo puedo rechazar planes de forma educada?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -3074,6 +3077,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6097297436119286254">Verifica que eres tú para rellenar tus datos para pagos</translation>
 <translation id="6099269767116481177">22 x 29,5 pulgadas</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6104418023125705346">Esta política está pensada para aplicarse a dispositivos. Su comportamiento cuando se aplica como política de usuarios no se admite oficialmente y dejará de estar disponible.</translation>
 <translation id="6105460996796456817">Crear sitio</translation>
 <translation id="6105511947520166941">Paga con Pix directamente en Chrome la próxima vez</translation>
 <translation id="6105745639559695088">Mostrar u ocultar barra lateral</translation>
@@ -4670,6 +4674,7 @@ Más información:
 <translation id="8800034312320686233">¿El sitio web no funciona?</translation>
 <translation id="8803251172194676606">Diseña una rutina de ejercicio personalizada</translation>
 <translation id="8803526663383843427">Cuando está activada</translation>
+<translation id="8804164990146287819">Política de Privacidad</translation>
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": se ha ignorado la entrada porque también está incluida en la política SpellcheckLanguage.</translation>
 <translation id="8806696968588872703">Plástico (satinado)</translation>
 <translation id="8807160976559152894">Recortar después de cada página</translation>
@@ -4733,6 +4738,7 @@ Más información:
 <translation id="8903998444169664879">Verifica que eres tú para cambiar la configuración de pago</translation>
 <translation id="890493561996401738">Botón Eliminar sugerencia, pulsa Intro para eliminar, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8x10 pulgadas</translation>
+<translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8918062451146297192">CVC de la tarjeta virtual</translation>
 <translation id="8919895429178014996">Ocultar todos los elementos</translation>

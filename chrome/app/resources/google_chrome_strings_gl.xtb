@@ -235,6 +235,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3037517125981011456">Mostra solicitudes para iniciar sesión en Chrome</translation>
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3038232873781883849">Esperando para realizar a instalación…</translation>
+<translation id="304285957253771186">Advertencia: Google Chrome non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo illado, anula a selección desta opción.</translation>
 <translation id="3045032126857188731">Idioma de tradución: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Pechar cadro de diálogo de comentarios</translation>
 <translation id="306179102415443347">Usa o atallo para acceder rapidamente ao xestor de contrasinais de Google. Podes mover o atallo ao Menú de aplicacións ou á pantalla de inicio do ordenador.</translation>
@@ -532,6 +533,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
+<translation id="5944731887996253728">Chrome actualizarase cando non esteas usando a pantalla</translation>
 <translation id="5947104538377036631">Atallo de Chrome</translation>
 <translation id="5960071705175224773">Unha aplicación descoñecida cambiou a túa configuración</translation>
 <translation id="5980111191913430208">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -835,6 +837,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8367950957770994118">Abre rapidamente Gemini en Chrome cando o necesites</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="8370748943308169953">Código QR para iniciar sesión en Chrome como <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">Hai unha <ph name="IMPORTANT_UPDATE" /> dispoñible. Podes reiniciar Chrome agora ou configuralo para que se actualice a próxima vez que a pantalla permaneza acendida e sen usar durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Panel lateral da Busca de Google</translation>
 <translation id="8377158135256176353">Activar ou desactivar Gemini en Chrome Canary</translation>
 <translation id="8380754585531979907">Usa o teclado para navegar entre Gemini en Chrome e a pestana que tes aberta.</translation>
@@ -878,6 +881,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8669527147644353129">Axudante de Google Chrome</translation>
 <translation id="8679801911857917785">Tamén controla a páxina que se mostra ao iniciar Chrome.</translation>
 <translation id="8689408573494410517">O botón Busca de Google no panel lateral, situado na barra de ferramentas, ten unha icona nova. Fai clic nel para facer preguntas mentres navegas coa Busca de Google no panel lateral.</translation>
+<translation id="8699232386626916686">Actualiza Chrome para manter a seguranza</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8712767363896337380">A actualización está a piques de rematar. Para que finalice, reinicia Chrome.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás desfrutar da lista de lectura e máis cousas do dispositivo: <ph name="DEVICE" />.</translation>

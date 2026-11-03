@@ -186,6 +186,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2799223571221894425">Redémarrer</translation>
 <translation id="2803971713792056305">Votre Chromium</translation>
 <translation id="2816462166102338036">Rechercher cette vidéo avec la recherche d'images</translation>
+<translation id="2819844767470613567">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode Isolé, désélectionnez cette option.</translation>
 <translation id="282591729717417030">Découvrez des produits avec votre appareil photo, suivez les baisses de prix et plus encore en déplacement grâce à Chromium sur iOS.</translation>
 <translation id="2841525013647267359">Traduire à partir de la langue suivante :</translation>
 <translation id="2846251086934905009">Erreur d'installation : le programme d'installation n'a pas été terminé. L'installation a été annulée.</translation>
@@ -482,6 +483,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5889361821821684993">Chromium vérifie régulièrement que votre navigateur dispose des paramètres les plus sûrs. Nous vous informerons si nous avons besoin de votre avis pour quelque chose.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5896077214220653386">Gemini Enterprise dans Chromium</translation>
+<translation id="5900507321340749588">Pour propulser des fonctionnalités telles que la Détection d'escroquerie, Chromium peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil. Lorsque cette option est désactivée, ces fonctionnalités peuvent ne pas fonctionner. <ph name="BEGIN_LINK" />En savoir plus sur l'IA sur l'appareil<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Connexion au réseau</translation>
 <translation id="5924017743176219022">Connexion à Internet en cours…</translation>
 <translation id="5941711191222866238">Réduire</translation>

@@ -2074,6 +2074,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4412377069090572315">Ką žmonės sako</translation>
 <translation id="4414515549596849729">slapukai ir svetainės duomenys</translation>
 <translation id="4415156962929755728">Plastikas (itin blizgus)</translation>
+<translation id="4415276339145661267">„Google“ paskyros tvarkymas</translation>
 <translation id="4415426530740016218">Paėmimo adresas</translation>
 <translation id="4415748029120993980">SECG elipsės formos kreivės secp384r1 (taip pat vadinama NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2547,6 +2548,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5216942107514965959">Paskutinį kartą lankytasi šiandien</translation>
 <translation id="5217759126664161410">Netinkamas protokolo formatas.</translation>
 <translation id="5221377878828867877">Slaptažodžio pakartotinį naudojimą stebi jūsų organizacija</translation>
+<translation id="5222676887888702881">Atsijungti</translation>
 <translation id="5222812217790122047">Būtina nurodyti el. paštą</translation>
 <translation id="5226979307236834587">Kaip mandagiai atsisakyti planų?</translation>
 <translation id="5229844812197559338">„<ph name="SELECT_PROVIDER_TITLE" />“. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4674,6 +4676,7 @@ Papildoma išsami informacija:
 <translation id="8800034312320686233">Neveikia svetainė?</translation>
 <translation id="8803251172194676606">Sukurk individualią kūno rengybos programą</translation>
 <translation id="8803526663383843427">Kada įjungta</translation>
+<translation id="8804164990146287819">Privatumo politika</translation>
 <translation id="8805819170075074995">Sąrašo įrašas „<ph name="LANGUAGE_ID" />“: įrašo nepaisoma, nes jis taip pat įtrauktas į politiką „SpellcheckLanguage“.</translation>
 <translation id="8806696968588872703">Plastikas (atlasinis)</translation>
 <translation id="8807160976559152894">Apkarpymas po kiekvieno puslapio</translation>
@@ -4737,6 +4740,7 @@ Papildoma išsami informacija:
 <translation id="8903998444169664879">Patvirtinkite savo tapatybę, kad galėtumėte pakeisti mokėjimų nustatymus</translation>
 <translation id="890493561996401738">Pašalinkite pasiūlymo mygtuką, paspauskite „Enter“, kad pašalintumėte, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 col.</translation>
+<translation id="8912362522468806198">„Google“ paskyra</translation>
 <translation id="8914504000324227558">Iš naujo paleisti „Chrome“</translation>
 <translation id="8918062451146297192">Virtualios kortelės saugos kodas (CVC)</translation>
 <translation id="8919895429178014996">Slėpti visus elementus</translation>

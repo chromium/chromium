@@ -734,6 +734,7 @@
 <translation id="2215727959747642672">फाइलचे संपादन</translation>
 <translation id="2219658597883514593">ट्यूटोरियल रीस्टार्ट करा</translation>
 <translation id="2219735899272417925">डिव्हाइस रीसेट करण्याची आवश्यकता आहे</translation>
+<translation id="2221460252073828078">तुमचे Search AI उत्तर इथे पहा</translation>
 <translation id="2222604080869344662">डाउनलोड करणे पुढे सुरू ठेवण्यासाठी OneDrive मध्ये साइन इन करा</translation>
 <translation id="2224337661447660594">इंटरनेट नाही</translation>
 <translation id="2225927550500503913">व्हर्च्युअल कार्ड सुरू केले आहे</translation>
@@ -2072,6 +2073,7 @@
 <translation id="4412377069090572315">लोक काय म्हणत आहेत</translation>
 <translation id="4414515549596849729">कुकी आणि साइट डेटा</translation>
 <translation id="4415156962929755728">प्लॅस्टिक (हाय ग्लॉस)</translation>
+<translation id="4415276339145661267">तुमचे Google खाते व्यवस्थापित करा</translation>
 <translation id="4415426530740016218">घेण्याचा पत्ता</translation>
 <translation id="4415748029120993980">SECG एल्लिपटिक कर्व्ह secp384r1 (aka NIST P-384)</translation>
 <translation id="4418150423720608641">ML-DSA-87</translation>
@@ -2545,6 +2547,7 @@
 <translation id="5216942107514965959">आज शेवटची भेट दिली</translation>
 <translation id="5217759126664161410">प्रोटोकॉलचा फॉरमॅट चुकीचा आहे.</translation>
 <translation id="5221377878828867877">तुमच्या संस्थेद्वारे पासवर्ड पुन्हा वापरणे हे नियंत्रित केले जाते</translation>
+<translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5222812217790122047">ईमेल आवश्यक आहे</translation>
 <translation id="5226979307236834587">मला नम्रपणे प्लॅनना नकार कसा देता येईल?</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
@@ -4672,6 +4675,7 @@
 <translation id="8800034312320686233">साइट काम करत नाही का?</translation>
 <translation id="8803251172194676606">कस्टम फिटनेस दिनक्रम डिझाइन कर</translation>
 <translation id="8803526663383843427">सुरू असल्यास</translation>
+<translation id="8804164990146287819">गोपनीयता धोरण</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री SpellcheckLanguage धोरणामध्येदेखील समाविष्ट असल्यामुळे तिच्याकडे दुर्लक्ष केले गेले आहे.</translation>
 <translation id="8806696968588872703">प्लॅस्टिक (सॅटिन)</translation>
 <translation id="8807160976559152894">प्रत्येक पेजनंतर ट्रिम करा</translation>
@@ -4735,6 +4739,7 @@
 <translation id="8903998444169664879">तुमची पेमेंट सेटिंग्ज बदलण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="890493561996401738">सूचना बटण काढा, काढण्यासाठी एंटर प्रेस करा, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">८ x १० इंच</translation>
+<translation id="8912362522468806198">Google खाते</translation>
 <translation id="8914504000324227558">Chrome रीलाँच करा</translation>
 <translation id="8918062451146297192">व्हर्च्युअल कार्डसाठी CVC</translation>
 <translation id="8919895429178014996">सर्व आयटम लपवा</translation>

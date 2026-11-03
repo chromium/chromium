@@ -187,6 +187,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2799223571221894425">Endurræsa</translation>
 <translation id="2803971713792056305">Chromium-prófíllinn þinn</translation>
 <translation id="2816462166102338036">Leita í þessu vídeói með Myndaleit</translation>
+<translation id="2819844767470613567">Viðvörun: Chromium getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í einangraðri stillingu.</translation>
 <translation id="282591729717417030">Uppgötvaðu vörur með myndavélinni þinni, fylgstu með verðlækkunum og margt fleira á ferðinni með Chromium í iOS.</translation>
 <translation id="2841525013647267359">Þýða úr</translation>
 <translation id="2846251086934905009">Uppsetningarvilla: Uppsetningarforrit lauk ekki verki sínu. Hætt var við uppsetningu.</translation>
@@ -483,6 +484,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5889361821821684993">Chromium athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5896077214220653386">Gemini Enterprise í Chromium</translation>
+<translation id="5900507321340749588">Chromium kann að nýta gervigreindarlíkön sem keyrð eru í tækinu þínu til að keyra eiginleika á borð við svindlvörn. Hugsanlega virka þessir eiginleikar ekki þegar slökkt er á þessu. <ph name="BEGIN_LINK" />Nánar um gervigreind í tæki<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – innskráning á net</translation>
 <translation id="5924017743176219022">Tengist internetinu…</translation>
 <translation id="5941711191222866238">Minnka</translation>

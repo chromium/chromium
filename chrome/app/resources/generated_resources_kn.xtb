@@ -521,6 +521,7 @@
 <translation id="1384849755549338773">ಇತರ ಭಾಷೆಗಳಲ್ಲಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಅನುವಾದಿಸಲು Google Translate ಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="1384959399684842514">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1386966479075994683">ಟ್ಯಾಬ್‌ಗಳನ್ನು ವಿಸ್ತರಿಸಿ</translation>
+<translation id="1387227841274754059">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಕುರಿತು ಕೇಳಿ</translation>
 <translation id="1388253969141979417">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="139013308650923562">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1390306150250850355"><ph name="APP_TYPE" /> ಆ್ಯಪ್ ಅನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಮೊದಲೇ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -4751,6 +4752,7 @@
 <translation id="4610637590575890427"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ಗೆ ಹೋಗುವುದೇ?</translation>
 <translation id="4611619000650855880">ಎಡ ಮೌಸ್ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿದಾಗ, ಡಬಲ್‌-ಕ್ಲಿಕ್ ಮಾಡಲು "/" ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="4613271546271159013">ನೀವು ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆದಿರುವಾಗ ಯಾವ ಪುಟವನ್ನು ತೋರಿಸಲಾಗಿದೆ ಎಂಬುದರ ವಿಸ್ತರಣೆ ಬದಲಾಗಿದೆ.</translation>
+<translation id="4616024182698834938">ಫೈಲ್‌ಗಳನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಅಂಡ್ ಡ್ರಾಪ್ ಮಾಡಿ</translation>
 <translation id="461613135510474570">ವಾಕ್ಯ</translation>
 <translation id="461661862154729886">ಶಕ್ತಿಯ ಮೂಲ</translation>
 <translation id="4617001782309103936">ತೀರಾ ಚಿಕ್ಕದು</translation>
@@ -5581,6 +5583,7 @@
 <translation id="5230190638672215545">"ươ" ಪಡೆಯಲು "uow" ಎಂದು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="5230516054153933099">ವಿಂಡೋ</translation>
 <translation id="5231255476752743708">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸುವ ವಿಚಾರದಲ್ಲಿ Chrome ಗೆ ಸಹಾಯ ಬೇಕಾಗಿದೆ</translation>
+<translation id="5232607425694431024">ಫೈಲ್ ಅಥವಾ ಚಿತ್ರದ ಕುರಿತು ಕೇಳಿ</translation>
 <translation id="5232714764496316200">Google Lens ಬಳಸಿಕೊಂಡು ಹೋಮ್‌ವರ್ಕ್ ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="5233231016133573565">ಪ್ರಗತಿ ID</translation>
 <translation id="5233638681132016545">ಹೊಸ ಟ್ಯಾಬ್</translation>
@@ -7034,6 +7037,7 @@
 <translation id="6399675241776343019">ನಿರಾಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="6399774419735315745">ಸ್ಪೈ</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> ನಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
+<translation id="6400714103322134861">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಅನ್‌ಫೋಕಸ್ ಮಾಡಿ</translation>
 <translation id="6401118106417399952">ನಿಮ್ಮ ಸಾಧನದ EID ಸಂಖ್ಯೆ <ph name="EID_NUMBER" /> ಮತ್ತು ಸಾಧನದ ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="6402042774506839496">ಏಕೆ ಎಂದು ತಿಳಿಯಲು, ಆ್ಯಪ್ ಡೆವಲಪರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="6402921224457714577">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸಲು ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
@@ -7730,6 +7734,7 @@
 <translation id="6913051485529944333">ಈ ಪುಟದಲ್ಲಿ ನೀವು Google Calendar ಅನ್ನು ಮತ್ತೆ ನೋಡುವುದಿಲ್ಲ</translation>
 <translation id="6914812290245989348">ಅಸುರಕ್ಷಿತ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡುವ ಮೊದಲು ಯಾವುದೇ ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಬೇಡಿ</translation>
 <translation id="6916590542764765824">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="6916630302999048499">Gemini ಕಾರ್ಯವು ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6916676294509106572">Outlook Calendar ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6916818963747321523">ಎಲ್ಲವನ್ನೂ ವಿಸ್ತರಿಸಿ</translation>
 <translation id="6917873303492266709">ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು, ಸೇರಿಕೊಳ್ಳಲು ಮತ್ತು ಕೊಲಾಬೊರೇಟ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು Chrome ಸೈನ್-ಇನ್ ಅನ್ನು ಅನುಮತಿಸಿ ಎಂಬುದನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -8260,6 +8265,7 @@
 <translation id="733058866272972585">ಸುರಕ್ಷಿತ ಕಂಟೆಂಟ್ ಅನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕಾಗಿ ಗುರುತಿಸುವಿಕೆಗಳನ್ನು ಬಳಸದಿರುವ ಹಾಗೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7332053360324989309">ಮೀಸಲು ಕೆಲಸಗಾರ: <ph name="SCRIPT_URL" /></translation>
+<translation id="7332618715997319332">ಆರಂಭವಾಗಿದೆ</translation>
 <translation id="7333388112938984914">ಮೀಟರ್ಡ್ ಕನೆಕ್ಷನ್‌ನಲ್ಲಿರುವಾಗ ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="7335974957018254119">ಈ ಭಾಷೆಗಳಿಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="7336799713063880535">ಸೂಚನೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
@@ -10301,6 +10307,7 @@
 <translation id="8876307312329369159">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಡೆಮೊ ಸೆಷನ್‌ನಲ್ಲಿ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8876965259056847565">ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲು, ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್ ಅನ್ನು <ph name="FEATURE_NAME" /> ಬಳಸಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="8877448029301136595">[ಮೂಲ ಡೈರೆಕ್ಟರಿ]</translation>
+<translation id="8878337214401484041"><ph name="TASK_TITLE" />: ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ</translation>
 <translation id="8879284080359814990">ಟ್ಯಾಬ್‌ನಂತೆ &amp;ತೋರಿಸಿ</translation>
 <translation id="8879921471468674457">ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯನ್ನು ನೆನಪಿನಲ್ಲಿಡಿ</translation>
 <translation id="8880009256105053174">Google ಮೂಲಕ ಈ ಪುಟವನ್ನು ಹುಡುಕಿ...</translation>

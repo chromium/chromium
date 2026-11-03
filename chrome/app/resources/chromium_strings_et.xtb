@@ -185,6 +185,7 @@
 <translation id="2799223571221894425">Taaskäivita</translation>
 <translation id="2803971713792056305">Teie Chromium</translation>
 <translation id="2816462166102338036">Otsige seda videot pildiotsinguga</translation>
+<translation id="2819844767470613567">Hoiatus. Chromium ei saa takistada laiendustel teie sirvimisajalugu salvestada. Kui soovite laienduse isoleeritud režiimis keelata, siis tühistage see valik.</translation>
 <translation id="282591729717417030">Avastage liikvel olles tooteid oma kaameraga, jälgige hinnamuutusi ja tehke muudki Chromiumi iOS-i rakendusega.</translation>
 <translation id="2841525013647267359">Tõlke lähtekeel</translation>
 <translation id="2846251086934905009">Installimisviga: installiprogrammi ei viidud lõpule. Installimine katkestati.</translation>
@@ -481,6 +482,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5889361821821684993">Chromium kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5896077214220653386">Gemini Enterprise Chromiumis</translation>
+<translation id="5900507321340749588">Pettuste tuvastamise ja muude funktsioonide toetamiseks võib Chromium kasutada AI-mudeleid, mis töötavad otse teie seadmes. Kui see on välja lülitatud, ei pruugi need funktsioonid töötada. <ph name="BEGIN_LINK" />Lugege lisaks seadmes oleva AI kohta.<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – võrku sisselogimine</translation>
 <translation id="5924017743176219022">Internetiga ühenduse loomine …</translation>
 <translation id="5941711191222866238">Minimeeri</translation>

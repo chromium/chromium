@@ -905,7 +905,6 @@
 <translation id="363473492175527493">បានកំណត់កិច្ចការឱ្យផ្ដោតអារម្មណ៍លើ៖ <ph name="TASK_NAME" />។ ចុច enter ដើម្បី​កែកិច្ចការ។</translation>
 <translation id="3638400994746983214">បិទ/បើកអេក្រង់ឯកជនភាព។ <ph name="STATE_TEXT" />។</translation>
 <translation id="3649256019230929621">បង្រួមផ្ទាំង</translation>
-<translation id="3650952250015018111">អនុញ្ញាត​ឱ្យ "<ph name="APP_NAME" />" ចូលប្រើ៖</translation>
 <translation id="3652817283076144888">កំពុង​ចាប់ផ្ដើម</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1176,7 +1175,6 @@
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4412698727486357573">មជ្ឈមណ្ឌល​ជំនួយ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> បានបិទ។</translation>
-<translation id="44141919652824029">អនុញ្ញាត​ឱ្យ "<ph name="APP_NAME" />" ទទួលបាន​បញ្ជី​ឧបករណ៍ USB ដែល​បានភ្ជាប់​របស់អ្នក​មែនទេ?</translation>
 <translation id="4414242853388122273">មានបញ្ហាក្នុងការដក <ph name="VM_NAME" /> ចេញ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="4417647906073317561">ការកំណត់​មុខងារ​ផ្ដោត​អារម្មណ៍។ កំណត់​មុខងារ​កំណត់ម៉ោង កិច្ចការ និង​តន្ត្រី ដើម្បី​ផ្ចង់អារម្មណ៍។</translation>
 <translation id="4418600384772451109">បិទ​ផ្ទាំង</translation>
@@ -2588,7 +2586,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> មាន <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />។</translation>
 <translation id="8477270416194247200">ចុច Alt+Search ឬ Shift ដើម្បីបោះបង់។</translation>
 <translation id="8480418399907765580">បង្ហាញរបារឧបករណ៍</translation>
-<translation id="8481187309597259238">បញ្ជាក់​ការអនុញ្ញាត USB</translation>
 <translation id="8487660088084188539">នៅពេល​អ្នកបើក​មុខងារ​ទាំងនេះ អក្សរបញ្ចូល ខ្លឹមសារ​ឯកសារ និង URL ទំព័រ​បណ្ដាញ​អាចត្រូវបាន​បញ្ជូនទៅ​ម៉ាស៊ីនមេ Google។ ព័ត៌មាននេះ​ត្រូវបានប្រើ ដើម្បី​បង្កើត​ការណែនាំ​សំណេរ បង្កើត​ការសង្ខេប ឆ្លើយសំណួរ និង​កែលម្អ​ផលិតផល​ដោយអនុលោម​តាម<ph name="LINK_TO_SERVICE_TERMS" />។ កុំ​រួមបញ្ចូល​ព័ត៌មាន​ផ្ទាល់ខ្លួន រសើប ឬ​សម្ងាត់។</translation>
 <translation id="8487699605742506766">ហតស្ប៉ត</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />សេវាកម្ម​ទីតាំង​របស់ Google ប្រើប្រាស់​ប្រភព ដូចជា Wi-Fi, បណ្ដាញ​ទូរសព្ទ​ចល័ត និង​សេនស័រ ដើម្បី​ជួយ​ប៉ាន់ស្មាន​ទីតាំងរបស់​ឧបករណ៍​នេះ។<ph name="END_PARAGRAPH1" />

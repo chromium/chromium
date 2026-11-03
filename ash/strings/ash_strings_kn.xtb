@@ -905,7 +905,6 @@
 <translation id="363473492175527493">ಇದರ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು ಕಾರ್ಯವನ್ನು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ: <ph name="TASK_NAME" />. ಕಾರ್ಯವನ್ನು ಎಡಿಟ್ ಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649256019230929621">ವಿಂಡೋ ಕಿರಿದಾಗಿಸಿ</translation>
-<translation id="3650952250015018111">ಇದನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು "<ph name="APP_NAME" />" ಅನ್ನು ಅನುಮತಿಸಿ:</translation>
 <translation id="3652817283076144888">ಆರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -1177,7 +1176,6 @@
 <translation id="4406883609789734330">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್</translation>
 <translation id="4412698727486357573">ಸಹಾಯ ಕೇಂದ್ರ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ಆಫ್ ಆಗಿದೆ.</translation>
-<translation id="44141919652824029">ನಿಮ್ಮ ಲಗತ್ತಿಸಲಾದ USB ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪಡೆಯಲು "<ph name="APP_NAME" />" ಅನ್ನು ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="4414242853388122273"><ph name="VM_NAME" /> ತೆಗೆದುಹಾಕುವಲ್ಲಿ ದೋಷ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4417647906073317561">ಫೋಕಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು. ಪ್ರಕ್ರಿಯೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಲು ಟೈಮರ್, ಕಾರ್ಯ ಮತ್ತು ಸಂಗೀತವನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="4418600384772451109">ಪ್ಯಾನೆಲ್ ಮುಚ್ಚಿರಿ</translation>
@@ -2591,7 +2589,6 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />, <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ಹೊಂದಿದೆ.</translation>
 <translation id="8477270416194247200">ರದ್ದುಗೊಳಿಸಲು Alt+ಹುಡುಕಾಟ ಅಥವಾ Shift ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8480418399907765580">ಟೂಲ್‌ಬಾರ್‌ ತೋರಿಸು</translation>
-<translation id="8481187309597259238">USB ಅನುಮತಿಯನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="8487660088084188539">ನೀವು ಈ ಫೀಚರ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಿದಾಗ, ಇನ್‌ಪುಟ್ ಪಠ್ಯ, ಡಾಕ್ಯುಮೆಂಟ್ ಕಂಟೆಂಟ್‌ ಮತ್ತು ವೆಬ್ ಪುಟದ URL ಅನ್ನು Google ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಬಹುದು. ಈ ಮಾಹಿತಿಯನ್ನು ಬರೆಯಲು ಸಲಹೆಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲು, ಸಾರಾಂಶಗಳನ್ನು ರಚಿಸಲು, ಪ್ರಶ್ನೆಗಳಿಗೆ ಉತ್ತರಿಸಲು ಮತ್ತು ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುತ್ತದೆ, ಇದು <ph name="LINK_TO_SERVICE_TERMS" /> ಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮವಾದ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವುದೇ ಮಾಹಿತಿಯನ್ನೂ ಸೇರಿಸಬೇಡಿ.</translation>
 <translation id="8487699605742506766">ಹಾಟ್‌ಸ್ಪಾಟ್</translation>
 <translation id="8488561391784577756"><ph name="BEGIN_PARAGRAPH1" />ಈ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಅಂದಾಜು ಮಾಡುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Google ನ ಸ್ಥಳ ಸೇವೆಯು ವೈ-ಫೈ, ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್ ರೀತಿಯ ಮೂಲಗಳನ್ನು ಬಳಸುತ್ತದೆ.<ph name="END_PARAGRAPH1" />

@@ -7034,6 +7034,7 @@ USB ડિવાઇસ</translation>
 <translation id="6399675241776343019">નકારવામાં આવ્યો છે</translation>
 <translation id="6399774419735315745">જાસૂસ</translation>
 <translation id="6400360390396538896">હંમેશાં ચાલુ <ph name="ORIGIN" /></translation>
+<translation id="6400714103322134861">ટૅબના ગ્રૂપને અનફોકસ કરો</translation>
 <translation id="6401118106417399952">તમારા ડિવાઇસનો EID <ph name="EID_NUMBER" /> અને ડિવાઇસનો અનુક્રમ નંબર <ph name="SERIAL_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ કરી શકાય છે.</translation>
 <translation id="6402042774506839496">શા માટે, તે જાણવા માટે ઍપ ડેવલપરનો સંપર્ક કરો</translation>
 <translation id="6402921224457714577">Sites તમારા MIDI ડિવાઇસ નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવા માટે પૂછી શકે છે</translation>
@@ -10075,6 +10076,7 @@ USB ડિવાઇસ</translation>
 <translation id="8708000541097332489">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;વધુ માહિતી</translation>
+<translation id="8709234440040320647">(આઇસોલેટેડ મોડ)</translation>
 <translation id="8709368517685334931">તમે Chrome વેબ સ્ટોરમાં જઈને જૂના રંગો શોધી શકો છો</translation>
 <translation id="8710414664106871428">કાલ્પનિક</translation>
 <translation id="8711402221661888347">પિકલ્સ</translation>
@@ -10239,6 +10241,7 @@ USB ડિવાઇસ</translation>
 <translation id="8836360711089151515"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લો અને 1 અઠવાડિયામાં આ <ph name="DEVICE_TYPE" /> પરત કરો. <ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" /></translation>
 <translation id="8836553134303716111">{NUM_GROUPS,plural, =1{ગ્રૂપ છોડો}one{ગ્રૂપ છોડો}other{ગ્રૂપ છોડો}}</translation>
 <translation id="8836782447513334597">ચાલુ રાખો</translation>
+<translation id="8837072669197607689">આઇસોલેટેડ મોડમાં મંજૂરી આપો</translation>
 <translation id="8837573527470979311">નીચેની બાજુના વ્યૂ સાથે સ્વૉપ કરો</translation>
 <translation id="8838601485495657486">અપારદર્શક</translation>
 <translation id="8838770651474809439">હૅમ્બર્ગર</translation>
@@ -10529,6 +10532,7 @@ USB ડિવાઇસ</translation>
 <translation id="9043767139743235992">Google Disability સપોર્ટ ટીમનો સંપર્ક કરો</translation>
 <translation id="9044646465488564462">નેટવર્કથી કનેક્ટ કરવામાં નિષ્ફળ: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">તમારી વાંચન સૂચિ બાજુની નવી પૅનલ પર ખસેડવામાં આવી છે. તેને અહીં અજમાવી જુઓ.</translation>
+<translation id="9046240419485318563">મેમરી બ્રાઉઝ કરો</translation>
 <translation id="9048745018038487540">બધા ફૉન્ટ પસંદ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
 <translation id="905137631551495997">એક્સ્ટેન્શન</translation>

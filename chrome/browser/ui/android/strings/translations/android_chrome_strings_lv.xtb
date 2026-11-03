@@ -41,6 +41,7 @@
 <translation id="1142732900304639782">Nepiedāvāt tulkot šīs vietnes</translation>
 <translation id="1143193470214071120">Aizveriet logu vai pārvaldiet logus.</translation>
 <translation id="1143486892058798649">Saglabāt saiti kā…</translation>
+<translation id="1149644372535087155">Paroļu saglabāšana pārlūkā Chrome</translation>
 <translation id="1149725087019908252">Fails <ph name="FILE_NAME" /> tiek skenēts</translation>
 <translation id="1150263420752757504">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Google paroļu pārvaldniekā nav saglabāta neviena parole.</translation>
@@ -299,6 +300,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2190355936436201913">(tukšs)</translation>
 <translation id="219283042927675668">Cilnes grupā</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
+<translation id="2195339740518523951">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="2196695604589508993">Atvērt vēsturi</translation>
 <translation id="2205701497928406883">Piesprausta cilne <ph name="TAB_TITLE" />, kuras saturs tiek kopīgots</translation>
 <translation id="22091350895006575">Pievienot lietotājvārdu</translation>

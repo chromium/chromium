@@ -184,6 +184,7 @@
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2803971713792056305">あなたの Chromium</translation>
 <translation id="2816462166102338036">画像検索でこの動画を検索する</translation>
+<translation id="2819844767470613567">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。アイソレート モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="282591729717417030">iOS 版 Chromium で、外出先でもカメラで商品を検索したり、値下げをトラッキングしたりできます。</translation>
 <translation id="2841525013647267359">原文の言語</translation>
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
@@ -478,6 +479,7 @@
 <translation id="5889361821821684993">Chromium では、ブラウザが安全な設定になっているかどうかを定期的に確認しています。お客様による確認が必要な項目がありましたらお知らせします。</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5896077214220653386">Gemini Enterprise in Chromium</translation>
+<translation id="5900507321340749588">Chromium の不正検出などの機能は、デバイス上で直接稼働する AI モデルを使用して動作します。オフにすると、これらの機能は動作しない可能性があります。<ph name="BEGIN_LINK" />オンデバイス AI の詳細<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ネットワークにログイン</translation>
 <translation id="5924017743176219022">インターネットに接続しています…</translation>
 <translation id="5941711191222866238">最小化</translation>
