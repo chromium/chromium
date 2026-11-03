@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -142,6 +143,9 @@ public class PendingTabClosureManager {
          */
         private final List<Tab> mRewoundTabs = new ArrayList<>();
 
+        private final List<Tab> mUnmodifiableRewoundTabs =
+                Collections.unmodifiableList(mRewoundTabs);
+
         @Override
         public boolean isIncognito() {
             return mTabModel.isIncognito();
@@ -192,7 +196,7 @@ public class PendingTabClosureManager {
 
         @Override
         public Iterator<Tab> iterator() {
-            return ReadOnlyIterator.maybeCreate(mRewoundTabs.iterator());
+            return mUnmodifiableRewoundTabs.iterator();
         }
 
         /**
