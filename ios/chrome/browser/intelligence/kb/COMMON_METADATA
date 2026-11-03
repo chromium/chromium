@@ -3,6 +3,48 @@
 # found in the LICENSE file.
 
 agentic_review {
+  # Core exclusions: server-side C++ and IPC rules that conflict with
+  # Objective-C++ syntax, iOS presubmit checks, EarlGrey 2, or iOS KB rules.
+  exclude_rules: "ipc/knowledge_base/webui/bind-webui-interfaces-via-mojo-webui-controller-and-standard.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/do-not-handle-dcheck-failures.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/enforce-impossible-states-with-check-or-notreached.md"
+  exclude_rules: "styleguide/c++/knowledge_base/checks/tests-use-gtest-assertions-not-check.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/todo-format-and-bug-or-owner.md"
+  exclude_rules: "styleguide/c++/knowledge_base/const/constexpr-for-true-constants.md"
+  exclude_rules: "styleguide/c++/knowledge_base/features/no-nonstandard-pragmas.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/param-types-by-role-and-optionality.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/return-value-or-reference-pointer-only-if-null.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/header-definitions-must-be-odr-safe-inline.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/include-what-you-use.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/prefer-forward-declarations-over-includes.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/class-vs-struct-data-member-underscores.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/function-names-pascal-case-and-inline-accessors.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/lowercase-specific-file-names-and-extensions.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/variable-and-parameter-names-snake-case.md"
+  exclude_rules: "styleguide/c++/knowledge_base/ownership/prefer-const-raw-ref-for-never-null-fields.md"
+  exclude_rules: "styleguide/c++/knowledge_base/ownership/raw-ptr-raw-ref-for-non-owning-fields.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/declare-local-variables-in-narrowest-scope.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/no-class-just-to-group-static-members.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/place-code-in-namespace.md"
+  exclude_rules: "styleguide/c++/knowledge_base/scoping/unnamed-namespace-for-cc-local-items.md"
+  exclude_rules: "styleguide/c++/knowledge_base/testing/test-only-classes-in-testonly-targets-and-test-dirs.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/no-c-style-or-function-style-casts.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/nullptr-for-pointers-nul-char-for-chars.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/use-size-t-for-sizes-counts-indices.md"
+
+  # Optional deduplication and policy exclusions: rules superseded by
+  # Objective-C++-aware iOS KB rules or conflicting with iOS idioms.
+  exclude_rules: "styleguide/c++/knowledge_base/checks/prefer-check-over-dcheck.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/document-pointer-retention-nullability-and-out-params.md"
+  exclude_rules: "styleguide/c++/knowledge_base/comments/function-declaration-comments-and-indicative-mood.md"
+  exclude_rules: "styleguide/c++/knowledge_base/features/no-statement-expressions-or-elvis-operator.md"
+  exclude_rules: "styleguide/c++/knowledge_base/functions/prefer-return-values-over-output-params.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/angle-bracket-includes-only-for-system-headers.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/associated-header-for-cc-files.md"
+  exclude_rules: "styleguide/c++/knowledge_base/headers/no-pointer-members-just-for-forward-declaration.md"
+  exclude_rules: "styleguide/c++/knowledge_base/naming/avoid-unfamiliar-and-letter-deleting-abbreviations.md"
+  exclude_rules: "styleguide/c++/knowledge_base/types/prefer-using-over-typedef.md"
+
   capability_groups {
     path_expression: "ios/(?:.*/)?(?:ui|ui_bundled)/(?:.*/)?[^/]*\\.h"
     path_expression_exclusion: "ios/third_party/.*"
