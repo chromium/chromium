@@ -1,13 +1,7 @@
-monorail: {
-  component: "UI>Browser>Autofill"
-}
 team_email: "bling-transactions@google.com"
 os: IOS
-buganizer_public: {
-  component_id: 1456764
-}
-agentic_review: {}
 
+mixins: "//components/autofill/COMMON_METADATA"
 # TODO(crbug.com/576358854): Import //ios/agents/knowledge_base/COMMON_METADATA instead
 # once the knowledge base has fully landed there.
 mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"

@@ -1,8 +1,2 @@
-monorail: {
-  project: "chromium"
-  component: "UI>Browser>Autofill"
-}
+mixins: "//components/autofill/COMMON_METADATA"
 team_email: "chrome-transactions@google.com"
-buganizer_public: {
-  component_id: 1456764
-}
