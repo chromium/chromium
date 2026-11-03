@@ -14,6 +14,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace blink {
@@ -514,13 +515,13 @@ Manifest::Builder& Manifest::Builder::SetMigrateTo(
 }
 
 Manifest::Builder& Manifest::Builder::SetThemeColor(
-    std::optional<uint32_t> theme_color) {
+    std::optional<SkColor> theme_color) {
   theme_color_ = theme_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetBackgroundColor(
-    std::optional<uint32_t> background_color) {
+    std::optional<SkColor> background_color) {
   background_color_ = background_color;
   return *this;
 }
@@ -555,13 +556,13 @@ Manifest::Builder& Manifest::Builder::SetTranslations(
 }
 
 Manifest::Builder& Manifest::Builder::SetDarkThemeColor(
-    std::optional<uint32_t> dark_theme_color) {
+    std::optional<SkColor> dark_theme_color) {
   dark_theme_color_ = dark_theme_color;
   return *this;
 }
 
 Manifest::Builder& Manifest::Builder::SetDarkBackgroundColor(
-    std::optional<uint32_t> dark_background_color) {
+    std::optional<SkColor> dark_background_color) {
   dark_background_color_ = dark_background_color;
   return *this;
 }

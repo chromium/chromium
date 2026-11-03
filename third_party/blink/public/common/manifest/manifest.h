@@ -29,6 +29,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_migration_behavior.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -438,8 +439,8 @@ class BLINK_COMMON_EXPORT Manifest {
   }
   const std::vector<MigrateFrom>& migrate_from() const { return migrate_from_; }
   const std::optional<MigrateTo>& migrate_to() const { return migrate_to_; }
-  std::optional<uint32_t> theme_color() const { return theme_color_; }
-  std::optional<uint32_t> background_color() const { return background_color_; }
+  std::optional<SkColor> theme_color() const { return theme_color_; }
+  std::optional<SkColor> background_color() const { return background_color_; }
   const std::optional<std::u16string>& gcm_sender_id() const {
     return gcm_sender_id_;
   }
@@ -453,8 +454,8 @@ class BLINK_COMMON_EXPORT Manifest {
   const base::flat_map<std::u16string, TranslationItem>& translations() const {
     return translations_;
   }
-  std::optional<uint32_t> dark_theme_color() const { return dark_theme_color_; }
-  std::optional<uint32_t> dark_background_color() const {
+  std::optional<SkColor> dark_theme_color() const { return dark_theme_color_; }
+  std::optional<SkColor> dark_background_color() const {
     return dark_background_color_;
   }
   const std::optional<TabStrip>& tab_strip() const { return tab_strip_; }
@@ -516,15 +517,15 @@ class BLINK_COMMON_EXPORT Manifest {
   bool prefer_related_applications_ = false;
   std::vector<MigrateFrom> migrate_from_;
   std::optional<MigrateTo> migrate_to_;
-  std::optional<uint32_t> theme_color_;
-  std::optional<uint32_t> background_color_;
+  std::optional<SkColor> theme_color_;
+  std::optional<SkColor> background_color_;
   std::optional<std::u16string> gcm_sender_id_;
   GURL scope_;
   std::optional<GURL> update_manifest_url_;
   std::optional<LaunchHandler> launch_handler_;
   base::flat_map<std::u16string, TranslationItem> translations_;
-  std::optional<uint32_t> dark_theme_color_;
-  std::optional<uint32_t> dark_background_color_;
+  std::optional<SkColor> dark_theme_color_;
+  std::optional<SkColor> dark_background_color_;
   std::optional<TabStrip> tab_strip_;
   std::optional<std::u16string> version_;
   std::optional<
@@ -591,17 +592,16 @@ class BLINK_COMMON_EXPORT Manifest::Builder {
   Builder& SetPreferRelatedApplications(bool prefer_related_applications);
   Builder& SetMigrateFrom(std::vector<MigrateFrom> migrate_from);
   Builder& SetMigrateTo(std::optional<MigrateTo> migrate_to);
-  Builder& SetThemeColor(std::optional<uint32_t> theme_color);
-  Builder& SetBackgroundColor(std::optional<uint32_t> background_color);
+  Builder& SetThemeColor(std::optional<SkColor> theme_color);
+  Builder& SetBackgroundColor(std::optional<SkColor> background_color);
   Builder& SetGcmSenderId(std::optional<std::u16string> gcm_sender_id);
   Builder& SetScope(GURL scope);
   Builder& SetUpdateManifestUrl(std::optional<GURL> update_manifest_url);
   Builder& SetLaunchHandler(std::optional<LaunchHandler> launch_handler);
   Builder& SetTranslations(
       base::flat_map<std::u16string, TranslationItem> translations);
-  Builder& SetDarkThemeColor(std::optional<uint32_t> dark_theme_color);
-  Builder& SetDarkBackgroundColor(
-      std::optional<uint32_t> dark_background_color);
+  Builder& SetDarkThemeColor(std::optional<SkColor> dark_theme_color);
+  Builder& SetDarkBackgroundColor(std::optional<SkColor> dark_background_color);
   Builder& SetTabStrip(std::optional<TabStrip> tab_strip);
   Builder& SetVersion(std::optional<std::u16string> version);
   Builder& SetNameLocalized(
@@ -656,15 +656,15 @@ class BLINK_COMMON_EXPORT Manifest::Builder {
   bool prefer_related_applications_ = false;
   std::vector<MigrateFrom> migrate_from_;
   std::optional<MigrateTo> migrate_to_;
-  std::optional<uint32_t> theme_color_;
-  std::optional<uint32_t> background_color_;
+  std::optional<SkColor> theme_color_;
+  std::optional<SkColor> background_color_;
   std::optional<std::u16string> gcm_sender_id_;
   GURL scope_;
   std::optional<GURL> update_manifest_url_;
   std::optional<LaunchHandler> launch_handler_;
   base::flat_map<std::u16string, TranslationItem> translations_;
-  std::optional<uint32_t> dark_theme_color_;
-  std::optional<uint32_t> dark_background_color_;
+  std::optional<SkColor> dark_theme_color_;
+  std::optional<SkColor> dark_background_color_;
   std::optional<TabStrip> tab_strip_;
   std::optional<std::u16string> version_;
   std::optional<

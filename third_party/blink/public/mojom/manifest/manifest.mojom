@@ -7,10 +7,11 @@ module blink.mojom;
 import "mojo/public/mojom/base/language_tag.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_migration_behavior.mojom";
-import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/safe_url_pattern.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
@@ -112,9 +113,10 @@ struct Manifest {
   // The app that this PWA intends to migrate to.
   ManifestMigrateTo? migrate_to;
 
-  // TODO(https://crbug.com/479448266): Use skia.mojom.SkColor.
-  uint32? theme_color;
-  uint32? background_color;
+  // Null if the member is absent from the manifest, is not a string, or is not
+  // a valid CSS color.
+  skia.mojom.SkColor? theme_color;
+  skia.mojom.SkColor? background_color;
 
   mojo_base.mojom.String16? gcm_sender_id;
 
@@ -141,10 +143,8 @@ struct Manifest {
   // TODO(b:340126786): Remove these obsolete fields.
   // TODO(crbug.com/40222835): This field is non-standard and part of a Chrome
   // experiment. See: https://github.com/w3c/manifest/issues/1045
-  // TODO(https://crbug.com/479448266): Use skia.mojom.SkColor possibly if these
-  // aren't yet removed.
-  uint32? dark_theme_color;
-  uint32? dark_background_color;
+  skia.mojom.SkColor? dark_theme_color;
+  skia.mojom.SkColor? dark_background_color;
 
   // TODO(crbug.com/897314): This field is non-standard and part of a Chrome
   // experiment. See:

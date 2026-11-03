@@ -65,6 +65,7 @@
 #include "third_party/liburlpattern/part.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/utils.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -694,8 +695,8 @@ std::optional<String> ManifestParser::ParseStringForMember(
   return value;
 }
 
-std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
-                                                 const String& key) {
+std::optional<SkColor> ManifestParser::ParseColor(const JSONObject* object,
+                                                  const String& key) {
   std::optional<String> parsed_color = ParseString(object, key, Trim(true));
   if (!parsed_color.has_value()) {
     return std::nullopt;
@@ -2341,12 +2342,12 @@ mojom::blink::ManifestMigrateToPtr ManifestParser::ParseMigrateTo(
   return migrate_to;
 }
 
-std::optional<RGBA32> ManifestParser::ParseThemeColor(
+std::optional<SkColor> ManifestParser::ParseThemeColor(
     const JSONObject* object) {
   return ParseColor(object, "theme_color");
 }
 
-std::optional<RGBA32> ManifestParser::ParseBackgroundColor(
+std::optional<SkColor> ManifestParser::ParseBackgroundColor(
     const JSONObject* object) {
   return ParseColor(object, "background_color");
 }

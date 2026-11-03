@@ -23,13 +23,13 @@
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
 class Size;
@@ -159,7 +159,8 @@ class MODULES_EXPORT ManifestParser {
   // Helper function to parse colors present on a given |dictionary| in a given
   // field identified by its |key|. Returns a null optional if the value is not
   // present or is not a valid color.
-  std::optional<RGBA32> ParseColor(const JSONObject* object, const String& key);
+  std::optional<SkColor> ParseColor(const JSONObject* object,
+                                    const String& key);
 
   // Helper function to validate a BCP 47 locale string and return the parsed
   // language tag. Returns a null optional if the locale string is not a valid
@@ -540,12 +541,12 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'theme_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-theme_color-member
   // Returns the parsed theme color if any, or a null optional otherwise.
-  std::optional<RGBA32> ParseThemeColor(const JSONObject* object);
+  std::optional<SkColor> ParseThemeColor(const JSONObject* object);
 
   // Parses the 'background_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-background_color-member
   // Returns the parsed background color if any, or a null optional otherwise.
-  std::optional<RGBA32> ParseBackgroundColor(const JSONObject* object);
+  std::optional<SkColor> ParseBackgroundColor(const JSONObject* object);
 
   // Parses the 'gcm_sender_id' field of the manifest.
   // This is a proprietary extension of the Web Manifest specification.
