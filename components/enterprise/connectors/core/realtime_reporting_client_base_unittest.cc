@@ -53,7 +53,7 @@ class TestRealtimeReportingClient : public RealtimeReportingClientBase {
 
   using RealtimeReportingClientBase::GetReportingClient;
 
-  const std::vector<policy::CloudPolicyClient*>& client_errors() const {
+  const std::vector<raw_ptr<policy::CloudPolicyClient>>& client_errors() const {
     return client_errors_;
   }
 
@@ -122,7 +122,7 @@ class TestRealtimeReportingClient : public RealtimeReportingClientBase {
  private:
   raw_ptr<policy::DeviceManagementService>
       device_management_service_for_testing_;
-  std::vector<policy::CloudPolicyClient*> client_errors_;
+  std::vector<raw_ptr<policy::CloudPolicyClient>> client_errors_;
   base::WeakPtrFactory<TestRealtimeReportingClient> weak_factory_{this};
 };
 
