@@ -280,6 +280,11 @@ are declared in tools/grit/grit_args.gni.
       <!-- Access Code Cast specific strings -->
       <part file="access_code_cast_strings.grdp" />
 
+      <!-- Action search synonym strings -->
+      <if expr="not is_android">
+        <part file="action_synonym_strings.grdp" />
+      </if>
+
       <!-- Actor specific strings -->
       <part file="actor_strings.grdp" />
 

@@ -372,6 +372,33 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
+// Searching for a synonym that does not appear in any menu item's title
+// surfaces the action the synonym was registered for.
+IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
+                       SearchMatchesActionSynonym) {
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu_control->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
+  ASSERT_TRUE(action_menu);
+
+  AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
+  ASSERT_TRUE(search_bar);
+  views::MenuItemView* root = action_menu->root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
+
+  search_bar->SetText(u"vault");
+
+  EXPECT_NE(root->GetMenuItemByID(kActionShowPasswordManager), nullptr);
+  EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
+}
+
 class ActionAppMenuWithSearchQueryBrowserTest
     : public ActionAppMenuBrowserTest {
  public:

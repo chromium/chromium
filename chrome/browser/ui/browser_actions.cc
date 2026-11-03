@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_actions.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +20,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "base/types/to_address.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -294,6 +296,15 @@ ui::Accelerator GetAcceleratorForCommandId(int command_id) {
   return ui::Accelerator();
 }
 
+// Splits the comma-separated synonym list stored in the string resource
+// `message_id` into individual search terms. Translators may delimit the list
+// with the Arabic ('،'), ideographic ('、') or fullwidth ('，') comma instead
+// of ',', so split on all of them.
+std::vector<std::u16string> GetSynonymsForAction(int message_id) {
+  return base::SplitString(l10n_util::GetStringUTF16(message_id), u",،、，",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
 void MaybeLogSafetyHubNotificationClicked(
     BrowserWindowInterface* bwi,
     const actions::ActionInvocationContext& context) {
@@ -429,6 +440,29 @@ void BrowserActions::InitializeBrowserActions() {
   InitializeToolbarAndMiscActions();
   InitializeNavigationActions();
   InitializeSubmenuActions();
+  PopulateSynonyms();
+}
+
+void BrowserActions::PopulateSynonyms() {
+  CHECK(root_action_item_);
+
+  // Maps an action to the string resource holding its comma-separated search
+  // synonyms. To add synonyms for an action, add a message to
+  // chrome/app/action_synonym_strings.grdp and list it here.
+  static constexpr auto kActionSynonymMessageIds =
+      std::to_array<std::pair<actions::ActionId, int>>({
+          {kActionShowPasswordManager,
+           IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER},
+      });
+
+  // TODO(crbug.com/581423314): Each entry costs a FindAction tree walk during
+  // window creation. Verify this stays performant as the synonym table grows.
+  for (const auto& [action_id, message_id] : kActionSynonymMessageIds) {
+    if (actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+            action_id, root_action_item_)) {
+      action->AddSynonyms(GetSynonymsForAction(message_id));
+    }
+  }
 }
 
 void BrowserActions::InitializeSidePanelActions() {

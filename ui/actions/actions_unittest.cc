@@ -5,6 +5,8 @@
 #include "ui/actions/actions.h"
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -535,7 +537,8 @@ TEST_F(ActionItemTest, TestActionProperties) {
   EXPECT_THAT(action_item->GetSynonyms(),
               testing::ElementsAre(u"Synonym1", u"Synonym2"));
 
-  action_item->AddSynonyms({u"Synonym3"});
+  const std::vector<std::u16string> more_synonyms = {u"Synonym3"};
+  action_item->AddSynonyms(more_synonyms);
   EXPECT_THAT(action_item->GetSynonyms(),
               testing::ElementsAre(u"Synonym1", u"Synonym2", u"Synonym3"));
 }

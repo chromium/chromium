@@ -47,6 +47,10 @@ class BrowserActions {
   void InitializeNavigationActions();
   void InitializeSubmenuActions();
 
+  // Attaches the search synonyms from action_synonym_strings.grdp to their
+  // actions. Must run after all actions have been added to `root_action_item_`.
+  void PopulateSynonyms();
+
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;

@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "ui/base/class_property.h"
@@ -363,8 +364,8 @@ ActionItem::AddActionChangedCallback(ActionChangedCallback callback) {
 }
 
 // Alternative terms used to identify this action. Used for search indexing
-void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
-  synonyms_.insert(synonyms_.end(), synonyms);
+void ActionItem::AddSynonyms(base::span<const std::u16string> synonyms) {
+  base::Extend(synonyms_, synonyms);
 }
 
 // Returns the synonyms for this action. Used for fuzzy search.
