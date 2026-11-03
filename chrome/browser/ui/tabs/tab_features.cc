@@ -54,8 +54,6 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
-#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -1290,12 +1288,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       tab, tab, tab.GetContents());
 
-  if (!profile->IsOffTheRecord() &&
-      HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
-    history_embeddings_tab_helper_ =
-        std::make_unique<HistoryEmbeddingsTabHelper>(tab.GetContents());
-  }
-
   download_navigation_observer_ =
       std::make_unique<download::DownloadNavigationObserver>(
           tab.GetContents(), download::NavigationMonitorFactory::GetForKey(
@@ -1992,11 +1984,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   task_tab_helper_.reset();
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       *tab, *tab, new_contents);
-
-  if (history_embeddings_tab_helper_) {
-    history_embeddings_tab_helper_ =
-        std::make_unique<HistoryEmbeddingsTabHelper>(new_contents);
-  }
 
   download_navigation_observer_ =
       std::make_unique<download::DownloadNavigationObserver>(

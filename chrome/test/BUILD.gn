@@ -1280,7 +1280,6 @@ if (!is_android) {
       "//chrome/browser/hid:browser_tests",
       "//chrome/browser/history:browser_tests",
       "//chrome/browser/history_clusters:browser_tests",
-      "//chrome/browser/history_embeddings:browser_tests",
       "//chrome/browser/icon_transcoder:browser_tests",
       "//chrome/browser/idle:browser_tests",
       "//chrome/browser/image_decoder:browser_tests",

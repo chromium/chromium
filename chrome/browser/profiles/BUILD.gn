@@ -807,7 +807,6 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/hid",
     "//chrome/browser/history",
     "//chrome/browser/history_clusters",
-    "//chrome/browser/history_embeddings",
     "//chrome/browser/language",
     "//chrome/browser/language_detection",
     "//chrome/browser/loader",
