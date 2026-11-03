@@ -114,6 +114,7 @@ class ContextualTasksEphemeralButtonController
   }
   void RemoveEphemeralButtonForCurrentTask();
   void RecordToolbarButtonOpenClick(bool is_permanent_button);
+  void RecordEphemeralButtonClicked();
   std::optional<RemovalReason> removal_reason() const {
     return removal_reason_;
   }
@@ -153,6 +154,8 @@ class ContextualTasksEphemeralButtonController
   void RecordTaskOpenClickCounts(const OpenSidePanelSessionCounts& counts);
   void FlushOpenClickCounts(bool flush_all);
   void UpdatePinnedButtonActiveIndicator();
+  void UpdatePinButtonTooltip();
+  void RecordShownDuration(std::string_view end_reason);
   void UpdateActiveTabObservation();
   void OnTabDiscarded(tabs::TabInterface* tab,
                       content::WebContents* old_contents,
@@ -172,6 +175,9 @@ class ContextualTasksEphemeralButtonController
 
   bool is_contextual_tasks_panel_open_ = false;
   bool is_hiding_contextual_tasks_panel_ = false;
+  bool was_ephemeral_button_visible_ = false;
+  bool was_ephemeral_panel_open_ = false;
+  std::optional<base::TimeTicks> ephemeral_button_shown_time_ticks_;
   std::optional<RemovalReason> removal_reason_;
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
 

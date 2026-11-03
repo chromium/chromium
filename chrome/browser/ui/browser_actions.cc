@@ -167,6 +167,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -702,6 +703,23 @@ void BrowserActions::InitializeSidePanelActions() {
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
                   if (!bwi) {
+                    return;
+                  }
+                  if (contextual_tasks::
+                          IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
+                      !contextual_tasks::GetEffectivePinState(
+                          bwi->GetProfile())) {
+                    base::OnceClosure on_ephemeral_open;
+                    if (auto* const ephemeral_controller =
+                            ContextualTasksEphemeralButtonController::From(
+                                bwi)) {
+                      on_ephemeral_open = base::BindOnce(
+                          &ContextualTasksEphemeralButtonController::
+                              RecordEphemeralButtonClicked,
+                          base::Unretained(ephemeral_controller));
+                    }
+                    contextual_tasks::HandleEphemeralButtonPressed(
+                        bwi, std::move(on_ephemeral_open));
                     return;
                   }
                   auto* controller =
