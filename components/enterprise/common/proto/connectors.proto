@@ -153,9 +153,17 @@ message ClientMetadata {
     optional string profile_name = 4;
     optional string client_id = 5;
 
-    reserved 6;
+    reserved 6, 7;
 
-    optional bool is_isolated_mode = 7;
+    enum ProfileType {
+      // Not set, e.g. by a client that predates this field.
+      PROFILE_TYPE_UNSPECIFIED = 0;
+      // A regular profile.
+      REGULAR = 1;
+      // An enterprise isolated mode profile.
+      ISOLATED = 2;
+    }
+    optional ProfileType profile_type = 8;
   }
   optional Profile profile = 3;
 
