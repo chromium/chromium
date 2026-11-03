@@ -23,6 +23,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 
 namespace image_fetcher {
 
@@ -45,6 +46,9 @@ struct CachedImageFetcherRequest {
 };
 
 namespace {
+
+// Quality used when encoding transcoded images as JPEG.
+constexpr int kJpegEncodingQuality = 90;
 
 void DataCallbackIfPresent(ImageDataFetcherCallback data_callback,
                            const std::string& image_data,
@@ -84,6 +88,22 @@ std::string EncodeSkBitmapToPNG(const std::string& uma_client_name,
   } else {
     return std::string(base::as_string_view(encoded_data.value()));
   }
+}
+
+std::string EncodeSkBitmapToJPEG(const std::string& uma_client_name,
+                                 const SkBitmap& bitmap,
+                                 uint64_t request_flow_id) {
+  TRACE_EVENT("ui", "CachedImageFetcher::EncodeSkBitmapToJPEG",
+              perfetto::Flow::ProcessScoped(request_flow_id));
+  std::optional<std::vector<uint8_t>> encoded_data =
+      gfx::JPEG1xEncodedDataFromImage(gfx::Image::CreateFrom1xBitmap(bitmap),
+                                      kJpegEncodingQuality);
+  if (!encoded_data) {
+    ImageFetcherMetricsReporter::ReportEvent(
+        uma_client_name, ImageFetcherEvent::kTranscodingError);
+    return "";
+  }
+  return std::string(base::as_string_view(encoded_data.value()));
 }
 
 }  // namespace
@@ -319,10 +339,20 @@ void CachedImageFetcher::EncodeAndStoreData(bool cache_result_needs_transcoding,
     // Copy of flow_id is necessary to avoid use after move in bindings below.
     auto flow_id = request.flow_id;
     std::string uma_client_name = request.params.uma_client_name();
+    base::OnceCallback<std::string()> encode_callback;
+    switch (request.params.transcode_format()) {
+      case ImageFetcherParams::TranscodeFormat::kPng:
+        encode_callback = base::BindOnce(&EncodeSkBitmapToPNG, uma_client_name,
+                                         *bitmap, flow_id);
+        break;
+      case ImageFetcherParams::TranscodeFormat::kJpeg:
+        encode_callback = base::BindOnce(&EncodeSkBitmapToJPEG, uma_client_name,
+                                         *bitmap, flow_id);
+        break;
+    }
     // Post a task to another thread to encode the image data downloaded.
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&EncodeSkBitmapToPNG, uma_client_name, *bitmap, flow_id),
+        FROM_HERE, std::move(encode_callback),
         base::BindOnce(&CachedImageFetcher::StoreData,
                        weak_ptr_factory_.GetWeakPtr(),
                        cache_result_needs_transcoding, is_image_data_transcoded,

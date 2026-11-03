@@ -133,6 +133,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/image/image.h"
 
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
@@ -1739,8 +1740,8 @@ TEST_F(OverflowMenuMediatorTest,
              image_fetcher::ImageDataFetcherCallback* image_data_callback,
              image_fetcher::ImageFetcherCallback* image_callback,
              image_fetcher::ImageFetcherParams params) {
-            std::move(*image_data_callback)
-                .Run(std::string(), image_fetcher::RequestMetadata());
+            std::move(*image_callback)
+                .Run(gfx::Image(), image_fetcher::RequestMetadata());
           });
   mediator_.imageFetcher = &mockImageFetcher;
 

@@ -508,4 +508,39 @@ TEST_F(CachedImageFetcherTest, FetchImageWithSkipDiskCache) {
   RunUntilIdle();
 }
 
+// Tests that fetching an image with `TranscodeFormat::kJpeg` encodes the
+// transcoded image as JPEG in the cache instead of PNG.
+TEST_F(CachedImageFetcherTest, FetchImagePopulatesCacheAsJpeg) {
+  static constexpr std::string_view kJpegMagicHeader = "\xFF\xD8";
+  const GURL kImageUrl("http://gstatic.img.com/foo.jpg");
+  {
+    test_url_loader_factory()->AddResponse(kImageUrl.spec(), kImageData);
+
+    base::MockCallback<ImageDataFetcherCallback> data_callback;
+    base::MockCallback<ImageFetcherCallback> image_callback;
+
+    EXPECT_CALL(data_callback, Run(NonEmptyString(), _));
+    EXPECT_CALL(image_callback, Run(NonEmptyImage(), _));
+    ImageFetcherParams params(TRAFFIC_ANNOTATION_FOR_TESTS, kUmaClientName);
+    params.set_transcode_format(ImageFetcherParams::TranscodeFormat::kJpeg);
+    cached_image_fetcher()->FetchImageAndData(kImageUrl, data_callback.Get(),
+                                              image_callback.Get(), params);
+    db()->LoadCallback(true);
+    RunUntilIdle();
+  }
+  // Verify the image data stored in the cache is JPEG-encoded.
+  {
+    std::string cached_data;
+    EXPECT_CALL(*this, OnImageLoaded(false, _))
+        .WillOnce(testing::SaveArg<1>(&cached_data));
+    image_cache()->LoadImage(
+        /*read_only=*/false, kImageUrl.spec(),
+        base::BindOnce(&CachedImageFetcherTest::OnImageLoaded,
+                       base::Unretained(this)));
+    db()->LoadCallback(true);
+    RunUntilIdle();
+    EXPECT_TRUE(cached_data.starts_with(kJpegMagicHeader));
+  }
+}
+
 }  // namespace image_fetcher

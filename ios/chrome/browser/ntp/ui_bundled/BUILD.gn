@@ -418,6 +418,7 @@ source_set("ntp_internal") {
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ui/base",
+    "//ui/gfx",
     "//url",
   ]
   frameworks = [

@@ -357,7 +357,7 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
     image_fetcher::ImageFetcherService* imageFetcherService =
         ImageFetcherServiceFactory::GetForProfile(profile);
     mediator.imageFetcher = imageFetcherService->GetImageFetcher(
-        image_fetcher::ImageFetcherConfig::kReducedMode);
+        image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
   }
   mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);

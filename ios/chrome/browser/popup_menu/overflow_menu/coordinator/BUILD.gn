@@ -114,6 +114,7 @@ source_set("coordinator") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
     "//ui/base",
+    "//ui/gfx",
   ]
 }
 
@@ -227,5 +228,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//ui/gfx",
   ]
 }

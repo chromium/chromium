@@ -64,13 +64,13 @@ std::unique_ptr<KeyedService> CreateUserUploadedImageManager(
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
-// Post reply to image data fetch. `p0` represents the data to return. `p1`
-// represents the HTTP response code.
-ACTION_P(PostFetchDataReply, data, http_response_code) {
+// Post reply to image fetch. `image` represents the image to return.
+// `http_response_code` represents the HTTP response code.
+ACTION_P(PostFetchReply, image, http_response_code) {
   image_fetcher::RequestMetadata metadata;
   metadata.http_response_code = http_response_code;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(*arg1), data, metadata));
+      FROM_HERE, base::BindOnce(std::move(*arg2), image, metadata));
 }
 
 }  // namespace
@@ -640,12 +640,10 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   // Set up call.
   GURL url("https://www.google.com/image");
   gfx::Image expected_image = gfx::test::CreateImage(20, 20);
-  NSData* data = UIImagePNGRepresentation(expected_image.ToUIImage());
-  std::string png_data((const char*)[data bytes], [data length]);
 
   EXPECT_CALL(*mock_image_fetcher_.get(),
               FetchImageAndData_(url, testing::_, testing::_, testing::_))
-      .WillOnce(PostFetchDataReply(png_data, 200));
+      .WillOnce(PostFetchReply(expected_image, 200));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
@@ -663,7 +661,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 
   run_loop.Run();
 
-  EXPECT_NE(nil, actual_image);
+  EXPECT_NSEQ(expected_image.ToUIImage(), actual_image);
   EXPECT_EQ(nil, actual_error);
 
   histogram_tester.ExpectUniqueSample(
@@ -675,12 +673,12 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 // works correctly.
 TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        FetchThumbnailImage_Failure) {
-  // Set up call with empty data to indicate failure.
+  // Set up call with empty image to indicate failure.
   GURL url("https://www.google.com/image");
 
   EXPECT_CALL(*mock_image_fetcher_.get(),
               FetchImageAndData_(url, testing::_, testing::_, testing::_))
-      .WillOnce(PostFetchDataReply("", 404));
+      .WillOnce(PostFetchReply(gfx::Image(), 404));
 
   base::RunLoop run_loop;
   base::RunLoop* run_loop_ptr = &run_loop;
