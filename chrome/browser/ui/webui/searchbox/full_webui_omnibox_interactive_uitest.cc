@@ -1383,6 +1383,38 @@ class FullWebUIOmniboxInteractiveTest
     bubble_widget->Show();
   }
 
+  // Shows a test bubble (see `ShowTestBubble()`), then focuses the omnibox
+  // while the bubble holds activation, as the NTP of a new window does while a
+  // window-modal dialog holds activation. The popup opens focused, but can't
+  // take activation from the bubble. `bubble_delegate` and `bubble_widget` must
+  // outlive the test sequence.
+  auto FocusOmniboxWhileBubbleActive(
+      std::unique_ptr<views::BubbleDialogDelegate>& bubble_delegate,
+      std::unique_ptr<views::Widget>& bubble_widget) {
+    return Steps(
+        WaitForPopupTransitionLockout(), WaitForPopupHandlerReady(),
+        Do([&]() { ShowTestBubble(bubble_delegate, bubble_widget); }),
+        PollUntil([&]() { return bubble_widget && bubble_widget->IsActive(); },
+                  "WaitForBubbleActive"),
+        Do([this]() {
+          BrowserWindow::FromBrowser(browser())
+              ->GetLocationBar()
+              ->GetOmniboxPopupView()
+              ->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                        /*show_full_url=*/false);
+        }),
+        WaitForPopupState(OmniboxPopupState::kFull),
+        WaitForEditModelFocus(true), WaitForPopupTransitionLockout(),
+        CheckResult([&]() { return bubble_widget->IsActive(); }, true,
+                    "BubbleStillActive"),
+        CheckResult(
+            [this]() {
+              auto* widget = GetPopupWidget(browser());
+              return widget && widget->IsActive();
+            },
+            false, "CheckPopupWidgetInactive"));
+  }
+
   // Presses Ctrl/Cmd+F and waits for the find bar to show with focus. The key
   // press goes to the popup, which holds activation while the omnibox is
   // focused, as a real one would. On macOS, the popup only redispatches an
@@ -3031,6 +3063,78 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckResult([&]() { return bubble_widget->IsActive(); }, true,
                   "BubbleStillActive"));
 }
+
+#if !BUILDFLAG(IS_MAC)
+// Verifies that if the omnibox is focused while a bubble anchored to the
+// browser window holds activation, e.g. on the NTP of a new profile's window
+// that opens with the "Welcome!" dialog, the popup takes focus once the bubble
+// closes, so that its caret shows and typing reaches it. Not on macOS, where a
+// focus request can take activation from such a bubble (see
+// `OmniboxPopupFullPresenter::CanTakeFocus()`).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusWhileBubbleActiveIsRestoredWhenBubbleCloses) {
+  // The bubble delegate must outlive the bubble widget, so declare it first.
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate;
+  std::unique_ptr<views::Widget> bubble_widget;
+
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      FocusOmniboxWhileBubbleActive(bubble_delegate, bubble_widget),
+      // Close the bubble, as clicking its button would.
+      Do([&]() { bubble_widget->Close(); }),
+      PollUntil([this]() { return IsBrowserOrPopupActive(browser()); },
+                "WaitForBrowserOrPopupActive"),
+      // The popup holds activation and its input has focus, so the caret shows
+      // and key presses reach it.
+      WaitForPopupReady(), WaitForPopupActive(),
+      WaitForWebUIInputValue("chrome://version"),
+      WaitForWebUIInputAllSelected(), TypeWebUITextWithKeyPresses("fork"),
+      InAnyContext(WaitForWebUIInputValue("fork")));
+}
+
+// Verifies that if the omnibox is focused while a bubble holds activation, and
+// then blurred with the popup closed before the bubble closes, closing the
+// bubble doesn't refocus it or activate the popup.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       BlurWhileBubbleActiveIsNotRefocusedWhenBubbleCloses) {
+  // The bubble delegate must outlive the bubble widget, so declare it first.
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate;
+  std::unique_ptr<views::Widget> bubble_widget;
+
+  RunTestSequence(
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("chrome://version/")),
+      WaitForWebContentsReady(kTab1),
+      FocusOmniboxWhileBubbleActive(bubble_delegate, bubble_widget),
+      // Blur the omnibox and close the popup, as blurring it without a draft
+      // does, without changing activation (e.g. switching tabs would activate
+      // the browser window and close the bubble).
+      Do([this]() {
+        OmniboxController* controller = GetOmniboxControllerForTest();
+        controller->edit_model()->OnKillFocus();
+        controller->popup_state_manager()->SetPopupState(
+            OmniboxPopupState::kNone);
+      }),
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(),
+      CheckResult([&]() { return bubble_widget->IsActive(); }, true,
+                  "BubbleStillActive"),
+      // Close the bubble, as clicking its button would.
+      Do([&]() { bubble_widget->Close(); }),
+      PollUntil([this]() { return IsBrowserOrPopupActive(browser()); },
+                "WaitForBrowserOrPopupActive"),
+      // Let any refocus posted on activation run.
+      WaitForPopupTransitionLockout(),
+      CheckPopupState(OmniboxPopupState::kNone), CheckEditModelFocus(false),
+      CheckResult(
+          [this]() {
+            auto* widget = GetPopupWidget(browser());
+            return widget && (widget->IsVisible() || widget->IsActive());
+          },
+          false, "CheckPopupWidgetHiddenAndInactive"));
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
 // Verifies that a bubble taking activation while a tab switch's deferred focus

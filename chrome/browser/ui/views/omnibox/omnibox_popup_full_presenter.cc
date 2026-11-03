@@ -149,6 +149,7 @@ void OmniboxPopupFullPresenter::Show() {
 
 void OmniboxPopupFullPresenter::Hide() {
   pending_focus_task_.Cancel();
+  refocus_on_activation_ = false;
   browser_widget_observation_.Reset();
   browser_focus_manager_observation_.Reset();
   // Cancel any pending context menu request, since the base `Hide()` only
@@ -186,11 +187,22 @@ void OmniboxPopupFullPresenter::RequestFocus() {
     focus_requested_ = true;
   }
 
-  // Don't take focus in a browser window the user has left. Activating the
-  // popup would pull the window back in front of the one the user switched to.
-  if (!GetWidget() || !ShouldReceiveFocus() || !CanTakeFocus()) {
+  if (!GetWidget() || !ShouldReceiveFocus()) {
     return;
   }
+
+  // Don't take focus in a browser window the user has left. Activating the
+  // popup would pull the window back in front of the one the user switched to.
+  if (!CanTakeFocus()) {
+    // The omnibox stays focused, e.g. on the NTP of a new window that a
+    // window-modal dialog took activation from before the omnibox was focused,
+    // as no deactivation blurred it. Hand focus to the popup once the window is
+    // activated again, as the Views omnibox's `FocusManager` does, so that its
+    // caret shows and key presses reach it. See `OnWidgetActivationChanged()`.
+    refocus_on_activation_ = true;
+    return;
+  }
+  refocus_on_activation_ = false;
 
   // If the popup widget is already active, focus the WebUI content now so the
   // caret and selection are correct within this event loop turn. Do NOT return
@@ -385,6 +397,19 @@ void OmniboxPopupFullPresenter::NotifyEscapeKeyPressed() {
 
 void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                           bool active) {
+  if (active && refocus_on_activation_) {
+    // A focus request couldn't take activation (see `RequestFocus()`), and the
+    // browser window or the popup is now active, e.g. after the window-modal
+    // dialog that held activation closed. Depending on the window manager,
+    // either may be activated, and neither focuses the WebUI content by
+    // itself. Refocus once activation settles.
+    refocus_on_activation_ = false;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OmniboxPopupFullPresenter::RefocusAfterActivation,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   if (!active) {
     // The browser or popup widget deactivating may mean another window, such
     // as a bubble, took activation. Check once activation settles, since
@@ -510,6 +535,19 @@ void OmniboxPopupFullPresenter::OnWidgetBoundsChanged(
     return;
   }
   SynchronizePopupBounds();
+}
+
+void OmniboxPopupFullPresenter::RefocusAfterActivation() {
+  // Only refocus if the omnibox is still focused with the popup open. If the
+  // window was deactivated again in the meantime, `RequestFocus()` waits for
+  // the next activation.
+  if (!IsShown() ||
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kFull ||
+      !controller()->edit_model()->has_focus()) {
+    return;
+  }
+  RequestFocus();
 }
 
 void OmniboxPopupFullPresenter::BlurIfBrowserOrPopupInactive() {
@@ -659,6 +697,7 @@ void OmniboxPopupFullPresenter::OnDidChangeFocus(views::View* focused_before,
 void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
     FocusAfterBlur focus_after_blur) {
   pending_focus_task_.Cancel();
+  refocus_on_activation_ = false;
   ResetPermissionPromptShowingState();
   OmniboxEditModel* edit_model = controller()->edit_model();
 
