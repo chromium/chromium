@@ -3796,23 +3796,6 @@
             ]
         }
     ],
-    "CertificateCollectionEnabled": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CertificateCollectionEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChildProcessSecurityPolicyRust": [
         {
             "platforms": [

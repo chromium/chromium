@@ -22,7 +22,7 @@ BASE_FEATURE(kBrowserSignalsReportingEnabled,
 BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the collection of certificates in a Chrome Profile signals report.
-BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCertificateCollectionEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the versioned content bindings in signal reports.
 BASE_FEATURE(kContentBindingVersioningEnabled,
