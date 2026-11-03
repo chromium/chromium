@@ -26,3 +26,13 @@ per-file ...group_list.cc=rkgibson@google.com
 per-file ...ios_promo_feature_configuration.*=rkgibson@google.com
 per-file ...EventConstants.java=rkgibson@google.com
 per-file ...FeatureConstants.java=rkgibson@google.com
+
+# For Android:
+per-file ...*.java=jhimawan@google.com
+per-file ...event_constants.*=jhimawan@google.com
+per-file ...feature_configurations.cc=jhimawan@google.com
+per-file ...feature_constants.*=jhimawan@google.com
+per-file ...feature_list.*=jhimawan@google.com
+per-file ...group_configurations.cc=jhimawan@google.com
+per-file ...group_constants.*=jhimawan@google.com
+per-file ...group_list.cc=jhimawan@google.com

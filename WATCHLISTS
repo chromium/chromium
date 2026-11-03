@@ -1278,6 +1278,10 @@
                   'chrome/browser/feed/|' \
                   'components/feed/'
     },
+    'fet_policy': {
+      'filepath': 'components/feature_engagement/.*/' \
+                  'EnterprisePolicyBypassAllowlist\\.java',
+    },
     'fileapi': {
       'filepath': 'file_system/|' \
                   'fileapi/'
@@ -3078,6 +3082,8 @@
     'feed': ['harringtond+watch@chromium.org',
              'petewil+watch@chromium.org',
              'iwells+watch@chromium.org'],
+    'fet_policy': ['jhimawan@google.com',
+                   'mschillaci+watchfet@google.com'],
     'fileapi': ['kinuko+fileapi@chromium.org'],
     'filebrowse': ['rginda+watch@chromium.org'],
     'filesapp': ['filesapp-reviews@chromium.org'],
