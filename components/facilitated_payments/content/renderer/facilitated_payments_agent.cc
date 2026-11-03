@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -38,6 +39,8 @@ constexpr std::string_view kCandidateImageElementsSelector = "img,canvas";
 constexpr std::string_view kMetaDescriptionSelector =
     "meta[name=\"description\"]";
 constexpr std::string_view kContentAttribute = "content";
+constexpr std::string_view kHeuristicsLatencyHistogram =
+    "FacilitatedPayments.QrCode.Heuristics.Latency";
 
 // Splits the comma-separated Finch keyword list. Parsed per scan rather than
 // cached so that tests can vary the parameter between scans.
@@ -168,7 +171,16 @@ void FacilitatedPaymentsAgent::RescanAndReportSignals() {
     return;
   }
 
-  mojom::HeuristicSignalsPtr signals = CalculateHeuristicSignals();
+  mojom::HeuristicSignalsPtr signals;
+  {
+    // The scan runs synchronously on the main thread, so its duration is the
+    // jank that the heuristics add to the page.
+    base::ScopedUmaHistogramTimer timer(
+        kHeuristicsLatencyHistogram,
+        base::ScopedUmaHistogramTimer::ScopedHistogramTiming::
+            kMicrosecondTimes);
+    signals = CalculateHeuristicSignals();
+  }
   const auto& driver = GetDriver();
   if (driver) {
     driver->ReportHeuristicSignals(std::move(signals));

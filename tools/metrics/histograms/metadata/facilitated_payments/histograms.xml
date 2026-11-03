@@ -676,6 +676,23 @@ reviewer.
   <token key="Result" variants="PurchaseActionResult"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.QrCode.Heuristics.Latency"
+    units="microseconds" expires_after="2027-04-30">
+  <owner>qihuizhao@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records how long the renderer takes to scan a page for the heuristic signals
+    of a payment QR code (a square image candidate, a payment link marker, and
+    keywords in the URL, title or meta description). The scan runs synchronously
+    on the main thread. [Trigger] A debounced scan runs after layout, scroll,
+    load or navigation activity settles on a page where the browser has enabled
+    QR code detection. [Frequency] Logged once per scan; scans stop once the
+    browser disables QR code detection for the page. Only logged on clients with
+    high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram
     name="FacilitatedPayments.QrCode.HeuristicSignals.{DetectionOutcome}"
     enum="FacilitatedPayments.QrCode.HeuristicSignals"

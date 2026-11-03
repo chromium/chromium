@@ -8,6 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
@@ -75,14 +78,24 @@ class TestFacilitatedPaymentsAgent : public FacilitatedPaymentsAgent {
     signals_to_return_ = std::move(signals);
   }
 
+  // Sets a `callback` that runs during each scan, e.g. to advance the mock
+  // clock by the time the scan should take.
+  void SetOnCalculateHeuristicSignals(base::RepeatingClosure callback) {
+    on_calculate_heuristic_signals_ = std::move(callback);
+  }
+
  protected:
   mojom::HeuristicSignalsPtr CalculateHeuristicSignals() override {
+    if (on_calculate_heuristic_signals_) {
+      on_calculate_heuristic_signals_.Run();
+    }
     return signals_to_return_.Clone();
   }
 
  private:
   mojom::HeuristicSignalsPtr signals_to_return_ =
       mojom::HeuristicSignals::New();
+  base::RepeatingClosure on_calculate_heuristic_signals_;
 };
 
 class FacilitatedPaymentsAgentTest : public testing::Test {
@@ -230,6 +243,32 @@ TEST_F(FacilitatedPaymentsAgentTest, TestAgentStartsDormant) {
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
   EXPECT_TRUE(dormant_driver.reported_signals().empty());
+}
+
+// Tests that each heuristic scan logs how long it took, and that no latency is
+// logged while detection is disabled.
+TEST_F(FacilitatedPaymentsAgentTest, TestScanLogsHeuristicsLatency) {
+  // Microsecond timings are dropped on clients with low-resolution clocks, and
+  // tests cannot change the clock resolution.
+  if (!base::TimeTicks::IsHighResolution()) {
+    GTEST_SKIP() << "Microsecond timings need a high-resolution clock.";
+  }
+  static constexpr base::TimeDelta kScanDuration = base::Microseconds(500);
+  base::HistogramTester histogram_tester;
+  agent_->SetOnCalculateHeuristicSignals(base::BindLambdaForTesting(
+      [&] { task_environment_.AdvanceClock(kScanDuration); }));
+
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.QrCode.Heuristics.Latency",
+      kScanDuration.InMicroseconds(), /*expected_bucket_count=*/1);
+
+  agent_->SetQrCodeDetectionEnabled(false);
+  agent_->DidFinishLoad();
+  task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
+  histogram_tester.ExpectTotalCount(
+      "FacilitatedPayments.QrCode.Heuristics.Latency", 1);
 }
 
 }  // namespace
