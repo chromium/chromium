@@ -457,12 +457,12 @@ omnibox-popup-contextual-entrypoint {
 #composeButton::part(hoverBackground) {
   background-color: var(--color-sys-state-hover-dim-blend-protection);
   display: block;
-  opacity: 0;
+  opacity: var(--compose-button-hover-background-opacity, 0);
   transition: opacity 250ms linear;
 }
 
-#composeButton:hover::part(hoverBackground) {
-  opacity: 1;
+#composeButton::part(compose-button):hover {
+  --compose-button-hover-background-opacity: 1;
 }
 
 :host-context([webui-rounded-icons]):host(:not([use-webkit-search-icons_])) #voiceSearchButton {
