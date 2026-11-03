@@ -110,8 +110,9 @@ class ActorService : public KeyedService {
   // runs at most once, always asynchronously, and never after `Shutdown()`. If
   // the task is not active or `web_state` is gone when the command runs, the
   // callback runs with `PageContextWrapperError::kGenericError`.
-  // TODO(crbug.com/568338837): Do not add new callers; move tab observation
-  // internal to `ActorTask`.
+  // Deprecated: has no production callers. Do not use; tab observations are
+  // taken by the service after acts and interrupts.
+  // TODO(crbug.com/579325766): Remove.
   void RequestTabObservation(ActorTaskId task_id,
                              web::WebState* web_state,
                              TabObservationCallback callback);
@@ -125,10 +126,10 @@ class ActorService : public KeyedService {
                                    id<ActorTaskInterventionDelegate> delegate);
 
   // Enqueues the interrupt described by `request`. `callback` runs at most
-  // once, asynchronously and never after `Shutdown()`: with the user's answer,
-  // `kRejected` if the task cannot take the interrupt, or `kTaskWentAway` if
-  // the task does not exist or stops first. When `callback` runs with an
-  // answer, the task has resumed.
+  // once, asynchronously and never after `Shutdown()`: with the user's answer
+  // and an observation of the task's tab, `kRejected` if the task cannot take
+  // the interrupt, or `kTaskWentAway` if the task does not exist or stops
+  // first. When `callback` runs with an answer, the task has resumed.
   void InterruptTask(ActorTaskId task_id,
                      InterruptRequest request,
                      ActorTaskResultCallback<InterruptTaskResult> callback);
@@ -281,12 +282,22 @@ class ActorService : public KeyedService {
   // Returns whether `Shutdown()` ran.
   bool IsShutDown() const { return !weak_this_; }
 
-  // Runs `callback` with `result`, or with `kTaskWentAway` if the task stopped
-  // since the user answered.
+  // Observes the tab of the task `task_id` once the user answered its
+  // interrupt, then runs `callback`.
   void OnInterruptCompleted(
       ActorTaskId task_id,
       ActorTaskResultCallback<InterruptTaskResult> callback,
       ActorTaskResult<InterruptResponse> result);
+
+  // Runs `callback` with `response` and the observation of the tab
+  // `web_state_id`, or with `kTaskWentAway` if the task stopped meanwhile.
+  // TODO(crbug.com/568338837): Move the interrupt observation into `ActorTask`.
+  void OnInterruptObservationComplete(
+      ActorTaskId task_id,
+      web::WebStateID web_state_id,
+      InterruptResponse response,
+      ActorTaskResultCallback<InterruptTaskResult> callback,
+      PageContextWrapperCallbackResponse page_context_response);
 
   // Returns the active task identified by `task_id`, or nullptr.
   ActorTask* FindActiveTask(ActorTaskId task_id);

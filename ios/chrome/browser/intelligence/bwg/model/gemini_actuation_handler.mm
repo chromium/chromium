@@ -180,15 +180,30 @@ void PopulateTabObservationFromResponse(
 // Returns the response for an accepted confirmation, carrying `observation` of
 // the actuated tab.
 GeminiActuationResponse* MakeConfirmedResponse(
-    const actor::TabObservationResponse& observation) {
+    const actor::TabObservationResponse* observation) {
+  if (!observation) {
+    // TODO(crbug.com/510404682): Handle tab closure during task execution
+    // gracefully rather than failing the request.
+    return MakeTabWentAwayResponse();
+  }
   optimization_guide::proto::ActionsResult actions_result;
   actions_result.set_action_result(
       static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
-  PopulateTabObservationFromResponse(actions_result.add_tabs(), observation);
+  PopulateTabObservationFromResponse(actions_result.add_tabs(), *observation);
   return [[GeminiActuationResponse alloc]
            initWithResultCode:actor::mojom::ActionResultCode::kOk
                  userResponse:kConfirmationUserResponse
       serializedActionsResult:SerializeProtoToNSData(actions_result)];
+}
+
+// Returns the response for a successful confirmation interrupt.
+GeminiActuationResponse* MakeConfirmationResponse(
+    const actor::InterruptTaskResult& result) {
+  switch (result.response) {
+    case actor::InterruptResponse::kConfirmed:
+      return MakeConfirmedResponse(result.observation.get());
+  }
+  NOTREACHED();
 }
 
 // Populates an `ActionsResult` proto from `result` and sets `outResultCode`.
@@ -589,8 +604,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 
   // Held before `InterruptTask` so concurrent requests are rejected while the
   // user is prompted.
-  // TODO(crbug.com/567035844): Resolve the request when the user declines or
-  // the prompt is dismissed unanswered.
   _activeCallbacks[taskID] = base::BindOnce(completionBlock);
 
   actor::ConfirmationInterrupt confirmation;
@@ -615,56 +628,8 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                      withResponse:MakeErrorResponse(result.error())];
     return;
   }
-  switch (result.value().response) {
-    case actor::InterruptResponse::kConfirmed:
-      [self observeTabForConfirmedTaskID:taskID];
-      return;
-  }
-}
-
-// Answers the confirmed request for `taskID` with a fresh observation of the
-// actuated tab.
-- (void)observeTabForConfirmedTaskID:(actor::ActorTaskId)taskID {
-  // Already answered, e.g. by a task stop or `-disconnect`.
-  if (!_activeCallbacks.contains(taskID)) {
-    return;
-  }
-  // `-disconnect` clears both `_activeCallbacks` and `_actorService`, so a
-  // pending request implies a live service.
-  CHECK(_actorService);
-
-  const web::WebStateID webStateID = [self webStateIDForTaskID:taskID];
-  web::WebState* webState =
-      webStateID.valid() ? _actorService->GetWebStateForID(webStateID, taskID)
-                         : nullptr;
-  if (!webState) {
-    // TODO(crbug.com/510404682): Handle tab closure during task execution
-    // gracefully rather than failing the request.
-    [self resolveRequestForTaskID:taskID
-                     withResponse:MakeTabWentAwayResponse()];
-    return;
-  }
-
-  __weak GeminiActuationHandler* weakSelf = self;
-  _actorService->RequestTabObservation(
-      taskID, webState,
-      base::BindOnce(^(PageContextWrapperCallbackResponse response) {
-        [weakSelf completeConfirmationForTaskID:taskID
-                                     webStateID:webStateID
-                            pageContextResponse:std::move(response)];
-      }));
-}
-
-// Answers the confirmed request for `taskID` with `pageContextResponse`, the
-// fresh observation of the tab `webStateID`.
-- (void)completeConfirmationForTaskID:(actor::ActorTaskId)taskID
-                           webStateID:(web::WebStateID)webStateID
-                  pageContextResponse:
-                      (PageContextWrapperCallbackResponse)pageContextResponse {
-  const actor::TabObservationResponse observation(
-      webStateID, std::move(pageContextResponse), /*web_state_exists=*/true);
   [self resolveRequestForTaskID:taskID
-                   withResponse:MakeConfirmedResponse(observation)];
+                   withResponse:MakeConfirmationResponse(result.value())];
 }
 
 // Answers the pending request for `taskID` with `response`, if any. A

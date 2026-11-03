@@ -90,6 +90,18 @@ PerformActionsResult MakePerformActionsResult(mojom::ActionResultCode code) {
   return result;
 }
 
+// Returns the first live WebState controlled by `task`, or null.
+// TODO(crbug.com/505080093): Remove once acts and interrupts observe every
+// controlled WebState.
+web::WebState* GetFirstLiveControlledWebState(const ActorTask& task) {
+  for (const auto& weak_web_state : task.controlled_web_states()) {
+    if (web::WebState* web_state = weak_web_state.get()) {
+      return web_state;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 template <typename Method, typename... Args>
@@ -510,11 +522,39 @@ void ActorService::OnInterruptCompleted(
     return;
   }
   // The task may have stopped since the user answered.
+  ActorTask* task = FindActiveTask(task_id);
+  if (!task) {
+    std::move(callback).Run(base::unexpected(ActorTaskError::kTaskWentAway));
+    return;
+  }
+  web::WebState* web_state = GetFirstLiveControlledWebState(*task);
+  if (!web_state) {
+    std::move(callback).Run(
+        InterruptTaskResult(result.value(), /*observation=*/nullptr));
+    return;
+  }
+  StartTabObservation(
+      task_id, web_state,
+      base::BindOnce(&ActorService::OnInterruptObservationComplete, weak_this_,
+                     task_id, web_state->GetUniqueIdentifier(), result.value(),
+                     std::move(callback)));
+}
+
+void ActorService::OnInterruptObservationComplete(
+    ActorTaskId task_id,
+    web::WebStateID web_state_id,
+    InterruptResponse response,
+    ActorTaskResultCallback<InterruptTaskResult> callback,
+    PageContextWrapperCallbackResponse page_context_response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!FindActiveTask(task_id)) {
     std::move(callback).Run(base::unexpected(ActorTaskError::kTaskWentAway));
     return;
   }
-  std::move(callback).Run(InterruptTaskResult(result.value()));
+  std::move(callback).Run(InterruptTaskResult(
+      response, std::make_unique<TabObservationResponse>(
+                    web_state_id, std::move(page_context_response),
+                    /*web_state_exists=*/true)));
 }
 
 void ActorService::DoStopTask(ActorTaskId task_id,
@@ -647,15 +687,8 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
   perform_actions_result.action_results = std::move(results);
 
   std::vector<web::WebState*> web_states_to_extract;
-
-  // TODO(crbug.com/505080093): Extract PageContext for *all* of the controlled
-  // WebStates when this is supported, instead of just one. Right now there
-  // should only be one, we iterate until the first valid one.
-  for (const auto& weak_web_state : task->controlled_web_states()) {
-    if (web::WebState* web_state = weak_web_state.get()) {
-      web_states_to_extract.push_back(web_state);
-      break;
-    }
+  if (web::WebState* web_state = GetFirstLiveControlledWebState(*task)) {
+    web_states_to_extract.push_back(web_state);
   }
 
   if (web_states_to_extract.empty()) {

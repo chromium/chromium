@@ -175,10 +175,19 @@ enum class InterruptResponse {
 
 // Result of a successful `ActorService::InterruptTask()`.
 struct InterruptTaskResult {
-  explicit InterruptTaskResult(InterruptResponse response);
+  InterruptTaskResult(InterruptResponse response,
+                      std::unique_ptr<TabObservationResponse> observation);
+  ~InterruptTaskResult();
+  InterruptTaskResult(const InterruptTaskResult&) = delete;
+  InterruptTaskResult& operator=(const InterruptTaskResult&) = delete;
+  InterruptTaskResult(InterruptTaskResult&&) noexcept;
+  InterruptTaskResult& operator=(InterruptTaskResult&&) noexcept;
 
   // How the user answered.
   InterruptResponse response;
+  // Observation of the task's tab once the user answered, or null if the task
+  // controls no live tab.
+  std::unique_ptr<TabObservationResponse> observation;
 };
 
 // Callback for a "tab observation" (nomenclature aligned with

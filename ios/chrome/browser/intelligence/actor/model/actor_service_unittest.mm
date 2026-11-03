@@ -1996,7 +1996,72 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   [delegate runUserInterventionCompletion];
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(InterruptResponse::kConfirmed, future.Get().value().response);
+  EXPECT_EQ(nullptr, future.Get().value().observation);
   EXPECT_EQ(task->GetState(), ActorTaskState::kReflecting);
+}
+
+// Tests that a confirmed interrupt replies with an observation of the task's
+// tab.
+TEST_F(ActorServiceTest, InterruptTaskRepliesObservationOfTab) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::WebState* fake_web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+  service->AddControlledWebState(task_id, fake_web_state_ptr);
+
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  service->SetTaskInterventionDelegate(task_id, delegate);
+  InterruptFuture future;
+  RequestConfirmation(service, task_id, "Please confirm", future);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.requestConfirmationCalled; }));
+  [delegate runUserInterventionCompletion];
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(InterruptResponse::kConfirmed, future.Get().value().response);
+  ASSERT_NE(nullptr, future.Get().value().observation);
+  EXPECT_EQ(fake_web_state_ptr->GetUniqueIdentifier(),
+            future.Get().value().observation->tab_id);
+
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Tests that a task stopped while the observation that follows a confirmed
+// interrupt is in progress replies `kTaskWentAway`.
+TEST_F(ActorServiceMockTimeTest, InterruptTaskStoppedDuringObservation) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      CreateWebStateWithHangingExtraction();
+  service->AddControlledWebState(task_id, fake_web_state.get());
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  service->SetTaskInterventionDelegate(task_id, delegate);
+
+  InterruptFuture future;
+  RequestConfirmation(service, task_id, "Please confirm", future);
+  FlushCurrentSequence();
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
+  [delegate runUserInterventionCompletion];
+  FlushCurrentSequence();
+  ASSERT_TRUE(HasPendingObservation(service));
+
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+
+  // End the observation through its timeout.
+  task_environment_.FastForwardBy(GetActorTabObservationPageContextTimeout());
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_FALSE(future.Get().has_value());
+  EXPECT_EQ(ActorTaskError::kTaskWentAway, future.Get().error());
 }
 
 // Tests that a task stopped after the user answered, but before the answer is
@@ -2021,6 +2086,36 @@ TEST_F(ActorServiceTest, InterruptTaskStoppedBeforeAnswerDelivered) {
   ASSERT_FALSE(future.Get().has_value());
   EXPECT_EQ(ActorTaskError::kTaskWentAway, future.Get().error());
   EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
+}
+
+// Tests that the observation that follows a confirmed interrupt never replies
+// if the service shuts down while it is in progress.
+TEST_F(ActorServiceMockTimeTest,
+       ShutdownDropsInterruptWithInProgressObservation) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      CreateWebStateWithHangingExtraction();
+  service->AddControlledWebState(task_id, fake_web_state.get());
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  service->SetTaskInterventionDelegate(task_id, delegate);
+
+  InterruptFuture future;
+  RequestConfirmation(service, task_id, "Please confirm", future);
+  FlushCurrentSequence();
+  ASSERT_TRUE(delegate.hasPendingUserIntervention);
+  [delegate runUserInterventionCompletion];
+  FlushCurrentSequence();
+  ASSERT_TRUE(HasPendingObservation(service));
+
+  service->Shutdown();
+  EXPECT_FALSE(HasPendingObservation(service));
+  // Go past the extraction timeout, which would otherwise have replied.
+  task_environment_.FastForwardBy(GetActorTabObservationPageContextTimeout());
+  EXPECT_FALSE(future.IsReady());
 }
 
 // Test that a task can be interrupted for user confirmation before it performs
