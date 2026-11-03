@@ -243,8 +243,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                         mEdgeToEdgeStateProvider,
                         createSystemBarColorHelperSupplier(),
                         shouldDrawEdgeToEdgeOnCreate(),
-                        canColorStatusBarWithEdgeToEdgeHelper(),
-                        canSetTransparentStatusBarWithoutDelegate());
+                        canColorStatusBarWithEdgeToEdgeHelper());
 
         if (canColorStatusBarWithEdgeToEdgeHelper()) {
             initializeSystemBarColors(mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
@@ -291,11 +290,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Returns whether the edge-to-edge system bar helper may update the status bar color. */
     protected boolean canColorStatusBarWithEdgeToEdgeHelper() {
         return EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled();
-    }
-
-    /** Returns whether the helper may make the status bar transparent without a delegate helper. */
-    protected boolean canSetTransparentStatusBarWithoutDelegate() {
-        return false;
     }
 
     /**

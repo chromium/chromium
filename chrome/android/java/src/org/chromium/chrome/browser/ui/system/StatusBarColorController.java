@@ -682,9 +682,8 @@ public class StatusBarColorController
         Window window = activity.getWindow();
         final View root = window.getDecorView().getRootView();
         boolean needsDarkStatusBarIcons = !ColorUtils.shouldUseLightForegroundOnBackground(color);
-        // The helper is the single source of truth whenever it is allowed to color the status bar
-        // (including activities like webapps in short-edges cutout mode that opt in on API 29).
-        // Otherwise fall back to writing the window directly, matching legacy Tabbed Chrome.
+        // The helper is the single source of truth whenever it is allowed to color the status
+        // bar. Otherwise fall back to writing the window directly, matching legacy Tabbed Chrome.
         if (edgeToEdgeSystemBarColorHelper != null
                 && edgeToEdgeSystemBarColorHelper.canSetStatusBarColor()) {
             edgeToEdgeSystemBarColorHelper.setStatusBarColor(color, forceLightIconColor);
