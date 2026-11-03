@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -675,7 +676,8 @@ class LocationBarViewFullWebUIPopupAppearanceTest
 
 // Under `kFull`, the native location bar keeps its focused look (focus ring,
 // unindented location icon with background, visible page actions) underneath
-// the full WebUI popup, while `kAim` uses the popup-open look.
+// the full WebUI popup, while `kAim` uses the popup-open look. The native ring
+// stays only until the popup's web content has painted.
 IN_PROC_BROWSER_TEST_F(LocationBarViewFullWebUIPopupAppearanceTest,
                        KeepsFocusedLookUnderFullPopupAndNotAimPopup) {
   LocationBarView* location_bar = GetLocationBarView();
@@ -683,6 +685,17 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewFullWebUIPopupAppearanceTest,
   ASSERT_TRUE(focus_ring);
   page_actions::PageActionView* zoom_view = GetZoomPageActionView();
   ASSERT_TRUE(zoom_view);
+
+  auto* state_manager =
+      location_bar->GetOmniboxController()->popup_state_manager();
+  auto* presenter = location_bar->GetOmniboxPopupView()->presenter();
+  ASSERT_TRUE(presenter);
+
+  // The initial tab focuses the omnibox, which can open the full popup and
+  // paint its web content before the test body runs. Start from a closed
+  // popup whose content hasn't painted.
+  state_manager->SetPopupState(OmniboxPopupState::kNone);
+  presenter->SetCompletedFirstVisuallyNonEmptyPaintForTesting(false);
 
   // Set focus directly on the edit model rather than via `SetFocus()`, which
   // relies on `RequestFocus()` before the WebUI popup finishes loading and
@@ -696,11 +709,18 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewFullWebUIPopupAppearanceTest,
             SK_ColorTRANSPARENT);
   EXPECT_TRUE(zoom_view->GetVisible());
 
-  auto* state_manager =
-      location_bar->GetOmniboxController()->popup_state_manager();
   state_manager->SetPopupState(OmniboxPopupState::kFull);
   EnsureLayout();
   EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+  EXPECT_EQ(location_bar->location_icon_view()->bounds().x(), focused_icon_x);
+  EXPECT_NE(location_bar->location_icon_view()->GetBackground()->color(),
+            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(zoom_view->GetVisible());
+
+  presenter->SetCompletedFirstVisuallyNonEmptyPaintForTesting(true);
+  EnsureLayout();
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+  EXPECT_FALSE(focus_ring->GetVisible());
   EXPECT_EQ(location_bar->location_icon_view()->bounds().x(), focused_icon_x);
   EXPECT_NE(location_bar->location_icon_view()->GetBackground()->color(),
             SK_ColorTRANSPARENT);

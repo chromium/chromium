@@ -324,6 +324,50 @@ class FullWebUIOmniboxInteractiveTestBase
     return WaitForStateChange(kPopupWebView, focus_changed);
   }
 
+  auto WaitForLocationBarFocusRingHidden() {
+    return PollUntil(
+        [this]() {
+          auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+          if (!browser_view || !browser_view->GetLocationBarView()) {
+            return false;
+          }
+          auto* focus_ring =
+              views::FocusRing::Get(browser_view->GetLocationBarView());
+          return focus_ring && !focus_ring->GetVisible();
+        },
+        "WaitForLocationBarFocusRingHidden");
+  }
+
+  auto CheckLocationBarFocusRing(bool should_paint) {
+    return Do([this, should_paint]() {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      ASSERT_TRUE(browser_view);
+      auto* location_bar_view = browser_view->GetLocationBarView();
+      ASSERT_TRUE(location_bar_view);
+      auto* focus_ring = views::FocusRing::Get(location_bar_view);
+      ASSERT_TRUE(focus_ring);
+      EXPECT_EQ(focus_ring->ShouldPaintForTesting(), should_paint);
+      EXPECT_EQ(focus_ring->GetVisible(), should_paint);
+      EXPECT_FALSE(location_bar_view->omnibox_view()->HasFocus());
+    });
+  }
+
+  auto WaitForInputWrapperFocusRing(bool expected) {
+    return InAnyContext(WaitForJsConditionAt(
+        kPopupWebView, kPopupSearchbox,
+        base::StringPrintf(
+            "(el) => {\n"
+            "  const wrapper = el.shadowRoot.querySelector('#inputWrapper');\n"
+            "  const boxShadow = getComputedStyle(wrapper).boxShadow;\n"
+            "  if (%s) {\n"
+            "    return /0px 0px 0px 1px(,|$)/.test(boxShadow) && "
+            "boxShadow.includes('0px 0px 0px 1px inset');\n"
+            "  }\n"
+            "  return boxShadow === 'none';\n"
+            "}",
+            expected ? "true" : "false")));
+  }
+
   // Returns the `OmniboxController` for the active browser, or null. Routed
   // through `LocationBar` rather than `LocationBarView` so this also works
   // when the WebUI toolbar is enabled and `GetLocationBarView()` is null.
@@ -4312,9 +4356,9 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           "WaitForFocusOutsideLocationBar"));
 }
 
-// Verifies that in Full WebUI mode the native LocationBarView focus ring
-// paints under the focused full popup and hides on blur, without focus leaking
-// into the native OmniboxViewViews.
+// Verifies that the native `LocationBarView` focus ring hides once the full
+// WebUI popup paints, and remains hidden when the dropdown expands and after
+// a blur. Also verifies that the native `OmniboxViewViews` stays unfocused.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                        LocationBarFocusRingInFullWebUIMode) {
   if (IsWebUIToolbarEnabled()) {
@@ -4322,31 +4366,45 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
     // WebUI toolbar has no `LocationBarView`, so there is nothing to check.
     GTEST_SKIP() << "Not applicable: the WebUI toolbar has no LocationBarView.";
   }
-  auto check_focus_ring = [this](bool should_paint) {
-    return Do([this, should_paint]() {
-      auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
-                               ->toolbar()
-                               ->location_bar_view();
-      if (!location_bar) {
-        return;
-      }
-      EXPECT_FALSE(location_bar->omnibox_view()->HasFocus());
-      auto* focus_ring = views::FocusRing::Get(location_bar);
-      if (focus_ring) {
-        EXPECT_EQ(focus_ring->ShouldPaintForTesting(), should_paint);
-      }
-    });
-  };
 
   RunTestSequence(
-      // 1. Open tab and focus WebUI popup -> native focus ring paints under
-      // the full popup while native OmniboxViewViews stays unfocused.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
-      WaitForWebUIInputValue("chrome://version"), check_focus_ring(true),
-      // 2. Click webpage body to dismiss -> focus ring stops painting.
-      ClickWebPageBody(kTab1),
-      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
-      WaitForOmniboxFocus(false), check_focus_ring(false));
+      WaitForWebUIInputValue("chrome://version"),
+      WaitForLocationBarFocusRingHidden(), CheckLocationBarFocusRing(false),
+      WaitForInputWrapperFocusRing(true), TypeWebUITextWithKeyPresses("fork"),
+      InAnyContext(WaitForWebUIInputValue("fork")),
+      WaitForVerbatimMatch(kPopupWebView, kDefaultMatchSuggestion, "fork"),
+      CheckLocationBarFocusRing(false), ClickWebPageBody(kTab1),
+      WaitForVisibleOmniboxUnfocused(), CheckLocationBarFocusRing(false));
+}
+
+// Verifies that once the full WebUI popup has painted, the native ring stays
+// hidden on later shows, since the popup keeps its painted page.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       LocationBarFocusRingStaysHiddenOnReshow) {
+  if (IsWebUIToolbarEnabled()) {
+    // This test covers the focus ring on the Views `LocationBarView`. The
+    // WebUI toolbar has no `LocationBarView`, so there is nothing to check.
+    GTEST_SKIP() << "Not applicable: the WebUI toolbar has no LocationBarView.";
+  }
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForLocationBarFocusRingHidden(), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), Do([this]() {
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        auto* popup_view =
+            browser_view->GetLocationBarView()->GetOmniboxPopupView();
+        popup_view->OnFocus(/*query_zps=*/true, /*select_all=*/false,
+                            /*show_full_url=*/false);
+        auto* state_manager = browser_view->GetLocationBarView()
+                                  ->GetOmniboxController()
+                                  ->popup_state_manager();
+        EXPECT_EQ(state_manager->popup_state(), OmniboxPopupState::kFull);
+        EXPECT_FALSE(views::FocusRing::Get(browser_view->GetLocationBarView())
+                         ->ShouldPaintForTesting());
+      }),
+      CheckLocationBarFocusRing(false), WaitForInputWrapperFocusRing(true));
 }
 
 // Verifies that Shift+Tabbing past the Omnibox closes the full WebUI popup
@@ -6444,6 +6502,29 @@ class FullWebUIOmniboxAimInteractiveTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Verifies that with the dropdown collapsed, Tab to the AI mode button removes
+// the popup's ring without the native ring showing around it (b/578919558).
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       NoLocationBarFocusRingWithAimButtonFocused) {
+  if (!BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView()) {
+    GTEST_SKIP() << "Not applicable: the WebUI toolbar has no LocationBarView.";
+  }
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(
+          WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                               "(el) => el.dropdownIsVisible === false")),
+      WaitForLocationBarFocusRingHidden(),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      InAnyContext(WaitForJsConditionAt(
+          kPopupWebView, kPopupSearchbox,
+          "(el) => el.shadowRoot.activeElement === el.$.composeButton")),
+      WaitForInputWrapperFocusRing(false), CheckLocationBarFocusRing(false));
+}
 
 // Dismissing the AIM popup with Escape should hand the composebox draft back
 // to the omnibox along with focus.

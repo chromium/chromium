@@ -251,9 +251,20 @@ LocationBarView::LocationBarView(BrowserWindowInterface* browser,
 
           // Show focus ring when the Omnibox is visibly focused and either the
           // popup is closed or it's the full WebUI popup, which keeps the
-          // focused look (see `ShouldUsePopupOpenAppearance()`).
+          // focused look (see `ShouldUsePopupOpenAppearance()`). Under the full
+          // popup, the native ring only fills in until the popup's web content
+          // completes its first paint, since the popup is see-through until
+          // then. From then on the popup shows focus itself.
+          const bool full_popup_completed_first_paint =
+              v->is_full_webui_omnibox_ &&
+              v->GetOmniboxController()->popup_state_manager()->popup_state() ==
+                  OmniboxPopupState::kFull &&
+              v->omnibox_popup_view_ && v->omnibox_popup_view_->presenter() &&
+              v->omnibox_popup_view_->presenter()
+                  ->CompletedFirstVisuallyNonEmptyPaint();
           return v->GetOmniboxController()->edit_model()->is_caret_visible() &&
-                 !v->ShouldUsePopupOpenAppearance();
+                 !v->ShouldUsePopupOpenAppearance() &&
+                 !full_popup_completed_first_paint;
         }));
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     views::InstallPillHighlightPathGenerator(this);
@@ -1254,6 +1265,13 @@ OmniboxPopupFileSelector* LocationBarView::GetOmniboxPopupFileSelector() const {
 
 OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
   return omnibox_popup_aim_presenter_.get();
+}
+
+void LocationBarView::OnPopupFirstVisuallyNonEmptyPaint() {
+  // The focus ring reads its predicate only when refreshed.
+  if (auto* focus_ring = views::FocusRing::Get(this)) {
+    focus_ring->Refresh();
+  }
 }
 
 views::View* LocationBarView::GetLocationBarFocusRestoreView() {

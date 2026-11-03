@@ -185,6 +185,13 @@ class OmniboxPopupPresenterBase
   // is expanded to cover the shadow margin.
   virtual bool ShouldDrawShadowInWebUI() const;
 
+  // Returns whether the popup's page has completed its first visually
+  // non-empty paint. `LocationBarView` drops its native focus ring under the
+  // full popup once this is true. The full popup's content reports the paint
+  // through the delegate's `OnPopupFirstVisuallyNonEmptyPaint()`.
+  bool CompletedFirstVisuallyNonEmptyPaint();
+  void SetCompletedFirstVisuallyNonEmptyPaintForTesting(bool completed);
+
   virtual std::string_view GetPopupMetricPrefix() const = 0;
 
   OmniboxPopupPresenterDelegate& delegate() const {
@@ -435,6 +442,9 @@ class OmniboxPopupPresenterBase
 
   // Whether the first paint metric of the popup has been logged.
   bool has_logged_first_widget_paint_ = false;
+
+  // Overrides `CompletedFirstVisuallyNonEmptyPaint()` when set.
+  std::optional<bool> completed_first_visually_non_empty_paint_for_testing_;
 
   // Minimum size bounds of omnibox popup.
   gfx::Size minimum_size_;

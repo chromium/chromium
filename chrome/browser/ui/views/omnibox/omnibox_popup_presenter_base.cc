@@ -35,6 +35,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/compositor/compositor.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
@@ -632,6 +633,25 @@ bool OmniboxPopupPresenterBase::ShouldShowLocationBarCutout() const {
 
 bool OmniboxPopupPresenterBase::ShouldDrawShadowInWebUI() const {
   return false;
+}
+
+bool OmniboxPopupPresenterBase::CompletedFirstVisuallyNonEmptyPaint() {
+  if (completed_first_visually_non_empty_paint_for_testing_.has_value()) {
+    return *completed_first_visually_non_empty_paint_for_testing_;
+  }
+  // The popup keeps its page across shows, so this stays true once the page
+  // first paints. Read the wrapped contents, since `GetWebContents()` creates
+  // new contents while the popup is hidden and its contents are detached.
+  OmniboxPopupWebUIBaseContent* content = GetWebUIContent();
+  content::WebContents* web_contents =
+      content ? content->GetWrappedWebContents() : nullptr;
+  return web_contents && web_contents->CompletedFirstVisuallyNonEmptyPaint();
+}
+
+void OmniboxPopupPresenterBase::
+    SetCompletedFirstVisuallyNonEmptyPaintForTesting(bool completed) {
+  completed_first_visually_non_empty_paint_for_testing_ = completed;
+  delegate().OnPopupFirstVisuallyNonEmptyPaint();
 }
 
 bool OmniboxPopupPresenterBase::ShouldReceiveFocus() const {

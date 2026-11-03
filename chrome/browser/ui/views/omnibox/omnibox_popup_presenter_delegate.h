@@ -25,6 +25,9 @@ class OmniboxPopupPresenterDelegate {
   virtual OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const = 0;
   virtual OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const = 0;
 
+  // Called when the popup's `CompletedFirstVisuallyNonEmptyPaint()` changes.
+  virtual void OnPopupFirstVisuallyNonEmptyPaint() {}
+
   // This returns the view that will be given focus when the focus is given
   // back to the location bar.
   virtual views::View* GetLocationBarFocusRestoreView() = 0;

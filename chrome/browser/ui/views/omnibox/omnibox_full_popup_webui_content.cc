@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -123,6 +124,14 @@ void OmniboxFullPopupWebUIContent::OnFocusChangedInPage(
   if (pending_context_menu_request_ &&
       details.editable_level != content::EditableLevel::kNotEditable) {
     ShowPendingContextMenuIfReady();
+  }
+}
+
+void OmniboxFullPopupWebUIContent::DidFirstVisuallyNonEmptyPaint() {
+  // `OmniboxPopupPresenterBase::CompletedFirstVisuallyNonEmptyPaint()` turns
+  // true with this paint, so let `LocationBarView` drop its native focus ring.
+  if (auto* presenter = popup_presenter()) {
+    presenter->delegate().OnPopupFirstVisuallyNonEmptyPaint();
   }
 }
 

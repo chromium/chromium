@@ -59,6 +59,7 @@ class OmniboxFullPopupWebUIContent
   // content::WebContentsObserver:
   void OnFocusChangedInPage(
       const content::FocusedNodeDetails& details) override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
  private:
   friend class OmniboxFullPopupWebUIContentBrowserTest;
