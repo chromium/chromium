@@ -12,8 +12,10 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,7 +34,7 @@ namespace {
 enum class DisplayLinkKind {
   // Default: CVDisplayLinkMac.
   kCVDisplayLink,
-  // CADisplayLinkMac created in the GPU process. Requires macOS 14.0+.
+  // CADisplayLinkMac created in the GPU process. Requires macOS 15.0+.
   kCADisplayLinkInGpu,
 };
 
@@ -65,10 +67,7 @@ class DisplayLinkMacTest : public testing::TestWithParam<DisplayLinkKind> {
   // Returns false if the current platform cannot provide the requested kind.
   bool IsSupported() const {
     if (GetParam() == DisplayLinkKind::kCADisplayLinkInGpu) {
-      if (@available(macOS 14.0, *)) {
-        return true;
-      }
-      return false;
+      return DisplayLinkMac::SupportsCADisplayLinkInGPU();
     }
     return true;
   }
@@ -246,6 +245,51 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(DisplayLinkKind::kCVDisplayLink,
                                          DisplayLinkKind::kCADisplayLinkInGpu),
                          DisplayLinkKindToString);
+
+TEST(DisplayLinkMacVersionTest, SupportsCADisplayLinkInGPU) {
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(display::features::kCADisplayLinkInGpu);
+    EXPECT_FALSE(DisplayLinkMac::SupportsCADisplayLinkInGPU());
+  }
+
+  if (!@available(macOS 14.0, *)) {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        display::features::kCADisplayLinkInGpu,
+        {{display::features::kCADisplayLinkInGpuMinMacOSMajorVersion.name,
+          "13"}});
+    EXPECT_FALSE(DisplayLinkMac::SupportsCADisplayLinkInGPU());
+    return;
+  }
+
+  // Default minimum macOS major version is 15.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(display::features::kCADisplayLinkInGpu);
+    EXPECT_EQ(DisplayLinkMac::SupportsCADisplayLinkInGPU(),
+              base::mac::MacOSMajorVersion() >= 15);
+  }
+
+  const int current_major = base::mac::MacOSMajorVersion();
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        display::features::kCADisplayLinkInGpu,
+        {{display::features::kCADisplayLinkInGpuMinMacOSMajorVersion.name,
+          base::NumberToString(current_major)}});
+    EXPECT_TRUE(DisplayLinkMac::SupportsCADisplayLinkInGPU());
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        display::features::kCADisplayLinkInGpu,
+        {{display::features::kCADisplayLinkInGpuMinMacOSMajorVersion.name,
+          base::NumberToString(current_major + 1)}});
+    EXPECT_FALSE(DisplayLinkMac::SupportsCADisplayLinkInGPU());
+  }
+}
 
 }  // namespace
 }  // namespace ui
