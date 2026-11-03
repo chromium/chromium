@@ -76,6 +76,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 #include "third_party/blink/renderer/controller/oom_intervention_impl.h"
 #include "third_party/blink/renderer/controller/private_memory_footprint_provider.h"
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
@@ -305,6 +306,12 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   CrashMemoryMetricsReporterImpl::Instance();
 
 #if BUILDFLAG(IS_ANDROID)
+  // RenderProcessHostImpl initializes applied_priority_.visible to false
+  // (!kLaunchingProcessIsBackgrounded) on Android and only sends
+  // SetProcessState when visibility or priority changes from that initial
+  // state.
+  MemoryUsageMonitor::Instance().SetRendererVisible(false);
+
   // Initialize UserLevelMemoryPressureSignalGenerator so it starts monitoring.
   if (platform->IsUserLevelMemoryPressureSignalEnabled()) {
     UserLevelMemoryPressureSignalGenerator::Initialize(main_thread_task_runner);

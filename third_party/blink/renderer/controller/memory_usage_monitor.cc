@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -46,8 +50,15 @@ bool MemoryUsageMonitor::HasObserver(Observer* observer) {
 }
 
 void MemoryUsageMonitor::StartMonitoringIfNeeded() {
-  if (timer_.IsRunning())
+  if (timer_.IsRunning()) {
     return;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (!is_visible_ &&
+      base::FeatureList::IsEnabled(features::kGateMemoryMetricsOnVisibility)) {
+    return;
+  }
+#endif
   timer_.Start(
       FROM_HERE, kPingInterval,
       BindRepeating(&MemoryUsageMonitor::TimerFired, Unretained(this)));
@@ -56,6 +67,26 @@ void MemoryUsageMonitor::StartMonitoringIfNeeded() {
 void MemoryUsageMonitor::StopMonitoring() {
   timer_.Stop();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void MemoryUsageMonitor::SetRendererVisible(bool visible) {
+  DCHECK(IsMainThread());
+  if (is_visible_ == visible) {
+    return;
+  }
+  is_visible_ = visible;
+  if (!base::FeatureList::IsEnabled(features::kGateMemoryMetricsOnVisibility)) {
+    return;
+  }
+  if (is_visible_) {
+    if (!observers_.empty()) {
+      StartMonitoringIfNeeded();
+    }
+  } else {
+    StopMonitoring();
+  }
+}
+#endif
 
 MemoryUsage MemoryUsageMonitor::GetCurrentMemoryUsage() {
   MemoryUsage usage;

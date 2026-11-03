@@ -7,6 +7,7 @@
 
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -54,6 +55,10 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
 
   bool TimerIsActive() const { return timer_.IsRunning(); }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetRendererVisible(bool visible);
+#endif
+
  protected:
   MemoryUsageMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing,
@@ -74,6 +79,14 @@ class CONTROLLER_EXPORT MemoryUsageMonitor {
 
   base::RepeatingTimer timer_;
   base::ObserverList<Observer> observers_;
+#if BUILDFLAG(IS_ANDROID)
+  // Accessed only on the main thread. Defaults to true for standalone
+  // instances in unit tests; BlinkInitializer::RegisterMemoryWatchers sets
+  // the process singleton to false on Android startup (matching
+  // RenderProcessHostImpl's initial applied_priority_.visible = false when
+  // !kLaunchingProcessIsBackgrounded).
+  bool is_visible_ = true;
+#endif
 };
 
 }  // namespace blink

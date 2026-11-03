@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
+#include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 
 namespace blink {
 
@@ -13,6 +14,7 @@ namespace blink {
 // static
 void WebMemoryFeatures::SetRendererVisible(bool visible) {
   CrashMemoryMetricsReporterImpl::Instance().SetRendererVisible(visible);
+  MemoryUsageMonitor::Instance().SetRendererVisible(visible);
 }
 #endif
 
