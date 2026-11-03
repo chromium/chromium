@@ -120,10 +120,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Delegate::OnFullCardRequestSucceeded() or
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
   // time.
-  //
-  // If the card is local, has a non-empty GUID, and the user has updated its
-  // expiration date, then this function will write the new information to
-  // autofill table on disk.
   void GetFullCard(CreditCard card,
                    PaymentsAutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
@@ -151,10 +147,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // used for providing context of the request to the server to link related
   // requests. `last_committed_primary_main_frame_origin` and `context_token`
   // are populated if the full card request is for a virtual card.
-  //
-  // If the card is local, has a non-empty GUID, and the user has updated its
-  // expiration date, then this function will write the new information to
-  // autofill table on disk.
   void GetFullCardViaFIDO(
       CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
@@ -180,8 +172,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
     return request_.get();
   }
 
-  bool GetShouldUnmaskCardForTesting() const { return should_unmask_card_; }
-
  private:
   friend class autofill::AutofillMetricsTest;
   friend class autofill::autofill_metrics::AutofillMetricsBaseTest;
@@ -204,10 +194,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // authentication methods. `last_committed_primary_main_frame_origin`,
   // `context_token`, and `selected_challenge_option` need to be specified if
   // the full card request is for a virtual card.
-  //
-  // If the card is local, has a non-empty GUID, and the user has updated its
-  // expiration date, then this function will write the new information to
-  // autofill table on disk.
   void GetFullCardImpl(
       CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
@@ -249,9 +235,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
 
   // The pending request to get a card's full PAN and CVC.
   std::unique_ptr<UnmaskRequestDetails> request_;
-
-  // Whether the card unmask request should be sent to the payment server.
-  bool should_unmask_card_ = false;
 
   // The timestamp when the full PAN was requested from a server. For
   // histograms.

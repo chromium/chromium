@@ -107,16 +107,19 @@ void FullCardRequest::GetFullCardImpl(
   DCHECK_NE(fido_assertion_info.has_value(), !!ui_delegate);
   DCHECK(result_delegate);
 
-  CreditCard::RecordType card_type = card.record_type();
-
-  // Full server cards are the temporarily-cached result of unmasking a masked
-  // card, and so we should never reach a GetFullCardImpl request for one.
-  DCHECK_NE(card_type, CreditCard::RecordType::kFullServerCard);
+  // Only masked server cards and virtual cards are unmasked through
+  // FullCardRequest. Local cards and cached full server cards are handled by
+  // CreditCardAccessManager without reaching here, so fail any non-masked card.
+  if (!card.masked()) {
+    result_delegate->OnFullCardRequestFailed(card.record_type(),
+                                             FailureType::GENERIC_FAILURE);
+    return;
+  }
 
   // Only one request can be active at a time. If the member variable
   // `result_delegate_` is already set, then immediately reject the new request.
   if (result_delegate_) {
-    result_delegate->OnFullCardRequestFailed(card_type,
+    result_delegate->OnFullCardRequestFailed(card.record_type(),
                                              FailureType::GENERIC_FAILURE);
     return;
   }
@@ -135,13 +138,9 @@ void FullCardRequest::GetFullCardImpl(
   request_->context_token = std::move(context_token).value_or({});
   request_->selected_challenge_option = std::move(selected_challenge_option);
 
-  should_unmask_card_ = request_->card.masked() ||
-                        card_type == CreditCard::RecordType::kVirtualCard;
-  if (should_unmask_card_) {
-    GetPaymentsNetworkInterface()->Prepare();
-    request_->billing_customer_number =
-        GetBillingCustomerId(GetPaymentsDataManager());
-  }
+  GetPaymentsNetworkInterface()->Prepare();
+  request_->billing_customer_number =
+      GetBillingCustomerId(GetPaymentsDataManager());
 
   request_->fido_assertion_info = std::move(fido_assertion_info);
 
@@ -165,11 +164,9 @@ void FullCardRequest::GetFullCardImpl(
         weak_ptr_factory_.GetWeakPtr());
   }
 
-  if (should_unmask_card_) {
-    autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
-        base::BindOnce(&FullCardRequest::OnDidGetUnmaskRiskData,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
+      base::BindOnce(&FullCardRequest::OnDidGetUnmaskRiskData,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FullCardRequest::OnUnmaskPromptAccepted(
@@ -180,23 +177,6 @@ void FullCardRequest::OnUnmaskPromptAccepted(
   if (!user_response.exp_year.empty())
     request_->card.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR,
                               user_response.exp_year);
-
-  if (request_->card.record_type() == CreditCard::RecordType::kLocalCard &&
-      !request_->card.guid().empty() &&
-      (!user_response.exp_month.empty() || !user_response.exp_year.empty())) {
-    GetPaymentsDataManager().UpdateCreditCard(request_->card);
-  }
-
-  if (!should_unmask_card_) {
-    if (result_delegate_)
-      result_delegate_->OnFullCardRequestSucceeded(*this, request_->card,
-                                                   user_response.cvc);
-    if (ui_delegate_)
-      ui_delegate_->OnUnmaskVerificationResult(PaymentsRpcResult::kSuccess);
-    Reset();
-
-    return;
-  }
 
   request_->user_response = user_response;
 #if BUILDFLAG(IS_ANDROID)
@@ -385,7 +365,6 @@ void FullCardRequest::Reset() {
   result_delegate_ = nullptr;
   ui_delegate_ = nullptr;
   request_.reset();
-  should_unmask_card_ = false;
   unmask_response_details_ = UnmaskResponseDetails();
 }
 
