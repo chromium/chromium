@@ -102,9 +102,13 @@ class CRYPTO_EXPORT ProcessBound {
   // only on supported platforms.
   explicit ProcessBound(const StringType& value, bool encrypted = true)
       : original_size_(value.size()) {
-    std::vector<CharType> data(value.begin(), value.end());
+    const size_t target_size =
+        encrypted ? internal::MaybeRoundUp(value.size()) : value.size();
+    std::vector<CharType> data;
+    data.reserve(target_size);
+    data.assign(value.begin(), value.end());
     if (encrypted) {
-      data.resize(internal::MaybeRoundUp(data.size()));
+      data.resize(target_size);
       encrypted_ =
           internal::MaybeEncryptBuffer(base::as_writable_byte_span(data));
     } else {
