@@ -16,11 +16,10 @@ import("//chrome/android/expectations/expectations.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/site_isolation/site_isolation.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//components/strings/grit_defines.gni")
 import("//components/supervised_user/buildflags.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//services/screen_ai/buildflags/features.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
@@ -979,15 +978,7 @@ if (_is_default_toolchain) {
 grit_strings("generate_components_strings") {
   source = "../components/components_strings.grd"
 
-  defines = [
-    "enable_arcore=$enable_arcore",
-    "enable_cardboard=$enable_cardboard",
-    "enable_pdf=$enable_pdf",
-    "enable_print_preview=$enable_print_preview",
-    "enable_screen_ai_service=$enable_screen_ai_service",
-    "enable_vr=$enable_vr",
-    "use_blink=$use_blink",
-  ]
+  defines = components_strings_grit_defines
 
   # components_strings contains strings from all components. WebView
   # will never display most of them, so we try to limit the included

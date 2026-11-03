@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//content/public/common/features.gni")
+import("//device/vr/buildflags/buildflags.gni")
+import("//pdf/features.gni")
+import("//printing/buildflags/buildflags.gni")
+import("//services/screen_ai/buildflags/features.gni")
+import("//third_party/blink/public/public_features.gni")
+
+# Grit defines for targets that process //components/components_strings.grd.
+components_strings_grit_defines = [
+  "enable_arcore=$enable_arcore",
+  "enable_cardboard=$enable_cardboard",
+  "enable_pdf=$enable_pdf",
+  "enable_pdf_ink2=$enable_pdf_ink2",
+  "enable_pdf_save_to_drive=$enable_pdf_save_to_drive",
+  "enable_plugins=$enable_plugins",
+  "enable_print_preview=$enable_print_preview",
+  "enable_screen_ai_service=$enable_screen_ai_service",
+  "enable_smart_card=$enable_smart_card",
+  "enable_vr=$enable_vr",
+  "use_blink=$use_blink",
+]

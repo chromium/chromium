@@ -3,13 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//build/config/locales.gni")
-import("//content/public/common/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
-import("//pdf/features.gni")
-import("//printing/buildflags/buildflags.gni")
-import("//services/screen_ai/buildflags/features.gni")
+import("//components/strings/grit_defines.gni")
 import("//tools/grit/grit_rule.gni")
 
 if (is_android) {
@@ -102,18 +97,7 @@ grit_strings("components_strings") {
       process_file_template(xtb_locales,
                             [ "components_strings_{{source_name_part}}.xtb" ])
 
-  defines = [
-    "enable_arcore=$enable_arcore",
-    "enable_cardboard=$enable_cardboard",
-    "enable_pdf=$enable_pdf",
-    "enable_pdf_ink2=$enable_pdf_ink2",
-    "enable_pdf_save_to_drive=$enable_pdf_save_to_drive",
-    "enable_plugins=$enable_plugins",
-    "enable_print_preview=$enable_print_preview",
-    "enable_screen_ai_service=$enable_screen_ai_service",
-    "enable_vr=$enable_vr",
-    "use_blink=$use_blink",
-  ]
+  defines = components_strings_grit_defines
 
   outputs = [ "grit/components_strings.h" ]
   if (is_android) {

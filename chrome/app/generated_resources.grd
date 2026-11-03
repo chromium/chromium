@@ -20187,7 +20187,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Smart Card Readers -->
-    <if expr="is_chromeos">
+    <if expr="enable_smart_card">
       <message name="IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE" desc="String describing a smart card reader permission granted by permission policy to a site for all devices.">
         Any smart card reader
       </message>
