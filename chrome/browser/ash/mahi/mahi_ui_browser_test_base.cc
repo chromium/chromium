@@ -120,7 +120,6 @@ class MockMantaService : public manta::MantaService {
             /*shared_url_loader_factory=*/nullptr,
             identity_manager,
             /*is_demo_mode=*/false,
-            /*is_otr_profile=*/false,
             /*chrome_version=*/"fake_version",
             /*chrome_channel=*/version_info::Channel::DEFAULT,
             /*locale=*/std::string()) {

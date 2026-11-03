@@ -265,7 +265,6 @@ class MahiManagerImplTest : public AshTestBase {
             test_url_loader_factory_.GetSafeWeakWrapper(),
             identity_test_env_.identity_manager(),
             /*is_demo_mode=*/false,
-            /*is_otr_profile=*/false,
             /*chrome_version=*/std::string(),
             /*chrome_channel=*/version_info::Channel::DEFAULT,
             /*locale=*/std::string()));

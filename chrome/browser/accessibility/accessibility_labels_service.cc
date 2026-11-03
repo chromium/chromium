@@ -8,7 +8,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,13 +20,16 @@
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/browser/url_language_histogram.h"
+#include "components/manta/anchovy/anchovy_provider.h"
 #include "components/manta/manta_service.h"
+#include "components/manta/provider_params.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -86,6 +92,11 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
     std::vector<std::string> top_languages;
     language::UrlLanguageHistogram* url_language_histogram =
         UrlLanguageHistogramFactory::GetForBrowserContext(profile_);
+    // UrlLanguageHistogramFactory returns nullptr for Off-The-Record profiles
+    // (including Guest sessions).
+    if (!url_language_histogram) {
+      return top_languages;
+    }
     std::vector<LanguageInfo> language_infos =
         url_language_histogram->GetTopLanguages();
     for (const LanguageInfo& info : language_infos) {
@@ -243,13 +254,28 @@ void AccessibilityLabelsService::BindImageAnnotator(
     if (binder) {
       binder.Run(std::move(service_receiver));
     } else {
+      // MantaServiceFactory only builds MantaService for regular profiles and
+      // returns nullptr in Guest profiles. Construct an anonymous API-key
+      // AnchovyProvider directly when manta_service is null.
       auto* manta_service = manta::MantaServiceFactory::GetForProfile(profile_);
-      CHECK(manta_service);
+      std::unique_ptr<manta::AnchovyProvider> anchovy_provider;
+      if (manta_service) {
+        anchovy_provider = manta_service->CreateAnchovyProvider();
+      } else {
+        const manta::ProviderParams provider_params = {
+            /*use_api_key=*/true, version_info::GetVersion().GetString(),
+            chrome::GetChannel(),
+            g_browser_process ? g_browser_process->GetApplicationLocale()
+                              : std::string()};
+        anchovy_provider = std::make_unique<manta::AnchovyProvider>(
+            profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess(),
+            /*identity_manager=*/nullptr, provider_params);
+      }
       service_ = std::make_unique<image_annotation::ImageAnnotationService>(
           std::move(service_receiver),
           google_apis::GetAPIKey(chrome::GetChannel()),
-          profile_->GetURLLoaderFactory(),
-          manta_service->CreateAnchovyProvider(),
+          profile_->GetURLLoaderFactory(), std::move(anchovy_provider),
           std::make_unique<ImageAnnotatorClient>(profile_));
     }
   }

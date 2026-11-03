@@ -150,6 +150,7 @@ source_set("impl") {
 
   deps += [
     "//base",
+    "//base/version_info",
     "//chrome/browser:browser_process",
     "//chrome/browser/manta",
     "//chrome/browser/profiles:profile",
@@ -231,6 +232,7 @@ if (!is_android) {
       ":accessibility",
       ":impl",
       "//chrome/browser/accessibility/live_caption:browser_tests",
+      "//chrome/browser/manta",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_commands",

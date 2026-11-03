@@ -23,6 +23,7 @@ source_set("impl") {
     "//base/version_info",
     "//chrome/browser:browser_process",
     "//chrome/browser/signin",
+    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//components/keyed_service/content",
     "//components/language/core/browser",

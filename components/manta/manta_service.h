@@ -48,7 +48,6 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       signin::IdentityManager* identity_manager,
       bool is_demo_mode,
-      bool is_otr_profile,
       const std::string& chrome_version,
       version_info::Channel chrome_channel,
       const std::string& locale);
@@ -101,7 +100,6 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   // Fields like version, channel and locale passed to a provider can be sent to
   // the server.
   const bool is_demo_mode_;
-  const bool is_otr_profile_;
   const std::string chrome_version_;
   const version_info::Channel chrome_channel_;
   const std::string locale_;

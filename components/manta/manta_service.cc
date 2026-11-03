@@ -46,14 +46,12 @@ MantaService::MantaService(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     signin::IdentityManager* identity_manager,
     bool is_demo_mode,
-    bool is_otr_profile,
     const std::string& chrome_version,
     const version_info::Channel chrome_channel,
     const std::string& locale)
     : shared_url_loader_factory_(shared_url_loader_factory),
       identity_manager_(identity_manager),
       is_demo_mode_(is_demo_mode),
-      is_otr_profile_(is_otr_profile),
       chrome_version_(chrome_version),
       chrome_channel_(chrome_channel),
       locale_(locale) {}
@@ -89,14 +87,15 @@ MantaService::CanAccessMantaFeaturesWithoutMinorRestrictions() {
 }
 
 std::unique_ptr<AnchovyProvider> MantaService::CreateAnchovyProvider() {
-  // Anchovy Provider supports API Key Requests for OTR profiles and doesn't
-  // requires a valid identity_manager.
-  const ProviderParams provider_params = {/*use_api_key=*/is_otr_profile_,
-                                          chrome_version_, chrome_channel_,
-                                          locale_};
+  // Image description requests always use Chrome's anonymous API key rather
+  // than Gaia OAuth tokens so no user identifier is sent (including from
+  // Incognito profiles that share the original profile's MantaService).
+  const ProviderParams provider_params = {/*use_api_key=*/true, chrome_version_,
+                                          chrome_channel_, locale_};
 
   return std::make_unique<AnchovyProvider>(shared_url_loader_factory_,
-                                           identity_manager_, provider_params);
+                                           /*identity_manager=*/nullptr,
+                                           provider_params);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

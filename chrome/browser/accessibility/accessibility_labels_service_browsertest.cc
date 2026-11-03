@@ -33,8 +33,14 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include <tuple>
+
+#include "base/test/test_future.h"
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
+#include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #endif
 
 class AccessibilityLabelsBrowserTest : public InProcessBrowserTest {
@@ -215,6 +221,41 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
     EXPECT_TRUE(remote.is_connected());
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,
+                       BindImageAnnotatorInGuestProfile) {
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
+  ASSERT_TRUE(guest_browser);
+  Profile* guest_profile = guest_browser->GetProfile();
+  ASSERT_TRUE(guest_profile->IsGuestSession());
+  ASSERT_TRUE(guest_profile->IsOffTheRecord());
+  ASSERT_EQ(nullptr, manta::MantaServiceFactory::GetForProfile(guest_profile));
+
+  auto* labels_service =
+      AccessibilityLabelsServiceFactory::GetForProfile(guest_profile);
+  ASSERT_NE(nullptr, labels_service);
+
+  mojo::Remote<image_annotation::mojom::Annotator> remote;
+  labels_service->BindImageAnnotator(remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+
+  // Exercise AnnotateImage with a non-empty page language so
+  // ImageAnnotatorClient::GetAcceptLanguages() and GetTopLanguages() run in
+  // the Off-The-Record Guest profile.
+  mojo::PendingRemote<image_annotation::mojom::ImageProcessor> processor_remote;
+  std::ignore = processor_remote.InitWithNewPipeAndPassReceiver();
+  base::test::TestFuture<image_annotation::mojom::AnnotateImageResultPtr>
+      future;
+  remote->AnnotateImage("https://www.example.com/image.jpg", "en",
+                        std::move(processor_remote), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Get()->is_error_code());
+  EXPECT_EQ(image_annotation::mojom::AnnotateImageError::kCanceled,
+            future.Get()->get_error_code());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif
 
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsBrowserTest,

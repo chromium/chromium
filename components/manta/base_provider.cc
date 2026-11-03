@@ -157,7 +157,7 @@ std::unique_ptr<EndpointFetcher> BaseProvider::CreateEndpointFetcherForDemoMode(
           .SetContentType(kHttpContentType)
           .SetTimeout(timeout)
           .SetPostData(post_data)
-          .SetChannel(version_info::Channel::STABLE)
+          .SetChannel(provider_params_.chrome_channel)
           .Build());
 }
 
