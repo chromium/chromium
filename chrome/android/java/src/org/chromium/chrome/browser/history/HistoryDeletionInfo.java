@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.history;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -16,44 +15,41 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class HistoryDeletionInfo {
-    private final long mHistoryDeletionInfoPtr;
+    private final String[] mDeletedURLs;
+    private final boolean mIsTimeRangeValid;
+    private final boolean mIsTimeRangeForAllTime;
 
     @CalledByNative
-    private static HistoryDeletionInfo create(long historyDeletionInfoPtr) {
-        return new HistoryDeletionInfo(historyDeletionInfoPtr);
+    private static HistoryDeletionInfo create(
+            String[] deletedURLs, boolean isTimeRangeValid, boolean isTimeRangeForAllTime) {
+        return new HistoryDeletionInfo(deletedURLs, isTimeRangeValid, isTimeRangeForAllTime);
     }
 
-    HistoryDeletionInfo(long historyDeletionInfoPtr) {
-        mHistoryDeletionInfoPtr = historyDeletionInfoPtr;
+    HistoryDeletionInfo(
+            String[] deletedURLs, boolean isTimeRangeValid, boolean isTimeRangeForAllTime) {
+        mDeletedURLs = deletedURLs;
+        mIsTimeRangeValid = isTimeRangeValid;
+        mIsTimeRangeForAllTime = isTimeRangeForAllTime;
     }
 
     /**
      * @return An array of URLs that were deleted.
      */
     public String[] getDeletedURLs() {
-        return HistoryDeletionInfoJni.get().getDeletedURLs(mHistoryDeletionInfoPtr);
+        return mDeletedURLs;
     }
 
     /**
      * @return True if the time range is valid.
      */
     public boolean isTimeRangeValid() {
-        return HistoryDeletionInfoJni.get().isTimeRangeValid(mHistoryDeletionInfoPtr);
+        return mIsTimeRangeValid;
     }
 
     /**
      * @return True if the time range is for all time.
      */
     public boolean isTimeRangeForAllTime() {
-        return HistoryDeletionInfoJni.get().isTimeRangeForAllTime(mHistoryDeletionInfoPtr);
-    }
-
-    @NativeMethods
-    interface Natives {
-        String[] getDeletedURLs(long historyDeletionInfoPtr);
-
-        boolean isTimeRangeValid(long historyDeletionInfoPtr);
-
-        boolean isTimeRangeForAllTime(long historyDeletionInfoPtr);
+        return mIsTimeRangeForAllTime;
     }
 }
