@@ -512,7 +512,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSettingsInTabUrlNav,
     &kSettingsSearchCollapsibleSearchBox,
     &kShareCustomActionsInCCT,
-    &kShortCircuitUnfocusAnimation,
     &kShowTabListAnimations,
     &kSidePanelTopHairlineRefactorAndroid,
     &kSideUiAllowPause,
@@ -983,7 +982,6 @@ BASE_FEATURE(kSettingsInTabDesktop, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsInTabUrlNav, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsSearchCollapsibleSearchBox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShareCustomActionsInCCT, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabListAnimations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSidePanelTopHairlineRefactorAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSideUiAllowPause, base::FEATURE_ENABLED_BY_DEFAULT);
