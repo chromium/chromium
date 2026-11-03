@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -16,10 +18,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.PackageInfo;
+import android.os.Build;
+import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.content.pm.PackageInfoBuilder;
@@ -33,12 +40,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDisplayManager;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -55,6 +64,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
@@ -97,6 +107,8 @@ public class PasswordManagerHelperTest {
     @Mock private SettingsNavigation mSettingsNavigationMock;
 
     @Mock private PendingIntent mPendingIntentMock;
+
+    @Mock private Context mContextMock;
 
     // TODO(crbug.com/40854050): Use fake instead of mock
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
@@ -260,6 +272,7 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswords();
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -275,6 +288,7 @@ public class PasswordManagerHelperTest {
         setUpSuccessfulIntentFetchingForAccount();
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -291,6 +305,7 @@ public class PasswordManagerHelperTest {
         doThrow(CanceledException.class).when(mPendingIntentMock).send();
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -306,6 +321,7 @@ public class PasswordManagerHelperTest {
         returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_EXCEPTION);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -323,6 +339,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -340,6 +357,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -356,6 +374,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.SHOWN);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -375,6 +394,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -393,6 +413,7 @@ public class PasswordManagerHelperTest {
         when(mLoadingModalDialogCoordinator.isImmediatelyDismissable()).thenReturn(true);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -412,6 +433,7 @@ public class PasswordManagerHelperTest {
         when(mLoadingModalDialogCoordinator.isImmediatelyDismissable()).thenReturn(false);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -432,6 +454,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.CANCELLED);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -447,6 +470,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.SHOWN);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -466,6 +490,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.TIMED_OUT);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -481,6 +506,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.SHOWN);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -501,6 +527,7 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
@@ -519,12 +546,135 @@ public class PasswordManagerHelperTest {
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
         mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 TEST_EMAIL_ADDRESS);
 
         verify(mLoadingModalDialogCoordinator).dismiss();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testCredentialManagerLaunchesOnCurrentDisplayWhenProjected()
+            throws CanceledException {
+        Activity activity = setUpCredentialManagerLaunchOnNewDisplay(/* isProjected= */ true);
+        Context context = new ContextWrapper(activity);
+
+        mPasswordManagerHelper.launchTheCredentialManager(
+                context,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSyncServiceMock,
+                mLoadingModalDialogCoordinator,
+                TEST_EMAIL_ADDRESS);
+
+        ArgumentCaptor<Bundle> optionsCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mPendingIntentMock)
+                .send(
+                        eq(context),
+                        eq(0),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        optionsCaptor.capture());
+        verify(mPendingIntentMock, never()).send();
+        assertEquals(
+                activity.getDisplay().getDisplayId(),
+                new ActivityOptions(optionsCaptor.getValue()).getLaunchDisplayId());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testCredentialManagerUsesDefaultLaunchWhenNotProjected() throws CanceledException {
+        Activity activity = setUpCredentialManagerLaunchOnNewDisplay(/* isProjected= */ false);
+
+        mPasswordManagerHelper.launchTheCredentialManager(
+                activity,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSyncServiceMock,
+                mLoadingModalDialogCoordinator,
+                TEST_EMAIL_ADDRESS);
+
+        verify(mPendingIntentMock).send();
+        verify(mPendingIntentMock, never())
+                .send(any(), anyInt(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testCredentialManagerUsesDefaultLaunchWhenContextHasNoDisplay()
+            throws CanceledException {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        doThrow(UnsupportedOperationException.class).when(mContextMock).getDisplay();
+        chooseToSyncPasswords();
+        setUpSuccessfulIntentFetchingForAccount();
+
+        mPasswordManagerHelper.launchTheCredentialManager(
+                mContextMock,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSyncServiceMock,
+                mLoadingModalDialogCoordinator,
+                TEST_EMAIL_ADDRESS);
+
+        verify(mPendingIntentMock).send();
+        verify(mPendingIntentMock, never())
+                .send(any(), anyInt(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testCredentialManagerFallsBackToDefaultLaunchWhenDisplayRejected()
+            throws CanceledException {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                                1)
+                        .build();
+        Activity activity = setUpCredentialManagerLaunchOnNewDisplay(/* isProjected= */ true);
+        doThrow(SecurityException.class)
+                .when(mPendingIntentMock)
+                .send(any(), anyInt(), any(), any(), any(), any(), any());
+
+        mPasswordManagerHelper.launchTheCredentialManager(
+                activity,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSyncServiceMock,
+                mLoadingModalDialogCoordinator,
+                TEST_EMAIL_ADDRESS);
+
+        verify(mPendingIntentMock).send();
+        histogram.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testCredentialManagerDoesNotFallBackWhenProjectedLaunchCanceled()
+            throws CanceledException {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                                0)
+                        .build();
+        Activity activity = setUpCredentialManagerLaunchOnNewDisplay(/* isProjected= */ true);
+        doThrow(CanceledException.class)
+                .when(mPendingIntentMock)
+                .send(any(), anyInt(), any(), any(), any(), any(), any());
+
+        mPasswordManagerHelper.launchTheCredentialManager(
+                activity,
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSyncServiceMock,
+                mLoadingModalDialogCoordinator,
+                TEST_EMAIL_ADDRESS);
+
+        verify(mPendingIntentMock, never()).send();
+        histogram.assertExpected();
     }
 
     @Test
@@ -771,6 +921,29 @@ public class PasswordManagerHelperTest {
         PackageInfo playStorePackageInfo =
                 PackageInfoBuilder.newBuilder().setPackageName("com.android.vending").build();
         shadowPackageManager.installPackage(playStorePackageInfo);
+    }
+
+    /**
+     * Prepares a successful account credential manager launch from an activity on a new display.
+     *
+     * @param isProjected Whether Chrome is projected to Android Auto.
+     * @return The activity requesting the launch.
+     */
+    private Activity setUpCredentialManagerLaunchOnNewDisplay(boolean isProjected) {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(isProjected);
+        Activity activity = buildActivityOnDisplay(ShadowDisplayManager.addDisplay(""));
+        chooseToSyncPasswords();
+        setUpSuccessfulIntentFetchingForAccount();
+        return activity;
+    }
+
+    private Activity buildActivityOnDisplay(int displayId) {
+        return Robolectric.buildActivity(
+                        Activity.class,
+                        /* intent= */ null,
+                        ActivityOptions.makeBasic().setLaunchDisplayId(displayId).toBundle())
+                .setup()
+                .get();
     }
 
     private void chooseToSyncPasswords() {

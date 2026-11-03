@@ -4,15 +4,20 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.Display;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
@@ -24,6 +29,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +43,7 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -73,6 +80,8 @@ public class PasswordManagerHelper {
         /** Obtain the number of reused credentials. */
         int GET_REUSED_CREDENTIALS_COUNT = 4;
     }
+
+    private static final String TAG = "PwdManagerHelper";
 
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
@@ -134,7 +143,8 @@ public class PasswordManagerHelper {
                 context, modalDialogManager, settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManager, context);
-            launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator, account);
+            launchTheCredentialManager(
+                    context, referrer, syncService, loadingDialogCoordinator, account);
         }
     }
 
@@ -395,6 +405,7 @@ public class PasswordManagerHelper {
 
     @VisibleForTesting
     void launchTheCredentialManager(
+            Context context,
             @ManagePasswordsReferrer int referrer,
             @Nullable SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
@@ -414,7 +425,7 @@ public class PasswordManagerHelper {
                     account,
                     (intent) ->
                             PasswordManagerHelper.launchCredentialManagerIntent(
-                                    intent, startTimeMs, true, loadingDialogCoordinator),
+                                    intent, context, startTimeMs, true, loadingDialogCoordinator),
                     (exception) -> {
                         PasswordManagerHelper.recordFailureMetrics(exception, true);
                         loadingDialogCoordinator.dismiss();
@@ -424,7 +435,7 @@ public class PasswordManagerHelper {
                     referrer,
                     (intent) ->
                             PasswordManagerHelper.launchCredentialManagerIntent(
-                                    intent, startTimeMs, false, loadingDialogCoordinator),
+                                    intent, context, startTimeMs, false, loadingDialogCoordinator),
                     (exception) -> {
                         PasswordManagerHelper.recordFailureMetrics(exception, false);
                         loadingDialogCoordinator.dismiss();
@@ -462,6 +473,7 @@ public class PasswordManagerHelper {
                     maybeLaunchIntentWithLoadingDialog(
                             loadingDialogCoordinator,
                             intent,
+                            context,
                             PasswordMetricsUtil
                                     .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
                 },
@@ -513,10 +525,10 @@ public class PasswordManagerHelper {
     }
 
     private static void launchIntentAndRecordSuccess(
-            PendingIntent intent, String intentLaunchSuccessHistogram) {
+            PendingIntent intent, Context context, String intentLaunchSuccessHistogram) {
         boolean launchIntentSuccessfully = true;
         try {
-            intent.send();
+            sendPendingIntent(intent, context);
         } catch (CanceledException e) {
             launchIntentSuccessfully = false;
         }
@@ -524,8 +536,56 @@ public class PasswordManagerHelper {
                 intentLaunchSuccessHistogram, launchIntentSuccessfully);
     }
 
+    /**
+     * Sends {@code intent}.
+     *
+     * <p>When Chrome is projected to Android Auto, launches on Chrome's display. Without an
+     * explicit display, Android may open the activity on the phone without telling Android Auto.
+     */
+    private static void sendPendingIntent(PendingIntent intent, Context context)
+            throws CanceledException {
+        if (BrowserUiUtils.isAndroidAutoProjected(context)
+                && trySendPendingIntentOnCurrentDisplay(intent, context)) {
+            return;
+        }
+        intent.send();
+    }
+
+    /**
+     * Sends {@code intent} on the display {@code context} is associated with. Returns false if
+     * {@code context} has no display or the platform rejects the launch display.
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    private static boolean trySendPendingIntentOnCurrentDisplay(
+            PendingIntent intent, Context context) throws CanceledException {
+        Display display;
+        try {
+            display = context.getDisplay();
+        } catch (UnsupportedOperationException e) {
+            // The context isn't associated with a display, e.g. the application context.
+            return false;
+        }
+        Bundle options =
+                ActivityOptions.makeBasic().setLaunchDisplayId(display.getDisplayId()).toBundle();
+        try {
+            intent.send(
+                    context,
+                    /* code= */ 0,
+                    /* intent= */ null,
+                    /* onFinished= */ null,
+                    /* handler= */ null,
+                    /* requiredPermission= */ null,
+                    options);
+            return true;
+        } catch (SecurityException e) {
+            Log.w(TAG, "Password Manager launch display was rejected.", e);
+            return false;
+        }
+    }
+
     private static void launchCredentialManagerIntent(
             PendingIntent intent,
+            Context context,
             long startTimeMs,
             boolean forAccount,
             LoadingModalDialogCoordinator loadingDialogCoordinator) {
@@ -534,6 +594,7 @@ public class PasswordManagerHelper {
         maybeLaunchIntentWithLoadingDialog(
                 loadingDialogCoordinator,
                 intent,
+                context,
                 forAccount
                         ? PasswordMetricsUtil.ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
                         : PasswordMetricsUtil.LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM);
@@ -559,11 +620,13 @@ public class PasswordManagerHelper {
      *
      * @param loadingDialogCoordinator {@link LoadingModalDialogCoordinator}.
      * @param intent {@link PendingIntent} to be launched.
+     * @param context The {@link Context} that requested the UI.
      * @param intentLaunchSuccessHistogram Name of the intent launch success histogram.
      */
     private static void maybeLaunchIntentWithLoadingDialog(
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             PendingIntent intent,
+            Context context,
             String intentLaunchSuccessHistogram) {
         @LoadingModalDialogCoordinator.State
         int loadingDialogState = loadingDialogCoordinator.getState();
@@ -577,14 +640,14 @@ public class PasswordManagerHelper {
         if (loadingDialogState == LoadingModalDialogCoordinator.State.PENDING) {
             // Dialog is not yet visible, dismiss immediately.
             loadingDialogCoordinator.dismiss();
-            launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+            launchIntentAndRecordSuccess(intent, context, intentLaunchSuccessHistogram);
             return;
         }
 
         if (loadingDialogCoordinator.isImmediatelyDismissable()) {
             // Dialog is visible and dismissable. Dismiss with a small delay to cover the intent
             // launch delay.
-            launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+            launchIntentAndRecordSuccess(intent, context, intentLaunchSuccessHistogram);
             new Handler(Looper.getMainLooper())
                     .postDelayed(
                             loadingDialogCoordinator::dismiss, LOADING_DIALOG_DISMISS_DELAY_MS);
@@ -599,7 +662,7 @@ public class PasswordManagerHelper {
                     public void onDismissable() {
                         // Record the known state - if the dialog was cancelled or timed out,
                         // {@link #onCancelledOrTimedOut()} would be called.
-                        launchIntentAndRecordSuccess(intent, intentLaunchSuccessHistogram);
+                        launchIntentAndRecordSuccess(intent, context, intentLaunchSuccessHistogram);
                         new Handler(Looper.getMainLooper())
                                 .postDelayed(
                                         loadingDialogCoordinator::dismiss,

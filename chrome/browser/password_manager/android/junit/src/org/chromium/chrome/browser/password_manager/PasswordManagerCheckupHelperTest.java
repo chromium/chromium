@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -17,10 +18,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.os.Build;
+import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.content.pm.PackageInfoBuilder;
@@ -40,6 +45,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowDisplayManager;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -60,6 +66,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowController;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -971,6 +978,59 @@ public class PasswordManagerCheckupHelperTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testPasswordCheckupLaunchesOnCurrentDisplayWhenProjected()
+            throws CanceledException {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(true);
+        int displayId = ShadowDisplayManager.addDisplay("");
+        Activity activity = buildActivityOnDisplay(displayId);
+        chooseToSyncPasswords();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_EMAIL_ADDRESS);
+
+        mPasswordManagerHelper.launchPasswordCheckup(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mLoadingModalDialogCoordinator,
+                mModalDialogManager,
+                activity,
+                mSettingsCustomTabLauncher);
+
+        ArgumentCaptor<Bundle> optionsCaptor = ArgumentCaptor.forClass(Bundle.class);
+        verify(mPendingIntentMock)
+                .send(
+                        eq(activity),
+                        eq(0),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        isNull(),
+                        optionsCaptor.capture());
+        verify(mPendingIntentMock, never()).send();
+        assertEquals(displayId, new ActivityOptions(optionsCaptor.getValue()).getLaunchDisplayId());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+    public void testPasswordCheckupUsesDefaultLaunchWhenNotProjected() throws CanceledException {
+        BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
+        Activity activity = buildActivityOnDisplay(ShadowDisplayManager.addDisplay(""));
+        chooseToSyncPasswords();
+        setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_EMAIL_ADDRESS);
+
+        mPasswordManagerHelper.launchPasswordCheckup(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mLoadingModalDialogCoordinator,
+                mModalDialogManager,
+                activity,
+                mSettingsCustomTabLauncher);
+
+        verify(mPendingIntentMock).send();
+        verify(mPendingIntentMock, never())
+                .send(any(), anyInt(), any(), any(), any(), any(), any());
+    }
+
+    @Test
     public void testRecordsErrorMetricsWhenRunPasswordCheckupFails() {
         chooseToSyncPasswords();
         Exception expectedException = new PasswordManagerUnavailableException();
@@ -1347,5 +1407,14 @@ public class PasswordManagerCheckupHelperTest {
         PackageInfo playStorePackageInfo =
                 PackageInfoBuilder.newBuilder().setPackageName("com.android.vending").build();
         shadowPackageManager.installPackage(playStorePackageInfo);
+    }
+
+    private Activity buildActivityOnDisplay(int displayId) {
+        return Robolectric.buildActivity(
+                        Activity.class,
+                        /* intent= */ null,
+                        ActivityOptions.makeBasic().setLaunchDisplayId(displayId).toBundle())
+                .setup()
+                .get();
     }
 }
