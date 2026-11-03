@@ -365,7 +365,11 @@ void LensSearchController::IssueContextualSearchRequest(
             lens::LensOverlayInvocationSource::kOmniboxPageAction ||
         invocation_source ==
             lens::LensOverlayInvocationSource::kContentAreaContextMenuPage ||
+        invocation_source == lens::LensOverlayInvocationSource::
+                                 kContentAreaContextMenuPageAskGoogle ||
         invocation_source == lens::LensOverlayInvocationSource::kAppMenu ||
+        invocation_source ==
+            lens::LensOverlayInvocationSource::kAppMenuAskGoogle ||
         invocation_source ==
             lens::LensOverlayInvocationSource::kHomeworkActionChip);
 

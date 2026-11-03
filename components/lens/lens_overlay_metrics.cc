@@ -23,8 +23,12 @@ std::string InvocationSourceToString(
   switch (invocation_source) {
     case LensOverlayInvocationSource::kAppMenu:
       return "AppMenu";
+    case LensOverlayInvocationSource::kAppMenuAskGoogle:
+      return "AppMenuAskGoogle";
     case LensOverlayInvocationSource::kContentAreaContextMenuPage:
       return "ContentAreaContextMenuPage";
+    case LensOverlayInvocationSource::kContentAreaContextMenuPageAskGoogle:
+      return "ContentAreaContextMenuPageAskGoogle";
     case LensOverlayInvocationSource::kContentAreaContextMenuImage:
       return "ContentAreaContextMenuImage";
     case LensOverlayInvocationSource::kToolbar:
@@ -520,6 +524,9 @@ void RecordTimeToFirstInteraction(
     case lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton:
     case lens::LensOverlayInvocationSource::kAppBarAimButton:
     case lens::LensOverlayInvocationSource::kContextualCue:
+    case lens::LensOverlayInvocationSource::kAppMenuAskGoogle:
+    case lens::LensOverlayInvocationSource::
+        kContentAreaContextMenuPageAskGoogle:
       // Not recorded since the ntp and omnibox contextual query flows and the
       // cobrowse toolbar button flow do not use the Lens Overlay Controller.
       break;

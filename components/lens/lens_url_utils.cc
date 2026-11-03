@@ -45,7 +45,10 @@ inline constexpr char kInvocationSourceParameterKey[] = "source";
 inline constexpr char kLensPanelPrefix[] = "chrome.cr.";
 inline constexpr char kContextualTasksPrefix[] = "chrome.crn.";
 inline constexpr char kInvocationSourceAppMenu[] = "menu";
+inline constexpr char kInvocationSourceAppMenuAskGoogle[] = "menuag";
 inline constexpr char kInvocationSourcePageSearchContextMenu[] = "ctxp";
+inline constexpr char kInvocationSourcePageSearchContextMenuAskGoogle[] =
+    "ctxpag";
 inline constexpr char kInvocationSourceImageSearchContextMenu[] = "ctxi";
 inline constexpr char kInvocationSourceTextSearchContextMenu[] = "ctxt";
 inline constexpr char kInvocationSourceVideoSearchContextMenu[] = "ctxv";
@@ -294,8 +297,15 @@ GURL AppendInvocationSourceParamToURL(
     case lens::LensOverlayInvocationSource::kAppMenu:
       param_value += kInvocationSourceAppMenu;
       break;
+    case lens::LensOverlayInvocationSource::kAppMenuAskGoogle:
+      param_value += kInvocationSourceAppMenuAskGoogle;
+      break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
       param_value += kInvocationSourcePageSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::
+        kContentAreaContextMenuPageAskGoogle:
+      param_value += kInvocationSourcePageSearchContextMenuAskGoogle;
       break;
     case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
       param_value += kInvocationSourceImageSearchContextMenu;

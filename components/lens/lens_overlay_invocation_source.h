@@ -105,7 +105,13 @@ enum class LensOverlayInvocationSource {
   // The selection suggestion chip.
   kSelectionSuggestion = 26,
 
-  kMaxValue = kSelectionSuggestion
+  // The "Ask Google about this page" Chrome app ("3-dot") menu entry.
+  kAppMenuAskGoogle = 27,
+
+  // The "Ask Google about this page" content area context menu entry.
+  kContentAreaContextMenuPageAskGoogle = 28,
+
+  kMaxValue = kContentAreaContextMenuPageAskGoogle
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

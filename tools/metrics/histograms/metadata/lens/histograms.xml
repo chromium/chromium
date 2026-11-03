@@ -43,10 +43,12 @@ chromium-metrics-reviews@google.com.
   <variant name="AIHub"/>
   <variant name="AppBarAimButton"/>
   <variant name="AppMenu"/>
+  <variant name="AppMenuAskGoogle"/>
   <variant name="CobrowsePinnedToolbarButton"/>
   <variant name="CobrowseToolbarButton"/>
   <variant name="ContentAreaContextMenuImage"/>
   <variant name="ContentAreaContextMenuPage"/>
+  <variant name="ContentAreaContextMenuPageAskGoogle"/>
   <variant name="ContentAreaContextMenuText"/>
   <variant name="ContentAreaContextMenuVideo"/>
   <variant name="ContextMenu"/>

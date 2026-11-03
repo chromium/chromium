@@ -1555,7 +1555,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
 
     case IDC_ASK_GOOGLE_ABOUT_THIS_PAGE:
       ExecAskGoogleAboutThisPage(
-          browser_, lens::LensOverlayInvocationSource::kAppMenu,
+          browser_, lens::LensOverlayInvocationSource::kAppMenuAskGoogle,
           omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE);
       break;
 

@@ -1194,7 +1194,7 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
 //  (3) User selects the "Ask Google about this page" item from the context
 //      menu.
 //  (4) The Contextual Tasks side panel opens in zero state with the
-//      kContentAreaContextMenuPage invocation source.
+//      kContentAreaContextMenuPageAskGoogle invocation source.
 // Disabled on Mac because the Mac interaction test util implementation does
 // not support selecting an item in the native context menu.
 #if BUILDFLAG(IS_MAC)
@@ -1278,18 +1278,18 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
             }
             return session_handle->invocation_source();
           },
-          std::make_optional(
-              lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
-          "Side panel session has kContentAreaContextMenuPage invocation "
-          "source"));
+          std::make_optional(lens::LensOverlayInvocationSource::
+                                 kContentAreaContextMenuPageAskGoogle),
+          "Side panel session has kContentAreaContextMenuPageAskGoogle "
+          "invocation source"));
 }
 
 // This tests the following CUJ:
 //  (1) User navigates to a webpage.
 //  (2) User clicks the 3-dot app menu button on the browser toolbar.
 //  (3) User selects the "Ask Google about this page" item from the app menu.
-//  (4) The Contextual Tasks side panel opens in zero state with the kAppMenu
-//      invocation source.
+//  (4) The Contextual Tasks side panel opens in zero state with the
+//      kAppMenuAskGoogle invocation source.
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        AskGoogleAppMenuClickOpensSidePanel) {
   SkipIfIncognito(
@@ -1363,8 +1363,9 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
             }
             return session_handle->invocation_source();
           },
-          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu),
-          "Side panel session has kAppMenu invocation source"));
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kAppMenuAskGoogle),
+          "Side panel session has kAppMenuAskGoogle invocation source"));
 }
 
 // This tests the following CUJ:
@@ -1478,7 +1479,7 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
 //  (3) User opens the Contextual Tasks submenu and selects "Ask Google about
 //      this page".
 //  (4) The Contextual Tasks side panel opens in zero state with the
-//      kContentAreaContextMenuPage invocation source.
+//      kContentAreaContextMenuPageAskGoogle invocation source.
 // Disabled on Mac because the Mac interaction test util implementation does
 // not support selecting an item in the native context menu.
 #if BUILDFLAG(IS_MAC)
@@ -1562,10 +1563,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
             }
             return session_handle->invocation_source();
           },
-          std::make_optional(
-              lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
-          "Side panel session has kContentAreaContextMenuPage invocation "
-          "source"));
+          std::make_optional(lens::LensOverlayInvocationSource::
+                                 kContentAreaContextMenuPageAskGoogle),
+          "Side panel session has kContentAreaContextMenuPageAskGoogle "
+          "invocation source"));
 }
 
 // This tests the following CUJ:
@@ -1573,8 +1574,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
 //  (2) User clicks the 3-dot app menu button on the browser toolbar.
 //  (3) User opens the Contextual Tasks submenu and selects "Ask Google about
 //      this page".
-//  (4) The Contextual Tasks side panel opens in zero state with the kAppMenu
-//      invocation source.
+//  (4) The Contextual Tasks side panel opens in zero state with the
+//      kAppMenuAskGoogle invocation source.
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
                        AskGoogleAppMenuSubmenuItemClickOpensSidePanel) {
   SkipIfIncognito(
@@ -1649,8 +1650,9 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
             }
             return session_handle->invocation_source();
           },
-          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu),
-          "Side panel session has kAppMenu invocation source"));
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kAppMenuAskGoogle),
+          "Side panel session has kAppMenuAskGoogle invocation source"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

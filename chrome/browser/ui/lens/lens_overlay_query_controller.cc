@@ -249,6 +249,9 @@ LenOverlayEntryPointFromInvocationSource(
     case lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton:
     case lens::LensOverlayInvocationSource::kOmniboxPopupButton:
     case lens::LensOverlayInvocationSource::kContextualCue:
+    case lens::LensOverlayInvocationSource::kAppMenuAskGoogle:
+    case lens::LensOverlayInvocationSource::
+        kContentAreaContextMenuPageAskGoogle:
       // TODO(crbug.com/469463485): This should be contextual tasks specific,
       // not unknown.
       return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;

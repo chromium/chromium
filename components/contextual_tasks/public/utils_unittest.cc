@@ -29,14 +29,15 @@ TEST(ContextualTasksUtilsTest, GetLensInvocationSourceForAimZeroState) {
                 omnibox::ChromeAimEntryPoint::
                     DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH),
             lens::LensOverlayInvocationSource::kOmniboxPageAction);
-  EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
-                omnibox::ChromeAimEntryPoint::
-                    DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE),
-            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
+  EXPECT_EQ(
+      GetLensInvocationSourceForAimZeroState(
+          omnibox::ChromeAimEntryPoint::
+              DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE),
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuPageAskGoogle);
   EXPECT_EQ(
       GetLensInvocationSourceForAimZeroState(
           omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE),
-      lens::LensOverlayInvocationSource::kAppMenu);
+      lens::LensOverlayInvocationSource::kAppMenuAskGoogle);
   EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
                 omnibox::ChromeAimEntryPoint::
                     DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP),
@@ -113,7 +114,7 @@ TEST(ContextualTasksUtilsTest,
 
   std::string source;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
-  EXPECT_EQ(source, "chrome.crn.ctxp");
+  EXPECT_EQ(source, "chrome.crn.ctxpag");
 }
 
 TEST(ContextualTasksUtilsTest, AppendAimEntryPointParams_AppMenuAskGoogle) {
@@ -128,7 +129,7 @@ TEST(ContextualTasksUtilsTest, AppendAimEntryPointParams_AppMenuAskGoogle) {
 
   std::string source;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
-  EXPECT_EQ(source, "chrome.crn.menu");
+  EXPECT_EQ(source, "chrome.crn.menuag");
 }
 
 TEST(ContextualTasksUtilsTest,
