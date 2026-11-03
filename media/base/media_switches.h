@@ -99,6 +99,10 @@ MEDIA_EXPORT extern const char kAlsaOutputDevice[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_SOLARIS)
 
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT extern const char kUseFakeNativeScreenCapturePicker[];
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
 MEDIA_EXPORT extern const char kForceWaveAudio[];

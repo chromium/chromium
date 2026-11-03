@@ -104,7 +104,29 @@ void DesktopMediaListController::StartUpdating(
   // until the first time they are focused.
   if (!media_list_->IsSourceListDelegated()) {
     StartUpdatingInternal();
+    return;
   }
+
+#if BUILDFLAG(IS_MAC)
+  // If auto-selection is enabled for a delegated source list, immediately
+  // start updating and trigger the delegated picker (FakeScreenCapturePickerMac
+  // if --use-fake-native-screen-capture-picker is set). Once the picker returns
+  // a source, it will be automatically accepted by
+  // DesktopMediaListController::ShouldAutoAccept.
+  const DesktopMediaList::Type type = media_list_->GetMediaListType();
+  const bool auto_select_screen =
+      (!auto_select_source_.empty() || auto_select_any_screen_) &&
+      type == DesktopMediaList::Type::kScreen;
+  const bool auto_select_window =
+      !auto_select_window_.empty() && type == DesktopMediaList::Type::kWindow;
+  if (auto_select_screen || auto_select_window) {
+    StartUpdatingInternal();
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DesktopMediaListController::ShowDelegatedList,
+                       weak_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 void DesktopMediaListController::StartUpdatingInternal() {
