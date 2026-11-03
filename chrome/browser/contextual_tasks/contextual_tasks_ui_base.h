@@ -269,11 +269,11 @@ class ContextualTasksUIBase
   class CookieJarObserver;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Re-evaluates whether the user may pin the side panel (e.g. after the
-  // Contextual Tasks or AIM eligibility changes while the side panel is open)
-  // and pushes the result to the toolbar WebUI so the pin/unpin menu item can
-  // be shown or hidden.
-  void OnPinningEligibilityMaybeChanged();
+  // Re-evaluates whether the user may pin or unpin the side panel (e.g. after
+  // the Contextual Tasks or AIM eligibility changes while the side panel is
+  // open) and pushes the result to the toolbar WebUI so the pin/unpin menu item
+  // can be shown or hidden.
+  void OnCanPinOrUnpinMaybeChanged();
 #endif
 
   mojo::Receiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
@@ -298,10 +298,11 @@ class ContextualTasksUIBase
                           PinnedToolbarActionsModel::Observer>
       pinned_toolbar_actions_model_observation_{this};
 
-  // Last pinning eligibility pushed to the WebUI, so we only notify on change.
-  bool is_pinning_eligible_ = false;
+  // Last pin/unpin eligibility pushed to the WebUI, so we only notify on
+  // change.
+  bool can_pin_or_unpin_ = false;
   // Subscriptions to the two signals that feed
-  // `EntryPointEligibilityManager::IsPinningEligible()`.
+  // `EntryPointEligibilityManager::CanPinOrUnpin()`.
   base::CallbackListSubscription eligibility_subscription_;
   base::CallbackListSubscription aim_eligibility_subscription_;
 #endif

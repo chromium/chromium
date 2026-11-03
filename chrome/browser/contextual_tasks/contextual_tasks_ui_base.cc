@@ -321,15 +321,14 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
   is_contextual_tasks_eligible_on_init_ =
       contextual_tasks::EntryPointEligibilityManager::IsEligible(profile);
 #if !BUILDFLAG(IS_ANDROID)
-  is_pinning_eligible_ =
-      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile);
-  if (is_pinning_eligible_) {
+  can_pin_or_unpin_ =
+      contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile);
+  if (can_pin_or_unpin_) {
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
       pinned_toolbar_actions_model_observation_.Observe(model);
     }
   }
-  // Pinning eligibility depends on both Contextual Tasks eligibility and AIM
+  // Pin/unpin eligibility depends on both Contextual Tasks eligibility and AIM
   // (Fusebox) eligibility. Either can change while the side panel is open, so
   // listen to both and push updates to the WebUI.
   if (auto* eligibility_manager =
@@ -338,14 +337,14 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
     eligibility_subscription_ =
         eligibility_manager->RegisterEligibilityChangedCallback(
             base::IgnoreArgs<bool>(base::BindRepeating(
-                &ContextualTasksUIBase::OnPinningEligibilityMaybeChanged,
+                &ContextualTasksUIBase::OnCanPinOrUnpinMaybeChanged,
                 base::Unretained(this))));
   }
   if (auto* aim_service =
           AimEligibilityServiceFactory::GetForProfile(profile)) {
     aim_eligibility_subscription_ =
         aim_service->RegisterEligibilityChangedCallback(base::BindRepeating(
-            &ContextualTasksUIBase::OnPinningEligibilityMaybeChanged,
+            &ContextualTasksUIBase::OnCanPinOrUnpinMaybeChanged,
             base::Unretained(this)));
   }
 #endif
@@ -528,19 +527,17 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   bool is_eligible =
       contextual_tasks::EntryPointEligibilityManager::IsEligible(profile);
   dict.Set("isCobrowseEligible", is_eligible);
-  const bool is_pinning_eligible =
-      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile);
-  dict.Set("enablePinButton", is_pinning_eligible);
+  const bool can_pin_or_unpin =
+      contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile);
+  dict.Set("enablePinButton", can_pin_or_unpin);
   // Intentionally not gated on pinning eligibility: eligibility can change
   // while the page is open and is pushed separately via
   // `OnPinButtonEligibilityChanged()`, which the WebUI already combines with
   // this flag.
   dict.Set("enablePinButtonOnSrp",
            contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
-  dict.Set(
-      "isSidePanelPinned",
-      is_pinning_eligible && contextual_tasks::GetEffectivePinState(profile));
+  dict.Set("isSidePanelPinned",
+           contextual_tasks::GetEffectivePinState(profile));
   dict.Set("contextualTasksSidePanelRearchitectureEnabled",
            contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());
   dict.Set("hideMenuOnAiPageEnabled",
@@ -623,13 +620,12 @@ void ContextualTasksUIBase::CreatePageHandler(
   toolbar_page_handler_receiver_.Bind(std::move(page_handler));
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
-  is_pinning_eligible_ =
-      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile);
+  can_pin_or_unpin_ =
+      contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile);
   if (auto* toolbar_page = GetToolbarPageRemote()) {
-    toolbar_page->OnPinButtonEligibilityChanged(is_pinning_eligible_);
+    toolbar_page->OnPinButtonEligibilityChanged(can_pin_or_unpin_);
   }
-  if (is_pinning_eligible_) {
+  if (can_pin_or_unpin_) {
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
       if (!pinned_toolbar_actions_model_observation_.IsObserving()) {
         pinned_toolbar_actions_model_observation_.Observe(model);
@@ -660,8 +656,7 @@ void ContextualTasksUIBase::CreatePageHandler(
 void ContextualTasksUIBase::PinSidePanel() {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
-  if (!contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile)) {
+  if (!contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile)) {
     return;
   }
   if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
@@ -673,8 +668,7 @@ void ContextualTasksUIBase::PinSidePanel() {
 void ContextualTasksUIBase::UnpinSidePanel() {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = GetProfile();
-  if (!contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile)) {
+  if (!contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile)) {
     return;
   }
   if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
@@ -793,26 +787,21 @@ void ContextualTasksUIBase::ShowThreadHistory() {
 #if !BUILDFLAG(IS_ANDROID)
 void ContextualTasksUIBase::OnActionsChanged() {
   if (auto* toolbar_page = GetToolbarPageRemote()) {
-    Profile* profile = GetProfile();
-    bool effective_pin_state =
-        contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-            profile) &&
-        contextual_tasks::GetEffectivePinState(profile);
-    toolbar_page->OnSidePanelPinStateChanged(effective_pin_state);
+    toolbar_page->OnSidePanelPinStateChanged(
+        contextual_tasks::GetEffectivePinState(GetProfile()));
   }
 }
 
-void ContextualTasksUIBase::OnPinningEligibilityMaybeChanged() {
+void ContextualTasksUIBase::OnCanPinOrUnpinMaybeChanged() {
   Profile* profile = GetProfile();
-  const bool is_pinning_eligible =
-      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile);
-  if (is_pinning_eligible == is_pinning_eligible_) {
+  const bool can_pin_or_unpin =
+      contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile);
+  if (can_pin_or_unpin == can_pin_or_unpin_) {
     return;
   }
-  is_pinning_eligible_ = is_pinning_eligible;
+  can_pin_or_unpin_ = can_pin_or_unpin;
 
-  if (is_pinning_eligible_) {
+  if (can_pin_or_unpin_) {
     // The user just became eligible: start tracking the pinned state so the
     // pin/unpin label stays accurate.
     if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
@@ -826,11 +815,10 @@ void ContextualTasksUIBase::OnPinningEligibilityMaybeChanged() {
   }
 
   if (auto* toolbar_page = GetToolbarPageRemote()) {
-    toolbar_page->OnPinButtonEligibilityChanged(is_pinning_eligible_);
-    // Keep the pin state in sync too; it is reported as unpinned when the
-    // user is ineligible, matching the load-time `isSidePanelPinned` value.
+    toolbar_page->OnPinButtonEligibilityChanged(can_pin_or_unpin_);
+    // Keep the pin state in sync too, since the model wasn't observed while
+    // the user was ineligible.
     toolbar_page->OnSidePanelPinStateChanged(
-        is_pinning_eligible_ &&
         contextual_tasks::GetEffectivePinState(profile));
   }
 }
@@ -994,8 +982,7 @@ void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
   }
 
   if (!contextual_tasks::IsContextualTasksPinningV2Enabled() ||
-      !contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile)) {
+      !contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile)) {
     return;
   }
 

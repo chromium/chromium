@@ -546,6 +546,76 @@ TEST_F(EntryPointEligibilityManagerTest,
   EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(otr_profile));
 }
 
+TEST_F(EntryPointEligibilityManagerTest, CanPinOrUnpin_True) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  InitializeManager();
+
+  EXPECT_TRUE(EntryPointEligibilityManager::CanPinOrUnpin(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest, CanPinOrUnpin_False_NullProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_FALSE(EntryPointEligibilityManager::CanPinOrUnpin(nullptr));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       CanPinOrUnpin_False_NotPinningEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::CanPinOrUnpin(profile_.get()));
+}
+
+// `kContextualTasksForceEntryPointEligibility` makes `IsPinningEligible()`
+// return true so that these tests isolate the regular-profile requirement in
+// `CanPinOrUnpin()`.
+TEST_F(EntryPointEligibilityManagerTest, CanPinOrUnpin_False_Incognito) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(EntryPointEligibilityManager::IsPinningEligible(otr_profile));
+
+  EXPECT_FALSE(EntryPointEligibilityManager::CanPinOrUnpin(otr_profile));
+}
+
+TEST_F(EntryPointEligibilityManagerTest, CanPinOrUnpin_False_Guest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
+  Profile* guest_otr_profile =
+      guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(guest_otr_profile->IsGuestSession());
+  ASSERT_TRUE(
+      EntryPointEligibilityManager::IsPinningEligible(guest_otr_profile));
+
+  EXPECT_FALSE(EntryPointEligibilityManager::CanPinOrUnpin(guest_otr_profile));
+}
+
 TEST_F(EntryPointEligibilityManagerTest,
        NotifyEntryPointEligibilityChanged_AimEligibilityChange) {
   base::test::ScopedFeatureList feature_list;

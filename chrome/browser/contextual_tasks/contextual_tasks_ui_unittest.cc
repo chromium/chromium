@@ -3469,6 +3469,92 @@ TEST_F(ContextualTasksUiTest,
   actions::ActionIdMap::ResetMapsForTesting();
 }
 
+TEST_F(ContextualTasksUiTest, PinSidePanel_IncognitoCannotPinOrUnpin) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {kContextualTasksRearchitecture, kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  base::DictValue otr_load_time_data =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(otr_profile);
+  EXPECT_EQ(otr_load_time_data.FindBool("enablePinButton"), false);
+
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  content::TestWebUI otr_web_ui;
+  otr_web_ui.set_web_contents(otr_web_contents.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&otr_web_ui,
+                                   GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* ui = controller->GetAs<ContextualTasksUIPostRearchitecture>();
+  ASSERT_NE(ui, nullptr);
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_);
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  // Calling PinSidePanel from an Incognito controller must not mutate the
+  // parent regular profile's pinned toolbar actions model.
+  ui->PinSidePanel();
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest, UnpinSidePanel_IncognitoCannotPinOrUnpin) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {kContextualTasksRearchitecture, kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(otr_profile);
+
+  base::DictValue otr_load_time_data =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(otr_profile);
+  EXPECT_EQ(otr_load_time_data.FindBool("enablePinButton"), false);
+
+  std::unique_ptr<content::WebContents> otr_web_contents =
+      content::WebContentsTester::CreateTestWebContents(otr_profile, nullptr);
+  content::TestWebUI otr_web_ui;
+  otr_web_ui.set_web_contents(otr_web_contents.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&otr_web_ui,
+                                   GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* ui = controller->GetAs<ContextualTasksUIPostRearchitecture>();
+  ASSERT_NE(ui, nullptr);
+
+  // Start with the button pinned in the parent regular profile.
+  auto* model = PinnedToolbarActionsModel::Get(profile_);
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+  ASSERT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  // Calling UnpinSidePanel from an Incognito controller must not unpin the
+  // button from the parent regular profile's pinned toolbar actions model.
+  ui->UnpinSidePanel();
+  EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
 TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   InitializeActionIdStringMapping();
   base::test::ScopedFeatureList scoped_feature_list;
@@ -4466,7 +4552,7 @@ TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_NotPinningEligible) {
   EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
       .WillOnce(Return(true));
 
-  // The pinning promo is NOT expected to be tried when IsPinningEligible is
+  // The pinning promo is NOT expected to be tried when CanPinOrUnpin is
   // false.
   EXPECT_CALL(
       mock_user_education,

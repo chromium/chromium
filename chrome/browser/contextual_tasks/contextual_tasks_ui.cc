@@ -592,10 +592,9 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set(
       "composeboxSkillsEnabled",
       base::FeatureList::IsEnabled(omnibox::kComposeboxSkillsContextualTasks));
-  const bool is_pinning_eligible =
-      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile);
-  dict.Set("enablePinButton", is_pinning_eligible);
+  const bool can_pin_or_unpin =
+      contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile);
+  dict.Set("enablePinButton", can_pin_or_unpin);
   // Intentionally not gated on pinning eligibility: eligibility can change
   // while the page is open and is pushed separately via
   // `OnPinButtonEligibilityChanged()`, which the WebUI already combines with
@@ -603,8 +602,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("enablePinButtonOnSrp",
            contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
   dict.Set("isSidePanelPinned",
-           is_pinning_eligible &&
-               contextual_tasks::GetEffectivePinState(profile));
+           contextual_tasks::GetEffectivePinState(profile));
   dict.Set("showOnboardingTooltip",
            base::FeatureList::IsEnabled(
                contextual_tasks::kContextualTasksShowOnboardingTooltip));
@@ -1240,8 +1238,7 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
   }
 
   if (!contextual_tasks::IsContextualTasksPinningV2Enabled() ||
-      !contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
-          profile)) {
+      !contextual_tasks::EntryPointEligibilityManager::CanPinOrUnpin(profile)) {
     return;
   }
 

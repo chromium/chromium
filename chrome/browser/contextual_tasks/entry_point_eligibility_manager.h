@@ -41,6 +41,11 @@ class EntryPointEligibilityManager {
   // profile. Returns false otherwise.
   static bool IsPinningEligible(Profile* profile);
 
+  // Returns true if the user can pin or unpin the contextual tasks button for
+  // the given profile. Unlike `IsPinningEligible()`, this also requires a
+  // regular profile, matching the generic toolbar pin/unpin menu.
+  static bool CanPinOrUnpin(Profile* profile);
+
   // Runs callback when the entry point eligibility changes
   using EntryPointEligibilityChangeCallbackList =
       base::RepeatingCallbackList<void(bool)>;

@@ -128,6 +128,11 @@ bool EntryPointEligibilityManager::IsPinningEligible(Profile* profile) {
   return eligibility_manager && eligibility_manager->IsSidePanelAvailable();
 }
 
+// static
+bool EntryPointEligibilityManager::CanPinOrUnpin(Profile* profile) {
+  return profile && profile->IsRegularProfile() && IsPinningEligible(profile);
+}
+
 void EntryPointEligibilityManager::MaybeNotifyEntryPointEligibilityChanged() {
   const bool updated_eligibility = AreEntryPointsEligible();
   const bool updated_pinning_eligible = IsPinningEligible(profile_);
