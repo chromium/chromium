@@ -501,6 +501,17 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
+void OmniboxPopupFullPresenter::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  // Only the browser widget. The popup widget is observed too, and
+  // `SynchronizePopupBounds()` changes its bounds.
+  if (widget != GetBrowserWidget() || !IsShown()) {
+    return;
+  }
+  SynchronizePopupBounds();
+}
+
 void OmniboxPopupFullPresenter::BlurIfBrowserOrPopupInactive() {
   if (!IsBrowserOrPopupActive()) {
     BlurForWindowDeactivation();

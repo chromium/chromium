@@ -1409,6 +1409,53 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       }));
 }
 
+// Verifies that the popup stays over the location bar while the browser window
+// keeps moving, e.g. during a window drag in any direction or a resize from the
+// top edge. The first move clears the suggestions, which resizes and re-aligns
+// the popup as a side effect, so it's the later moves that would leave the
+// popup behind.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       PopupFollowsLocationBarWhenWindowMoves) {
+  // The popup widget's offset from the location bar.
+  auto get_popup_offset = [this]() {
+    views::Widget* popup_widget = GetPopupWidget(browser());
+    CHECK(popup_widget);
+    const gfx::Point location_bar_origin =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetLocationBar()
+            ->BoundsInScreen()
+            .origin();
+    return popup_widget->GetWindowBoundsInScreen().origin() -
+           location_bar_origin;
+  };
+  gfx::Vector2d initial_offset;
+  // Moves the window by `delta`, then moves its top edge down by `top_inset`,
+  // and waits for the popup to be back over the location bar.
+  auto move_window_and_wait = [&](gfx::Vector2d delta, int top_inset) {
+    return Steps(
+        Do([this, delta, top_inset]() {
+          views::Widget* browser_widget =
+              BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+          gfx::Rect bounds = browser_widget->GetWindowBoundsInScreen();
+          bounds.Offset(delta);
+          bounds.Inset(gfx::Insets::TLBR(top_inset, 0, 0, 0));
+          browser_widget->SetBounds(bounds);
+        }),
+        PollUntil([&]() { return get_popup_offset() == initial_offset; },
+                  "WaitForPopupAlignedWithLocationBar"));
+  };
+  RunTestSequence(FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+                  Do([&]() { initial_offset = get_popup_offset(); }),
+                  // Drag right, down, left and up.
+                  move_window_and_wait(gfx::Vector2d(40, 0), 0),
+                  move_window_and_wait(gfx::Vector2d(0, 40), 0),
+                  move_window_and_wait(gfx::Vector2d(-40, 0), 0),
+                  move_window_and_wait(gfx::Vector2d(0, -40), 0),
+                  // Resize from the top edge, down and back up.
+                  move_window_and_wait(gfx::Vector2d(), 40),
+                  move_window_and_wait(gfx::Vector2d(), -40));
+}
+
 // Verifies that the full WebUI omnibox popup loads layout_constants_v0.css and
 // applies the generated `--location-bar-height` variable on the searchbox.
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
