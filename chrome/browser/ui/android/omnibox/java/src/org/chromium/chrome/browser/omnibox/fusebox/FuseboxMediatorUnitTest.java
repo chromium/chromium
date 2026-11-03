@@ -300,7 +300,7 @@ public class FuseboxMediatorUnitTest {
     private FuseboxMediator mMediator;
     private FuseboxAttachmentModelList mAttachments;
     private OmniboxResourceProvider mResourceProvider;
-    private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private final LinkedHashMap<Integer, Tab> mTabMap = new LinkedHashMap<>();
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier =
@@ -320,7 +320,8 @@ public class FuseboxMediatorUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
-        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
+        mTabModelSelectorSupplier = ObservableSuppliers.createMonotonic();
+        mTabModelSelectorSupplier.set(mTabModelSelector);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         TrackerFactory.setTrackerForTests(mTracker);
@@ -2654,6 +2655,19 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
+    }
+
+    @Test
+    public void onInputStateChange_noTabModelSelector_disablesTabs() {
+        mTabModelSelectorSupplier = ObservableSuppliers.createMonotonic();
+        recreateMediator();
+
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_ENABLED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
     }
 
     @Test

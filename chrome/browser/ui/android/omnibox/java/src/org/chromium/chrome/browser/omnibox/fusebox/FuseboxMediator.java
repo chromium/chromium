@@ -1456,7 +1456,8 @@ class FuseboxMediator implements BackPressHandler {
 
         // TODO(https://crbug.com/480976526): Control visibility as well.
         boolean tabsEnabled =
-                !(disableTabsForCanvas && isCanvasActive)
+                mTabModelSelectorSupplier.get() != null
+                        && !(disableTabsForCanvas && isCanvasActive)
                         && (inputState == null
                                 || !inputState.disabledInputTypes.contains(
                                         InputType.INPUT_TYPE_BROWSER_TAB_VALUE));
