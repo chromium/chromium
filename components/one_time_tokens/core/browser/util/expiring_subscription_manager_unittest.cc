@@ -342,6 +342,39 @@ TEST_F(ExpiringSubscriptionTest, GetExpirationTimeNonExistent) {
   EXPECT_TRUE(subscription_manager.GetExpirationTime(handle).is_null());
 }
 
+// Verifies GetLatestExpirationTime across subscription lifecycle events.
+TEST_F(ExpiringSubscriptionTest, GetLatestExpirationTime) {
+  ExpiringSubscriptionManagerType subscription_manager;
+  EXPECT_TRUE(subscription_manager.GetLatestExpirationTime().is_null());
+
+  base::Time now = base::Time::Now();
+  ExpiringSubscription subscription1 =
+      subscription_manager.Subscribe(now + base::Minutes(5), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+  EXPECT_EQ(subscription_manager.GetLatestExpirationTime(),
+            now + base::Minutes(5));
+
+  ExpiringSubscription subscription2 =
+      subscription_manager.Subscribe(now + base::Minutes(10), base::DoNothing(),
+                                     /*expiration_callback=*/base::DoNothing());
+  EXPECT_EQ(subscription_manager.GetLatestExpirationTime(),
+            now + base::Minutes(10));
+
+  // Extending subscription1 beyond subscription2 makes it the latest.
+  subscription1.SetExpirationTime(now + base::Minutes(15));
+  EXPECT_EQ(subscription_manager.GetLatestExpirationTime(),
+            now + base::Minutes(15));
+
+  // Canceling the latest subscription falls back to subscription2.
+  subscription1.Cancel();
+  EXPECT_EQ(subscription_manager.GetLatestExpirationTime(),
+            now + base::Minutes(10));
+
+  // Letting the remaining subscription expire returns a null base::Time.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_TRUE(subscription_manager.GetLatestExpirationTime().is_null());
+}
+
 // Verifies Exists for various states.
 TEST_F(ExpiringSubscriptionTest, Exists) {
   ExpiringSubscriptionManagerType subscription_manager;

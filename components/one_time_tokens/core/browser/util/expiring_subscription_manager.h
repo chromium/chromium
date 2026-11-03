@@ -64,6 +64,10 @@ class ExpiringSubscriptionManagerBase {
   [[nodiscard]] base::Time GetExpirationTime(
       const ExpiringSubscriptionHandle& handle) const;
 
+  // Returns the latest expiration time across all active subscriptions, or a
+  // null base::Time if there are no active subscriptions.
+  [[nodiscard]] base::Time GetLatestExpirationTime() const;
+
   // Updates the expiration date. Does nothing if the subscription is unknown.
   void SetExpirationTime(const ExpiringSubscriptionHandle& handle,
                          base::Time new_expiration);

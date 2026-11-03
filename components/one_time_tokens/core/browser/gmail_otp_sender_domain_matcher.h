@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "url/origin.h"
 
@@ -64,6 +65,11 @@ class GmailOtpSenderDomainMatcher {
           domain_relation_checker,
       const url::Origin& otp_frame_origin);
 
+  // `domain_relation_checker` must be non-null and must outlive `this`.
+  GmailOtpSenderDomainMatcher(
+      affiliations::DomainRelationChecker* domain_relation_checker,
+      const url::Origin& otp_frame_origin);
+
   ~GmailOtpSenderDomainMatcher();
 
   GmailOtpSenderDomainMatcher(const GmailOtpSenderDomainMatcher&) = delete;
@@ -77,6 +83,14 @@ class GmailOtpSenderDomainMatcher {
   // ever be related to it.
   void Check(std::string_view sender_address, ResultCallback callback);
 
+  const url::Origin& otp_frame_origin() const { return otp_frame_origin_; }
+
+  bool HasPendingChecks() const { return pending_checks_ > 0; }
+
+  base::WeakPtr<const GmailOtpSenderDomainMatcher> GetWeakPtr() const {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   void OnDomainRelationChecked(
       const url::SchemeHostPort& sender_tuple,
@@ -88,8 +102,10 @@ class GmailOtpSenderDomainMatcher {
       const url::SchemeHostPort& sender_tuple) const;
 
   const std::unique_ptr<affiliations::DomainRelationChecker>
-      domain_relation_checker_;
+      owned_domain_relation_checker_;
+  const raw_ref<affiliations::DomainRelationChecker> domain_relation_checker_;
   const url::Origin otp_frame_origin_;
+  size_t pending_checks_ = 0;
 
   base::WeakPtrFactory<GmailOtpSenderDomainMatcher> weak_ptr_factory_{this};
 };

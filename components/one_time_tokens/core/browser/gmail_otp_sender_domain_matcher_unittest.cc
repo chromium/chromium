@@ -40,15 +40,15 @@ class GmailOtpSenderDomainMatcherTest : public testing::Test {
     return future.Take();
   }
 
-  std::unique_ptr<affiliations::DomainRelationChecker>
-  domain_relation_checker() {
-    return std::make_unique<affiliations::DomainRelationChecker>(
-        affiliation_service_);
+  affiliations::DomainRelationChecker* domain_relation_checker() {
+    return &domain_relation_checker_;
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
   affiliations::FakeAffiliationService affiliation_service_;
+  affiliations::DomainRelationChecker domain_relation_checker_{
+      affiliation_service_};
 };
 
 TEST_F(GmailOtpSenderDomainMatcherTest, SameDomainIsExact) {
@@ -143,6 +143,20 @@ TEST_F(GmailOtpSenderDomainMatcherTest, OneMatcherAnswersConcurrentChecks) {
 
   EXPECT_EQ(exact.Get(), GmailOtpSenderDomainMatchType::kExact);
   EXPECT_EQ(no_match.Get(), GmailOtpSenderDomainMatchType::kNoMatch);
+}
+
+TEST_F(GmailOtpSenderDomainMatcherTest, HasPendingChecks) {
+  GmailOtpSenderDomainMatcher matcher(
+      domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")));
+  EXPECT_FALSE(matcher.HasPendingChecks());
+
+  base::test::TestFuture<GmailOtpSenderDomainMatchType> future;
+  matcher.Check("no-reply@example.com", future.GetCallback());
+  EXPECT_TRUE(matcher.HasPendingChecks());
+
+  EXPECT_EQ(future.Take(), GmailOtpSenderDomainMatchType::kExact);
+  EXPECT_FALSE(matcher.HasPendingChecks());
 }
 
 TEST_F(GmailOtpSenderDomainMatcherTest, DestructionCancelsTheCheck) {

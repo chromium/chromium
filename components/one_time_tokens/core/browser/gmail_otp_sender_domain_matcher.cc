@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_split.h"
 #include "components/affiliations/core/browser/domain_matching/domain_relation_checker.h"
 #include "components/affiliations/core/browser/match_type.h"
@@ -60,10 +63,16 @@ GmailOtpSenderDomainMatcher::GmailOtpSenderDomainMatcher(
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin)
-    : domain_relation_checker_(std::move(domain_relation_checker)),
-      otp_frame_origin_(otp_frame_origin) {
-  CHECK(domain_relation_checker_);
-}
+    : owned_domain_relation_checker_(std::move(domain_relation_checker)),
+      domain_relation_checker_(
+          CHECK_DEREF(owned_domain_relation_checker_.get())),
+      otp_frame_origin_(otp_frame_origin) {}
+
+GmailOtpSenderDomainMatcher::GmailOtpSenderDomainMatcher(
+    affiliations::DomainRelationChecker* domain_relation_checker,
+    const url::Origin& otp_frame_origin)
+    : domain_relation_checker_(CHECK_DEREF(domain_relation_checker)),
+      otp_frame_origin_(otp_frame_origin) {}
 
 GmailOtpSenderDomainMatcher::~GmailOtpSenderDomainMatcher() = default;
 
@@ -80,9 +89,10 @@ void GmailOtpSenderDomainMatcher::Check(std::string_view sender_address,
       url::kHttpsScheme, std::move(sender_domain),
       url::DefaultPortForScheme(url::kHttpsScheme));
 
-  // `domain_relation_checker_` is destroyed together with `this`, which already
-  // cancels the check. The weak pointer makes that explicit and keeps the
-  // cancellation independent of the checker's implementation.
+  // `domain_relation_checker_` outlives `this`. Binding a weak pointer to
+  // `this` cancels the callback if `this` is destroyed while the check is in
+  // flight.
+  pending_checks_++;
   domain_relation_checker_->Check(
       frame_tuple, sender_tuple,
       base::BindOnce(&GmailOtpSenderDomainMatcher::OnDomainRelationChecked,
@@ -94,6 +104,8 @@ void GmailOtpSenderDomainMatcher::OnDomainRelationChecked(
     const url::SchemeHostPort& sender_tuple,
     ResultCallback callback,
     std::optional<affiliations::MatchType> match_type) {
+  CHECK_GT(pending_checks_, 0u);
+  pending_checks_--;
   std::move(callback).Run(ResolveMatchType(match_type, sender_tuple));
 }
 

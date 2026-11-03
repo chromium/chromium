@@ -33,6 +33,13 @@ bool ExpiringSubscriptionManagerBase::Exists(
   return base::Time();
 }
 
+base::Time ExpiringSubscriptionManagerBase::GetLatestExpirationTime() const {
+  if (expiration_queue_.empty()) {
+    return base::Time();
+  }
+  return expiration_queue_.rbegin()->expiration;
+}
+
 void ExpiringSubscriptionManagerBase::SetExpirationTime(
     const ExpiringSubscriptionHandle& handle,
     base::Time new_expiration) {
