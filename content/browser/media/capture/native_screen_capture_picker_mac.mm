@@ -796,11 +796,6 @@ NativeScreenCapturePickerMac::GetOrCreateCaptureSession(DesktopMediaID::Id id) {
   return *session;
 }
 
-base::WeakPtr<NativeScreenCapturePicker>
-NativeScreenCapturePickerMac::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void NativeScreenCapturePickerMac::CaptureScreenshot(
     DesktopMediaID::Id session_id,
     base::OnceCallback<void(const SkBitmap&)> callback) {

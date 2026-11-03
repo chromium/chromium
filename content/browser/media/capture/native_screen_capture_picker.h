@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -62,8 +61,6 @@ class NativeScreenCapturePicker {
   // call to Open.
   virtual std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
       const DesktopMediaID& source) = 0;
-
-  virtual base::WeakPtr<NativeScreenCapturePicker> GetWeakPtr() = 0;
 };
 
 std::unique_ptr<NativeScreenCapturePicker>

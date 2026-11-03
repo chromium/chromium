@@ -82,8 +82,6 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
       const DesktopMediaID& source) override;
 
-  base::WeakPtr<NativeScreenCapturePicker> GetWeakPtr() override;
-
   static void SetGetWindowOwnerPidForTesting(
       GetWindowOwnerPidCallback callback);
 

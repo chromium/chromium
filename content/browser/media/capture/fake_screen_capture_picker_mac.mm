@@ -184,11 +184,6 @@ class API_AVAILABLE(macos(14.4)) FakeScreenCapturePickerMac
         std::move(stop_callback_));
   }
 
-  base::WeakPtr<NativeScreenCapturePicker> GetWeakPtr() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
  private:
   void OnShareableContent(
       DesktopMediaID::Type type,
