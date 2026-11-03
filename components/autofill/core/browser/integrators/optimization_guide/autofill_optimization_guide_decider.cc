@@ -30,7 +30,6 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -131,14 +130,6 @@ void AddCreditCardOptimizationTypes(
     const PaymentsDataManager& payments_data_manager,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
-  // This optimization type should already be registered by
-  // `OnPaymentsDataLoaded()`, but we register it again here to be sure.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillActorRewriteCreditCardTriggerField)) {
-    optimization_types.insert(
-        optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST);
-  }
-
   for (const CreditCard* card : payments_data_manager.GetServerCreditCards()) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
@@ -303,12 +294,6 @@ void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
 
   AddOptimizationTypesForBnplIssuers(payments_data_manager.GetBnplIssuers(),
                                      optimization_types);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillActorRewriteCreditCardTriggerField)) {
-    optimization_types.insert(
-        optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST);
-  }
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableOmniboxAutofill)) {
     optimization_types.insert(
@@ -577,17 +562,6 @@ bool AutofillOptimizationGuideDecider::IsUrlEligibleForBnplIssuer(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   NOTREACHED();
-}
-
-bool AutofillOptimizationGuideDecider::IsIframeUrlAllowlistedForActor(
-    const GURL& url) const {
-  // To match server-side allowlisting, we require that the url is HTTPS.
-  return url.SchemeIs(url::kHttpsScheme) &&
-         decider_->CanApplyOptimization(
-             url,
-             optimization_guide::proto::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST,
-             /*optimization_metadata=*/nullptr) ==
-             optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 bool AutofillOptimizationGuideDecider::IsUrlEligibleForOmniboxAutofill(

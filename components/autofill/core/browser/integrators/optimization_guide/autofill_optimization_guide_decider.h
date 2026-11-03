@@ -100,10 +100,6 @@ class AutofillOptimizationGuideDecider : public KeyedService {
   virtual bool IsUrlEligibleForBnplIssuer(BnplIssuer::IssuerId issuer_id,
                                           const GURL& url) const;
 
-  // Returns whether the `ActorFormFillingService` may trigger autofill on a
-  // field in a cross-origin iframe hosted at `url`.
-  virtual bool IsIframeUrlAllowlistedForActor(const GURL& url) const;
-
   // Returns whether omnibox-triggered autofill may appear for an iframe hosted
   // at `url`.
   virtual bool IsUrlEligibleForOmniboxAutofill(const GURL& url) const;

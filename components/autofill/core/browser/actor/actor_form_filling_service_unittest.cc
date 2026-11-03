@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/safety_list_manager.h"
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/actor/actor_form_filling_service_impl.h"
 #include "components/autofill/core/browser/actor/actor_form_filling_service_impl_test_api.h"
@@ -207,9 +208,6 @@ class ActorFormFillingServiceTest : public ActorTestBase {
   // Returns an address that is available in `AddressDataManager`.
   AutofillProfile GetProfile1() { return test::GetFullProfile(); }
   AutofillProfile GetProfile2() { return test::GetFullProfile2(); }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a `kNoSuggestions` error is returned if we cannot find the form
@@ -219,6 +217,20 @@ TEST_F(ActorFormFillingServiceTest, UnfindableForm) {
   GetSuggestionsFuture future;
 
   service().GetSuggestions(client(), {UnfindableFillRequest()},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
+
+  ExpectGetSuggestionsOutcome(ActorFormFillingError::kNoSuggestions,
+                              histogram_tester);
+}
+
+// Tests that a `kNoSuggestions` error is returned if a credit card fill request
+// specifies a trigger field that cannot be found.
+TEST_F(ActorFormFillingServiceTest, UnfindableCreditCardForm) {
+  base::HistogramTester histogram_tester;
+  GetSuggestionsFuture future;
+
+  service().GetSuggestions(client(), {CreditCardFillRequest({FieldGlobalId()})},
                            future.GetCallback());
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
 
@@ -625,8 +637,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
 // number field even if the triggering field passed by the model is a different
 // one as long as kAutofillActorRewriteCreditCardTriggerField is enabled.
 TEST_F(ActorFormFillingServiceTest, CreditCardFormWithNumberField) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
+  feature_list_.InitAndEnableFeature(
       features::kAutofillActorRewriteCreditCardTriggerField);
   const CreditCard card = test::GetCreditCard();
   ASSERT_THAT(base::UTF16ToUTF8(card.number()), EndsWith("1111"));
@@ -648,19 +659,25 @@ TEST_F(ActorFormFillingServiceTest, CreditCardFormWithNumberField) {
                   Each(Field(&ActorSuggestion::title, HasSubstr("1111")))))));
 }
 
-class ActorFormFillingServiceWithOptimizationGuideTest
+class ActorFormFillingServiceWithSafetyListTest
     : public ActorFormFillingServiceTest,
       public testing::WithParamInterface<bool> {
  public:
+  void TearDown() override {
+    ::actor::SetSafetyListsForTesting(::actor::SafetyListManager::GetInstance(),
+                                      "{}");
+    ActorFormFillingServiceTest::TearDown();
+  }
+
   bool IsIframeUrlAllowlisted() const { return GetParam(); }
 };
 
 // Tests that we only switch the trigger field to a credit card number field of
 // different origin if the origin of the number field is allowlisted.
-TEST_P(ActorFormFillingServiceWithOptimizationGuideTest,
+TEST_P(ActorFormFillingServiceWithSafetyListTest,
        CreditCardFormWithNumberFieldAndIframe) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillActorRewriteCreditCardTriggerField};
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorRewriteCreditCardTriggerField);
   const CreditCard card = test::GetCreditCard();
   ASSERT_THAT(base::UTF16ToUTF8(card.number()), EndsWith("1111"));
   payments_data_manager().AddCreditCard(card);
@@ -673,9 +690,12 @@ TEST_P(ActorFormFillingServiceWithOptimizationGuideTest,
                   {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                    .origin = origin2}}});
 
-  EXPECT_CALL(*client().GetAutofillOptimizationGuideDecider(),
-              IsIframeUrlAllowlistedForActor(origin2.GetURL()))
-      .WillRepeatedly(Return(IsIframeUrlAllowlisted()));
+  ::actor::SetSafetyListsForTesting(
+      ::actor::SafetyListManager::GetInstance(),
+      IsIframeUrlAllowlisted()
+          ? base::StrCat({R"({"payment_iframe_allowed": [")",
+                          origin2.Serialize(), R"("]})"})
+          : "{}");
 
   GetSuggestionsFuture future;
   service().GetSuggestions(
@@ -693,8 +713,48 @@ TEST_P(ActorFormFillingServiceWithOptimizationGuideTest,
                   Each(Field(&ActorSuggestion::title, expected_result))))));
 }
 
+// Tests that `RetrieveSuggestionForCreditCardOpaqueToken` only switches the
+// section trigger field to a cross-origin credit card number field if the
+// iframe origin is allowlisted.
+TEST_P(ActorFormFillingServiceWithSafetyListTest,
+       RetrieveSuggestionForCreditCardOpaqueTokenWithIframe) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorRewriteCreditCardTriggerField);
+  const CreditCard card = test::GetCreditCard();
+  EXPECT_CALL(credit_card_access_manager(),
+              RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
+      .WillOnce(base::test::RunOnceCallback<1>(card));
+
+  const auto origin1 = url::Origin::Create(GURL("https://cccc.com"));
+  const auto origin2 = url::Origin::Create(GURL("https://dddd.com"));
+  FormData form = SeeForm(
+      {.fields = {{.server_type = CREDIT_CARD_NAME_FULL, .origin = origin1},
+                  {.server_type = CREDIT_CARD_NUMBER, .origin = origin2},
+                  {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                   .origin = origin2}}});
+
+  ::actor::SetSafetyListsForTesting(
+      ::actor::SafetyListManager::GetInstance(),
+      IsIframeUrlAllowlisted()
+          ? base::StrCat({R"({"payment_iframe_allowed": [")",
+                          origin2.Serialize(), R"("]})"})
+          : "{}");
+
+  RetrieveSuggestionFuture future;
+  service().RetrieveSuggestionForCreditCardOpaqueToken(
+      client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      "opaque_token_xyz", future.GetCallback());
+  ASSERT_THAT(future.Get(), ValueIs(ActorSuggestionId(1)));
+
+  FieldGlobalId expected_trigger_field = IsIframeUrlAllowlisted()
+                                             ? form.fields()[1].global_id()
+                                             : form.fields()[0].global_id();
+  EXPECT_CALL(driver(), ScrollFieldIntoView(expected_trigger_field));
+  service().ScrollToForm(client(), /*form_index=*/0);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
-                         ActorFormFillingServiceWithOptimizationGuideTest,
+                         ActorFormFillingServiceWithSafetyListTest,
                          ::testing::Bool());
 
 // Tests that a suggestion is returned when invoking on a credit card form and

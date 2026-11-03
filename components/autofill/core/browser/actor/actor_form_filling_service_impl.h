@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "url/origin.h"
 class GURL;
 
 namespace actor {
@@ -98,6 +99,24 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
  private:
   friend class ActorFormFillingServiceImplTestApi;
 
+  // Generates suggestions for `fill_requests` after filtering cross-origin
+  // payment iframe origins to those allowlisted by `SafetyListManager`.
+  base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>
+  GetSuggestionsWithAllowedIframeOrigins(
+      base::WeakPtr<AutofillClient> client,
+      base::span<const FillRequest> fill_requests,
+      const base::flat_set<url::Origin>& allowed_iframe_origins);
+
+  // Retrieves a suggestion ID for a credit card opaque token after filtering
+  // cross-origin payment iframe origins to those allowlisted by
+  // `SafetyListManager`.
+  void RetrieveSuggestionForCreditCardOpaqueTokenWithAllowedIframeOrigins(
+      base::WeakPtr<AutofillClient> client,
+      std::vector<FillRequest> fill_requests,
+      std::string credit_card_opaque_token,
+      RetrieveSuggestionCallback callback_with_metrics,
+      const base::flat_set<url::Origin>& allowed_iframe_origins);
+
   // Forwards a fill/preview signal to `AutofillManager`. Returns the error that
   // led to the filling failure if any, and `std::nullopt` otherwise.
   std::optional<ActorFormFillingError> FillOrPreviewFormImpl(
@@ -115,10 +134,10 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
 
   // Handles the retrieved credit card for an opaque token and populates the
   // fill data.
-  void OnRetrievedSuggestionForCreditCardOpaqueToken(
-      base::WeakPtr<AutofillManager> weak_manager,
+  base::expected<ActorSuggestionId, ActorFormFillingError>
+  OnRetrievedSuggestionForCreditCardOpaqueToken(
+      base::WeakPtr<AutofillClient> client,
       std::optional<FormGlobalId> form_id,
-      RetrieveSuggestionCallback callback,
       std::vector<FieldGlobalId> fields,
       std::string section_label,
       FieldGlobalId trigger_field_id,

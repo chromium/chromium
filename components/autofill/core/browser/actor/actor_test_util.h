@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/actor/core/aggregated_journal.h"
@@ -164,6 +165,11 @@ class ActorTestBase : public testing::Test,
   }
   ActorFormFillingServiceImpl& service() { return *service_; }
   ::actor::AggregatedJournal& journal() { return journal_; }
+
+  // This is intended to be initialized by derived classes. It needs to be
+  // defined before the `task_environment_` to ensure a correct destruction
+  // order.
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   base::test::TaskEnvironment task_environment_{

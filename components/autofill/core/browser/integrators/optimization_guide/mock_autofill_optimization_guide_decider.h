@@ -49,10 +49,6 @@ class MockAutofillOptimizationGuideDecider
               (const PaymentsDataManager& payments_data_manager),
               (override));
   MOCK_METHOD(bool,
-              IsIframeUrlAllowlistedForActor,
-              (const GURL&),
-              (const, override));
-  MOCK_METHOD(bool,
               IsUrlEligibleForOmniboxAutofill,
               (const GURL&),
               (const, override));
