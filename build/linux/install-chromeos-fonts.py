@@ -48,7 +48,7 @@ def main(args):
 
     stamp = os.path.join(dest_dir, ".stamp02")
     if os.path.exists(stamp):
-        with open(stamp) as s:
+        with open(stamp, encoding='utf-8') as s:
             if s.read() == '\n'.join(URLS):
                 print("Chrome OS fonts already up to date in %s." % dest_dir)
                 return 0
@@ -61,7 +61,7 @@ def main(args):
     print("Installing Chrome OS fonts to %s." % dest_dir)
     for url in URLS:
         tarball = os.path.join(dest_dir, os.path.basename(url))
-        subprocess.check_call(['curl', '-L', url, '-o', tarball])
+        subprocess.check_call(['curl', '-fL', url, '-o', tarball])
         subprocess.check_call(
             [
                 'tar',
@@ -76,12 +76,12 @@ def main(args):
         os.remove(tarball)
 
     readme = os.path.join(dest_dir, "README")
-    with open(readme, 'w') as s:
+    with open(readme, 'w', encoding='utf-8') as s:
         s.write("This directory and its contents are auto-generated.\n")
         s.write("It may be deleted and recreated. Do not modify.\n")
         s.write("Script: %s\n" % __file__)
 
-    with open(stamp, 'w') as s:
+    with open(stamp, 'w', encoding='utf-8') as s:
         s.write('\n'.join(URLS))
 
     for base, dirs, files in os.walk(dest_dir):

@@ -24,19 +24,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(os.path.basename(sys.argv[0]))
 
+LOCALE_GEN = "/etc/locale.gen"
+
 
 @functools.lru_cache(maxsize=1)
 def build_apt_package_list():
     logger.info("Building apt package list.")
-    output = subprocess.check_output(["apt-cache", "dumpavail"]).decode()
+    packages = set()
     arch_map = {"i386": ":i386"}
-    package_regex = re.compile(
-        r"^Package: (.+?)$.+?^Architecture: (.+?)$", re.M | re.S
-    )
-    return set(
-        package + arch_map.get(arch, "")
-        for package, arch in re.findall(package_regex, output)
-    )
+    with subprocess.Popen(
+        ["apt-cache", "dumpavail"],
+        stdout=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    ) as proc:
+        pkg = None
+        for line in proc.stdout:
+            if not line.strip():
+                pkg = None
+            elif line.startswith("Package: "):
+                pkg = line[9:].strip()
+            elif line.startswith("Architecture: ") and pkg is not None:
+                arch = line[14:].strip()
+                packages.add(pkg + arch_map.get(arch, ""))
+                pkg = None
+        if proc.wait() != 0:
+            raise subprocess.CalledProcessError(proc.returncode, proc.args)
+    return packages
 
 
 def package_exists(package_name: str) -> bool:
@@ -848,6 +863,8 @@ def missing_packages(packages):
 
 
 def package_is_installable(package):
+    if package_exists(package.split("=")[0]):
+        return True
     result = subprocess.run(["apt-cache", "show", package], capture_output=True)
     return result.returncode == 0
 
@@ -989,22 +1006,17 @@ def install_locales():
         "he_IL.UTF-8",
         "zh_TW.UTF-8",
     ]
-    LOCALE_GEN = "/etc/locale.gen"
     if os.path.exists(LOCALE_GEN):
-        old_locale_gen = open(LOCALE_GEN).read()
+        with open(LOCALE_GEN, encoding="utf-8") as f:
+            old_locale_gen = f.read()
+        sed_args = []
         for locale in CHROMIUM_LOCALES:
-            subprocess.check_call(
-                [
-                    "sudo",
-                    "sed",
-                    "-i",
-                    "s/^# %s/%s/" % (locale, locale),
-                    LOCALE_GEN,
-                ]
-            )
+            sed_args.extend(["-e", "s/^# %s/%s/" % (locale, locale)])
+        subprocess.check_call(["sudo", "sed", "-i", *sed_args, LOCALE_GEN])
 
         # Regenerating locales can take a while, so only do it if we need to.
-        locale_gen = open(LOCALE_GEN).read()
+        with open(LOCALE_GEN, encoding="utf-8") as f:
+            locale_gen = f.read()
         if locale_gen != old_locale_gen:
             subprocess.check_call(["sudo", "locale-gen"])
         else:
