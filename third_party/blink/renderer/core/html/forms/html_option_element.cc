@@ -375,14 +375,7 @@ bool HTMLOptionElement::selectedForBinding() const {
 
 void HTMLOptionElement::setSelectedForBinding(bool selected) {
   bool was_selected = is_selected_;
-  if (RuntimeEnabledFeatures::SelectedcontentSpec2Enabled()) {
-    SetSelectedState(selected);
-    if (HTMLSelectElement* select = OwnerSelectElement()) {
-      select->OptionSelectionStateChanged(this, selected);
-    }
-  } else {
-    SetSelected(selected);
-  }
+  SetSelected(selected);
 
   // As of December 2015, the HTML specification says the dirtiness becomes
   // true by |selected| setter unconditionally. However it caused a real bug,
