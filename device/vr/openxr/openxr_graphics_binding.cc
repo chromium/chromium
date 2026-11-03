@@ -148,16 +148,25 @@ OpenXrGraphicsBinding::GetProjectionViews(
       projection_view.subImage.imageRect.offset.x = 0;
       projection_view.subImage.imageRect.offset.y = 0;
     } else {
-      projection_view.subImage.imageRect.extent.width = properties.Width();
-      projection_view.subImage.imageRect.extent.height = properties.Height();
+      const bool is_custom_layer = layer.GetLayerId() != kInvalidLayerId;
+      const uint32_t view_width =
+          is_custom_layer ? (layout == mojom::XRLayerLayout::kStereoLeftRight
+                                 ? layer.GetSwapchainImageSize().width() / 2
+                                 : layer.GetSwapchainImageSize().width())
+                          : properties.Width();
+      const uint32_t view_height = is_custom_layer
+                                       ? layer.GetSwapchainImageSize().height()
+                                       : properties.Height();
+      projection_view.subImage.imageRect.extent.width = view_width;
+      projection_view.subImage.imageRect.extent.height = view_height;
       projection_view.subImage.imageRect.offset.x = x_offset;
 
       if (layout == mojom::XRLayerLayout::kStereoLeftRight) {
-        x_offset += properties.Width();
+        x_offset += view_width;
       }
 
       projection_view.subImage.imageRect.offset.y =
-          layer.GetSwapchainImageSize().height() - properties.Height();
+          layer.GetSwapchainImageSize().height() - view_height;
     }
     projection_view.fov.angleUp = view.fov.angleUp;
     projection_view.fov.angleDown = view.fov.angleDown;
@@ -279,9 +288,9 @@ gfx::Size OpenXrGraphicsBinding::GetProjectionLayerSwapchainImageSize() {
 void OpenXrGraphicsBinding::SetProjectionLayerSwapchainImageSize(
     const gfx::Size& swapchain_image_size) {
   base_layer_->SetSwapchainImageSize(swapchain_image_size);
-  // All projection layers should have the same size.
   for (auto& [_, layer] : layers_) {
-    if (layer->type() == OpenXrCompositionLayer::Type::kProjection) {
+    if (layer->type() == OpenXrCompositionLayer::Type::kProjection &&
+        layer->GetSwapchainImageSize().IsEmpty()) {
       layer->SetSwapchainImageSize(swapchain_image_size);
     }
   }
@@ -579,8 +588,8 @@ bool OpenXrGraphicsBinding::CreateCompositionLayer(
   auto new_layer = std::make_unique<OpenXrCompositionLayer>(
       std::move(layer_data), this, CreateLayerGraphicsBindingData());
 
-  if (new_layer->type() == OpenXrCompositionLayer::Type::kProjection) {
-    // All projection layers should have same size.
+  if (new_layer->type() == OpenXrCompositionLayer::Type::kProjection &&
+      new_layer->GetSwapchainImageSize().IsEmpty()) {
     new_layer->SetSwapchainImageSize(GetProjectionLayerSwapchainImageSize());
   }
 

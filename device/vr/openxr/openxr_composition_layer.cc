@@ -45,13 +45,8 @@ OpenXrCompositionLayer::OpenXrCompositionLayer(
       creation_data_(std::move(layer_data)) {
   type_ = GetTypeFromMojomData(*creation_data_->mutable_data->layer_data);
 
-  // Projection layers will have same size as the base layer, and will
-  // be set later, though their initial transfer size comes from the layer
-  // creation data.
-  if (type_ == Type::kProjection) {
-    SetTransferSize(gfx::Size(read_only_data().texture_width,
-                              read_only_data().texture_height));
-  } else {
+  if (read_only_data().texture_width > 0 &&
+      read_only_data().texture_height > 0) {
     SetSwapchainImageSize(gfx::Size(read_only_data().texture_width,
                                     read_only_data().texture_height));
   }
