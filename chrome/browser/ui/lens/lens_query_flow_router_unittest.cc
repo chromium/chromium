@@ -1865,6 +1865,118 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   std::move(captured_interaction_callback).Run(server_response);
 }
 
+// Regression test for b/578839213. In selected-region-only mode, each region
+// selection starts a new context upload. If a second region selection happens
+// while the first selection's search URL request is still pending, the new
+// upload fails the stale request, which runs its callback with an empty URL.
+// The router must ignore the empty URL and only open the side panel for the
+// newest request.
+TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
+       SendRegionSearch_SelectedRegionOnly_SupersededRequestIsIgnored) {
+  SignInUser();
+  lens::GrantLensOverlayNeededPermissions(profile_.get());
+  // Arrange: Set up invocation source to kOmniboxPopupButton (selected region
+  // only).
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(
+          Return(lens::LensOverlayInvocationSource::kOmniboxPopupButton));
+  EXPECT_CALL(*mock_lens_search_controller_,
+              lens_search_contextualization_controller())
+      .WillRepeatedly(Return(contextualization_controller_.get()));
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+  router.SetTabContextualizationController(
+      mock_tab_contextualization_controller_.get());
+
+  EXPECT_CALL(*router.mock_session_handle(), NotifySessionStarted());
+  EXPECT_CALL(*router.mock_session_handle(), CreateContextToken())
+      .WillRepeatedly(Return(base::UnguessableToken::Create()));
+
+  GURL example_url("https://example.com");
+  router.StartQueryFlow(router.GetViewportScreenshot(),
+                        router.GetViewportScreenshot(), example_url, "Title",
+                        {}, {}, lens::MimeType::kAnnotatedPageContent,
+                        std::nullopt, 1.0f, base::TimeTicks::Now());
+  ASSERT_EQ(router.context_upload_mode(),
+            LensQueryFlowRouter::ContextUploadMode::kSelectedRegionOnly);
+
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              InitSidePanelWithGhostLoader(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  testing::Pointer(router.mock_session_handle()), testing::_))
+      .WillOnce(
+          [&router](
+              BrowserWindowInterface*, tabs::TabInterface*,
+              std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+                  handle,
+              omnibox::ChromeAimEntryPoint entry_point) {
+            router.SetTransferredSessionHandle(std::move(handle));
+          });
+
+  // Arrange: The first region selection's search URL request stays pending,
+  // as it does while its context upload is still in flight. The second
+  // request completes with a valid URL.
+  const GURL search_url("https://www.google.com/search?q=second");
+  base::OnceCallback<void(GURL)> stale_callback;
+  EXPECT_CALL(*router.mock_session_handle(), CreateSearchUrl(_, _))
+      .WillOnce([&stale_callback](
+                    std::unique_ptr<CreateSearchUrlRequestInfo> request_info,
+                    base::OnceCallback<void(GURL)> callback) {
+        stale_callback = std::move(callback);
+      })
+      .WillOnce(base::test::RunOnceCallback<1>(search_url));
+
+  // Arrange: Starting the second region selection's context upload fails the
+  // stale pending request with an empty URL, as ComposeboxQueryController
+  // does in StartFileUploadFlow.
+  EXPECT_CALL(*router.mock_session_handle(), StartTabContextUploadFlow(_, _, _))
+      .WillOnce(testing::Return())
+      .WillOnce([&stale_callback](
+                    const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> input_data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_TRUE(stale_callback);
+        std::move(stale_callback).Run(GURL());
+      });
+
+  // Assert: The side panel is opened exactly once, for the newest request, and
+  // never with an empty URL.
+  EXPECT_CALL(*service, StartTaskUiInSidePanelImpl(_, _, GURL(), _, _))
+      .Times(0);
+  EXPECT_CALL(*service, StartTaskUiInSidePanelImpl(
+                            mock_browser_window_interface_.get(),
+                            &mock_tab_interface_, search_url, _, _))
+      .Times(1);
+  EXPECT_CALL(*mock_lens_overlay_controller_, NotifyResultsPanelOpened())
+      .Times(1);
+
+  // Act: Make two region selections in quick succession.
+  SkBitmap region_bytes;
+  region_bytes.allocN32Pixels(10, 10);
+  auto first_region = lens::mojom::CenterRotatedBox::New();
+  first_region->box = gfx::RectF(0.3f, 0.3f, 0.2f, 0.2f);
+  first_region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  router.SendRegionSearch(
+      base::Time::Now(), std::move(first_region),
+      lens::LensOverlaySelectionType::REGION_SEARCH, {}, region_bytes,
+      lens::LensOverlayInvocationSource::kOmniboxPopupButton);
+  auto second_region = lens::mojom::CenterRotatedBox::New();
+  second_region->box = gfx::RectF(0.6f, 0.6f, 0.2f, 0.2f);
+  second_region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  router.SendRegionSearch(
+      base::Time::Now(), std::move(second_region),
+      lens::LensOverlaySelectionType::REGION_SEARCH, {}, region_bytes,
+      lens::LensOverlayInvocationSource::kOmniboxPopupButton);
+
+  EXPECT_FALSE(stale_callback);
+}
+
 TEST_F(
     LensQueryFlowRouterContextualTaskEnabledTest,
     SendRegionSearch_SelectedRegionOnly_RemapsTextCoordinatesWithDownscaledRegion) {

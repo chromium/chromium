@@ -924,6 +924,14 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(
     return;
   }
 
+  // An empty URL means search URL creation failed or was superseded. For
+  // example, a newer region selection started a new context upload, which
+  // fails the stale pending request. The newer request opens the panel itself,
+  // so do not open the side panel for this one.
+  if (url.is_empty()) {
+    return;
+  }
+
   // Show the side panel. This will create a new task and associate it with the
   // active tab.
   auto entry_point = AimEntryPointFromInvocationSource(

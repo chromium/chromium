@@ -1489,6 +1489,52 @@ TEST_F(ComposeboxQueryControllerTest, DeleteContext_TriggersCreateSearchUrl) {
   EXPECT_FALSE(aim_url.is_empty());
 }
 
+// Starting a new file upload while a search URL request is stashed fails the
+// stale request with an empty URL, so callers of CreateSearchUrl must handle an
+// empty URL (b/578839213).
+TEST_F(ComposeboxQueryControllerTest,
+       StartFileUploadFlow_FailsStashedSearchUrlRequestWithEmptyUrl) {
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+
+  // Act: Start the session and the first file upload.
+  controller().InitializeIfNeeded();
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  std::vector<uint8_t> image_bytes = std::vector<uint8_t>();
+  StartImageFileUploadFlow(file_token, image_bytes, image_options);
+  WaitForClusterInfo();
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Request a search URL while the first upload is still in flight.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  // Assert: The request is stashed until the upload completes.
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_FALSE(url_future.IsReady());
+
+  // Act: Start a second file upload, which supersedes the stashed request.
+  StartImageFileUploadFlow(file_token_2, image_bytes, image_options);
+
+  // Assert: The stale request completes immediately with an empty URL, and
+  // only the new upload is pending.
+  ASSERT_TRUE(url_future.IsReady());
+  EXPECT_TRUE(url_future.Take().is_empty());
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token_2));
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Not(testing::Contains(file_token)));
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadFileWithoutClusterInfoNeverHasSuggestReady) {
   // Arrange: Simulate an error in the cluster info request.
