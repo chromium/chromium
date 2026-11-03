@@ -85,6 +85,15 @@
   <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT" desc="Item in the side panel toolbar account menu that signs the user out of their Google Account on the web. Shown when the user is signed in to one Google Account on the web.">
     Sign out
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_ACCOUNTS" desc="Item in the side panel toolbar account menu that signs the user out of all their Google Accounts on the web. Shown when the user is signed in to two or more Google Accounts on the web.">
+    Sign out of all accounts
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_GOOGLE_COM" desc="Item in the side panel toolbar account menu that signs the user out of their Google Account on google.com. Shown when the user is signed in to one Google Account on the web.">
+    Sign out of google.com
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_GOOGLE_COM_ACCOUNTS" desc="Item in the side panel toolbar account menu that signs the user out of all their Google Accounts on google.com. Shown when the user is signed in to two or more Google Accounts on the web.">
+    Sign out of all google.com accounts
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP" desc="Tool tip text displayed on the context button on the side panel to show tabs and files context attached to the current thread.">
     Tabs and files
   </message>

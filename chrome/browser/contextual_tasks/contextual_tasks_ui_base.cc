@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -18,6 +19,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -61,6 +63,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -131,50 +134,62 @@ void OpenUrlWithDisposition(Profile* profile,
   Navigate(&params);
 }
 
-// Returns the Google account to show in the toolbar, if any. This is only set
-// when the user is signed in to Google on the web but not signed in to Chrome,
-// as the account is otherwise duplicative with the one in top Chrome.
-std::optional<gaia::ListedAccount> GetWebOnlyAccount(
-    signin::IdentityManager* identity_manager,
-    const GURL& url) {
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return std::nullopt;
+struct ProfileIndicatorInfo {
+  GURL avatar_url;
+  std::string full_name;
+  std::string email;
+  uint32_t signed_in_account_count = 0;
+};
+
+// Resolves the Google account information to show in the toolbar, if any. This
+// is only populated when the user is signed in to Google on the web but not
+// signed in to Chrome, as the account is otherwise duplicative with the one in
+// top Chrome.
+ProfileIndicatorInfo GetProfileIndicatorInfo(Profile* profile,
+                                             const GURL& url) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return {};
   }
   // A stale cookie jar is the list cached from a previous session, which can
-  // still show an account whose cookies have since expired. Wait for the
-  // fresh list; `CookieJarObserver` refreshes the toolbar when it arrives.
-  if (!identity_manager->GetAccountsInCookieJar().AreAccountsFresh()) {
-    return std::nullopt;
+  // still show an account whose cookies have since expired. Wait for the fresh
+  // list; `CookieJarObserver` refreshes the toolbar when it arrives.
+  signin::AccountsInCookieJarInfo cookie_jar =
+      identity_manager->GetAccountsInCookieJar();
+  if (!cookie_jar.AreAccountsFresh()) {
+    return {};
   }
-  std::optional<gaia::ListedAccount> account =
-      contextual_tasks::GetAccountFromCookieJar(identity_manager, url);
-  if (account.has_value() && !account->signed_out && account->valid) {
-    return account;
+  const std::vector<gaia::ListedAccount>& accounts =
+      cookie_jar.GetAllAccounts();
+  size_t user_index = contextual_tasks::GetUserIndex(url).value_or(0);
+  if (user_index >= accounts.size()) {
+    return {};
   }
-  return std::nullopt;
+  const gaia::ListedAccount& account = accounts[user_index];
+  if (account.signed_out || !account.valid) {
+    return {};
+  }
+
+  AccountInfo extended_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(account.gaia_id);
+  GURL avatar_url =
+      (!extended_info.IsEmpty() && extended_info.GetAvatarImage().has_value())
+          ? GURL(base::StrCat({chrome::kChromeUIContextualTasksURL,
+                               kProfileAvatarPathPrefix,
+                               account.gaia_id.ToString()}))
+          : GURL(profiles::GetPlaceholderAvatarIconUrl());
+  return {
+      .avatar_url = std::move(avatar_url),
+      .full_name = std::string(extended_info.GetFullName().value_or("")),
+      .email = account.email,
+      .signed_in_account_count = base::checked_cast<uint32_t>(
+          cookie_jar.GetPotentiallyInvalidSignedInAccounts().size()),
+  };
 }
 
 GURL GetProfileAvatarUrl(Profile* profile, const GURL& url) {
-  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
-    // If the user is not signed into Chrome, but signed into Google.com,
-    // return cached avatar (if available; otherwise return generic).
-    std::optional<gaia::ListedAccount> account =
-        GetWebOnlyAccount(identity_manager, url);
-    if (account.has_value()) {
-      AccountInfo extended_info =
-          identity_manager->FindExtendedAccountInfoByGaiaId(account->gaia_id);
-      if (!extended_info.IsEmpty() &&
-          extended_info.GetAvatarImage().has_value()) {
-        return GURL(base::StrCat({chrome::kChromeUIContextualTasksURL,
-                                  kProfileAvatarPathPrefix,
-                                  account->gaia_id.ToString()}));
-      }
-      return GURL(profiles::GetPlaceholderAvatarIconUrl());
-    }
-  }
-  // If the user is signed into Chrome, or fully signed out in Google + Chrome,
-  // do not show the avatar.
-  return GURL();
+  return GetProfileIndicatorInfo(profile, url).avatar_url;
 }
 
 bool IsLegacyOnlyContextualTasksResource(std::string_view path) {
@@ -207,26 +222,6 @@ bool IsLegacyOnlyContextualTasksResource(std::string_view path) {
       "window_manager.js",
   };
   return std::ranges::contains(kLegacyOnlyPaths, path);
-}
-
-// Returns the full name and email of the account returned by
-// `GetWebOnlyAccount()`, or empty strings if there is no such account.
-std::pair<std::string, std::string> GetWebOnlyAccountNameAndEmail(
-    Profile* profile,
-    const GURL& url) {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager) {
-    return {};
-  }
-  std::optional<gaia::ListedAccount> account =
-      GetWebOnlyAccount(identity_manager, url);
-  if (!account.has_value()) {
-    return {};
-  }
-  AccountInfo extended_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(account->gaia_id);
-  return {std::string(extended_info.GetFullName().value_or("")),
-          account->email};
 }
 
 // `WebUIDataSource::SetRequestFilter` only supports a single filter callback
@@ -497,7 +492,6 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
        IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_MANAGE_ACCOUNT},
       {"accountMenuNameAndEmail",
        IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_NAME_AND_EMAIL},
-      {"accountMenuSignOut", IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT},
       {"close", IDS_CLOSE},
       {"closeTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP},
       {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},
@@ -601,6 +595,20 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
 #endif
   dict.Set("contextualTasksUnboundedMenuEnabled",
            contextual_tasks::IsContextualTasksUnboundedMenuEnabled());
+
+  const bool use_google_com_sign_out_label = base::FeatureList::IsEnabled(
+      contextual_tasks::kContextualTasksAccountMenuGoogleComSignOutLabel);
+  dict.Set("accountMenuSignOut",
+           l10n_util::GetStringUTF16(
+               use_google_com_sign_out_label
+                   ? IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_GOOGLE_COM
+                   : IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT));
+  dict.Set(
+      "accountMenuSignOutOfAllAccounts",
+      l10n_util::GetStringUTF16(
+          use_google_com_sign_out_label
+              ? IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_GOOGLE_COM_ACCOUNTS
+              : IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT_OF_ALL_ACCOUNTS));
 
   return dict;
 }
@@ -1266,9 +1274,10 @@ void ContextualTasksUIBase::UpdateProfileIndicator() {
 
 void ContextualTasksUIBase::UpdateProfileIndicator(const GURL& url) {
   if (auto* toolbar_page = GetToolbarPageRemote()) {
-    toolbar_page->SetProfileAvatarUrl(GetProfileAvatarUrl(GetProfile(), url));
-    auto [full_name, email] = GetWebOnlyAccountNameAndEmail(GetProfile(), url);
-    toolbar_page->SetAccountInfo(full_name, email);
+    ProfileIndicatorInfo info = GetProfileIndicatorInfo(GetProfile(), url);
+    toolbar_page->SetProfileAvatarUrl(info.avatar_url);
+    toolbar_page->SetAccountInfo(info.full_name, info.email);
+    toolbar_page->SetSignedInAccountCount(info.signed_in_account_count);
   }
 }
 

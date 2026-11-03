@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PAGE_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PAGE_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -148,6 +149,7 @@ class MockContextualTasksToolbarPage
               SetAccountInfo,
               (const std::string& full_name, const std::string& email),
               (override));
+  MOCK_METHOD(void, SetSignedInAccountCount, (uint32_t count), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};

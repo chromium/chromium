@@ -99,6 +99,10 @@ BASE_DECLARE_FEATURE(kContextualTasksHideMenuOnAiPage);
 // Enables painting dropdown menus outside WebUI boundaries.
 BASE_DECLARE_FEATURE(kContextualTasksUnboundedMenu);
 
+// Labels the sign out item in the side panel toolbar account menu as signing
+// out of google.com, rather than just "Sign out".
+BASE_DECLARE_FEATURE(kContextualTasksAccountMenuGoogleComSignOutLabel);
+
 // Enables hiding the close button when in vertical tabs or immersive mode.
 BASE_DECLARE_FEATURE(kContextualTasksHideCloseButtonInVerticalTabs);
 

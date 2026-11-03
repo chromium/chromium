@@ -17,7 +17,7 @@ export function getHtml(this: AccountMenuElement) {
       </button>
       <button id="signOutButton" class="dropdown-item"
           @click="${this.onSignOutClick_}">
-        $i18n{accountMenuSignOut}
+        ${this.getSignOutLabel_()}
       </button>
     </cr-action-menu>
   <!--_html_template_end_-->`;

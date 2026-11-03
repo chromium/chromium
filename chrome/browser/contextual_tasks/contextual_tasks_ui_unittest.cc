@@ -307,6 +307,7 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
               SetAccountInfo,
               (const std::string& full_name, const std::string& email),
               (override));
+  MOCK_METHOD(void, SetSignedInAccountCount, (uint32_t count), (override));
 
   mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page>
   BindAndGetRemote() {
@@ -3491,6 +3492,8 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   testing::StrictMock<MockToolbarPage> mock_page;
   EXPECT_CALL(mock_page, SetProfileAvatarUrl(_)).Times(testing::AnyNumber());
   EXPECT_CALL(mock_page, SetAccountInfo(_, _)).Times(testing::AnyNumber());
+  EXPECT_CALL(mock_page, SetSignedInAccountCount(_))
+      .Times(testing::AnyNumber());
   // The initial (ineligible) pin button eligibility is pushed on bind.
   EXPECT_CALL(mock_page, OnPinButtonEligibilityChanged(false))
       .Times(testing::AnyNumber());
@@ -3511,6 +3514,8 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   EXPECT_CALL(legacy_mock_page, SetProfileAvatarUrl(_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(legacy_mock_page, SetAccountInfo(_, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(legacy_mock_page, SetSignedInAccountCount(_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(legacy_mock_page, OnPinButtonEligibilityChanged(false))
       .Times(testing::AnyNumber());
@@ -4967,6 +4972,75 @@ TEST_F(ContextualTasksUiTest, AccountInfo_WebSignedInWithFullName) {
   auto [full_name, email] = future.Take();
   EXPECT_EQ(full_name, "Jane Doe");
   EXPECT_EQ(email, "user@example.com");
+}
+
+TEST_F(ContextualTasksUiTest, SignedInAccountCount_MultipleWebAccounts) {
+  AccountInfo account_info1 =
+      identity_test_env()->MakeAccountAvailable("user1@example.com");
+  AccountInfo account_info2 =
+      identity_test_env()->MakeAccountAvailable("user2@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info1.GetEmail()), account_info1.GetGaiaId()},
+       {std::string(account_info2.GetEmail()), account_info2.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<uint32_t> future;
+  EXPECT_CALL(mock_page, SetSignedInAccountCount(_))
+      .WillOnce([&future](uint32_t count) { future.SetValue(count); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(future.Take(), 2u);
+}
+
+TEST_F(ContextualTasksUiTest, SignedInAccountCount_ZeroWhenSignedOut) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandlerFactory>
+      factory_remote;
+  controller.BindInterface(factory_remote.BindNewPipeAndPassReceiver());
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  base::test::TestFuture<uint32_t> future;
+  EXPECT_CALL(mock_page, SetSignedInAccountCount(_))
+      .WillOnce([&future](uint32_t count) { future.SetValue(count); });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  factory_remote->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                    page_handler.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(future.Take(), 0u);
+}
+
+TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData_SignOutLabels) {
+  base::DictValue dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  EXPECT_EQ(*dict.FindString("accountMenuSignOut"), "Sign out");
+  EXPECT_EQ(*dict.FindString("accountMenuSignOutOfAllAccounts"),
+            "Sign out of all accounts");
+}
+
+TEST_F(ContextualTasksUiTest,
+       GetContextualTasksLoadTimeData_GoogleComSignOutLabels) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksAccountMenuGoogleComSignOutLabel);
+  base::DictValue dict =
+      ContextualTasksUIBase::GetContextualTasksLoadTimeData(profile_);
+  EXPECT_EQ(*dict.FindString("accountMenuSignOut"), "Sign out of google.com");
+  EXPECT_EQ(*dict.FindString("accountMenuSignOutOfAllAccounts"),
+            "Sign out of all google.com accounts");
 }
 
 TEST_F(ContextualTasksUiTest, AccountInfo_EmptyWhenSignedOut) {

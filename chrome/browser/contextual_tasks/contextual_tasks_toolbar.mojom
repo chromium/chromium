@@ -161,6 +161,11 @@ interface Page {
   // signed in to Chrome or is signed out of Google on the web). `full_name`
   // may also be empty if the account's name is not known yet.
   SetAccountInfo(string full_name, string email);
+
+  // Updates the number of Google accounts the user is signed in to on the web,
+  // which determines the label of the sign out item in the account menu. This
+  // is 0 when there is no account to show in the account menu.
+  SetSignedInAccountCount(uint32 count);
 };
 // Observer interface (page) implemented by WebUI to receive push
 // updates from browser process.

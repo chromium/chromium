@@ -119,6 +119,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
       profileAvatarUrl: {type: String},
       accountFullName: {type: String},
       accountEmail: {type: String},
+      signedInAccountCount: {type: Number},
     };
   }
 
@@ -140,6 +141,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
       '';
   accessor accountFullName: string = '';
   accessor accountEmail: string = '';
+  accessor signedInAccountCount: number = 0;
   protected accessor isSidePanelRearchitectureEnabled_: boolean =
       loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
   accessor isUserSignedIn: boolean = true;
@@ -201,6 +203,10 @@ export class TopToolbarElement extends TopToolbarElementBase {
           (fullName: string, email: string) => {
             this.accountFullName = fullName;
             this.accountEmail = email;
+          }),
+      this.toolbarBrowserProxy_.callbackRouter.setSignedInAccountCount
+          .addListener((count: number) => {
+            this.signedInAccountCount = count;
           }),
     ];
     window.addEventListener('blur', this.boundOnWindowBlur_);

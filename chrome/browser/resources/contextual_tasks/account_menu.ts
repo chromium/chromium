@@ -38,11 +38,13 @@ export class AccountMenuElement extends CrLitElement {
     return {
       fullName: {type: String},
       email: {type: String},
+      signedInAccountCount: {type: Number},
     };
   }
 
   accessor fullName: string = '';
   accessor email: string = '';
+  accessor signedInAccountCount: number = 0;
 
   private toolbarBrowserProxy_: ToolbarBrowserProxy =
       ToolbarBrowserProxyImpl.getInstance();
@@ -75,6 +77,12 @@ export class AccountMenuElement extends CrLitElement {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.SignOutFromAccountMenu');
     this.toolbarBrowserProxy_.handler.openLogOutFlow();
+  }
+
+  protected getSignOutLabel_(): string {
+    return loadTimeData.getString(
+        this.signedInAccountCount > 1 ? 'accountMenuSignOutOfAllAccounts' :
+                                        'accountMenuSignOut');
   }
 
   protected getAccountLabel_(): string {

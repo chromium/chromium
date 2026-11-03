@@ -110,7 +110,8 @@ export function getHtml(this: TopToolbarElement) {
   <cr-lazy-render-lit id="accountMenu" .template="${() => html`
     <contextual-tasks-account-menu
         .fullName="${this.accountFullName}"
-        .email="${this.accountEmail}">
+        .email="${this.accountEmail}"
+        .signedInAccountCount="${this.signedInAccountCount}">
     </contextual-tasks-account-menu>`}">
   </cr-lazy-render-lit>
   ${this.isSidePanelRearchitectureEnabled_ && this.profileAvatarUrl ? html`

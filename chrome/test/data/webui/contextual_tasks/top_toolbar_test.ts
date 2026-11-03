@@ -1558,6 +1558,33 @@ suite('TopToolbarTest', () => {
       assertFalse(tooltip.isOpen);
     });
 
+    test('labels sign out based on signed in account count', async () => {
+      loadTimeData.overrideValues({
+        accountMenuSignOut: 'Sign out',
+        accountMenuSignOutOfAllAccounts: 'Sign out of all accounts',
+      });
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      toolbarProxy.callbackRouterRemote.setSignedInAccountCount(1);
+      await microtasksFinished();
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.click();
+      await microtasksFinished();
+
+      const accountMenu = topToolbar.$.accountMenu.get();
+      const signOutButton =
+          accountMenu.shadowRoot.querySelector<HTMLElement>('#signOutButton');
+      assertTrue(!!signOutButton);
+      assertEquals('Sign out', signOutButton.textContent.trim());
+
+      toolbarProxy.callbackRouterRemote.setSignedInAccountCount(2);
+      await microtasksFinished();
+      assertEquals(
+          'Sign out of all accounts', signOutButton.textContent.trim());
+    });
+
     test('records account menu metrics', async () => {
       const metrics = fakeMetricsPrivate();
       assertEquals(
