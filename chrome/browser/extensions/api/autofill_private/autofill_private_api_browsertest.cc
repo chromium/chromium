@@ -276,6 +276,15 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     payments_data_manager().SetSyncingForTest(/*is_syncing_for_test=*/true);
+    // Ensure the initial asynchronous `LoadEntitiesFromDatabase()` query
+    // completes before tests call `AddOrUpdateEntityInstance()` followed by
+    // `EntityDataChangedWaiter::Wait()`, which otherwise unblocks on the
+    // initial empty load notification instead of the save notification.
+    if (autofill::EntityDataManager* edm =
+            autofill_client()->GetEntityDataManager()) {
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return !edm->HasPendingQueries(); }));
+    }
   }
 
   void TearDownOnMainThread() override {
