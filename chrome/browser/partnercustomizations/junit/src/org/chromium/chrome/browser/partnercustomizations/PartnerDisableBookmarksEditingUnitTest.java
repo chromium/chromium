@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
@@ -59,9 +58,13 @@ public class PartnerDisableBookmarksEditingUnitTest {
 
     @After
     public void tearDown() {
-        PartnerBrowserCustomizations.destroy();
+        ThreadUtils.runOnUiThreadBlocking(PartnerBrowserCustomizations::destroy);
     }
 
+    /**
+     * Tests that `PartnerBrowserCustomizations.initializeAsync()` ignores a customizations provider
+     * that is not from a system package and leaves `isBookmarksEditingDisabled()` as `false`.
+     */
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
@@ -76,9 +79,9 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
                 });
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
-                mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
         mTestRule.getCallbackLock().acquire();
 
@@ -86,6 +89,10 @@ public class PartnerDisableBookmarksEditingUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
+    /**
+     * Tests that `PartnerBrowserCustomizations.initializeAsync()` completes with
+     * `isBookmarksEditingDisabled()` as `false` when no customizations provider is present.
+     */
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
@@ -96,15 +103,19 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
                 });
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
-                mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
         mTestRule.getCallbackLock().acquire();
 
         Assert.assertTrue(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
+    /**
+     * Tests that `PartnerBrowserCustomizations.isBookmarksEditingDisabled()` returns `false` when
+     * the provider reports bookmarks editing as not disabled.
+     */
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
@@ -116,9 +127,9 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
                 });
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
-                mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
         mTestRule.getCallbackLock().acquire();
 
@@ -126,6 +137,10 @@ public class PartnerDisableBookmarksEditingUnitTest {
         Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
+    /**
+     * Tests that `PartnerBrowserCustomizations.isBookmarksEditingDisabled()` returns `true` when
+     * the provider reports bookmarks editing as disabled.
+     */
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
@@ -137,9 +152,9 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
                 });
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
-                mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
         mTestRule.getCallbackLock().acquire();
 
@@ -147,10 +162,14 @@ public class PartnerDisableBookmarksEditingUnitTest {
         Assert.assertTrue(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
     }
 
+    /**
+     * Tests that `PartnerBrowserCustomizations.isBookmarksEditingDisabled()` remains `false` while
+     * `TestPartnerBrowserCustomizationsDelayedProvider` blocks the query and becomes `true` once
+     * the query is unblocked and initialization completes.
+     */
     @Test
     @SmallTest
     @Feature({"PartnerBookmarksEditing"})
-    @DisabledTest(message = "Flaky due to ConcurrentModificationException, crbug.com/40268444")
     public void testBookmarksEditingProviderDelayed() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_DELAYED_PROVIDER);
@@ -161,14 +180,19 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 () -> {
                     mPartnerBrowserCustomizations.initializeAsync(
                             mTestRule.getContextWrapper(), 2000);
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback());
                 });
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback());
 
         Assert.assertFalse(mPartnerBrowserCustomizations.isInitialized());
         Assert.assertFalse(mPartnerBrowserCustomizations.isBookmarksEditingDisabled());
 
         TestPartnerBrowserCustomizationsDelayedProvider.unblockQuery();
-        mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 3000);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
+                            mTestRule.getCallback(), 3000);
+                });
 
         mTestRule.getCallbackLock().acquire();
 
