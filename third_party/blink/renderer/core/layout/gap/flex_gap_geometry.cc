@@ -6,20 +6,29 @@
 
 #include <algorithm>
 
+#include "base/memory/values_equivalent.h"
+
 namespace blink {
 
-std::optional<LayoutUnit> FlexGapGeometry::MaxFlexCrossGapSize() const {
-  if (!flex_cross_gap_sizes_ || flex_cross_gap_sizes_->empty()) {
-    return std::nullopt;
-  }
-  return *std::ranges::max_element(*flex_cross_gap_sizes_);
+bool FlexGapGeometry::HasEqualSubclassFields(const GapGeometry& other) const {
+  const auto& other_flex = To<FlexGapGeometry>(other);
+  return cross_gap_sizes_ == other_flex.cross_gap_sizes_ &&
+         base::ValuesEquivalent(stored_cross_gap_decoration_values_,
+                                other_flex.stored_cross_gap_decoration_values_);
 }
 
-void FlexGapGeometry::GenerateMainIntersectionListForFlex(
+std::optional<LayoutUnit> FlexGapGeometry::MaxCrossGapSize() const {
+  if (cross_gap_sizes_.empty()) {
+    return std::nullopt;
+  }
+  return *std::ranges::max_element(cross_gap_sizes_);
+}
+
+void FlexGapGeometry::GenerateMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    GapSegmentStateCursor& cursor,
+    Vector<GapIntersection>& intersections) const {
   const MainGap& main_gap = GetMainGaps()[gap_index];
 
   const bool has_cross_gaps_before = main_gap.HasCrossGapsBefore();
@@ -45,12 +54,12 @@ void FlexGapGeometry::GenerateMainIntersectionListForFlex(
 
   std::optional<LayoutUnit> cross_gap_size_above;
   if (has_cross_gaps_before) {
-    cross_gap_size_above = GetFlexCrossGapSize(gap_index);
+    cross_gap_size_above = GetCrossGapSizeForLine(gap_index);
   }
 
   std::optional<LayoutUnit> cross_gap_size_below;
   if (has_cross_gaps_after) {
-    cross_gap_size_below = GetFlexCrossGapSize(gap_index + 1);
+    cross_gap_size_below = GetCrossGapSizeForLine(gap_index + 1);
   }
 
   // In flexbox, cross gaps from adjacent flex lines can overlap in a
@@ -202,12 +211,15 @@ void FlexGapGeometry::GenerateMainIntersectionListForFlex(
   intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
-void FlexGapGeometry::GenerateCrossIntersectionListForFlex(
+void FlexGapGeometry::GenerateCrossIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
+    std::optional<wtf_size_t> cross_gap_owner_index,
     GapSegmentStateCursor& cursor,
-    wtf_size_t main_gap_index) const {
+    Vector<GapIntersection>& intersections) const {
+  CHECK(cross_gap_owner_index);
+  const wtf_size_t main_gap_index = *cross_gap_owner_index;
+
   // For a flex cross gap:
   // - There are exactly two intersections:
   // 1. The gap's start offset
@@ -225,10 +237,9 @@ void FlexGapGeometry::GenerateCrossIntersectionListForFlex(
                           ? cross_gap.GetGapOffset().block_offset
                           : cross_gap.GetGapOffset().inline_offset;
   intersections.emplace_back(offset, cursor.GetNextGapSegmentState());
-  LayoutUnit end_offset_for_flex_cross_gap = ComputeEndOffsetForFlexCrossGap(
+  LayoutUnit end_offset = ComputeEndOffsetForCrossGap(
       direction, cross_gap.EndsAtEdge(), main_gap_index);
-  intersections.emplace_back(end_offset_for_flex_cross_gap,
-                             cursor.GetNextGapSegmentState());
+  intersections.emplace_back(end_offset, cursor.GetNextGapSegmentState());
 
   // Each flex cross gap intersection needs to know which main gap it borders
   // so that `overlap-join` can look up the correct cross-direction decoration
@@ -263,7 +274,7 @@ void FlexGapGeometry::GenerateCrossIntersectionListForFlex(
   }
 }
 
-LayoutUnit FlexGapGeometry::ComputeEndOffsetForFlexCrossGap(
+LayoutUnit FlexGapGeometry::ComputeEndOffsetForCrossGap(
     GridTrackSizingDirection direction,
     bool cross_gap_is_at_end,
     wtf_size_t main_gap_index) const {

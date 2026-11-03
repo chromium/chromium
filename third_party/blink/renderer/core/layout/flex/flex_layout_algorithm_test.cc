@@ -869,8 +869,8 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsContentDistributionGaps) {
   // space). Line 1: 5 items, free = 50px, space-between = 12.5px.
   // Line 2: 4 items, free = 120px, space-between = 40px.
   const auto& flex_gap_geometry = To<FlexGapGeometry>(*gap_geometry);
-  EXPECT_EQ(flex_gap_geometry.GetFlexCrossGapSize(0), LayoutUnit(12.5));
-  EXPECT_EQ(flex_gap_geometry.GetFlexCrossGapSize(1), LayoutUnit(40));
+  EXPECT_EQ(flex_gap_geometry.GetCrossGapSizeForLine(0), LayoutUnit(12.5));
+  EXPECT_EQ(flex_gap_geometry.GetCrossGapSizeForLine(1), LayoutUnit(40));
 
   VerifyCrossGaps(expected_column_gaps, column_gaps);
 }

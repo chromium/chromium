@@ -33,7 +33,7 @@ FlexGapAccumulator::FlexGapAccumulator(
   if (num_lines > 0) {
     gap_geometry_->ReserveMainGaps(num_lines - 1);
   }
-  gap_geometry_->ResizeFlexCrossGapSizes(num_lines);
+  gap_geometry_->ResizeCrossGapSizes(num_lines);
   gap_geometry_->SetMainDirection(is_column_ ? kForColumns : kForRows);
   if (is_column_) {
     // Entries use global-line indexing. Pre-size the vector so lines skipped
@@ -203,8 +203,8 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   const bool can_write_cross_gap_size =
       in_fragmentation || !is_first_item || is_last_item;
   if (can_write_cross_gap_size) {
-    gap_geometry_->SetFlexCrossGapSize(fragment_relative_line_index,
-                                       flex_line.effective_gap_between_items);
+    gap_geometry_->SetCrossGapSizeForLine(
+        fragment_relative_line_index, flex_line.effective_gap_between_items);
   }
 
   // The first item in any line doesn't have any `CrossGap` associated with
@@ -272,8 +272,8 @@ void FlexGapAccumulator::RecordFragmentedFlexCrossGapDecorationIndex(
   const wtf_size_t decoration_value_index =
       gap_geometry_->DecorationValueIndexForCrossGap(
           stitched_gap_index, line_range, gap_slot_count);
-  gap_geometry_->AddFragmentedFlexCrossGapDecorationIndex(
-      decoration_value_index, gap_slot_count);
+  gap_geometry_->AddFragmentedCrossGapDecorationIndex(decoration_value_index,
+                                                      gap_slot_count);
 }
 
 void FlexGapAccumulator::PopulateMainGapForFirstItem(LayoutUnit cross_end) {

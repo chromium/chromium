@@ -6,11 +6,13 @@
 
 namespace blink {
 
-void MulticolGapGeometry::GenerateCrossIntersectionListForMulticol(
+void MulticolGapGeometry::GenerateCrossIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    std::optional<wtf_size_t> cross_gap_owner_index,
+    GapSegmentStateCursor& cursor,
+    Vector<GapIntersection>& intersections) const {
+  CHECK(!cross_gap_owner_index);
   CHECK_EQ(direction, kForColumns);
 
   // At most, any cross gap can intersect with all main gaps, plus the start and

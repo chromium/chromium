@@ -188,7 +188,7 @@ void GridLanesGapAccumulator::CaptureEmptyOpenings(
       }
     }
   }
-  gap_geometry_->SetGridLanesEmptyOpenings(std::move(empty_openings));
+  gap_geometry_->SetEmptyOpenings(std::move(empty_openings));
 }
 
 const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
@@ -211,7 +211,7 @@ const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
   // Placement is skipped when the container has no in-flow items, so every
   // lane is empty.
   if (grid_lanes.empty() && HasMainGaps()) {
-    gap_geometry_->SetGridLanesEmptyOpenings(GridLanesEmptyOpenings(
+    gap_geometry_->SetEmptyOpenings(GridLanesEmptyOpenings(
         UncollapsedTrackCount(), {{/*start_position=*/LayoutUnit::Min(),
                                    /*end_position=*/LayoutUnit::Max()}}));
   }

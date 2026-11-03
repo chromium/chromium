@@ -8,11 +8,7 @@
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
-#include "third_party/blink/renderer/core/layout/gap/flex_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
-#include "third_party/blink/renderer/core/layout/gap/grid_gap_geometry.h"
-#include "third_party/blink/renderer/core/layout/gap/grid_lanes_gap_geometry.h"
-#include "third_party/blink/renderer/core/layout/gap/multicol_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -21,7 +17,7 @@
 namespace blink {
 
 bool GapGeometry::operator==(const GapGeometry& other) const {
-  // The container types must be equal before the subclass casts below.
+  // The container types must be equal before the subclass comparison below.
   if (container_type_ != other.container_type_ ||
       inline_gap_size_ != other.inline_gap_size_ ||
       block_gap_size_ != other.block_gap_size_ ||
@@ -36,19 +32,7 @@ bool GapGeometry::operator==(const GapGeometry& other) const {
     return false;
   }
 
-  // TODO(javiercon): Replace this switch with a virtual method that each
-  // subclass overrides.
-  switch (container_type_) {
-    case ContainerType::kFlex:
-      return To<FlexGapGeometry>(*this).HasEqualSubclassFields(
-          To<FlexGapGeometry>(other));
-    case ContainerType::kGridLanes:
-      return To<GridLanesGapGeometry>(*this).HasEqualSubclassFields(
-          To<GridLanesGapGeometry>(other));
-    case ContainerType::kGrid:
-    case ContainerType::kMultiColumn:
-      return true;
-  }
+  return HasEqualSubclassFields(other);
 }
 
 bool GapGeometry::HasRowGapFragmentation(
@@ -98,14 +82,11 @@ std::optional<wtf_size_t> GapGeometry::StoredGapSlotCount(
   if (IsMainDirection(direction)) {
     return std::nullopt;
   }
-  // TODO(javiercon): Replace this cast with a virtual method that
-  // FlexGapGeometry overrides.
-  const auto* flex_gap_geometry = DynamicTo<FlexGapGeometry>(*this);
-  if (!flex_gap_geometry ||
-      !flex_gap_geometry->HasFragmentedFlexCrossGapDecorationIndices()) {
-    return std::nullopt;
+  if (const StoredCrossGapDecorationValues* stored_values =
+          GetStoredCrossGapDecorationValues()) {
+    return stored_values->gap_slot_count;
   }
-  return flex_gap_geometry->FragmentedFlexCrossGapCount();
+  return std::nullopt;
 }
 
 wtf_size_t GapGeometry::CountSpannerMainGaps(const MainGaps& main_gaps) {
@@ -141,23 +122,6 @@ GapGeometry::DecorationValueAssignmentForGap(
     std::optional<wtf_size_t> cross_gap_owner_index) const {
   CHECK_LT(stitched_gap_index, gap_slot_count);
 
-  // Each entry in `fragmented_flex_cross_gap_decoration_indices_` stores the
-  // `CrossGap`'s index in the complete decoration value sequence after flex
-  // reversals are applied. This can differ from `stitched_gap_index`, which
-  // remains in geometric paint order. Use the entry keyed by
-  // `fragment_relative_gap_index` because fragmentation can change the gap's
-  // fragment-relative geometric index.
-  if (const std::optional<wtf_size_t> stored_gap_slot_count =
-          StoredGapSlotCount(track_direction)) {
-    CHECK_EQ(gap_slot_count, *stored_gap_slot_count);
-    // TODO(javiercon): Replace this cast with a virtual method that
-    // FlexGapGeometry overrides.
-    return {
-        To<FlexGapGeometry>(*this).FragmentedFlexCrossGapDecorationValueIndexAt(
-            fragment_relative_gap_index),
-        gap_slot_count};
-  }
-
   if (IsMainDirection(track_direction)) {
     // Main gaps use one container-wide assignment sequence for their color,
     // style, and width lists. If placement reverses their order, mirror the
@@ -168,6 +132,20 @@ GapGeometry::DecorationValueAssignmentForGap(
                                                      gap_slot_count)
             : stitched_gap_index;
     return {decoration_value_index, gap_slot_count};
+  }
+
+  // Each entry in `StoredCrossGapDecorationValues::value_indices` stores the
+  // `CrossGap`'s index in the complete decoration value sequence after flex
+  // reversals are applied. This can differ from `stitched_gap_index`, which
+  // remains in geometric paint order. Use the entry keyed by
+  // `fragment_relative_gap_index` because fragmentation can change the gap's
+  // fragment-relative geometric index.
+  if (const StoredCrossGapDecorationValues* stored_values =
+          GetStoredCrossGapDecorationValues()) {
+    CHECK_EQ(gap_slot_count, stored_values->gap_slot_count);
+    CHECK_LT(fragment_relative_gap_index, stored_values->value_indices.size());
+    return {stored_values->value_indices[fragment_relative_gap_index],
+            gap_slot_count};
   }
 
   // Grid-lanes assigns gap-decoration values to `CrossGap`s independently per
@@ -307,21 +285,18 @@ LayoutUnit GapGeometry::GetCrossingGapSize(
   const LayoutUnit base_size =
       direction == kForColumns ? block_gap_size_ : inline_gap_size_;
 
-  if (container_type_ != ContainerType::kFlex || !IsMainDirection(direction)) {
+  if (!IsMainDirection(direction)) {
     return base_size;
   }
 
-  // TODO(javiercon): Replace this cast with a virtual method that
-  // FlexGapGeometry overrides.
-  const std::optional<LayoutUnit> max_flex_cross_gap_size =
-      To<FlexGapGeometry>(*this).MaxFlexCrossGapSize();
-  if (!max_flex_cross_gap_size) {
+  const std::optional<LayoutUnit> max_cross_gap_size = MaxCrossGapSize();
+  if (!max_cross_gap_size) {
     return base_size;
   }
 
   // For flex containers, per-line cross gap sizes can differ due to content
   // distribution. Use the max across all lines for a conservative bound.
-  return std::max(base_size, *max_flex_cross_gap_size);
+  return std::max(base_size, *max_cross_gap_size);
 }
 
 String GapGeometry::ToString(bool verbose) const {
@@ -439,56 +414,45 @@ LayoutUnit GapGeometry::GetGapCenterOffset(GridTrackSizingDirection direction,
 void GapGeometry::GenerateIntersectionListForGap(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    std::optional<wtf_size_t> cross_gap_owner_index) const {
+    std::optional<wtf_size_t> cross_gap_owner_index,
+    bool needs_empty_segment_states,
+    Vector<GapIntersection>& intersections) const {
   // Reset the buffer's logical size but keep capacity, so we can reuse
   // a single Vector across loop iterations without reallocating.
   intersections.Shrink(0);
   if (IsMainDirection(direction)) {
-    GenerateMainIntersectionList(direction, gap_index, intersections);
+    BuildMainIntersectionList(direction, gap_index, needs_empty_segment_states,
+                              intersections);
   } else {
-    GenerateCrossIntersectionList(direction, gap_index, intersections,
-                                  cross_gap_owner_index);
+    BuildCrossIntersectionList(direction, gap_index, cross_gap_owner_index,
+                               intersections);
   }
 }
 
-void GapGeometry::GenerateMainIntersectionList(
+void GapGeometry::BuildMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
+    bool needs_empty_segment_states,
     Vector<GapIntersection>& intersections) const {
   GapSegmentStateCursor cursor(
       GetGapSegmentStateRangesForGap(direction, gap_index));
-  // Multicol spanner main gaps don't correspond to a paintable gap.
-  if (GetContainerType() == ContainerType::kMultiColumn) {
-    CHECK_EQ(direction, kForRows);
-    if (GetMainGaps()[gap_index].IsSpannerMainGap()) {
-      return;
-    }
+  if (!IsPaintableGap(direction, gap_index)) {
+    return;
   }
 
-  // TODO(javiercon): Replace this switch with a virtual method when each
-  // subclass contains its container-specific methods.
-  switch (GetContainerType()) {
-    case ContainerType::kGridLanes:
-      To<GridLanesGapGeometry>(*this).GenerateMainIntersectionListForGridLanes(
-          direction, gap_index, intersections, cursor);
-      break;
-    case ContainerType::kGrid:
-    case ContainerType::kMultiColumn:
-      GenerateMainIntersectionListForGridAndMulticol(direction, intersections,
-                                                     cursor);
-      break;
-    case ContainerType::kFlex:
-      To<FlexGapGeometry>(*this).GenerateMainIntersectionListForFlex(
-          direction, gap_index, intersections, cursor);
-      break;
+  GenerateMainIntersectionList(direction, gap_index, cursor, intersections);
+  if (needs_empty_segment_states) {
+    // Grid-lanes segments depend on the crossing gutters of both adjacent
+    // lanes, so their empty-side states are computed after the intersections
+    // are generated.
+    MarkEmptySegments(direction, gap_index, intersections);
   }
 }
 
 void GapGeometry::GenerateMainIntersectionListForGridAndMulticol(
     GridTrackSizingDirection direction,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    GapSegmentStateCursor& cursor,
+    Vector<GapIntersection>& intersections) const {
   intersections.reserve(GetCrossGaps().size() + 2);
 
   LayoutUnit content_start =
@@ -508,40 +472,16 @@ void GapGeometry::GenerateMainIntersectionListForGridAndMulticol(
   intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
-void GapGeometry::GenerateCrossIntersectionList(
+void GapGeometry::BuildCrossIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    std::optional<wtf_size_t> cross_gap_owner_index) const {
+    std::optional<wtf_size_t> cross_gap_owner_index,
+    Vector<GapIntersection>& intersections) const {
   GapSegmentStateCursor cursor(
       GetGapSegmentStateRangesForGap(direction, gap_index));
 
-  // TODO(javiercon): Replace this switch with a virtual method when each
-  // subclass contains its container-specific methods.
-  switch (GetContainerType()) {
-    case ContainerType::kGridLanes: {
-      CHECK(cross_gap_owner_index);
-      To<GridLanesGapGeometry>(*this).GenerateCrossIntersectionListForGridLanes(
-          *cross_gap_owner_index, intersections);
-      break;
-    }
-    case ContainerType::kGrid: {
-      CHECK(!cross_gap_owner_index);
-      To<GridGapGeometry>(*this).GenerateCrossIntersectionListForGrid(
-          direction, intersections, cursor);
-      break;
-    }
-    case ContainerType::kFlex: {
-      CHECK(cross_gap_owner_index);
-      To<FlexGapGeometry>(*this).GenerateCrossIntersectionListForFlex(
-          direction, gap_index, intersections, cursor, *cross_gap_owner_index);
-      break;
-    }
-    case ContainerType::kMultiColumn:
-      To<MulticolGapGeometry>(*this).GenerateCrossIntersectionListForMulticol(
-          direction, gap_index, intersections, cursor);
-      break;
-  }
+  GenerateCrossIntersectionList(direction, gap_index, cross_gap_owner_index,
+                                cursor, intersections);
 }
 
 bool GapGeometry::IsIntersectionAtContainerEdge(
@@ -729,14 +669,11 @@ LayoutUnit GapGeometry::CrossingGapSizeAt(
     GridTrackSizingDirection track_direction,
     wtf_size_t gap_index,
     const GapIntersection& intersection) const {
-  // Flex lines can have different effective gap sizes because of content
-  // distribution. Use the size of the line on the side of `intersection`.
-  if (GetContainerType() == ContainerType::kFlex &&
-      IsMainDirection(track_direction)) {
-    // TODO(javiercon): Replace this cast with a virtual method that
-    // FlexGapGeometry overrides.
-    return To<FlexGapGeometry>(*this).GetFlexCrossGapSize(
-        intersection.IsAboveMainGap() ? gap_index : gap_index + 1);
+  if (IsMainDirection(track_direction)) {
+    if (const std::optional<LayoutUnit> cross_gap_size =
+            CrossGapSizeAtMainGapIntersection(gap_index, intersection)) {
+      return *cross_gap_size;
+    }
   }
 
   return track_direction == kForRows ? GetInlineGapSize() : GetBlockGapSize();

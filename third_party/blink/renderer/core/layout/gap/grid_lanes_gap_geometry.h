@@ -114,22 +114,12 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
   GridLanesGapGeometry() : GapGeometry(ContainerType::kGridLanes) {}
 
   // Stores finalized empty openings grouped by non-collapsed lane.
-  void SetGridLanesEmptyOpenings(GridLanesEmptyOpenings empty_openings);
+  void SetEmptyOpenings(GridLanesEmptyOpenings empty_openings);
 
   // Returns the empty openings of a lane, as offsets along the stacking axis.
   // `lane_index` counts only non-collapsed lanes.
   const Vector<TrackOpeningCoordinates>& EmptyOpeningsForLane(
       wtf_size_t lane_index) const;
-
-  // Marks each segment of a grid-lanes main gap, between two adjacent
-  // intersections, as empty before or after when the lane on that side is empty
-  // along the whole segment. The segment is bounded by the edges of the
-  // crossing gutters, and its state is stored on the intersection that starts
-  // it, as for grid. This way `rule-visibility-items` applies to each segment
-  // before `rule-break` joins them.
-  void MarkGridLanesEmptySegments(GridTrackSizingDirection track_direction,
-                                  wtf_size_t gap_index,
-                                  Vector<GapIntersection>& intersections) const;
 
   // A lane boundary separates adjacent non-collapsed tracks. Maps a lane
   // boundary to its grid-axis offset:
@@ -142,32 +132,47 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
   LayoutUnit GridAxisOffsetForLaneBoundary(wtf_size_t lane_boundary) const;
 
  private:
-  // TODO(javiercon): Remove this friend declaration when the methods that
-  // `GapGeometry` calls can be made virtual.
-  friend class GapGeometry;
+  // Compares the empty openings of each lane.
+  bool HasEqualSubclassFields(const GapGeometry& other) const override;
 
-  bool HasEqualSubclassFields(const GridLanesGapGeometry& other) const {
-    return grid_lanes_empty_openings_ == other.grid_lanes_empty_openings_;
-  }
+  // Each cross gap belongs to the lane that contains it.
+  bool CrossGapsHaveOwners() const override { return true; }
 
-  // Fills `intersections` for a grid-lanes main gap at `gap_index`.
-  void GenerateMainIntersectionListForGridLanes(
+  // Fills `intersections` for a grid-lanes main gap at `gap_index`. The
+  // intersections come from the cross gaps of the lanes on both sides of the
+  // main gap. Overlapping crossing gutters become one overlap window.
+  void GenerateMainIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections,
-      GapSegmentStateCursor& cursor) const;
+      GapSegmentStateCursor& cursor,
+      Vector<GapIntersection>& intersections) const override;
 
-  // Fills `intersections` for a grid-lanes `CrossGap` at `lane`, which
-  // includes:
+  // Marks each segment of a grid-lanes main gap, between two adjacent
+  // intersections, as empty before or after when the lane on that side is empty
+  // along the whole segment. The segment is bounded by the edges of the
+  // crossing gutters, and its state is stored on the intersection that starts
+  // it, as for grid. This way `rule-visibility-items` applies to each segment
+  // before `rule-break` joins them.
+  void MarkEmptySegments(GridTrackSizingDirection direction,
+                         wtf_size_t gap_index,
+                         Vector<GapIntersection>& intersections) const override;
+
+  // Fills `intersections` for a grid-lanes `CrossGap` in the lane at
+  // `cross_gap_owner_index`, which includes:
   // 1. The gap's start offset
-  // 2. Its computed end offset at the end of `lane` (which could be a
+  // 2. Its computed end offset at the end of the lane (which could be a
   // `MainGap`)
-  void GenerateCrossIntersectionListForGridLanes(
-      wtf_size_t lane,
-      Vector<GapIntersection>& intersections) const;
+  // `cross_gap_owner_index` must have a value. The intersections depend only
+  // on the lane, so `direction`, `gap_index`, and `cursor` are not used.
+  void GenerateCrossIntersectionList(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      std::optional<wtf_size_t> cross_gap_owner_index,
+      GapSegmentStateCursor& cursor,
+      Vector<GapIntersection>& intersections) const override;
 
   // Empty openings per lane, used to determine visibility.
-  GridLanesEmptyOpenings grid_lanes_empty_openings_;
+  GridLanesEmptyOpenings empty_openings_;
 };
 
 template <>

@@ -20,10 +20,14 @@ void GridGapGeometry::AdjustCrossGapsRangesForFragmentation(
   }
 }
 
-void GridGapGeometry::GenerateCrossIntersectionListForGrid(
+void GridGapGeometry::GenerateCrossIntersectionList(
     GridTrackSizingDirection direction,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    wtf_size_t gap_index,
+    std::optional<wtf_size_t> cross_gap_owner_index,
+    GapSegmentStateCursor& cursor,
+    Vector<GapIntersection>& intersections) const {
+  CHECK(!cross_gap_owner_index);
+
   // For a grid cross gap:
   // - Intersections include:
   // 1. The content-start edge

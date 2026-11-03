@@ -298,6 +298,12 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
     return main_direction_ == direction;
   }
 
+  // Returns whether each gap in `direction` belongs to an owner, such as a flex
+  // line or a grid lane. Only cross gaps can have owners.
+  bool AreGapsOwned(GridTrackSizingDirection direction) const {
+    return !IsMainDirection(direction) && CrossGapsHaveOwners();
+  }
+
   const Vector<MainGap>& GetMainGaps() const { return main_gaps_; }
 
   const Vector<CrossGap>& GetCrossGaps() const { return cross_gaps_; }
@@ -317,7 +323,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   //
   // We reset `intersections` (Shrink(0)) before populating, so the buffer's
   // capacity is preserved through loop iterations. This makes reuse across a
-  // gap loop allocation-free after the first call.
+  // gap loop allocation-free after the first call. `intersections` stays empty
+  // for a main gap that cannot be painted (see `IsPaintableGap`), so callers
+  // that paint must skip those gaps first.
   //
   // `cross_gap_owner_index` is the forward-only cursor identifying the owner of
   // the cross gap being processed: the flex line (main gap) for flex, or the
@@ -325,8 +333,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void GenerateIntersectionListForGap(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections,
-      std::optional<wtf_size_t> cross_gap_owner_index) const;
+      std::optional<wtf_size_t> cross_gap_owner_index,
+      bool needs_empty_segment_states,
+      Vector<GapIntersection>& intersections) const;
 
   // Determines whether the intersection at `intersection_index` within
   // `gap_index` lies on the container boundary. Typically, the first and last
@@ -487,7 +496,94 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
         content_block_end_(new_content_block_end),
         main_direction_(other.main_direction_) {}
 
+  // Fills `intersections` for a grid or multicol main gap.
+  // Kept in the base class because both containers have identical behavior.
+  void GenerateMainIntersectionListForGridAndMulticol(
+      GridTrackSizingDirection direction,
+      GapSegmentStateCursor& cursor,
+      Vector<GapIntersection>& intersections) const;
+
+  // TODO(javiercon): The painter chooses between stored values, stitching
+  // across fragments, and the gap count of this fragment to assign decoration
+  // values. Give the painter one container-agnostic entry point for this, so
+  // that this struct and its hook become internal to the gap geometry.
+  //
+  // Each `column-rule-*` and `row-rule-*` property can hold a list of values.
+  // Layout assigns these values to the cross gaps of the whole container, one
+  // value per cross gap, in placement order. We call this order the assignment
+  // sequence, and each position in it a gap slot. This struct holds the
+  // assignment that layout stored for the cross gaps of one fragment.
+  struct StoredCrossGapDecorationValues {
+    bool operator==(const StoredCrossGapDecorationValues&) const = default;
+
+    // The gap slot of each cross gap in this fragment, in paint order. This is
+    // the index of the cross gap's value in each value list.
+    Vector<wtf_size_t> value_indices;
+
+    // The number of gap slots in the assignment sequence. This is the number of
+    // cross gaps in all fragments of the container, not only in this fragment.
+    // It is used to resolve repeaters in the value lists.
+    wtf_size_t gap_slot_count = 0;
+  };
+
  private:
+  // Compares the fields of the container-specific subclass. `other` has the
+  // same container type as this geometry.
+  virtual bool HasEqualSubclassFields(const GapGeometry& other) const = 0;
+
+  // Fills `intersections` for a main gap at `gap_index`, between the
+  // container content start and content end. The intersections with cross
+  // gaps are container-specific.
+  virtual void GenerateMainIntersectionList(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      GapSegmentStateCursor& cursor,
+      Vector<GapIntersection>& intersections) const = 0;
+
+  // Fills `intersections` for a cross gap at `gap_index`.
+  // `cross_gap_owner_index` is the owner of the cross gap (flex line or grid
+  // lane), when there is one.
+  virtual void GenerateCrossIntersectionList(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      std::optional<wtf_size_t> cross_gap_owner_index,
+      GapSegmentStateCursor& cursor,
+      Vector<GapIntersection>& intersections) const = 0;
+
+  // Returns the decoration value assignment that layout stored for the cross
+  // gaps of this fragment, or `nullptr` if layout did not store one.
+  virtual const StoredCrossGapDecorationValues*
+  GetStoredCrossGapDecorationValues() const {
+    return nullptr;
+  }
+
+  // Returns whether each cross gap belongs to an owner (such as a flex line or
+  // grid lane). Grid and multicol cross gaps cross the whole container, so they
+  // have no owner.
+  virtual bool CrossGapsHaveOwners() const { return false; }
+
+  // Marks which segments of the main gap at `gap_index` are next to empty
+  // space.
+  virtual void MarkEmptySegments(GridTrackSizingDirection direction,
+                                 wtf_size_t gap_index,
+                                 Vector<GapIntersection>& intersections) const {
+  }
+
+  // Returns the largest cross gap size, or `std::nullopt` if all cross gaps
+  // use the uniform gap size.
+  virtual std::optional<LayoutUnit> MaxCrossGapSize() const {
+    return std::nullopt;
+  }
+
+  // Returns the size of the cross gaps on the side of `intersection` along the
+  // main gap at `main_gap_index`, or `std::nullopt` if all cross gaps use the
+  // uniform gap size.
+  virtual std::optional<LayoutUnit> CrossGapSizeAtMainGapIntersection(
+      wtf_size_t main_gap_index,
+      const GapIntersection& intersection) const {
+    return std::nullopt;
+  }
+
   static wtf_size_t CountSpannerMainGaps(const MainGaps& main_gaps);
 
   // Returns whether a cross-gap intersection is adjacent to a synthetic main
@@ -518,28 +614,24 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // - container content start
   // - Intersections with cross gaps (container-specific)
   // - container content end.
-  // All offsets are in increasing order along `direction`.
-  void GenerateMainIntersectionList(
-      GridTrackSizingDirection direction,
-      wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections) const;
-
-  // Fills `intersections` for a grid or multicol main gap.
-  void GenerateMainIntersectionListForGridAndMulticol(
-      GridTrackSizingDirection direction,
-      Vector<GapIntersection>& intersections,
-      GapSegmentStateCursor& cursor) const;
+  // All offsets are in increasing order along `direction`. Leaves
+  // `intersections` empty when the gap cannot be painted (see
+  // `IsPaintableGap`).
+  void BuildMainIntersectionList(GridTrackSizingDirection direction,
+                                 wtf_size_t gap_index,
+                                 bool needs_empty_segment_states,
+                                 Vector<GapIntersection>& intersections) const;
 
   // Fills `intersections` for a cross gap at `gap_index`. For grid containers,
   // this includes the container content edges and every main gap offset. For
   // flex containers, it includes the cross-gap start offset and its computed
   // end offset. `cross_gap_owner_index` is the owner of the cross gap being
   // processed (flex line or grid lane), when there is one.
-  void GenerateCrossIntersectionList(
+  void BuildCrossIntersectionList(
       GridTrackSizingDirection direction,
       wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections,
-      std::optional<wtf_size_t> cross_gap_owner_index) const;
+      std::optional<wtf_size_t> cross_gap_owner_index,
+      Vector<GapIntersection>& intersections) const;
 
   // For `overlap-join`, computes the inset so the main-direction decoration
   // extends to meet the far edge of the cross-direction decoration at each

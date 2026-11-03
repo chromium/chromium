@@ -37,22 +37,27 @@ bool ConsumeOpeningsAndCheckEmpty(
 
 }  // namespace
 
-void GridLanesGapGeometry::SetGridLanesEmptyOpenings(
+bool GridLanesGapGeometry::HasEqualSubclassFields(
+    const GapGeometry& other) const {
+  return empty_openings_ == To<GridLanesGapGeometry>(other).empty_openings_;
+}
+
+void GridLanesGapGeometry::SetEmptyOpenings(
     GridLanesEmptyOpenings empty_openings) {
   CHECK_EQ(empty_openings.size(), MainGapCount() + 1);
-  grid_lanes_empty_openings_ = std::move(empty_openings);
+  empty_openings_ = std::move(empty_openings);
 }
 
 const Vector<TrackOpeningCoordinates>&
 GridLanesGapGeometry::EmptyOpeningsForLane(wtf_size_t lane_index) const {
-  return grid_lanes_empty_openings_[lane_index];
+  return empty_openings_[lane_index];
 }
 
-void GridLanesGapGeometry::MarkGridLanesEmptySegments(
-    GridTrackSizingDirection track_direction,
+void GridLanesGapGeometry::MarkEmptySegments(
+    GridTrackSizingDirection direction,
     wtf_size_t gap_index,
     Vector<GapIntersection>& intersections) const {
-  CHECK(IsMainDirection(track_direction));
+  CHECK(IsMainDirection(direction));
 
   base::span<const TrackOpeningCoordinates> before_openings =
       EmptyOpeningsForLane(gap_index);
@@ -69,13 +74,13 @@ void GridLanesGapGeometry::MarkGridLanesEmptySegments(
 
   LayoutUnit segment_start =
       intersections[0].GetOffset() +
-      GetCrossWidthForIntersection(track_direction, gap_index,
+      GetCrossWidthForIntersection(direction, gap_index,
                                    /*intersection_index=*/0,
                                    /*is_main_gap=*/true, intersections) /
           2;
   for (wtf_size_t i = 0; i + 1 < intersections.size(); ++i) {
     const LayoutUnit next_half_cross_width =
-        GetCrossWidthForIntersection(track_direction, gap_index, i + 1,
+        GetCrossWidthForIntersection(direction, gap_index, i + 1,
                                      /*is_main_gap=*/true, intersections) /
         2;
     const LayoutUnit segment_end =
@@ -198,11 +203,11 @@ GridLanesMainGapSegmentWalker::Next() {
   return segment;
 }
 
-void GridLanesGapGeometry::GenerateMainIntersectionListForGridLanes(
+void GridLanesGapGeometry::GenerateMainIntersectionList(
     GridTrackSizingDirection direction,
     wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
+    GapSegmentStateCursor& cursor,
+    Vector<GapIntersection>& intersections) const {
   GridLanesMainGapSegmentWalker walker(*this, gap_index);
   intersections.reserve(walker.IntersectionCapacity());
   const LayoutUnit content_start = direction == kForColumns
@@ -272,9 +277,15 @@ LayoutUnit GridLanesGapGeometry::GridAxisOffsetForLaneBoundary(
   return MainGapAt(lane_boundary - 1).GetGapOffset();
 }
 
-void GridLanesGapGeometry::GenerateCrossIntersectionListForGridLanes(
-    wtf_size_t lane,
+void GridLanesGapGeometry::GenerateCrossIntersectionList(
+    GridTrackSizingDirection direction,
+    wtf_size_t gap_index,
+    std::optional<wtf_size_t> cross_gap_owner_index,
+    GapSegmentStateCursor& cursor,
     Vector<GapIntersection>& intersections) const {
+  CHECK(cross_gap_owner_index);
+  const wtf_size_t lane = *cross_gap_owner_index;
+
   // A grid-lanes `CrossGap` is one stacking-axis gutter confined to a single
   // lane, so it generates exactly two intersections: one at each of the lane's
   // grid-axis boundaries. It never crosses a grid-axis gutter.
