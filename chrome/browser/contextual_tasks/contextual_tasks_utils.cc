@@ -730,12 +730,24 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window) {
             is_pinning_eligible ? actions::ActionPinnableState::kPinnable
                                 : actions::ActionPinnableState::kNotPinnable));
 
-    bool should_show_ephemeral = false;
-    if (auto* ephemeral_controller =
-            ContextualTasksEphemeralButtonController::From(browser_window)) {
-      should_show_ephemeral = ephemeral_controller->ShouldShowEphemeralButton();
+    if (!browser_window->GetProfile()->IsOffTheRecord()) {
+      // Unpinned toolbar presence is owned by `ShowActionEphemerallyInToolbar`;
+      // hiding `action_item` directly bypasses `AnimatingLayoutManager`
+      // fade-out and leaves a popped-out button queued for removal that
+      // resurrects if eligibility is restored before layout completes.
+      if (!GetEffectivePinState(browser_window->GetProfile())) {
+        action_item->SetVisible(true);
+        return;
+      }
+
+      bool should_show_ephemeral = false;
+      if (auto* ephemeral_controller =
+              ContextualTasksEphemeralButtonController::From(browser_window)) {
+        should_show_ephemeral =
+            ephemeral_controller->ShouldShowEphemeralButton();
+      }
+      action_item->SetVisible(is_pinning_eligible || should_show_ephemeral);
     }
-    action_item->SetVisible(is_pinning_eligible || should_show_ephemeral);
     return;
   }
 

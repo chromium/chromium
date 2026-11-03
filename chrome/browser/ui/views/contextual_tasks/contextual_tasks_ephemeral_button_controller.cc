@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -119,6 +120,17 @@ ContextualTasksEphemeralButtonController::
   }
   if (auto* pinned_model = PinnedToolbarActionsModel::Get(profile)) {
     pinned_toolbar_observation_.Observe(pinned_model);
+  }
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+    if (auto* const eligibility_manager =
+            contextual_tasks::EntryPointEligibilityManager::From(
+                browser_window_interface_)) {
+      entry_point_eligibility_subscription_ =
+          eligibility_manager->RegisterOnEntryPointEligibilityChanged(
+              base::BindRepeating(&ContextualTasksEphemeralButtonController::
+                                      OnEntryPointEligibilityChanged,
+                                  base::Unretained(this)));
+    }
   }
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
@@ -269,6 +281,27 @@ void ContextualTasksEphemeralButtonController::OnTaskDisassociatedFromTab(
 
 void ContextualTasksEphemeralButtonController::
     OnAimEligibilityResponseChanged() {
+  MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksEphemeralButtonController::OnEntryPointEligibilityChanged(
+    bool is_eligible) {
+  if (is_eligible) {
+    MaybeNotifyVisibilityShouldChange();
+    return;
+  }
+
+  // The side panel coordinator closes the panel when eligibility is lost, which
+  // would otherwise mark the active task's tabs eligible for the ephemeral
+  // button. Clear every tab so no thread-state button is left behind. Tasks are
+  // intentionally not disassociated: a pinned icon comes back if the user
+  // becomes eligible again, and the thread can still be resumed from it.
+  ephemeral_button_eligible_tabs_.clear();
+  ephemeral_button_auto_dismiss_timers_.clear();
+  std::optional<base::AutoReset<std::optional<RemovalReason>>> reset_reason;
+  if (!removal_reason_.has_value()) {
+    reset_reason.emplace(&removal_reason_, RemovalReason::kTaskDisassociated);
+  }
   MaybeNotifyVisibilityShouldChange();
 }
 

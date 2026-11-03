@@ -208,6 +208,42 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Unpin
   EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
 }
 
+TEST_F(
+    ContextualTasksUtilsTest,
+    UpdatePinButtonVisibilityState_Ineligible_Unpinned_EphemeralPinButtonRefactor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::
+                                kEnableContextualTasksPinButtonInToolbar,
+                            contextual_tasks::
+                                kContextualTasksEphemeralPinButtonRefactor},
+      /*disabled_features=*/{});
+
+  root_action_ = actions::ActionItem::Builder().Build();
+  actions::ActionItem* action_item = root_action_->AddChild(
+      actions::ActionItem::Builder()
+          .SetActionId(kActionSidePanelShowContextualTasks)
+          .SetVisible(true)
+          .SetEnabled(true)
+          .Build());
+
+  browser_actions_->set_root_action_item_for_testing(root_action_.get());
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_.get());
+  ASSERT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+
+  // Should mark the action item not pinnable, but NOT hide it when unpinned so
+  // `ShowActionEphemerallyInToolbar` can fade out popped-out buttons cleanly.
+  UpdatePinButtonVisibilityState(browser_window_.get());
+
+  EXPECT_EQ(
+      static_cast<actions::ActionPinnableState>(
+          action_item->GetProperty(actions::kActionItemPinnableKey)),
+      actions::ActionPinnableState::kNotPinnable);
+  EXPECT_TRUE(action_item->GetVisible());
+  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
+}
+
 TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Pinned_IncognitoProfile) {
   root_action_ = actions::ActionItem::Builder().Build();
   actions::ActionItem* action_item = root_action_->AddChild(

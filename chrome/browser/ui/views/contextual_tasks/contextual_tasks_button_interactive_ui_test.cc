@@ -86,6 +86,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_solid_color.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -1652,6 +1653,34 @@ IN_PROC_BROWSER_TEST_F(
       CheckButtonIsInRightDock(), SetContextualTasksRightAligned(true),
       EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
       CheckButtonIsInRightDock());
+}
+
+// Under Pinning V2, losing entry point eligibility (e.g. the default search
+// engine changes) must hide the thread-state ephemeral button instead of
+// leaving it behind until navigation, auto-dismiss, or tab close.
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+                       ButtonHidesWhenUserBecomesIneligible) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      SetIsAimEligible(false),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      ExpectTotalCount(
+          "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+          "TaskDisassociated",
+          1),
+      // Regaining eligibility does not resurrect the dismissed button; a new
+      // side panel session is required.
+      SetIsAimEligible(true),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
@@ -3945,4 +3974,41 @@ IN_PROC_BROWSER_TEST_F(
             "RemovedByContextMenu",
             1);
       }));
+}
+
+// Under the ephemeral pin button refactor, losing entry point eligibility must
+// hide the popped-out pinned action in its thread state, matching the legacy
+// ephemeral button.
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralPinButtonRefactorInteractiveTest,
+                       PinnedActionHidesWhenUserBecomesIneligible) {
+  const auto rich_animation_lock =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      SetIsAimEligible(false),
+      WaitForHide(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+            "TaskDisassociated",
+            1);
+      }),
+      // Regaining eligibility does not resurrect the dismissed button; a new
+      // side panel session is required.
+      SetIsAimEligible(true),
+      EnsureNotPresent(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId));
 }
