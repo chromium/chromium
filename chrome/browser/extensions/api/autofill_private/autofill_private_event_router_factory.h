@@ -33,6 +33,7 @@ class AutofillPrivateEventRouterFactory : public ProfileKeyedServiceFactory {
  protected:
   // BrowserContextKeyedServiceFactory overrides:
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsCreatedAfterStartup() const override;
 
  private:
   friend base::NoDestructor<AutofillPrivateEventRouterFactory>;

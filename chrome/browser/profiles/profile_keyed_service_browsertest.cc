@@ -1140,9 +1140,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_active_services.erase("PageContentAnnotationsService");
     guest_active_services.erase("ZeroSuggestCacheServiceFactory");
   }
-  if (features::IsLazyAfterStartupKeyedServicesEnabled()) {
-    guest_active_services.erase("AutofillPrivateEventRouter");
-  }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {
     guest_active_services.erase("SafeBrowsingPrivateEventRouter");

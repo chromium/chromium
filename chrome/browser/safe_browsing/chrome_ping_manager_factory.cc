@@ -115,6 +115,11 @@ bool ChromePingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   // PingManager is created at startup to send persisted reports.
   return !::features::IsLazyAfterStartupKeyedServicesEnabled();
 }
+
+bool ChromePingManagerFactory::ServiceIsCreatedAfterStartup() const {
+  return ::features::IsLazyAfterStartupKeyedServicesEnabled();
+}
+
 bool ChromePingManagerFactory::ServiceIsNULLWhileTesting() const {
   return !kAllowPingManagerInTests;
 }

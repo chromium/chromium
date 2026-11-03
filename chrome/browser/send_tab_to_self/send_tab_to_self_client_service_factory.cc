@@ -97,6 +97,11 @@ bool SendTabToSelfClientServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return !::features::IsLazyAfterStartupKeyedServicesEnabled();
 }
+
+bool SendTabToSelfClientServiceFactory::ServiceIsCreatedAfterStartup() const {
+  return ::features::IsLazyAfterStartupKeyedServicesEnabled();
+}
+
 bool SendTabToSelfClientServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

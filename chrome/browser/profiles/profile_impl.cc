@@ -40,7 +40,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -60,11 +59,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_manager_utils.h"
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
-#endif
-#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
-#include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
@@ -966,30 +960,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // TODO(crbug.com/527272238): Migrate these factories to
-  // `ServiceIsCreatedAfterStartup()`.
-  if (features::IsLazyAfterStartupKeyedServicesEnabled() &&
-      IsRegularProfile()) {
-    AfterStartupTaskUtils::PostTask(
-        FROM_HERE,
-        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}),
-        base::BindOnce(
-            [](base::WeakPtr<Profile> profile) {
-              if (!profile || profile->ShutdownStarted()) {
-                return;
-              }
-              safe_browsing::ChromePingManagerFactory::GetForBrowserContext(
-                  profile.get());
-              send_tab_to_self::SendTabToSelfClientServiceFactory::
-                  GetForProfile(profile.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-              extensions::AutofillPrivateEventRouterFactory::GetForProfile(
-                  profile.get());
-#endif
-            },
-            GetWeakPtr()));
-  }
 
   // The announcement notification  service might not be available for some
   // irregular profiles, like the System Profile.

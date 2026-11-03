@@ -60,4 +60,8 @@ bool AutofillPrivateEventRouterFactory::
     ServiceIsCreatedWithBrowserContext() const {
   return !::features::IsLazyAfterStartupKeyedServicesEnabled();
 }
+
+bool AutofillPrivateEventRouterFactory::ServiceIsCreatedAfterStartup() const {
+  return ::features::IsLazyAfterStartupKeyedServicesEnabled();
+}
 }  // namespace extensions
