@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public/public_key_credential_user_entity.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webauthn/android/jni_headers/WebauthnBrowserBridge_jni.h"
@@ -116,10 +117,11 @@ void OnHybridAssertionInvoked(
   jni_zero::RunRunnable(jcallback);
 }
 
-static int64_t JNI_WebauthnBrowserBridge_CreateNativeWebauthnBrowserBridge(
+static jni_zero::JniUniquePtr<WebauthnBrowserBridge>
+JNI_WebauthnBrowserBridge_CreateNativeWebauthnBrowserBridge(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbridge) {
-  return reinterpret_cast<int64_t>(new WebauthnBrowserBridge(env, jbridge));
+  return jni_zero::MakeUnique<WebauthnBrowserBridge>(env, jbridge);
 }
 
 WebauthnBrowserBridge::WebauthnBrowserBridge(
@@ -278,10 +280,6 @@ void WebauthnBrowserBridge::CleanupCredManRequest(
     return;
   }
   client->CleanupCredManRequest(render_frame_host);
-}
-
-void WebauthnBrowserBridge::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 static bool JNI_WebauthnBrowserBridge_ShouldDisallowCredentialRequest(
