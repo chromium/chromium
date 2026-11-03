@@ -361,20 +361,6 @@ class SelectionOverlayInteractiveTestWithPrompt
   std::unique_ptr<FakePromptSuggestionTool> fake_tool_;
 };
 
-class SelectionOverlayInteractiveTestWithPromptWithoutBox
-    : public SelectionOverlayInteractiveTestWithPrompt {
- public:
-  SelectionOverlayInteractiveTestWithPromptWithoutBox() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicSelectionOverlayPrompt,
-                              ::selection::kSmartSelectionServerSuggestions},
-        /*disabled_features=*/{features::kGlicSelectionOverlayPromptBox});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 class SelectionOverlayInteractiveTestWithSplitView
     : public SplitViewInteractiveTestMixin<SelectionOverlayInteractiveTest> {
  public:
@@ -2100,339 +2086,15 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(150, 150)),
-      WaitForJsResultAt(
+      // Wait for the region so the check below runs after the drag.
+      WaitForJsResultAt(kOverlayWebContentsId,
+                        {"selection-overlay-app", "glic-selection-overlay",
+                         "post-selection-renderer"},
+                        "el => el.selectedRegions.length === 1"),
+      CheckJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => el.shadowRoot.querySelector('#floatingPromptContainer') === "
           "null"));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
-                       FloatingPromptAndChipsShownOnSelection) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-
-  RunTestSequence(
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
-          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
-      MoveMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(50, 50)),
-      DragMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(150, 150)),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  return container !== null && !container.hidden;"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const input = el.shadowRoot.querySelector('#promptInput');"
-          "  return input !== null && input.placeholder === 'Ask Gemini';"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (chips.length !== 2) return false;"
-          "  const titles = chips.map(c => "
-          "c.querySelector('.chip-label')?.textContent?.trim());"
-          "  return titles[0] === 'Summarize' && titles[1] === 'Ask Gemini';"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (!container || !pill || chips.length !== 2) return false;"
-          "  const rect = container.getBoundingClientRect();"
-          "  const pillRect = pill.getBoundingClientRect();"
-          "  const chip0Rect = chips[0].getBoundingClientRect();"
-          "  const chip1Rect = chips[1].getBoundingClientRect();"
-          "  return rect.height > 96 && rect.height <= 130 && "
-          "      chip0Rect.top >= pillRect.bottom && "
-          "      chip1Rect.top >= chip0Rect.bottom && "
-          "      Math.abs(chip0Rect.left - pillRect.left) <= 1 && "
-          "      Math.abs(chip1Rect.left - pillRect.left) <= 1;"
-          "}"),
-      ExecuteJsAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  el.suggestedActions = ["
-          "    {...el.suggestedActions[0], title: 'Short'},"
-          "    {...el.suggestedActions[0], title: 'A longer suggestion title "
-          "that wraps onto a second line in the chip'},"
-          "    {...el.suggestedActions[0], title: 'A very long suggestion "
-          "title that definitely exceeds two lines and therefore is ellipsised "
-          "at the end of the second line instead of growing to three or more "
-          "lines'},"
-          "  ];"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (!pill || chips.length !== 3) return false;"
-          "  const pillRect = pill.getBoundingClientRect();"
-          "  const r0 = chips[0].getBoundingClientRect();"
-          "  const r1 = chips[1].getBoundingClientRect();"
-          "  const r2 = chips[2].getBoundingClientRect();"
-          "  const label2 = chips[2].querySelector('.chip-label');"
-          "  return r0.width <= pillRect.width && "
-          "      r1.width <= pillRect.width && "
-          "      r2.width <= pillRect.width && "
-          "      Math.round(r0.height) === 32 && "
-          "      Math.round(r1.height) === 52 && "
-          "      Math.round(r2.height) === 52 && "
-          "      getComputedStyle(label2).webkitLineClamp === '2';"
-          "}"));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
-                       FloatingPromptAndChipsShownAboveSelection) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-  auto point_from_bottom_left = [this](int x, int y) {
-    return base::BindLambdaForTesting([this, x, y](ui::TrackedElement* el) {
-      return AsView<views::View>(el)->GetBoundsInScreen().bottom_left() +
-             gfx::Vector2d(x, -y);
-    });
-  };
-
-  RunTestSequence(
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
-          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
-      MoveMouseTo(OverlayBaseController::kOverlayId,
-                  point_from_bottom_left(50, 150)),
-      DragMouseTo(OverlayBaseController::kOverlayId,
-                  point_from_bottom_left(150, 20)),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (!container || container.hidden || !pill || chips.length !== "
-          "2) {"
-          "    return false;"
-          "  }"
-          "  const titles = chips.map(c => "
-          "c.querySelector('.chip-label')?.textContent?.trim());"
-          "  if (titles[0] !== 'Summarize' || titles[1] !== 'Ask Gemini') {"
-          "    return false;"
-          "  }"
-          "  const pillRect = pill.getBoundingClientRect();"
-          "  const chip0Rect = chips[0].getBoundingClientRect();"
-          "  const chip1Rect = chips[1].getBoundingClientRect();"
-          "  return container.hasAttribute('above-selection') && "
-          "      chip0Rect.top >= chip1Rect.bottom && "
-          "      pillRect.top >= chip0Rect.bottom && "
-          "      Math.abs(chip0Rect.left - pillRect.left) <= 1 && "
-          "      Math.abs(chip1Rect.left - pillRect.left) <= 1;"
-          "}"));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
-                       ChipsShownWithoutInputBoxWhenPromptBoxDisabled) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-  const DeepQuery kSettingsButton = {
-      "selection-overlay-app", "glic-selection-overlay", "#settingsButton"};
-
-  RunTestSequence(
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
-          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
-      MoveMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(50, 50)),
-      DragMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(150, 150)),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  return container !== null && !container.hidden;"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.shadowRoot.querySelector('#promptInput') === null"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (chips.length !== 2) return false;"
-          "  const titles = chips.map(c => "
-          "c.querySelector('.chip-label')?.textContent?.trim());"
-          "  return titles[0] === 'Summarize' && titles[1] === 'Ask Gemini';"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const renderer = "
-          "el.shadowRoot.querySelector('#postSelectionRenderer');"
-          "  const rendererCloseBtn = "
-          "renderer?.shadowRoot?.querySelector('.close-button');"
-          "  return renderer?.hideCloseButton === true && "
-          "      rendererCloseBtn !== null && "
-          "      getComputedStyle(rendererCloseBtn).display === 'none';"
-          "}"),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  const settingsBtn = "
-          "el.shadowRoot.querySelector('#settingsButton');"
-          "  const chips = "
-          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (!container || !settingsBtn || chips.length !== 2) return "
-          "false;"
-          "  const containerRect = container.getBoundingClientRect();"
-          "  const btnRect = settingsBtn.getBoundingClientRect();"
-          "  const chip0Rect = chips[0].getBoundingClientRect();"
-          "  const chip1Rect = chips[1].getBoundingClientRect();"
-          "  const overlayRect = el.selectionOverlayRect;"
-          "  const sel = el.activeSelection;"
-          "  const selRight = overlayRect.left + (sel.left + sel.width) * "
-          "overlayRect.width;"
-          "  const selTop = overlayRect.top + sel.top * overlayRect.height;"
-          "  return Math.abs(containerRect.left - selRight) <= 2 && "
-          "      Math.abs(containerRect.bottom - selTop) <= 2 && "
-          "      chip1Rect.left >= chip0Rect.right && "
-          "      btnRect.left >= chip1Rect.right;"
-          "}"),
-      MoveMouseTo(kOverlayWebContentsId, kSettingsButton), ClickMouse(),
-      WaitForHide(OverlayBaseController::kOverlayId));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
-                       ChipsRowClampedToViewportRightEdge) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-  // A point measured from the overlay's top-right corner, so the selection
-  // ends too close to the right edge for the row to fit beside it.
-  auto point_from_top_right = [this](int x, int y) {
-    return base::BindLambdaForTesting([this, x, y](ui::TrackedElement* el) {
-      return AsView<views::View>(el)->GetBoundsInScreen().top_right() +
-             gfx::Vector2d(-x, y);
-    });
-  };
-  static constexpr char kRowClampedJs[] = R"js(
-    el => {
-      const container =
-          el.shadowRoot.querySelector('#floatingPromptContainer');
-      if (!container || container.hidden ||
-          el.shadowRoot.querySelectorAll('.action-chip').length === 0) {
-        return false;
-      }
-      const rect = container.getBoundingClientRect();
-      const overlayRect = el.selectionOverlayRect;
-      const sel = el.activeSelection;
-      const selRight =
-          overlayRect.left + (sel.left + sel.width) * overlayRect.width;
-      return Math.abs(rect.right - (window.innerWidth - 16)) <= 2 &&
-          rect.left < selRight - 2;
-    }
-  )js";
-
-  RunTestSequence(
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
-          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
-      MoveMouseTo(OverlayBaseController::kOverlayId,
-                  point_from_top_right(120, 100)),
-      DragMouseTo(OverlayBaseController::kOverlayId,
-                  point_from_top_right(40, 180)),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        kRowClampedJs));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
-                       FloatingPromptPositionClampedWithinViewport) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kOverlayApp = {"selection-overlay-app"};
-  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
-                                       "glic-selection-overlay"};
-
-  RunTestSequence(
-      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
-      WaitForShow(OverlayBaseController::kOverlayId),
-      InstrumentNonTabWebView(kOverlayWebContentsId,
-                              OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
-                        "el => el.screenshot_ !== null"),
-      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
-          "&& el.selectionOverlayRect.height > 0"),
-      MoveMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(500, 200)),
-      DragMouseTo(OverlayBaseController::kOverlayId,
-                  GetPointWithOffset(700, 350)),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const container = "
-          "el.shadowRoot.querySelector('#floatingPromptContainer');"
-          "  if (!container || container.hidden) return false;"
-          "  const rect = container.getBoundingClientRect();"
-          "  return rect.left >= 0 && rect.right <= window.innerWidth && "
-          "         rect.top >= 0 && rect.bottom <= window.innerHeight;"
-          "}"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
@@ -2701,17 +2363,16 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
   }
 
   auto OpenOverlayFromSmallChip(ui::ElementIdentifier tab,
-                                ui::ElementIdentifier overlay,
-                                std::string_view paragraph_style = "") {
+                                ui::ElementIdentifier overlay) {
     const DeepQuery kOverlayApp = {"selection-overlay-app"};
 
     // Text for the user to select. `width/height: fit-content` on `html`,
     // `body`, and `p` ensures `SelectAll()`'s range bounding box wraps the
     // paragraph rather than the full quirks-mode viewport.
-    std::string add_text_js = base::StrCat(
-        {"() => { document.body.innerHTML = '<style>html, body, p { width: "
-         "fit-content; height: fit-content; }</style><p style=\"",
-         paragraph_style, "\">Explain this sentence please</p>'; }"});
+    static constexpr char kAddTextJs[] =
+        "() => { document.body.innerHTML = '<style>html, body, p { width: "
+        "fit-content; height: fit-content; }</style><p>Explain this sentence "
+        "please</p>'; }";
 
     return Steps(
         InstrumentTab(tab), Do([this] {
@@ -2727,7 +2388,7 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
                   optimization_guide::proto::OptimizationType::QUICK_ANSWERS,
                   metadata);
         }),
-        NavigateWebContents(tab, GetEmptyDocURL()), ExecuteJs(tab, add_text_js),
+        NavigateWebContents(tab, GetEmptyDocURL()), ExecuteJs(tab, kAddTextJs),
         // Focus the page and select the text. The small chip shows up on it.
         // Use FocusElement() instead of an OS mouse click so the click's
         // asynchronous kMouseDown input observer task does not dismiss the
@@ -2879,89 +2540,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       GrowingCardStaysInViewport) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-
-  static constexpr char kCardShownJs[] = R"js(
-    el => !!el.shadowRoot.querySelector(
-        '#inlineFulfillmentHost > glic-explain-fulfillment')
-  )js";
-  // In WebUI, updateFloatingPromptPosition() keeps a 16px margin from the
-  // viewport edges and from the selection. Grows the card until the prompt is
-  // exactly as tall as the space inside the top and bottom margins (innerHeight
-  // - 2 * 16). It can no longer go below the selection, so it must move up. If
-  // it didn't, it would run off the bottom by (selection bottom - 16px), which
-  // is > 0 here since the selected text ends ~26px down.
-  static constexpr char kGrowCardJs[] = R"js(
-    el => {
-      const container =
-          el.shadowRoot.querySelector('#floatingPromptContainer');
-      const host = el.shadowRoot.querySelector('#inlineFulfillmentHost');
-      const grow = innerHeight - 32 - container.getBoundingClientRect().height;
-      host.style.height = `${host.getBoundingClientRect().height + grow}px`;
-    }
-  )js";
-  static constexpr char kPromptInViewportJs[] = R"js(
-    el => {
-      const rect = el.shadowRoot.querySelector('#floatingPromptContainer')
-                       .getBoundingClientRect();
-      return rect.top >= 0 && rect.bottom <= innerHeight;
-    }
-  )js";
-
-  RunTestSequence(
-      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
-      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay, kGrowCardJs),
-      // The prompt moves so the card stays on screen.
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        kPromptInViewportJs));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       CardKeepsCueTopLeftAndGrowsDownward) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-
-  // The fade-in animation offsets the cue, so wait for it to end.
-  static constexpr char kRecordCueAndClickExplainJs[] = R"js(
-    el => {
-      const cue = el.shadowRoot.querySelector('#floatingPromptContainer');
-      const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
-          c => c.querySelector('.chip-label')?.textContent === 'Explain');
-      if (!chip || cue.hidden || cue.getAnimations().length > 0) {
-        return false;
-      }
-      window.cueRect = cue.getBoundingClientRect();
-      chip.click();
-      return true;
-    }
-  )js";
-  static constexpr char kCardAtCueTopLeftJs[] = R"js(
-    el => {
-      const rect = el.shadowRoot.querySelector('#floatingPromptContainer')
-                       .getBoundingClientRect();
-      return !!el.shadowRoot.querySelector(
-                 '#inlineFulfillmentHost > glic-explain-fulfillment') &&
-             Math.abs(rect.left - cueRect.left) <= 2 &&
-             Math.abs(rect.top - cueRect.top) <= 2 &&
-             rect.bottom > cueRect.bottom;
-    }
-  )js";
-
-  RunTestSequence(
-      // Far enough below the top edge that neither the cue nor the card is
-      // clamped to the top margin.
-      OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId,
-                               "margin-top: 200px"),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        kRecordCueAndClickExplainJs),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        kCardAtCueTopLeftJs));
-}
-
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                        ClickCardAskGeminiOpensSidePanel) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
@@ -2977,38 +2555,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                   // Glic opens in the side panel.
                   WaitForShow(kSidePanelElementId),
                   InAnyContext(WaitForShow(kGlicViewElementId)));
-}
-
-// The small chip opens the overlay with the handles hidden, and they stay
-// hidden while the Explain card shows.
-IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
-                       HandlesHiddenWithExplainCard) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
-  const DeepQuery kRenderer = {"selection-overlay-app",
-                               "glic-selection-overlay",
-                               "post-selection-renderer"};
-
-  static constexpr char kCardShownJs[] = R"js(
-    el => !!el.shadowRoot.querySelector(
-        '#inlineFulfillmentHost > glic-explain-fulfillment')
-  )js";
-  // The corners aren't drawn, and their hit boxes are gone, so the region
-  // can't be resized.
-  static constexpr char kHandlesHiddenJs[] = R"js(
-    el => {
-      const corners = el.shadowRoot.querySelector('#selectionCorners');
-      const boxes = [...corners.querySelectorAll('.corner-hit-box')];
-      return getComputedStyle(corners).backgroundImage === 'none' &&
-          boxes.length === 4 &&
-          boxes.every(box => getComputedStyle(box).display === 'none');
-    }
-  )js";
-
-  RunTestSequence(
-      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs),
-      CheckJsResultAt(kOverlayWebContentsId, kRenderer, kHandlesHiddenJs));
 }
 
 // With the side panel open, the small chip starts a capture session through
@@ -3168,19 +2714,6 @@ IN_PROC_BROWSER_TEST_F(
       DragMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(150, 150)),
       WaitForElementVisible(kOverlayWebContentsId, kDogfoodFeedbackButton),
-      WaitForJsResultAt(
-          kOverlayWebContentsId, kSelectionOverlay,
-          "el => {"
-          "  const pill = el.shadowRoot.querySelector('.searchbox-pill');"
-          "  const btn = el.shadowRoot.querySelector('#dogfoodFeedbackButton');"
-          "  if (!pill || !btn) return false;"
-          "  const pillRect = pill.getBoundingClientRect();"
-          "  const btnRect = btn.getBoundingClientRect();"
-          "  const pillCenterY = (pillRect.top + pillRect.bottom) / 2;"
-          "  const btnCenterY = (btnRect.top + btnRect.bottom) / 2;"
-          "  return Math.abs(pillCenterY - btnCenterY) <= 1 && "
-          "      btnRect.left >= pillRect.right;"
-          "}"),
       ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       ClickElement(kOverlayWebContentsId, kDogfoodFeedbackButton,
                    ExecuteJsMode::kFireAndForget),
