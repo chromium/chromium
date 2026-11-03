@@ -120,7 +120,7 @@ ${this.showControlledIndicator_() ? html`
   <extension-controlled-indicator
       extension-id="${this.engine.extension!.id}"
       extension-name="${this.engine.extension!.name}"
-      extension-can-be-disabled="${this.engine.extension!.canBeDisabled}">
+      ?extension-can-be-disabled="${this.engine.extension!.canBeDisabled}">
   </extension-controlled-indicator>
 ` : ''}
 <!--_html_template_end_-->`;
