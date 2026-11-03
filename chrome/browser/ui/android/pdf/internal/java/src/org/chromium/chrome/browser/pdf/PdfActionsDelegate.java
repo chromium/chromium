@@ -52,11 +52,15 @@ public interface PdfActionsDelegate {
     /** Called when the edit mode changes. */
     void onEditModeChanged(boolean editMode);
 
+    /** Enters edit mode. */
+    void enterEditMode();
+
     /** Returns whether the page navigation and edit button are visible in the top toolbar. */
     boolean isPageNavAndEditVisible();
 
     /** Returns the URI of the PDF document. */
-    @Nullable Uri getUri();
+    @Nullable
+    Uri getUri();
 
     /**
      * Show pdf specific find in page UI.
@@ -85,5 +89,3 @@ public interface PdfActionsDelegate {
     /** Called when saving edits to a file failed. */
     void onPdfEditsSaveFailed();
 }
-
-

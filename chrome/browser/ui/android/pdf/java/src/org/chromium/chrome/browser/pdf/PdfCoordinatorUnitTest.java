@@ -53,6 +53,7 @@ import androidx.pdf.PdfPoint;
 import androidx.pdf.PdfWriteHandle;
 import androidx.pdf.content.ExternalLink;
 import androidx.pdf.ink.EditablePdfViewerFragment;
+import androidx.pdf.ink.state.PdfEditMode;
 import androidx.pdf.view.PdfView;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -60,31 +61,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.intrinsics.IntrinsicsKt;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.RealObject;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowContentResolver;
-import org.robolectric.shadows.ShadowDialog;
-import org.robolectric.shadows.ShadowLooper;
-import org.robolectric.shadows.ShadowParcelFileDescriptor;
-import org.robolectric.shadows.ShadowToast;
-import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.TriState;
 import org.chromium.base.UserDataHost;
@@ -114,6 +90,30 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.RealObject;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowContentResolver;
+import org.robolectric.shadows.ShadowDialog;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowParcelFileDescriptor;
+import org.robolectric.shadows.ShadowToast;
+import org.robolectric.shadows.ShadowView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -122,7 +122,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1303,15 +1305,294 @@ public class PdfCoordinatorUnitTest {
         assertNotNull("Edit button should exist", editButton);
         assertFalse("Edit button should not be selected initially", editButton.isSelected());
 
-        // Simulate fragment entering edit mode (from native FAB)
+        // Simulate fragment entering edit mode without clicking the toolbar edit icon (e.g. from
+        // typing in a form field).
         mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
-        assertTrue("Edit button should be selected after onEnterEditMode", editButton.isSelected());
+        assertFalse(
+                "Edit button should not be selected when edit mode was not triggered from toolbar",
+                editButton.isSelected());
+        assertFalse(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
+
+        // Simulate user clicking edit icon in the toolbar.
+        mPdfCoordinator.enterEditMode();
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue(
+                "Edit button should be selected after toolbar enterEditMode",
+                editButton.isSelected());
         assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
 
         // Simulate fragment exiting edit mode
         mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
         assertFalse(
                 "Edit button should not be selected after onExitEditMode", editButton.isSelected());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testFormFillingDisabledInEditModeAndReenabledOnExit() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        assertTrue(
+                "Form filling should be enabled initially", shadowPdfView.isFormFillingEnabled());
+
+        // Simulate typing in a form field: onEnterEditMode is triggered, but edit mode is not
+        // from toolbar. Form filling should remain enabled.
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue(
+                "Form filling should remain enabled when not entered from toolbar",
+                shadowPdfView.isFormFillingEnabled());
+        View editButton = mPdfCoordinator.getView().findViewById(R.id.edit_button);
+        assertFalse(editButton.isSelected());
+
+        // User enters edit mode via top toolbar
+        mPdfCoordinator.enterEditMode();
+        assertFalse(
+                "Form filling should be disabled when entering edit mode from toolbar",
+                shadowPdfView.isFormFillingEnabled());
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue("Edit button should be selected", editButton.isSelected());
+
+        // User exits edit mode
+        mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
+        assertFalse("Edit button should not be selected", editButton.isSelected());
+        assertTrue(
+                "Form filling should be re-enabled after exiting edit mode",
+                shadowPdfView.isFormFillingEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testEnterEditModeWhileAlreadyInFormFillingEditMode() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        assertTrue(shadowPdfView.isFormFillingEnabled());
+
+        // Simulate AndroidX entering form filling edit journey
+        shadowFragment.setEditModeEnabled(true);
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        View editButton = mPdfCoordinator.getView().findViewById(R.id.edit_button);
+        assertFalse(editButton.isSelected());
+        assertTrue(shadowPdfView.isFormFillingEnabled());
+
+        shadowFragment.getEditModeHistory().clear();
+
+        // User enters edit mode via toolbar while isEditModeEnabled() was already true.
+        // It must not call setEditModeEnabled(false) which would discard unsaved form edits.
+        mPdfCoordinator.enterEditMode();
+        assertTrue(shadowFragment.getEditModeEnabled());
+        assertFalse(shadowPdfView.isFormFillingEnabled());
+        assertEquals(List.of(true), shadowFragment.getEditModeHistory());
+
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue(editButton.isSelected());
+
+        // Exit edit mode
+        mPdfCoordinator.mChromePdfViewerFragment.onExitEditMode();
+        assertFalse(editButton.isSelected());
+        assertTrue(shadowPdfView.isFormFillingEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testIsEditModeFromToolbarStateSavedAndRestored() {
+        createPdfCoordinator();
+        mPdfCoordinator.enterEditMode();
+        mPdfCoordinator.mChromePdfViewerFragment.onEnterEditMode();
+        assertTrue(mPdfCoordinator.mChromePdfViewerFragment.isEditModeFromToolbar());
+        assertEquals(1, mUserActionTester.getActionCount("Android.Pdf.EditFab"));
+
+        Bundle bundle = new Bundle();
+        mPdfCoordinator.mChromePdfViewerFragment.onSaveInstanceState(bundle);
+        assertTrue(
+                bundle.getBoolean(
+                        PdfCoordinator.ChromePdfViewerFragment.KEY_IS_EDIT_MODE_FROM_TOOLBAR));
+
+        PdfCoordinator.ChromePdfViewerFragment restoredFragment =
+                new PdfCoordinator.ChromePdfViewerFragment();
+        restoredFragment.onViewCreated(mPdfCoordinator.getView(), bundle);
+        assertTrue(restoredFragment.isEditModeFromToolbar());
+
+        // Re-entering edit mode after configuration change should not record a duplicate metric.
+        restoredFragment.onEnterEditMode();
+        assertEquals(1, mUserActionTester.getActionCount("Android.Pdf.EditFab"));
+
+        // Discarding changes should reset toolbar edit mode state.
+        mPdfCoordinator.discardChanges();
+        assertFalse(mPdfCoordinator.mChromePdfViewerFragment.isEditModeFromToolbar());
+
+        // Attaching the delegate to the restored fragment before mPdfView is created should sync
+        // the coordinator and toolbar back into active edit mode without calling
+        // setTextSearchActive(false) before pdfView is initialized.
+        View editButton = mPdfCoordinator.getView().findViewById(R.id.edit_button);
+        assertFalse(editButton.isSelected());
+        restoredFragment.setTextSearchActive(true);
+        restoredFragment.setDelegate(mPdfCoordinator);
+        assertTrue(editButton.isSelected());
+        assertTrue(restoredFragment.isTextSearchActive());
+
+        // Once pdfView is initialized and onViewCreated runs, text search should be deactivated.
+        restoredFragment.onPdfViewCreated(mPdfView);
+        restoredFragment.onViewCreated(mPdfCoordinator.getView(), bundle);
+        assertFalse(restoredFragment.isTextSearchActive());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testMaybeRemoveFormEditModeListener() throws Exception {
+        createPdfCoordinator();
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        PdfView.OnFormWidgetInfoUpdatedListener mockListener =
+                mock(PdfView.OnFormWidgetInfoUpdatedListener.class);
+
+        Field listenerField =
+                EditablePdfViewerFragment.class.getDeclaredField("onFormWidgetInfoUpdatedListener");
+        listenerField.setAccessible(true);
+        listenerField.set(mPdfCoordinator.mChromePdfViewerFragment, mockListener);
+
+        mPdfCoordinator.mChromePdfViewerFragment.onViewCreated(mPdfCoordinator.getView(), null);
+        assertSame(mockListener, shadowPdfView.mRemovedFormWidgetInfoUpdatedListener);
+    }
+
+    @SuppressWarnings({"unused", "UnusedMethod"})
+    private static class FakeEditModeFlow {
+        private Object mValue = new PdfEditMode.Enabled(PdfEditMode.EDITING_JOURNEY_FORM_FILLING);
+
+        public Object getValue() {
+            return mValue;
+        }
+
+        public void setValue(Object value) {
+            mValue = value;
+        }
+    }
+
+    @SuppressWarnings({"unused", "UnusedMethod", "UnusedVariable"})
+    private static class FakeObfuscatedDocumentViewModel {
+        private final FakeEditModeFlow mObfuscatedFlowField = new FakeEditModeFlow();
+
+        private Boolean mInitialFormFillingState = Boolean.FALSE;
+
+        public void obfuscatedSetInitialFormFillingState(Boolean state) {
+            mInitialFormFillingState = state;
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testReflectionFallbacksForViewModelFlowAndInitialFormFillingState() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.onPdfViewCreated(mPdfView);
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        FakeObfuscatedDocumentViewModel fakeViewModel = new FakeObfuscatedDocumentViewModel();
+        mPdfCoordinator.mChromePdfViewerFragment.setDocumentViewModelForTesting(fakeViewModel);
+
+        // Simulate AndroidX already in form-filling edit mode.
+        shadowFragment.setEditModeEnabled(true);
+        assertTrue(fakeViewModel.mObfuscatedFlowField.getValue() instanceof PdfEditMode.Enabled);
+
+        // Entering toolbar edit mode should reset the flow to PdfEditMode.Disabled.INSTANCE via
+        // the type-scanning reflection fallback before calling setEditModeEnabled(true).
+        mPdfCoordinator.enterEditMode();
+        assertSame(PdfEditMode.Disabled.INSTANCE, fakeViewModel.mObfuscatedFlowField.getValue());
+
+        // Simulate corrupted initialFormFillingState = false and verify discardChanges() clears it
+        // to null via the signature-scanning reflection fallback even when onExitEditMode() sees
+        // mIsEditModeFromToolbar == false.
+        fakeViewModel.mInitialFormFillingState = Boolean.FALSE;
+        mPdfCoordinator.discardChanges();
+        assertNull(fakeViewModel.mInitialFormFillingState);
+
+        // Simulate form-only edits where hasUnsavedChanges() is true while isEditModeEnabled() is
+        // false. Attaching the fragment and calling discardChanges() should set the flow to
+        // PdfEditMode.Enabled(EDITING_JOURNEY_FORM_FILLING) before calling
+        // setEditModeEnabled(false).
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_form_reset_tag")
+                .commitNow();
+        shadowFragment.setEditModeEnabled(false);
+        shadowFragment.setHasUnsavedChanges(true);
+        fakeViewModel.mObfuscatedFlowField.setValue(PdfEditMode.Disabled.INSTANCE);
+
+        mPdfCoordinator.discardChanges();
+        assertEquals(
+                new PdfEditMode.Enabled(PdfEditMode.EDITING_JOURNEY_FORM_FILLING),
+                fakeViewModel.mObfuscatedFlowField.getValue());
+        assertFalse(shadowFragment.isEditModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testFinishExitingEditMode_WithFormOnlyEdits_EnablesFormFillingEditModeBeforeReset()
+            throws Exception {
+        ChromeFileProvider.setGeneratedUriForTesting(
+                Uri.parse("content://com.android.chrome.provider/test.pdf"));
+        File tempFile = File.createTempFile("test_form_pdf", ".pdf");
+        tempFile.deleteOnExit();
+        ParcelFileDescriptor pfd =
+                ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_WRITE);
+        TestContentProvider provider = new TestContentProvider(pfd);
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = "com.android.chrome.provider";
+        provider.attachInfo(mActivity, providerInfo);
+        ShadowContentResolver.registerProviderInternal("com.android.chrome.provider", provider);
+
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_form_save_tag")
+                .commitNow();
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        FakeObfuscatedDocumentViewModel fakeViewModel = new FakeObfuscatedDocumentViewModel();
+        mPdfCoordinator.mChromePdfViewerFragment.setDocumentViewModelForTesting(fakeViewModel);
+
+        // Simulate form-only edits (hasUnsavedChanges() is true while isEditModeEnabled() is
+        // false).
+        shadowFragment.setEditModeEnabled(false);
+        shadowFragment.setHasUnsavedChanges(true);
+        fakeViewModel.mObfuscatedFlowField.setValue(PdfEditMode.Disabled.INSTANCE);
+        shadowFragment.getEditModeHistory().clear();
+
+        mPdfCoordinator.download();
+        assertTrue(shadowFragment.wasApplyDraftEditsCalled());
+        shadowFragment.mApplyDraftEditsCalled = false;
+
+        FakePdfWriteHandle fakeHandle = new FakePdfWriteHandle();
+        fakeHandle.mResult = Unit.INSTANCE;
+        mPdfCoordinator.mChromePdfViewerFragment.onApplyEditsSuccess(fakeHandle);
+        ShadowLooper.idleMainLooper();
+
+        // finishExitingEditMode() should have enabled EDITING_JOURNEY_FORM_FILLING on the flow
+        // before calling setEditModeEnabled(false), and onPdfEditsSaved() should have called
+        // downloadAnnotatedPdf() directly rather than calling applyDraftEdits() a second time.
+        assertEquals(
+                new PdfEditMode.Enabled(PdfEditMode.EDITING_JOURNEY_FORM_FILLING),
+                fakeViewModel.mObfuscatedFlowField.getValue());
+        assertEquals(List.of(false), shadowFragment.getEditModeHistory());
+        assertFalse(
+                "download() should not re-trigger applyDraftEdits() after save",
+                shadowFragment.wasApplyDraftEditsCalled());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
+        pfd.close();
     }
 
     @Test
@@ -1340,12 +1621,20 @@ public class PdfCoordinatorUnitTest {
                 "Form filling should remain enabled after reload",
                 shadowPdfView.isFormFillingEnabled());
 
-        // Verify that if edit mode is true, document reload does not enable form filling
+        // Verify that if internal form-filling edit mode is true (not from toolbar), reload keeps
+        // form filling enabled.
         mPdfCoordinator.mChromePdfViewerFragment.setEditModeEnabled(true);
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
+        assertTrue(
+                "Form filling should remain enabled when edit mode is not from toolbar",
+                shadowPdfView.isFormFillingEnabled());
+
+        // Verify that if toolbar edit mode is true, document reload does not enable form filling.
+        mPdfCoordinator.mChromePdfViewerFragment.setIsEditModeFromToolbar(true);
         shadowPdfView.setFormFillingEnabled(false);
         mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentSuccess(pdfDocument);
         assertFalse(
-                "Form filling should not be enabled on reload when edit mode is true",
+                "Form filling should not be enabled on reload when toolbar edit mode is true",
                 shadowPdfView.isFormFillingEnabled());
     }
 
@@ -1583,6 +1872,60 @@ public class PdfCoordinatorUnitTest {
         assertNull(
                 "ToolBoxView should be removed when top toolbar is visible",
                 toolBoxView.getParent());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2 + ":enable_form_filling/true")
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class, ShadowPdfView.class})
+    public void testToolBoxViewClickInV2_RoutesThroughDelegateEnterEditMode() {
+        createPdfCoordinator();
+
+        TestChromePdfViewerFragment fragment = new TestChromePdfViewerFragment(mPdfCoordinator);
+        mPdfCoordinator.mChromePdfViewerFragment = fragment;
+        fragment.onPdfViewCreated(mPdfView);
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        ShadowEditablePdfViewerFragment shadowFragment = Shadow.extract(fragment);
+        assertTrue(shadowPdfView.isFormFillingEnabled());
+
+        FrameLayout fragmentView = new FrameLayout(mActivity);
+        FrameLayout toolBoxView = new FrameLayout(mActivity);
+        toolBoxView.setId(R.id.toolBoxView);
+        View childView = new View(mActivity);
+        toolBoxView.addView(childView);
+        fragmentView.addView(toolBoxView);
+
+        // Simulate narrow screen where toolbar edit button is hidden and mToolBoxView FAB is shown.
+        mPdfCoordinator.onPageNavAndEditVisibilityChanged(false);
+        fragment.onViewCreated(fragmentView, null);
+        assertNotNull(toolBoxView.getParent());
+
+        // Clicking mToolBoxView (or its child) in V2 should route through mDelegate.enterEditMode()
+        // rather than EditablePdfViewerFragment's internal listener or external editor intent.
+        childView.performClick();
+        assertTrue(fragment.isEditModeFromToolbar());
+        assertTrue(shadowFragment.getEditModeEnabled());
+        assertFalse(shadowPdfView.isFormFillingEnabled());
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+
+        // Subsequent onEnterEditMode() should update the toolbar to show "Done" and record metric.
+        fragment.setTextSearchActive(true);
+        fragment.onEnterEditMode();
+        View editButton = mPdfCoordinator.getView().findViewById(R.id.edit_button);
+        assertTrue(editButton.isSelected());
+        assertFalse(fragment.isTextSearchActive());
+        assertEquals(1, mUserActionTester.getActionCount("Android.Pdf.EditFab"));
+
+        // Exit edit mode and verify onResume() also re-applies the V2 click listener override.
+        fragment.onExitEditMode();
+        assertFalse(fragment.isEditModeFromToolbar());
+        assertFalse(editButton.isSelected());
+        assertTrue(shadowPdfView.isFormFillingEnabled());
+
+        childView.setOnClickListener(null);
+        fragment.onResume();
+        childView.performClick();
+        assertTrue(fragment.isEditModeFromToolbar());
+        assertFalse(shadowPdfView.isFormFillingEnabled());
     }
 
     @Test
@@ -3980,8 +4323,15 @@ public class PdfCoordinatorUnitTest {
         public int mPagesPerRow = 1;
         public int mFirstVisiblePage;
         public boolean mFormFillingEnabled;
+        public PdfView.OnFormWidgetInfoUpdatedListener mRemovedFormWidgetInfoUpdatedListener;
 
         public ShadowPdfView() {}
+
+        @Implementation
+        public void removeOnFormWidgetInfoUpdatedListener(
+                PdfView.OnFormWidgetInfoUpdatedListener listener) {
+            mRemovedFormWidgetInfoUpdatedListener = listener;
+        }
 
         @Implementation
         public void setFormFillingEnabled(boolean enabled) {
@@ -4046,6 +4396,7 @@ public class PdfCoordinatorUnitTest {
         private boolean mUnsavedChanges;
         private boolean mApplyDraftEditsCalled;
         private Boolean mEditModeEnabled;
+        private final List<Boolean> mEditModeHistory = new ArrayList<>();
 
         @Implementation
         public View onCreateView(
@@ -4071,6 +4422,11 @@ public class PdfCoordinatorUnitTest {
         @Implementation
         public void setEditModeEnabled(boolean enabled) {
             mEditModeEnabled = enabled;
+            mEditModeHistory.add(enabled);
+        }
+
+        public List<Boolean> getEditModeHistory() {
+            return mEditModeHistory;
         }
 
         @Implementation
@@ -4235,7 +4591,7 @@ public class PdfCoordinatorUnitTest {
 
         @Override
         public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-            if ("w".equals(mode) || "rw".equals(mode)) {
+            if ("w".equals(mode) || "rw".equals(mode) || "r".equals(mode)) {
                 return mPfd;
             }
             return super.openFile(uri, mode);
