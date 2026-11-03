@@ -23,6 +23,16 @@ enum GetPoliciesReason {
   kExport,
 };
 
+// Azure Active Directory (Entra ID) join type for Windows machine-level status.
+// Mirrors `base::win::AzureADJoinType`, with `kNotJoined` indicating the device
+// is not joined.
+enum AzureAdJoinType {
+  kNotJoined = 0,
+  kUnknown,
+  kDevice,
+  kWorkplace,
+};
+
 // Represents data to be displayed in the status box on chrome://policy.
 struct Status {
   string policy_description_key;
@@ -54,6 +64,9 @@ struct Status {
   bool policies_push_available;
   bool error;
   bool extension_install_error;
+  // Only populated on Windows for machine-level status; null on non-Windows
+  // platforms and non-machine scopes.
+  AzureAdJoinType? azure_ad_join_type;
 };
 
 // Enforcement level of a policy. Mirrors `policy::PolicyLevel`.

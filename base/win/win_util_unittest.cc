@@ -11,6 +11,7 @@
 #include <ntstatus.h>
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -453,6 +454,34 @@ TEST(BaseWinUtilTest, StrictHandleChecks) {
                                            &policy, sizeof(policy)));
   EXPECT_TRUE(policy.HandleExceptionsPermanentlyEnabled);
   EXPECT_TRUE(policy.RaiseExceptionOnInvalidHandleReference);
+}
+
+TEST(BaseWinUtilTest, GetAzureADJoinTypeNoAD) {
+  ScopedAzureADJoinStateForTesting scoped_state(std::nullopt);
+  EXPECT_EQ(GetAzureADJoinType(), std::nullopt);
+  EXPECT_FALSE(IsJoinedToAzureAD());
+  EXPECT_FALSE(IsDeviceJoinedToAzureAD());
+}
+
+TEST(BaseWinUtilTest, GetAzureADJoinTypeInWorkplace) {
+  ScopedAzureADJoinStateForTesting scoped_state(AzureADJoinType::kWorkplace);
+  EXPECT_EQ(GetAzureADJoinType(), AzureADJoinType::kWorkplace);
+  EXPECT_TRUE(IsJoinedToAzureAD());
+  EXPECT_FALSE(IsDeviceJoinedToAzureAD());
+}
+
+TEST(BaseWinUtilTest, GetAzureADJoinTypeInDevice) {
+  ScopedAzureADJoinStateForTesting scoped_state(AzureADJoinType::kDevice);
+  EXPECT_EQ(GetAzureADJoinType(), AzureADJoinType::kDevice);
+  EXPECT_TRUE(IsJoinedToAzureAD());
+  EXPECT_TRUE(IsDeviceJoinedToAzureAD());
+}
+
+TEST(BaseWinUtilTest, GetAzureADJoinTypeUnknown) {
+  ScopedAzureADJoinStateForTesting scoped_state(AzureADJoinType::kUnknown);
+  EXPECT_EQ(GetAzureADJoinType(), AzureADJoinType::kUnknown);
+  EXPECT_TRUE(IsJoinedToAzureAD());
+  EXPECT_FALSE(IsDeviceJoinedToAzureAD());
 }
 
 }  // namespace win

@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/ref_counted.h"
@@ -13,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -22,6 +24,10 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace policy {
 
@@ -150,5 +156,99 @@ TEST_F(MachineLevelUserCloudPolicyStatusProviderTest, ObserverNotification) {
 
   provider.RemoveObserver(&observer);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(MachineLevelUserCloudPolicyStatusProviderTest,
+       AzureADJoinStatus_NotJoined) {
+  base::win::ScopedAzureADJoinStateForTesting scoped_state(std::nullopt);
+  MachineLevelUserCloudPolicyStatusProvider provider(
+      core_.get(), /*extension_install_core=*/nullptr, &prefs_, &context_);
+
+  base::DictValue status = provider.GetStatus();
+  std::optional<int> join_type = status.FindInt(kAzureAdJoinTypeKey);
+  ASSERT_TRUE(join_type.has_value());
+  EXPECT_EQ(static_cast<int>(policy::mojom::AzureAdJoinType::kNotJoined),
+            *join_type);
+
+  policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
+  ASSERT_TRUE(status_mojo);
+  ASSERT_TRUE(status_mojo->azure_ad_join_type.has_value());
+  EXPECT_EQ(policy::mojom::AzureAdJoinType::kNotJoined,
+            *status_mojo->azure_ad_join_type);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStatusProviderTest,
+       AzureADJoinStatus_WorkplaceJoined) {
+  base::win::ScopedAzureADJoinStateForTesting scoped_state(
+      base::win::AzureADJoinType::kWorkplace);
+  MachineLevelUserCloudPolicyStatusProvider provider(
+      core_.get(), /*extension_install_core=*/nullptr, &prefs_, &context_);
+
+  base::DictValue status = provider.GetStatus();
+  std::optional<int> join_type = status.FindInt(kAzureAdJoinTypeKey);
+  ASSERT_TRUE(join_type.has_value());
+  EXPECT_EQ(static_cast<int>(policy::mojom::AzureAdJoinType::kWorkplace),
+            *join_type);
+
+  policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
+  ASSERT_TRUE(status_mojo);
+  ASSERT_TRUE(status_mojo->azure_ad_join_type.has_value());
+  EXPECT_EQ(policy::mojom::AzureAdJoinType::kWorkplace,
+            *status_mojo->azure_ad_join_type);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStatusProviderTest,
+       AzureADJoinStatus_DeviceJoined) {
+  base::win::ScopedAzureADJoinStateForTesting scoped_state(
+      base::win::AzureADJoinType::kDevice);
+  MachineLevelUserCloudPolicyStatusProvider provider(
+      core_.get(), /*extension_install_core=*/nullptr, &prefs_, &context_);
+
+  base::DictValue status = provider.GetStatus();
+  std::optional<int> join_type = status.FindInt(kAzureAdJoinTypeKey);
+  ASSERT_TRUE(join_type.has_value());
+  EXPECT_EQ(static_cast<int>(policy::mojom::AzureAdJoinType::kDevice),
+            *join_type);
+
+  policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
+  ASSERT_TRUE(status_mojo);
+  ASSERT_TRUE(status_mojo->azure_ad_join_type.has_value());
+  EXPECT_EQ(policy::mojom::AzureAdJoinType::kDevice,
+            *status_mojo->azure_ad_join_type);
+}
+
+TEST_F(MachineLevelUserCloudPolicyStatusProviderTest,
+       AzureADJoinStatus_JoinedUnknown) {
+  base::win::ScopedAzureADJoinStateForTesting scoped_state(
+      base::win::AzureADJoinType::kUnknown);
+  MachineLevelUserCloudPolicyStatusProvider provider(
+      core_.get(), /*extension_install_core=*/nullptr, &prefs_, &context_);
+
+  base::DictValue status = provider.GetStatus();
+  std::optional<int> join_type = status.FindInt(kAzureAdJoinTypeKey);
+  ASSERT_TRUE(join_type.has_value());
+  EXPECT_EQ(static_cast<int>(policy::mojom::AzureAdJoinType::kUnknown),
+            *join_type);
+
+  policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
+  ASSERT_TRUE(status_mojo);
+  ASSERT_TRUE(status_mojo->azure_ad_join_type.has_value());
+  EXPECT_EQ(policy::mojom::AzureAdJoinType::kUnknown,
+            *status_mojo->azure_ad_join_type);
+}
+#else
+TEST_F(MachineLevelUserCloudPolicyStatusProviderTest,
+       AzureADJoinStatus_NonWindows) {
+  MachineLevelUserCloudPolicyStatusProvider provider(
+      core_.get(), /*extension_install_core=*/nullptr, &prefs_, &context_);
+
+  base::DictValue status = provider.GetStatus();
+  EXPECT_FALSE(status.FindInt(kAzureAdJoinTypeKey).has_value());
+
+  policy::mojom::StatusPtr status_mojo = provider.GetStatusMojo();
+  ASSERT_TRUE(status_mojo);
+  EXPECT_FALSE(status_mojo->azure_ad_join_type.has_value());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy

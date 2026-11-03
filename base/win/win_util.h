@@ -207,6 +207,22 @@ BASE_EXPORT void IsDeviceSlateWithKeyboard(
 // Returns true if the machine is enrolled to a domain.
 BASE_EXPORT bool IsEnrolledToDomain();
 
+// Azure Active Directory (Entra ID) join type of the device, mirroring
+// `DSREG_JOIN_TYPE`.
+enum class AzureADJoinType {
+  // `DSREG_UNKNOWN_JOIN`.
+  kUnknown,
+  // `DSREG_DEVICE_JOIN`: the device itself is joined to Azure AD.
+  kDevice,
+  // `DSREG_WORKPLACE_JOIN`: only a work account was added on the device.
+  kWorkplace,
+};
+
+// Returns the Azure AD join type of the device, or `std::nullopt` if the device
+// is not joined or the join information could not be queried. Uses the same
+// cached state as `IsJoinedToAzureAD()`.
+BASE_EXPORT std::optional<AzureADJoinType> GetAzureADJoinType();
+
 // Returns true if either the device is joined to Azure Active Directory (AD) or
 // one or more Azure AD work accounts have been added on the device. This call
 // triggers some I/O when loading netapi32.dll to determine the management
@@ -430,11 +446,9 @@ class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
 // object. The original state is restored upon destruction.
 class BASE_EXPORT ScopedAzureADJoinStateForTesting {
  public:
-  enum class AzureADJoinType {
-    kUnknown,
-    kDevice,
-    kWorkplace,
-  };
+  // Retained as an alias to `base::win::AzureADJoinType` for backward
+  // compatibility in tests.
+  using AzureADJoinType = base::win::AzureADJoinType;
 
   explicit ScopedAzureADJoinStateForTesting(
       std::optional<AzureADJoinType> state);

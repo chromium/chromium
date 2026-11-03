@@ -46,6 +46,7 @@ inline constexpr char kUsernameKey[] = "username";
 inline constexpr char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
 inline constexpr char kDomainKey[] = "domain";
 inline constexpr char kEnrollmentTokenKey[] = "enrollmentToken";
+inline constexpr char kAzureAdJoinTypeKey[] = "azureAdJoinType";
 
 // An interface for querying the status of a policy provider.  It surfaces
 // things like last fetch time or status of the backing store, but not the

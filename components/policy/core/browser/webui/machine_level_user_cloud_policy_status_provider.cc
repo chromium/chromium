@@ -4,11 +4,13 @@
 
 #include "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
 
+#include <optional>
 #include <string>
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -16,6 +18,10 @@
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/time_format.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -30,6 +36,24 @@ std::string GetMachineStatusDescriptionKey() {
   return "statusMachine";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
+
+#if BUILDFLAG(IS_WIN)
+policy::mojom::AzureAdJoinType GetAzureADJoinTypeMojom() {
+  const std::optional<base::win::AzureADJoinType> join_type =
+      base::win::GetAzureADJoinType();
+  if (!join_type.has_value()) {
+    return policy::mojom::AzureAdJoinType::kNotJoined;
+  }
+  switch (*join_type) {
+    case base::win::AzureADJoinType::kWorkplace:
+      return policy::mojom::AzureAdJoinType::kWorkplace;
+    case base::win::AzureADJoinType::kDevice:
+      return policy::mojom::AzureAdJoinType::kDevice;
+    case base::win::AzureADJoinType::kUnknown:
+      return policy::mojom::AzureAdJoinType::kUnknown;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -99,6 +123,9 @@ base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
   }
   dict.Set(kMachineKey, GetMachineName());
   dict.Set(policy::kPolicyDescriptionKey, GetMachineStatusDescriptionKey());
+#if BUILDFLAG(IS_WIN)
+  dict.Set(kAzureAdJoinTypeKey, static_cast<int>(GetAzureADJoinTypeMojom()));
+#endif
 
   UpdateLastReportTimestamp(dict, prefs_,
                             context_->lastReportTimestampPrefName);
@@ -150,6 +177,9 @@ MachineLevelUserCloudPolicyStatusProvider::GetStatusMojo() {
   }
   status->machine = GetMachineName();
   status->policy_description_key = GetMachineStatusDescriptionKey();
+#if BUILDFLAG(IS_WIN)
+  status->azure_ad_join_type = GetAzureADJoinTypeMojom();
+#endif
 
   UpdateLastReportTimestamp(status, prefs_,
                             context_->lastReportTimestampPrefName);

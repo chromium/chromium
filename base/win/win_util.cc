@@ -92,14 +92,13 @@ namespace {
 using QueryKeyFunction =
     ScopedDeviceConvertibilityStateForTesting::QueryFunction;
 
-DSREG_JOIN_TYPE ToDSREGJoinType(
-    ScopedAzureADJoinStateForTesting::AzureADJoinType join_type) {
+DSREG_JOIN_TYPE ToDSREGJoinType(AzureADJoinType join_type) {
   switch (join_type) {
-    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kUnknown:
+    case AzureADJoinType::kUnknown:
       return DSREG_UNKNOWN_JOIN;
-    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kDevice:
+    case AzureADJoinType::kDevice:
       return DSREG_DEVICE_JOIN;
-    case ScopedAzureADJoinStateForTesting::AzureADJoinType::kWorkplace:
+    case AzureADJoinType::kWorkplace:
       return DSREG_WORKPLACE_JOIN;
   }
 }
@@ -946,14 +945,31 @@ bool IsDeviceRegisteredWithManagement() {
   return *GetRegisteredWithManagementStateStorage();
 }
 
+std::optional<AzureADJoinType> GetAzureADJoinType() {
+  const std::optional<DSREG_JOIN_TYPE>& join_type =
+      GetAzureADJoinStateStorage();
+  if (!join_type.has_value()) {
+    return std::nullopt;
+  }
+  switch (*join_type) {
+    case DSREG_UNKNOWN_JOIN:
+      return AzureADJoinType::kUnknown;
+    case DSREG_DEVICE_JOIN:
+      return AzureADJoinType::kDevice;
+    case DSREG_WORKPLACE_JOIN:
+      return AzureADJoinType::kWorkplace;
+    default:
+      return AzureADJoinType::kUnknown;
+  }
+}
+
 bool IsJoinedToAzureAD() {
-  auto join_type = GetAzureADJoinStateStorage();
-  return join_type.has_value();
+  return GetAzureADJoinType().has_value();
 }
 
 bool IsDeviceJoinedToAzureAD() {
-  const auto& join_type = GetAzureADJoinStateStorage();
-  return join_type && *join_type == DSREG_DEVICE_JOIN;
+  const std::optional<AzureADJoinType> join_type = GetAzureADJoinType();
+  return join_type && *join_type == AzureADJoinType::kDevice;
 }
 
 bool IsUser32AndGdi32Available() {
@@ -1309,20 +1325,7 @@ ScopedDeviceRegisteredWithManagementForTesting::
 
 ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(
     std::optional<AzureADJoinType> state)
-    : initial_state_([&] {
-        const auto& storage = GetAzureADJoinStateStorage();
-        if (!storage.has_value()) {
-          return std::optional<AzureADJoinType>(std::nullopt);
-        }
-        switch (*storage) {
-          case DSREG_UNKNOWN_JOIN:
-            return std::optional<AzureADJoinType>(AzureADJoinType::kUnknown);
-          case DSREG_DEVICE_JOIN:
-            return std::optional<AzureADJoinType>(AzureADJoinType::kDevice);
-          case DSREG_WORKPLACE_JOIN:
-            return std::optional<AzureADJoinType>(AzureADJoinType::kWorkplace);
-        }
-      }()) {
+    : initial_state_(GetAzureADJoinType()) {
   if (state.has_value()) {
     GetAzureADJoinStateStorage() = ToDSREGJoinType(*state);
   } else {

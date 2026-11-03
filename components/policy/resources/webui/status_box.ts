@@ -8,6 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {AzureAdJoinType} from './policy.mojom-webui.js';
 import type {Status} from './policy.mojom-webui.js';
 import {getCss} from './status_box.css.js';
 import {getHtml} from './status_box.html.js';
@@ -86,6 +87,16 @@ export class StatusBoxElement extends CrLitElement {
         className: 'machine-enrollment-device-id',
         show: this.scope === 'machine',
       },
+      // <if expr="is_win">
+      {
+        label: this.getAzureAdJoinStatusLabel(),
+        value: this.getAzureAdJoinStatusString(),
+        className: 'azure-ad-join-status',
+        show: this.scope === 'machine' &&
+            this.status.azureAdJoinType !== null &&
+            this.status.azureAdJoinType !== undefined,
+      },
+      // </if>
       {
         label: loadTimeData.getString('labelUsername'),
         value: this.status.username ?? this.getNotSpecified(),
@@ -274,6 +285,27 @@ export class StatusBoxElement extends CrLitElement {
 
   private getNotSpecified(): string {
     return loadTimeData.getString('notSpecified');
+  }
+
+  private getAzureAdJoinStatusLabel(): string {
+    return loadTimeData.valueExists('labelAzureAdJoinStatus') ?
+        loadTimeData.getString('labelAzureAdJoinStatus') :
+        '';
+  }
+
+  private getAzureAdJoinStatusString(): string {
+    switch (this.status?.azureAdJoinType) {
+      case AzureAdJoinType.kNotJoined:
+        return loadTimeData.getString('azureAdNotJoined');
+      case AzureAdJoinType.kWorkplace:
+        return loadTimeData.getString('azureAdWorkplaceJoined');
+      case AzureAdJoinType.kDevice:
+        return loadTimeData.getString('azureAdDeviceJoined');
+      case AzureAdJoinType.kUnknown:
+        return loadTimeData.getString('azureAdJoinedUnknown');
+      default:
+        return '';
+    }
   }
 
   protected showPolicyFetchSection(): boolean {

@@ -554,6 +554,21 @@ Additional details:
     <message name="IDS_POLICY_LABEL_MACHINE_ENROLLMENT_MACHINE_NAME" desc="Label for the machine name in the machine policy status box.">
     Machine Name:
   </message>
+  <message name="IDS_POLICY_LABEL_AZURE_AD_JOIN_STATUS" desc="Label for the Azure Active Directory / Entra join status in the machine policy status box.">
+    Microsoft Entra join:
+  </message>
+  <message name="IDS_POLICY_AZURE_AD_NOT_JOINED" desc="Status in the machine policy status box indicating that the Windows device is not joined to Azure Active Directory / Entra.">
+    Not joined
+  </message>
+  <message name="IDS_POLICY_AZURE_AD_WORKPLACE_JOINED" desc="Status in the machine policy status box indicating that the Windows device is workplace joined to Azure Active Directory / Entra.">
+    Workplace joined
+  </message>
+  <message name="IDS_POLICY_AZURE_AD_DEVICE_JOINED" desc="Status in the machine policy status box indicating that the Windows device is device joined to Azure Active Directory / Entra.">
+    Device joined
+  </message>
+  <message name="IDS_POLICY_AZURE_AD_JOINED_UNKNOWN" desc="Status in the machine policy status box indicating that the Windows device is joined to Azure Active Directory / Entra, but detailed status is unavailable.">
+    Joined, details unavailable
+  </message>
   <message name="IDS_POLICY_LABEL_USERNAME" desc="Label for the username in the user policy status box.">
     User:
   </message>
