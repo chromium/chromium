@@ -1191,6 +1191,7 @@ bool IsPlainContentElement(ax::mojom::Role role) {
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kNone:
     case ax::mojom::Role::kGroup:
+    case ax::mojom::Role::kParagraph:
       return true;
     default:
       return false;

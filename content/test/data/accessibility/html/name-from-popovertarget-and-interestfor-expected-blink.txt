@@ -5,3 +5,8 @@ rootWebArea
 ++++++button name='popover description' nameFrom=interestFor
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible
+++++++button collapsed name='Paragraph popover text' nameFrom=popoverTarget
+++++++button name='Paragraph popover text' nameFrom=interestFor
+++++++genericContainer ignored invisible
+++++++++paragraph ignored invisible
+++++++++++staticText ignored invisible

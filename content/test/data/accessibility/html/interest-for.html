@@ -39,6 +39,10 @@
 <div popover="manual" id="interestee4">Plain #4</div>
 <button interestfor="interestee4">Button</button>
 
+<!-- Text in a paragraph is still plain, will use as name -->
+<div popover="manual" id="interestee7"><p>Plain #7</p></div>
+<button interestfor="interestee7"></button>
+
 <!-- Non-popover target -->
 
 <!-- No details relation when target is not a popover -->
@@ -52,7 +56,8 @@
 <button interestfor="interestee6">Button</button>
 
 <script>
-  for (const id of ['interestee1', 'interestee2', 'interestee3', 'interestee4']) {
+  for (const id of ['interestee1', 'interestee2', 'interestee3', 'interestee4',
+                    'interestee7']) {
     document.getElementById(id).showPopover();
   }
 </script>

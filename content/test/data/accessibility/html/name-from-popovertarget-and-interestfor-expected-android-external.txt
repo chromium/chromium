@@ -2,3 +2,5 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++Button contentDescription:"popover description" clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, EXPAND] bundle:[chromeRole="button", clickableScore="300"]
 ++++Button contentDescription:"popover description" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="button", clickableScore="300"]
+++++Button contentDescription:"Paragraph popover text" clickable focusable expandedState:1 actions:[FOCUS, CLICK, AX_FOCUS, EXPAND] bundle:[chromeRole="button", clickableScore="300"]
+++++Button contentDescription:"Paragraph popover text" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="button", clickableScore="300"]

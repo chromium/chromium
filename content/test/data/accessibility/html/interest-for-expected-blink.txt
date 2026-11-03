@@ -23,6 +23,11 @@ rootWebArea
 ++++++button description='Plain #4' name='Button' descriptionFrom=interestFor describedbyIds=group
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
+++++++group ispopup=manual
+++++++++paragraph
+++++++++++staticText name='Plain #7'
+++++++++++++inlineTextBox name='Plain #7'
+++++++button name='Plain #7'
 ++++++genericContainer
 ++++++++staticText name='Plain #5'
 ++++++++++inlineTextBox name='Plain #5'
