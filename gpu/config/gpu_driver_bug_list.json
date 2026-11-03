@@ -83,19 +83,6 @@
       ]
     },
     {
-      "id": 24,
-      "cr_bugs": [231082],
-      "description": "Mali-4xx drivers throw an error when a buffer object's size is set to 0",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-4.*",
-      "features": [
-        "use_non_zero_size_for_client_side_stream_buffers"
-      ]
-    },
-    {
       "id": 31,
       "cr_bugs": [154715, 10068, 269829, 294779, 285292, 1018528, 179815, 179250, 229643, 230896, 163464, 233612, 289461, 369316, 678508],
       "description": "Always use virtualized contexts on Android",
@@ -342,18 +329,6 @@
       ]
     },
     {
-      "id": 105,
-      "cr_bugs": [449488,451230],
-      "description": "Framebuffer discarding causes corruption on Mali-4xx",
-      "gl_renderer": "Mali-4.*",
-      "os": {
-        "type": "android"
-      },
-      "features": [
-        "disable_discard_framebuffer"
-      ]
-    },
-    {
       "id": 106,
       "description": "EXT_occlusion_query_boolean hangs on PowerVR SGX 544 (IMG) drivers",
       "os": {
@@ -363,19 +338,6 @@
       "gl_renderer": "PowerVR SGX 544",
       "disabled_extensions": [
         "GL_EXT_occlusion_query_boolean"
-      ]
-    },
-    {
-      "id": 108,
-      "cr_bugs": [449150],
-      "description": "Mali-4xx on Linux does not support GL_RGB format",
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-4.*",
-      "features": [
-        "disable_gl_rgb_format"
       ]
     },
     {
@@ -393,19 +355,6 @@
       },
       "disabled_extensions": [
         "EGL_KHR_wait_sync"
-      ]
-    },
-    {
-      "id": 111,
-      "description": "Discard Framebuffer breaks WebGL on Mali-4xx Linux",
-      "cr_bugs": [485814],
-      "os": {
-        "type": "linux"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-4.*",
-      "features": [
-        "disable_discard_framebuffer"
       ]
     },
     {
@@ -465,19 +414,6 @@
       "gl_renderer": ".*4\\d\\d",
       "features": [
         "disable_blend_equation_advanced"
-      ]
-    },
-    {
-      "id": 119,
-      "description": "Context lost recovery often fails on Mali-400/450 on Android.",
-      "cr_bugs": [496438],
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "ARM.*",
-      "gl_renderer": ".*Mali-4.*",
-      "features": [
-        "exit_on_context_lost"
       ]
     },
     {
@@ -1202,23 +1138,6 @@
       "disabled_extensions": [
         "GL_ARB_timer_query",
         "GL_EXT_timer_query",
-        "GL_EXT_disjoint_timer_query",
-        "GL_EXT_disjoint_timer_query_webgl2"
-      ]
-    },
-    {
-      "id": 266,
-      "cr_bugs": [828721],
-      "description": "Crash in gl::GLApiBase::glGetQueryObjectui64vFn with NetEase devices ",
-      "os": {
-        "type": "android"
-      },
-      "gl_vendor": "NetEase",
-      "gl_renderer": "MuMu GL.*",
-      "features": [
-        "disable_timestamp_queries"
-      ],
-      "disabled_extensions": [
         "GL_EXT_disjoint_timer_query",
         "GL_EXT_disjoint_timer_query_webgl2"
       ]
