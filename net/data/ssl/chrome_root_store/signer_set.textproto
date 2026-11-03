@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1792103430
+  seconds: 1793289600
 }
-version: "2.0.11"
+version: "3.0.0"
 compatibility_version: 1
 operators: {
   name: "mtcs.dev Test CA Operator"
@@ -18,6 +18,10 @@ operators: {
 operators: {
   name: "Geomys"
   email: "mtc@geomys.org"
+}
+operators: {
+  name: "DigiCert, Inc."
+  email: "plants.labs@digicert.com"
 }
 issuers: {
   friendly_name: "mtcs.dev Test CA 1"
@@ -46,58 +50,85 @@ issuers: {
   spec_version: SPEC_VERSION_DRAFT05
 }
 issuers: {
-  friendly_name: "TrustAsia Test CA 1"
-  base_id: "44494.3.1.1"
+  friendly_name: "TrustAsia Test CA 3"
+  base_id: "44494.3.1.3"
   state_history: {
     state: STATE_USABLE
     state_start: {
-      seconds: 1787162400
+      seconds: 1793289600
     }
   }
   operator_history: {
     name: "TrustAsia"
     operator_start: {
-      seconds: 1787162400
+      seconds: 1793289600
     }
   }
-  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.1"
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.3"
   type: SIGNER_TYPE_ISSUER
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   max_cert_lifetime: {
     seconds: 604800
   }
-  key_sha256: "d02f2326a08aa339b1d73e4ef2a4384126c17841e5551461e6e27806e829f05d"
-  crs_root_id: 110
+  key_sha256: "1ee24d5bd7f8bc65a681fdbfec5d6f0ffa4938ee6987a7b3dba2ad51c8821a9f"
+  crs_root_id: 112
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
-  spec_version: SPEC_VERSION_DRAFT05
+  spec_version: SPEC_VERSION_DRAFT07
 }
 issuers: {
-  friendly_name: "TrustAsia Test CA 2"
-  base_id: "44494.3.1.2"
+  friendly_name: "TrustAsia Test CA 4"
+  base_id: "44494.3.1.4"
   state_history: {
     state: STATE_USABLE
     state_start: {
-      seconds: 1787162400
+      seconds: 1793289600
     }
   }
   operator_history: {
     name: "TrustAsia"
     operator_start: {
-      seconds: 1787162400
+      seconds: 1793289600
     }
   }
-  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.2"
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.4"
   type: SIGNER_TYPE_ISSUER
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   max_cert_lifetime: {
     seconds: 4060800
   }
-  key_sha256: "fe15c094d961f12afb97c0261cb994a411cb2abc6c027dd388679bfd4ae471da"
-  crs_root_id: 111
+  key_sha256: "9b936f69cb8c91672ee00be6263803cba9f3edb8d77c1f050c2f4ac9cf1d5a27"
+  crs_root_id: 113
   min_log_number: 1
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
-  spec_version: SPEC_VERSION_DRAFT05
+  spec_version: SPEC_VERSION_DRAFT07
+}
+issuers: {
+  friendly_name: "DigiCert Test CA 1"
+  base_id: "52580.200109.2.1"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1793289600
+    }
+  }
+  operator_history: {
+    name: "DigiCert, Inc."
+    operator_start: {
+      seconds: 1793289600
+    }
+  }
+  base_url: "https://phase2.mtc.digicert.dev/plants"
+  type: SIGNER_TYPE_ISSUER
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  max_cert_lifetime: {
+    seconds: 604800
+  }
+  key_sha256: "076eb2033f69185f7ac2b4de9595cddfacf747c9fa6dbd20bd432c2fd55ff06e"
+  crs_root_id: 114
+  min_log_number: 3
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  spec_version: SPEC_VERSION_DRAFT07
 }
 mirrors: {
   friendly_name: "mtcs.dev Test Mirror 1"
@@ -164,4 +195,26 @@ mirrors: {
   key_sha256: "ed9b91b23c895a940807816c3c1bca85c28d62959bc349e2b571d2c3ea9e4cce"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
   submission_prefix: "https://witness.navigli.sunlight.geomys.org/"
+}
+mirrors: {
+  friendly_name: "DigiCert Test Mirror 1"
+  base_id: "52580.200109.2.1000"
+  state_history: {
+    state: STATE_USABLE
+    state_start: {
+      seconds: 1793289600
+    }
+  }
+  operator_history: {
+    name: "DigiCert, Inc."
+    operator_start: {
+      seconds: 1793289600
+    }
+  }
+  base_url: "https://phase2.mtc.digicert.dev/plants/mirror"
+  type: SIGNER_TYPE_MIRROR
+  realm: REALM_UNTRUSTED_VALIDATION_ONLY
+  key_sha256: "ce0c09cb2049bb2e1495526023158e57839df8fbce04ceabd9694480700eaa58"
+  signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  submission_prefix: "https://phase2.mtc.digicert.dev/plants/mirror"
 }
