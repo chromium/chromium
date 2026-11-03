@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
@@ -298,7 +297,7 @@ void SplitTabsToolbarButton::UpdateAccessibilityLabel(bool is_enabled) {
 
 void SplitTabsToolbarButton::MaybeNotifyIndirectAccessIPHUsed() {
   if (auto* const user_ed = BrowserUserEducationInterface::From(browser_);
-      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed &&
+      user_ed &&
       user_ed->IsFeaturePromoActive(
           feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature)) {
     user_ed->NotifyFeaturePromoFeatureUsed(
@@ -308,8 +307,7 @@ void SplitTabsToolbarButton::MaybeNotifyIndirectAccessIPHUsed() {
 }
 
 void SplitTabsToolbarButton::MaybeAbortIndirectAccessIPH() {
-  if (auto* const user_ed = BrowserUserEducationInterface::From(browser_);
-      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed) {
+  if (auto* const user_ed = BrowserUserEducationInterface::From(browser_)) {
     TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
     tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
     if (!active_tab || !active_tab->IsSplit() ||

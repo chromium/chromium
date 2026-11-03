@@ -2351,20 +2351,17 @@ void MaybeRegisterChromeFeaturePromos(
 #endif  // BUILDFLAG(IS_WIN)
 
   // kIPHSplitViewHorizontalIndirectAccessFeature:
-  if (base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
-    registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForSnoozePromo(
-            feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
-            kToolbarSplitTabsToolbarButtonElementId,
-            IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_BODY)
-            .SetBubbleTitleText(
-                IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_TITLE)
-            .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-            .SetMetadata(152, "charlesmeng@chromium.org",
-                         "Triggered when the split view horizontal feature is "
-                         "enabled and the user creates a side by side "
-                         "split.")));
-  }
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
+          kToolbarSplitTabsToolbarButtonElementId,
+          IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_BODY)
+          .SetBubbleTitleText(
+              IDS_SPLIT_VIEW_HORIZONTAL_INDIRECT_ACCESS_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetMetadata(152, "charlesmeng@chromium.org",
+                       "Triggered when the user creates a side by side "
+                       "split.")));
 
   // kIPHGlassFrameOptInFeature:
   registry.RegisterFeature(std::move(

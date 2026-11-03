@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/existing_base_sub_menu_model.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -92,6 +91,19 @@ class TabMenuModelBrowserTest : public MenuModelTest,
         menu.GetSubmenuModelAt(submenu_index));
     submenu->ActivatedAt(static_cast<size_t>(
         submenu->GetIndexOfCommandId(static_cast<int>(command_id)).value()));
+  }
+
+  ui::SimpleMenuModel* GetArrangeSplitSubmenu(
+      int tab_index,
+      std::unique_ptr<TabMenuModel>& out_menu_model) {
+    out_menu_model = std::make_unique<TabMenuModel>(
+        &delegate_, TabMenuModelDelegate::From(browser()),
+        browser()->tab_strip_model(), tab_index);
+    size_t arrange_submenu_index =
+        out_menu_model->GetIndexOfCommandId(TabStripModel::CommandArrangeSplit)
+            .value();
+    return static_cast<ui::SimpleMenuModel*>(
+        out_menu_model->GetSubmenuModelAt(arrange_submenu_index));
   }
 };
 
@@ -654,32 +666,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelMuteSitesBrowserTest,
   EXPECT_FALSE(IsMuted(right_index));
 }
 
-class TabMenuModelSplitViewHorizontalBrowserTest
-    : public TabMenuModelBrowserTest {
- public:
-  TabMenuModelSplitViewHorizontalBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(tabs::kSplitViewHorizontal);
-  }
-
-  ui::SimpleMenuModel* GetArrangeSplitSubmenu(
-      int tab_index,
-      std::unique_ptr<TabMenuModel>& out_menu_model) {
-    out_menu_model = std::make_unique<TabMenuModel>(
-        &delegate_, TabMenuModelDelegate::From(browser()),
-        browser()->tab_strip_model(), tab_index);
-    size_t arrange_submenu_index =
-        out_menu_model->GetIndexOfCommandId(TabStripModel::CommandArrangeSplit)
-            .value();
-    return static_cast<ui::SimpleMenuModel*>(
-        out_menu_model->GetSubmenuModelAt(arrange_submenu_index));
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalBrowserTest,
-                       ToggleOrientationMenuAction) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, ToggleOrientationMenuAction) {
   chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();

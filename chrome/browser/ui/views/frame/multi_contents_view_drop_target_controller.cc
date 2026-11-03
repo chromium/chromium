@@ -13,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
@@ -360,8 +359,7 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
              drop_target_parent_view_->width() - drop_entry_point_width) {
     drop_side = is_rtl ? MultiContentsDropTargetView::DropSide::START
                        : MultiContentsDropTargetView::DropSide::END;
-  } else if (base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) &&
-             drag_type == MultiContentsDropTargetView::DragType::kTab &&
+  } else if (drag_type == MultiContentsDropTargetView::DragType::kTab &&
              point_in_view.y() >=
                  drop_target_parent_view_->height() - drop_entry_point_height) {
     drop_side = MultiContentsDropTargetView::DropSide::BOTTOM;

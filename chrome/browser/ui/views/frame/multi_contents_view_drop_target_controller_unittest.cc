@@ -13,7 +13,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -124,8 +123,6 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
         gfx::AnimationTestApi::SetPrefersReducedMotionForTesting(false);
     SetAnimationModeForTesting(
         gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
-    feature_list_.InitWithFeaturesAndParameters(EnabledFeaturesAndParameters(),
-                                                {});
     scoped_rtl_.emplace(false);
     multi_contents_view_ = std::make_unique<views::View>();
     drop_target_view_ = multi_contents_view_->AddChildView(
@@ -170,12 +167,6 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
   MultiContentsViewDropTargetController& controller() { return *controller_; }
   MultiContentsDropTargetView& drop_target_view() { return *drop_target_view_; }
   PrefService* prefs() { return prefs_.get(); }
-
-  virtual const std::vector<base::test::FeatureRefAndParams>
-  EnabledFeaturesAndParameters() {
-    return std::vector<base::test::FeatureRefAndParams>{
-        {tabs::kSplitViewHorizontal, {}}};
-  }
 
   // Fast forwards by an arbitrary time to ensure timed events are executed.
   void FastForward(base::TimeDelta amount) {
@@ -336,9 +327,6 @@ class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
   }
 
   MockDropDelegate& drop_delegate() { return drop_delegate_; }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   MockDropDelegate drop_delegate_;
@@ -717,24 +705,6 @@ TEST_F(MultiContentsViewDropTargetControllerTest, BottomDropTargetTab) {
 
 // Tests that link dragging does not show a bottom drop target.
 TEST_F(MultiContentsViewDropTargetControllerTest, BottomDropTargetLink) {
-  DragURLTo(DragPointForDropTargetShow(DropSide::BOTTOM, false));
-  FastForward(MultiContentsViewDropTargetController::
-                  kShowDropTargetForLinkAfterHideDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-class MultiContentsViewDropTargetControllerHorizontalDisabledTest
-    : public MultiContentsViewDropTargetControllerTest {
- public:
-  const std::vector<base::test::FeatureRefAndParams>
-  EnabledFeaturesAndParameters() override {
-    return std::vector<base::test::FeatureRefAndParams>{};
-  }
-};
-
-// Tests that the bottom drop target is disabled when the feature flag is off.
-TEST_F(MultiContentsViewDropTargetControllerHorizontalDisabledTest,
-       BottomDropTargetDisabled) {
   DragURLTo(DragPointForDropTargetShow(DropSide::BOTTOM, false));
   FastForward(MultiContentsViewDropTargetController::
                   kShowDropTargetForLinkAfterHideDelay);

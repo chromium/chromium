@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -156,13 +155,11 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     NOTREACHED() << "Unknown close menu item option";
   }
 
-  if (base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
-    AddItem(GetCommandIdInt(CommandId::kToggleOrientation), std::u16string());
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(GetCommandIdInt(CommandId::kToggleOrientation))
-            .value(),
-        kToggleOrientationMenuItem);
-  }
+  AddItem(GetCommandIdInt(CommandId::kToggleOrientation), std::u16string());
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(GetCommandIdInt(CommandId::kToggleOrientation))
+          .value(),
+      kToggleOrientationMenuItem);
 
   AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
 

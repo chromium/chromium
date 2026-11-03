@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_close_types_data.h"
@@ -2002,8 +2001,7 @@ void TabStripModel::UpdateSplitLayout(
 
   if (auto* const user_ed = BrowserUserEducationInterface::From(
           delegate_->GetBrowserWindowInterface());
-      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed &&
-      tab_layout == split_tabs::SplitTabLayout::kStacked) {
+      user_ed && tab_layout == split_tabs::SplitTabLayout::kStacked) {
     user_ed->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
@@ -2099,8 +2097,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   split_tabs::LogSplitViewCreatedUKM(this, split_id);
 
   if (auto* const user_ed = BrowserUserEducationInterface::From(
-          delegate_->GetBrowserWindowInterface());
-      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed) {
+          delegate_->GetBrowserWindowInterface())) {
     if (visual_data.split_layout() == split_tabs::SplitTabLayout::kStacked) {
       user_ed->NotifyFeaturePromoFeatureUsed(
           feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,

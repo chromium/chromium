@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -285,16 +284,8 @@ split_tabs::SplitTabVisualData GetWindowOpenSplitTabVisualData(
   CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
   CHECK(window_features.is_split);
 
-  blink::mojom::SplitTabPosition position = window_features.split_position;
-  // Top/bottom splits require stacked split support. Without it, fall back to
-  // left/right.
-  if (!base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
-    if (position == blink::mojom::SplitTabPosition::kTop) {
-      position = blink::mojom::SplitTabPosition::kLeft;
-    } else if (position == blink::mojom::SplitTabPosition::kBottom) {
-      position = blink::mojom::SplitTabPosition::kRight;
-    }
-  }
+  const blink::mojom::SplitTabPosition position =
+      window_features.split_position;
   const split_tabs::SplitTabLayout layout =
       (position == blink::mojom::SplitTabPosition::kTop ||
        position == blink::mojom::SplitTabPosition::kBottom)

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -127,7 +126,6 @@ class SplitTabButtonInteractiveTest
       features.push_back({::features::kWebUIReloadButton, {}});
       features.push_back({::features::kWebUISplitTabsButton, {}});
     }
-    features.push_back({tabs::kSplitViewHorizontal, {}});
     return features;
   }
 
