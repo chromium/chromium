@@ -10,6 +10,7 @@ import android.speech.RecognizerIntent;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,9 +19,10 @@ import org.chromium.chrome.browser.profiles.Profile;
  * Integration with the Google app Voice Plate, which performs voice capture and transcription on
  * behalf of Chrome.
  *
- * <p>The base implementation never supplies an intent, so voice recognition falls back to the
- * system speech recognizer. A downstream implementation in //clank provides the Google app specific
- * eligibility checks and intent.
+ * <p>The base implementation reports all requests as ineligible ({@link #isEligible(Profile)}) and
+ * never supplies an intent ({@link #createIntent(Context, Profile)}), so voice recognition falls
+ * back to the system speech recognizer. A downstream implementation in //clank provides the Google
+ * app specific eligibility checks and intent.
  *
  * <p>The integration only supplies the intent. Chrome remains responsible for enterprise policy and
  * permission checks, launching the intent, parsing the {@link RecognizerIntent#EXTRA_RESULTS}
@@ -38,6 +40,17 @@ public class VoicePlateIntegration {
             sInstance = downstream != null ? downstream : new VoicePlateIntegration();
         }
         return sInstance;
+    }
+
+    /**
+     * Returns whether the voice recognition request is eligible to use the Voice Plate. Overridden
+     * by the downstream implementation in //clank.
+     *
+     * @param profile The profile that initiated the voice recognition.
+     */
+    @Contract("null -> false")
+    protected boolean isEligible(@Nullable Profile profile) {
+        return false;
     }
 
     /**

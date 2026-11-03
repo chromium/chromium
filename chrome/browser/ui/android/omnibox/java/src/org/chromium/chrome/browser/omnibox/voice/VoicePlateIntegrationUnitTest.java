@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -29,20 +30,26 @@ public class VoicePlateIntegrationUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Profile mProfile;
-    @Mock private VoicePlateIntegration mIntegration;
+    @Mock private VoicePlateIntegration mMockIntegration;
 
     private final Context mContext = ApplicationProvider.getApplicationContext();
-    private final VoicePlateIntegration mDefaultIntegration = new VoicePlateIntegration();
+    private final VoicePlateIntegration mIntegration = new VoicePlateIntegration();
+
+    @Test
+    public void isEligible_defaultImplementation_returnsFalse() {
+        assertFalse(mIntegration.isEligible(mProfile));
+        assertFalse(mIntegration.isEligible(/* profile= */ null));
+    }
 
     @Test
     public void createIntent_defaultImplementation_returnsNull() {
-        assertNull(mDefaultIntegration.createIntent(mContext, mProfile));
+        assertNull(mIntegration.createIntent(mContext, mProfile));
     }
 
     @Test
     public void getInstance_returnsTestInstance() {
-        VoicePlateIntegration.setInstanceForTesting(mIntegration);
-        assertSame(mIntegration, VoicePlateIntegration.getInstance());
+        VoicePlateIntegration.setInstanceForTesting(mMockIntegration);
+        assertSame(mMockIntegration, VoicePlateIntegration.getInstance());
     }
 
     @Test

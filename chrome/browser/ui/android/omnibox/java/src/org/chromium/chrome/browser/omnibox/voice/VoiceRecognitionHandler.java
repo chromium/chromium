@@ -64,7 +64,6 @@ public class VoiceRecognitionHandler {
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
     private final VoiceRecognitionIntentHandler mIntentHandler;
-    private final VoicePlateIntentFactory mVoicePlateIntentFactory;
 
     /**
      * AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
@@ -108,8 +107,7 @@ public class VoiceRecognitionHandler {
                 autocompleteCoordinator,
                 windowAndroid,
                 profileSupplier,
-                new VoiceRecognitionIntentHandler(windowAndroid),
-                new VoicePlateIntentFactory());
+                new VoiceRecognitionIntentHandler(windowAndroid));
     }
 
     VoiceRecognitionHandler(
@@ -118,15 +116,13 @@ public class VoiceRecognitionHandler {
             AutocompleteCoordinator autocompleteCoordinator,
             WindowAndroid windowAndroid,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            VoiceRecognitionIntentHandler intentHandler,
-            VoicePlateIntentFactory voicePlateIntentFactory) {
+            VoiceRecognitionIntentHandler intentHandler) {
         mOmniboxStub = omniboxStub;
         mLocationBarDataProvider = locationBarDataProvider;
         mAutocompleteCoordinator = autocompleteCoordinator;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mIntentHandler = intentHandler;
-        mVoicePlateIntentFactory = voicePlateIntentFactory;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(this::onProfileUpdated));
     }
@@ -288,7 +284,7 @@ public class VoiceRecognitionHandler {
      * Triggers a voice recognition intent to allow the user to specify a search query.
      *
      * <p>Eligible requests are delegated to the Google app Voice Plate; see {@link
-     * VoicePlateIntentFactory}. Voice Plate transcriptions are treated as high confidence and
+     * VoicePlateIntegration}. Voice Plate transcriptions are treated as high confidence and
      * navigate directly.
      *
      * @param source The source of the voice recognition initiation, such as NTP or omnibox.
@@ -319,19 +315,20 @@ public class VoiceRecognitionHandler {
                         }
                     }
                 },
-                createVoicePlateIntent(source));
+                createVoicePlateIntent());
     }
 
     /**
      * Returns the intent delegating voice recognition to the Google app Voice Plate, or null if the
      * system speech recognizer should be used.
-     *
-     * @param source The source of the voice recognition initiation, such as NTP or omnibox.
      */
-    private @Nullable Intent createVoicePlateIntent(@VoiceInteractionSource int source) {
+    private @Nullable Intent createVoicePlateIntent() {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return null;
-        return mVoicePlateIntentFactory.createIntent(context, mProfileSupplier.get(), source);
+        Profile profile = mProfileSupplier.get();
+        var integration = VoicePlateIntegration.getInstance();
+        if (!integration.isEligible(profile)) return null;
+        return integration.createIntent(context, profile);
     }
 
     /** Returns whether voice search is enabled on the current tab. */

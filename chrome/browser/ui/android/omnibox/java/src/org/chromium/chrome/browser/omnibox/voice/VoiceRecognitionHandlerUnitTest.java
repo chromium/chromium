@@ -110,7 +110,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Runnable mOnCanceled;
-    @Mock private VoicePlateIntentFactory mVoicePlateIntentFactory;
+    @Mock private VoicePlateIntegration mVoicePlateIntegration;
     @Captor private ArgumentCaptor<List<VoiceResult>> mVoiceResults;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallback;
     @Captor private ArgumentCaptor<AutocompleteInput> mInputCaptor;
@@ -128,6 +128,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Before
     public void setUp() throws InterruptedException, ExecutionException {
         VoiceRecognitionUtil.setHasRecognitionIntentHandlerForTesting(true);
+        VoicePlateIntegration.setInstanceForTesting(mVoicePlateIntegration);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         lenient()
@@ -161,8 +162,7 @@ public class VoiceRecognitionHandlerUnitTest {
                         mAutocompleteCoordinator,
                         mWindowAndroid,
                         mProfileSupplier,
-                        mIntentHandler,
-                        mVoicePlateIntentFactory);
+                        mIntentHandler);
         mHandler.addObserver(mObserver);
 
         mWindowAndroid.setAndroidPermissionDelegate(mPermissionDelegate);
@@ -230,11 +230,10 @@ public class VoiceRecognitionHandlerUnitTest {
                 .showCancelableIntent(any(Intent.class), mIntentCallback.capture(), any());
     }
 
-    /** Makes the Voice Plate intent factory report the request as eligible for the Voice Plate. */
+    /** Makes the Voice Plate integration report the request as eligible for the Voice Plate. */
     private void enableVoicePlate() {
-        doReturn(mVoicePlateIntent)
-                .when(mVoicePlateIntentFactory)
-                .createIntent(any(), any(), anyInt());
+        doReturn(true).when(mVoicePlateIntegration).isEligible(any());
+        doReturn(mVoicePlateIntent).when(mVoicePlateIntegration).createIntent(any(), any());
     }
 
     @Test
@@ -415,8 +414,9 @@ public class VoiceRecognitionHandlerUnitTest {
     }
 
     @Test
-    public void testVoicePlate_passesProfileAndSourceToFactory() {
+    public void testVoicePlate_passesProfileToIntegration() {
         mProfileSupplier.set(mProfile);
+        enableVoicePlate();
         setVoiceResult(
                 /* resultCode= */ Activity.RESULT_CANCELED,
                 /* text= */ null,
@@ -424,8 +424,8 @@ public class VoiceRecognitionHandlerUnitTest {
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP, mOnCanceled);
 
-        verify(mVoicePlateIntentFactory)
-                .createIntent(any(), eq(mProfile), eq(VoiceInteractionSource.NTP));
+        verify(mVoicePlateIntegration).isEligible(mProfile);
+        verify(mVoicePlateIntegration).createIntent(any(), eq(mProfile));
     }
 
     @Test
