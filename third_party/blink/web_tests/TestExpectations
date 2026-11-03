@@ -4134,6 +4134,7 @@ crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-006.svg [ Failu
 crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-003.svg [ Failure ]
 crbug.com/366558 external/wpt/svg/text/reftests/text-multiline-001.svg [ Failure ]
 crbug.com/366553 external/wpt/svg/text/reftests/text-inline-size-101.svg [ Failure ]
+crbug.com/570524827 external/wpt/css/css-writing-modes/wm-propagation-svg-root-scrollbar.svg [ Failure Pass ]
 crbug.com/626703 external/wpt/web-animations/timing-model/timelines/update-and-send-events.html [ Failure ]
 
 crbug.com/1380987 external/wpt/html/user-activation/detached-iframe.html [ Failure ]
