@@ -31,7 +31,7 @@ class DXGIDeviceScopedHandleTest : public testing::Test {
     UINT creation_flags =
         (D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT |
          D3D11_CREATE_DEVICE_PREVENT_INTERNAL_THREADING_OPTIMIZATIONS);
-    static const D3D_FEATURE_LEVEL feature_levels[] = {
+    static constexpr D3D_FEATURE_LEVEL feature_levels[] = {
         D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
         D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
         D3D_FEATURE_LEVEL_9_1};

@@ -126,8 +126,8 @@ enum PixelFormat {
   COLOR_FORMAT_YUV420_SEMIPLANAR = 21,
 };
 
-static const int kPresentationTimeBase = 100;
-static const int kMaxInputPts = kPresentationTimeBase + 2;
+static constexpr int kPresentationTimeBase = 100;
+static constexpr int kMaxInputPts = kPresentationTimeBase + 2;
 
 static inline const base::TimeDelta InfiniteTimeOut() {
   return base::Microseconds(-1);

@@ -24,7 +24,7 @@
 
 namespace media {
 
-static const size_t kTestCallbacks = 5;
+static constexpr size_t kTestCallbacks = 5;
 
 using testing::Eq;
 using testing::SizeIs;

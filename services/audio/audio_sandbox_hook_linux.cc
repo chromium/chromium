@@ -44,7 +44,7 @@ void AddAlsaFilePermissions(std::vector<BrokerFilePermission>* permissions) {
   permissions->push_back(
       BrokerFilePermission::ReadWriteCreateRecursive("/dev/snd/"));
 
-  static const base::FilePath::CharType dev_aload_path[] =
+  static constexpr base::FilePath::CharType dev_aload_path[] =
       FILE_PATH_LITERAL("/dev/aloadC");
   for (int i = 0; i <= 31; ++i) {
     permissions->push_back(BrokerFilePermission::ReadWrite(

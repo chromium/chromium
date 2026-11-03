@@ -29,7 +29,7 @@ static constexpr float kOutputFillValue = 3.0;
 static constexpr int kVectorSize = 8192;
 
 // List of unclamped values that are out of bounds and within bounds.
-static const float kUnclampedInputValues[] = {
+static constexpr float kUnclampedInputValues[] = {
     std::numeric_limits<float>::quiet_NaN(),
     std::numeric_limits<float>::signaling_NaN(),
     -std::numeric_limits<float>::infinity(),
@@ -44,8 +44,8 @@ static const float kUnclampedInputValues[] = {
 };
 
 // Expected result of clamping `kUnclampedInputValues`.
-static const float kClampedOutputValues[] = {0,    0,   -1.0, 1.0, -1.0, -1.0,
-                                             -0.5, 0.0, 0.5,  1.0, 1.0};
+static constexpr float kClampedOutputValues[] = {
+    0, 0, -1.0, 1.0, -1.0, -1.0, -0.5, 0.0, 0.5, 1.0, 1.0};
 
 static_assert(std::size(kUnclampedInputValues) ==
               std::size(kClampedOutputValues));
@@ -117,7 +117,7 @@ class VectorMathTest : public testing::Test {
 
 // Ensure each optimized vector_math::FMAC() method returns the same value.
 TEST_F(VectorMathTest, FMAC) {
-  static const float kResult = kInputFillValue * kScale + kOutputFillValue;
+  static constexpr float kResult = kInputFillValue * kScale + kOutputFillValue;
 
   {
     SCOPED_TRACE("FMAC");
@@ -163,7 +163,7 @@ TEST_F(VectorMathTest, FMAC) {
 
 // Ensure each optimized vector_math::FMUL() method returns the same value.
 TEST_F(VectorMathTest, FMUL) {
-  static const float kResult = kInputFillValue * kScale;
+  static constexpr float kResult = kInputFillValue * kScale;
 
   {
     SCOPED_TRACE("FMUL");
@@ -437,25 +437,21 @@ TEST_P(VectorMathEWMAAndMaxPowerTest, Correctness) {
   GetParam().RunTest();
 }
 
-static const float kZeros[] = {  // 32 zeros
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
+static constexpr float kZeros[] = {  // 32 zeros
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-static const float kOnes[] = {  // 32 ones
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-};
+static constexpr float kOnes[] = {  // 32 ones
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-static const float kCheckerboard[] = {  // 32 alternating 0, 1
-  0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-  0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1
-};
+static constexpr float kCheckerboard[] = {  // 32 alternating 0, 1
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 
-static const float kInverseCheckerboard[] = {  // 32 alternating 1, 0
-  1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
-  1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0
-};
+static constexpr float kInverseCheckerboard[] = {  // 32 alternating 1, 0
+    1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};
 
 INSTANTIATE_TEST_SUITE_P(
     Scenarios,

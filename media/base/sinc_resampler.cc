@@ -209,10 +209,10 @@ void SincResampler::UpdateRegions(bool second_load) {
 
 void SincResampler::InitializeKernel() {
   // Blackman window parameters.
-  static const double kAlpha = 0.16;
-  static const double kA0 = 0.5 * (1.0 - kAlpha);
-  static const double kA1 = 0.5;
-  static const double kA2 = 0.5 * kAlpha;
+  static constexpr double kAlpha = 0.16;
+  static constexpr double kA0 = 0.5 * (1.0 - kAlpha);
+  static constexpr double kA1 = 0.5;
+  static constexpr double kA2 = 0.5 * kAlpha;
 
   // Generates a set of windowed sinc() kernels.
   // We generate a range of sub-sample offsets from 0.0 to 1.0.

@@ -17,10 +17,10 @@
 
 namespace media {
 
-static const int kSampleRate = 48000;
-static const int kFramesPerBuffer = 128;
+static constexpr int kSampleRate = 48000;
+static constexpr int kFramesPerBuffer = 128;
 
-static const int kTimeConstantMillis = 5;
+static constexpr int kTimeConstantMillis = 5;
 
 namespace {
 
@@ -173,7 +173,7 @@ class AudioPowerMonitorTest : public ::testing::TestWithParam<TestScenario> {
                                            bool clipped) {
     // Feed the AudioPowerMonitor, read measurements from it, and record them in
     // MeasurementObserver.
-    static const int kNumFeedIters = 100;
+    static constexpr int kNumFeedIters = 100;
     MeasurementObserver observer(power);
     for (int i = 0; i < kNumFeedIters; ++i) {
       power_monitor_.Scan(bus, bus.frames());
@@ -211,39 +211,39 @@ TEST_P(AudioPowerMonitorTest, MeasuresPowerOfSignal) {
                                       AudioPowerMonitor::zero_power(), false);
 }
 
-static const float kMonoSilentNoise[] = {0.01f, -0.01f};
+static constexpr float kMonoSilentNoise[] = {0.01f, -0.01f};
 
-static const float kMonoMaxAmplitude[] = {1.0f};
+static constexpr float kMonoMaxAmplitude[] = {1.0f};
 
-static const float kMonoMaxAmplitude2[] = {-1.0f, 1.0f};
+static constexpr float kMonoMaxAmplitude2[] = {-1.0f, 1.0f};
 
-static const float kMonoHalfMaxAmplitude[] = {0.5f, -0.5f, 0.5f, -0.5f};
+static constexpr float kMonoHalfMaxAmplitude[] = {0.5f, -0.5f, 0.5f, -0.5f};
 
-static const float kMonoAmplitudeClipped[] = {2.0f, -2.0f};
+static constexpr float kMonoAmplitudeClipped[] = {2.0f, -2.0f};
 
-static const float kMonoMaxAmplitudeWithClip[] = {2.0f, 0.0, 0.0f, 0.0f};
+static constexpr float kMonoMaxAmplitudeWithClip[] = {2.0f, 0.0, 0.0f, 0.0f};
 
-static const float kMonoMaxAmplitudeWithClip2[] = {4.0f, 0.0, 0.0f, 0.0f};
+static constexpr float kMonoMaxAmplitudeWithClip2[] = {4.0f, 0.0, 0.0f, 0.0f};
 
-static const float kStereoSilentNoise[] = {
+static constexpr float kStereoSilentNoise[] = {
     // left channel
     0.005f, -0.005f,
     // right channel
     0.005f, -0.005f};
 
-static const float kStereoMaxAmplitude[] = {
+static constexpr float kStereoMaxAmplitude[] = {
     // left channel
     1.0f, -1.0f,
     // right channel
     -1.0f, 1.0f};
 
-static const float kRightChannelMaxAmplitude[] = {
+static constexpr float kRightChannelMaxAmplitude[] = {
     // left channel
     0.0f, 0.0f, 0.0f, 0.0f,
     // right channel
     -1.0f, 1.0f, -1.0f, 1.0f};
 
-static const float kLeftChannelHalfMaxAmplitude[] = {
+static constexpr float kLeftChannelHalfMaxAmplitude[] = {
     // left channel
     0.5f,
     -0.5f,
@@ -256,13 +256,13 @@ static const float kLeftChannelHalfMaxAmplitude[] = {
     0.0f,
 };
 
-static const float kStereoMixed[] = {
+static constexpr float kStereoMixed[] = {
     // left channel
     0.5f, -0.5f, 0.5f, -0.5f,
     // right channel
     -1.0f, 1.0f, -1.0f, 1.0f};
 
-static const float kStereoMixed2[] = {
+static constexpr float kStereoMixed2[] = {
     // left channel
     1.0f, -1.0f, 0.75f, -0.75f, 0.5f, -0.5f, 0.25f, -0.25f,
     // right channel

@@ -20,7 +20,7 @@ using testing::_;
 
 namespace media {
 
-static const double kSampleRateRatio = 192000.0 / 44100.0;
+static constexpr double kSampleRateRatio = 192000.0 / 44100.0;
 
 // Minimum request size to use `kMaxKernelSize`.
 constexpr int kMinRequestSizeForMaxKernel =
@@ -62,7 +62,7 @@ TEST(SincResamplerTest, ChunkedResample) {
                           base::BindRepeating(&MockSource::ProvideInput,
                                               base::Unretained(&mock_source)));
 
-  static const int kChunks = 2;
+  static constexpr int kChunks = 2;
   size_t max_chunk_size = resampler.ChunkSize() * kChunks;
   auto resampled_destination = base::HeapArray<float>::Uninit(max_chunk_size);
 
@@ -167,7 +167,7 @@ TEST(SincResamplerTest, DISABLED_SetRatioBench) {
 // Ensure various optimized Convolve() methods return the same value.  Only run
 // this test if other optimized methods exist, otherwise the default Convolve()
 // will be tested by the parameterized SincResampler tests below.
-static const double kKernelInterpolationFactor = 0.5;
+static constexpr double kKernelInterpolationFactor = 0.5;
 
 TEST(SincResamplerTest, Convolve) {
   // Initialize a dummy resampler.
@@ -178,7 +178,7 @@ TEST(SincResamplerTest, Convolve) {
 
   // The optimized Convolve methods are slightly more precise than Convolve_C(),
   // so comparison must be done using an epsilon.
-  static const double kEpsilon = 0.00000005;
+  static constexpr double kEpsilon = 0.00000005;
   size_t kernel_size = resampler.KernelSize();
   auto kernel = resampler.get_kernel_for_testing().first(kernel_size);
   auto kernel_unaligned =
@@ -277,7 +277,7 @@ class SincResamplerTest : public testing::TestWithParam<SincResamplerTestData> {
 // Tests resampling using a given input and output sample rate.
 TEST_P(SincResamplerTest, Resample) {
   // Make comparisons using one second of data.
-  static const double kTestDurationSecs = 1;
+  static constexpr double kTestDurationSecs = 1;
   int input_samples = kTestDurationSecs * input_rate_;
   int output_samples = kTestDurationSecs * output_rate_;
 
@@ -319,8 +319,8 @@ TEST_P(SincResamplerTest, Resample) {
 
   // Range of the Nyquist frequency (0.5 * min(input rate, output_rate)) which
   // we refer to as low and high.
-  static const double kLowFrequencyNyquistRange = 0.7;
-  static const double kHighFrequencyNyquistRange = 0.9;
+  static constexpr double kLowFrequencyNyquistRange = 0.7;
+  static constexpr double kHighFrequencyNyquistRange = 0.9;
 
   // Calculate Root-Mean-Square-Error and maximum error for the resampling.
   double sum_of_squares = 0;
@@ -363,7 +363,7 @@ TEST_P(SincResamplerTest, Resample) {
 // kernel size.
 TEST_P(SincResamplerTest, Resample_SmallKernel) {
   // Make comparisons using one second of data.
-  static const double kTestDurationSecs = 1;
+  static constexpr double kTestDurationSecs = 1;
   int input_samples = kTestDurationSecs * input_rate_;
   int output_samples = kTestDurationSecs * output_rate_;
 
@@ -408,8 +408,8 @@ TEST_P(SincResamplerTest, Resample_SmallKernel) {
 
 // Almost all conversions have an RMS error of around -15 dbFS and have a high
 // frequency error around -12 dbFS.
-static const double kRMSMaxError = -14.94;
-static const double kHighFreqMaxError = -12.09;
+static constexpr double kRMSMaxError = -14.94;
+static constexpr double kHighFreqMaxError = -12.09;
 
 INSTANTIATE_TEST_SUITE_P(
     SincResamplerTest,

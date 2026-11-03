@@ -14,9 +14,9 @@
 
 namespace media {
 
-static const gfx::Size kCodedSize(320, 240);
-static const gfx::Rect kVisibleRect(320, 240);
-static const gfx::Size kNaturalSize(320, 240);
+static constexpr gfx::Size kCodedSize(320, 240);
+static constexpr gfx::Rect kVisibleRect(320, 240);
+static constexpr gfx::Size kNaturalSize(320, 240);
 static constexpr ChannelLayoutConfig kStereoConfig =
     ChannelLayoutConfig::Stereo();
 

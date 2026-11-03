@@ -24,7 +24,7 @@ class ScopedAllowBlockingForMediaFoundation : public base::ScopedAllowBlocking {
 
 namespace {
 
-static const char kMediaFoundationLoadFailedMessage[] =
+static constexpr char kMediaFoundationLoadFailedMessage[] =
     "Failed to start Media Foundation, accelerated media functionality "
     "may be disabled. If you're using Windows N, see "
     "https://support.microsoft.com/en-us/topic/"

@@ -203,7 +203,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
  public:
   // Allocate space for ~10 seconds of data @ 48kHz in stereo:
   // 2 bytes per sample, 2 channels, 10ms @ 48kHz, 10 seconds <=> 1920000 bytes.
-  static const size_t kMaxBufferSize = 2 * 2 * 480 * 100 * 10;
+  static constexpr size_t kMaxBufferSize = 2 * 2 * 480 * 100 * 10;
 
   explicit WriteToFileAudioSink(const char* file_name)
       : buffer_(0, kMaxBufferSize), bytes_to_write_(0) {

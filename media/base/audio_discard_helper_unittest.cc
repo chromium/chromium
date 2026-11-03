@@ -17,8 +17,8 @@
 
 namespace media {
 
-static const float kDataStep = 0.01f;
-static const size_t kSampleRate = 48000;
+static constexpr float kDataStep = 0.01f;
+static constexpr size_t kSampleRate = 48000;
 
 static AudioDiscardHelper::TimeInfo CreateTimeInfo(base::TimeDelta timestamp,
                                                    base::TimeDelta duration) {

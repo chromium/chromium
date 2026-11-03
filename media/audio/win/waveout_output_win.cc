@@ -30,15 +30,15 @@ namespace media {
 //   synchronized to the actual device state.
 
 // Sixty four MB is the maximum buffer size per AudioOutputStream.
-static const uint32_t kMaxOpenBufferSize = 1024 * 1024 * 64;
+static constexpr uint32_t kMaxOpenBufferSize = 1024 * 1024 * 64;
 
 // See Also
 // http://www.thx.com/consumer/home-entertainment/home-theater/surround-sound-speaker-set-up/
 // http://en.wikipedia.org/wiki/Surround_sound
 
-static const int kMaxChannelsToMask = 8;
-static const std::array<unsigned int, kMaxChannelsToMask + 1> kChannelsToMask =
-    {
+static constexpr int kMaxChannelsToMask = 8;
+static constexpr std::array<unsigned int, kMaxChannelsToMask + 1>
+    kChannelsToMask = {
         0,
         // 1 = Mono
         SPEAKER_FRONT_CENTER,

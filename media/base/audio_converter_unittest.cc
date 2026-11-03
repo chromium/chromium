@@ -21,17 +21,17 @@
 namespace media {
 
 // Parameters which control the many input case tests.
-static const int kConvertInputs = 8;
-static const int kConvertCycles = 3;
+static constexpr int kConvertInputs = 8;
+static constexpr int kConvertCycles = 3;
 
 // Parameters used for testing.
 static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
-static const int kHighLatencyBufferSize = 2048;
-static const int kLowLatencyBufferSize = 256;
-static const int kSampleRate = 48000;
+static constexpr int kHighLatencyBufferSize = 2048;
+static constexpr int kLowLatencyBufferSize = 256;
+static constexpr int kSampleRate = 48000;
 
 // Number of full sine wave cycles for each Render() call.
-static const int kSineCycles = 4;
+static constexpr int kSineCycles = 4;
 
 // Tuple of <input rate, output rate, output channel layout config, epsilon>.
 typedef std::tuple<int, int, ChannelLayoutConfig, double>

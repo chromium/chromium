@@ -196,8 +196,8 @@ TEST_F(AudioBlockFifoTest, PushAndConsume) {
 
 // Perform a sequence of Push/Consume calls to a 1 block FIFO.
 TEST_F(AudioBlockFifoTest, PushAndConsumeOneBlockFifo) {
-  static const int frames = 441;
-  static const int blocks = 1;
+  static constexpr int frames = 441;
+  static constexpr int blocks = 1;
   AudioBlockFifo fifo(kChannels, frames, blocks);
   PushAndVerify(&fifo, frames, frames, frames * blocks);
   EXPECT_TRUE(fifo.GetUnfilledFrames() == 0);
@@ -212,8 +212,8 @@ TEST_F(AudioBlockFifoTest, PushAndConsumeOneBlockFifo) {
 }
 
 TEST_F(AudioBlockFifoTest, PushAndConsumeSilence) {
-  static const int frames = 441;
-  static const int blocks = 2;
+  static constexpr int frames = 441;
+  static constexpr int blocks = 2;
   AudioBlockFifo fifo(kChannels, frames, blocks);
   // First push non-zero data.
   Push(&fifo, frames, kChannels);

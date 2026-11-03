@@ -29,8 +29,8 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 namespace media {
 
-static const int kBenchmarkIterations = 20;
-static const int kSampleRate = 48000;
+static constexpr int kBenchmarkIterations = 20;
+static constexpr int kSampleRate = 48000;
 
 template <typename T, class SampleTraits>
 void RunInterleaveBench(AudioBus* bus,

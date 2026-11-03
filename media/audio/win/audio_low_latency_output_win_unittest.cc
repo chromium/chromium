@@ -52,9 +52,9 @@ using ::testing::Return;
 
 namespace media {
 
-static const int kBitsPerSample = 16;
-static const size_t kMaxDeltaSamples = 1000;
-static const char kDeltaTimeMsFileName[] = "delta_times_ms.txt";
+static constexpr int kBitsPerSample = 16;
+static constexpr size_t kMaxDeltaSamples = 1000;
+static constexpr char kDeltaTimeMsFileName[] = "delta_times_ms.txt";
 
 MATCHER_P(HasValidDelay, value, "") {
   // It is difficult to come up with a perfect test condition for the delay

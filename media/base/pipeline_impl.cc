@@ -42,8 +42,8 @@
 #include "media/base/win/mf_feature_checks.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-static const double kDefaultPlaybackRate = 0.0;
-static const float kDefaultVolume = 1.0f;
+static constexpr double kDefaultPlaybackRate = 0.0;
+static constexpr float kDefaultVolume = 1.0f;
 
 namespace media {
 

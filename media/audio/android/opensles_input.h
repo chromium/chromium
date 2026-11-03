@@ -38,7 +38,7 @@ class OpenSLESInputStream : public AudioInputStream {
  public:
   using Error = AudioInputStream::AudioInputCallback::Error;
 
-  static const int kMaxNumOfBuffersInQueue = 2;
+  static constexpr int kMaxNumOfBuffersInQueue = 2;
 
   OpenSLESInputStream(AudioManagerAndroid* manager,
                       const AudioParameters& params);

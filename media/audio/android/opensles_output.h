@@ -36,7 +36,7 @@ class AudioManagerAndroid;
 // All public methods should be called on the Audio Manager thread.
 class MEDIA_EXPORT OpenSLESOutputStream : public MuteableAudioOutputStream {
  public:
-  static const int kMaxNumOfBuffersInQueue = 2;
+  static constexpr int kMaxNumOfBuffersInQueue = 2;
 
   OpenSLESOutputStream(AudioManagerAndroid* manager,
                        const AudioParameters& params,

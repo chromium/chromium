@@ -15,10 +15,10 @@
 
 namespace media {
 
-static const int kBenchmarkIterations = 50000000;
+static constexpr int kBenchmarkIterations = 50000000;
 
-static const double kSampleRateRatio = 192000.0 / 44100.0;
-static const double kKernelInterpolationFactor = 0.5;
+static constexpr double kSampleRateRatio = 192000.0 / 44100.0;
+static constexpr double kKernelInterpolationFactor = 0.5;
 
 static void RunConvolveBenchmark(
     float (*convolve_fn)(const base::span<const float>&,

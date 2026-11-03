@@ -19,22 +19,22 @@ namespace media {
 // Just test a basic resampling case.  The SincResampler unit test will take
 // care of accuracy testing; we just need to check that multichannel works as
 // expected within some tolerance.
-static const float kScaleFactor = 192000.0f / 44100.0f;
+static constexpr float kScaleFactor = 192000.0f / 44100.0f;
 
 // Simulate large and small sample requests used by the different audio paths.
-static const int kHighLatencySize = 8192;
+static constexpr int kHighLatencySize = 8192;
 // Low latency buffers show a larger error than high latency ones.  Which makes
 // sense since each error represents a larger portion of the total request.
-static const int kLowLatencySize = 128;
+static constexpr int kLowLatencySize = 128;
 
 // Test fill value.
-static const float kFillValue = 0.1f;
+static constexpr float kFillValue = 0.1f;
 
 // Chosen arbitrarily based on what each resampler reported during testing.
-static const double kLowLatencyMaxRMSError = 0.0036;
-static const double kLowLatencyMaxError = 0.04;
-static const double kHighLatencyMaxRMSError = 0.0036;
-static const double kHighLatencyMaxError = 0.04;
+static constexpr double kLowLatencyMaxRMSError = 0.0036;
+static constexpr double kLowLatencyMaxError = 0.04;
+static constexpr double kHighLatencyMaxRMSError = 0.0036;
+static constexpr double kHighLatencyMaxError = 0.04;
 
 class MultiChannelResamplerTest
     : public testing::TestWithParam<int> {

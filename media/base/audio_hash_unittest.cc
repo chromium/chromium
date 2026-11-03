@@ -13,9 +13,9 @@
 
 namespace media {
 
-static const int kChannelCount = 2;
-static const int kFrameCount = 1024;
-static const int kSampleRate = 48000;
+static constexpr int kChannelCount = 2;
+static constexpr int kFrameCount = 1024;
+static constexpr int kSampleRate = 48000;
 
 class AudioHashTest : public testing::Test {
  public:

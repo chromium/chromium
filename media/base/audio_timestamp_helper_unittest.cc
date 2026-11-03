@@ -20,7 +20,7 @@ const int k48kHz = 48000;
 
 }  // namespace
 
-static const int kDefaultSampleRate = 44100;
+static constexpr int kDefaultSampleRate = 44100;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:

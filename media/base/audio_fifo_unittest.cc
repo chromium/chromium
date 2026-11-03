@@ -64,8 +64,8 @@ TEST_F(AudioFifoTest, Push) {
 
 // Consumes audio bus objects from a FIFO and empty it to different degrees.
 TEST_F(AudioFifoTest, Consume) {
-  static const int kChannels = 2;
-  static const size_t kMaxFrameCount = 128;
+  static constexpr int kChannels = 2;
+  static constexpr size_t kMaxFrameCount = 128;
   AudioFifo fifo(kChannels, kMaxFrameCount);
   {
     std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kMaxFrameCount);

@@ -335,7 +335,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // Channel map to CRAS_CHANNEL, values in the same order of
   // corresponding source in Chromium defined Channels.
   static constexpr int kUnsupportedChannel = -4;
-  static const int kChannelMap[] = {
+  static constexpr int kChannelMap[] = {
       CRAS_CH_FL, CRAS_CH_FR, CRAS_CH_FC, CRAS_CH_LFE, CRAS_CH_RL, CRAS_CH_RR,
       CRAS_CH_FLC, CRAS_CH_FRC, CRAS_CH_RC, CRAS_CH_SL, CRAS_CH_SR,
       // CRAS doesn't currently define explicit mappings for all channels.

@@ -25,7 +25,7 @@ namespace media {
 static int kChannels = 2;
 
 // Max number of audio framed the FIFO can contain.
-static const int kMaxFramesInFifo = 2048;
+static constexpr int kMaxFramesInFifo = 2048;
 
 class AudioPullFifoTest
     : public testing::TestWithParam<int> {

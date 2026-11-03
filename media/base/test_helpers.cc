@@ -509,9 +509,9 @@ static VideoCodecProfile MinProfile(VideoCodec codec) {
   }
 }
 
-static const gfx::Size kNormalSize(320, 240);
-static const gfx::Size kLargeSize(640, 480);
-static const gfx::Size kExtraLargeSize(15360, 8640);
+static constexpr gfx::Size kNormalSize(320, 240);
+static constexpr gfx::Size kLargeSize(640, 480);
+static constexpr gfx::Size kExtraLargeSize(15360, 8640);
 
 // static
 VideoDecoderConfig TestVideoConfig::Invalid() {
@@ -852,7 +852,7 @@ DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(uint8_t);
 DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(int16_t);
 DEFINE_MAKE_AUDIO_BUFFER_INSTANCE(int32_t);
 
-static const char kFakeVideoBufferHeader[] = "FakeVideoBufferForTest";
+static constexpr char kFakeVideoBufferHeader[] = "FakeVideoBufferForTest";
 
 scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
     const VideoDecoderConfig& config,

@@ -35,10 +35,10 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 namespace media {
 
-static const int kBenchmarkIterations = 200000;
-static const int kEWMABenchmarkIterations = 50000;
-static const float kScale = 0.5;
-static const size_t kVectorSize = 8192;
+static constexpr int kBenchmarkIterations = 200000;
+static constexpr int kEWMABenchmarkIterations = 50000;
+static constexpr float kScale = 0.5;
+static constexpr size_t kVectorSize = 8192;
 
 class VectorMathPerfTest : public testing::Test {
  public:
@@ -120,8 +120,8 @@ class VectorMathPerfTest : public testing::Test {
  private:
   // Fills `input_vector_` with repeating values, some of which are unclamped.
   void FillInputWithUnclampedData() {
-    static const float kUnclampedInput[] = {-2.0, -1.0, -0.5, 0.0,
-                                            0.5,  1.0,  2.0};
+    static constexpr float kUnclampedInput[] = {-2.0, -1.0, -0.5, 0.0,
+                                                0.5,  1.0,  2.0};
     auto input_span = base::span(kUnclampedInput);
     auto writer = base::SpanWriter(base::span(input_vector_));
 

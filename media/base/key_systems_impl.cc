@@ -37,7 +37,7 @@ struct MimeTypeToCodecs {
 // Mapping between containers and their codecs.
 // Only audio codecs can belong to a "audio/*" mime_type, and only video codecs
 // can belong to a "video/*" mime_type.
-static const MimeTypeToCodecs kMimeTypeToCodecsMap[] = {
+static constexpr MimeTypeToCodecs kMimeTypeToCodecsMap[] = {
     {"audio/webm", EME_CODEC_WEBM_AUDIO_ALL},
     {"video/webm", EME_CODEC_WEBM_VIDEO_ALL},
     {"audio/mp4", EME_CODEC_MP4_AUDIO_ALL},

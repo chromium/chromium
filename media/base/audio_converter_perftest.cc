@@ -14,7 +14,7 @@
 
 namespace media {
 
-static const int kBenchmarkIterations = 200000;
+static constexpr int kBenchmarkIterations = 200000;
 
 // InputCallback that zero's out the provided AudioBus.
 class NullInputProvider : public AudioConverter::InputCallback {

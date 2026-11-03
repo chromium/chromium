@@ -378,23 +378,23 @@ TEST_F(AudioBusTest, Zero) {
 static constexpr size_t kFrames = 5;
 static constexpr size_t kChannels = 2;
 static constexpr size_t kTotalFrames = kFrames * kChannels;
-static const std::array<uint8_t, kTotalFrames> kTestVectorUint8 = {
+static constexpr std::array<uint8_t, kTotalFrames> kTestVectorUint8 = {
     0,         -INT8_MIN,          UINT8_MAX,
     0,         INT8_MAX / 2 + 128, INT8_MIN / 2 + 128,
     -INT8_MIN, UINT8_MAX,          -INT8_MIN,
     -INT8_MIN};
-static const std::array<int16_t, kTotalFrames> kTestVectorInt16 = {
+static constexpr std::array<int16_t, kTotalFrames> kTestVectorInt16 = {
     INT16_MIN,     0, INT16_MAX, INT16_MIN, INT16_MAX / 2,
     INT16_MIN / 2, 0, INT16_MAX, 0,         0};
-static const std::array<int32_t, kTotalFrames> kTestVectorInt32 = {
+static constexpr std::array<int32_t, kTotalFrames> kTestVectorInt32 = {
     INT32_MIN,     0, INT32_MAX, INT32_MIN, INT32_MAX / 2,
     INT32_MIN / 2, 0, INT32_MAX, 0,         0};
-static const std::array<float, kTotalFrames> kTestVectorFloat32 = {
+static constexpr std::array<float, kTotalFrames> kTestVectorFloat32 = {
     -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f};
 
 // This is based on kTestVectorFloat32, but has some of the values outside of
 // sanity.
-static const std::array<float, kTotalFrames> kTestVectorFloat32Invalid = {
+static constexpr std::array<float, kTotalFrames> kTestVectorFloat32Invalid = {
     -5.0f,
     0.0f,
     5.0f,
@@ -406,11 +406,11 @@ static const std::array<float, kTotalFrames> kTestVectorFloat32Invalid = {
     std::numeric_limits<float>::signaling_NaN(),
     std::numeric_limits<float>::quiet_NaN()};
 
-static const std::array<float, kTotalFrames> kTestVectorFloat32Sanitized = {
+static constexpr std::array<float, kTotalFrames> kTestVectorFloat32Sanitized = {
     -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f};
 
 // Expected results.
-static const auto kExpectedPlanarData =
+static constexpr auto kExpectedPlanarData =
     std::to_array<std::array<const float, kFrames>>(
         {{-1.0f, 1.0f, 0.5f, 0.0f, 0.0f}, {0.0f, -1.0f, -0.5f, 1.0f, 0.0f}});
 
@@ -784,7 +784,7 @@ TEST_F(AudioBusTest, Scale) {
 }
 
 TEST_F(AudioBusTest, Bitstream) {
-  static const size_t kDataSize = kFrameCount / 2;
+  static constexpr size_t kDataSize = kFrameCount / 2;
   std::unique_ptr<AudioBus> bus = AudioBus::Create(1, kFrameCount);
 
   EXPECT_FALSE(bus->is_bitstream_format());

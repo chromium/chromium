@@ -24,7 +24,7 @@ namespace media {
 class MEDIA_EXPORT DecryptConfig {
  public:
   // Keys are always 128 bits.
-  static const int kDecryptionKeySize = 16;
+  static constexpr int kDecryptionKeySize = 16;
 
   // |key_id| is the ID that references the decryption key for this sample.
   // |iv| is the initialization vector defined by the encrypted format.

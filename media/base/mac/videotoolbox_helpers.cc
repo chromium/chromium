@@ -20,7 +20,7 @@
 namespace media::video_toolbox {
 
 namespace {
-static const char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
+static constexpr char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
 }  // anonymous namespace
 
 // Wrapper class for writing AnnexBBuffer output into.
