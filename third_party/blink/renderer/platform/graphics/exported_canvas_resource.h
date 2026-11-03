@@ -50,6 +50,8 @@ class PLATFORM_EXPORT ExportedCanvasResource
 
  private:
   scoped_refptr<CanvasResource> resource_;
+
+  const bool use_legacy_external_canvas_resource_bitmap_path_;
 };
 
 }  // namespace blink

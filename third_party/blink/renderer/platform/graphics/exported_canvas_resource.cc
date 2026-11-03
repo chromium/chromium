@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 namespace blink {
 
@@ -26,12 +27,10 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   void NotifyResourceLost() override { resource_is_lost_ = true; }
   void WaitSyncToken(const gpu::SyncToken&) override;
 
-  scoped_refptr<StaticBitmapImage> Bitmap() override;
   const gfx::HDRMetadata& GetHdrMetadata() const override {
     return hdr_metadata_;
   }
 
- private:
   viz::TransferableResource::ResourceSource GetTransferableResourceSource()
       const final {
     return resource_source_;
@@ -65,36 +64,6 @@ ExternalCanvasResource::~ExternalCanvasResource() {
     std::move(release_callback_)
         .Run(destruction_sync_token_, resource_is_lost_);
   }
-}
-
-scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::Bitmap");
-
-  // On same thread we need to make sure context was not dropped, but
-  // in the cross-thread case, checking a WeakPtr in not thread safe, not
-  // to mention that we will use a shared context rather than the context
-  // of origin to access the resource. In that case we will find out
-  // whether the resource was dropped later, when we attempt to access the
-  // mailbox.
-  if (!is_cross_thread() && !context_provider_wrapper_) {
-    return nullptr;
-  }
-
-  // The |release_callback| keeps a ref on this resource to ensure the backing
-  // shared image is kept alive until the lifetime of the image.
-  auto release_callback = base::BindOnce(
-      [](scoped_refptr<ExternalCanvasResource> resource,
-         const gpu::SyncToken& sync_token, bool is_lost) {
-        // Do nothing but hold onto the refptr.
-      },
-      base::RetainedRef(this));
-
-  scoped_refptr<StaticBitmapImage> image =
-      AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          GetSharedImage(), sync_token(), alpha_type_, hdr_metadata_,
-          context_provider_wrapper_, owning_thread_ref_,
-          owning_thread_task_runner_, std::move(release_callback));
-  return image;
 }
 
 void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
@@ -133,14 +102,16 @@ ExportedCanvasResource::ExportedCanvasResource(
                                                        resource_source,
                                                        hdr_metadata,
                                                        std::move(callback),
-                                                       provider)) {
+                                                       provider)),
+      use_legacy_external_canvas_resource_bitmap_path_(true) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
 }
 
 ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<CanvasResourceSharedImage> resource)
-    : resource_(std::move(resource)) {
+    : resource_(std::move(resource)),
+      use_legacy_external_canvas_resource_bitmap_path_(false) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
 }
@@ -178,7 +149,98 @@ bool ExportedCanvasResource::OriginClean() const {
 }
 
 scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
-  return resource_->Bitmap();
+  TRACE_EVENT0("blink", "ExportedCanvasResource::Bitmap");
+  if (use_legacy_external_canvas_resource_bitmap_path_) {
+    ExternalCanvasResource* external_resource =
+        static_cast<ExternalCanvasResource*>(resource_.get());
+
+    // On same thread we need to make sure context was not dropped, but
+    // in the cross-thread case, checking a WeakPtr in not thread safe, not
+    // to mention that we will use a shared context rather than the context
+    // of origin to access the resource. In that case we will find out
+    // whether the resource was dropped later, when we attempt to access the
+    // mailbox.
+    if (!resource_->is_cross_thread() &&
+        !external_resource->context_provider_wrapper_) {
+      return nullptr;
+    }
+
+    // The |release_callback| keeps a ref on this resource to ensure the backing
+    // shared image is kept alive until the lifetime of the image.
+    auto release_callback = base::BindOnce(
+        [](scoped_refptr<ExternalCanvasResource> resource,
+           const gpu::SyncToken& sync_token, bool is_lost) {
+          // Do nothing but hold onto the refptr.
+        },
+        base::WrapRefCounted(external_resource));
+
+    scoped_refptr<StaticBitmapImage> image =
+        AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+            resource_->GetSharedImage(), resource_->sync_token(),
+            external_resource->alpha_type_, resource_->GetHdrMetadata(),
+            external_resource->context_provider_wrapper_,
+            resource_->owning_thread_ref_,
+            resource_->owning_thread_task_runner_, std::move(release_callback));
+    return image;
+  } else {
+    CanvasResourceSharedImage* resource_si =
+        static_cast<CanvasResourceSharedImage*>(resource_.get());
+    if (!resource_si->is_accelerated_) {
+      // Construct an SkImage that references the shared memory buffer.
+      auto mapping = resource_->GetSharedImage()->Map();
+      if (!mapping) {
+        LOG(ERROR) << "MapSharedImage Failed.";
+        return nullptr;
+      }
+
+      auto sk_image = SkImages::RasterFromPixmapCopy(
+          mapping->GetSkPixmapForPlane(0, resource_si->CreateSkImageInfo()));
+
+      // Unmap the underlying buffer.
+      mapping.reset();
+      if (!sk_image) {
+        return nullptr;
+      }
+
+      auto image = UnacceleratedStaticBitmapImage::Create(
+          sk_image, ImageOrientationEnum::kDefault,
+          resource_->GetHdrMetadata());
+      image->SetOriginClean(resource_->OriginClean());
+      return image;
+    }
+
+    // The |release_callback| keeps a ref on this resource to ensure the backing
+    // shared image is kept alive until the lifetime of the image.
+    // Note that the code in CanvasResourceProvider::RecycleResource also uses
+    // the ref-count on the resource as a proxy for a read lock to allow
+    // recycling the resource once all refs have been released.
+    auto release_callback = base::BindOnce(
+        [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+           const gpu::SyncToken& sync_token, bool lost_resource) {
+          CHECK(resource);
+
+          resource->WaitSyncToken(sync_token);
+          if (lost_resource) {
+            resource->NotifyResourceLost();
+          }
+
+          CanvasResource::DropRefOnOwningThread(std::move(resource));
+        },
+        base::WrapRefCounted(resource_si));
+
+    scoped_refptr<StaticBitmapImage> image;
+    const auto& client_shared_image = resource_->GetSharedImage();
+
+    // If its cross thread, then the sync token was already verified.
+    image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+        client_shared_image, resource_->sync_token(),
+        client_shared_image->alpha_type(), resource_->GetHdrMetadata(),
+        resource_si->context_provider_wrapper_, resource_->owning_thread_ref_,
+        resource_->owning_thread_task_runner_, std::move(release_callback));
+
+    DCHECK(image);
+    return image;
+  }
 }
 
 void ExportedCanvasResource::EndDisplayCompositorAccess(

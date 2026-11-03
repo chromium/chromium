@@ -206,64 +206,6 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   }
 }
 
-scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
-  TRACE_EVENT0("blink", "CanvasResourceSharedImage::Bitmap");
-
-  if (!is_accelerated_) {
-    // Construct an SkImage that references the shared memory buffer.
-    auto mapping = GetSharedImage()->Map();
-    if (!mapping) {
-      LOG(ERROR) << "MapSharedImage Failed.";
-      return nullptr;
-    }
-
-    auto sk_image = SkImages::RasterFromPixmapCopy(
-        mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()));
-
-    // Unmap the underlying buffer.
-    mapping.reset();
-    if (!sk_image) {
-      return nullptr;
-    }
-
-    auto image = UnacceleratedStaticBitmapImage::Create(
-        sk_image, ImageOrientationEnum::kDefault, hdr_metadata_);
-    image->SetOriginClean(OriginClean());
-    return image;
-  }
-
-  // The |release_callback| keeps a ref on this resource to ensure the backing
-  // shared image is kept alive until the lifetime of the image.
-  // Note that the code in CanvasResourceProvider::RecycleResource also uses the
-  // ref-count on the resource as a proxy for a read lock to allow recycling the
-  // resource once all refs have been released.
-  auto release_callback = base::BindOnce(
-      [](scoped_refptr<CanvasResourceSharedImage>&& resource,
-         const gpu::SyncToken& sync_token, bool lost_resource) {
-        CHECK(resource);
-
-        resource->WaitSyncToken(sync_token);
-        if (lost_resource) {
-          resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(resource));
-      },
-      scoped_refptr<CanvasResourceSharedImage>(this));
-
-  scoped_refptr<StaticBitmapImage> image;
-  const auto& client_shared_image = GetSharedImage();
-
-  // If its cross thread, then the sync token was already verified.
-  image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-      client_shared_image, sync_token(), client_shared_image->alpha_type(),
-      hdr_metadata_, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
-
-  DCHECK(image);
-  return image;
-}
-
 void CanvasResourceSharedImage::EndExternalWrite(
     const gpu::SyncToken& external_write_sync_token) {
   // Ensure that any subsequent internal accesses wait for the external write to

@@ -44,8 +44,6 @@ class RasterInterface;
 
 namespace blink {
 
-class StaticBitmapImage;
-
 // Generic resource interface, used for locking (RAII) and recycling pixel
 // buffers of any type.
 // Note that this object may be accessed across multiple threads but not
@@ -73,9 +71,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   bool OriginClean() const { return is_origin_clean_; }
   void SetOriginClean(bool flag) { is_origin_clean_ = flag; }
 
-  // Provides a StaticBitmapImage wrapping this resource. Commonly used for
-  // snapshots not used in compositing (for instance to draw to another canvas).
-  virtual scoped_refptr<StaticBitmapImage> Bitmap() = 0;
 
   // Called when the resource is marked lost. Losing a resource does not mean
   // that the backing memory has been destroyed, since the resource itself keeps
@@ -154,7 +149,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
     return !GetSharedImage()->is_software();
   }
   void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
-  scoped_refptr<StaticBitmapImage> Bitmap() final;
   const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
 
   // Save (and wait on) this sync token on the context used by this resource for
