@@ -2915,6 +2915,14 @@ void StyleEngine::InvalidateForRuleSetChanges(
   if (invalidation_root.GetStyleChangeType() == kSubtreeStyleChange) {
     return;
   }
+  // An unstyled root already marked for recalc (e.g. a newly inserted shadow
+  // host) needs nothing: matching could only mark it again, and we never
+  // descend below an unstyled root. Without a ComputedStyle, an independent
+  // style change is handled as a full recalc anyway.
+  if (invalidation_root.NeedsStyleRecalc() &&
+      !invalidation_root.GetComputedStyle()) {
+    return;
+  }
 
   if (changed_rule_flags & kFullRecalcRules) {
     invalidation_root.SetNeedsStyleRecalc(
