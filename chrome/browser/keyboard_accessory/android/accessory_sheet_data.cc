@@ -237,13 +237,14 @@ std::ostream& operator<<(std::ostream& os,
 
 IbanInfo::IbanInfo(std::u16string value,
                    std::u16string text_to_fill,
-                   std::string id)
+                   std::string id,
+                   bool selectable)
     : value_(AccessorySheetField::Builder()
                  .SetSuggestionType(AccessorySuggestionType::kIban)
                  .SetDisplayText(std::move(value))
                  .SetTextToFill(std::move(text_to_fill))
                  .SetId(std::move(id))
-                 .SetSelectable(true)
+                 .SetSelectable(selectable)
                  .Build()) {}
 
 IbanInfo::IbanInfo(const IbanInfo&) = default;
@@ -606,18 +607,20 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AddPromoCodeInfo(
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddIbanInfo(
     std::u16string value,
     std::u16string text_to_fill,
-    std::string id) && {
+    std::string id,
+    bool selectable) && {
   // Calls IbanInfo(...)& since `this` is an lvalue.
-  return std::move(
-      AddIbanInfo(std::move(value), std::move(text_to_fill), std::move(id)));
+  return std::move(AddIbanInfo(std::move(value), std::move(text_to_fill),
+                               std::move(id), selectable));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddIbanInfo(
     std::u16string value,
     std::u16string text_to_fill,
-    std::string id) & {
-  accessory_sheet_data_.add_iban_info(
-      (IbanInfo(std::move(value), std::move(text_to_fill), std::move(id))));
+    std::string id,
+    bool selectable) & {
+  accessory_sheet_data_.add_iban_info(IbanInfo(
+      std::move(value), std::move(text_to_fill), std::move(id), selectable));
   return *this;
 }
 

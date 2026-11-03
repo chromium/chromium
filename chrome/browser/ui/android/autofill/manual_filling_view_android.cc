@@ -141,7 +141,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
     Java_ManualFillingComponentBridge_addIbanInfoToAccessorySheetData(
         env, java_object, j_tab_data, tab_data.get_sheet_type(),
         value.suggestion_type(), value.id(), value.display_text(),
-        value.text_to_fill());
+        value.text_to_fill(), value.selectable());
   }
 
   for (const autofill::LoyaltyCardInfo& loyalty_card_info :

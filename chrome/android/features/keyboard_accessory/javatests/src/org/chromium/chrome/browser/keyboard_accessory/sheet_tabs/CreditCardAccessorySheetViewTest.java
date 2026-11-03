@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
@@ -360,6 +361,80 @@ public class CreditCardAccessorySheetViewTest {
         assertThat(getChipText(R.id.cc_number), is("4111111111111111"));
         assertThat(findChipView(R.id.cc_number).isShown(), is(true));
         assertThat(findChipView(R.id.cc_number).isEnabled(), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingUnselectableIbanRendersUnclickableChip() {
+        assertThat(mView.get().getChildCount(), is(0));
+
+        final String kIbanValue = "FR7630006000011234567890189";
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IbanInfo ibanInfo = new IbanInfo();
+                    ibanInfo.setValue(
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(AccessorySuggestionType.IBAN)
+                                    .setDisplayText(kIbanValue)
+                                    .setA11yDescription(kIbanValue)
+                                    .setId("iban_guid")
+                                    .setIsObfuscated(true)
+                                    .build());
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    ibanInfo, AccessorySheetDataPiece.Type.IBAN_INFO));
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new KeyboardAccessoryData.FooterCommand(
+                                            "Manage credit cards", null),
+                                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
+
+        assertThat(getChipText(R.id.value), is(kIbanValue));
+        assertThat(findChipView(R.id.value).isShown(), is(true));
+        assertThat(findChipView(R.id.value).isEnabled(), is(false));
+        assertThat(findChipView(R.id.value).hasOnClickListeners(), is(false));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingSelectableIbanRendersClickableChip() {
+        final AtomicBoolean clicked = new AtomicBoolean();
+        assertThat(mView.get().getChildCount(), is(0));
+
+        final String kIbanValue = "FR7630006000011234567890189";
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IbanInfo ibanInfo = new IbanInfo();
+                    ibanInfo.setValue(
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(AccessorySuggestionType.IBAN)
+                                    .setDisplayText(kIbanValue)
+                                    .setA11yDescription(kIbanValue)
+                                    .setId("iban_guid")
+                                    .setIsObfuscated(true)
+                                    .setCallback(item -> clicked.set(true))
+                                    .build());
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    ibanInfo, AccessorySheetDataPiece.Type.IBAN_INFO));
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new KeyboardAccessoryData.FooterCommand(
+                                            "Manage credit cards", null),
+                                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
+                });
+
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(2)));
+
+        assertThat(getChipText(R.id.value), is(kIbanValue));
+        assertThat(findChipView(R.id.value).isShown(), is(true));
+        assertThat(findChipView(R.id.value).isEnabled(), is(true));
+        assertThat(findChipView(R.id.value).isClickable(), is(true));
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.value)::performClick);
+        assertThat(clicked.get(), is(true));
     }
 
     @Test

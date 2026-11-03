@@ -271,7 +271,10 @@ std::ostream& operator<<(std::ostream& out,
 // tab of manual fallback UI.
 class IbanInfo final {
  public:
-  IbanInfo(std::u16string value, std::u16string text_to_fill, std::string id);
+  IbanInfo(std::u16string value,
+           std::u16string text_to_fill,
+           std::string id,
+           bool selectable);
 
   IbanInfo(const IbanInfo&);
   IbanInfo& operator=(const IbanInfo&);
@@ -586,10 +589,12 @@ class AccessorySheetData::Builder final {
 
   Builder&& AddIbanInfo(std::u16string value,
                         std::u16string text_to_fill,
-                        std::string id) &&;
+                        std::string id,
+                        bool selectable = true) &&;
   Builder& AddIbanInfo(std::u16string value,
                        std::u16string text_to_fill,
-                       std::string id) &;
+                       std::string id,
+                       bool selectable = true) &;
 
   Builder&& AddLoyaltyCardInfo(std::string merchant_name,
                                GURL program_logo_url,

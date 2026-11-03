@@ -357,6 +357,12 @@ BASE_FEATURE(kAutofillPreferBuyNowPayLaterBlocklists,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+// When enabled, the Android keyboard-accessory payment sheet builds IBAN rows
+// non-selectable on insecure pages and refuses to fill/unmask IBANs there.
+// TODO(crbug.com/577370514): Clean up after M162 branch.
+BASE_FEATURE(kAutofillRequireSecureContextForIbanManualFilling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, Chrome will try to fetch payment account image resources again
 // upon failure. The number of attempts is a controllable parameter. This is a
 // kill-switch.

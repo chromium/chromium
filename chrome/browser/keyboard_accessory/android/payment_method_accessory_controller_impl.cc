@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
@@ -39,6 +40,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -176,14 +178,29 @@ PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
   return promo_code_info;
 }
 
-IbanInfo TranslateIban(const Iban& data) {
+IbanInfo TranslateIban(const Iban& data, bool allow_filling) {
   bool is_local = data.record_type() == Iban::kLocalIban;
   std::string id_string =
       is_local ? data.guid() : base::NumberToString(data.instrument_id());
-  IbanInfo iban_info(data.GetIdentifierStringForAutofillDisplay(),
-                     is_local ? data.value() : std::u16string(), id_string);
+  return IbanInfo(data.GetIdentifierStringForAutofillDisplay(),
+                  is_local ? data.value() : std::u16string(), id_string,
+                  allow_filling);
+}
 
-  return iban_info;
+bool IsIbanFillingAllowed(bool allow_filling) {
+  return allow_filling ||
+         !base::FeatureList::IsEnabled(
+             features::kAutofillRequireSecureContextForIbanManualFilling);
+}
+
+bool ShouldBlockIdBasedFillingInInsecureContext(
+    const BrowserAutofillManager& autofill_manager) {
+  // Card numbers and IBANs are not selectable in insecure contexts (see
+  // `GetSheetData()`). Recheck before unmasking/filling the payment method;
+  // the sheet may be stale.
+  return base::FeatureList::IsEnabled(
+             features::kAutofillRequireSecureContextForIbanManualFilling) &&
+         !autofill_manager.client().IsContextSecure();
 }
 
 }  // namespace
@@ -244,8 +261,10 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
     data.add_promo_code_info(TranslateOffer(offer));
   }
 
-  for (const Iban& iban : GetIbans()) {
-    data.add_iban_info(TranslateIban(iban));
+  bool iban_filling_allowed = IsIbanFillingAllowed(allow_filling);
+  std::vector<Iban> ibans = GetIbans();
+  for (const Iban& iban : ibans) {
+    data.add_iban_info(TranslateIban(iban, iban_filling_allowed));
   }
 
   for (const LoyaltyCard& loyalty_card : GetLoyaltyCards()) {
@@ -254,7 +273,8 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
         base::UTF8ToUTF16(loyalty_card.loyalty_card_number())));
   }
 
-  if (has_suggestions && !allow_filling && autofill_manager) {
+  if ((has_suggestions || (!ibans.empty() && !iban_filling_allowed)) &&
+      !allow_filling && autofill_manager) {
     data.set_warning(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
   }
@@ -265,8 +285,9 @@ void PaymentMethodAccessoryControllerImpl::OnFillingTriggered(
     FieldGlobalId focused_field_id,
     const AccessorySheetField& selection) {
   content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
-  if (!rfh)
+  if (!rfh) {
     return;  // Without focused frame, driver and manager will be undefined.
+  }
   if (!GetDriver() || !GetAutofillManager()) {
     // Even with a valid frame, driver or manager might be invalid. Log these
     // cases to check how we can recover and fail gracefully so users can retry.
@@ -280,6 +301,10 @@ void PaymentMethodAccessoryControllerImpl::OnFillingTriggered(
     GetDriver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                   mojom::ActionPersistence::kFill,
                                   focused_field_id, selection.text_to_fill());
+    return;
+  }
+
+  if (ShouldBlockIdBasedFillingInInsecureContext(*GetAutofillManager())) {
     return;
   }
 

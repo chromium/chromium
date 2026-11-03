@@ -311,16 +311,20 @@ class ManualFillingComponentBridge {
                     int suggestionType,
             @JniType("std::string") String guid,
             @JniType("std::u16string") String value,
-            @JniType("std::u16string") String textToFill) {
+            @JniType("std::u16string") String textToFill,
+            boolean selectable) {
         IbanInfo ibanInfo = new IbanInfo();
         accessorySheetData.getIbanInfoList().add(ibanInfo);
 
-        Callback<UserInfoField> callback =
-                (field) -> {
-                    assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
-                    ManualFillingComponentBridgeJni.get()
-                            .onFillingTriggered(mNativeView, sheetType, field);
-                };
+        Callback<UserInfoField> callback = null;
+        if (selectable) {
+            callback =
+                    (field) -> {
+                        assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                        ManualFillingComponentBridgeJni.get()
+                                .onFillingTriggered(mNativeView, sheetType, field);
+                    };
+        }
         ((IbanInfo) ibanInfo)
                 .setValue(
                         new UserInfoField.Builder()

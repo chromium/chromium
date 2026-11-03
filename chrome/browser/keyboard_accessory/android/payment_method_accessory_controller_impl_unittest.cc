@@ -268,6 +268,79 @@ TEST_F(PaymentMethodAccessoryControllerTest_Insecure,
           .Build());
 }
 
+TEST_F(PaymentMethodAccessoryControllerTest_Insecure,
+       PreventsFillingIbansInInsecureContexts) {
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  std::string guid = paydm().AddAsLocalIban(iban);
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  std::optional<AccessorySheetData> sheet_data = controller()->GetSheetData();
+  ASSERT_TRUE(sheet_data);
+  ASSERT_EQ(sheet_data->iban_info_list().size(), 1u);
+  EXPECT_FALSE(sheet_data->iban_info_list()[0].value().selectable());
+  EXPECT_EQ(
+      sheet_data->warning(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
+
+  // A selection from a stale sheet must not fill the IBAN either.
+  AccessorySheetField field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kIban)
+          .SetDisplayText(iban.GetIdentifierStringForAutofillDisplay())
+          .SetTextToFill(iban.value())
+          .SetId(guid)
+          .SetSelectable(true)
+          .Build();
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  EXPECT_CALL(iban_access_manager(), FetchValue).Times(0);
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+  controller()->OnFillingTriggered(field_id, field);
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest_Insecure,
+       FillsIbansWhenKillSwitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillRequireSecureContextForIbanManualFilling);
+
+  Iban iban;
+  iban.set_value(std::u16string(test::kIbanValue16));
+  std::string guid = paydm().AddAsLocalIban(iban);
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  std::optional<AccessorySheetData> sheet_data = controller()->GetSheetData();
+  ASSERT_TRUE(sheet_data);
+  ASSERT_EQ(sheet_data->iban_info_list().size(), 1u);
+  EXPECT_TRUE(sheet_data->iban_info_list()[0].value().selectable());
+
+  AccessorySheetField field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kIban)
+          .SetDisplayText(iban.GetIdentifierStringForAutofillDisplay())
+          .SetTextToFill(iban.value())
+          .SetId(guid)
+          .SetSelectable(true)
+          .Build();
+  content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+  ASSERT_TRUE(rfh);
+  FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
+                         .renderer_id = FieldRendererId(123)};
+
+  EXPECT_CALL(iban_access_manager(), FetchValue).Times(1);
+  controller()->OnFillingTriggered(field_id, field);
+}
+
 class PaymentMethodAccessoryControllerCardUnmaskTest
     : public PaymentMethodAccessoryControllerTest,
       public testing::WithParamInterface<CreditCard::RecordType> {
