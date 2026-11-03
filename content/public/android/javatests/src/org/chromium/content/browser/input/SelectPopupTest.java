@@ -4,10 +4,13 @@
 
 package org.chromium.content.browser.input;
 
+import android.view.ViewGroup;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -105,5 +108,27 @@ public class SelectPopupTest {
                 () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
         DOMUtils.clickNode(webContents, "select");
         verifyPopupShownState(true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Browser"})
+    public void testHideRemovesAnchorView() throws Exception, Throwable {
+        final WebContents webContents = mActivityTestRule.getWebContents();
+        final ViewGroup containerView = (ViewGroup) mActivityTestRule.getContainerView();
+        int initialChildCount = ThreadUtils.runOnUiThreadBlocking(containerView::getChildCount);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(webContents));
+        DOMUtils.clickNode(webContents, "select");
+        verifyPopupShownState(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(initialChildCount + 1, containerView.getChildCount());
+                    mActivityTestRule.getSelectPopup().hide();
+                    Assert.assertEquals(initialChildCount, containerView.getChildCount());
+                });
+        verifyPopupShownState(false);
     }
 }
