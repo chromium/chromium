@@ -14298,6 +14298,33 @@
             ]
         }
     ],
+    "PerformanceControlsHatsStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledPerformance_20261102",
+                    "params": {
+                        "en_site_id": "rcKd8mV1n0ugnJ3q1cK0Vogsfb7o",
+                        "probability": "0.0005"
+                    },
+                    "enable_features": [
+                        "PerformanceControlsPerformanceSurvey"
+                    ],
+                    "disable_features": [
+                        "PerformanceControlsBatteryPerformanceSurvey",
+                        "PerformanceControlsBatterySaverOptOutSurvey",
+                        "PerformanceControlsMemorySaverOptOutSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "PeriodicScudoPurge": [
         {
             "platforms": [
