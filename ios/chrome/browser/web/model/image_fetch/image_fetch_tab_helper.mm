@@ -111,7 +111,8 @@ void ImageFetchTabHelper::GetImageData(const GURL& url,
 
   if (frame->GetSecurityOrigin() != frame_origin) {
     // An origin mismatch implies that the request is untrusted and pass an
-    // opaque `url::Origin()` to ensure that `send_cookies` is false.
+    // opaque `url::Origin()` so that no origin is treated as same-origin for
+    // credentials.
     FetchImageDataWithFetcher(url, referrer, /*frame_origin=*/url::Origin(),
                               callback);
     return;
@@ -131,7 +132,6 @@ void ImageFetchTabHelper::FetchImageDataWithFetcher(
     const web::Referrer& referrer,
     const url::Origin& frame_origin,
     ImageDataCallback callback) {
-  const bool send_cookies = frame_origin.IsSameOriginWith(url);
   ImageFetcher::FromWebState(web_state_)
       ->FetchImageData(
           url,
@@ -143,7 +143,7 @@ void ImageFetchTabHelper::FetchImageDataWithFetcher(
           }),
           web::ReferrerHeaderValueForNavigation(url, referrer),
           web::PolicyForNavigation(url, referrer), NO_TRAFFIC_ANNOTATION_YET,
-          send_cookies);
+          frame_origin);
 }
 
 void ImageFetchTabHelper::JsCallbackOfGetImageData(

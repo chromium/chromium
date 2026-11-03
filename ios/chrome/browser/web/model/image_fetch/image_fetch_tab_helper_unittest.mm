@@ -8,7 +8,6 @@
 
 #import "base/byte_size.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_future.h"
@@ -310,9 +309,11 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataWithWebStateNavigate) {
 }
 
 // Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
-// when the origin is mismatched (wrong domain).
+// with an opaque initiator when the origin is mismatched (wrong domain).
 TEST_F(ImageFetchTabHelperTest,
        GetImageDataWithMismatchedOriginFallsbackToImageFetcher) {
+  base::test::TestFuture<const network::ResourceRequest&> future;
+  test_url_loader_factory_.SetInterceptor(future.GetRepeatingCallback());
   url::Origin mismatched_origin =
       url::Origin::Create(GURL("https://mismatch.origin/"));
   base::RunLoop run_loop;
@@ -327,12 +328,21 @@ TEST_F(ImageFetchTabHelperTest,
 
   run_loop.Run();
   histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+  ASSERT_TRUE(future.IsReady());
+  network::ResourceRequest intercepted_request = future.Take();
+  EXPECT_EQ(network::mojom::CredentialsMode::kSameOrigin,
+            intercepted_request.credentials_mode);
+  ASSERT_TRUE(intercepted_request.request_initiator.has_value());
+  EXPECT_TRUE(intercepted_request.request_initiator->opaque());
+  EXPECT_TRUE(intercepted_request.site_for_cookies.IsNull());
 }
 
 // Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
 // when the frame is null.
 TEST_F(ImageFetchTabHelperTest,
        GetImageDataWithNullFrameFallsbackToImageFetcher) {
+  base::test::TestFuture<const network::ResourceRequest&> future;
+  test_url_loader_factory_.SetInterceptor(future.GetRepeatingCallback());
   base::RunLoop run_loop;
   __block base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
@@ -345,6 +355,13 @@ TEST_F(ImageFetchTabHelperTest,
 
   run_loop.Run();
   histogram_tester_.ExpectTotalCount(kUmaGetImageDataByJsResult, 0);
+  ASSERT_TRUE(future.IsReady());
+  network::ResourceRequest intercepted_request = future.Take();
+  EXPECT_EQ(network::mojom::CredentialsMode::kSameOrigin,
+            intercepted_request.credentials_mode);
+  EXPECT_EQ(main_frame_origin(), intercepted_request.request_initiator);
+  EXPECT_TRUE(intercepted_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromOrigin(main_frame_origin())));
 }
 
 // Tests that ImageFetchTabHelper::GetImageData can successfully get image data
@@ -411,30 +428,32 @@ TEST_F(ImageFetchTabHelperTest, GetImageDataFromSubframeSucceeds) {
 }
 
 // Tests that ImageFetchTabHelper::GetImageData falls back to using ImageFetcher
-// with CredentialsMode::kOmit when the frame origin is cross-origin to the
-// image URL.
+// with CredentialsMode::kSameOrigin and sets request_initiator to the frame
+// origin.
 TEST_F(ImageFetchTabHelperTest,
        GetImageDataWithCrossOriginFallbackOmitsCredentials) {
-  std::optional<network::mojom::CredentialsMode> intercepted_credentials_mode;
+  base::test::TestFuture<const network::ResourceRequest&> request_future;
   test_url_loader_factory_.SetInterceptor(
-      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        intercepted_credentials_mode = request.credentials_mode;
-      }));
-  url::Origin cross_origin =
+      request_future.GetRepeatingCallback());
+  url::Origin caller_origin =
       url::Origin::Create(GURL("https://untrusted-cross-origin.test/"));
   __block base::test::TestFuture<NSData*> future;
 
   image_fetch_tab_helper()->GetImageData(GURL(kImageUrl), web::Referrer(),
-                                         "invalid-frame-id", cross_origin,
+                                         "invalid-frame-id", caller_origin,
                                          ^(NSData* data) {
                                            future.SetValue(data);
                                          });
   NSData* data = future.Get();
   ASSERT_TRUE(data);
   EXPECT_NSEQ(GetExpectedData(), data);
-  ASSERT_TRUE(intercepted_credentials_mode.has_value());
-  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
-            intercepted_credentials_mode.value());
+  ASSERT_TRUE(request_future.IsReady());
+  network::ResourceRequest intercepted_request = request_future.Take();
+  EXPECT_EQ(network::mojom::CredentialsMode::kSameOrigin,
+            intercepted_request.credentials_mode);
+  EXPECT_EQ(caller_origin, intercepted_request.request_initiator);
+  EXPECT_TRUE(intercepted_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromOrigin(caller_origin)));
 }
 
 // Tests that ImageFetchTabHelper::GetImageData with fallback correctly handles

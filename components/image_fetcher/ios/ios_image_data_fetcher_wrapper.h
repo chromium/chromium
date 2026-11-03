@@ -35,8 +35,7 @@ class IOSImageDataFetcherWrapper {
   // Helper to start downloading and possibly decoding the image without a
   // referrer.
   void FetchImageDataWebpDecoded(const GURL& image_url,
-                                 ImageDataFetcherBlock callback,
-                                 bool send_cookies = false);
+                                 ImageDataFetcherBlock callback);
 
   // Start downloading the image at the given |image_url|. The |callback| will
   // be called with the downloaded image, or nil if any error happened. If the
@@ -47,8 +46,7 @@ class IOSImageDataFetcherWrapper {
   void FetchImageDataWebpDecoded(const GURL& image_url,
                                  ImageDataFetcherBlock callback,
                                  const std::string& referrer,
-                                 net::ReferrerPolicy referrer_policy,
-                                 bool send_cookies = false);
+                                 net::ReferrerPolicy referrer_policy);
 
   // Test-only accessor for underlying ImageDataFetcher.
   ImageDataFetcher* AccessImageDataFetcherForTesting() {

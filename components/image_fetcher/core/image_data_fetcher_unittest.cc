@@ -156,7 +156,7 @@ TEST_F(ImageDataFetcherTest, FetchImageDataTrafficAnnotationOnly) {
       GURL(kImageURL),
       base::BindOnce(&ImageDataFetcherTest::OnImageDataFetched,
                      base::Unretained(this)),
-      TRAFFIC_ANNOTATION_FOR_TESTS, false);
+      TRAFFIC_ANNOTATION_FOR_TESTS, std::nullopt);
 
   RequestMetadata expected_metadata;
   expected_metadata.mime_type = std::string("image/png");
@@ -169,6 +169,7 @@ TEST_F(ImageDataFetcherTest, FetchImageDataTrafficAnnotationOnly) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kImageURL, &pending_request));
   EXPECT_EQ(pending_request->credentials_mode,
             network::mojom::CredentialsMode::kOmit);
+  EXPECT_FALSE(pending_request->request_initiator.has_value());
 
   auto head = network::mojom::URLResponseHead::New();
   std::string raw_header =
@@ -186,13 +187,14 @@ TEST_F(ImageDataFetcherTest, FetchImageDataTrafficAnnotationOnly) {
 
 TEST_F(ImageDataFetcherTest, FetchImageDataWithCookies) {
   std::string content = kURLResponseData;
+  url::Origin initiator = url::Origin::Create(GURL(kImageURL));
 
   image_data_fetcher_.FetchImageData(
       GURL(kImageURL),
       base::BindOnce(&ImageDataFetcherTest::OnImageDataFetched,
                      base::Unretained(this)),
       ImageFetcherParams(TRAFFIC_ANNOTATION_FOR_TESTS, kTestUmaClientName),
-      true);
+      initiator);
 
   RequestMetadata expected_metadata;
   expected_metadata.mime_type = std::string("image/png");
@@ -202,9 +204,12 @@ TEST_F(ImageDataFetcherTest, FetchImageDataWithCookies) {
   // Check to make sure the request is pending with proper flags, and
   // provide a response.
   const network::ResourceRequest* pending_request;
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kImageURL, &pending_request));
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kImageURL, &pending_request));
   EXPECT_EQ(pending_request->credentials_mode,
-            network::mojom::CredentialsMode::kInclude);
+            network::mojom::CredentialsMode::kSameOrigin);
+  EXPECT_EQ(pending_request->request_initiator, initiator);
+  EXPECT_TRUE(pending_request->site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromOrigin(initiator)));
 
   auto head = network::mojom::URLResponseHead::New();
   std::string raw_header =
