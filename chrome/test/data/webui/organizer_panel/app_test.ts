@@ -455,6 +455,81 @@ suite('OrganizerPanelAppTest', () => {
     assertTrue(withCloseEvent.defaultPrevented);
   });
 
+  test(
+      'tabbing from last header menu button loops to close button or exits',
+      async () => {
+        const sections = app.$.list.getVisibleSections();
+        const lastSection = sections[sections.length - 1]!;
+        lastSection.expanded = true;
+        await microtasksFinished();
+
+        lastSection.$.header.focusMenuButton();
+        await microtasksFinished();
+        assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
+
+        // When not in tray view (without close button): Tab forwards
+        // focus-after-list without preventDefault, and expandButton has
+        // tabindex=-1 so focus is not trapped within the header.
+        app.inTrayView = false;
+        await microtasksFinished();
+
+        lastSection.$.header.focusMenuButton();
+        lastSection.$.header.$.menuButton.dispatchEvent(new Event('focus'));
+        await microtasksFinished();
+
+        const withoutCloseEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        lastSection.$.header.$.menuButton.dispatchEvent(withoutCloseEvent);
+        await microtasksFinished();
+        assertFalse(withoutCloseEvent.defaultPrevented);
+        assertEquals(-1, lastSection.$.header.$.expandButton.tabIndex);
+        assertEquals(
+            '-1',
+            lastSection.$.header.$.expandButton.$.icon.getAttribute(
+                'tabindex'));
+
+        // When in tray view (with close button): Tab focuses close
+        // button and prevents default.
+        app.inTrayView = true;
+        await microtasksFinished();
+
+        const closeBtn =
+            app.shadowRoot.querySelector<HTMLElement>('#closeButton')!;
+        assertTrue(!!closeBtn);
+
+        lastSection.$.header.focusMenuButton();
+        await microtasksFinished();
+        assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
+
+        const withCloseEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        lastSection.$.header.$.menuButton.dispatchEvent(withCloseEvent);
+        await microtasksFinished();
+        assertEquals(closeBtn, getDeepActiveElement());
+        assertTrue(withCloseEvent.defaultPrevented);
+
+        // Shift+Tab from close button focuses last section menu button.
+        const reverseEvent = new KeyboardEvent('keydown', {
+          key: 'Tab',
+          shiftKey: true,
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        closeBtn.dispatchEvent(reverseEvent);
+        await microtasksFinished();
+        assertEquals(lastSection.$.header.$.menuButton, getDeepActiveElement());
+        assertTrue(reverseEvent.defaultPrevented);
+      });
+
   test('tab navigation from search field to list', async () => {
     SearchApiProxyImpl.setInstance(new TestSearchApiProxy());
     const sections = app.$.list.getVisibleSections();

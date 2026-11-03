@@ -11,11 +11,11 @@ export function getHtml(this: OrganizerListSectionElement) {
   return html`<!--_html_template_start_-->
 <organizer-list-section-header id="header" ?expanded="${this.isExpanded_()}"
     ?disabled="${this.isSearching_()}" ?show-all="${this.showAll_}"
+    .title="${this.delegate?.getHeader() || ''}"
     @expanded-changed="${this.onExpandedChanged_}"
     @menu-action="${this.onMenuAction_}"
     @show-all-changed="${this.onShowAllChanged_}"
     @toggle-action="${this.onToggleAction_}">
-  ${this.delegate?.getHeader() || ''}
 </organizer-list-section-header>
 <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"
     ?no-animation="${this.noAnimation_}">

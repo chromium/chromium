@@ -37,6 +37,8 @@ export enum OrganizerSectionMenuOption {
 export interface OrganizerListSectionHeaderElement {
   $: {
     expandButton: CrExpandButtonElement,
+    headerContent: HTMLElement,
+    headerTitle: HTMLElement,
     menu: CrActionMenuElement,
     menuButton: CrIconButtonElement,
     showAllButton: HTMLButtonElement,
@@ -83,6 +85,9 @@ export class OrganizerListSectionHeaderElement extends
         notify: true,
         reflect: true,
       },
+      title: {
+        type: String,
+      },
     };
   }
 
@@ -90,6 +95,7 @@ export class OrganizerListSectionHeaderElement extends
   accessor expanded: boolean = false;
   protected accessor menuOpen_: boolean = false;
   accessor showAll: boolean = false;
+  override accessor title: string = '';
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -112,6 +118,11 @@ export class OrganizerListSectionHeaderElement extends
   }
 
   protected onExpandButtonKeydown_(e: KeyboardEvent) {
+    if (e.target === this.$.menuButton ||
+        e.composedPath().includes(this.$.menuButton)) {
+      return;
+    }
+
     const isRtl = isRTL();
     const forwardKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
     const backwardKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
@@ -147,6 +158,19 @@ export class OrganizerListSectionHeaderElement extends
         this.fire('focus-previous-section', {sourceEvent: e});
       }
     }
+  }
+
+  protected onMenuButtonFocus_() {
+    // Remove the expand button's chevron icon from sequential focus navigation
+    // while the menu button is focused to prevent focus trapping when tabbing
+    // past the last section header.
+    this.$.expandButton.tabIndex = -1;
+  }
+
+  protected onMenuButtonBlur_() {
+    // Restore the expand button's focusability when focus leaves the menu
+    // button.
+    this.$.expandButton.tabIndex = 0;
   }
 
   protected onMenuButtonKeydown_(e: KeyboardEvent) {

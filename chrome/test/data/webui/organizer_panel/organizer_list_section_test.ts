@@ -52,7 +52,7 @@ suite('OrganizerListSectionTest', () => {
 
     const header = listSection.$.header;
     assertTrue(!!header);
-    assertEquals('Open Tabs', header.textContent.trim());
+    assertEquals('Open Tabs', header.$.expandButton.textContent.trim());
 
     const listItems =
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');

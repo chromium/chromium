@@ -13,7 +13,7 @@
 
 #crUrlListItem {
   --organizer-list-section-item-trailing-icon-size_: 16px;
-  --organizer-list-section-item-trailing-button-size_: 24px;
+  --organizer-list-section-item-trailing-button-size_: 32px;
   --cr-url-list-item-padding: 4px 8px;
 
   border-radius: 8px;
@@ -28,8 +28,8 @@
 }
 
 #crUrlListItem::part(suffix) {
-  margin-inline-end: 0;
-  padding-right: 4px;
+  margin-inline-end: -4px;
+  padding-inline-end: 0;
 }
 
 #content {
