@@ -2000,7 +2000,8 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,
   EXPECT_TRUE(pip_widget->GetWindowBoundsInScreen().Contains(bounds));
 }
 
-class PiPIndicatorsBrowsertest : public PictureInPictureBrowserFrameViewTest {
+class PiPIndicatorsBrowsertest : public PictureInPictureFrameControlsTestBase,
+                                 public testing::WithParamInterface<bool> {
  public:
   PiPIndicatorsBrowsertest() = default;
 
@@ -2013,17 +2014,24 @@ class PiPIndicatorsBrowsertest : public PictureInPictureBrowserFrameViewTest {
   const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
       gfx::AnimationTestApi::SetRichAnimationRenderMode(
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PiPIndicatorsBrowsertest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
   ASSERT_NO_FATAL_FAILURE(
       SetUpDocumentPIP({}, kPictureInPictureDocumentPipPage));
 
-  content::WebContents* pip_web_contents = pip_frame_view()
-                                               ->GetBrowserView()
-                                               ->browser()
-                                               ->GetTabStripModel()
-                                               ->GetActiveWebContents();
+  content::WebContents* pip_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
   ASSERT_TRUE(pip_web_contents);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -2072,7 +2080,7 @@ resolve('denied')
   EXPECT_TRUE(permission_dashboard->GetVisible());
   // Blocked media indicator is not supported by PiP window, hence it should not
   // be shown.
-  EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
+  EXPECT_FALSE(HasAnyVisibleContentSettingViews());
 
   // Wait for the LHS indicator to disappear.
   {
@@ -2089,7 +2097,7 @@ resolve('denied')
   EXPECT_FALSE(permission_dashboard->GetVisible());
   // The indicator should not be visible in PiP window because it is not
   // supported.
-  EXPECT_FALSE(pip_frame_view()->HasAnyVisibleContentSettingViews());
+  EXPECT_FALSE(HasAnyVisibleContentSettingViews());
 }
 
 }  // namespace
