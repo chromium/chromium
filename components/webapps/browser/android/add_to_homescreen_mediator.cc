@@ -16,6 +16,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -27,12 +28,13 @@ using base::android::ScopedJavaLocalRef;
 namespace webapps {
 
 // static
-static int64_t JNI_AddToHomescreenMediator_Initialize(
+static jni_zero::JniUniquePtr<AddToHomescreenMediator>
+JNI_AddToHomescreenMediator_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& java_ref,
     const JavaRef<jobject>& java_web_contents) {
-  return reinterpret_cast<intptr_t>(
-      new AddToHomescreenMediator(java_ref, java_web_contents));
+  return jni_zero::MakeUnique<AddToHomescreenMediator>(java_ref,
+                                                       java_web_contents);
 }
 
 AddToHomescreenMediator::AddToHomescreenMediator(
@@ -124,10 +126,6 @@ void AddToHomescreenMediator::OnUiDismissed(JNIEnv* env) {
 
 void AddToHomescreenMediator::OnNativeDetailsShown(JNIEnv* env) {
   event_callback_.Run(AddToHomescreenEvent::NATIVE_DETAILS_SHOWN, *params_);
-}
-
-void AddToHomescreenMediator::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 AddToHomescreenMediator::~AddToHomescreenMediator() = default;

@@ -57,9 +57,8 @@ void AddToHomescreenCoordinator::OnUserTitleAvailable(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  mediator_ = reinterpret_cast<AddToHomescreenMediator*>(
-      Java_AddToHomescreenCoordinator_buildMediatorAndShowDialog(
-          env, java_coordinator_));
+  mediator_ = Java_AddToHomescreenCoordinator_buildMediatorAndShowDialog(
+      env, java_coordinator_);
   CHECK(mediator_);
 
   if (app_menu_type_ ==
@@ -138,7 +137,7 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  AddToHomescreenMediator* mediator = (AddToHomescreenMediator*)
+  AddToHomescreenMediator* mediator =
       Java_AddToHomescreenCoordinator_initMvcAndReturnMediator(
           env, weak_manager->web_contents()->GetJavaWebContents());
   if (!mediator)

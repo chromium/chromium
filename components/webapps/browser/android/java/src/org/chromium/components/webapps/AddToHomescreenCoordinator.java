@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -86,13 +87,14 @@ public class AddToHomescreenCoordinator {
      *     used by add_to_homescreen_coordinator.cc to complete the initialization of the mediator.
      */
     @CalledByNative
-    private static long initMvcAndReturnMediator(WebContents webContents) {
+    static @Nullable JniPtr<AddToHomescreenMediator.NativeAddToHomescreenMediator>
+            initMvcAndReturnMediator(WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
-        if (windowAndroid == null) return 0;
+        if (windowAndroid == null) return null;
 
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
 
-        if (modalDialogManager == null) return 0;
+        if (modalDialogManager == null) return null;
 
         AddToHomescreenCoordinator coordinator =
                 new AddToHomescreenCoordinator(
@@ -110,7 +112,8 @@ public class AddToHomescreenCoordinator {
      * @return The instance of {@link AddToHomescreenMediator} that was constructed.
      */
     @CalledByNative
-    private long buildMediatorAndShowDialog() {
+    @Nullable JniPtr<AddToHomescreenMediator.NativeAddToHomescreenMediator>
+            buildMediatorAndShowDialog() {
         mModel = new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
         AddToHomescreenMediator addToHomescreenMediator =
                 new AddToHomescreenMediator(

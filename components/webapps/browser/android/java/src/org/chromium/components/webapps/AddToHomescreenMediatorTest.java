@@ -4,12 +4,14 @@
 
 package org.chromium.components.webapps;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.util.Pair;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,7 +47,8 @@ public class AddToHomescreenMediatorTest {
     @Before
     public void setUp() {
         AddToHomescreenMediatorJni.setInstanceForTesting(mNativeMock);
-        when(mNativeMock.initialize(Mockito.any(), Mockito.any())).thenReturn(NATIVE_POINTER);
+        when(mNativeMock.initialize(Mockito.any(), Mockito.any()))
+                .thenAnswer(inv -> JniUniquePtr.createForTesting(NATIVE_POINTER));
     }
 
     @Test
@@ -74,6 +77,7 @@ public class AddToHomescreenMediatorTest {
         Assert.assertEquals(
                 "Install",
                 mPropertyModel.get(AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT));
+        addToHomescreenMediator.destroy();
     }
 
     @Test
@@ -95,6 +99,7 @@ public class AddToHomescreenMediatorTest {
         Assert.assertNotEquals(icon, mPropertyModel.get(AddToHomescreenProperties.ICON).first);
         Assert.assertTrue(mPropertyModel.get(AddToHomescreenProperties.ICON).second);
         Assert.assertEquals(true, mPropertyModel.get(AddToHomescreenProperties.CAN_SUBMIT));
+        addToHomescreenMediator.destroy();
     }
 
     @Test
@@ -106,10 +111,9 @@ public class AddToHomescreenMediatorTest {
 
         addToHomescreenMediator.onAddToHomescreen("Title");
 
-        verify(mNativeMock).addToHomescreen(NATIVE_POINTER, "Title");
+        verify(mNativeMock).addToHomescreen(Mockito.any(), eq("Title"));
 
-        // Verify that the native mediator is destroyed and the callback runs.
-        verify(mNativeMock).destroy(NATIVE_POINTER);
+        // Verify that the callback runs.
         verify(mOnFlowCompleted).run();
     }
 
@@ -122,10 +126,9 @@ public class AddToHomescreenMediatorTest {
 
         addToHomescreenMediator.onViewDismissed();
 
-        verify(mNativeMock).onUiDismissed(NATIVE_POINTER);
+        verify(mNativeMock).onUiDismissed(Mockito.any());
 
-        // Verify that the native mediator is destroyed and the callback runs.
-        verify(mNativeMock).destroy(NATIVE_POINTER);
+        // Verify that the callback runs.
         verify(mOnFlowCompleted).run();
     }
 }

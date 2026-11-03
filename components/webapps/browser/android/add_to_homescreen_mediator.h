@@ -64,11 +64,9 @@ class AddToHomescreenMediator {
   // Called from the Java side when details for a native app are shown.
   void OnNativeDetailsShown(JNIEnv* env);
 
-  // Called from the Java side and destructs this object.
-  void Destroy(JNIEnv* env);
+  ~AddToHomescreenMediator();
 
  private:
-  ~AddToHomescreenMediator();
 
   // Called immediatedly after |params_| is available. Displays |display_icon|
   // in the installation UI.

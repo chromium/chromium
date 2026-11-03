@@ -11,6 +11,10 @@ import android.util.Pair;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,7 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 @JNINamespace("webapps")
 @NullMarked
 class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
-    private long mNativeAddToHomescreenMediator;
+    @JniType("::webapps::AddToHomescreenMediator")
+    interface NativeAddToHomescreenMediator extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeAddToHomescreenMediator> mNativeAddToHomescreenMediator;
     private final PropertyModel mModel;
     private final WindowAndroid mWindowAndroid;
     private @Nullable AppData mNativeAppData;
@@ -78,13 +85,13 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
                 nativeAppData.installButtonText());
     }
 
-    long getNativeMediator() {
+    @Nullable JniPtr<NativeAddToHomescreenMediator> getNativeMediator() {
         return mNativeAddToHomescreenMediator;
     }
 
     @Override
     public void onAddToHomescreen(String title) {
-        if (mNativeAddToHomescreenMediator == 0) return;
+        if (mNativeAddToHomescreenMediator == null) return;
 
         AddToHomescreenMediatorJni.get().addToHomescreen(mNativeAddToHomescreenMediator, title);
         onFlowCompleted();
@@ -99,7 +106,7 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
         assumeNonNull(mNativeAppData);
         mWindowAndroid.showIntent(mNativeAppData.detailsIntent(), null, null);
 
-        if (mNativeAddToHomescreenMediator != 0) {
+        if (mNativeAddToHomescreenMediator != null) {
             AddToHomescreenMediatorJni.get().onNativeDetailsShown(mNativeAddToHomescreenMediator);
         }
         return true;
@@ -107,31 +114,33 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
 
     @Override
     public void onViewDismissed() {
-        if (mNativeAddToHomescreenMediator == 0) return;
+        if (mNativeAddToHomescreenMediator == null) return;
 
         AddToHomescreenMediatorJni.get().onUiDismissed(mNativeAddToHomescreenMediator);
         onFlowCompleted();
     }
 
     private void onFlowCompleted() {
-        if (mNativeAddToHomescreenMediator != 0) {
-            AddToHomescreenMediatorJni.get().destroy(mNativeAddToHomescreenMediator);
-            mNativeAddToHomescreenMediator = 0;
-        }
-
+        destroy();
         mOnFlowCompleted.run();
+    }
+
+    void destroy() {
+        if (mNativeAddToHomescreenMediator != null) {
+            mNativeAddToHomescreenMediator.destroy();
+            mNativeAddToHomescreenMediator = null;
+        }
     }
 
     @NativeMethods
     interface Natives {
-        long initialize(AddToHomescreenMediator instance, WebContents webContents);
+        JniUniquePtr<NativeAddToHomescreenMediator> initialize(
+                AddToHomescreenMediator instance, WebContents webContents);
 
-        void addToHomescreen(long nativeAddToHomescreenMediator, String title);
+        void addToHomescreen(JniPtr<NativeAddToHomescreenMediator> self, String title);
 
-        void onNativeDetailsShown(long nativeAddToHomescreenMediator);
+        void onNativeDetailsShown(JniPtr<NativeAddToHomescreenMediator> self);
 
-        void onUiDismissed(long nativeAddToHomescreenMediator);
-
-        void destroy(long nativeAddToHomescreenMediator);
+        void onUiDismissed(JniPtr<NativeAddToHomescreenMediator> self);
     }
 }
