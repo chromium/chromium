@@ -84,7 +84,6 @@ class PageInfoBubbleViewBase : public views::BubbleDialogDelegateView,
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void DidChangeVisibleSecurityState() override;
 
   const BubbleType type_ = BUBBLE_NONE;
 };

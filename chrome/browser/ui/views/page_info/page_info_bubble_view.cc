@@ -105,6 +105,9 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
   InternalPageInfoBubbleView& operator=(const InternalPageInfoBubbleView&) =
       delete;
   ~InternalPageInfoBubbleView() override;
+
+  // content::WebContentsObserver:
+  void DidChangeVisibleSecurityState() override { GetWidget()->Close(); }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

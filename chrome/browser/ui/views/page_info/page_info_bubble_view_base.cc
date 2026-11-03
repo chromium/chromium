@@ -139,11 +139,6 @@ void PageInfoBubbleViewBase::PrimaryPageChanged(content::Page& page) {
   GetWidget()->Close();
 }
 
-void PageInfoBubbleViewBase::DidChangeVisibleSecurityState() {
-  // Subclasses may update instead, but this the only safe general option.
-  GetWidget()->Close();
-}
-
 void PageInfoBubbleViewBase::WebContentsDestroyed() {
   GetWidget()->Close();
 }

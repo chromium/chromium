@@ -158,3 +158,37 @@ TEST_F(SuspiciousSiteBubbleViewTest, BackToSafetyClick) {
   EXPECT_FALSE(
       web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
 }
+
+TEST_F(SuspiciousSiteBubbleViewTest, DoesNotCloseOnSecurityStateChange) {
+  content::WebContents* web_contents = web_contents_helper_.web_contents();
+  ASSERT_FALSE(bubble_->GetWidget()->IsClosed());
+  EXPECT_TRUE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  // Direct security state change notification should not close the bubble.
+  web_contents->DidChangeVisibleSecurityState();
+  EXPECT_FALSE(bubble_->GetWidget()->IsClosed());
+  EXPECT_EQ(PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(web_contents),
+            PageInfoBubbleViewBase::BUBBLE_SUSPICIOUS_SITE);
+  EXPECT_TRUE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  // Same-document navigation (which triggers DidChangeVisibleSecurityState)
+  // should also keep the bubble open and input blocked.
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://suspicious.example.com/#section"),
+      web_contents->GetPrimaryMainFrame())
+      ->CommitSameDocument();
+  EXPECT_FALSE(bubble_->GetWidget()->IsClosed());
+  EXPECT_EQ(PageInfoBubbleViewBase::GetShownBubbleTypeForTesting(web_contents),
+            PageInfoBubbleViewBase::BUBBLE_SUSPICIOUS_SITE);
+  EXPECT_TRUE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  // Cross-document navigation in the primary main frame should close the
+  // bubble and unblock input.
+  views::Widget* widget = bubble_->GetWidget();
+  bubble_ = nullptr;
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents, GURL("https://other.example.com"));
+  EXPECT_TRUE(widget->IsClosed());
+  widget->CloseNow();
+  EXPECT_FALSE(web_contents->ShouldIgnoreInputEventsForTesting());
+}

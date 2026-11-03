@@ -529,4 +529,92 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
       SuspiciousSiteWarningUserInteraction::kDismissed, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       WarningStaysOpenOnSecurityStateChange) {
+  base::HistogramTester histogram_tester;
+  GURL suspicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(suspicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), suspicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  views::BubbleDialogDelegateView* bubble = GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->GetWidget());
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  class VisibleSecurityStateObserver : public content::WebContentsObserver {
+   public:
+    explicit VisibleSecurityStateObserver(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    void DidChangeVisibleSecurityState() override {
+      if (!future_.IsReady()) {
+        future_.SetValue();
+      }
+    }
+
+    bool Wait() { return future_.Wait(); }
+
+   private:
+    base::test::TestFuture<void> future_;
+  };
+
+  // Trigger a same-document navigation and security state change from the page.
+  VisibleSecurityStateObserver security_state_observer(GetActiveWebContents());
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(), "location.hash = '#section';"));
+  ASSERT_TRUE(security_state_observer.Wait());
+  GetActiveWebContents()->DidChangeVisibleSecurityState();
+
+  // The warning bubble must remain open and the tab must stay blocked.
+  bubble = GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->GetWidget());
+  EXPECT_FALSE(bubble->GetWidget()->IsClosed());
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteWarningUserInteraction::kDismissed, 0);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteWarningUserInteraction::kDestroyed, 0);
+
+  // Switching to a new tab and back should still re-show the warning bubble.
+  base::test::TestFuture<void> second_shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      second_shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  EXPECT_TRUE(second_shown_future.Wait());
+  bubble = GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->GetWidget());
+  EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
+  // Navigating to a different page should close the bubble and unblock the tab.
+  GURL safe_url = embedded_test_server()->GetURL("/title2.html");
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), safe_url));
+  waiter.Wait();
+  EXPECT_FALSE(GetPageInfoBubbleForTesting());
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
+}
+
 }  // namespace safe_browsing

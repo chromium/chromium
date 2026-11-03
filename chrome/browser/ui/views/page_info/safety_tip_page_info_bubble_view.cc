@@ -216,10 +216,6 @@ void SafetyTipPageInfoBubbleView::PrimaryPageChanged(content::Page& page) {
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-void SafetyTipPageInfoBubbleView::DidChangeVisibleSecurityState() {
-  // Do nothing. (Base class closes the bubble.)
-}
-
 void ShowSafetyTipDialog(
     content::WebContents* web_contents,
     security_state::SafetyTipStatus safety_tip_status,
