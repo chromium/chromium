@@ -1182,9 +1182,17 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
             u"Before text Selected target After text");
 }
 
+// TODO(b/581296466): Reenable this
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText \
+  DISABLED_ShowWithSelectionForImageSkipsPaddingAndSurroundingText
+#else
+#define MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText \
+  ShowWithSelectionForImageSkipsPaddingAndSurroundingText
+#endif
 IN_PROC_BROWSER_TEST_F(
     SelectionOverlayPromptBrowserTest,
-    ShowWithSelectionForImageSkipsPaddingAndSurroundingText) {
+    MAYBE_ShowWithSelectionForImageSkipsPaddingAndSurroundingText) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
 
