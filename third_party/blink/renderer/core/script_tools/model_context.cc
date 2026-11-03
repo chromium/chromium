@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/script_tools/script_tool_utils.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_script_tool_types.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -311,12 +313,13 @@ ModelContext::ModelContext(Document& document)
   if (!document.GetFrame()) {
     return;
   }
-  auto* execution_context = document.GetExecutionContext();
-  CHECK(execution_context);
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      model_context_host_remote_.BindNewPipeAndPassReceiver(task_runner_));
+  // ModelContextHost is navigation-associated so updates to the tool set in the
+  // browser are properly ordered with updates to the Document's navigation
+  // lifecycle.
+  document.GetFrame()->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      model_context_host_remote_.BindNewEndpointAndPassReceiver(task_runner_));
   model_context_host_remote_->BindModelContext(
-      model_context_receiver_.BindNewPipeAndPassRemote(task_runner_));
+      model_context_receiver_.BindNewEndpointAndPassRemote(task_runner_));
 }
 
 void ModelContext::ForEachScriptTool(

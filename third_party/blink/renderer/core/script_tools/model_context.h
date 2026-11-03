@@ -22,7 +22,8 @@
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 
@@ -321,8 +322,9 @@ class CORE_EXPORT ModelContext : public EventTarget,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   HeapMojoRemote<mojom::blink::ScriptToolHost> script_tool_host_remote_;
-  HeapMojoRemote<mojom::blink::ModelContextHost> model_context_host_remote_;
-  HeapMojoReceiver<mojom::blink::ModelContext, ModelContext>
+  HeapMojoAssociatedRemote<mojom::blink::ModelContextHost>
+      model_context_host_remote_;
+  HeapMojoAssociatedReceiver<mojom::blink::ModelContext, ModelContext>
       model_context_receiver_{this, nullptr};
 
   // true when there is a pending or completed task to record the number

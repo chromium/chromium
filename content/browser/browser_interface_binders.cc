@@ -1430,9 +1430,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::SerialService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindSerialService>);
 
-  map->Add<blink::mojom::ModelContextHost>(
-      &BindRenderFrameHostImpl<&RenderFrameHostImpl::BindModelContextHost>);
-
 #if BUILDFLAG(ENABLE_SMART_CARD)
   map->Add<blink::mojom::SmartCardService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetSmartCardService>);

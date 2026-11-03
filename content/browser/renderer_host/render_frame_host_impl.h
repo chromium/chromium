@@ -1600,9 +1600,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
 #endif
 
-  void BindModelContextHost(
-      mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver);
-
   void BindInputInjectorReceiver(
       mojo::PendingReceiver<mojom::InputInjector> receiver);
 
@@ -1627,6 +1624,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindFileBackedBlobFactory(
       mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
           receiver);
+
+  void BindModelContextHost(
+      mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver);
 
   // END IPC REVIEW BOUNDARY
 

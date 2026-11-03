@@ -20,6 +20,7 @@
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -151,6 +152,16 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
   // TODO(crbug.com/40276121): Update according to feedback from
   // https://github.com/WICG/pending-beacon/issues/82
   map.SetAssociatedPolicy<blink::mojom::FetchLaterLoaderFactory>(
+      MojoBinderAssociatedPolicy::kGrant);
+
+  // WebMCP state is scoped to the page: tools are only visible to and
+  // executable by documents in the same page. Browser-side agents only target
+  // the primary page, but DevTools and extensions, which can already run script
+  // in a prerendered page, can also use its tools. Unlike kDefer, granting
+  // doesn't hold messages until activation, so methods with effects the user
+  // can see (e.g. elicitation) must be gated in feature code while the page is
+  // prerendering.
+  map.SetAssociatedPolicy<blink::mojom::ModelContextHost>(
       MojoBinderAssociatedPolicy::kGrant);
 }
 

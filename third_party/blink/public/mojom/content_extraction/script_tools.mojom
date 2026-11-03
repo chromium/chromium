@@ -115,7 +115,7 @@ interface ScriptToolHost {
 interface ModelContextHost {
   // Binds the receiver for the browser to notify the renderer about changes in
   // tools.
-  BindModelContext(pending_remote<ModelContext> model_context);
+  BindModelContext(pending_associated_remote<ModelContext> model_context);
 
   // Registers a WebMCP script tool hosted in the caller document. The
   // registration goes to the browser process, so it can alert other relevant

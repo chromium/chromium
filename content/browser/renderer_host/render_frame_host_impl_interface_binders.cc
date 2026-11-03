@@ -326,6 +326,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
       base::BindRepeating(&RenderFrameHostImpl::BindFileBackedBlobFactory,
                           base::Unretained(this)));
 
+  associated_registry_->AddInterface<blink::mojom::ModelContextHost>(
+      base::BindRepeating(&RenderFrameHostImpl::BindModelContextHost,
+                          base::Unretained(this)));
+
   // Allow embedders to register their binders.
   GetContentClient()
       ->browser()
@@ -452,11 +456,6 @@ void RenderFrameHostImpl::BindNFCReceiver(
 }
 #endif
 
-void RenderFrameHostImpl::BindModelContextHost(
-    mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver) {
-  ModelContextUserData::Bind(this, std::move(receiver));
-}
-
 void RenderFrameHostImpl::BindInputInjectorReceiver(
     mojo::PendingReceiver<mojom::InputInjector> receiver) {
   InputInjectorImpl::Create(weak_ptr_factory_.GetWeakPtr(),
@@ -490,6 +489,11 @@ void RenderFrameHostImpl::BindFileBackedBlobFactory(
         receiver) {
   FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(this,
                                                            std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindModelContextHost(
+    mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver) {
+  ModelContextUserData::Bind(this, std::move(receiver));
 }
 
 }  // namespace content

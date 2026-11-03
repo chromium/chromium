@@ -7032,15 +7032,6 @@ void RenderFrameHostImpl::DidCommitDocumentReplacement() {
   // The renderer replaced its Document, so drop the replaced Document's
   // ModelContextUserData.
   // TODO(crbug.com/576419973): Do this for all Document scoped user data.
-  //
-  // The new Document binds `ModelContextHost` through the frame's
-  // BrowserInterfaceBroker, which isn't ordered with navigation IPCs. When a
-  // commit replaces the window, the renderer creates a new broker whose
-  // messages are only processed after the commit IPC. But a document
-  // replacement reuses the broker, so the bind can race this IPC, as it does
-  // for a commit that reuses the initial empty Document's window.
-  // TODO(crbug.com/576011705): Order the bind after the IPC that replaces its
-  // Document.
   if (ModelContextUserData::GetForCurrentDocument(this)) {
     ModelContextUserData::DeleteForCurrentDocument(this);
   }

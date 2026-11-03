@@ -7736,6 +7736,49 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   }
 }
 
+class PrerenderWebMCPBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderWebMCPBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kWebMCP);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a prerendered page can use WebMCP: the navigation-associated
+// ModelContextHost is granted during prerendering, so binding it doesn't cancel
+// prerendering, and the page's tools are visible before and after activation.
+IN_PROC_BROWSER_TEST_F(PrerenderWebMCPBrowserTest,
+                       RegisterToolWhilePrerendering) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+
+  // The promise resolves once the browser has handled the registration, i.e.
+  // after it handled the ModelContextHost bind.
+  EXPECT_TRUE(ExecJs(prerender_rfh, R"(
+    document.modelContext.registerTool(
+        {name: 'tool', description: 'tool', execute: () => {}});
+  )",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+
+  constexpr char kGetToolNames[] = R"(
+    document.modelContext.getTools().then(t => t.map(x => x.name).join());
+  )";
+  // Without the grant, this would cancel prerendering.
+  EXPECT_EQ("tool", EvalJs(prerender_rfh, kGetToolNames,
+                           EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  NavigatePrimaryPage(prerendering_url);
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kActivated);
+  EXPECT_EQ("tool", EvalJs(web_contents(), kGetToolNames));
+}
+
 class PrerenderLazyBrowserInterfaceBrokerBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<bool> {

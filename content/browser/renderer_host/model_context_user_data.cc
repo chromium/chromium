@@ -86,7 +86,7 @@ ModelContextUserData::~ModelContextUserData() {
 // static
 void ModelContextUserData::Bind(
     RenderFrameHost* rfh,
-    mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver) {
+    mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver) {
   auto* user_data = ModelContextUserData::GetForCurrentDocument(rfh);
   if (user_data) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
@@ -99,7 +99,7 @@ void ModelContextUserData::Bind(
 }
 
 void ModelContextUserData::BindModelContext(
-    mojo::PendingRemote<blink::mojom::ModelContext> model_context) {
+    mojo::PendingAssociatedRemote<blink::mojom::ModelContext> model_context) {
   if (model_context_remote_.is_bound()) {
     // TODO(crbug.com/573662751): Migrate to mojo::ReportBadMessage.
     bad_message::ReceivedBadMessage(

@@ -13,9 +13,10 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/weak_document_ptr.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 #include "url/origin.h"
@@ -123,11 +124,12 @@ class CONTENT_EXPORT ModelContextUserData
 
   static void Bind(
       RenderFrameHost* rfh,
-      mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver);
+      mojo::PendingAssociatedReceiver<blink::mojom::ModelContextHost> receiver);
 
   // blink::mojom::ModelContextHost implementation:
   void BindModelContext(
-      mojo::PendingRemote<blink::mojom::ModelContext> model_context) override;
+      mojo::PendingAssociatedRemote<blink::mojom::ModelContext> model_context)
+      override;
   void RegisterScriptTool(blink::mojom::ScriptToolPtr tool,
                           RegisterScriptToolCallback callback) override;
   void UnregisterScriptTool(const blink::ScriptToolToken& tool_id) override;
@@ -158,8 +160,8 @@ class CONTENT_EXPORT ModelContextUserData
   // `exposed_origins` for the tool.
   void NotifyToolChange(const std::vector<url::Origin>& exposed_origins);
 
-  mojo::Receiver<blink::mojom::ModelContextHost> receiver_{this};
-  mojo::Remote<blink::mojom::ModelContext> model_context_remote_;
+  mojo::AssociatedReceiver<blink::mojom::ModelContextHost> receiver_{this};
+  mojo::AssociatedRemote<blink::mojom::ModelContext> model_context_remote_;
 
   std::vector<blink::mojom::ScriptToolPtr> script_tools_;
 

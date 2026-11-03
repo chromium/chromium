@@ -11,15 +11,20 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
@@ -75,13 +80,15 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
  public:
   explicit MockModelContextHost() = default;
 
-  void Bind(mojo::ScopedMessagePipeHandle pipe) {
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
     receiver_.Bind(
-        mojo::PendingReceiver<mojom::blink::ModelContextHost>(std::move(pipe)));
+        mojo::PendingAssociatedReceiver<mojom::blink::ModelContextHost>(
+            std::move(handle)));
   }
 
   void BindModelContext(
-      mojo::PendingRemote<mojom::blink::ModelContext> model_context) override {
+      mojo::PendingAssociatedRemote<mojom::blink::ModelContext> model_context)
+      override {
     model_context_.Bind(std::move(model_context));
   }
 
@@ -133,8 +140,8 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   const Vector<String>& registered_tools() const { return registered_tools_; }
 
  private:
-  mojo::Receiver<mojom::blink::ModelContextHost> receiver_{this};
-  mojo::Remote<mojom::blink::ModelContext> model_context_;
+  mojo::AssociatedReceiver<mojom::blink::ModelContextHost> receiver_{this};
+  mojo::AssociatedRemote<mojom::blink::ModelContext> model_context_;
   Vector<String> registered_tools_;
   HashMap<ScriptToolToken, String> tool_names_by_id_;
 };
@@ -176,9 +183,9 @@ class ModelContextTestBase : public SimTest {
     GetDocument().GetSettings()->SetAllowUniversalAccessFromFileURLs(false);
     GetDocument().GetSettings()->SetAllowFileAccessFromFileURLs(false);
     GetDocument()
-        .GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .SetBinderForTesting(
+        .GetFrame()
+        ->GetRemoteNavigationAssociatedInterfaces()
+        ->OverrideBinderForTesting(
             mojom::blink::ModelContextHost::Name_,
             base::BindRepeating(&MockModelContextHost::Bind,
                                 base::Unretained(&mock_model_context_host_)));
@@ -186,10 +193,10 @@ class ModelContextTestBase : public SimTest {
 
   void TearDown() override {
     GetDocument()
-        .GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .SetBinderForTesting(mojom::blink::ModelContextHost::Name_,
-                             base::NullCallback());
+        .GetFrame()
+        ->GetRemoteNavigationAssociatedInterfaces()
+        ->OverrideBinderForTesting(mojom::blink::ModelContextHost::Name_,
+                                   base::NullCallback());
     SimTest::TearDown();
   }
 
