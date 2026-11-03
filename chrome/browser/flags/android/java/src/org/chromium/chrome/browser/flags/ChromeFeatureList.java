@@ -865,6 +865,8 @@ public abstract class ChromeFeatureList {
     public static final String SIDE_UI_ALLOW_PAUSE = "SideUiAllowPause";
     public static final String SITE_ISOLATION_ENABLE_MEMORY_THRESHOLD_ANDROID =
             "SiteIsolationEnableMemoryThresholdAndroid";
+    public static final String SKIP_DETACHED_TAB_RESIZE_ON_SIZE_CHANGED =
+            "SkipDetachedTabResizeOnSizeChanged";
     public static final String SKIP_DUPLICATE_ON_URL_UPDATED = "SkipDuplicateOnUrlUpdated";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
@@ -1901,6 +1903,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID, false);
     public static final MutableFlagWithSafeDefault sSideUiAllowPause =
             newMutableFlagWithSafeDefault(SIDE_UI_ALLOW_PAUSE, true);
+    public static final MutableFlagWithSafeDefault sSkipDetachedTabResizeOnSizeChanged =
+            newMutableFlagWithSafeDefault(SKIP_DETACHED_TAB_RESIZE_ON_SIZE_CHANGED, true);
     public static final MutableFlagWithSafeDefault sSkipDuplicateOnUrlUpdated =
             newMutableFlagWithSafeDefault(SKIP_DUPLICATE_ON_URL_UPDATED, false);
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =

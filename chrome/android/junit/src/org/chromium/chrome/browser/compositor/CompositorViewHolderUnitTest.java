@@ -67,6 +67,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.DragEventBuilder;
 
 import org.chromium.base.BaseFeatures;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
@@ -83,8 +84,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
@@ -1913,6 +1916,115 @@ public class CompositorViewHolderUnitTest {
         verify(mCompositorViewJni, never())
                 .onPhysicalBackingSizeChanged(
                         anyLong(), eq(bgWebContents), anyInt(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
+        ChromeFeatureList.SKIP_DETACHED_TAB_RESIZE_ON_SIZE_CHANGED
+    })
+    public void testOnSizeChanged_SkipsDetachedUncapturedBackgroundTabsUntilSelected() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+        mActivity.setContentView(mCompositorViewHolder);
+
+        SideUiSpecs activeTabSpecs =
+                new SideUiSpecs(SIDE_UI_START_WIDTH, /* rightContainerWidth= */ 0);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab)).thenReturn(activeTabSpecs);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        mCompositorViewHolder.onContentChanged();
+        runCurrentTasks();
+
+        mCompositorViewHolder.setWidthForTesting(VIEWPORT_WIDTH);
+        mCompositorViewHolder.setHeightForTesting(VIEWPORT_HEIGHT);
+
+        // Detached uncaptured background tab.
+        MockTab bgTab = mTabModelSelector.addMockTab();
+        ContentView bgContentView =
+                ContentView.createContentView(mActivity, /* webContents= */ null);
+        WebContents bgWebContents = mock(WebContents.class);
+        when(bgTab.getWebContents()).thenReturn(bgWebContents);
+        when(bgTab.getContentView()).thenReturn(bgContentView);
+        when(bgTab.getView()).thenReturn(bgContentView);
+        when(bgWebContents.isBeingCaptured()).thenReturn(false);
+
+        // Detached captured background tab.
+        MockTab capturedBgTab = mTabModelSelector.addMockTab();
+        ContentView capturedBgContentView =
+                ContentView.createContentView(mActivity, /* webContents= */ null);
+        WebContents capturedBgWebContents = mock(WebContents.class);
+        when(capturedBgTab.getWebContents()).thenReturn(capturedBgWebContents);
+        when(capturedBgTab.getContentView()).thenReturn(capturedBgContentView);
+        when(capturedBgTab.getView()).thenReturn(capturedBgContentView);
+        when(capturedBgWebContents.isBeingCaptured()).thenReturn(true);
+
+        // Detached layout-rendered background tab.
+        MockTab layoutBgTab = mTabModelSelector.addMockTab();
+        ContentView layoutBgContentView =
+                ContentView.createContentView(mActivity, /* webContents= */ null);
+        WebContents layoutBgWebContents = mock(WebContents.class);
+        when(layoutBgTab.getWebContents()).thenReturn(layoutBgWebContents);
+        when(layoutBgTab.getContentView()).thenReturn(layoutBgContentView);
+        when(layoutBgTab.getView()).thenReturn(layoutBgContentView);
+        when(layoutBgWebContents.isBeingCaptured()).thenReturn(false);
+        Layout activeLayout = mock(Layout.class);
+        LayoutTab layoutTab =
+                new LayoutTab(
+                        layoutBgTab.getId(),
+                        /* isIncognito= */ false,
+                        VIEWPORT_WIDTH,
+                        VIEWPORT_HEIGHT);
+        when(mLayoutManager.getActiveLayout()).thenReturn(activeLayout);
+        when(activeLayout.getLayoutTabsToRender()).thenReturn(new LayoutTab[] {null, layoutTab});
+
+        assertEquals(mTab, mTabModelSelector.getCurrentTab());
+        assertNotNull(mContentView.getWindowToken());
+        assertNull(bgContentView.getWindowToken());
+        assertNull(capturedBgContentView.getWindowToken());
+        assertNull(layoutBgContentView.getWindowToken());
+
+        clearInvocations(mWebContents, bgWebContents, capturedBgWebContents, layoutBgWebContents);
+
+        int newWidth = 1200;
+        int newHeight = 800;
+        int expectedHeight = newHeight - TOOLBAR_HEIGHT;
+        mCompositorViewHolder.setWidthForTesting(newWidth);
+        mCompositorViewHolder.setHeightForTesting(newHeight);
+        mCompositorViewHolder.onSizeChanged(newWidth, newHeight, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+
+        verify(mWebContents).setSize(newWidth - SIDE_UI_START_WIDTH, expectedHeight);
+        verify(capturedBgWebContents).setSize(newWidth, expectedHeight);
+        verify(layoutBgWebContents).setSize(newWidth, expectedHeight);
+        verify(bgWebContents, never()).setSize(anyInt(), anyInt());
+        assertEquals(SIDE_UI_START_WIDTH, mContentView.getContentOffsetXPix());
+        assertEquals(0, capturedBgContentView.getContentOffsetXPix());
+        assertEquals(0, layoutBgContentView.getContentOffsetXPix());
+
+        // Selecting the detached background tab sizes its WebContents via setTab().
+        int bgTabIndex = mTabModelSelector.getModel(false).indexOf(bgTab);
+        mTabModelSelector.getModel(false).setIndex(bgTabIndex, TabSelectionType.FROM_USER);
+        mCompositorViewHolder.onContentChanged();
+        runCurrentTasks();
+
+        verify(bgWebContents, atLeastOnce()).setSize(newWidth, expectedHeight);
+        assertNull(mContentView.getWindowToken());
+
+        // Disabling the killswitch restores legacy eager resizing of detached background tabs and
+        // legacy getContentView() offset updates without querying active layout tabs.
+        FeatureOverrides.disable(ChromeFeatureList.SKIP_DETACHED_TAB_RESIZE_ON_SIZE_CHANGED);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(bgTab)).thenReturn(activeTabSpecs);
+        bgContentView.setContentOffsetXPix(SIDE_UI_START_WIDTH);
+        clearInvocations(mWebContents, mLayoutManager);
+        int killSwitchWidth = 1000;
+        int killSwitchHeight = 700;
+        mCompositorViewHolder.setWidthForTesting(killSwitchWidth);
+        mCompositorViewHolder.setHeightForTesting(killSwitchHeight);
+        mCompositorViewHolder.onSizeChanged(killSwitchWidth, killSwitchHeight, newWidth, newHeight);
+        verify(mWebContents)
+                .setSize(killSwitchWidth - SIDE_UI_START_WIDTH, killSwitchHeight - TOOLBAR_HEIGHT);
+        verify(mLayoutManager, never()).getActiveLayout();
+        assertEquals(0, bgContentView.getContentOffsetXPix());
     }
 
     @Test
