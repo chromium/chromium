@@ -33,7 +33,24 @@ const base::FeatureParam<int> kMaxTaskToCriticalActionIdsCacheCapacity{
     &kCriticalActionHistory, "max_task_to_critical_action_ids_cache_capacity",
     200};
 
+// TODO(b/535078652): Register a histogram to see the usage of LRU cache to set
+// up an optimum value for max capacity.
+const base::FeatureParam<int> kMaxTaskToAnchorCacheCapacity{
+    &kCriticalActionHistory, "max_task_to_anchor_cache_capacity", 200};
+
 const base::FeatureParam<bool> kEnableChatLinkouts{
     &kCriticalActionHistory, "enable_chat_linkouts", true};
+
+const base::FeatureParam<bool> kEnableActionLevelChatLinkouts{
+    &kCriticalActionHistory, "enable_action_level_chat_linkouts", false};
+
+bool IsChatLinkoutsEnabled() {
+  return base::FeatureList::IsEnabled(kCriticalActionHistory) &&
+         kEnableChatLinkouts.Get();
+}
+
+bool IsActionLevelChatLinkoutsEnabled() {
+  return IsChatLinkoutsEnabled() && kEnableActionLevelChatLinkouts.Get();
+}
 
 }  // namespace critical_actions::features

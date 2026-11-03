@@ -27,9 +27,27 @@ extern const base::FeatureParam<int> kMaxTaskToConversationCacheCapacity;
 // cache.
 extern const base::FeatureParam<int> kMaxTaskToCriticalActionIdsCacheCapacity;
 
+// Maximum number of task-to-anchor entries retained in the LRU cache.
+extern const base::FeatureParam<int> kMaxTaskToAnchorCacheCapacity;
+
 // Parameter controlling whether to replace "Review Gemini Activity" with
-// "Go to Gemini chat" in the history menu.
+// "Go to Gemini chat" in the history menu. Prefer `IsChatLinkoutsEnabled()`
+// over reading `.Get()` directly so `kCriticalActionHistory` is also checked.
 extern const base::FeatureParam<bool> kEnableChatLinkouts;
+
+// Parameter controlling whether chat linkouts target the specific
+// action-level turn/message in the chat. Only effective when both
+// `kCriticalActionHistory` and `kEnableChatLinkouts` are enabled; prefer
+// `IsActionLevelChatLinkoutsEnabled()` over reading `.Get()` directly.
+extern const base::FeatureParam<bool> kEnableActionLevelChatLinkouts;
+
+// Returns true if Critical Action History and chat linkouts are both enabled.
+bool IsChatLinkoutsEnabled();
+
+// Returns true if action-level chat linkouts are enabled. Effective only when
+// `IsChatLinkoutsEnabled()` (i.e. both `kCriticalActionHistory` and
+// `kEnableChatLinkouts`) is also true.
+bool IsActionLevelChatLinkoutsEnabled();
 
 }  // namespace critical_actions::features
 

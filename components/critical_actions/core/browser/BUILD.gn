@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "critical_action_redirect_metrics_recorder_unittest.cc",
     "critical_action_service_unittest.cc",
     "critical_action_types_unittest.cc",
+    "features_unittest.cc",
   ]
 
   deps = [
