@@ -484,7 +484,7 @@ public class DownloadUtils {
         // TODO(crbug.com/521890621): Remove isDesktop() check to enable on all form factors once
         // the non-desktop rollout is complete.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_PREFERRED_APP)
-                && DeviceInfo.isDesktop()) {
+                || DeviceInfo.isDesktop()) {
             Intent targetIntent = createViewIntent(req);
             Context context = req.mContext;
             String chromePackage = context.getPackageName();
@@ -1034,7 +1034,7 @@ public class DownloadUtils {
         // the non-desktop rollout is complete.
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND)
-                && DeviceInfo.isDesktop();
+                || DeviceInfo.isDesktop();
     }
 
     @NativeMethods

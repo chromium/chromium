@@ -41,7 +41,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -83,7 +82,6 @@ public class DownloadUtilsUnitTest {
 
     @Before
     public void setUp() {
-        DeviceInfo.setIsDesktopForTesting(true);
         DownloadUtils.resetLastOpenFileForTesting();
         mContext = RuntimeEnvironment.getApplication();
         mShadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());

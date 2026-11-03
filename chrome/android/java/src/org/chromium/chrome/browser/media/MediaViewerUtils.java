@@ -74,7 +74,7 @@ public class MediaViewerUtils {
         // TODO(crbug.com/521890621): Update to LFF check
         // (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) once rollout is complete.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.OPEN_DOWNLOAD_IN_NEW_TAB)
-                && DeviceInfo.isDesktop()) {
+                || DeviceInfo.isDesktop()) {
             Intent intent = createViewIntentForUri(contentUri, mimeType, null, null);
             intent.removeFlags(
                     Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);

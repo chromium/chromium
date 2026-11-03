@@ -211,6 +211,7 @@ public class ChromeContextMenuPopulatorTest {
     @Before
     public void setUp() {
         FeatureList.setDisableNativeForTesting(true);
+        DeviceInfo.setIsDesktopForTesting(false);
         ChromeContextMenuPopulator.setIsDefaultBrowserForTesting(false);
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.FALSE);
