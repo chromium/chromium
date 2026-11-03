@@ -322,9 +322,6 @@ public class AutofillOptionsTest {
 
     @Test
     public void toggledOptionSetsPrefAndRestarts() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, true);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
         PropertyModel model =
@@ -342,14 +339,10 @@ public class AutofillOptionsTest {
         inOrder.verify(mRestartRunnable).run();
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(USE_3P);
-        histogramWatcher.assertExpected();
     }
 
     @Test
     public void toggledOptionResetsWithoutConfirmation() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        AutofillOptionsMediator.HISTOGRAM_RESTART_ACCEPTED, false);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
         PropertyModel model =
@@ -366,7 +359,6 @@ public class AutofillOptionsTest {
         verify(mProfileManagerUtilsJniMock, times(0)).flushPersistentDataForAllProfiles();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
         verifyOptionReflectedInView(DEFAULT);
-        histogramWatcher.assertExpected();
         verify(mRestartRunnable, times(0)).run();
     }
 

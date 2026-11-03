@@ -9329,20 +9329,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Settings.AutofillOptionsRestartAccepted"
-    enum="Boolean" expires_after="2026-12-12">
-  <owner>friedrichh@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records true whenever the user confirms changing the third party autofill
-    experience with a restart. Records false whenever the user dismisses the
-    restart prompt. Since a restart is always required, users may be opting in
-    or out of 3P suggestions while they are faced with this restart prompt.
-    Recorded when the user flips the toggle in the autofill options settings.
-    Recorded only on Android.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Settings.EditAddress"
     enum="BooleanAutofillEditAddress" expires_after="2027-03-21">
   <owner>brunobraga@google.com</owner>
