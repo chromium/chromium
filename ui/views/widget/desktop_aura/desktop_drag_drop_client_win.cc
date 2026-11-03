@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
@@ -58,7 +61,28 @@ class SourceWindowObserver : public aura::WindowObserver {
 
 bool g_is_dragging = false;
 
+// Number of live ScopedSuppressForWindowMove() scopes. A counter allows
+// independent scopes, such as a pre-threshold click-hold and a move loop, to
+// overlap and be destroyed in any order without leaving drags permanently
+// suppressed or prematurely enabled.
+int g_window_move_suppression_count = 0;
+
 }  // namespace
+
+// static
+base::ScopedClosureRunner
+DesktopDragDropClientWin::ScopedSuppressForWindowMove() {
+  ++g_window_move_suppression_count;
+  return base::ScopedClosureRunner(base::BindOnce([] {
+    CHECK_GT(g_window_move_suppression_count, 0);
+    --g_window_move_suppression_count;
+  }));
+}
+
+// static
+bool DesktopDragDropClientWin::IsDragInProgressOrSuppressedForTesting() {
+  return g_is_dragging || g_window_move_suppression_count > 0;
+}
 
 DesktopDragDropClientWin::DesktopDragDropClientWin(
     aura::Window* root_window,
@@ -83,7 +107,8 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     int allowed_operations,
     ui::mojom::DragEventSource source) {
   CHECK(!g_is_dragging);
-  if (desktop_host_->IsInNativeMoveResizeLoop()) {
+  if (desktop_host_->IsInNativeMoveResizeLoop() ||
+      g_window_move_suppression_count > 0) {
     return ui::PreferredDragOperation(
         ui::DragDropTypes::DropEffectToDragOperation(DROPEFFECT_NONE));
   }
