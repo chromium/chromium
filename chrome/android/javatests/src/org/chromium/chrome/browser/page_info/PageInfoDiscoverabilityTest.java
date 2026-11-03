@@ -77,8 +77,7 @@ public class PageInfoDiscoverabilityTest {
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
-    public final PermissionTestRule mPermissionTestRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
+    public final PermissionTestRule mPermissionTestRule = new PermissionTestRule(mActivityTestRule);
 
     @Rule
     public final RuleChain mRuleChain =

@@ -89,8 +89,7 @@ public class NotificationPlatformBridgeTest {
     public final NotificationTestRule mNotificationTestRule =
             new NotificationTestRule(mActivityTestRule);
 
-    public final PermissionTestRule mPermissionTestRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
+    public final PermissionTestRule mPermissionTestRule = new PermissionTestRule(mActivityTestRule);
 
     @Rule
     public final RuleChain mRuleChain =

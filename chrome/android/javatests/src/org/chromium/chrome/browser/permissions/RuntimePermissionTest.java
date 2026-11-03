@@ -48,8 +48,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class RuntimePermissionTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
-    public PermissionTestRule mPermissionTestRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
+    public PermissionTestRule mPermissionTestRule = new PermissionTestRule(mActivityTestRule);
 
     @Rule
     public RuleChain mRuleChain =

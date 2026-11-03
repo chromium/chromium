@@ -59,8 +59,7 @@ public class PermissionClapperLoudTest {
 
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
-    public PermissionTestRule mPermissionRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule());
+    public PermissionTestRule mPermissionRule = new PermissionTestRule(mActivityTestRule);
 
     @Rule
     public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);

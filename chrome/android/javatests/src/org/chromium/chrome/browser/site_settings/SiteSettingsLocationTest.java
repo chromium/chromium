@@ -96,8 +96,7 @@ public class SiteSettingsLocationTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
-    public PermissionTestRule mPermissionTestRule =
-            new PermissionTestRule(mActivityTestRule.getActivityTestRule(), true);
+    public PermissionTestRule mPermissionTestRule = new PermissionTestRule(mActivityTestRule, true);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

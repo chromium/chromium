@@ -35,14 +35,15 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -81,7 +82,7 @@ import java.util.concurrent.TimeoutException;
  * JS call with a gesture, and whether an infobar or a dialog is expected.
  */
 public class PermissionTestRule implements TestRule {
-    private final ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule;
+    private final BaseCtaTransitTestRule mCtaTestRule;
     private final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     /** Content description for the "allowed" notification icon/status. */
@@ -229,14 +230,12 @@ public class PermissionTestRule implements TestRule {
         }
     }
 
-    public PermissionTestRule(ChromeActivityTestRule<? extends ChromeActivity> activityTestRule) {
-        this(activityTestRule, false);
+    public PermissionTestRule(BaseCtaTransitTestRule ctaTestRule) {
+        this(ctaTestRule, false);
     }
 
-    public PermissionTestRule(
-            ChromeActivityTestRule<? extends ChromeActivity> activityTestRule,
-            boolean useHttpsServer) {
-        mActivityTestRule = activityTestRule;
+    public PermissionTestRule(BaseCtaTransitTestRule ctaTestRule, boolean useHttpsServer) {
+        mCtaTestRule = ctaTestRule;
         mEmbeddedTestServerRule.setServerUsesHttps(useHttpsServer);
     }
 
@@ -253,8 +252,9 @@ public class PermissionTestRule implements TestRule {
                 description);
     }
 
-    public ChromeActivity getActivity() {
-        return mActivityTestRule.getActivity();
+    // TODO(crbug.com/581036334): Inline BaseCtaTransitTestRule pass-through helpers into callers.
+    public ChromeTabbedActivity getActivity() {
+        return mCtaTestRule.getActivity();
     }
 
     public EmbeddedTestServer getTestServer() {
@@ -265,60 +265,40 @@ public class PermissionTestRule implements TestRule {
         return mEmbeddedTestServerRule;
     }
 
-    public ChromeActivityTestRule<? extends ChromeActivity> getActivityTestRule() {
-        return mActivityTestRule;
-    }
-
     public LoadUrlResult loadUrl(String url) {
-        return mActivityTestRule.loadUrl(url);
+        return mCtaTestRule.loadUrl(url);
     }
 
     public String runJavaScriptCodeInCurrentTab(String js) throws TimeoutException {
-        return mActivityTestRule.runJavaScriptCodeInCurrentTab(js);
+        return mCtaTestRule.runJavaScriptCodeInCurrentTab(js);
     }
 
     public void runJavaScriptCodeWithUserGestureInCurrentTab(String js) throws TimeoutException {
-        mActivityTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(js);
+        mCtaTestRule.getActivityTestRule().runJavaScriptCodeWithUserGestureInCurrentTab(js);
     }
 
     public WebContents getWebContents() {
-        return mActivityTestRule.getWebContents();
+        return mCtaTestRule.getWebContents();
     }
 
     public Tab getActivityTab() {
-        return mActivityTestRule.getActivityTab();
+        return mCtaTestRule.getActivityTab();
     }
 
-    @SuppressWarnings("unchecked")
-    public void setActivity(ChromeActivity activity) {
-        ((ChromeActivityTestRule<ChromeActivity>) mActivityTestRule).setActivity(activity);
+    public void setActivity(ChromeTabbedActivity activity) {
+        mCtaTestRule.getActivityTestRule().setActivity(activity);
     }
 
     public Tab newIncognitoTabFromMenu() {
-        if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
-            return ctaRule.newIncognitoTabFromMenu();
-        }
-        throw new UnsupportedOperationException(
-                "Activity test rule does not support incognito tabs");
+        return mCtaTestRule.newIncognitoTabFromMenu();
     }
 
-    public ChromeActivity newIncognitoWindowFromMenu() {
-        if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
-            return ctaRule.newIncognitoWindowFromMenu();
-        }
-        throw new UnsupportedOperationException(
-                "Activity test rule does not support incognito windows");
+    public ChromeTabbedActivity newIncognitoWindowFromMenu() {
+        return mCtaTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
     }
 
-    /** Starts an activity and listens for info-bars appearing/disappearing. */
-    public void setUpActivity() throws InterruptedException {
-        if (getActivity() == null) {
-            if (mActivityTestRule instanceof ChromeTabbedActivityTestRule ctaRule) {
-                ctaRule.startMainActivityOnBlankPage();
-            } else {
-                mActivityTestRule.startActivityCompletely(null);
-            }
-        }
+    public WebPageStation setUpActivity() {
+        return mCtaTestRule.startOnBlankPage();
     }
 
     /**

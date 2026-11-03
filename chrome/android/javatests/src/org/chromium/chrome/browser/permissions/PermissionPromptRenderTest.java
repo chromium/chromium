@@ -69,8 +69,7 @@ public class PermissionPromptRenderTest {
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
     public PermissionTestRule mPermissionRule =
-            new PermissionTestRule(
-                    mActivityTestRule.getActivityTestRule(), /* useHttpsServer= */ true);
+            new PermissionTestRule(mActivityTestRule, /* useHttpsServer= */ true);
 
     @Rule
     public RuleChain mRuleChain = RuleChain.outerRule(mActivityTestRule).around(mPermissionRule);
