@@ -9,8 +9,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/strings/grit/components_strings.h"
@@ -29,6 +32,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using autofill::SuggestionType;
 
 namespace {
 
@@ -669,4 +674,58 @@ TEST_F(FormInputAccessoryViewControllerTest,
   [container_view layoutIfNeeded];
   EXPECT_TRUE(CGRectEqualToRect(container_view.layer.mask.frame,
                                 container_view.bounds));
+}
+
+// Tests that the duration `SuggestionType::kFetchingAmbientData` stays on the
+// keyboard accessory bar is recorded once a subsequent batch of suggestions
+// without it is shown or when the view disappears.
+TEST_F(FormInputAccessoryViewControllerTest,
+       RecordsFetchingAmbientDataShownToRemovedDuration) {
+  constexpr base::TimeDelta kFetchingAmbientDataStepDuration = base::Seconds(2);
+  base::ScopedMockClockOverride mock_clock;
+  base::HistogramTester histogram_tester;
+
+  FormSuggestion* fetching_suggestion = SimpleFormSuggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FETCHING_AMBIENT_DATA),
+      SuggestionType::kFetchingAmbientData);
+  FormSuggestion* standard_suggestion =
+      SimpleFormSuggestion(u"John Doe", SuggestionType::kAddressEntry);
+
+  // Showing `kFetchingAmbientData` starts the timer without emitting a sample.
+  [view_controller_ showAccessorySuggestions:@[ fetching_suggestion ]];
+  histogram_tester.ExpectTotalCount(kFetchingAmbientDataShownToRemovedHistogram,
+                                    0);
+
+  // Refreshing suggestions while `kFetchingAmbientData` is still present keeps
+  // the original start timestamp and does not emit a sample yet.
+  mock_clock.Advance(kFetchingAmbientDataStepDuration);
+  [view_controller_
+      showAccessorySuggestions:@[ standard_suggestion, fetching_suggestion ]];
+  histogram_tester.ExpectTotalCount(kFetchingAmbientDataShownToRemovedHistogram,
+                                    0);
+
+  // Showing the next batch of suggestions without `kFetchingAmbientData` emits
+  // the total elapsed duration.
+  mock_clock.Advance(kFetchingAmbientDataStepDuration);
+  [view_controller_ showAccessorySuggestions:@[ standard_suggestion ]];
+  histogram_tester.ExpectUniqueTimeSample(
+      kFetchingAmbientDataShownToRemovedHistogram,
+      2 * kFetchingAmbientDataStepDuration, 1);
+
+  // Subsequent updates without `kFetchingAmbientData` do not emit again.
+  mock_clock.Advance(kFetchingAmbientDataStepDuration);
+  [view_controller_ showAccessorySuggestions:@[]];
+  histogram_tester.ExpectTotalCount(kFetchingAmbientDataShownToRemovedHistogram,
+                                    1);
+
+  // If the keyboard accessory view disappears while `kFetchingAmbientData` is
+  // shown, the duration until disappearance is recorded and the timer resets.
+  [view_controller_ showAccessorySuggestions:@[ fetching_suggestion ]];
+  mock_clock.Advance(kFetchingAmbientDataStepDuration);
+  [view_controller_ viewDidDisappear:NO];
+  histogram_tester.ExpectTimeBucketCount(
+      kFetchingAmbientDataShownToRemovedHistogram,
+      kFetchingAmbientDataStepDuration, 1);
+  histogram_tester.ExpectTotalCount(kFetchingAmbientDataShownToRemovedHistogram,
+                                    2);
 }

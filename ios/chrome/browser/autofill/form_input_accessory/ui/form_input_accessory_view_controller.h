@@ -18,6 +18,11 @@
 // The maximum number of suggestions to show in the keyboard accessory.
 inline constexpr NSUInteger kKeyboardAccessorySuggestionsLimit = 30;
 
+// Histogram tracking the duration `SuggestionType::kFetchingAmbientData` stays
+// on the keyboard accessory bar before being removed.
+inline constexpr char kFetchingAmbientDataShownToRemovedHistogram[] =
+    "Autofill.Ai.TimingInterval.IOS.FetchingAmbientDataShownToRemoved";
+
 // Creates and manages a custom input accessory view while the user is
 // interacting with a form.
 @interface FormInputAccessoryViewController

@@ -2598,6 +2598,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.Ai.TimingInterval.IOS.FetchingAmbientDataShownToRemoved"
+    units="ms" expires_after="2027-04-28">
+  <owner>leozhao@google.com</owner>
+  <owner>novakovica@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the duration that the Ambient Autofill loading suggestion
+    (kFetchingAmbientData) stays on the keyboard accessory bar from when it is
+    first shown until it is removed. Emitted when the keyboard accessory
+    suggestions are updated to a list that no longer contains
+    kFetchingAmbientData, or when the keyboard accessory view disappears while
+    kFetchingAmbientData is shown. iOS only.
+  </summary>
+</histogram>
+
+<histogram
     name="Autofill.Ai.TimingInterval.LoadedServerPredictionsToFirstInteraction"
     units="ms" expires_after="2027-03-07">
   <owner>vizcay@google.com</owner>

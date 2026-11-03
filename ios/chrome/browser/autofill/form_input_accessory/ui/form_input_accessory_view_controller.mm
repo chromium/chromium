@@ -8,10 +8,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/webauthn/ios/features.h"
@@ -35,6 +38,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using autofill::FillingProduct;
+using autofill::SuggestionType;
+using base::ElapsedTimer;
 using manual_fill::ManualFillDataType;
 
 namespace {
@@ -154,6 +159,18 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
   return standard_suggestions;
 }
 
+// Returns true if `suggestions` contains a suggestion of type
+// `SuggestionType::kFetchingAmbientData`.
+bool ContainsFetchingAmbientDataSuggestion(
+    NSArray<FormSuggestion*>* suggestions) {
+  for (FormSuggestion* suggestion in suggestions) {
+    if (suggestion.type == SuggestionType::kFetchingAmbientData) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // Keeps the form suggestion view's layer mask (the fade-out gradient) sized to
@@ -226,6 +243,11 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 
   // Whether the manual fill menu most recently used popover presentation.
   std::optional<BOOL> _shouldUsePopover;
+
+  // Timer tracking how long a `SuggestionType::kFetchingAmbientData` suggestion
+  // was shown on the keyboard accessory bar. Reset once a batch of suggestions
+  // without it is shown or the view disappears.
+  std::optional<ElapsedTimer> _fetchingAmbientDataTimer;
 }
 
 @synthesize addressButtonHidden = _addressButtonHidden;
@@ -291,6 +313,8 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
+
+  [self recordFetchingAmbientDataDurationForSuggestions:@[]];
 
   // Exit the manual fill view, so that the next time the keyboard opens, it is
   // showing the keyboard and not the manual fill view.
@@ -624,6 +648,7 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
 
 // Populates `formSuggestionView` with the given suggestions.
 - (void)updateFormSuggestionView:(NSArray<FormSuggestion*>*)suggestions {
+  [self recordFetchingAmbientDataDurationForSuggestions:suggestions];
   [self createFormSuggestionViewIfNeeded];
   [self forceUserInterfaceStyle];
 
@@ -647,6 +672,24 @@ UIImage* GetManualFillSymbol(id<UITraitEnvironment> trait_environment) {
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
   [self announceVoiceOverMessageIfNeeded:[suggestions count]];
+}
+
+// Tracks the duration `SuggestionType::kFetchingAmbientData` stays on the
+// keyboard accessory bar.
+- (void)recordFetchingAmbientDataDurationForSuggestions:
+    (NSArray<FormSuggestion*>*)suggestions {
+  if (ContainsFetchingAmbientDataSuggestion(suggestions)) {
+    if (!_fetchingAmbientDataTimer.has_value()) {
+      _fetchingAmbientDataTimer.emplace();
+    }
+    return;
+  }
+
+  if (_fetchingAmbientDataTimer.has_value()) {
+    base::UmaHistogramMediumTimes(kFetchingAmbientDataShownToRemovedHistogram,
+                                  _fetchingAmbientDataTimer->Elapsed());
+    _fetchingAmbientDataTimer.reset();
+  }
 }
 
 // Creates formSuggestionView if not done yet.
