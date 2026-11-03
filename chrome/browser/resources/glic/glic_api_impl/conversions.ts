@@ -20,15 +20,14 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
-import type {                                                    //
-             AdditionalContext as AdditionalContextMojo,         //
-             AdditionalContextPart as AdditionalContextPartMojo, //
-             AnnotatedPageData as AnnotatedPageDataMojo,         //
-             CaptureRegionResult as CaptureRegionResultMojo,     //
-             ConversationInfo as ConversationInfoMojo,           //
-             CounterAbuseVerdict as CounterAbuseVerdictMojo,     //
-             CreateTabOptions as CreateTabOptionsMojo,           //
-             DataTransferActionsBlockedNotice as DataTransferActionsBlockedNoticeMojo, //
+import type {                                                                //
+             AdditionalContext as AdditionalContextMojo,                     //
+             AdditionalContextPart as AdditionalContextPartMojo,             //
+             AnnotatedPageData as AnnotatedPageDataMojo,                     //
+             CaptureRegionResult as CaptureRegionResultMojo,                 //
+             ConversationInfo as ConversationInfoMojo,                       //
+             CounterAbuseVerdict as CounterAbuseVerdictMojo,                 //
+             CreateTabOptions as CreateTabOptionsMojo,                       //
              FileUploadPolicyState as FileUploadPolicyStateMojo,             //
              FocusedTabData as FocusedTabDataMojo,                           //
              GetPinCandidatesOptions as GetPinCandidatesOptionsMojo,         //
@@ -71,7 +70,6 @@ import type {                                                   //
              ConversationInfo,                                  //
              CounterAbuseVerdict,                               //
              CreateTabOptions,                                  //
-             DataTransferActionsBlockedNotice,                  //
              FileUploadPolicyState as FileUploadPolicyStateApi, //
              FocusedTabData,                                    //
              GetPinCandidatesOptions,                           //
@@ -845,13 +843,4 @@ export function imageBytesResultToClient(result: ImageBytesResultMojo):
 export function fileUploadPolicyStateToClient(state: FileUploadPolicyStateMojo):
     FileUploadPolicyStateApi {
   return enumToClient(state);
-}
-
-export function dataTransferActionsBlockedNoticeToClient(
-    notice: DataTransferActionsBlockedNoticeMojo):
-    DataTransferActionsBlockedNotice {
-  return {
-    action: enumToClient(notice.action),
-    reason: enumToClient(notice.reason),
-  };
 }
