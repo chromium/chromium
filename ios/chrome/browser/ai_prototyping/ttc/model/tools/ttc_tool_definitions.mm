@@ -14,6 +14,9 @@ namespace {
 // JSON schema keys and type strings, sorted alphabetically.
 constexpr char kBooleanType[] = "boolean";
 constexpr char kDescriptionKey[] = "description";
+constexpr char kDirectionKey[] = "direction";
+constexpr char kEnumKey[] = "enum";
+constexpr char kGranularityKey[] = "granularity";
 constexpr char kIntegerType[] = "integer";
 constexpr char kNewTabKey[] = "new_tab";
 constexpr char kNodeIdKey[] = "node_id";
@@ -119,6 +122,50 @@ std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   open_url.behavior = ToolDefinition::Behavior::kBlocking;
   open_url.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_url));
+
+  ToolDefinition scroll_page;
+  scroll_page.name = kToolScrollPage;
+  scroll_page.description =
+      "Scrolls the current page or a scrollable element in the specified "
+      "direction.";
+  scroll_page.parameters_json_schema =
+      base::DictValue()
+          .Set(kTypeKey, kObjectType)
+          .Set(kPropertiesKey,
+               base::DictValue()
+                   .Set(kGranularityKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kStringType)
+                            .Set(kEnumKey,
+                                 base::ListValue().Append("page").Append(
+                                     "document"))
+                            .Set(kDescriptionKey,
+                                 "Scroll distance granularity: \"page\" or "
+                                 "\"document\"."))
+                   .Set(kDirectionKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kStringType)
+                            .Set(kEnumKey, base::ListValue()
+                                               .Append("up")
+                                               .Append("down")
+                                               .Append("left")
+                                               .Append("right"))
+                            .Set(kDescriptionKey,
+                                 "The direction to scroll: \"up\", \"down\", "
+                                 "\"left\", or \"right\"."))
+                   .Set(kNodeIdKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kIntegerType)
+                            .Set(kDescriptionKey,
+                                 "The DOM node ID of the scrollable element, "
+                                 "or 0 to scroll the main viewport.")))
+          .Set(kRequiredKey, base::ListValue()
+                                 .Append(kGranularityKey)
+                                 .Append(kDirectionKey)
+                                 .Append(kNodeIdKey));
+  scroll_page.behavior = ToolDefinition::Behavior::kBlocking;
+  scroll_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(scroll_page));
 
   ToolDefinition select_option;
   select_option.name = kToolSelectOption;

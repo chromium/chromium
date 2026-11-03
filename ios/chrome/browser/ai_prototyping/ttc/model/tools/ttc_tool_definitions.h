@@ -20,6 +20,7 @@ inline constexpr char kToolCreateTab[] = "create_tab";
 inline constexpr char kToolGoBack[] = "go_back";
 inline constexpr char kToolGoForward[] = "go_forward";
 inline constexpr char kToolOpenUrl[] = "open_url";
+inline constexpr char kToolScrollPage[] = "scroll_page";
 inline constexpr char kToolSelectOption[] = "select_option";
 inline constexpr char kToolSetText[] = "set_text";
 

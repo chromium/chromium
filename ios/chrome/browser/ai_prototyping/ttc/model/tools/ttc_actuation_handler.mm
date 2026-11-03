@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 
+#import <UIKit/UIKit.h>
 #import <stdint.h>
 
 #import <memory>
@@ -54,6 +55,9 @@ namespace {
 // Journal event name for tool actuation execution.
 constexpr char kActuationExecuteEventName[] = "ActuationExecute";
 
+// Fraction of the active viewport dimension scrolled for `"page"` granularity.
+constexpr float kPageScrollViewportFraction = 0.8f;
+
 // Internal title used when creating the session's Actor task; not surfaced in
 // user-facing UI.
 constexpr char kTtcTaskTitle[] = "TTC Session";
@@ -96,11 +100,13 @@ void SetTabIdIfUnset(SubAction* sub_action, int32_t tab_id) {
   }
 }
 
-// Injects the current tab and window ID into the given action proto if not
-// already explicitly specified by the action.
+// Injects the current tab ID, window ID, and viewport-derived scroll distance
+// into `action` if not already explicitly specified by the action.
 void InjectDataIntoAction(optimization_guide::proto::Action& action,
-                          web::WebStateID web_state_id,
+                          web::WebState* web_state,
                           SessionID window_id) {
+  web::WebStateID web_state_id =
+      web_state ? web_state->GetUniqueIdentifier() : web::WebStateID();
   if (web_state_id.valid()) {
     int32_t tab_id = web_state_id.identifier();
     switch (action.action_case()) {
@@ -130,9 +136,31 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
           action.mutable_wait()->set_observe_tab_id(tab_id);
         }
         break;
-      case optimization_guide::proto::Action::kScroll:
-        SetTabIdIfUnset(action.mutable_scroll(), tab_id);
+      case optimization_guide::proto::Action::kScroll: {
+        optimization_guide::proto::ScrollAction* scroll_action =
+            action.mutable_scroll();
+        SetTabIdIfUnset(scroll_action, tab_id);
+        // When `scroll_page` uses `"page"` granularity, `TtcToolValidator`
+        // leaves `distance` unset so it can be computed from 80% of the active
+        // viewport dimension. If the view is unattached or zero-sized,
+        // `distance` is left unset so `ScrollTool::Validate` rejects the
+        // action with `kArgumentsInvalid`.
+        if (!scroll_action->has_distance()) {
+          const CGSize viewport_size = web_state->GetView().bounds.size;
+          const optimization_guide::proto::ScrollAction::ScrollDirection dir =
+              scroll_action->direction();
+          const CGFloat dimension =
+              (dir == optimization_guide::proto::ScrollAction::LEFT ||
+               dir == optimization_guide::proto::ScrollAction::RIGHT)
+                  ? viewport_size.width
+                  : viewport_size.height;
+          if (dimension > 0.0) {
+            scroll_action->set_distance(static_cast<float>(dimension) *
+                                        kPageScrollViewportFraction);
+          }
+        }
         break;
+      }
       case optimization_guide::proto::Action::kScrollTo:
         SetTabIdIfUnset(action.mutable_scroll_to(), tab_id);
         break;
@@ -336,7 +364,6 @@ void TtcActuationHandler::DispatchActuationRequest(
     return;
   }
 
-  web::WebStateID web_state_id = active_web_state->GetUniqueIdentifier();
   SessionID window_id = GetBrowserIdForWebState(active_web_state);
   std::vector<optimization_guide::proto::Action> actions;
   actions.reserve(request.action_protos.size());
@@ -348,7 +375,7 @@ void TtcActuationHandler::DispatchActuationRequest(
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
       return;
     }
-    InjectDataIntoAction(action, web_state_id, window_id);
+    InjectDataIntoAction(action, active_web_state, window_id);
     actions.push_back(std::move(action));
   }
 

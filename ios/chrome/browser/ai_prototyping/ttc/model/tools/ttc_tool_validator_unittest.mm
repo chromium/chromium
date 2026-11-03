@@ -396,4 +396,119 @@ TEST_F(TtcToolValidatorTest, CreateActuationRequestForSetText) {
   }
 }
 
+// Tests that `CreateActuationRequest` for `scroll_page` with `"page"`
+// granularity on the root viewport (`dom_node_id == 0`) maps all four
+// directions and leaves `distance` and `target` unset.
+TEST_F(
+    TtcToolValidatorTest,
+    CreateActuationRequestForScrollPageWithPageGranularityLeavesDistanceAndTargetUnset) {
+  struct DirectionCase {
+    const char* name;
+    optimization_guide::proto::ScrollAction::ScrollDirection expected;
+  };
+  const DirectionCase kDirections[] = {
+      {"up", optimization_guide::proto::ScrollAction::UP},
+      {"down", optimization_guide::proto::ScrollAction::DOWN},
+      {"left", optimization_guide::proto::ScrollAction::LEFT},
+      {"right", optimization_guide::proto::ScrollAction::RIGHT},
+  };
+
+  for (const DirectionCase& dir_case : kDirections) {
+    SCOPED_TRACE(dir_case.name);
+    base::DictValue page_args;
+    page_args.Set("granularity", "page");
+    page_args.Set("direction", dir_case.name);
+    page_args.Set("node_id", CreateNodeIdDict("", 0));
+
+    base::expected<TtcActuationRequest, std::string> page_result =
+        TtcToolValidator::CreateActuationRequest(
+            ttc::ToolRequest{ttc::kToolScrollPage, std::move(page_args)});
+
+    ASSERT_TRUE(page_result.has_value());
+    ASSERT_EQ(page_result->action_protos.size(), 1u);
+    optimization_guide::proto::Action action;
+    ASSERT_TRUE(action.ParseFromString(page_result->action_protos[0]));
+    ASSERT_TRUE(action.has_scroll());
+    EXPECT_EQ(action.scroll().direction(), dir_case.expected);
+    EXPECT_FALSE(action.scroll().has_distance());
+    EXPECT_FALSE(action.scroll().has_target());
+  }
+}
+
+// Tests that `CreateActuationRequest` for `scroll_page` with `"document"`
+// granularity on a scrollable container (`dom_node_id > 0`) sets the sentinel
+// distance (`100000.0f`) and populates `target`.
+TEST_F(
+    TtcToolValidatorTest,
+    CreateActuationRequestForScrollPageWithDocumentGranularitySetsDistanceAndTarget) {
+  base::DictValue doc_args;
+  doc_args.Set("granularity", "document");
+  doc_args.Set("direction", "down");
+  doc_args.Set("node_id", CreateNodeIdDict("doc-token-1", 42));
+
+  base::expected<TtcActuationRequest, std::string> doc_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolScrollPage, std::move(doc_args)});
+
+  ASSERT_TRUE(doc_result.has_value());
+  ASSERT_EQ(doc_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action doc_action;
+  ASSERT_TRUE(doc_action.ParseFromString(doc_result->action_protos[0]));
+  ASSERT_TRUE(doc_action.has_scroll());
+  EXPECT_EQ(doc_action.scroll().direction(),
+            optimization_guide::proto::ScrollAction::DOWN);
+  EXPECT_TRUE(doc_action.scroll().has_distance());
+  EXPECT_FLOAT_EQ(doc_action.scroll().distance(), 100000.0f);
+  EXPECT_EQ(doc_action.scroll().target().content_node_id(), 42);
+  EXPECT_EQ(
+      doc_action.scroll().target().document_identifier().serialized_token(),
+      "doc-token-1");
+}
+
+// Tests that `CreateActuationRequest` for `scroll_page` rejects missing or
+// invalid `granularity`, `direction`, and `node_id` arguments.
+TEST_F(TtcToolValidatorTest,
+       CreateActuationRequestForScrollPageWithInvalidArgumentsFails) {
+  std::vector<base::DictValue> invalid_scroll_cases;
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("direction", "down")
+                                     .Set("node_id", CreateNodeIdDict("", 0)));
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("granularity", "page")
+                                     .Set("node_id", CreateNodeIdDict("", 0)));
+  invalid_scroll_cases.push_back(
+      base::DictValue().Set("granularity", "page").Set("direction", "down"));
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("granularity", "page")
+                                     .Set("direction", "down")
+                                     .Set("node_id", base::DictValue()));
+  invalid_scroll_cases.push_back(
+      base::DictValue()
+          .Set("granularity", "page")
+          .Set("direction", "down")
+          .Set("node_id", CreateNodeIdDict("doc", -1)));
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("granularity", "page")
+                                     .Set("direction", "down")
+                                     .Set("node_id", CreateNodeIdDict("", 42)));
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("granularity", "line")
+                                     .Set("direction", "down")
+                                     .Set("node_id", CreateNodeIdDict("", 0)));
+  invalid_scroll_cases.push_back(base::DictValue()
+                                     .Set("granularity", "page")
+                                     .Set("direction", "diagonal")
+                                     .Set("node_id", CreateNodeIdDict("", 0)));
+
+  for (size_t i = 0; i < invalid_scroll_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    base::expected<TtcActuationRequest, std::string> invalid_result =
+        TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+            ttc::kToolScrollPage, std::move(invalid_scroll_cases[i])});
+
+    ASSERT_FALSE(invalid_result.has_value());
+    EXPECT_EQ(invalid_result.error(), ttc::kErrorMessageInvalidArguments);
+  }
+}
+
 }  // namespace

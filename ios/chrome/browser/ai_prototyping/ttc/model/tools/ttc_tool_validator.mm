@@ -17,14 +17,26 @@
 
 namespace {
 
-// Tool argument keys, sorted alphabetically.
+// Tool argument keys and values, sorted alphabetically.
+constexpr char kDirectionDown[] = "down";
+constexpr char kDirectionKey[] = "direction";
+constexpr char kDirectionLeft[] = "left";
+constexpr char kDirectionRight[] = "right";
+constexpr char kDirectionUp[] = "up";
 constexpr char kDocumentIdKey[] = "document_id";
 constexpr char kDomNodeIdKey[] = "dom_node_id";
+constexpr char kGranularityDocument[] = "document";
+constexpr char kGranularityKey[] = "granularity";
+constexpr char kGranularityPage[] = "page";
 constexpr char kNewTabKey[] = "new_tab";
 constexpr char kNodeIdKey[] = "node_id";
 constexpr char kTextKey[] = "text";
 constexpr char kUrlKey[] = "url";
 constexpr char kValueKey[] = "value";
+
+// Large sentinel scroll distance (in CSS pixels) used for `"document"`
+// granularity to scroll to the boundary of the document or container.
+constexpr float kDocumentScrollDistance = 100000.0f;
 
 // Task update string.
 constexpr char kSingleToolTaskUpdate[] = "Executing TTC tool";
@@ -55,6 +67,46 @@ bool ParseElementTarget(const base::DictValue& arguments,
                         optimization_guide::proto::ActionTarget* out_target) {
   const base::DictValue* node_id_dict = arguments.FindDict(kNodeIdKey);
   return node_id_dict && ParseTargetFromDict(*node_id_dict, out_target);
+}
+
+// Parses the required `node_id` dictionary for `scroll_page`. When
+// `dom_node_id == 0` (the root viewport sentinel), leaves `out_target` unset so
+// `ScrollTool` targets the root window even when `document_id` is empty. When
+// `dom_node_id > 0`, delegates to `ParseTargetFromDict`.
+bool ParseScrollTarget(const base::DictValue& arguments,
+                       optimization_guide::proto::ActionTarget* out_target) {
+  const base::DictValue* node_id_dict = arguments.FindDict(kNodeIdKey);
+  if (!node_id_dict) {
+    return false;
+  }
+  std::optional<int> dom_node_id = node_id_dict->FindInt(kDomNodeIdKey);
+  if (!dom_node_id.has_value() || *dom_node_id < 0) {
+    return false;
+  }
+  if (*dom_node_id == 0) {
+    return true;
+  }
+  return ParseTargetFromDict(*node_id_dict, out_target);
+}
+
+// Parses a scroll direction string into the corresponding `ScrollDirection`
+// proto enum value, or `std::nullopt` if unrecognized.
+std::optional<optimization_guide::proto::ScrollAction::ScrollDirection>
+ParseScrollDirection(const std::string& direction) {
+  const std::string lower = base::ToLowerASCII(direction);
+  if (lower == kDirectionUp) {
+    return optimization_guide::proto::ScrollAction::UP;
+  }
+  if (lower == kDirectionDown) {
+    return optimization_guide::proto::ScrollAction::DOWN;
+  }
+  if (lower == kDirectionLeft) {
+    return optimization_guide::proto::ScrollAction::LEFT;
+  }
+  if (lower == kDirectionRight) {
+    return optimization_guide::proto::ScrollAction::RIGHT;
+  }
+  return std::nullopt;
 }
 
 // Converts a boolean-like `base::Value` into an optional bool.
@@ -107,6 +159,25 @@ optimization_guide::proto::Action BuildActionProto(
     const std::string* url_string = arguments.FindString(kUrlKey);
     GURL gurl(url_string ? *url_string : std::string());
     action.mutable_navigate()->set_url(gurl.spec());
+  } else if (name == ttc::kToolScrollPage) {
+    optimization_guide::proto::ScrollAction* scroll_action =
+        action.mutable_scroll();
+    if (const std::string* direction = arguments.FindString(kDirectionKey)) {
+      if (std::optional<
+              optimization_guide::proto::ScrollAction::ScrollDirection>
+              parsed_dir = ParseScrollDirection(*direction)) {
+        scroll_action->set_direction(*parsed_dir);
+      }
+    }
+    const std::string* granularity = arguments.FindString(kGranularityKey);
+    if (granularity &&
+        base::ToLowerASCII(*granularity) == kGranularityDocument) {
+      scroll_action->set_distance(kDocumentScrollDistance);
+    }
+    optimization_guide::proto::ActionTarget target;
+    if (ParseScrollTarget(arguments, &target) && target.has_content_node_id()) {
+      *scroll_action->mutable_target() = std::move(target);
+    }
   } else if (name == ttc::kToolSelectOption) {
     optimization_guide::proto::SelectAction* select_action =
         action.mutable_select();
@@ -184,6 +255,23 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
       return base::unexpected(ttc::kErrorMessageInvalidArguments);
     }
 
+    return base::ok();
+  }
+
+  if (name == ttc::kToolScrollPage) {
+    const std::string* granularity = arguments.FindString(kGranularityKey);
+    const std::string* direction = arguments.FindString(kDirectionKey);
+    if (!granularity || !direction || !ParseScrollTarget(arguments, nullptr)) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
+    const std::string lower_granularity = base::ToLowerASCII(*granularity);
+    if (lower_granularity != kGranularityPage &&
+        lower_granularity != kGranularityDocument) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
+    if (!ParseScrollDirection(*direction).has_value()) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
     return base::ok();
   }
 

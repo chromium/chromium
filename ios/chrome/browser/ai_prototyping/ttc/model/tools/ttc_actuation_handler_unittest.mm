@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_handler.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 #import <string>
 
@@ -701,6 +703,84 @@ TEST_F(TtcActuationHandlerTest, ProcessToolCallCreatesAndClosesBrowserTabs) {
   EXPECT_TRUE(close_future.Get().Ok());
   EXPECT_EQ(web_state_list->count(), 1);
   EXPECT_EQ(GetActiveWebState(), initial_tab);
+
+  handler->Disconnect();
+}
+
+// Tests that `scroll_page` with `"page"` granularity fails validation with
+// `kArgumentsInvalid` when the active `WebState`'s view is unattached or has
+// zero dimensions.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallScrollPageWithZeroSizedViewportFailsValidation) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  base::DictValue args;
+  args.Set("granularity", "page");
+  args.Set("direction", "down");
+  args.Set("node_id",
+           base::DictValue().Set("document_id", "").Set("dom_node_id", 0));
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolScrollPage, std::move(args)},
+      GetActiveWebState(), future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  handler->Disconnect();
+}
+
+// Tests that `scroll_page` with `"page"` granularity computes 80% of the active
+// `WebState` viewport height (for vertical scrolls) or width (for horizontal
+// scrolls), while preserving fixed distance for `"document"` granularity.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallScrollPageInjectsViewportBasedDistance) {
+  actor::ActorService* actor_service = GetActorService();
+  ASSERT_TRUE(actor_service);
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  web::FakeWebState* active_fake_web_state =
+      static_cast<web::FakeWebState*>(GetActiveWebState());
+  UIView* web_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400, 800)];
+  active_fake_web_state->SetView(web_view);
+
+  struct ScrollTestCase {
+    const char* granularity;
+    const char* direction;
+    const char* expected_tool_debug_string;
+  };
+  const ScrollTestCase kScrollCases[] = {
+      {"page", "up",
+       "ScrollTool[target(null);direction(UP);distance(640.000000)]"},
+      {"page", "down",
+       "ScrollTool[target(null);direction(DOWN);distance(640.000000)]"},
+      {"page", "left",
+       "ScrollTool[target(null);direction(LEFT);distance(320.000000)]"},
+      {"page", "right",
+       "ScrollTool[target(null);direction(RIGHT);distance(320.000000)]"},
+      {"document", "down",
+       "ScrollTool[target(null);direction(DOWN);distance(100000.000000)]"},
+  };
+
+  for (const ScrollTestCase& test_case : kScrollCases) {
+    SCOPED_TRACE(testing::Message()
+                 << test_case.granularity << ":" << test_case.direction);
+    base::DictValue args;
+    args.Set("granularity", test_case.granularity);
+    args.Set("direction", test_case.direction);
+    args.Set("node_id",
+             base::DictValue().Set("document_id", "").Set("dom_node_id", 0));
+    base::test::TestFuture<ttc::ToolResponse> future;
+
+    handler->ProcessToolCall(
+        ttc::ToolRequest{ttc::kToolScrollPage, std::move(args)},
+        GetActiveWebState(), future.GetCallback());
+
+    ASSERT_TRUE(future.Wait());
+    EXPECT_TRUE(actor::HasJournalEntryWithDetail(
+        *actor_service->GetJournal(), "Execute Tool: ScrollTool", "tool",
+        test_case.expected_tool_debug_string));
+  }
 
   handler->Disconnect();
 }
