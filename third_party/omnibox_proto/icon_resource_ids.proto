@@ -350,6 +350,10 @@ enum IconResourceIds {
 
   // Icon: Luminous Symbols:image_create:wght@200;opsz@24;FILL@0
   IMAGE_CREATE = 108;
+
+  // Icon: Google Symbols 2:pro_model:wght@200;opsz@24;FILL@0
+  // For AIM.
+  PTM_TOOL = 109;
 }
 
 enum IconPositions {
