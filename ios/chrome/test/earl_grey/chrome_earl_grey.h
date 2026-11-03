@@ -303,30 +303,34 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 #pragma mark - Navigation and Loading
 
-// Loads `URL` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
-// specified `timeout`. This timeout is used for both webView appearance and
-// page load; time taken is approximately `timeout` for page load but total time
-// could take up to double the `timeout`.
+// Loads `URL` in the current `WebState` with transition type
+// `ui::PAGE_TRANSITION_TYPED`, and waits for the loading to complete within a
+// specified `timeout`. Asserts via `GREYAssert` in case of error (such as when
+// Chrome is not on an active tab or loading times out). This `timeout` is used
+// for both `webView` appearance and page load; time taken is approximately
+// `timeout` for page load but total time could take up to double the `timeout`.
 - (void)loadURL:(const GURL&)URL withTimeout:(base::TimeDelta)timeout;
 
-// Loads `URL` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
-// specified `timeout`. This timeout is used for both webView appearance and
+// Loads `URL` in the current `WebState` with transition type
+// `ui::PAGE_TRANSITION_TYPED`, and waits for the loading to complete within a
+// specified `timeout`. This `timeout` is used for both `webView` appearance and
 // page load; time taken is approximately `timeout` for page load but total time
-// could take up to double the `timeout`. Returns nil on success, or else an
-// NSError indicating why the operation failed.
+// could take up to double the `timeout`. Returns `nil` on success, or else an
+// `NSError*` indicating why the operation failed (e.g. if Chrome is not on an
+// active tab or loading times out).
 - (NSError*)loadURL:(const GURL&)URL
     timeoutWithError:(base::TimeDelta)timeout [[nodiscard]];
 
-// Loads `URL` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED, and if `wait` is YES
-// waits for the loading to complete within a timeout.
+// Loads `URL` in the current `WebState` with transition type
+// `ui::PAGE_TRANSITION_TYPED`, and if `wait` is `YES` waits for the loading to
+// complete within a timeout. Asserts via `GREYAssert` in case of error (such as
+// when Chrome is not on an active tab or loading times out).
 - (void)loadURL:(const GURL&)URL waitForCompletion:(BOOL)wait;
 
-// Loads `URL` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
-// timeout.
+// Loads `URL` in the current `WebState` with transition type
+// `ui::PAGE_TRANSITION_TYPED`, and waits for the loading to complete within a
+// timeout. Asserts via `GREYAssert` in case of error (such as when Chrome is
+// not on an active tab or loading times out).
 - (void)loadURL:(const GURL&)URL;
 
 // Returns YES if the current WebState is loading.
@@ -546,19 +550,20 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)changeWindowWithNumber:(int)windowNumber
                    toNewNumber:(int)newWindowNumber;
 
-// Loads `URL` in the current WebState for window with given `windowNumber`,
-// with transition type ui::PAGE_TRANSITION_TYPED, and if `wait` is YES
-// waits for the loading to complete within a timeout.
-// Returns nil on success, or else an NSError indicating why the operation
-// failed.
+// Loads `URL` in the current `WebState` for the window with `windowNumber`,
+// with transition type `ui::PAGE_TRANSITION_TYPED`, and if `wait` is `YES`
+// waits for the loading to complete within a timeout. Asserts via `GREYAssert`
+// in case of error (such as when the window does not exist, Chrome is on the
+// Tab Grid, no active tab exists, or loading times out).
 - (void)loadURL:(const GURL&)URL
     inWindowWithNumber:(int)windowNumber
      waitForCompletion:(BOOL)wait;
 
-// Loads `URL` in the current WebState for window with given `windowNumber`,
-// with transition type ui::PAGE_TRANSITION_TYPED, and waits for the loading to
-// complete within a timeout. If the condition is not met within a timeout
-// returns an NSError indicating why the operation failed, otherwise nil.
+// Loads `URL` in the current `WebState` for the window with `windowNumber`,
+// with transition type `ui::PAGE_TRANSITION_TYPED`, and waits for the loading
+// to complete within a timeout. Asserts via `GREYAssert` in case of error (such
+// as when the window does not exist, Chrome is on the Tab Grid, no active tab
+// exists, or loading times out).
 - (void)loadURL:(const GURL&)URL inWindowWithNumber:(int)windowNumber;
 
 // Waits for the page to finish loading for window with given `windowNumber`,

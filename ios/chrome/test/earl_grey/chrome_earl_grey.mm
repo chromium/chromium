@@ -627,11 +627,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                                             url:urlString];
 }
 
+// Loads `URL` in the current `WebState` with appearance and page load
+// timeouts. Returns `nil` on success, or an `NSError*` if starting
+// navigation fails (e.g. if not on an active tab) or if waiting for the
+// `WebState` or page load times out.
 - (NSError*)loadURL:(const GURL&)URL
     webStateAppearanceTimeout:(base::TimeDelta)webStateAppearanceTimeout
               pageLoadTimeout:(base::TimeDelta)pageLoadTimeout {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  [ChromeEarlGreyAppInterface startLoadingURL:spec];
+  NSError* startLoadingError =
+      [ChromeEarlGreyAppInterface startLoadingURL:spec];
+  if (startLoadingError) {
+    return startLoadingError;
+  }
   // Wait for url loading completion is not neccessary. No timeout is specified.
   if (webStateAppearanceTimeout.is_zero() && pageLoadTimeout.is_zero()) {
     return nil;
@@ -676,7 +684,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 - (void)loadURL:(const GURL&)URL {
-  return [self loadURL:URL waitForCompletion:YES];
+  [self loadURL:URL waitForCompletion:YES];
 }
 
 - (BOOL)isLoading {
@@ -1460,8 +1468,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
     inWindowWithNumber:(int)windowNumber
      waitForCompletion:(BOOL)wait {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  [ChromeEarlGreyAppInterface startLoadingURL:spec
-                           inWindowWithNumber:windowNumber];
+  EG_TEST_HELPER_ASSERT_NO_ERROR([ChromeEarlGreyAppInterface
+         startLoadingURL:spec
+      inWindowWithNumber:windowNumber]);
   if (wait) {
     [self waitForPageToFinishLoadingInWindowWithNumber:windowNumber];
     // Loading URL (especially the first time) can trigger alerts.
@@ -1470,9 +1479,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 }
 
 - (void)loadURL:(const GURL&)URL inWindowWithNumber:(int)windowNumber {
-  return [self loadURL:URL
-      inWindowWithNumber:windowNumber
-       waitForCompletion:YES];
+  [self loadURL:URL inWindowWithNumber:windowNumber waitForCompletion:YES];
 }
 
 - (BOOL)isLoadingInWindowWithNumber:(int)windowNumber {

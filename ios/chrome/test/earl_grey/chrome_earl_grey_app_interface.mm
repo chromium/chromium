@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -286,6 +287,45 @@ class InAppWaiter {
   ProceduralBlock completion_ = nil;
   base::TimeDelta poll_interval_ = kSpinDelaySeconds;
 };
+
+// Verifies that `scene_state` exists, is not displaying the Tab Grid, and that
+// `current_web_state` is non-null. Returns `nil` on success, or an `NSError*`
+// describing why navigation cannot be performed. When `window_number` is
+// non-negative, the error description mentions the window number.
+NSError* CanStartLoadingURL(SceneState* scene_state,
+                            web::WebState* current_web_state,
+                            int window_number = -1) {
+  if (!scene_state) {
+    NSString* description =
+        window_number >= 0
+            ? [NSString stringWithFormat:@"No window with number %d exists",
+                                         window_number]
+            : @"No active scene exists";
+    return testing::NSErrorWithLocalizedDescription(description);
+  }
+
+  if (scene_state.controller.isTabGridVisible) {
+    NSString* description =
+        window_number >= 0
+            ? [NSString stringWithFormat:
+                            @"Tab Grid is visible in window %d instead of an "
+                            @"active tab",
+                            window_number]
+            : @"Tab Grid is visible instead of an active tab";
+    return testing::NSErrorWithLocalizedDescription(description);
+  }
+
+  if (!current_web_state) {
+    NSString* description =
+        window_number >= 0
+            ? [NSString stringWithFormat:@"No active tab exists in window %d",
+                                         window_number]
+            : @"No active tab exists";
+    return testing::NSErrorWithLocalizedDescription(description);
+  }
+
+  return nil;
+}
 
 }  // namespace
 
@@ -529,8 +569,20 @@ class InAppWaiter {
   [scene.delegate scene:scene continueUserActivity:fakeActivity];
 }
 
-+ (void)startLoadingURL:(NSString*)spec {
+// Initiates loading the URL `spec` in the current `WebState` without waiting
+// for the load to finish. Returns `nil` on success, or an `NSError*` describing
+// why navigation failed (e.g., if Chrome is not on an active tab, such as when
+// the Tab Grid is visible or no active tab exists).
++ (NSError*)startLoadingURL:(NSString*)spec {
+  NSError* error =
+      CanStartLoadingURL(chrome_test_util::GetForegroundActiveScene(),
+                         chrome_test_util::GetCurrentWebState());
+  if (error) {
+    return error;
+  }
+
   chrome_test_util::LoadUrl(GURL(base::SysNSStringToUTF8(spec)));
+  return nil;
 }
 
 + (bool)isLoading {
@@ -1028,9 +1080,24 @@ class InAppWaiter {
   }
 }
 
-+ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber {
+// Initiates loading the URL `spec` in the current `WebState` of the window with
+// number `windowNumber` without waiting for the load to finish. Returns `nil`
+// on success, or an `NSError*` describing why navigation failed (e.g., if the
+// window does not exist, the Tab Grid is visible, or no active tab exists in
+// that window).
++ (NSError*)startLoadingURL:(NSString*)spec
+         inWindowWithNumber:(int)windowNumber {
+  NSError* error = CanStartLoadingURL(
+      [self sceneStateWithNumber:windowNumber],
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber),
+      windowNumber);
+  if (error) {
+    return error;
+  }
+
   chrome_test_util::LoadUrlInWindowWithNumber(
       GURL(base::SysNSStringToUTF8(spec)), windowNumber);
+  return nil;
 }
 
 + (BOOL)isLoadingInWindowWithNumber:(int)windowNumber {

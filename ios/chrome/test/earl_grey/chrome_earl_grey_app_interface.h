@@ -106,9 +106,12 @@ enum class TipsNotificationType;
 + (void)sceneContinueUserActivityWithType:(NSString*)activityType
                                       url:(NSString*)urlString;
 
-// Loads the URL `spec` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED and returns without waiting for the page to load.
-+ (void)startLoadingURL:(NSString*)spec;
+// Starts loading the URL `spec` in the current `WebState` with transition type
+// `ui::PAGE_TRANSITION_TYPED` and returns without waiting for the page to load.
+// Returns `nil` on success, or an `NSError*` describing why navigation failed
+// (e.g., if Chrome is not on an active tab, such as when the Tab Grid is
+// visible or no active tab exists).
++ (NSError*)startLoadingURL:(NSString*)spec [[nodiscard]];
 
 // Returns YES if the current WebState is loading.
 + (BOOL)isLoading;
@@ -337,10 +340,13 @@ enum class TipsNotificationType;
 + (void)changeWindowWithNumber:(int)windowNumber
                    toNewNumber:(int)newWindowNumber;
 
-// Loads the URL `spec` in the current WebState in window `windowNumber` with
-// transition type ui::PAGE_TRANSITION_TYPED and returns without waiting for the
-// page to load.
-+ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber;
+// Starts loading the URL `spec` in the current `WebState` in the window with
+// `windowNumber` with transition type `ui::PAGE_TRANSITION_TYPED` and returns
+// without waiting for the page to load. Returns `nil` on success, or an
+// `NSError*` describing why navigation failed (e.g., if the window does not
+// exist, the Tab Grid is visible, or no active tab exists in that window).
++ (NSError*)startLoadingURL:(NSString*)spec
+         inWindowWithNumber:(int)windowNumber [[nodiscard]];
 
 // Returns YES if current WebState is loading in window `windowNumber`.
 + (BOOL)isLoadingInWindowWithNumber:(int)windowNumber [[nodiscard]];

@@ -28,6 +28,7 @@ source_set("eg2_tests") {
     ":switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",
+    "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }
