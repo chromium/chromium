@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -27,11 +28,15 @@ bool IsDTCKeyUploadedBySharedAPI() {
 
 BASE_FEATURE(kDeviceTrustConnectorAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceTrustConnectorDesktopFormFactors,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDeviceTrustConnectorAndroidEnabled() {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(b/575835298): Device Trust Connector is not supported yet on desktop
-  // form factors.
-  if (base::android::device_info::is_desktop()) {
+  // TODO(b/575835298): Remove `kDeviceTrustConnectorDesktopFormFactors` once
+  // the Device Trust Connector launches on desktop form factors.
+  if (base::android::device_info::is_desktop() &&
+      !base::FeatureList::IsEnabled(kDeviceTrustConnectorDesktopFormFactors)) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

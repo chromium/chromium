@@ -59,9 +59,10 @@ class UserDelegateImplTest : public testing::Test {
  protected:
 #if BUILDFLAG(IS_ANDROID)
   void SetUp() override {
-    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
-    // factors. Pin a non-desktop form factor so that these tests behave the
-    // same on all Android devices.
+    // `IsDeviceTrustConnectorAndroidEnabled()` also depends on
+    // `kDeviceTrustConnectorDesktopFormFactors` on desktop form factors. Pin a
+    // non-desktop form factor so that these tests behave the same on all
+    // Android devices.
     base::android::device_info::set_is_desktop_for_testing(false);
   }
 
@@ -233,17 +234,35 @@ TEST_F(UserDelegateImplTest,
   EXPECT_FALSE(user_delegate_->IsCollectSignalsConsentRequired());
 }
 
-// Tests that consent is required for a managed user on desktop form factors,
-// where the Device Trust Connector is not supported yet, even when the
-// DeviceTrustConnectorAndroid feature is enabled.
+// Tests that consent is required for a managed user on desktop form factors
+// when the `kDeviceTrustConnectorDesktopFormFactors` feature is disabled, even
+// when the `kDeviceTrustConnectorAndroid` feature is enabled.
 TEST_F(
     UserDelegateImplTest,
     IsCollectSignalsConsentRequired_FeatureEnabled_ManagedUser_DesktopFormFactor) {
-  base::test::ScopedFeatureList feature_list{
-      enterprise_connectors::kDeviceTrustConnectorAndroid};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {enterprise_connectors::kDeviceTrustConnectorAndroid},
+      {enterprise_connectors::kDeviceTrustConnectorDesktopFormFactors});
   base::android::device_info::set_is_desktop_for_testing(true);
   CreateDelegate(/*is_managed_user=*/true);
   EXPECT_TRUE(user_delegate_->IsCollectSignalsConsentRequired());
+}
+
+// Tests that consent is not required for a managed user on desktop form
+// factors when both the `kDeviceTrustConnectorAndroid` and the
+// `kDeviceTrustConnectorDesktopFormFactors` features are enabled.
+TEST_F(
+    UserDelegateImplTest,
+    IsCollectSignalsConsentRequired_FeatureEnabled_ManagedUser_DesktopFormFactorWithDesktopFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {enterprise_connectors::kDeviceTrustConnectorAndroid,
+       enterprise_connectors::kDeviceTrustConnectorDesktopFormFactors},
+      {});
+  base::android::device_info::set_is_desktop_for_testing(true);
+  CreateDelegate(/*is_managed_user=*/true);
+  EXPECT_FALSE(user_delegate_->IsCollectSignalsConsentRequired());
 }
 
 // Tests that consent is required for an unmanaged user on Android even when the

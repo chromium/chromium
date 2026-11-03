@@ -151,9 +151,10 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
 #if BUILDFLAG(IS_ANDROID)
   void SetUp() override {
-    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
-    // factors. Pin a non-desktop form factor so that these tests behave the
-    // same on all Android devices.
+    // `IsDeviceTrustConnectorAndroidEnabled()` also depends on
+    // `kDeviceTrustConnectorDesktopFormFactors` on desktop form factors. Pin a
+    // non-desktop form factor so that these tests behave the same on all
+    // Android devices.
     base::android::device_info::set_is_desktop_for_testing(false);
   }
 
@@ -744,7 +745,33 @@ TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleWhenFeatureDisabled) {
 }
 
 TEST_F(DeviceTrustNavigationThrottleTest, NoThrottleOnDesktopFormFactor) {
-  scoped_feature_list_.InitAndEnableFeature(kDeviceTrustConnectorAndroid);
+  scoped_feature_list_.InitWithFeatures(
+      {kDeviceTrustConnectorAndroid},
+      {kDeviceTrustConnectorDesktopFormFactors});
+  test_prefs_->SetBoolean(
+      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+  base::android::device_info::set_is_desktop_for_testing(true);
+
+  EXPECT_EQ(0u, CountCreatedThrottles());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       ThrottleCreatedOnDesktopFormFactorWithDesktopFeature) {
+  scoped_feature_list_.InitWithFeatures(
+      {kDeviceTrustConnectorAndroid, kDeviceTrustConnectorDesktopFormFactors},
+      {});
+  test_prefs_->SetBoolean(
+      device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
+  base::android::device_info::set_is_desktop_for_testing(true);
+
+  EXPECT_EQ(1u, CountCreatedThrottles());
+}
+
+TEST_F(DeviceTrustNavigationThrottleTest,
+       NoThrottleOnDesktopFormFactorWithOnlyDesktopFeature) {
+  scoped_feature_list_.InitWithFeatures(
+      {kDeviceTrustConnectorDesktopFormFactors},
+      {kDeviceTrustConnectorAndroid});
   test_prefs_->SetBoolean(
       device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled, true);
   base::android::device_info::set_is_desktop_for_testing(true);

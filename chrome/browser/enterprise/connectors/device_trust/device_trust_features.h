@@ -26,8 +26,13 @@ bool IsDTCKeyUploadedBySharedAPI();
 // Controls whether the Device Trust Connector flow is enabled on Android.
 BASE_DECLARE_FEATURE(kDeviceTrustConnectorAndroid);
 
-// Returns true if the Device Trust Connector is enabled on Android. Always
-// returns false on desktop form factors, where it is not supported yet.
+// Controls whether the Device Trust Connector can run on desktop form factors.
+// Only checked on desktop form factors, and only has an effect when
+// `kDeviceTrustConnectorAndroid` is also enabled.
+BASE_DECLARE_FEATURE(kDeviceTrustConnectorDesktopFormFactors);
+
+// Returns true if the Device Trust Connector is enabled on Android. On desktop
+// form factors, `kDeviceTrustConnectorDesktopFormFactors` must be enabled too.
 bool IsDeviceTrustConnectorAndroidEnabled();
 
 // Controls whether the Device Trust Connector on Android binds challenge

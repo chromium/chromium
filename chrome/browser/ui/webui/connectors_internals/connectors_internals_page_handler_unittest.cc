@@ -53,9 +53,10 @@ class ConnectorsInternalsPageHandlerTest : public testing::Test {
 
   void SetUp() override {
 #if BUILDFLAG(IS_ANDROID)
-    // IsDeviceTrustConnectorAndroidEnabled() returns false on desktop form
-    // factors. Pin a non-desktop form factor so that these tests behave the
-    // same on all Android devices.
+    // `IsDeviceTrustConnectorAndroidEnabled()` also depends on
+    // `kDeviceTrustConnectorDesktopFormFactors` on desktop form factors. Pin a
+    // non-desktop form factor so that these tests behave the same on all
+    // Android devices.
     base::android::device_info::set_is_desktop_for_testing(false);
 #endif  // BUILDFLAG(IS_ANDROID)
 
