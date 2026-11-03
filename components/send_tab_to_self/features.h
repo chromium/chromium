@@ -43,6 +43,12 @@ BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2);
 // states instead of a single command item.
 BASE_DECLARE_FEATURE(kSendTabToSelfSubmenuSigninPromos);
 
+// If this feature is enabled, Send Tab to Self promo bubbles on desktop
+// (sign-in, reauth, and no-target-device) anchor to the profile pill and stay
+// open across tab navigations instead of popping out and anchoring to the
+// Send Tab to Self toolbar icon.
+BASE_DECLARE_FEATURE(kSendTabToSelfAnchorPromosToProfilePill);
+
 // If this feature is enabled, multi-tab sharing via Send Tab to Self is
 // supported.
 BASE_DECLARE_FEATURE(kSendTabToSelfMultiTabShare);

@@ -43,6 +43,9 @@ BASE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2,
 BASE_FEATURE(kSendTabToSelfSubmenuSigninPromos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendTabToSelfAnchorPromosToProfilePill,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSendTabToSelfMultiTabShare, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
