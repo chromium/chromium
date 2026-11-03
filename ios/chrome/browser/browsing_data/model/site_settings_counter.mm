@@ -17,11 +17,15 @@
 #import "components/content_settings/core/browser/website_settings_info.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
+#import "components/translate/core/browser/translate_prefs.h"
 
 SiteSettingsCounter::SiteSettingsCounter(
-    scoped_refptr<HostContentSettingsMap> host_content_settings_map)
-    : host_content_settings_map_(std::move(host_content_settings_map)) {
+    scoped_refptr<HostContentSettingsMap> host_content_settings_map,
+    PrefService* pref_service)
+    : host_content_settings_map_(std::move(host_content_settings_map)),
+      pref_service_(pref_service) {
   CHECK(host_content_settings_map_);
+  CHECK(pref_service_);
 }
 
 SiteSettingsCounter::~SiteSettingsCounter() = default;
@@ -66,6 +70,12 @@ void SiteSettingsCounter::Count() {
         hosts.insert(host);
       }
     }
+  }
+
+  for (const std::string& site :
+       translate::TranslatePrefs(pref_service_)
+           .GetNeverPromptSitesBetween(period_start, period_end)) {
+    hosts.insert(site);
   }
 
   ReportResult(static_cast<ResultInt>(hosts.size()) + empty_host_pattern_count);

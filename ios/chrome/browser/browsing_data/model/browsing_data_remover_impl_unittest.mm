@@ -9,21 +9,24 @@
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/json/values_util.h"
 #import "base/run_loop.h"
 #import "base/scoped_observation.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
+#import "components/prefs/scoped_user_pref_update.h"
+#import "components/translate/core/browser/translate_pref_names.h"
+#import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -62,6 +65,10 @@ const char kOldSiteURL[] = "https://old.example.com";
 
 // Age of a site settings exception that falls outside of the last hour.
 constexpr base::TimeDelta kOldSiteSettingAge = base::Days(2);
+
+// Hosts used for "never translate" entries.
+const char kRecentNeverTranslateSite[] = "recent.example.com";
+const char kOldNeverTranslateSite[] = "old.example.com";
 
 // Observer used to validate that BrowsingDataRemoverImpl notifies its
 // observers.
@@ -140,6 +147,20 @@ class BrowsingDataRemoverImplTest : public PlatformTest {
   ContentSetting GetCameraSetting(const GURL& url) {
     return GetHostContentSettingsMap()->GetContentSetting(
         url, url, ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+
+  // Returns the `TranslatePrefs` of `profile_`.
+  std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() {
+    return ChromeIOSTranslateClient::CreateTranslatePrefs(profile_->GetPrefs());
+  }
+
+  // Adds `site` to the "never translate" list, recorded as added at
+  // `added_time`. Writes the pref directly because
+  // `TranslatePrefs::AddSiteToNeverPromptList()` always uses the current time.
+  void AddNeverTranslateSite(std::string_view site, base::Time added_time) {
+    ScopedDictPrefUpdate update(
+        profile_->GetPrefs(), translate::prefs::kPrefNeverPromptSitesWithTime);
+    update->Set(site, base::TimeToValue(added_time));
   }
 
   // Removes `mask` for `time_period` and waits for the removal to complete.
@@ -329,7 +350,6 @@ TEST_F(BrowsingDataRemoverImplTest,
 
 // Tests that site settings are removed for all time when requested.
 TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettings) {
-  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
   const GURL recent_url(kRecentSiteURL);
   const GURL old_url(kOldSiteURL);
   const base::Time now = base::Time::Now();
@@ -346,7 +366,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettings) {
 // Tests that only site settings modified within the deletion period are
 // removed.
 TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettingsInTimePeriod) {
-  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
   const GURL recent_url(kRecentSiteURL);
   const GURL old_url(kOldSiteURL);
   const base::Time now = base::Time::Now();
@@ -362,7 +381,6 @@ TEST_F(BrowsingDataRemoverImplTest, RemovesSiteSettingsInTimePeriod) {
 
 // Tests that site settings are kept when they are not part of the removal mask.
 TEST_F(BrowsingDataRemoverImplTest, KeepsSiteSettingsWhenNotRequested) {
-  base::test::ScopedFeatureList feature_list(kDomainLevelSitePermissions);
   const GURL url(kRecentSiteURL);
   SetCameraSetting(url, CONTENT_SETTING_ALLOW, base::Time::Now());
 
@@ -371,16 +389,19 @@ TEST_F(BrowsingDataRemoverImplTest, KeepsSiteSettingsWhenNotRequested) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCameraSetting(url));
 }
 
-// Tests that site settings are kept when the domain-level site permissions
-// feature is disabled.
-TEST_F(BrowsingDataRemoverImplTest, KeepsSiteSettingsWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
-  const GURL url(kRecentSiteURL);
-  SetCameraSetting(url, CONTENT_SETTING_ALLOW, base::Time::Now());
+// Tests that "never translate" sites added within the deletion period are
+// removed with site settings.
+TEST_F(BrowsingDataRemoverImplTest, RemovesNeverTranslateSitesInTimePeriod) {
+  const base::Time now = base::Time::Now();
+  AddNeverTranslateSite(kRecentNeverTranslateSite, now);
+  AddNeverTranslateSite(kOldNeverTranslateSite, now - kOldSiteSettingAge);
 
-  RemoveAndWait(browsing_data::TimePeriod::ALL_TIME,
+  RemoveAndWait(browsing_data::TimePeriod::LAST_HOUR,
                 BrowsingDataRemoveMask::REMOVE_SITE_SETTINGS);
 
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCameraSetting(url));
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      GetTranslatePrefs();
+  EXPECT_FALSE(
+      translate_prefs->IsSiteOnNeverPromptList(kRecentNeverTranslateSite));
+  EXPECT_TRUE(translate_prefs->IsSiteOnNeverPromptList(kOldNeverTranslateSite));
 }

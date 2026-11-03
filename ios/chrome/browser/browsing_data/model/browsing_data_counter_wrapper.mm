@@ -72,7 +72,8 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
 
   if (pref_name == browsing_data::prefs::kDeleteSiteSettings) {
     return std::make_unique<SiteSettingsCounter>(
-        ios::HostContentSettingsMapFactory::GetForProfile(profile));
+        ios::HostContentSettingsMapFactory::GetForProfile(profile),
+        profile->GetPrefs());
   }
 
   if (pref_name == browsing_data::prefs::kCloseTabs) {
