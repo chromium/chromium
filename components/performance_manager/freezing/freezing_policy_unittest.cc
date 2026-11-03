@@ -48,6 +48,7 @@ namespace performance_manager {
 namespace {
 
 using FreezingType = FreezingPolicy::FreezingType;
+using InfiniteTabFreezingStatus = FreezingPolicy::InfiniteTabFreezingStatus;
 using freezing::CannotFreezeReason;
 using freezing::CannotFreezeReasonSet;
 using ::testing::ElementsAre;
@@ -2060,72 +2061,6 @@ class FreezingPolicyPeriodicUnfreezeDisabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests with only the memory-pressure-gated Infinite Tabs feature enabled.
-class FreezingPolicyInfiniteTabsMemoryPressureTest
-    : public FreezingPolicyPeriodicUnfreezeTestBase {
- protected:
-  FreezingPolicyInfiniteTabsMemoryPressureTest() {
-    // Keep the Windows-only automatic memory check from overriding pressure
-    // transitions injected by this fixture.
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kInfiniteTabsFreezingOnMemoryPressure,
-          {{features::kInfiniteTabsFreezingOnMemoryPressureInterval.name,
-            "1d"}}}},
-        {features::kInfiniteTabsFreezing});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class FreezingPolicyInfiniteTabsBothFeaturesTest
-    : public FreezingPolicyPeriodicUnfreezeTestBase {
- protected:
-  FreezingPolicyInfiniteTabsBothFeaturesTest() {
-    feature_list_.InitWithFeatures(
-        {features::kInfiniteTabsFreezing,
-         features::kInfiniteTabsFreezingOnMemoryPressure},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests with Infinite Tabs on memory pressure and critical pressure suppression
-// enabled.
-class FreezingPolicyCriticalMemoryPressureTest
-    : public FreezingPolicyPeriodicUnfreezeTestBase {
- protected:
-  FreezingPolicyCriticalMemoryPressureTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kInfiniteTabsFreezingOnMemoryPressure,
-          {{features::kInfiniteTabsFreezingOnMemoryPressureInterval.name,
-            "1d"}}},
-         {features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure, {}}},
-        {features::kInfiniteTabsFreezing});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests with always-active Infinite Tabs and critical pressure suppression
-// enabled.
-class FreezingPolicyAmbientInfiniteTabsCriticalPressureTest
-    : public FreezingPolicyPeriodicUnfreezeTestBase {
- protected:
-  FreezingPolicyAmbientInfiniteTabsCriticalPressureTest() {
-    feature_list_.InitWithFeatures(
-        {features::kInfiniteTabsFreezing,
-         features::kDisablePeriodicUnfreezeOnCriticalMemoryPressure},
-        {features::kInfiniteTabsFreezingOnMemoryPressure});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 }  // namespace
 
 TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest, TimerIsNotStarted) {
@@ -2140,7 +2075,7 @@ TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest, TimerIsNotStarted) {
   VerifyFreezerExpectations();
 }
 
-TEST_F(FreezingPolicyInfiniteTabsMemoryPressureTest, PressureTransitions) {
+TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest, StatusTransitions) {
   auto [page, frame] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   ASSERT_FALSE(page->IsVisible());
@@ -2149,21 +2084,24 @@ TEST_F(FreezingPolicyInfiniteTabsMemoryPressureTest, PressureTransitions) {
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  policy()->SetIsUnderMemoryPressureForTesting(true);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   VerifyFreezerExpectations();
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->SetIsUnderMemoryPressureForTesting(false);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kInactive);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
-  // Enter pressure at the beginning of an unfreeze period. The page should
+  // Become active at the beginning of an unfreeze period. The page should
   // remain unfrozen until the end of the window.
   AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
-  policy()->SetIsUnderMemoryPressureForTesting(true);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
@@ -2174,35 +2112,15 @@ TEST_F(FreezingPolicyInfiniteTabsMemoryPressureTest, PressureTransitions) {
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->SetIsUnderMemoryPressureForTesting(false);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kInactive);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 }
 
-TEST_F(FreezingPolicyInfiniteTabsMemoryPressureTest,
-       CriticalPressureWithoutFeatureFlagKeepsTimerRunning) {
-  auto [page, frame] =
-      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
-  ASSERT_FALSE(page->IsVisible());
-
-  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  VerifyFreezerExpectations();
-  EXPECT_TRUE(
-      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-
-  EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE);
-  VerifyFreezerExpectations();
-  EXPECT_FALSE(
-      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-}
-
-TEST_F(FreezingPolicyCriticalMemoryPressureTest,
-       CriticalPressureStopsTimerAndSuppressesUnfreeze) {
+TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest,
+       ActiveWithoutPeriodicUnfreezingStopsTimerAndSuppressesUnfreeze) {
   auto [page, frame] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   ASSERT_FALSE(page->IsVisible());
@@ -2211,22 +2129,22 @@ TEST_F(FreezingPolicyCriticalMemoryPressureTest,
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   VerifyFreezerExpectations();
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithoutPeriodicUnfreezing);
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() * 2);
   VerifyFreezerExpectations();
 
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
@@ -2239,31 +2157,31 @@ TEST_F(FreezingPolicyCriticalMemoryPressureTest,
   VerifyFreezerExpectations();
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(pages_[0].get()));
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kInactive);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 }
 
-TEST_F(FreezingPolicyCriticalMemoryPressureTest,
-       CriticalPressureImmediatelyRefreezesUnfrozenPage) {
+TEST_F(FreezingPolicyPeriodicUnfreezeDisabledTest,
+       ActiveWithoutPeriodicUnfreezingImmediatelyRefreezesUnfrozenPage) {
   auto [page, frame] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
   ASSERT_FALSE(page->IsVisible());
 
-  // Enter moderate pressure at the start of an unfreeze period so the page
-  // starts in an unfrozen state.
+  // Enter kActiveWithPeriodicUnfreezing at the start of an unfreeze period so
+  // the page starts in an unfrozen state.
   AdvanceToAlignedTime(features::kInfiniteTabsFreezing_UnfreezeInterval.Get());
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
   VerifyFreezerExpectations();
 
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithoutPeriodicUnfreezing);
   VerifyFreezerExpectations();
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
@@ -2272,8 +2190,8 @@ TEST_F(FreezingPolicyCriticalMemoryPressureTest,
   VerifyFreezerExpectations();
 }
 
-TEST_F(FreezingPolicyAmbientInfiniteTabsCriticalPressureTest,
-       CriticalPressureSuppressesAmbientPeriodicUnfreeze) {
+TEST_F(FreezingPolicyInfiniteTabsTest,
+       ActiveWithoutPeriodicUnfreezingSuppressesAmbientPeriodicUnfreeze) {
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   auto [page, frame] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
@@ -2283,50 +2201,18 @@ TEST_F(FreezingPolicyAmbientInfiniteTabsCriticalPressureTest,
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithoutPeriodicUnfreezing);
   EXPECT_FALSE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
 
   AdvanceClock(features::kInfiniteTabsFreezing_UnfreezeInterval.Get() * 2);
   VerifyFreezerExpectations();
 
-  policy()->SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE);
+  policy()->SetInfiniteTabFreezingStatusForTesting(
+      InfiniteTabFreezingStatus::kActiveWithPeriodicUnfreezing);
   EXPECT_TRUE(
       policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-}
-
-TEST_F(FreezingPolicyInfiniteTabsBothFeaturesTest,
-       TimerRemainsRunningAcrossPressureTransitions) {
-  EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
-  auto [page, frame] =
-      CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
-  ASSERT_FALSE(page->IsVisible());
-  VerifyFreezerExpectations();
-
-  // A page that never had a reason change doesn't have a timer. Pressure
-  // transitions shouldn't start one because the always-active feature already
-  // controls periodic unfreezing.
-  auto page_without_timer = CreateNode<PageNodeImpl>(
-      /*web_contents=*/nullptr,
-      /*browsing_context_id=*/base::UnguessableToken());
-
-  EXPECT_TRUE(
-      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
-      page_without_timer.get()));
-  policy()->SetIsUnderMemoryPressureForTesting(true);
-  EXPECT_TRUE(
-      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
-      page_without_timer.get()));
-  policy()->SetIsUnderMemoryPressureForTesting(false);
-  EXPECT_TRUE(
-      policy()->IsPeriodicUnfreezeTimerRunningForTesting(pages_[0].get()));
-  EXPECT_FALSE(policy()->IsPeriodicUnfreezeTimerRunningForTesting(
-      page_without_timer.get()));
-  VerifyFreezerExpectations();
 }
 
 // Verify that under "Infinite Tabs Freezing", tabs are frozen if not in the

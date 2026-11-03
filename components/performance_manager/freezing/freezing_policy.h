@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_level.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
@@ -73,6 +72,12 @@ class FreezingPolicy : public PageNodeObserver,
   using FreezingTypeSet = base::
       EnumSet<FreezingType, FreezingType::kVoting, FreezingType::kInfiniteTabs>;
 
+  enum class InfiniteTabFreezingStatus {
+    kInactive,
+    kActiveWithPeriodicUnfreezing,
+    kActiveWithoutPeriodicUnfreezing,
+  };
+
   explicit FreezingPolicy(
       std::unique_ptr<freezing::Discarder> discarder,
       std::unique_ptr<freezing::OptOutChecker> opt_out_checker = nullptr);
@@ -88,10 +93,8 @@ class FreezingPolicy : public PageNodeObserver,
   bool IsPeriodicUnfreezeTimerRunningForTesting(
       const PageNode* page_node) const;
 
-  // Updates the memory pressure level for testing.
-  void SetIsUnderMemoryPressureForTesting(bool is_under_memory_pressure);
-  void SetMemoryPressureLevelForTesting(
-      base::MemoryPressureLevel memory_pressure_level);
+  // Updates the infinite-tab freezing status for testing.
+  void SetInfiniteTabFreezingStatusForTesting(InfiniteTabFreezingStatus status);
 
   // Invoked freezing on battery saver is enabled or disabled.
   void ToggleFreezingOnBatterySaverMode(bool is_enabled);
@@ -309,9 +312,9 @@ class FreezingPolicy : public PageNodeObserver,
   // policy-wide re-evaluation of page freezing.
   void CheckMemoryPressureForFreezing();
 
-  // Updates the cached memory pressure state and reconciles policy state.
-  void OnMemoryPressureStateChanged(
-      base::MemoryPressureLevel memory_pressure_level);
+  // Updates the cached infinite-tab freezing status and reconciles policy
+  // state.
+  void SetInfiniteTabFreezingStatus(InfiniteTabFreezingStatus status);
 
   // Triggers a re-evaluation of the frozen state for all pages in the graph.
   void UpdateAllPagesFrozenState(base::LiveTicks now);
@@ -361,9 +364,8 @@ class FreezingPolicy : public PageNodeObserver,
   // Timer to periodically check system memory.
   base::RepeatingTimer memory_check_timer_;
 
-  // Current memory pressure level of the system.
-  base::MemoryPressureLevel memory_pressure_level_ =
-      base::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  // Current status of infinite-tabs freezing.
+  InfiniteTabFreezingStatus infinite_tab_freezing_status_;
 
   base::WeakPtrFactory<FreezingPolicy> weak_factory_{this};
 };
