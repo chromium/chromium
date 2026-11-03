@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.core.graphics.Insets;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
@@ -33,7 +35,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -259,7 +260,8 @@ class FuseboxPopup {
         mPinnedSectionBottomDivider =
                 contentView.findViewById(R.id.fusebox_pinned_section_bottom_divider);
 
-        initializeItem(mAddCurrentTab, R.string.fusebox_add_tab, 0, 0);
+        initializeItem(
+                mAddCurrentTab, R.string.fusebox_add_tab, Resources.ID_NULL, Resources.ID_NULL);
         initializeItem(
                 mTabButton,
                 R.string.omnibox_navattach_tabs,
@@ -267,36 +269,30 @@ class FuseboxPopup {
                 R.string.accessibility_omnibox_add_tabs);
         initializeItem(
                 mCameraButton,
-                R.string.photo_picker_camera,
+                Resources.ID_NULL,
                 R.drawable.photo_camera_24dp,
                 R.string.accessibility_omnibox_add_camera_picture);
         initializeItem(
                 mGalleryButton,
-                OmniboxCapabilities.isDesktopPlatform()
-                        ? R.string.omnibox_navattach_add_images
-                        : R.string.omnibox_navattach_gallery,
+                Resources.ID_NULL,
                 R.drawable.add_photo_alternate_24dp,
                 R.string.accessibility_omnibox_add_images);
         initializeItem(
                 mFileButton,
-                OmniboxCapabilities.isDesktopPlatform()
-                        ? R.string.omnibox_navattach_add_files
-                        : R.string.omnibox_navattach_files,
+                Resources.ID_NULL,
                 isBottomSheet && currentTabPlacement != CurrentTabPlacement.WITH_ATTACHMENTS
                         ? R.drawable.ic_folder_24dp
                         : R.drawable.ic_attach_file_24dp,
                 R.string.accessibility_omnibox_add_files);
         initializeItem(
                 mDriveButton,
-                OmniboxCapabilities.isDesktopPlatform()
-                        ? R.string.ntp_compose_add_drive
-                        : R.string.omnibox_navattach_drive,
+                Resources.ID_NULL,
                 R.drawable.gs_drive_vd_theme_24,
                 R.string.accessibility_omnibox_add_from_drive);
         initializeItem(
                 mMoreOptionsButton,
                 R.string.fusebox_more_options,
-                0,
+                Resources.ID_NULL,
                 R.string.fusebox_more_options);
         ImageView startIcon = mMoreOptionsButton.findViewById(R.id.start_icon);
         startIcon.setVisibility(View.GONE);
@@ -494,16 +490,19 @@ class FuseboxPopup {
         updateDesiredWidth();
     }
 
-    private void initializeItem(View item, int textRes, int iconRes, int a11yRes) {
-        TextView actionText = item.findViewById(R.id.action_text);
-        actionText.setText(textRes);
+    private void initializeItem(
+            View item, @StringRes int textRes, @DrawableRes int iconRes, @StringRes int a11yRes) {
+        if (textRes != Resources.ID_NULL) {
+            TextView actionText = item.findViewById(R.id.action_text);
+            actionText.setText(textRes);
+        }
 
-        if (iconRes != 0) {
+        if (iconRes != Resources.ID_NULL) {
             ImageView actionIcon = item.findViewById(R.id.start_icon);
             actionIcon.setImageResource(iconRes);
         }
 
-        if (a11yRes != 0) {
+        if (a11yRes != Resources.ID_NULL) {
             item.setContentDescription(item.getContext().getString(a11yRes));
         }
     }

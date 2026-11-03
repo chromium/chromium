@@ -604,6 +604,53 @@ public class FuseboxMediatorUnitTest {
                 .checkConsentStatus(any(), any());
     }
 
+    private void recreateMediatorWithDriveAndPdfAllowed() {
+        doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
+        recreateMediator();
+        setInputState(
+                new InputStateBuilder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .build());
+    }
+
+    private static InputTypeConfig createLabelConfig(InputSource source, String label) {
+        return InputTypeConfig.newBuilder().setInputSource(source).setMenuLabel(label).build();
+    }
+
+    private void setCustomAttachmentLabelsInputState() {
+        setInputState(
+                new InputStateBuilder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withInputTypeConfigs(
+                                createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_FILE_PICKER, "Docs"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_DRIVE, "Cloud Drive")));
+    }
+
+    private void swapToFreshSessionWithNullInputState() {
+        mMediator.endInput();
+        doReturn(ObservableSuppliers.createMonotonic())
+                .when(mComposeboxQueryControllerBridge)
+                .getInputStateSupplier();
+        mMediator.beginInput(mSession);
+    }
+
+    private void assertDefaultPhoneAttachmentLabels() {
+        assertEquals(
+                mContext.getString(R.string.photo_picker_camera),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT));
+        assertEquals(
+                mContext.getString(R.string.omnibox_navattach_gallery),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT));
+        assertEquals(
+                mContext.getString(R.string.omnibox_navattach_files),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_TEXT));
+        assertEquals(
+                mContext.getString(R.string.omnibox_navattach_drive),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
+    }
+
     @Test
     public void testDestroy() {
         mAttachments = mFuseboxAttachmentModelList;
@@ -3420,5 +3467,167 @@ public class FuseboxMediatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabLoadingService).queueLoadIfNeeded(cancelledTab);
+    }
+
+    @Test
+    public void attachmentLabels_usesInputStateConfigs() {
+        doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
+        recreateMediator();
+        setInputState(
+                createDefaultInputStateBuilder()
+                        .withAllowedInputTypes(
+                                InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
+                                InputType.INPUT_TYPE_LENS_FILE_VALUE,
+                                InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withInputTypeConfigs(
+                                createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_FILE_PICKER, "Docs"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_DRIVE, "Cloud Drive")));
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertEquals("Snap photo", mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT));
+        assertEquals("Photos", mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT));
+        assertEquals("Docs", mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_TEXT));
+        assertEquals("Cloud Drive", mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_fallsBackOnPhoneForVisibleButtons() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
+                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertDefaultPhoneAttachmentLabels();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_sessionSwapUpdatesFileVisibilityBeforeFallback() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        setInputState(
+                new InputStateBuilder()
+                        .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withInputTypeConfigs(
+                                createLabelConfig(InputSource.INPUT_SOURCE_CAMERA, "Snap photo"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_GALLERY, "Photos"),
+                                createLabelConfig(InputSource.INPUT_SOURCE_DRIVE, "Cloud Drive"))
+                        .build());
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        doReturn(false).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM)
+                        .build();
+
+        mMediator.beginInput(mSession);
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_fallsBackOnDesktopAndSkipsHiddenButtons() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        recreateMediatorWithDriveAndPdfAllowed();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
+                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertEquals(
+                mContext.getString(R.string.photo_picker_camera),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT));
+        assertEquals(
+                mContext.getString(R.string.omnibox_navattach_add_images),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT));
+        assertEquals(
+                mContext.getString(R.string.omnibox_navattach_add_files),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_TEXT));
+        assertEquals(
+                mContext.getString(R.string.ntp_compose_add_drive),
+                mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_nullInputStateAfterSessionSwapResetsToDefaults() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        setCustomAttachmentLabelsInputState();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        swapToFreshSessionWithNullInputState();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).isEmpty());
+        assertDefaultPhoneAttachmentLabels();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_fakeboxPlusTapRecordsFallbackOnce() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        mMediator.endInput();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
+                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                        .build();
+
+        mMediator.beginInput(mSession);
+
+        assertNotEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
+        assertDefaultPhoneAttachmentLabels();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentLabels_requestTypeChangeWhilePopupOpenDoesNotReemitFallback() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM)
+                        .build();
+
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+
+        watcher.assertExpected();
     }
 }

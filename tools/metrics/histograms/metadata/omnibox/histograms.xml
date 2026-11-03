@@ -2931,6 +2931,27 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentLabelFallback"
+    enum="OmniboxInputSource" expires_after="2027-04-28">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the attachment source (Camera, Gallery, FilePicker, or Drive) of a
+    visible button in the Fusebox attachments popup when its label falls back to
+    a built-in client string because no server-provided attachment configuration
+    or non-empty menu label was available.
+
+    Not emitted when the server configuration provides a non-empty label for the
+    button, when the button is hidden in the popup, while the popup remains
+    closed, or for other OmniboxInputSource values (such as TabPicker, Voice, or
+    SearchLive) whose labels are not resolved through this path.
+
+    Emitted once per evaluated visible attachment button using a client fallback
+    label each time the Fusebox attachments popup is shown, and again if the
+    session input configuration updates while the popup is open.
+  </summary>
+</histogram>
+
 <histogram
     name="Omnibox.MobileFusebox.AttachmentLoadOOM{FuseboxAttachmentFileType}"
     enum="Boolean" expires_after="2027-03-30">

@@ -509,6 +509,24 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void attachmentButtonsText_setsText() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT, "Snap photo");
+        mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT, "Photos");
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_TEXT, "Documents");
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT, "Cloud Drive");
+
+        TextView cameraText = mPopup.mCameraButton.findViewById(R.id.action_text);
+        TextView galleryText = mPopup.mGalleryButton.findViewById(R.id.action_text);
+        TextView fileText = mPopup.mFileButton.findViewById(R.id.action_text);
+        TextView driveText = mPopup.mDriveButton.findViewById(R.id.action_text);
+
+        assertEquals("Snap photo", cameraText.getText());
+        assertEquals("Photos", galleryText.getText());
+        assertEquals("Documents", fileText.getText());
+        assertEquals("Cloud Drive", driveText.getText());
+    }
+
+    @Test
     public void addCurrentTabButton() {
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());

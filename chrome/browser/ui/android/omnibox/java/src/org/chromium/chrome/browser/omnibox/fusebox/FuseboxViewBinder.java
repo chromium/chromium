@@ -114,6 +114,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED) {
             view.popup.mCameraButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT) {
+            getViewHolder(view.popup.mCameraButton)
+                    .mActionText
+                    .setText(model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, view.popup.mCameraButton);
@@ -135,6 +139,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED) {
             view.popup.mDriveButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT) {
+            getViewHolder(view.popup.mDriveButton)
+                    .mActionText
+                    .setText(model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE, view.popup.mDriveButton);
@@ -144,6 +152,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_ENABLED) {
             view.popup.mFileButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_TEXT) {
+            getViewHolder(view.popup.mFileButton)
+                    .mActionText
+                    .setText(model.get(FuseboxProperties.POPUP_ATTACH_FILE_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, view.popup.mFileButton);
@@ -153,6 +165,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED) {
             view.popup.mGalleryButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT) {
+            getViewHolder(view.popup.mGalleryButton)
+                    .mActionText
+                    .setText(model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE) {
             updateButtonVisibility(
                     model,

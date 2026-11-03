@@ -470,6 +470,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/omnibox/browser/geolocation_header_service.h:OmniboxInlineLocationSuggestionShown) -->
 
+<!-- LINT.IfChange(OmniboxInputSource) -->
+
+<enum name="OmniboxInputSource">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Gallery"/>
+  <int value="2" label="Camera"/>
+  <int value="3" label="FilePicker"/>
+  <int value="4" label="Drive"/>
+  <int value="5" label="TabPicker"/>
+  <int value="6" label="Voice"/>
+  <int value="7" label="SearchLive"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:InputSource) -->
+
 <!-- LINT.IfChange(OmniboxModelMode) -->
 
 <enum name="OmniboxModelMode">

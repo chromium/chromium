@@ -113,6 +113,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CAMERA_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The text label for the Camera button in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_ATTACH_CAMERA_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the Camera button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CAMERA_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -147,6 +151,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_DRIVE_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The text label for the Drive button in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_ATTACH_DRIVE_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the Drive button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_DRIVE_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -159,6 +167,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_FILE_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The text label for the File button in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_ATTACH_FILE_TEXT =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the File button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_FILE_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -170,6 +182,10 @@ class FuseboxProperties {
     /** Whether the Gallery button in the popup is enabled. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_GALLERY_ENABLED =
             new WritableBooleanPropertyKey();
+
+    /** The text label for the Gallery button in the popup. */
+    public static final WritableObjectPropertyKey<String> POPUP_ATTACH_GALLERY_TEXT =
+            new WritableObjectPropertyKey<>();
 
     /** Whether the Gallery button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_GALLERY_VISIBLE =
@@ -307,6 +323,7 @@ class FuseboxProperties {
         POPUP_ATTACHMENTS_HEADER_VISIBLE,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
+        POPUP_ATTACH_CAMERA_TEXT,
         POPUP_ATTACH_CAMERA_VISIBLE,
         POPUP_ATTACH_CURRENT_TAB_CLICKED,
         POPUP_ATTACH_CURRENT_TAB_ENABLED,
@@ -314,12 +331,15 @@ class FuseboxProperties {
         POPUP_ATTACH_CURRENT_TAB_VISIBLE,
         POPUP_ATTACH_DRIVE_CLICKED,
         POPUP_ATTACH_DRIVE_ENABLED,
+        POPUP_ATTACH_DRIVE_TEXT,
         POPUP_ATTACH_DRIVE_VISIBLE,
         POPUP_ATTACH_FILE_CLICKED,
         POPUP_ATTACH_FILE_ENABLED,
+        POPUP_ATTACH_FILE_TEXT,
         POPUP_ATTACH_FILE_VISIBLE,
         POPUP_ATTACH_GALLERY_CLICKED,
         POPUP_ATTACH_GALLERY_ENABLED,
+        POPUP_ATTACH_GALLERY_TEXT,
         POPUP_ATTACH_GALLERY_VISIBLE,
         POPUP_ATTACH_TAB_PICKER_CLICKED,
         POPUP_ATTACH_TAB_PICKER_ENABLED,

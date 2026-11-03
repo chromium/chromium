@@ -23,6 +23,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -93,6 +94,10 @@ public class FuseboxMetrics {
     private static final String ATTACHMENT_TYPE_AT_SUBMISSION_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentTypeAtSubmission";
 
+    @VisibleForTesting
+    static final String ATTACHMENT_LABEL_FALLBACK_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentLabelFallback";
+
     // LINT.IfChange(ToolMode)
     @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 13;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
@@ -100,6 +105,11 @@ public class FuseboxMetrics {
     @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 18;
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxModelMode)
+
+    // LINT.IfChange(InputSource)
+    @VisibleForTesting static final int INPUT_SOURCE_HISTOGRAM_BOUND = 8;
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxInputSource)
 
     // LINT.IfChange(SetActiveModelSource)
     @IntDef({
@@ -409,6 +419,11 @@ public class FuseboxMetrics {
     static void notifyModelButtonSelected(@ModelMode int modelMode) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.MobileFusebox.ModelButtonSelected", modelMode, MODEL_MODE_HISTOGRAM_BOUND);
+    }
+
+    static void notifyAttachmentLabelFallback(@InputSource int inputSource) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ATTACHMENT_LABEL_FALLBACK_HISTOGRAM, inputSource, INPUT_SOURCE_HISTOGRAM_BOUND);
     }
 
     static void notifyAttachmentsPopupClosed(boolean itemSelected) {

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
+import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
@@ -272,5 +274,31 @@ public class InputStateTest {
         assertEquals(SectionConfig.getDefaultInstance(), state.getToolsSectionConfig());
         assertTrue(state.getModelConfigs().isEmpty());
         assertEquals(SectionConfig.getDefaultInstance(), state.getModelSectionConfig());
+    }
+
+    @Test
+    public void testGetInputTypeConfig() {
+        InputTypeConfig galleryConfig =
+                InputTypeConfig.newBuilder()
+                        .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                        .setInputSourceValue(InputSource.INPUT_SOURCE_GALLERY)
+                        .setMenuLabel("Gallery")
+                        .build();
+        InputTypeConfig cameraConfig =
+                InputTypeConfig.newBuilder()
+                        .setInputType(InputType.INPUT_TYPE_LENS_IMAGE)
+                        .setInputSourceValue(InputSource.INPUT_SOURCE_CAMERA)
+                        .setMenuLabel("Camera")
+                        .build();
+        InputState state =
+                new InputStateBuilder().withInputTypeConfigs(galleryConfig, cameraConfig).build();
+
+        assertEquals(galleryConfig, state.getInputTypeConfig(InputSource.INPUT_SOURCE_GALLERY));
+        assertEquals(cameraConfig, state.getInputTypeConfig(InputSource.INPUT_SOURCE_CAMERA));
+        assertNull(state.getInputTypeConfig(InputSource.INPUT_SOURCE_DRIVE));
+        assertNull(
+                new InputStateBuilder()
+                        .build()
+                        .getInputTypeConfig(InputSource.INPUT_SOURCE_GALLERY));
     }
 }

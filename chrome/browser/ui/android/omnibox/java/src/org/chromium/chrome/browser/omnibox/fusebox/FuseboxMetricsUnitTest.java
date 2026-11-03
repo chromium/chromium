@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonTy
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -161,6 +162,18 @@ public class FuseboxMetricsUnitTest {
     }
 
     @Test
+    public void testNotifyAttachmentLabelFallback() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM,
+                        InputSource.INPUT_SOURCE_DRIVE);
+
+        FuseboxMetrics.notifyAttachmentLabelFallback(InputSource.INPUT_SOURCE_DRIVE);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testToolModeHistogramBound() {
         // When this test fails, it means the proto added a new tool mode, and
         // TOOL_MODE_HISTOGRAM_BOUND needs to be updated.
@@ -172,6 +185,13 @@ public class FuseboxMetricsUnitTest {
         // When this test fails, it means the proto added a new model mode, and
         // MODEL_MODE_HISTOGRAM_BOUND needs to be updated.
         assertThat(ModelMode.MAX_VALUE).isLessThan(FuseboxMetrics.MODEL_MODE_HISTOGRAM_BOUND);
+    }
+
+    @Test
+    public void testInputSourceHistogramBound() {
+        // When this test fails, it means the proto added a new input source, and
+        // INPUT_SOURCE_HISTOGRAM_BOUND needs to be updated.
+        assertThat(InputSource.MAX_VALUE).isLessThan(FuseboxMetrics.INPUT_SOURCE_HISTOGRAM_BOUND);
     }
 
     @Test
