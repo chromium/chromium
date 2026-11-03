@@ -33,3 +33,9 @@
   border-top: 1px solid var(--cr-separator-color);
 }
 
+/* TODO(crbug.com/579395055): Move "overflow: hidden" into
+   ".multi-card > .card" in autofill_shared_lit.css and remove the duplicated
+   per-page rules. */
+.card {
+  overflow: hidden;
+}
