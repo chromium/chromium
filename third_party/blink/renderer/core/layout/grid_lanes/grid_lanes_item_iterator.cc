@@ -137,7 +137,7 @@ GridLanesItemIterator::GridLanesItemIterator(
   }
 }
 
-GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
+GridLanesItemIterator::Entry GridLanesItemIterator::NextEntry() {
   const BlockBreakToken* current_child_break_token = nullptr;
   GridLanesItemData* current_item = next_unstarted_item_;
   wtf_size_t current_lane_idx = kNotFound;
@@ -153,6 +153,10 @@ GridLanesItemIterator::Entry GridLanesItemIterator::NextItem() {
     if (child_token_idx_ < child_break_tokens.size()) {
       current_child_break_token =
           To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
+      if (current_child_break_token->InputNode().IsOutOfFlowPositioned()) {
+        // This is a resumed OOF, not a grid-lanes item.
+        return Entry(current_child_break_token);
+      }
       DCHECK(current_child_break_token);
       current_item = FindNextItem(current_child_break_token);
       CHECK(current_item);

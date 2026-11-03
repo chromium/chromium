@@ -525,8 +525,13 @@ void GridLanesLayoutAlgorithm::SetReadingFlowNodes(
             ? GridLanesItemIterator::kPreorder
             : GridLanesItemIterator::kPostorder,
         GridLanesItemIterator::kStackingAxisReadingFlow, is_for_columns);
-    for (auto entry = item_iterator.NextItem(); entry.grid_lanes_item;
-         entry = item_iterator.NextItem()) {
+    for (auto entry = item_iterator.NextEntry(); !entry.IsNull();
+         entry = item_iterator.NextEntry()) {
+      if (!entry.grid_lanes_item) {
+        // This is an out-of-flow positioned element that's resumed after a
+        // break.
+        continue;
+      }
       add_item_to_reading_flow_nodes(*entry.grid_lanes_item->item);
     }
   }
@@ -1057,9 +1062,19 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
 
   wtf_size_t previous_grid_lane_idx = kNotFound;
 
-  for (auto entry = item_iterator.NextItem();
-       const GridLanesItemData* grid_lanes_item = entry.grid_lanes_item;
-       entry = item_iterator.NextItem()) {
+  for (auto entry = item_iterator.NextEntry(); !entry.IsNull();
+       entry = item_iterator.NextEntry()) {
+    if (entry.token && entry.token->InputNode().IsOutOfFlowPositioned()) {
+      // Resumed OOFs are found directly under the grid-lanes container, but
+      // they are obviously not grid-lanes items. Make sure that OOFs get
+      // handled in the out-of-flow pass that takes place after in-flow layout.
+      container_builder_.AddOutOfFlowChildCandidate(
+          entry.token->InputNode(), LogicalStaticPosition(), entry.token);
+      continue;
+    }
+
+    const GridLanesItemData* grid_lanes_item = entry.grid_lanes_item;
+    CHECK(grid_lanes_item);
     const wtf_size_t grid_lane_idx = entry.grid_lane_idx;
 
     CHECK_LT(grid_lane_idx, grid_lanes.size());
@@ -1364,7 +1379,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
   }
 
   if (!container_builder_.HasInflowChildBreakInside() &&
-      !item_iterator.NextItem().grid_lanes_item) {
+      !item_iterator.NextEntry().grid_lanes_item) {
     container_builder_.SetHasSeenAllChildren();
   }
 

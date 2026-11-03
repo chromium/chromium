@@ -61,7 +61,7 @@ class CORE_EXPORT GridLanesItemIterator {
   // TODO(almaher): Similar to flex, we will likely need the break before row
   // state here for row containers.
   struct Entry;
-  Entry NextItem();
+  Entry NextEntry();
 
   bool HasMoreBreakTokens() const { return break_token_; }
 
@@ -161,12 +161,15 @@ struct GridLanesItemIterator::Entry {
         grid_lane_idx(grid_lane_idx),
         is_last_item_in_lane(is_last_item_in_lane),
         token(token) {}
+  // Constructor for resumed OOF.
+  explicit Entry(const BlockBreakToken* token) : token(token) {}
 
   GridLanesItemData* grid_lanes_item = nullptr;
   wtf_size_t grid_lane_idx = kNotFound;
   bool is_last_item_in_lane = false;
   const BlockBreakToken* token = nullptr;
 
+  bool IsNull() const { return !grid_lanes_item && !token; }
   bool operator==(const GridLanesItemIterator::Entry& other) const {
     return grid_lanes_item == other.grid_lanes_item &&
            grid_lane_idx == other.grid_lane_idx &&
