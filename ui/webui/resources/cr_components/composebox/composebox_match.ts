@@ -4,7 +4,7 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {getUrlForCss} from '//resources/js/icon.js';
+import {getUrlForCss, resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -192,7 +192,9 @@ export class ComposeboxMatchElement extends CrLitElement {
       return '';
     }
     const src = computeImageUrl(this.match.suggestTemplate.image?.url);
-    return src ? `background-image: ${getUrlForCss(src)};` : '';
+    return src ?
+        `background-image: ${getUrlForCss(resolveSchemeRelativeUrl(src))};` :
+        '';
   }
 
   private onMatchFocusin_() {

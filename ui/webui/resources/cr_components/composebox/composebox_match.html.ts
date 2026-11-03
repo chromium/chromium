@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ComposeboxMatchElement} from './composebox_match.js';
@@ -14,7 +15,8 @@ export function getHtml(this: ComposeboxMatchElement) {
   <div id="focusIndicator" part="match-focus-indicator"></div>
   <div id="iconContainer" part="match-icon-container">
     <div id="icon" part="match-icon"
-        style="-webkit-mask-image: url(${this.iconPath_()});">
+        style="-webkit-mask-image: url(${
+            resolveSchemeRelativeUrl(this.iconPath_())});">
     </div>
   </div>
   <div id="textContainer" part="match-text-container">

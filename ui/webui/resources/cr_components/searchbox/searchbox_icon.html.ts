@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxIconElement} from './searchbox_icon.js';
@@ -11,7 +12,8 @@ export function getHtml(this: SearchboxIconElement) {
   return html`<!--_html_template_start_-->
 <div id="container" aria-hidden="true"
     style="--container-bg-color:${this.getContainerBgColor_()};">
-  <img id="image" alt="" src="${this.imageSrc_}" ?hidden="${!this.showImage_}"
+  <img id="image" alt="" ?hidden="${!this.showImage_}"
+      src="${resolveSchemeRelativeUrl(this.imageSrc_)}"
       @load="${this.onImageLoad_}" @error="${this.onImageError_}">
 
   <div ?hidden="${this.showIconImg_}">
@@ -20,14 +22,16 @@ export function getHtml(this: SearchboxIconElement) {
     </div>
     <div id="faviconImageContainer"
         ?hidden="${!this.showFaviconImage_}">
-      <img id="faviconImage" alt="" src="${this.faviconImage_}"
+      <img id="faviconImage" alt=""
+          src="${resolveSchemeRelativeUrl(this.faviconImage_)}"
           srcset="${this.faviconImageSrcSet_}"
           @load="${this.onFaviconLoad_}"
           @error="${this.onFaviconError_}">
     </div>
   </div>
 
-  <img id="iconImg" alt="" src="${this.iconSrc_}" ?hidden="${!this.showIconImg_}"
+  <img id="iconImg" alt="" ?hidden="${!this.showIconImg_}"
+      src="${resolveSchemeRelativeUrl(this.iconSrc_)}"
       @load="${this.onIconLoad_}">
 </div>
 <!--_html_template_end_-->`;

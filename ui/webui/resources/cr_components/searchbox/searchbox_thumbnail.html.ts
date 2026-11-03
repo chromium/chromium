@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SearchboxThumbnailElement} from './searchbox_thumbnail.js';
@@ -10,7 +11,7 @@ export function getHtml(this: SearchboxThumbnailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" aria-hidden="true">
-  <img id="image" src="${this.thumbnailUrl}">
+  <img id="image" src="${resolveSchemeRelativeUrl(this.thumbnailUrl)}">
   <div class="overlay">
     ${this.isDeletable ? html`
       <cr-icon-button id="remove" class="action-icon icon-clear"

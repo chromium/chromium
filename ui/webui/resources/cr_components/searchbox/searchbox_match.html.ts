@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -30,7 +31,8 @@ export function getHtml(this: SearchboxMatchElement) {
             class="suggest-hint-text">${this.separatorText_}</span>
         <span id="secondaryText" .innerHTML="${this.secondaryTextHtml_}"
             ?has-icon="${!!this.match.descriptionIconPath}"
-            style="--description-icon: url(${this.match.descriptionIconPath})">
+            style="--description-icon: url(${
+                resolveSchemeRelativeUrl(this.match.descriptionIconPath)})">
         </span>
       </span>
     </div>

@@ -244,3 +244,20 @@ export function getFaviconForPageURL(
     scaleFactor,
   }));
 }
+
+// Matches scheme-relative URLs for chrome://resources and chrome://image, e.g.
+// //resources/foo.svg or //image?url=...
+const WEBUI_SCHEME_RELATIVE_URL = /^\/\/(resources|image)(?=[/?])/;
+
+/**
+ * If `url` is a scheme-relative //resources or //image URL, returns the URL
+ * with an explicit chrome:// scheme if the page is a component extension.
+ * Returns the url unmodified otherwise.
+ */
+export function resolveSchemeRelativeUrl(url: string): string {
+  if (window.location.protocol !== 'chrome-extension:' ||
+      !WEBUI_SCHEME_RELATIVE_URL.test(url)) {
+    return url;
+  }
+  return `chrome:${url}`;
+}

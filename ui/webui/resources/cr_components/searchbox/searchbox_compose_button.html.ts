@@ -44,17 +44,17 @@ export function getHtml(this: SearchboxComposeButtonElement) {
     ${this.hasFavicon_() ? html`
     <img slot="prefix-icon" class="compose-icon compose-icon-favicon"
          part="compose-icon compose-icon-favicon"
-        src="${this.composeIcon}">
+        src="${this.composeIconUrl_()}">
     ` : html`
     <div slot="prefix-icon" class="compose-icon" part="compose-icon"
-        style="-webkit-mask-image: url(${this.composeIcon});
-               mask-image: url(${this.composeIcon});">
+        style="-webkit-mask-image: url(${this.composeIconUrl_()});
+               mask-image: url(${this.composeIconUrl_()});">
     </div>
     `}
     <span id="label" part="label">${this.labelText}</span>
     <div id="arrowIcon" slot="suffix-icon" class="arrow-icon" part="arrow-icon"
-        style="-webkit-mask-image: url(${this.arrowIcon_});
-               mask-image: url(${this.arrowIcon_});">
+        style="-webkit-mask-image: url(${this.arrowIconUrl_()});
+               mask-image: url(${this.arrowIconUrl_()});">
     </div>
   </cr-button>
 </div>

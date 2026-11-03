@@ -5,6 +5,7 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -435,7 +436,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
           this.preloadingImages_.delete(img);
           resolve();
         };
-        img.src = computeImageUrl(imageUrl);
+        img.src = resolveSchemeRelativeUrl(computeImageUrl(imageUrl));
       });
     });
 

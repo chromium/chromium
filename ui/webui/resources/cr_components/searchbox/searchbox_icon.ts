@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFaviconUrl, isFaviconUrl} from '//resources/js/icon.js';
+import {getFaviconUrl, isFaviconUrl, resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -406,18 +406,22 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeMaskImage_(): string {
+    return `url(${resolveSchemeRelativeUrl(this.computeMaskImageUrl_())})`;
+  }
+
+  private computeMaskImageUrl_(): string {
     // In keyword mode, show the custom keyword vector icon if present,
     // otherwise fall back to search_cr23.svg in the searchbox.
     if (this.inSearchbox && this.inKeywordMode) {
       if (this.defaultIcon) {
-        return `url(${this.defaultIcon})`;
+        return this.defaultIcon;
       }
-      return 'url(//resources/cr_components/searchbox/icons/search_cr23.svg)';
+      return '//resources/cr_components/searchbox/icons/search_cr23.svg';
     }
 
     // Lens searchboxes should always have the Google G in the searchbox.
     if (this.isLensSearchbox_ && this.inSearchbox) {
-      return `url(${this.defaultIcon})`;
+      return this.defaultIcon;
     }
     // Enterprise search aggregator people, top-chrome searchbox (WebUI
     // Omnibox), and suggestions whose secondary text isn't placed below the
@@ -428,7 +432,7 @@ export class SearchboxIconElement extends CrLitElement {
          this.match.isEnterpriseSearchAggregatorPeopleType ||
          this.isTopChromeSearchbox_ || !this.inSearchbox)) {
       if (this.match.iconPath) {
-        return `url(${this.match.iconPath})`;
+        return this.match.iconPath;
       }
     }
 
@@ -436,15 +440,15 @@ export class SearchboxIconElement extends CrLitElement {
       // When focused on an unedited webpage URL without an active match,
       // fall back to the generic globe icon (page_cr23.svg).
       if (this.isTopChromeSearchbox_ && this.pageUrl && !this.match) {
-        return 'url(//resources/cr_components/searchbox/icons/page_cr23.svg)';
+        return '//resources/cr_components/searchbox/icons/page_cr23.svg';
       }
       // A non-Google DSE favicon can't be drawn as a mask, so fall back to the
       // search loupe while it loads or if it fails to load.
       if (isFaviconUrl(this.defaultIcon)) {
-        return 'url(//resources/cr_components/searchbox/icons/search_cr23.svg)';
+        return '//resources/cr_components/searchbox/icons/search_cr23.svg';
       }
     }
-    return `url(${this.defaultIcon})`;
+    return this.defaultIcon;
   }
 
   // Controls whether the favicon image should be rendered instead of the mask

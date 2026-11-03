@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {resolveSchemeRelativeUrl} from '//resources/js/icon.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {blurredRectUrl} from './audio_wave.js';
@@ -60,7 +61,7 @@ export function getHtml(this: AudioWaveElement) {
         <g mask="url(#mask)">
           <g class="blurred-rects-outer">
             <image
-                href="${blurredRectUrl}"
+                href="${resolveSchemeRelativeUrl(blurredRectUrl)}"
                 id="blurredRects"
                 class="blurred-rects"
                 transform="scale(10)"

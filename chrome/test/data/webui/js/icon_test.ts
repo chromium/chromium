@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getFavicon, getFaviconForPageURL, getFaviconUrl, getFileIconUrl, isFaviconUrl} from 'chrome://resources/js/icon.js';
+import {getFavicon, getFaviconForPageURL, getFaviconUrl, getFileIconUrl, isFaviconUrl, resolveSchemeRelativeUrl} from 'chrome://resources/js/icon.js';
 import type {GetFaviconUrlParams} from 'chrome://resources/js/icon.js';
 import {isAndroid, isIOS} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -159,5 +159,14 @@ suite('IconTest', function() {
         getFileIconUrl('file path'),
         'chrome://fileicon/?path=file+path&scale=' + window.devicePixelRatio +
             'x');
+  });
+
+  test('ResolveSchemeRelativeUrl', function() {
+    assertEquals(
+        '//resources/images/icon_clear.svg',
+        resolveSchemeRelativeUrl('//resources/images/icon_clear.svg'));
+    assertEquals(
+        '//image?url=https%3A%2F%2Fa.com',
+        resolveSchemeRelativeUrl('//image?url=https%3A%2F%2Fa.com'));
   });
 });
