@@ -420,6 +420,32 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   EXPECT_TRUE(actions[0]->action->is_handoff());
 }
 
+// Suggestions are asked for right away, so the surrounding text arrives before
+// the redacted screenshot. Requesting them on the text alone hit the CHECK in
+// `RequestNewSuggestions()`; they must wait for the screenshot too, and no
+// empty list is sent before they're requested.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
+                       RequestsSuggestionsOnceInputsAreReady) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  gfx::Rect bounds = tab->GetContents()->GetViewBounds();
+  bounds.Inset(20);
+  controller->ShowWithSelection(
+      tab->GetContents()->GetPrimaryMainFrame(), bounds,
+      selection::InteractionOptions::New(/*hide_handles=*/true,
+                                         /*disable_multi_select=*/true,
+                                         /*skip_intro_animation=*/true),
+      ::selection::EntryPoint::kInlineCue);
+
+  TestSuggestedActionsListener listener;
+  controller->GetSuggestedActionsForTesting(listener.GetCallback());
+  listener.WaitForBatches(1);
+  ASSERT_FALSE(listener.actions().empty());
+  EXPECT_EQ(listener.actions()[0]->title, "Ask Gemini");
+}
+
 class SelectionOverlayStaticSuggestionsWithPromptBoxBrowserTest
     : public GlicBrowserTest {
  public:

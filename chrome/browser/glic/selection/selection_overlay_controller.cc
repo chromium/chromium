@@ -865,6 +865,7 @@ void SelectionOverlayController::OnScreenshotTaken(const SkBitmap& bitmap) {
 void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {
   session_->redacted_screenshot = bitmap;
   SyncRegionsToPanelIfPending();
+  MaybeRequestSuggestions();
 }
 
 void SelectionOverlayController::PageContextReady(
@@ -902,6 +903,7 @@ void SelectionOverlayController::PageContextReady(
   }
 
   SyncRegionsToPanelIfPending();
+  MaybeRequestSuggestions();
 }
 
 void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
@@ -1133,14 +1135,13 @@ void SelectionOverlayController::GetSuggestedActionsImpl(
     return;
   }
 
-  ::selection::SuggestionService* suggestion_service =
-      ::selection::SuggestionService::From(tab_);
-  if (!suggestion_service || session_->redacted_screenshot.empty()) {
+  if (!::selection::SuggestionService::From(tab_)) {
     callback.Run({});
     return;
   }
 
-  RequestNewSuggestions(*region_data);
+  // Requests them now if every input is here, otherwise once the last arrives.
+  MaybeRequestSuggestions();
 }
 
 void SelectionOverlayController::OnTextSurroundingSelectionAvailable(
@@ -1163,12 +1164,38 @@ void SelectionOverlayController::OnTextSurroundingSelectionAvailable(
         content.substr(start_offset, end_offset - start_offset);
     region_data->text_surrounding_selection = content;
   }
-  if (session_->active_region_id == region_id &&
-      !region_data->suggestions_requested &&
-      (session_->suggested_actions_listener.is_bound() ||
-       session_->suggested_actions_callback_for_testing)) {
-    RequestNewSuggestions(*region_data);
+  if (session_->active_region_id == region_id) {
+    MaybeRequestSuggestions();
   }
+}
+
+bool SelectionOverlayController::AreSuggestionInputsReady() const {
+  if (session_->redacted_screenshot.empty()) {
+    return false;
+  }
+  // The page can ask for suggestions before the page content arrives.
+  const bool needs_page_content =
+      base::FeatureList::IsEnabled(
+          ::selection::kSmartSelectionServerSuggestions) &&
+      ::selection::kSmartSelectionServerAppendApc.Get();
+  return !needs_page_content || session_->tab_context;
+}
+
+void SelectionOverlayController::MaybeRequestSuggestions() {
+  if (!IsSelectionOverlayPromptEnabled() ||
+      !session_->active_region_id.has_value() || !AreSuggestionInputsReady() ||
+      !(session_->suggested_actions_listener.is_bound() ||
+        session_->suggested_actions_callback_for_testing) ||
+      !::selection::SuggestionService::From(tab_)) {
+    return;
+  }
+  SelectedRegionData* region_data =
+      base::FindOrNull(session_->selected_regions, *session_->active_region_id);
+  if (!region_data || region_data->suggestions_requested ||
+      region_data->waiting_for_surrounding_text) {
+    return;
+  }
+  RequestNewSuggestions(*region_data);
 }
 
 void SelectionOverlayController::RequestNewSuggestions(
@@ -1176,10 +1203,8 @@ void SelectionOverlayController::RequestNewSuggestions(
   ::selection::SuggestionService* suggestion_service =
       ::selection::SuggestionService::From(tab_);
   CHECK(suggestion_service);
-  CHECK(!session_->redacted_screenshot.empty());
-  if (region_data.waiting_for_surrounding_text) {
-    return;
-  }
+  CHECK(AreSuggestionInputsReady());
+  CHECK(!region_data.waiting_for_surrounding_text);
 
   region_data.suggestions_requested = true;
   uint64_t generation = ++region_data.generation;

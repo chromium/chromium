@@ -276,6 +276,13 @@ class SelectionOverlayController
   void SetRegionFromBounds(content::RenderFrameHost* selected_frame,
                            const gfx::Rect& selection_bounds);
   void RequestNewSuggestions(SelectedRegionData& region_data);
+  // Whether the session has what a suggestions request needs: the redacted
+  // screenshot, and the page content if the server request includes it.
+  bool AreSuggestionInputsReady() const;
+  // Requests suggestions for the active region once its surrounding text, the
+  // inputs above and a listener are all here. Called by each of them, so the
+  // last one to arrive makes the request.
+  void MaybeRequestSuggestions();
   void OnSuggestionsReceived(
       const base::UnguessableToken& region_id,
       uint64_t generation,
