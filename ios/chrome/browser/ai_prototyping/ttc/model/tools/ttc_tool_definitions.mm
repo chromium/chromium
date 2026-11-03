@@ -21,8 +21,10 @@ constexpr char kObjectType[] = "object";
 constexpr char kPropertiesKey[] = "properties";
 constexpr char kRequiredKey[] = "required";
 constexpr char kStringType[] = "string";
+constexpr char kTextKey[] = "text";
 constexpr char kTypeKey[] = "type";
 constexpr char kUrlKey[] = "url";
+constexpr char kValueKey[] = "value";
 
 }  // namespace
 
@@ -117,6 +119,56 @@ std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   open_url.behavior = ToolDefinition::Behavior::kBlocking;
   open_url.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_url));
+
+  ToolDefinition select_option;
+  select_option.name = kToolSelectOption;
+  select_option.description =
+      "Selects an option in a dropdown or select element on the current page.";
+  select_option.parameters_json_schema =
+      base::DictValue()
+          .Set(kTypeKey, kObjectType)
+          .Set(kPropertiesKey,
+               base::DictValue()
+                   .Set(kNodeIdKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kIntegerType)
+                            .Set(kDescriptionKey,
+                                 "The DOM node ID of the select element."))
+                   .Set(kValueKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kStringType)
+                            .Set(kDescriptionKey,
+                                 "The value of the option to select.")))
+          .Set(kRequiredKey,
+               base::ListValue().Append(kNodeIdKey).Append(kValueKey));
+  select_option.behavior = ToolDefinition::Behavior::kBlocking;
+  select_option.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(select_option));
+
+  ToolDefinition set_text;
+  set_text.name = kToolSetText;
+  set_text.description =
+      "Enters text into an input or editable element on the current page.";
+  set_text.parameters_json_schema =
+      base::DictValue()
+          .Set(kTypeKey, kObjectType)
+          .Set(kPropertiesKey,
+               base::DictValue()
+                   .Set(kNodeIdKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kIntegerType)
+                            .Set(kDescriptionKey,
+                                 "The DOM node ID of the input element."))
+                   .Set(kTextKey,
+                        base::DictValue()
+                            .Set(kTypeKey, kStringType)
+                            .Set(kDescriptionKey,
+                                 "The text to enter into the element.")))
+          .Set(kRequiredKey,
+               base::ListValue().Append(kNodeIdKey).Append(kTextKey));
+  set_text.behavior = ToolDefinition::Behavior::kBlocking;
+  set_text.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(set_text));
 
   return tools;
 }

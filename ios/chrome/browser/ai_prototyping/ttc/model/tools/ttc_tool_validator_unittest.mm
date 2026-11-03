@@ -311,4 +311,89 @@ TEST_F(TtcToolValidatorTest,
   }
 }
 
+// Tests validation and `SelectAction` creation for `select_option`, including
+// rejection of missing `value` or invalid `node_id` targets.
+TEST_F(TtcToolValidatorTest, CreateActuationRequestForSelectOption) {
+  base::DictValue select_args;
+  select_args.Set("node_id", CreateNodeIdDict("doc-token-1", 15));
+  select_args.Set("value", "option_b");
+
+  base::expected<TtcActuationRequest, std::string> select_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolSelectOption, std::move(select_args)});
+
+  ASSERT_TRUE(select_result.has_value());
+  ASSERT_EQ(select_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action select_action;
+  ASSERT_TRUE(select_action.ParseFromString(select_result->action_protos[0]));
+  ASSERT_TRUE(select_action.has_select());
+  EXPECT_EQ(select_action.select().value(), "option_b");
+  EXPECT_EQ(select_action.select().target().content_node_id(), 15);
+  EXPECT_EQ(
+      select_action.select().target().document_identifier().serialized_token(),
+      "doc-token-1");
+
+  std::vector<base::DictValue> invalid_select_cases;
+  invalid_select_cases.push_back(
+      base::DictValue().Set("node_id", CreateNodeIdDict("doc-token-1", 15)));
+  invalid_select_cases.push_back(base::DictValue().Set("value", "option_b"));
+  invalid_select_cases.push_back(
+      base::DictValue()
+          .Set("node_id", CreateNodeIdDict("doc-token-1", 0))
+          .Set("value", "option_b"));
+
+  for (size_t i = 0; i < invalid_select_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    base::expected<TtcActuationRequest, std::string> invalid_select =
+        TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+            ttc::kToolSelectOption, std::move(invalid_select_cases[i])});
+    ASSERT_FALSE(invalid_select.has_value());
+    EXPECT_EQ(invalid_select.error(), ttc::kErrorMessageInvalidArguments);
+  }
+}
+
+// Tests validation and `TypeAction` creation for `set_text`, including
+// rejection of missing `text` or invalid `node_id` targets.
+TEST_F(TtcToolValidatorTest, CreateActuationRequestForSetText) {
+  base::DictValue set_text_args;
+  set_text_args.Set("node_id", CreateNodeIdDict("doc-token-1", 27));
+  set_text_args.Set("text", "search query");
+
+  base::expected<TtcActuationRequest, std::string> set_text_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolSetText, std::move(set_text_args)});
+
+  ASSERT_TRUE(set_text_result.has_value());
+  ASSERT_EQ(set_text_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action type_action;
+  ASSERT_TRUE(type_action.ParseFromString(set_text_result->action_protos[0]));
+  ASSERT_TRUE(type_action.has_type());
+  EXPECT_EQ(type_action.type().text(), "search query");
+  EXPECT_EQ(type_action.type().mode(),
+            optimization_guide::proto::TypeAction::DELETE_EXISTING);
+  EXPECT_FALSE(type_action.type().follow_by_enter());
+  EXPECT_EQ(type_action.type().target().content_node_id(), 27);
+  EXPECT_EQ(
+      type_action.type().target().document_identifier().serialized_token(),
+      "doc-token-1");
+
+  std::vector<base::DictValue> invalid_set_text_cases;
+  invalid_set_text_cases.push_back(
+      base::DictValue().Set("node_id", CreateNodeIdDict("doc-token-1", 27)));
+  invalid_set_text_cases.push_back(
+      base::DictValue().Set("text", "search query"));
+  invalid_set_text_cases.push_back(base::DictValue()
+                                       .Set("node_id", CreateNodeIdDict("", 27))
+                                       .Set("text", "search query"));
+
+  for (size_t i = 0; i < invalid_set_text_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    base::expected<TtcActuationRequest, std::string> invalid_set_text =
+        TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+            ttc::kToolSetText, std::move(invalid_set_text_cases[i])});
+    ASSERT_FALSE(invalid_set_text.has_value());
+    EXPECT_EQ(invalid_set_text.error(), ttc::kErrorMessageInvalidArguments);
+  }
+}
+
 }  // namespace

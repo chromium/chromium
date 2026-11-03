@@ -22,7 +22,9 @@ constexpr char kDocumentIdKey[] = "document_id";
 constexpr char kDomNodeIdKey[] = "dom_node_id";
 constexpr char kNewTabKey[] = "new_tab";
 constexpr char kNodeIdKey[] = "node_id";
+constexpr char kTextKey[] = "text";
 constexpr char kUrlKey[] = "url";
+constexpr char kValueKey[] = "value";
 
 // Task update string.
 constexpr char kSingleToolTaskUpdate[] = "Executing TTC tool";
@@ -105,6 +107,22 @@ optimization_guide::proto::Action BuildActionProto(
     const std::string* url_string = arguments.FindString(kUrlKey);
     GURL gurl(url_string ? *url_string : std::string());
     action.mutable_navigate()->set_url(gurl.spec());
+  } else if (name == ttc::kToolSelectOption) {
+    optimization_guide::proto::SelectAction* select_action =
+        action.mutable_select();
+    const std::string* value = arguments.FindString(kValueKey);
+    select_action->set_value(value ? *value : std::string());
+    ParseElementTarget(arguments, select_action->mutable_target());
+  } else if (name == ttc::kToolSetText) {
+    optimization_guide::proto::TypeAction* type_action = action.mutable_type();
+    // Replaces existing field text rather than appending, and avoids premature
+    // form submission.
+    type_action->set_mode(
+        optimization_guide::proto::TypeAction::DELETE_EXISTING);
+    type_action->set_follow_by_enter(false);
+    const std::string* text = arguments.FindString(kTextKey);
+    type_action->set_text(text ? *text : std::string());
+    ParseElementTarget(arguments, type_action->mutable_target());
   }
   return action;
 }
@@ -166,6 +184,22 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
       return base::unexpected(ttc::kErrorMessageInvalidArguments);
     }
 
+    return base::ok();
+  }
+
+  if (name == ttc::kToolSelectOption) {
+    if (!ParseElementTarget(arguments, nullptr) ||
+        !arguments.FindString(kValueKey)) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
+    return base::ok();
+  }
+
+  if (name == ttc::kToolSetText) {
+    if (!ParseElementTarget(arguments, nullptr) ||
+        !arguments.FindString(kTextKey)) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
     return base::ok();
   }
 
