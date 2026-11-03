@@ -1524,10 +1524,11 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     return false;
   }
 
-  bool updated_backing = false;
   bool copy_succeeded = false;
 
-  if (latest_content_element) {
+  // Skip copying if the source backing has never been cleared, as there is no
+  // initialized pixel data to synchronize.
+  if (!latest_content_element->GetBacking()->ClearedRect().IsEmpty()) {
     // Copy data from the latest permanent backing into the current backing
     // (which could be another permanent backing or a transient one).
     copy_succeeded = copy_manager_->CopyImage(
@@ -1535,8 +1536,6 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
         /*dst_backing=*/backing);
 
     if (copy_succeeded) {
-      updated_backing = true;
-
       // Sync the clear rect from the source backing to the destination backing
       // and the container itself.
       const gfx::Rect src_cleared_rect =
@@ -1615,7 +1614,7 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     if (access_element) {
       access_element->content_id_ = latest_content_id_;
     }
-  } else if (updated_backing && access_element) {
+  } else if (copy_succeeded && access_element) {
     access_element->content_id_ = latest_content_id_;
   }
   return true;

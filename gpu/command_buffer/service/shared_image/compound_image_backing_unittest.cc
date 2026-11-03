@@ -1294,4 +1294,75 @@ TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
   }
 }
 
+TEST_F(CompoundImageBackingCopyToGpuMemoryBufferTest,
+       SkipsCopyFromUninitializedInitialBackingOnDynamicAllocation) {
+  base::HistogramTester histograms;
+
+  // Make the initial GPU backing refuse GL access so that
+  // ProduceGLTexturePassthrough() dynamically allocates a second GPU backing.
+  test_factory_.SetUnsupportedAccessStreamForNextBacking(
+      SharedImageAccessStream::kGL);
+
+  constexpr gfx::Size kSize(100, 100);
+  SharedImageInfo info(
+      viz::SinglePlaneFormat::kRGBA_8888, kSize, gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+      {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE,
+       SHARED_IMAGE_USAGE_DISPLAY_READ},
+      "TestLabel");
+  auto backing = CompoundImageBacking::Create(
+      GetSharedImageFactory(), Mailbox::Generate(), info, kNullSurfaceHandle);
+  ASSERT_TRUE(backing);
+  auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
+  EXPECT_FALSE(compound_backing->IsCleared());
+
+  auto factory_rep =
+      manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto gl_rep = manager_.ProduceGLTexturePassthrough(
+      compound_backing->mailbox(), &memory_type_tracker_);
+  ASSERT_TRUE(gl_rep);
+
+  auto gpu_backings = GetGpuBackings(compound_backing);
+  ASSERT_EQ(gpu_backings.size(), 2u);
+  EXPECT_FALSE(gpu_backings[0]->IsCleared());
+  EXPECT_FALSE(gpu_backings[1]->IsCleared());
+
+  // Beginning write access on the dynamically allocated GL backing when the
+  // initial GPU backing has never been cleared must not attempt to copy
+  // uninitialized pixels from `gpu_backings[0]` to `gpu_backings[1]`.
+  {
+    auto gl_access = gl_rep->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(gl_access);
+    gl_rep->SetClearedRect(gfx::Rect(kSize));
+  }
+
+  histograms.ExpectTotalCount("GPU.CompoundImageBacking.ContentSync.Success",
+                              0);
+  EXPECT_FALSE(gpu_backings[0]->GetReadbackToMemoryCalledAndReset());
+  EXPECT_FALSE(gpu_backings[1]->GetUploadFromMemoryCalledAndReset());
+  EXPECT_TRUE(compound_backing->IsCleared());
+  EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
+
+  // Once `gpu_backings[1]` has been cleared, reading via `gpu_backings[0]`
+  // (Skia stream) must synchronize the initialized content.
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto skia_rep =
+      manager_.ProduceSkia(compound_backing->mailbox(), &memory_type_tracker_,
+                           nullptr, /*required_usages=*/{});
+  ASSERT_TRUE(skia_rep);
+  {
+    auto skia_read =
+        skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
+    ASSERT_TRUE(skia_read);
+  }
+  histograms.ExpectUniqueSample("GPU.CompoundImageBacking.ContentSync.Success",
+                                true, 1);
+  EXPECT_TRUE(gpu_backings[1]->GetReadbackToMemoryCalledAndReset());
+  EXPECT_TRUE(gpu_backings[0]->GetUploadFromMemoryCalledAndReset());
+}
+
 }  // namespace gpu
