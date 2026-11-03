@@ -177,7 +177,7 @@ Refer to README.md for content description and update process.
  <item id="safety_check_update_connectivity" added_in_milestone="84" content_hash_code="01d8ad59" os_list="linux,windows,chromeos,android" file_path="components/safety_check/update_check_helper.cc" />
  <item id="sanitized_image_source" added_in_milestone="86" content_hash_code="00c52605" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/webui/sanitized_image/sanitized_image_source.cc" />
  <item id="save_file_manager" added_in_milestone="62" content_hash_code="03610e73" os_list="linux,windows,chromeos,android" file_path="content/browser/download/save_file_manager.cc" />
- <item id="sct_auditing" added_in_milestone="87" content_hash_code="0298c98f" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
+ <item id="sct_auditing" added_in_milestone="87" content_hash_code="03d27018" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
  <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.cc" />
  <item id="security_key_socket" added_in_milestone="66" content_hash_code="00d1acb0" os_list="linux,windows,chromeos" file_path="remoting/host/security_key/security_key_socket.cc" />
  <item id="service_worker_navigation_preload" added_in_milestone="63" content_hash_code="0675faf7" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc" />
@@ -273,7 +273,7 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="04839870" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />
  <item id="webview_proxy_config" added_in_milestone="100" content_hash_code="05d4e544" os_list="android" file_path="android_webview/browser/network_service/aw_proxy_config_monitor.cc" />
  <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc" />
- <item id="sct_auditing_hashdance" added_in_milestone="100" content_hash_code="00ea07d2" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
+ <item id="sct_auditing_hashdance" added_in_milestone="100" content_hash_code="01fd5f01" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
  <item id="wallpaper_google_photos_enabled" added_in_milestone="101" content_hash_code="027ae762" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />
  <item id="printing_oauth2_metadata_request" added_in_milestone="101" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="041eb66d" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_data.cc" />
  <item id="printing_oauth2_registration_request" added_in_milestone="101" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="039d2748" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_data.cc" />

@@ -45,6 +45,7 @@ constexpr net::NetworkTrafficAnnotationTag kSCTAuditReportTrafficAnnotation =
             "the certificate chain, and the Signed Certificate Timestamps "
             "observed on the connection."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "sctauditing-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
@@ -82,6 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag kSCTHashdanceTrafficAnnotation =
             "A short prefix of the SCT leaf hash, the length of the prefix, "
             "and a short user agent string."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "sctauditing-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
