@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -593,7 +592,7 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
 
     metadata.target_name = std::move(target_name);
 
-    metadata.trust_anchor_ids = base::ToVector(service->trust_anchor_ids());
+    metadata.trust_anchor_ids = service->trust_anchor_ids();
 
     metadatas.emplace(service->priority(), std::move(metadata));
 
