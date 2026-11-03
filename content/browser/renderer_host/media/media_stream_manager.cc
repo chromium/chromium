@@ -3433,6 +3433,8 @@ void MediaStreamManager::InitializeMaybeAsync(
       base::BindRepeating(&MediaStreamManager::StopRemovedDevice,
                           base::Unretained(this)),
       base::BindRepeating(&MediaStreamManager::NotifyDevicesChanged,
+                          base::Unretained(this)),
+      base::BindRepeating(&MediaStreamManager::UpdateMediaCaptureDevicesCache,
                           base::Unretained(this)));
 
   if (base::FeatureList::IsEnabled(
@@ -4047,6 +4049,28 @@ void MediaStreamManager::NotifyDevicesChanged(
   MediaObserver* media_observer =
       GetContentClient()->browser()->GetMediaObserver();
 
+  // Update the media-device cache and notify MediaObserver.
+  UpdateMediaCaptureDevicesCache(device_type, devices);
+
+  MediaStreamType stream_type = ConvertToMediaStreamType(device_type);
+  if (blink::IsAudioInputMediaType(stream_type)) {
+    if (media_observer) {
+      media_observer->OnAudioCaptureDevicesChanged();
+    }
+  } else if (blink::IsVideoInputMediaType(stream_type)) {
+    if (media_observer) {
+      media_observer->OnVideoCaptureDevicesChanged();
+    }
+  } else {
+    NOTREACHED();
+  }
+}
+
+void MediaStreamManager::UpdateMediaCaptureDevicesCache(
+    MediaDeviceType device_type,
+    const blink::WebMediaDeviceInfoArray& devices) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+
   MediaStreamType stream_type = ConvertToMediaStreamType(device_type);
   MediaStreamDevices new_devices =
       ConvertToMediaStreamDevices(stream_type, devices);
@@ -4054,15 +4078,9 @@ void MediaStreamManager::NotifyDevicesChanged(
   if (blink::IsAudioInputMediaType(stream_type)) {
     MediaCaptureDevicesImpl::GetInstance()->OnAudioCaptureDevicesChanged(
         new_devices);
-    if (media_observer) {
-      media_observer->OnAudioCaptureDevicesChanged();
-    }
   } else if (blink::IsVideoInputMediaType(stream_type)) {
     MediaCaptureDevicesImpl::GetInstance()->OnVideoCaptureDevicesChanged(
         new_devices);
-    if (media_observer) {
-      media_observer->OnVideoCaptureDevicesChanged();
-    }
   } else {
     NOTREACHED();
   }

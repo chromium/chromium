@@ -44,6 +44,8 @@ struct VideoCaptureControlSupport {
   bool pan = false;
   bool tilt = false;
   bool zoom = false;
+
+  bool operator==(const VideoCaptureControlSupport&) const = default;
 };
 
 enum class VideoCaptureTransportType {

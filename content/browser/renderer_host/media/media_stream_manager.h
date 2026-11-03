@@ -384,6 +384,16 @@ class CONTENT_EXPORT MediaStreamManager
   void NotifyDevicesChanged(blink::mojom::MediaDeviceType stream_type,
                             const blink::WebMediaDeviceInfoArray& devices);
 
+  // Updates the audio or video input devices cached by MediaCaptureDevicesImpl.
+  // NotifyDevicesChanged() calls this before notifying observers of a
+  // device-list change.
+  // MediaDevicesManager also invokes it through a callback when a
+  // `kDevicesWithCapabilities` enumeration changes only camera control
+  // support for the existing devices.
+  void UpdateMediaCaptureDevicesCache(
+      blink::mojom::MediaDeviceType device_type,
+      const blink::WebMediaDeviceInfoArray& devices);
+
   // This method is called when an audio or video device is removed. It makes
   // sure all MediaStreams that use a removed device are stopped and that the
   // render process is notified. Must be called on the IO thread.

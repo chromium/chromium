@@ -124,6 +124,12 @@ class CONTENT_EXPORT MediaDevicesManager
   using UIInputDeviceChangeCallback = base::RepeatingCallback<void(
       MediaDeviceType stream_type,
       const blink::WebMediaDeviceInfoArray& devices)>;
+  // When a `kDevicesWithCapabilities` enumeration changes only camera
+  // pan/tilt/zoom support, this callback updates video input-device information
+  // without reporting a device-list change.
+  using UpdateVideoControlSupportCallback = base::RepeatingCallback<void(
+      MediaDeviceType device_type,
+      const blink::WebMediaDeviceInfoArray& devices)>;
 
   static bool IsRelaxedCacheFeatureEnabled();
 
@@ -131,7 +137,8 @@ class CONTENT_EXPORT MediaDevicesManager
       media::AudioSystem* audio_system,
       const scoped_refptr<VideoCaptureManager>& video_capture_manager,
       StopRemovedInputDeviceCallback stop_removed_input_device_cb,
-      UIInputDeviceChangeCallback ui_input_device_change_cb);
+      UIInputDeviceChangeCallback ui_input_device_change_cb,
+      UpdateVideoControlSupportCallback update_video_control_support_cb);
 
   MediaDevicesManager(const MediaDevicesManager&) = delete;
   MediaDevicesManager& operator=(const MediaDevicesManager&) = delete;
@@ -503,6 +510,7 @@ class CONTENT_EXPORT MediaDevicesManager
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
   StopRemovedInputDeviceCallback stop_removed_input_device_cb_;
   UIInputDeviceChangeCallback ui_input_device_change_cb_;
+  UpdateVideoControlSupportCallback update_video_control_support_cb_;
 
   std::unique_ptr<MediaDevicesPermissionChecker> permission_checker_;
 

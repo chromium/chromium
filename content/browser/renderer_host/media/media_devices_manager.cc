@@ -192,10 +192,30 @@ bool EqualDeviceIncludingGroupID(const blink::WebMediaDeviceInfo& lhs,
   return EqualDeviceExcludingGroupID(lhs, rhs) && lhs.group_id == rhs.group_id;
 }
 
+bool MaybeUpdateCachedDeviceVideoControlSupport(
+    blink::WebMediaDeviceInfoArray& cached_snapshot,
+    const blink::WebMediaDeviceInfoArray& new_snapshot) {
+  CHECK_EQ(cached_snapshot.size(), new_snapshot.size());
+  if (std::ranges::equal(cached_snapshot, new_snapshot,
+                         [](const blink::WebMediaDeviceInfo& cached_device_info,
+                            const blink::WebMediaDeviceInfo& new_device_info) {
+                           return cached_device_info.video_control_support ==
+                                  new_device_info.video_control_support;
+                         })) {
+    return false;
+  }
+  for (size_t i = 0; i < cached_snapshot.size(); ++i) {
+    cached_snapshot[i].video_control_support =
+        new_snapshot[i].video_control_support;
+  }
+  return true;
+}
+
 void ReplaceInvalidFrameRatesWithFallback(media::VideoCaptureFormats* formats) {
   for (auto& format : *formats) {
-    if (format.frame_rate <= 0)
+    if (format.frame_rate <= 0) {
       format.frame_rate = kFallbackVideoFrameRates[0];
+    }
   }
 }
 
@@ -584,13 +604,16 @@ MediaDevicesManager::MediaDevicesManager(
     media::AudioSystem* audio_system,
     const scoped_refptr<VideoCaptureManager>& video_capture_manager,
     StopRemovedInputDeviceCallback stop_removed_input_device_cb,
-    UIInputDeviceChangeCallback ui_input_device_change_cb)
+    UIInputDeviceChangeCallback ui_input_device_change_cb,
+    UpdateVideoControlSupportCallback update_video_control_support_cb)
     : use_fake_devices_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)),
       audio_system_(audio_system),
       video_capture_manager_(video_capture_manager),
       stop_removed_input_device_cb_(std::move(stop_removed_input_device_cb)),
       ui_input_device_change_cb_(std::move(ui_input_device_change_cb)),
+      update_video_control_support_cb_(
+          std::move(update_video_control_support_cb)),
       permission_checker_(std::make_unique<MediaDevicesPermissionChecker>()),
       video_enumeration_mode_(media::GetDefaultVideoEnumerationMode()),
       get_salt_and_origin_cb_(
@@ -600,6 +623,7 @@ MediaDevicesManager::MediaDevicesManager(
   CHECK(video_capture_manager_.get(), base::NotFatalUntil::M155);
   CHECK(!stop_removed_input_device_cb_.is_null(), base::NotFatalUntil::M155);
   CHECK(!ui_input_device_change_cb_.is_null(), base::NotFatalUntil::M155);
+  CHECK(!update_video_control_support_cb_.is_null(), base::NotFatalUntil::M160);
   // Enable relaxed mode only for cameras.
   // Audio devices do not need relaxed mode and it can interfere with bluetooth
   // notifications. See https://crbug.com/417256410
@@ -1606,8 +1630,8 @@ void MediaDevicesManager::UpdateSnapshot(
     MaybeStopRemovedInputDevices(type, new_snapshot);
   }
 
-  // Update the cached snapshot and send notifications only if the device list
-  // has changed.
+  // Handle device-list changes separately from camera control support updates
+  // to the same devices.
   if (!std::ranges::equal(new_snapshot, old_snapshot,
                           use_group_id ? EqualDeviceIncludingGroupID
                                        : EqualDeviceExcludingGroupID)) {
@@ -1633,6 +1657,31 @@ void MediaDevicesManager::UpdateSnapshot(
          is_video_with_good_group_ids);
     current_snapshot_[static_cast<size_t>(type)] = new_snapshot;
     current_snapshot_changed = true;
+  } else if (type == MediaDeviceType::kMediaVideoInput && !use_group_id) {
+    // `use_group_id` is true only when setting group IDs on cached video
+    // devices. It is false when this is a video enumeration result.
+    //
+    // When the ongoing update has a `kDevicesWithCapabilities` video
+    // enumeration mode, it can report different `VideoCaptureControlSupport`
+    // while the device list remains unchanged. `EqualDeviceExcludingGroupID`
+    // ignores this to avoid notifying subscribers for updated
+    // `VideoCaptureControlSupport`. So we update the cached devices in place
+    // with updated `VideoCaptureControlSupport` in these cases:
+    // (a) A `kDevicesOnly` to `kDevicesWithCapabilities` upgrade that can add
+    //     control support to the existing list of devices.
+    // (b) Changes to control support in a subsequent `kDevicesWithCapabilities`
+    //     enumeration.
+    if (ongoing_update_video_enumeration_mode_ ==
+            media::mojom::VideoCaptureDeviceEnumerationMode::
+                kDevicesWithCapabilities &&
+        MaybeUpdateCachedDeviceVideoControlSupport(old_snapshot,
+                                                   new_snapshot)) {
+      // A control-support change is new information. Setting
+      // `current_snapshot_changed` to true ensures that we reset the spurious
+      // invalidation count below even though the device list is unchanged.
+      current_snapshot_changed = true;
+      update_video_control_support_cb_.Run(type, old_snapshot);
+    }
   }
 
   if (IsRelaxedCacheFeatureEnabled() && !use_group_id) {
@@ -1647,6 +1696,19 @@ void MediaDevicesManager::UpdateSnapshot(
     }
   }
 
+  // Video subscribers receive the cached snapshot because when the list of
+  // devices is unchanged, it retains inferred group IDs and control-support
+  // changes are applied in place. When the list of devices is unchanged and a
+  // salt reset occurs, this allows us to send the inferred group IDs.
+  // If the device list changed, the cache was already replaced with
+  // `new_snapshot`.
+  // Audio continues to use `new_snapshot` because the inferred group IDs and
+  // control-support updates are video-only.
+  const auto& subscription_snapshot =
+      type == MediaDeviceType::kMediaVideoInput
+          ? current_snapshot_[static_cast<size_t>(type)]
+          : new_snapshot;
+
   // Generate salts for each subscriber even if the device list hasn't changed,
   // as we may need to notify them anyway.
   for (const auto& subscription : subscriptions_) {
@@ -1659,7 +1721,7 @@ void MediaDevicesManager::UpdateSnapshot(
               base::BindPostTaskToCurrentDefault(base::BindOnce(
                   &MediaDevicesManager::OnSaltAndOriginForSubscription,
                   weak_factory_.GetWeakPtr(), subscription.first,
-                  request.render_frame_host_id, type, new_snapshot,
+                  request.render_frame_host_id, type, subscription_snapshot,
                   need_update_device_change_subscribers))));
     }
   }

@@ -252,6 +252,8 @@ class MockMediaDevicesListener : public blink::mojom::MediaDevicesListener {
     return listener;
   }
 
+  void FlushForTesting() { receivers_.FlushForTesting(); }
+
  private:
   mojo::ReceiverSet<blink::mojom::MediaDevicesListener> receivers_;
 };
@@ -263,6 +265,9 @@ class MockMediaDevicesManagerClient {
                     const blink::WebMediaDeviceInfo& media_device_info));
   MOCK_METHOD2(InputDevicesChangedUI,
                void(MediaDeviceType stream_type,
+                    const blink::WebMediaDeviceInfoArray& devices));
+  MOCK_METHOD2(UpdateMediaCaptureDevicesCache,
+               void(MediaDeviceType device_type,
                     const blink::WebMediaDeviceInfoArray& devices));
 };
 
@@ -463,6 +468,9 @@ class MediaDevicesManagerTest : public ::testing::Test {
             base::Unretained(&media_devices_manager_client_)),
         base::BindRepeating(
             &MockMediaDevicesManagerClient::InputDevicesChangedUI,
+            base::Unretained(&media_devices_manager_client_)),
+        base::BindRepeating(
+            &MockMediaDevicesManagerClient::UpdateMediaCaptureDevicesCache,
             base::Unretained(&media_devices_manager_client_)));
     media_devices_manager_->set_get_salt_and_origin_cb_for_testing(
         base::BindRepeating(&GetSaltAndOrigin));
@@ -913,6 +921,235 @@ TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
 }
 
 TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
+       DevicesOnlyCacheUpgradeUpdatesVideoControlSupport) {
+  media::VideoCaptureDeviceInfo descriptor_only_device_info(
+      media::VideoCaptureDeviceDescriptor(
+          "test_device_name", "test_device_id",
+          media::VideoCaptureApi::WIN_MEDIA_FOUNDATION));
+  media::VideoCaptureDeviceInfo device_with_capabilities_info =
+      descriptor_only_device_info;
+  media::VideoCaptureControlSupport control_support;
+  control_support.pan = true;
+  control_support.tilt = true;
+  control_support.zoom = true;
+  device_with_capabilities_info.descriptor.set_control_support(control_support);
+
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(
+          media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(DeviceEnumerationResult::kSuccess,
+                                    {descriptor_only_device_info});
+          }));
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                kDevicesWithCapabilities,
+                            _))
+      .WillOnce(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(DeviceEnumerationResult::kSuccess,
+                                    {device_with_capabilities_info});
+          }));
+
+  // Populate the system-monitor cache with a devices-only result.
+  ASSERT_EQ(GetCachePolicy(MediaDeviceType::kMediaVideoInput),
+            MediaDevicesManager::CachePolicy::NO_CACHE);
+  // The initial devices-only result adds a camera to the device list.
+  base::RunLoop initial_enumeration_run_loop;
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _))
+      .WillOnce([&](MediaDeviceType, const blink::WebMediaDeviceInfoArray&) {
+        initial_enumeration_run_loop.Quit();
+      });
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+  initial_enumeration_run_loop.Run();
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &media_devices_manager_client_));
+
+  // Devices-only results contain identity but no capabilities.
+  blink::WebMediaDeviceInfoArray cached_devices =
+      media_devices_manager_->GetCachedDeviceInfo(
+          MediaDeviceType::kMediaVideoInput);
+  ASSERT_EQ(cached_devices.size(), 1u);
+  const std::string inferred_group_id = cached_devices[0].group_id;
+  ASSERT_FALSE(inferred_group_id.empty());
+  EXPECT_FALSE(cached_devices[0].video_control_support.pan);
+  EXPECT_FALSE(cached_devices[0].video_control_support.tilt);
+  EXPECT_FALSE(cached_devices[0].video_control_support.zoom);
+
+  MockMediaDevicesListener listener;
+  MediaDevicesManager::BoolDeviceTypes device_types_to_subscribe;
+  device_types_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaVideoInput)] = true;
+  media_devices_manager_->SubscribeDeviceChangeNotifications(
+      kRenderFrameHostId, device_types_to_subscribe,
+      listener.CreateInterfacePtrAndBind());
+  // A PTZ-only update must not notify this listener.
+  EXPECT_CALL(listener, OnDevicesChanged(MediaDeviceType::kMediaVideoInput, _))
+      .Times(0);
+
+  // A capability-only upgrade must not notify media observers of a device-list
+  // change.
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _))
+      .Times(0);
+  blink::WebMediaDeviceInfoArray updated_input_devices;
+  EXPECT_CALL(
+      media_devices_manager_client_,
+      UpdateMediaCaptureDevicesCache(MediaDeviceType::kMediaVideoInput, _))
+      .WillOnce(SaveArg<1>(&updated_input_devices));
+
+  // Upgrade the same camera to full capabilities.
+  media_devices_manager_->SetVideoEnumerationModeToDevicesWithCapabilities();
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  base::RunLoop enumerate_with_capabilities_run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindLambdaForTesting([&](const MediaDeviceEnumeration&) {
+        enumerate_with_capabilities_run_loop.Quit();
+      }));
+  enumerate_with_capabilities_run_loop.Run();
+  listener.FlushForTesting();
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&listener));
+
+  // The manager's cached snapshot has PTZ support and keeps its group ID.
+  cached_devices = media_devices_manager_->GetCachedDeviceInfo(
+      MediaDeviceType::kMediaVideoInput);
+  ASSERT_EQ(cached_devices.size(), 1u);
+  EXPECT_EQ(cached_devices[0].group_id, inferred_group_id);
+  EXPECT_TRUE(cached_devices[0].video_control_support.pan);
+  EXPECT_TRUE(cached_devices[0].video_control_support.tilt);
+  EXPECT_TRUE(cached_devices[0].video_control_support.zoom);
+
+  // The supplied callback receives updated PTZ support. In production, it is
+  // bound to `MediaStreamManager::UpdateMediaCaptureDevicesCache()`.
+  ASSERT_EQ(updated_input_devices.size(), 1u);
+  EXPECT_EQ(updated_input_devices[0].group_id, inferred_group_id);
+  EXPECT_TRUE(updated_input_devices[0].video_control_support.pan);
+  EXPECT_TRUE(updated_input_devices[0].video_control_support.tilt);
+  EXPECT_TRUE(updated_input_devices[0].video_control_support.zoom);
+
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &media_devices_manager_client_));
+
+  // Simulate adding a second camera to trigger the expected listener
+  // notification.
+  media::VideoCaptureDeviceInfo second_device_info(
+      media::VideoCaptureDeviceDescriptor("added camera", "added_device_id"));
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                kDevicesWithCapabilities,
+                            _))
+      .WillOnce(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(
+                DeviceEnumerationResult::kSuccess,
+                {device_with_capabilities_info, second_device_info});
+          }));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _));
+  base::RunLoop device_change_run_loop;
+  EXPECT_CALL(listener, OnDevicesChanged(MediaDeviceType::kMediaVideoInput, _))
+      .Times(1)
+      .WillOnce(
+          [&](MediaDeviceType, const blink::WebMediaDeviceInfoArray& devices) {
+            EXPECT_EQ(devices.size(), 2u);
+            device_change_run_loop.Quit();
+          });
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+  device_change_run_loop.Run();
+  listener.FlushForTesting();
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&listener));
+}
+
+TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
+       DevicesOnlyCacheUpgradeWithUnchangedDeviceListAndControlSupport) {
+  media::VideoCaptureDeviceInfo device_info(media::VideoCaptureDeviceDescriptor(
+      "test_device_name", "test_device_id"));
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(
+          media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(DeviceEnumerationResult::kSuccess,
+                                    {device_info});
+          }));
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                kDevicesWithCapabilities,
+                            _))
+      .WillOnce(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(DeviceEnumerationResult::kSuccess,
+                                    {device_info});
+          }));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _))
+      .Times(1);
+
+  EnableCache(MediaDeviceType::kMediaVideoInput);
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  base::RunLoop devices_only_run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindLambdaForTesting([&](const MediaDeviceEnumeration&) {
+        devices_only_run_loop.Quit();
+      }));
+  devices_only_run_loop.Run();
+
+  const auto cached_devices_before =
+      media_devices_manager_->GetCachedDeviceInfo(
+          MediaDeviceType::kMediaVideoInput);
+  ASSERT_EQ(cached_devices_before.size(), 1u);
+  EXPECT_FALSE(cached_devices_before[0].video_control_support.pan);
+  EXPECT_FALSE(cached_devices_before[0].video_control_support.tilt);
+  EXPECT_FALSE(cached_devices_before[0].video_control_support.zoom);
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(
+      &media_devices_manager_client_));
+
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _))
+      .Times(0);
+  EXPECT_CALL(
+      media_devices_manager_client_,
+      UpdateMediaCaptureDevicesCache(MediaDeviceType::kMediaVideoInput, _))
+      .Times(0);
+  media_devices_manager_->SetVideoEnumerationModeToDevicesWithCapabilities();
+  base::RunLoop capabilities_run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindLambdaForTesting([&](const MediaDeviceEnumeration&) {
+        capabilities_run_loop.Quit();
+      }));
+  capabilities_run_loop.Run();
+
+  const auto cached_devices_after = media_devices_manager_->GetCachedDeviceInfo(
+      MediaDeviceType::kMediaVideoInput);
+  ASSERT_EQ(cached_devices_after.size(), 1u);
+  EXPECT_EQ(cached_devices_after[0].device_id,
+            cached_devices_before[0].device_id);
+  EXPECT_EQ(cached_devices_after[0].group_id,
+            cached_devices_before[0].group_id);
+  EXPECT_EQ(cached_devices_after[0].video_control_support.pan,
+            cached_devices_before[0].video_control_support.pan);
+  EXPECT_EQ(cached_devices_after[0].video_control_support.tilt,
+            cached_devices_before[0].video_control_support.tilt);
+  EXPECT_EQ(cached_devices_after[0].video_control_support.zoom,
+            cached_devices_before[0].video_control_support.zoom);
+}
+
+TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
        FailedEnumerationRetainsVideoEnumerationMode) {
   video_capture_device_factory_->SetToDefaultDevicesConfig(/*device_count=*/0);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
@@ -955,6 +1192,55 @@ TEST_F(MediaDevicesManagerWinEnumerateWithoutActivationFeatureEnabledTest,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(MediaDevicesManagerTest,
+       OnlyVideoControlSupportChangedOnSubsequentWithCapabilitiesEnumeration) {
+  media::VideoCaptureDeviceInfo device_info(media::VideoCaptureDeviceDescriptor(
+      "test_device_name", "test_device_id"));
+  EXPECT_CALL(
+      *mock_video_capture_provider_,
+      DoGetDeviceInfosAsync(media::mojom::VideoCaptureDeviceEnumerationMode::
+                                kDevicesWithCapabilities,
+                            _))
+      .Times(2)
+      .WillRepeatedly(testing::WithArg<1>(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback callback) {
+            std::move(callback).Run(DeviceEnumerationResult::kSuccess,
+                                    {device_info});
+          }));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::kMediaVideoInput, _))
+      .Times(1);
+  blink::WebMediaDeviceInfoArray updated_input_devices;
+  EXPECT_CALL(
+      media_devices_manager_client_,
+      UpdateMediaCaptureDevicesCache(MediaDeviceType::kMediaVideoInput, _))
+      .WillOnce(SaveArg<1>(&updated_input_devices));
+
+  media_devices_manager_->SetVideoEnumerationModeToDevicesWithCapabilities();
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      true;
+  for (bool supports_pan : {false, true}) {
+    media::VideoCaptureControlSupport control_support;
+    control_support.pan = supports_pan;
+    device_info.descriptor.set_control_support(control_support);
+
+    base::RunLoop run_loop;
+    media_devices_manager_->EnumerateDevices(
+        devices_to_enumerate,
+        base::BindLambdaForTesting(
+            [&](const MediaDeviceEnumeration&) { run_loop.Quit(); }));
+    run_loop.Run();
+
+    auto cached_devices = media_devices_manager_->GetCachedDeviceInfo(
+        MediaDeviceType::kMediaVideoInput);
+    ASSERT_EQ(cached_devices.size(), 1u);
+    EXPECT_EQ(cached_devices[0].video_control_support.pan, supports_pan);
+  }
+  ASSERT_EQ(updated_input_devices.size(), 1u);
+  EXPECT_TRUE(updated_input_devices[0].video_control_support.pan);
+}
 
 TEST_F(MediaDevicesManagerTest, EnumerateCacheAudio) {
   EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_)).Times(1);
