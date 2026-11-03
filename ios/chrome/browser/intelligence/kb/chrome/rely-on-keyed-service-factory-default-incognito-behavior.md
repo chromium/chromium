@@ -60,8 +60,8 @@ CobrowseServiceFactory::CobrowseServiceFactory()
                                     TestingCreation::kCreateService) {}
 
 std::unique_ptr<KeyedService> ImageServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  if (profile->IsOffTheRecord()) {
+    ProfileIOS& profile) const {
+  if (profile.IsOffTheRecord()) {
     return nullptr;
   }
   return std::make_unique<ImageService>();
@@ -77,7 +77,7 @@ class TailModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ...
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS& profile) const override;
 };
 
 TailModelServiceFactory::TailModelServiceFactory()
@@ -90,7 +90,7 @@ CobrowseServiceFactory::CobrowseServiceFactory()
     : ProfileKeyedServiceFactoryIOS("CobrowseService") {}
 
 std::unique_ptr<KeyedService> ImageServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ImageService>();
 }
 ```

@@ -68,7 +68,7 @@ class FooTabHelper : public web::WebStateObserver {
 class FooServiceFactory : public ProfileKeyedServiceFactoryIOS {
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS& profile) const override;
 };
 ```
 
@@ -88,6 +88,6 @@ class FooTabHelper : public web::WebStateObserver {};
 class FooServiceFactory : public ProfileKeyedServiceFactoryIOS {
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS& profile) const override;
 };
 ```

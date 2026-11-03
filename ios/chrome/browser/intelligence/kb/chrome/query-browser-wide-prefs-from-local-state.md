@@ -45,9 +45,9 @@ bool CredentialProviderService::IsLastUsedProfile() const {
 // Bad: KeyedService factory fails to inject local state for a service needing it.
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<CredentialProviderService>(
-      profile->GetProfileName(), profile->GetPrefs(),
+      profile.GetProfileName(), profile.GetPrefs(),
       profile_password_store);
 }
 ```
@@ -63,9 +63,9 @@ bool CredentialProviderService::IsLastUsedProfile() const {
 // Good: KeyedService factory injects local-state PrefService alongside profile prefs.
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<CredentialProviderService>(
-      profile->GetProfileName(), profile->GetPrefs(),
+      profile.GetProfileName(), profile.GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       profile_password_store);
 }
