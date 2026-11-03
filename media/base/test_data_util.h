@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,7 @@ base::FilePath GetTestDataFilePath(std::string_view name);
 base::FilePath GetTestDataPath();
 
 // Returns the mime type for media/test/data/<file_name>.
-std::string GetMimeTypeForFile(std::string_view file_name);
+std::string_view GetMimeTypeForFile(std::string_view file_name);
 
 // Returns a string containing key value query params in the form of:
 // "key_1=value_1&key_2=value2"

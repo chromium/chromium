@@ -4,6 +4,8 @@
 
 #include "media/test/test_media_source.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,7 +19,7 @@ namespace {
 // This code assumes that |mimetype| is one of the following forms:
 // 1. mimetype without codecs (e.g. audio/mpeg)
 // 2. mimetype with codecs (e.g. video/webm; codecs="vorbis,vp8")
-void SplitMime(const std::string& mimetype,
+void SplitMime(std::string_view mimetype,
                std::string* type,
                std::string* codecs) {
   DCHECK(type);
@@ -45,8 +47,8 @@ namespace media {
 
 constexpr char kSourceId[] = "SourceId";
 
-TestMediaSource::TestMediaSource(const std::string& filename,
-                                 const std::string& mimetype,
+TestMediaSource::TestMediaSource(std::string_view filename,
+                                 std::string_view mimetype,
                                  size_t initial_append_size,
                                  bool initial_sequence_mode)
     : current_position_(0),
@@ -70,7 +72,7 @@ TestMediaSource::TestMediaSource(const std::string& filename,
   CHECK_LE(initial_append_size_, file_data_->size());
 }
 
-TestMediaSource::TestMediaSource(const std::string& filename,
+TestMediaSource::TestMediaSource(std::string_view filename,
                                  size_t initial_append_size,
                                  bool initial_sequence_mode)
     : TestMediaSource(filename,
@@ -79,7 +81,7 @@ TestMediaSource::TestMediaSource(const std::string& filename,
                       initial_sequence_mode) {}
 
 TestMediaSource::TestMediaSource(scoped_refptr<DecoderBuffer> data,
-                                 const std::string& mimetype,
+                                 std::string_view mimetype,
                                  size_t initial_append_size,
                                  bool initial_sequence_mode)
     : file_data_(data),
@@ -290,7 +292,7 @@ ChunkDemuxer::Status TestMediaSource::AddId() {
   return chunk_demuxer_->AddId(kSourceId, type, codecs);
 }
 
-void TestMediaSource::ChangeType(const std::string& mimetype) {
+void TestMediaSource::ChangeType(std::string_view mimetype) {
   chunk_demuxer_->ResetParserState(kSourceId, base::TimeDelta(),
                                    kInfiniteDuration, &last_timestamp_offset_);
   std::string type;
