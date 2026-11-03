@@ -1,50 +1,33 @@
-    <style include="cr-shared-style settings-shared">
-      #emptyListMessage {
-        padding: 0 var(--cr-section-padding);
-        padding-top: 30px;
-      }
-
-      #exceptionList {
-        padding-top: 0;
-      }
-
-      #resetSettingsButton {
-        margin: 0 var(--cr-section-padding);
-        margin-top: 24px;
-      }
-    </style>
-
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}">
-      <div slot="body">[[resetPermissionsMessage_]]</div>
+      <div slot="body">${this.resetPermissionsMessage_}</div>
       <div slot="button-container">
-        <cr-button class="cancel-button" on-click="onCloseDialog_">
+        <cr-button class="cancel-button" @click="${this.onCloseDialogClick_}">
           $i18n{cancel}
         </cr-button>
-        <cr-button class="action-button" on-click="onResetSettings_">
+        <cr-button class="action-button" @click="${this.onResetSettingsClick_}">
           $i18n{siteSettingsSiteResetAll}
         </cr-button>
       </div>
     </cr-dialog>
 
-    <div id="emptyListMessage"
-        hidden$="[[hasExceptions_(chooserExceptions.*)]]">
-      <div class="secondary">[[emptyListMessage_]]</div>
+    <div id="emptyListMessage" ?hidden="${this.hasExceptions_()}">
+      <div class="secondary">${this.emptyListMessage_}</div>
     </div>
 
-    <div hidden$="[[!hasExceptions_(chooserExceptions.*)]]">
+    <div ?hidden="${!this.hasExceptions_()}">
       <cr-button id="resetSettingsButton" role="button" aria-disabled="false"
-          on-click="onConfirmClearSettings_">
+          @click="${this.onConfirmClearSettingsClick_}">
         $i18n{siteSettingsReset}
       </cr-button>
     </div>
 
-    <template id="exceptionList" is="dom-repeat" items="[[chooserExceptions]]">
-      <chooser-exception-list-entry exception="[[item]]"
-          on-show-tooltip="onShowTooltip_">
+    ${this.chooserExceptions.map(item => html`
+      <chooser-exception-list-entry .exception="${item}"
+          @show-tooltip="${this.onShowTooltip_}">
       </chooser-exception-list-entry>
-    </template>
+    `)}
 
     <cr-tooltip id="tooltip" manual-mode position="top">
-      [[tooltipText_]]
+      ${this.tooltipText_}
     </cr-tooltip>

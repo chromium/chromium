@@ -6,11 +6,10 @@ import 'chrome://settings/settings.js';
 import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChooserException, ChooserExceptionListElement, RawChooserException, RawSiteException, SiteException} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -156,16 +155,13 @@ suite('ChooserExceptionList', function() {
     assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
     const chooserType =
         await browserProxy.whenCalled('getChooserExceptionList');
+    await microtasksFinished();
     assertEquals(ChooserType.USB_DEVICES, chooserType);
-
-    // Flush the container to ensure that the container is populated.
-    flush();
 
     // Ensure that each chooser exception is rendered with a
     // chooser-exception-list-entry.
     const chooserExceptionListEntries =
-        testElement.shadowRoot!.querySelectorAll(
-            'chooser-exception-list-entry');
+        testElement.shadowRoot.querySelectorAll('chooser-exception-list-entry');
     assertEquals(3, chooserExceptionListEntries.length);
     for (let i = 0; i < chooserExceptionListEntries.length; ++i) {
       assertChooserExceptionEquals(
@@ -205,11 +201,10 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
-        // Flush the container to ensure that the container is populated.
-        flush();
 
-        const chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
+        const chooserExceptionListEntry = testElement.shadowRoot.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
 
@@ -236,11 +231,10 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
-        // Flush the container to ensure that the container is populated.
-        flush();
 
-        const chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
+        const chooserExceptionListEntry = testElement.shadowRoot.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
 
@@ -267,12 +261,11 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
-        // Flush the container to ensure that the container is populated.
-        flush();
 
         const chooserExceptionListEntries =
-            testElement.shadowRoot!.querySelectorAll(
+            testElement.shadowRoot.querySelectorAll(
                 'chooser-exception-list-entry');
         assertEquals(3, chooserExceptionListEntries.length);
 
@@ -309,7 +302,7 @@ suite('ChooserExceptionList', function() {
     assertEquals(ChooserType.USB_DEVICES, chooserType);
     assertEquals(0, testElement.chooserExceptions.length);
     const emptyListMessage =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#emptyListMessage');
+        testElement.shadowRoot.querySelector<HTMLElement>('#emptyListMessage');
     assertTrue(!!emptyListMessage);
     assertTrue(isVisible(emptyListMessage));
     assertEquals('No USB devices found', emptyListMessage.textContent.trim());
@@ -324,6 +317,7 @@ suite('ChooserExceptionList', function() {
     assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
     const chooserType =
         await browserProxy.whenCalled('getChooserExceptionList');
+    await microtasksFinished();
     assertEquals(ChooserType.USB_DEVICES, chooserType);
     assertEquals(1, testElement.chooserExceptions.length);
 
@@ -332,11 +326,8 @@ suite('ChooserExceptionList', function() {
             .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
         testElement.chooserExceptions[0]!);
 
-    // Flush the container to ensure that the container is populated.
-    flush();
-
     const chooserExceptionListEntry =
-        testElement.shadowRoot!.querySelector('chooser-exception-list-entry');
+        testElement.shadowRoot.querySelector('chooser-exception-list-entry');
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
@@ -370,6 +361,7 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
         assertEquals(1, testElement.chooserExceptions.length);
 
@@ -378,10 +370,7 @@ suite('ChooserExceptionList', function() {
                 .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
             testElement.chooserExceptions[0]!);
 
-        // Flush the container to ensure that the container is populated.
-        flush();
-
-        const chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
+        const chooserExceptionListEntry = testElement.shadowRoot.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
 
@@ -411,12 +400,13 @@ suite('ChooserExceptionList', function() {
           const eventTarget = params.el;
 
           siteListEntry.fire('show-tooltip', {target: testElement, text});
-          assertFalse(innerTooltip.hidden);
-          assertEquals(text, tooltip.innerHTML.trim());
+          await microtasksFinished();
+          assertTrue(isVisible(innerTooltip));
+          assertEquals(text, tooltip.textContent.trim());
 
           eventTarget.dispatchEvent(new MouseEvent(params.eventType));
           await microtasksFinished();
-          assertTrue(innerTooltip.hidden);
+          assertFalse(isVisible(innerTooltip));
         }
       });
 
@@ -431,6 +421,7 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         let chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
         assertEquals(1, testElement.chooserExceptions.length);
 
@@ -453,6 +444,7 @@ suite('ChooserExceptionList', function() {
             'contentSettingChooserPermissionChanged',
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES);
         chooserType = await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
         assertEquals(1, testElement.chooserExceptions.length);
 
@@ -472,11 +464,10 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         let chooserType =
             await browserProxy.whenCalled('getChooserExceptionList');
+        await microtasksFinished();
         assertEquals(ChooserType.USB_DEVICES, chooserType);
-        // Flush the container to ensure that the container is populated.
-        flush();
 
-        let chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
+        let chooserExceptionListEntry = testElement.shadowRoot.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
 
@@ -488,17 +479,17 @@ suite('ChooserExceptionList', function() {
         // Ensure that the incognito tooltip is hidden.
         const incognitoTooltip =
             siteListEntry.shadowRoot.querySelector('#incognitoTooltip');
-        assertFalse(!!incognitoTooltip);
+        assertNull(incognitoTooltip);
 
         // Simulate an incognito session being created.
         browserProxy.resetResolver('getChooserExceptionList');
         browserProxy.setIncognito(true);
         chooserType = await browserProxy.whenCalled('getChooserExceptionList');
-        assertEquals(ChooserType.USB_DEVICES, chooserType);
         // Wait for the updated exception list to render.
         await microtasksFinished();
+        assertEquals(ChooserType.USB_DEVICES, chooserType);
 
-        chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
+        chooserExceptionListEntry = testElement.shadowRoot.querySelector(
             'chooser-exception-list-entry');
         assertTrue(!!chooserExceptionListEntry);
         assertTrue(chooserExceptionListEntry.exception.sites.some(
@@ -516,20 +507,20 @@ suite('ChooserExceptionList', function() {
         const text = loadTimeData.getString('incognitoSiteExceptionDesc');
         // This filtered array should be non-empty due to above test that
         // checks for incognito exception.
-        Array.from(siteListEntries)
-            .filter(entry => entry.model.incognito)
-            .forEach(entry => {
-              assertTrue(!!entry.shadowRoot);
-              const incognitoTooltip =
-                  entry.shadowRoot.querySelector('#incognitoTooltip');
-              // Make sure it is not hidden if it is an incognito
-              // exception
-              assertTrue(!!incognitoTooltip);
-              // Trigger mouse enter and check tooltip text
-              incognitoTooltip.dispatchEvent(new MouseEvent('mouseenter'));
-              assertFalse(innerTooltip.classList.contains('hidden'));
-              assertEquals(text, tooltip.innerHTML.trim());
-            });
+        for (const entry of Array.from(siteListEntries)
+                 .filter(e => e.model.incognito)) {
+          assertTrue(!!entry.shadowRoot);
+          const incognitoTooltip =
+              entry.shadowRoot.querySelector('#incognitoTooltip');
+          // Make sure it is not hidden if it is an incognito
+          // exception
+          assertTrue(!!incognitoTooltip);
+          // Trigger mouse enter and check tooltip text
+          incognitoTooltip.dispatchEvent(new MouseEvent('mouseenter'));
+          await microtasksFinished();
+          assertTrue(isVisible(innerTooltip));
+          assertEquals(text, tooltip.textContent.trim());
+        }
       });
 
   test('show confirmation dialog on reset settings', async function() {
@@ -541,6 +532,7 @@ suite('ChooserExceptionList', function() {
     assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
     const chooserType =
         await browserProxy.whenCalled('getChooserExceptionList');
+    await microtasksFinished();
     assertEquals(ChooserType.USB_DEVICES, chooserType);
     assertEquals(1, testElement.chooserExceptions.length);
 
@@ -549,11 +541,8 @@ suite('ChooserExceptionList', function() {
             .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
         testElement.chooserExceptions[0]!);
 
-    // Flush the container to ensure that the container is populated.
-    flush();
-
     const chooserExceptionListEntry =
-        testElement.shadowRoot!.querySelector('chooser-exception-list-entry');
+        testElement.shadowRoot.querySelector('chooser-exception-list-entry');
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
@@ -563,13 +552,13 @@ suite('ChooserExceptionList', function() {
     // Check both cancelling and accepting the dialog closes it.
     assertFalse(testElement.$.confirmResetSettings.open);
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      const resetButton = testElement.shadowRoot!.querySelector<HTMLElement>(
+      const resetButton = testElement.shadowRoot.querySelector<HTMLElement>(
           '#resetSettingsButton');
       assertTrue(!!resetButton);
       resetButton.click();
       assertTrue(testElement.$.confirmResetSettings.open);
       const actionButtonList =
-          testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+          testElement.shadowRoot.querySelectorAll<HTMLElement>(
               `#confirmResetSettings .${buttonType}`);
       assertEquals(1, actionButtonList.length);
       actionButtonList[0]!.click();

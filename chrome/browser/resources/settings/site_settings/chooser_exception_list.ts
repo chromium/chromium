@@ -9,26 +9,24 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import '../settings_shared.css.js';
-import '../i18n_setup.js';
 import './chooser_exception_list_entry.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {TooltipMixin} from '../tooltip_mixin.js';
+import {TooltipMixinLit} from '../tooltip_mixin_lit.js';
 
-import {getTemplate} from './chooser_exception_list.html.js';
+import {getCss} from './chooser_exception_list.css.js';
+import {getHtml} from './chooser_exception_list.html.js';
 import type {ContentSettingsTypes} from './constants.js';
 import {ChooserType} from './constants.js';
 import type {ChooserException, RawChooserException} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 export interface ChooserExceptionListElement {
   $: {
@@ -37,8 +35,8 @@ export interface ChooserExceptionListElement {
   };
 }
 
-const ChooserExceptionListElementBase = TooltipMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const ChooserExceptionListElementBase = TooltipMixinLit(
+    SiteSettingsMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))));
 
 export class ChooserExceptionListElement extends
     ChooserExceptionListElementBase {
@@ -46,55 +44,39 @@ export class ChooserExceptionListElement extends
     return 'chooser-exception-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Array of chooser exceptions to display in the widget.
        */
-      chooserExceptions: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+      chooserExceptions: {type: Array},
 
       /**
        * The string ID of the chooser type that this element is displaying data
        * for.
        * See site_settings/constants.js for possible values.
        */
-      chooserType: {
-        observer: 'chooserTypeChanged_',
-        type: String,
-        value: ChooserType.NONE,
-      },
+      chooserType: {type: String},
 
-      emptyListMessage_: {
-        type: String,
-        value: '',
-      },
-
-      hasIncognito_: Boolean,
-
-      resetPermissionsMessage_: {
-        type: String,
-        value: '',
-      },
-
-      tooltipText_: String,
+      emptyListMessage_: {type: String},
+      resetPermissionsMessage_: {type: String},
+      tooltipText_: {type: String},
     };
   }
 
-  declare chooserExceptions: ChooserException[];
-  declare chooserType: ChooserType;
-  declare private emptyListMessage_: string;
-  declare private hasIncognito_: boolean;
-  declare private resetPermissionsMessage_: string;
-  declare private tooltipText_: string;
+  accessor chooserExceptions: ChooserException[] = [];
+  accessor chooserType: ChooserType = ChooserType.NONE;
+  protected accessor emptyListMessage_: string = '';
+  protected accessor resetPermissionsMessage_: string = '';
+  protected accessor tooltipText_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
@@ -105,10 +87,16 @@ export class ChooserExceptionListElement extends
           this.objectWithinChooserTypeChanged_(category, chooserType);
         });
     this.addWebUiListener(
-        'onIncognitoStatusChanged',
-        (hasIncognito: boolean) =>
-            this.onIncognitoStatusChanged_(hasIncognito));
+        'onIncognitoStatusChanged', () => this.onIncognitoStatusChanged_());
     this.browserProxy.updateIncognitoStatus();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('chooserType')) {
+      this.chooserTypeChanged_();
+    }
   }
 
   /**
@@ -131,8 +119,7 @@ export class ChooserExceptionListElement extends
    * disabled. Only called on change (opening N incognito windows only fires one
    * message). Another message is sent when the *last* incognito window closes.
    */
-  private onIncognitoStatusChanged_(hasIncognito: boolean) {
-    this.hasIncognito_ = hasIncognito;
+  private onIncognitoStatusChanged_() {
     this.populateList_();
   }
 
@@ -182,12 +169,14 @@ export class ChooserExceptionListElement extends
   /**
    * @return true if there are any chooser exceptions for this chooser type.
    */
-  private hasExceptions_(): boolean {
+  protected hasExceptions_(): boolean {
     return this.chooserExceptions.length > 0;
   }
 
-  private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
+  protected async onShowTooltip_(
+      e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
+    await this.updateComplete;
     // cr-tooltip normally determines the target from the |for| property,
     // which is a selector. Here cr-tooltip is being reused by multiple
     // potential targets.
@@ -213,9 +202,10 @@ export class ChooserExceptionListElement extends
   }
 
   /**
-   * Confirms the resetting of all content settings for an origin.
+   * Opens the dialog that confirms resetting all chooser exceptions for this
+   * chooser type.
    */
-  private onConfirmClearSettings_(e: Event) {
+  protected onConfirmClearSettingsClick_(e: Event) {
     e.preventDefault();
     this.$.confirmResetSettings.showModal();
   }
@@ -224,10 +214,14 @@ export class ChooserExceptionListElement extends
     (e.target as HTMLElement).closest('cr-dialog')!.close();
   }
 
+  protected onCloseDialogClick_(e: Event) {
+    this.onCloseDialog_(e);
+  }
+
   /**
-   * Resets all permissions for the current origin.
+   * Resets all chooser exceptions for this chooser type.
    */
-  private onResetSettings_(e: Event) {
+  protected onResetSettingsClick_(e: Event) {
     this.chooserExceptions.forEach(exception => {
       exception.sites.forEach(site => {
         this.browserProxy.resetChooserExceptionForSite(
