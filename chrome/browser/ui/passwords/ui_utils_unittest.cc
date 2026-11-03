@@ -18,8 +18,12 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -229,4 +233,21 @@ TEST(ManagePasswordsViewUtilTest,
   form.display_name = u" \n ";
   EXPECT_THAT(GetCredentialLabelsForAccountChooser(form),
               Pair(u"user Fake claim", u""));
+}
+
+TEST(ManagePasswordsViewUtilTest,
+     ScaleImageForAccountAvatarCropsNonSquareImage) {
+  SkBitmap wide_bitmap;
+  wide_bitmap.allocN32Pixels(48, 24);
+  wide_bitmap.eraseColor(SK_ColorRED);
+  wide_bitmap.erase(SK_ColorGREEN, SkIRect::MakeXYWH(12, 0, 24, 24));
+
+  gfx::ImageSkia scaled = ScaleImageForAccountAvatar(
+      gfx::ImageSkia::CreateFrom1xBitmap(wide_bitmap), 24);
+  ASSERT_FALSE(scaled.isNull());
+  EXPECT_EQ(scaled.width(), 24);
+  EXPECT_EQ(scaled.height(), 24);
+  EXPECT_EQ(scaled.bitmap()->getColor(0, 12), SK_ColorGREEN);
+  EXPECT_EQ(scaled.bitmap()->getColor(12, 12), SK_ColorGREEN);
+  EXPECT_EQ(scaled.bitmap()->getColor(23, 12), SK_ColorGREEN);
 }

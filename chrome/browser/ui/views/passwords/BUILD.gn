@@ -105,6 +105,7 @@ source_set("impl") {
     ":passwords",
     "//chrome/app/vector_icons",
     "//chrome/browser/favicon",
+    "//chrome/browser/glic/resources:grit",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",

@@ -162,6 +162,7 @@ TEST_F(CredentialManagerDialogControllerTest, PasswordCombinedSelectorController
   EXPECT_EQ(controller().GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kCredentialManager);
   EXPECT_FALSE(controller().ShouldShowTopIllustration());
+  EXPECT_TRUE(controller().GetActorIconUrl().is_empty());
   EXPECT_FALSE(controller().GetTitle().empty());
   EXPECT_TRUE(controller().GetSubtitle().empty());
   EXPECT_TRUE(controller().GetSubtitleLinkRange().is_empty());

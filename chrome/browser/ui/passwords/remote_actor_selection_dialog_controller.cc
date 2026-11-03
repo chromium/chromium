@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
@@ -15,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace password_manager {
 
@@ -56,6 +58,12 @@ void RemoteActorSelectionDialogController::Show() {
   view_->ShowAccountChooser();
 }
 
+void RemoteActorSelectionDialogController::SetActorIconUrl(
+    GURL actor_icon_url) {
+  CHECK(!view_);
+  actor_icon_url_ = std::move(actor_icon_url);
+}
+
 PasswordCombinedSelectorController::DisplayType
 RemoteActorSelectionDialogController::GetDisplayType() const {
   return DisplayType::kRemoteActor;
@@ -63,6 +71,14 @@ RemoteActorSelectionDialogController::GetDisplayType() const {
 
 bool RemoteActorSelectionDialogController::ShouldShowTopIllustration() const {
   return true;
+}
+
+GURL RemoteActorSelectionDialogController::GetActorIconUrl() const {
+  if (actor_icon_url_.is_valid() &&
+      actor_icon_url_.SchemeIs(url::kHttpsScheme)) {
+    return actor_icon_url_;
+  }
+  return GURL();
 }
 
 std::u16string RemoteActorSelectionDialogController::GetTitle() const {

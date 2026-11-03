@@ -70,17 +70,17 @@ bool SameDomainOrHost(const GURL& gurl, const url::Origin& origin) {
 
 }  // namespace
 
-gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
-  gfx::Size size = skia_image.size();
-  if (size.height() != size.width()) {
-    gfx::Rect target(size);
-    int side = std::min(size.height(), size.width());
+gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image,
+                                          int size) {
+  gfx::Size image_size = skia_image.size();
+  if (image_size.height() != image_size.width()) {
+    gfx::Rect target(image_size);
+    int side = std::min(image_size.height(), image_size.width());
     target.ClampToCenteredSize(gfx::Size(side, side));
     skia_image = gfx::ImageSkiaOperations::ExtractSubset(skia_image, target);
   }
   return gfx::ImageSkiaOperations::CreateResizedImage(
-      skia_image, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kAvatarImageSize, kAvatarImageSize));
+      skia_image, skia::ImageOperations::RESIZE_BEST, gfx::Size(size, size));
 }
 
 std::u16string GetSingleLineDisplayText(std::u16string text) {

@@ -54,8 +54,9 @@ class Profile;
 // The desired width and height in pixels for an account avatar.
 inline constexpr int kAvatarImageSize = 32;
 
-// Crops and scales |image_skia| to the desired size for an account avatar.
-gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia image_skia);
+// Crops and scales `skia_image` to the desired `size` for an account avatar.
+gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image,
+                                          int size = kAvatarImageSize);
 
 // Returns `text` prepared to be displayed on a single line in the password
 // manager UI. Control characters, line breaks and other whitespace sequences

@@ -15,6 +15,7 @@
 
 class AccountChooserPrompt;
 class AutoSigninFirstRunPrompt;
+class GURL;
 class PasswordsModelDelegate;
 class Profile;
 
@@ -60,6 +61,7 @@ class CredentialManagerDialogControllerImpl
   // PasswordCombinedSelectorController:
   DisplayType GetDisplayType() const override;
   bool ShouldShowTopIllustration() const override;
+  GURL GetActorIconUrl() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSubtitle() const override;
   gfx::Range GetSubtitleLinkRange() const override;

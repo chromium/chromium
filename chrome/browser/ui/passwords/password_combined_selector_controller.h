@@ -13,6 +13,8 @@
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
 
+class GURL;
+
 namespace password_manager {
 struct PasswordForm;
 }
@@ -22,6 +24,8 @@ class PasswordCombinedSelectorController : public PasswordBaseDialogController {
  public:
   enum class DisplayType {
     kCredentialManager,
+    // Specialized dialog for allowing a remote actor (e.g. an AI agent) to
+    // sign in.
     kRemoteActor,
   };
 
@@ -33,6 +37,9 @@ class PasswordCombinedSelectorController : public PasswordBaseDialogController {
 
   virtual DisplayType GetDisplayType() const = 0;
   virtual bool ShouldShowTopIllustration() const = 0;
+  // Returns the custom icon URL for the remote actor header illustration, or
+  // an empty GURL to use the default icon.
+  virtual GURL GetActorIconUrl() const = 0;
 
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetSubtitle() const = 0;

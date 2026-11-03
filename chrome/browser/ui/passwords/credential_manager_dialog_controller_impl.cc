@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -258,6 +259,10 @@ CredentialManagerDialogControllerImpl::GetDisplayType() const {
 
 bool CredentialManagerDialogControllerImpl::ShouldShowTopIllustration() const {
   return false;
+}
+
+GURL CredentialManagerDialogControllerImpl::GetActorIconUrl() const {
+  return GURL();
 }
 
 std::u16string CredentialManagerDialogControllerImpl::GetTitle() const {

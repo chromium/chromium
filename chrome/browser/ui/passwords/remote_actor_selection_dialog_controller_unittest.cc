@@ -70,6 +70,14 @@ TEST_F(RemoteActorSelectionDialogControllerTest, Properties) {
   EXPECT_EQ(controller.GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kRemoteActor);
   EXPECT_TRUE(controller.ShouldShowTopIllustration());
+  EXPECT_TRUE(controller.GetActorIconUrl().is_empty());
+  const GURL custom_icon_url("https://www.gstatic.com/images/icon.png");
+  controller.SetActorIconUrl(custom_icon_url);
+  EXPECT_EQ(controller.GetActorIconUrl(), custom_icon_url);
+  controller.SetActorIconUrl(GURL("http://www.gstatic.com/images/icon.png"));
+  EXPECT_TRUE(controller.GetActorIconUrl().is_empty());
+  controller.SetActorIconUrl(GURL("not-a-valid-url"));
+  EXPECT_TRUE(controller.GetActorIconUrl().is_empty());
   EXPECT_EQ(controller.GetTitle(),
             u"Allow Gemini to sign in to example.com for you?");
   EXPECT_EQ(controller.GetSubtitle(),
