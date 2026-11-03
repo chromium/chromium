@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "media/base/audio_bus.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/media/cma/backend/android/audio_track_jni_headers/AudioSinkAudioTrackImpl_jni.h"
@@ -108,7 +109,7 @@ AudioSinkAndroidAudioTrackImpl::~AudioSinkAndroidAudioTrackImpl() {
 bool AudioSinkAndroidAudioTrackImpl::Initialize(int audio_track_session_id,
                                                 bool is_apk_audio) {
   j_audio_sink_audiotrack_impl_ = Java_AudioSinkAudioTrackImpl_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
+      base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
       static_cast<int>(content_type_), num_channels_, input_samples_per_second_,
       kDirectBufferSize, audio_track_session_id, is_apk_audio, use_hw_av_sync_);
   if (!j_audio_sink_audiotrack_impl_) {

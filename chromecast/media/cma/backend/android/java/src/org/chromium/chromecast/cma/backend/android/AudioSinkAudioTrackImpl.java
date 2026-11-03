@@ -14,9 +14,14 @@ import android.util.Pair;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -30,28 +35,26 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 /**
- * Implements an audio sink object using Android's AudioTrack module to
- * playback audio samples.
- * It assumes the following fixed configuration parameters:
- *   - PCM audio format (i.e., no encoded data like mp3)
- *   - samples are 4-byte floats, interleaved channels (i.e., interleaved audio
- *     data for stereo is "LRLRLRLRLR").
- * The configurable audio parameters are the sample rate (typically 44.1 or
+ * Implements an audio sink object using Android's AudioTrack module to playback audio samples. It
+ * assumes the following fixed configuration parameters: - PCM audio format (i.e., no encoded data
+ * like mp3) - samples are 4-byte floats, interleaved channels (i.e., interleaved audio data for
+ * stereo is "LRLRLRLRLR"). The configurable audio parameters are the sample rate (typically 44.1 or
  * 48 KHz) and the channel number.
  *
- * PCM data is shared through the JNI using memory-mapped ByteBuffer objects.
- * The AudioTrack.write() function is called in BLOCKING mode. That means when
- * in PLAYING state the call will block until all data has been accepted
- * (queued) by the Audio server. The native side feeding data in through the
- * JNI is assumed to be running in a dedicated thread to avoid hanging other
+ * <p>PCM data is shared through the JNI using memory-mapped ByteBuffer objects. The
+ * AudioTrack.write() function is called in BLOCKING mode. That means when in PLAYING state the call
+ * will block until all data has been accepted (queued) by the Audio server. The native side feeding
+ * data in through the JNI is assumed to be running in a dedicated thread to avoid hanging other
  * parts of the application.
  *
- * No locking of instance data is done as it is assumed to be called from a
- * single thread in native code.
- *
+ * <p>No locking of instance data is done as it is assumed to be called from a single thread in
+ * native code.
  */
 @JNINamespace("chromecast::media")
 class AudioSinkAudioTrackImpl {
+    @JniType("chromecast::media::AudioSinkAndroidAudioTrackImpl")
+    interface NativeAudioSinkAndroidAudioTrackImpl extends JniTypeToken {}
+
     private static final String TAG = "AATrack";
     private static final int DEBUG_LEVEL = 0;
 
@@ -123,7 +126,8 @@ class AudioSinkAudioTrackImpl {
     // Additional padding for minimum buffer time, determined experimentally.
     private static final long MIN_BUFFERED_TIME_PADDING_US = 120000;
 
-    private final long mNativeAudioSinkAudioTrackImpl;
+    private @Nullable JniRawPtr<NativeAudioSinkAndroidAudioTrackImpl>
+            mNativeAudioSinkAudioTrackImpl;
 
     private String mTag;
 
@@ -250,12 +254,24 @@ class AudioSinkAudioTrackImpl {
 
     /** Construction */
     @CalledByNative
-    private static AudioSinkAudioTrackImpl create(long nativeAudioSinkAudioTrackImpl,
-            @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
-            int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
+    static @Nullable AudioSinkAudioTrackImpl create(
+            JniRawPtr<NativeAudioSinkAndroidAudioTrackImpl> nativeAudioSinkAudioTrackImpl,
+            @AudioContentType int castContentType,
+            int channelCount,
+            int sampleRateInHz,
+            int bytesPerBuffer,
+            int sessionId,
+            boolean isApkAudio,
+            boolean useHwAvSync) {
         try {
-            return new AudioSinkAudioTrackImpl(nativeAudioSinkAudioTrackImpl, castContentType,
-                    channelCount, sampleRateInHz, bytesPerBuffer, sessionId, isApkAudio,
+            return new AudioSinkAudioTrackImpl(
+                    nativeAudioSinkAudioTrackImpl,
+                    castContentType,
+                    channelCount,
+                    sampleRateInHz,
+                    bytesPerBuffer,
+                    sessionId,
+                    isApkAudio,
                     useHwAvSync);
         } catch (UnsupportedOperationException e) {
             Log.e(TAG, "Failed to create audio sink track");
@@ -263,9 +279,15 @@ class AudioSinkAudioTrackImpl {
         }
     }
 
-    private AudioSinkAudioTrackImpl(long nativeAudioSinkAudioTrackImpl,
-            @AudioContentType int castContentType, int channelCount, int sampleRateInHz,
-            int bytesPerBuffer, int sessionId, boolean isApkAudio, boolean useHwAvSync) {
+    private AudioSinkAudioTrackImpl(
+            JniRawPtr<NativeAudioSinkAndroidAudioTrackImpl> nativeAudioSinkAudioTrackImpl,
+            @AudioContentType int castContentType,
+            int channelCount,
+            int sampleRateInHz,
+            int bytesPerBuffer,
+            int sessionId,
+            boolean isApkAudio,
+            boolean useHwAvSync) {
         mNativeAudioSinkAudioTrackImpl = nativeAudioSinkAudioTrackImpl;
         mLastTimestampUpdateNsec = NO_TIMESTAMP;
         mTriggerTimestampUpdateNow = false;
@@ -379,12 +401,14 @@ class AudioSinkAudioTrackImpl {
         mAudioTrackTimestampBuffer.putLong(8, 0);
         mAudioTrackTimestampBuffer.putLong(16, System.nanoTime());
 
-        AudioSinkAudioTrackImplJni.get()
-                .cacheDirectBufferAddress(
-                        mNativeAudioSinkAudioTrackImpl,
-                        mPcmBuffer,
-                        mRenderingDelayBuffer,
-                        mAudioTrackTimestampBuffer);
+        if (mNativeAudioSinkAudioTrackImpl != null) {
+            AudioSinkAudioTrackImplJni.get()
+                    .cacheDirectBufferAddress(
+                            mNativeAudioSinkAudioTrackImpl,
+                            mPcmBuffer,
+                            mRenderingDelayBuffer,
+                            mAudioTrackTimestampBuffer);
+        }
     }
 
     @CalledByNative
@@ -456,6 +480,10 @@ class AudioSinkAudioTrackImpl {
         Log.i(mTag, "Close AudioSinkAudioTrackImpl!");
         if (!isStopped()) mAudioTrack.stop();
         mAudioTrack.release();
+        if (mNativeAudioSinkAudioTrackImpl != null) {
+            mNativeAudioSinkAudioTrackImpl.release();
+            mNativeAudioSinkAudioTrackImpl = null;
+        }
     }
 
     private String getPlayStateString() {
@@ -841,7 +869,7 @@ class AudioSinkAudioTrackImpl {
     @NativeMethods
     interface Natives {
         void cacheDirectBufferAddress(
-                long nativeAudioSinkAndroidAudioTrackImpl,
+                JniPtr<NativeAudioSinkAndroidAudioTrackImpl> self,
                 ByteBuffer mPcmBuffer,
                 ByteBuffer mRenderingDelayBuffer,
                 ByteBuffer mAudioTrackTimestampBuffer);
