@@ -180,6 +180,7 @@ suite('OpenTabsDelegateTest', () => {
   test('returns id and header', () => {
     assertEquals('open-tabs', delegate.getId());
     assertEquals('Recently visited', delegate.getHeader());
+    assertEquals('OpenTabs', delegate.getHistogramSectionName());
   });
 
   test('returns tabs sorted by MRU across windows', async () => {

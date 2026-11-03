@@ -232,6 +232,24 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="No user action taken"/>
 </enum>
 
+<!-- LINT.IfChange(OrganizerSectionMenuOption) -->
+
+<enum name="OrganizerSectionMenuOption">
+  <int value="0" label="ShowSome"/>
+  <int value="1" label="ShowAll"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_header.ts:OrganizerSectionMenuOption) -->
+
+<!-- LINT.IfChange(OrganizerSectionToggleAction) -->
+
+<enum name="OrganizerSectionToggleAction">
+  <int value="0" label="Expand"/>
+  <int value="1" label="Collapse"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section.ts:OrganizerSectionToggleAction) -->
+
 <!-- LINT.IfChange(PersistentStoreType) -->
 
 <enum name="PersistentStoreType">

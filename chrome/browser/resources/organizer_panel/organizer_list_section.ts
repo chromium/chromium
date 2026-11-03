@@ -14,6 +14,7 @@ import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {OrganizerListSectionHeaderElement} from './organizer_list_section_header.js';
+import {OrganizerSectionMenuOption} from './organizer_list_section_header.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 import type {BrowserProxy, SectionState} from './organizer_panel.mojom-webui.js';
 import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
@@ -21,6 +22,18 @@ import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
 export const INITIAL_ITEM_COUNT = 3;
+
+// LINT.IfChange(OrganizerSectionToggleAction)
+/**
+ * These values are persisted to logs and should not be renumbered or reused.
+ * See tools/metrics/histograms/metadata/tab/enums.xml.
+ */
+export enum OrganizerSectionToggleAction {
+  EXPAND = 0,
+  COLLAPSE = 1,
+  COUNT = COLLAPSE + 1,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:OrganizerSectionToggleAction)
 
 export interface OrganizerListSectionElement {
   $: {
@@ -237,6 +250,29 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(this.delegate);
     this.browserProxy_.handler.setSectionExpanded(
         this.delegate.getId(), this.expanded);
+  }
+
+  protected onToggleAction_(e: CustomEvent<{expanded: boolean}>) {
+    assert(this.delegate);
+    chrome.histograms.recordEnumerationValue(
+        `Tabs.Organizer.Section.${
+            this.delegate.getHistogramSectionName()}.ToggleAction`,
+        e.detail.expanded ? OrganizerSectionToggleAction.EXPAND :
+                            OrganizerSectionToggleAction.COLLAPSE,
+        OrganizerSectionToggleAction.COUNT);
+  }
+
+  protected onMenuAction_(
+      e: CustomEvent<{option: OrganizerSectionMenuOption}>) {
+    assert(this.delegate);
+    const showAll = e.detail.option === OrganizerSectionMenuOption.SHOW_ALL;
+    if (this.showAll_ === showAll) {
+      return;
+    }
+    chrome.histograms.recordEnumerationValue(
+        `Tabs.Organizer.Section.${
+            this.delegate.getHistogramSectionName()}.MenuAction`,
+        e.detail.option, OrganizerSectionMenuOption.COUNT);
   }
 
   protected hasZeroState_(): boolean {

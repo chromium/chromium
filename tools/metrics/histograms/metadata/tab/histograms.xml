@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Tab" summary="a single tab"/>
 </variants>
 
+<!-- LINT.IfChange(OrganizerSection) -->
+
+<variants name="OrganizerSection">
+  <variant name="CrossDeviceTabs" summary="Cross-device tabs"/>
+  <variant name="OpenTabs" summary="Open tabs"/>
+  <variant name="RecentlyClosed" summary="Recently closed"/>
+  <variant name="TabGroups" summary="Tab groups"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section_delegate.ts:OrganizerSection) -->
+
 <variants name="RecentlyClosedType">
   <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
   <variant name="Group" summary="RecentlyClosedGroup"/>
@@ -2552,6 +2563,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     [iOS] Number of tabs older than 21 days. Recorded at cold launch.
   </summary>
+</histogram>
+
+<histogram name="Tabs.Organizer.Section.{Section}.MenuAction"
+    enum="OrganizerSectionMenuOption" expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the option selected by the user from the 3-dot action menu in the
+    {Section} section header of the Organizer panel.
+  </summary>
+  <token key="Section" variants="OrganizerSection"/>
+</histogram>
+
+<histogram name="Tabs.Organizer.Section.{Section}.ToggleAction"
+    enum="OrganizerSectionToggleAction" expires_after="2027-05-02">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records whether the user expanded or collapsed the {Section} section in the
+    Organizer panel via the section header controls.
+  </summary>
+  <token key="Section" variants="OrganizerSection"/>
 </histogram>
 
 <histogram name="Tabs.PageLoad.TimeSinceActive2" units="ms"

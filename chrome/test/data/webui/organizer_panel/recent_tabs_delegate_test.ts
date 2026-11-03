@@ -133,6 +133,7 @@ suite('RecentTabsDelegateTest', () => {
   test('returns id and header', () => {
     assertEquals('recently-closed', delegate.getId());
     assertEquals('Recently closed', delegate.getHeader());
+    assertEquals('RecentlyClosed', delegate.getHistogramSectionName());
   });
 
   test('returns tabs sorted by MRU', async () => {

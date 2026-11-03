@@ -12,7 +12,9 @@ export function getHtml(this: OrganizerListSectionElement) {
 <organizer-list-section-header id="header" ?expanded="${this.isExpanded_()}"
     ?disabled="${this.isSearching_()}" ?show-all="${this.showAll_}"
     @expanded-changed="${this.onExpandedChanged_}"
-    @show-all-changed="${this.onShowAllChanged_}">
+    @menu-action="${this.onMenuAction_}"
+    @show-all-changed="${this.onShowAllChanged_}"
+    @toggle-action="${this.onToggleAction_}">
   ${this.delegate?.getHeader() || ''}
 </organizer-list-section-header>
 <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"

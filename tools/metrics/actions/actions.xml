@@ -29338,6 +29338,24 @@ should be able to be added at any place in this file.
   <description>Settings: Users: Remove a whitelisted user</description>
 </action>
 
+<action name="OrganizerPanel.CollapseSection">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a section in the organizer panel is manually collapsed by the
+    user.
+  </description>
+</action>
+
+<action name="OrganizerPanel.ExpandSection">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when a section in the organizer panel is manually expanded by the
+    user.
+  </description>
+</action>
+
 <action name="OrganizerPanel.OpenButtonPressed">
   <owner>kunaldaftari@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

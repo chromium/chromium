@@ -74,6 +74,7 @@ build_webui("build") {
 
   webui_context_type = "trusted"
   ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/chrome_histograms.d.ts" ]
 
   ts_deps = [
     "//chrome/browser/resources/tab_group_shared:build_ts",

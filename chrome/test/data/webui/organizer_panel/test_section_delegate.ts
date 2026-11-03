@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem, OrganizerSection} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 export class TestSectionDelegate implements
     OrganizerListSectionDelegate<unknown> {
   private id_: string;
   private header_: string;
+  private histogramSectionName_: OrganizerSection;
   private items_: Array<OrganizerListSectionItem<unknown>>;
   getZeroState?: () => TemplateResult;
   shouldAlwaysShowZeroState?: () => boolean;
@@ -28,9 +29,11 @@ export class TestSectionDelegate implements
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
       zeroState?: TemplateResult, id: string = 'open-tabs',
-      alwaysShowZeroState: boolean = false) {
+      alwaysShowZeroState: boolean = false,
+      histogramSectionName: OrganizerSection = 'OpenTabs') {
     this.id_ = id;
     this.header_ = header;
+    this.histogramSectionName_ = histogramSectionName;
     this.items_ = items;
     if (zeroState) {
       this.getZeroState = () => zeroState;
@@ -48,6 +51,10 @@ export class TestSectionDelegate implements
 
   getHeader(): string {
     return this.header_;
+  }
+
+  getHistogramSectionName(): OrganizerSection {
+    return this.histogramSectionName_;
   }
 
   getItems(): Promise<Array<OrganizerListSectionItem<unknown>>> {

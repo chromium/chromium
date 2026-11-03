@@ -22,6 +22,18 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './organizer_list_section_header.css.js';
 import {getHtml} from './organizer_list_section_header.html.js';
 
+// LINT.IfChange(OrganizerSectionMenuOption)
+/**
+ * These values are persisted to logs and should not be renumbered or reused.
+ * See tools/metrics/histograms/metadata/tab/enums.xml.
+ */
+export enum OrganizerSectionMenuOption {
+  SHOW_SOME = 0,
+  SHOW_ALL = 1,
+  COUNT = SHOW_ALL + 1,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:OrganizerSectionMenuOption)
+
 export interface OrganizerListSectionHeaderElement {
   $: {
     expandButton: CrExpandButtonElement,
@@ -106,7 +118,7 @@ export class OrganizerListSectionHeaderElement extends
 
     if (e.key === forwardKey) {
       if (!this.disabled && !this.expanded) {
-        this.expanded = true;
+        this.setExpandedFromUser_(true);
         e.preventDefault();
         e.stopPropagation();
       }
@@ -115,7 +127,7 @@ export class OrganizerListSectionHeaderElement extends
 
     if (e.key === backwardKey) {
       if (!this.disabled && this.expanded) {
-        this.expanded = false;
+        this.setExpandedFromUser_(false);
         e.preventDefault();
         e.stopPropagation();
       }
@@ -150,7 +162,18 @@ export class OrganizerListSectionHeaderElement extends
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    this.expanded = e.detail.value;
+    if (this.disabled || this.expanded === e.detail.value) {
+      return;
+    }
+    this.setExpandedFromUser_(e.detail.value);
+  }
+
+  private setExpandedFromUser_(expanded: boolean) {
+    this.expanded = expanded;
+    chrome.histograms.recordUserAction(
+        expanded ? 'OrganizerPanel.ExpandSection' :
+                   'OrganizerPanel.CollapseSection');
+    this.fire('toggle-action', {expanded});
   }
 
   protected onMenuButtonClick_(e: Event) {
@@ -168,11 +191,13 @@ export class OrganizerListSectionHeaderElement extends
   protected onShowSomeClick_() {
     this.$.menu.close();
     this.showAll = false;
+    this.fire('menu-action', {option: OrganizerSectionMenuOption.SHOW_SOME});
   }
 
   protected onShowAllClick_() {
     this.$.menu.close();
     this.showAll = true;
+    this.fire('menu-action', {option: OrganizerSectionMenuOption.SHOW_ALL});
   }
 }
 

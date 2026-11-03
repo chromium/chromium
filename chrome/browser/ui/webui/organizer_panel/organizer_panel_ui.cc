@@ -64,7 +64,9 @@ std::optional<GURL> OrganizerPanelUIConfig::GetPreloadEngagementAliasURL()
 }
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {
+    : TopChromeWebUIController(web_ui,
+                               /*enable_chrome_send=*/false,
+                               /*enable_chrome_histograms=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIOrganizerPanelHost);

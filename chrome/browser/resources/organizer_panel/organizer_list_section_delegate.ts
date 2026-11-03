@@ -11,6 +11,11 @@ export interface OrganizerListSectionClient {
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>): void;
 }
 
+// LINT.IfChange(OrganizerSection)
+export type OrganizerSection =
+    'CrossDeviceTabs'|'OpenTabs'|'RecentlyClosed'|'TabGroups';
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerSection)
+
 // Delegate for a section in the organizer list.
 export interface OrganizerListSectionDelegate<T> {
   // Hooks up the section element to receive updates from this section's model.
@@ -21,6 +26,9 @@ export interface OrganizerListSectionDelegate<T> {
 
   // Returns the section header.
   getHeader(): string;
+
+  // Returns the section name used in UMA histogram names.
+  getHistogramSectionName(): OrganizerSection;
 
   // Returns all items that should be shown in the section.
   getItems(): Promise<Array<OrganizerListSectionItem<T>>>;

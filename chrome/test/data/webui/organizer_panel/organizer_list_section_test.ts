@@ -4,11 +4,13 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import {INITIAL_ITEM_COUNT, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {INITIAL_ITEM_COUNT, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, OrganizerSectionMenuOption, OrganizerSectionToggleAction, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -21,9 +23,11 @@ suite('OrganizerListSectionTest', () => {
       OrganizerPanelPageHandlerRemote;
   let remotePage: OrganizerPanelPageRemote;
   let testSearchProxy: TestSearchApiProxy;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
     mockHandler = TestMock.fromClass(OrganizerPanelPageHandlerRemote);
     mockHandler.setPromiseResolveFor(
         'getSectionState', {state: {expanded: true, showAll: false}});
@@ -956,4 +960,87 @@ suite('OrganizerListSectionTest', () => {
                 .querySelectorAll('organizer-list-section-item')
                 .length);
       });
+
+  test('records ToggleAction and MenuAction histograms', async () => {
+    listSection.delegate =
+        new TestSectionDelegate('Open Tabs', [{title: ['Tab 1']}]);
+    await microtasksFinished();
+
+    const header = listSection.$.header;
+    const toggleHistogram = 'Tabs.Organizer.Section.OpenTabs.ToggleAction';
+    header.$.expandButton.click();
+    await microtasksFinished();
+    assertEquals(
+        1,
+        metrics.count(toggleHistogram, OrganizerSectionToggleAction.COLLAPSE));
+
+    header.$.expandButton.click();
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count(toggleHistogram, OrganizerSectionToggleAction.EXPAND));
+
+    const menuHistogram = 'Tabs.Organizer.Section.OpenTabs.MenuAction';
+    for (const [button, option] of [
+             [header.$.showAllButton, OrganizerSectionMenuOption.SHOW_ALL],
+             [header.$.showSomeButton, OrganizerSectionMenuOption.SHOW_SOME],
+    ] as const) {
+      header.$.menuButton.click();
+      await microtasksFinished();
+      button.click();
+      await microtasksFinished();
+      assertEquals(1, metrics.count(menuHistogram, option));
+    }
+  });
+
+  test('does not record MenuAction when selection is unchanged', async () => {
+    listSection.delegate =
+        new TestSectionDelegate('Open Tabs', [{title: ['Tab 1']}]);
+    await microtasksFinished();
+
+    const header = listSection.$.header;
+    const menuHistogram = 'Tabs.Organizer.Section.OpenTabs.MenuAction';
+
+    // Click Show All: changes state from Show Some to Show All and logs.
+    header.$.menuButton.click();
+    await microtasksFinished();
+    header.$.showAllButton.click();
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count(menuHistogram, OrganizerSectionMenuOption.SHOW_ALL));
+
+    // Click Show All a second time: no metric logged since value didn't change.
+    header.$.menuButton.click();
+    await microtasksFinished();
+    header.$.showAllButton.click();
+    await microtasksFinished();
+    assertEquals(
+        1, metrics.count(menuHistogram, OrganizerSectionMenuOption.SHOW_ALL));
+  });
+
+  test('does not record metrics on programmatic state updates', async () => {
+    mockHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: false, showAll: false}});
+    listSection.delegate = new TestSectionDelegate(
+        'Open Tabs', [{title: ['Tab 1']}], undefined, 'open-tabs');
+    await microtasksFinished();
+
+    remotePage.onSectionsStateChanged(
+        {'open-tabs': {expanded: true, showAll: true}});
+    await microtasksFinished();
+    remotePage.onSectionsStateChanged(
+        {'open-tabs': {expanded: false, showAll: false}});
+    await microtasksFinished();
+
+    listSection.searchQuery = 'Tab';
+    await microtasksFinished();
+    listSection.searchQuery = '';
+    await microtasksFinished();
+
+    assertEquals(
+        0, metrics.count('Tabs.Organizer.Section.OpenTabs.ToggleAction'));
+    assertEquals(
+        0, metrics.count('Tabs.Organizer.Section.OpenTabs.MenuAction'));
+    assertEquals(0, metrics.count('OrganizerPanel.ExpandSection'));
+    assertEquals(0, metrics.count('OrganizerPanel.CollapseSection'));
+  });
 });

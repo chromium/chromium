@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {BrowserProxy, ForeignTab} from '../foreign_tabs.mojom-webui.js';
 import {browserProxyFactory} from '../foreign_tabs.mojom-webui.js';
-import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
+import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
 import {getHostnameOrUrl} from './tab_delegate_utils.js';
@@ -33,6 +33,10 @@ export class ForeignTabsDelegate implements
 
   getHeader(): string {
     return loadTimeData.getString('tabsOnOtherDevices');
+  }
+
+  getHistogramSectionName(): OrganizerSection {
+    return 'CrossDeviceTabs';
   }
 
   shouldHide(): boolean {
