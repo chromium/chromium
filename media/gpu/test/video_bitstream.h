@@ -87,8 +87,6 @@ class VideoBitstream final {
 
   const std::unique_ptr<base::MemoryMappedFile> memory_mapped_file_;
   const Metadata metadata_;
-
-  static base::FilePath test_data_path_;
 };
 }  // namespace media::test
 

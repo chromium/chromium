@@ -4,9 +4,13 @@
 
 #include "media/gpu/test/video_bitstream.h"
 
+#include <array>
+#include <cstddef>
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/json/json_reader.h"
@@ -22,6 +26,9 @@ namespace {
 // explicit metadata file path was specified.
 constexpr const base::FilePath::CharType* kMetadataSuffix =
     FILE_PATH_LITERAL(".json");
+
+std::array<base::FilePath::CharType, 4096> g_test_data_path = {};
+size_t g_test_data_path_length = 0;
 
 // Converts the string to VideoCodecProfile. This returns std::nullopt if
 // it is not supported by video_decode_accelerator(_perf)_tests.
@@ -202,11 +209,11 @@ base::span<const uint8_t> VideoBitstream::Data() const {
   return memory_mapped_file_->bytes();
 }
 // static
-base::FilePath VideoBitstream::test_data_path_;
-
-// static
 void VideoBitstream::SetTestDataPath(const base::FilePath& test_data_path) {
-  test_data_path_ = test_data_path;
+  const base::FilePath::StringType& value = test_data_path.value();
+  CHECK_LE(value.size(), g_test_data_path.size());
+  base::span(g_test_data_path).copy_prefix_from(base::span(value));
+  g_test_data_path_length = value.size();
 }
 
 // static
@@ -217,9 +224,13 @@ base::FilePath VideoBitstream::ResolveFilePath(
   // Try to resolve the path into an absolute path. If the path doesn't exist,
   // it might be relative to the test data dir.
   if (!resolved_path.IsAbsolute()) {
+    const auto path_span =
+        base::span(g_test_data_path).first(g_test_data_path_length);
+    const base::FilePath test_data_path(
+        base::FilePath::StringViewType(path_span.begin(), path_span.end()));
     resolved_path = base::MakeAbsoluteFilePath(
         PathExists(resolved_path) ? resolved_path
-                                  : test_data_path_.Append(resolved_path));
+                                  : test_data_path.Append(resolved_path));
   }
 
   return base::PathExists(resolved_path) ? resolved_path : base::FilePath();

@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_TEST_VIDEO_DECODE_ACCELERATOR_TEST_SUITE_H_
 #define MEDIA_GPU_TEST_VIDEO_DECODE_ACCELERATOR_TEST_SUITE_H_
 
+#include <memory>
+
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
@@ -77,7 +79,7 @@ class VideoDecodeAcceleratorTestSuite : public base::TestSuite {
       const std::vector<base::test::FeatureRef>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features);
 
-  static std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
   std::unique_ptr<VideoPlayerTestEnvironment> video_test_env_;
