@@ -59,12 +59,16 @@ std::unique_ptr<KeyedService>
 GlicProviderLatchFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   GURL geic_guest_url = geic::ResolveGeicGuestUrl(context);
-  GlicProvider provider = geic_guest_url.is_empty()
-                              ? GlicProvider::kGemini
-                              : GlicProvider::kGeminiEnterprise;
-  GlicProviderLatch::Set(
-      base::PassKey<GlicProviderLatchFactory>(), *context, provider,
-      GeicProviderInitOptions{.guest_url = std::move(geic_guest_url)});
+  GeicProviderInitOptions geic_options;
+  GlicProvider provider;
+  if (geic::ShouldLatchToGeminiEnterprise(context, geic_guest_url)) {
+    provider = GlicProvider::kGeminiEnterprise;
+    geic_options.guest_url = std::move(geic_guest_url);
+  } else {
+    provider = GlicProvider::kGemini;
+  }
+  GlicProviderLatch::Set(base::PassKey<GlicProviderLatchFactory>(), *context,
+                         provider, std::move(geic_options));
   return std::make_unique<KeyedService>();
 }
 

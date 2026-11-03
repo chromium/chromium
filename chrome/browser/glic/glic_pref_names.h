@@ -92,6 +92,17 @@ inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile.
 
+// Per-profile assistant selection preference. Evaluated once at profile
+// initialization by `geic::ShouldLatchToGeminiEnterprise()` (via
+// `GlicProviderLatchFactory`); changing it requires a browser restart.
+enum class AssistantSelection {
+  kAuto = 0,
+  kConsumer = 1,
+  kEnterprise = 2,
+  kMaxValue = kEnterprise,
+};
+inline constexpr char kGlicAssistantSelection[] = "glic.assistant_selection";
+
 // Values for the "glic.actuation_on_web" pref.
 enum class GlicActuationOnWebPolicyState {
   kMinValue = 0,

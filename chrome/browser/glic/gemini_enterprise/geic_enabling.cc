@@ -8,6 +8,7 @@
 #include <iterator>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -167,6 +168,20 @@ GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context) {
   return it != std::end(candidates) && it->has_value()
              ? CanonicalizeGuestUrl(it->value())
              : GURL();
+}
+
+bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
+                                   const GURL& resolved_guest_url) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (resolved_guest_url.is_empty() || !profile || !profile->GetPrefs()) {
+    return false;
+  }
+  // Any selection other than explicit `kConsumer` (including `kAuto`,
+  // `kEnterprise`, or unconfigured/corrupted values) latches to Enterprise when
+  // a valid enterprise guest URL is configured.
+  return profile->GetPrefs()->GetInteger(
+             glic::prefs::kGlicAssistantSelection) !=
+         std::to_underlying(glic::prefs::AssistantSelection::kConsumer);
 }
 
 }  // namespace geic

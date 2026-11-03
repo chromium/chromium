@@ -60,6 +60,13 @@ bool IsGeicEnabledByFeature();
 // still requires the user to sign in to Gemini Enterprise.
 GURL ResolveGeicGuestUrl(content::BrowserContext* browser_context);
 
+// Returns true if `browser_context` should latch to
+// `GlicProvider::kGeminiEnterprise` at profile startup, or false to latch to
+// consumer `GlicProvider::kGemini`. Evaluates `resolved_guest_url` and
+// `prefs::kGlicAssistantSelection`.
+bool ShouldLatchToGeminiEnterprise(content::BrowserContext* browser_context,
+                                   const GURL& resolved_guest_url);
+
 }  // namespace geic
 
 #endif  // CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_ENABLING_H_

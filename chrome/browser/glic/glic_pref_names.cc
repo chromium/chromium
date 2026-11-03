@@ -106,6 +106,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Boolean pref that determines if errors are allowed to be shown.
   registry->RegisterBooleanPref(prefs::kGlicShowErrorAllowed, false);
 
+  registry->RegisterIntegerPref(prefs::kGlicAssistantSelection,
+                                std::to_underlying(AssistantSelection::kAuto));
+
   // Boolean pref for the daisy chain new tabs setting.
   registry->RegisterBooleanPref(prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled,
                                 true);

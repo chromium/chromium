@@ -15,12 +15,14 @@
 #include "chrome/browser/glic/public/glic_provider.h"
 #include "chrome/browser/glic/public/glic_provider_latch_factory.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_testing_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -75,6 +77,8 @@ class GlicProviderLatchTest : public testing::Test {
     EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
     EXPECT_EQ(GetGlicProviderSpec(profile).GetSettingsSectionId(),
               kGeminiSettingsSectionId);
+    EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
+              GetLocalizedGuestURL(GURL(kGuestUrl)));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -168,10 +172,7 @@ class GlicProviderLatchSetForTestingTest : public GlicProviderLatchTest {
 
 TEST_F(GlicProviderLatchSetForTestingTest, OverridesResolvedLatch) {
   // GEiC is configured, so the factory would latch Gemini Enterprise.
-  Profile* profile = helper_.regular_profile();
-  EXPECT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
-  EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
-            GetLocalizedGuestURL(GURL(kGuestUrl)));
+  ExpectDefaultLatch(helper_.regular_profile());
 }
 
 // Without GEiC configuration, regular profiles are latched as Gemini.
@@ -184,6 +185,71 @@ TEST(GlicProviderLatchDefaultTest, ProfileIsLatchedAsGemini) {
   EXPECT_NE(GetGlicProviderSpec(profile).GetGuestUrl(profile),
             GetLocalizedGuestURL(GURL(kGuestUrl)));
 }
+
+struct AssistantSelectionLatchTestCase {
+  const char* test_name;
+  bool has_enterprise_url;
+  prefs::AssistantSelection assistant_selection;
+  GlicProvider expected_provider;
+};
+
+class GlicProviderLatchAssistantSelectionTest
+    : public GlicProviderLatchTest,
+      public testing::WithParamInterface<AssistantSelectionLatchTestCase> {};
+
+TEST_P(GlicProviderLatchAssistantSelectionTest, ResolvesExpectedProvider) {
+  const AssistantSelectionLatchTestCase& param = GetParam();
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch("geic-guest-url");
+
+  auto prefs = std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  RegisterUserProfilePrefs(prefs->registry());
+  if (param.has_enterprise_url) {
+    prefs->SetManagedPref(prefs::kGlicGeminiEnterpriseUrl,
+                          base::Value(kGuestUrl));
+  }
+  prefs->SetInteger(prefs::kGlicAssistantSelection,
+                    static_cast<int>(param.assistant_selection));
+
+  TestingProfile::Builder builder;
+  builder.SetPrefService(std::move(prefs));
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  if (param.expected_provider == GlicProvider::kGeminiEnterprise) {
+    ExpectGeminiEnterprise(profile.get());
+  } else {
+    ExpectDefaultLatch(profile.get());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicProviderLatchAssistantSelectionTest,
+    testing::Values(
+        // Unset enterprise URL always latches consumer Gemini regardless of
+        // assistant selection.
+        AssistantSelectionLatchTestCase{"Unset_Auto", false,
+                                        prefs::AssistantSelection::kAuto,
+                                        GlicProvider::kGemini},
+        AssistantSelectionLatchTestCase{"Unset_Consumer", false,
+                                        prefs::AssistantSelection::kConsumer,
+                                        GlicProvider::kGemini},
+        AssistantSelectionLatchTestCase{"Unset_Enterprise", false,
+                                        prefs::AssistantSelection::kEnterprise,
+                                        GlicProvider::kGemini},
+        // Configured enterprise URL latches Gemini Enterprise for kAuto and
+        // kEnterprise, and consumer Gemini for kConsumer.
+        AssistantSelectionLatchTestCase{"Configured_Auto", true,
+                                        prefs::AssistantSelection::kAuto,
+                                        GlicProvider::kGeminiEnterprise},
+        AssistantSelectionLatchTestCase{"Configured_Consumer", true,
+                                        prefs::AssistantSelection::kConsumer,
+                                        GlicProvider::kGemini},
+        AssistantSelectionLatchTestCase{"Configured_Enterprise", true,
+                                        prefs::AssistantSelection::kEnterprise,
+                                        GlicProvider::kGeminiEnterprise}),
+    [](const testing::TestParamInfo<AssistantSelectionLatchTestCase>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace
 }  // namespace glic

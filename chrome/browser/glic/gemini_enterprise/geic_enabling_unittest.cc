@@ -403,5 +403,37 @@ TEST_F(GeicEnablingTest, GoogleGroupsFilterEnablesOnlyMatchingProfile) {
             GURL("https://enterprise.gemini.cloud.google/side-panel"));
 }
 
+TEST_F(GeicEnablingTest, ShouldLatchToGeminiEnterprise) {
+  TestingProfile* p = profile();
+  const GURL kValidGuestUrl("https://business.gemini.google/side-panel");
+
+  // Default pref (kAuto) on fresh profile with a valid guest URL -> Enterprise.
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // Explicit kAuto with a valid guest URL -> Enterprise.
+  p->GetPrefs()->SetInteger(
+      glic::prefs::kGlicAssistantSelection,
+      static_cast<int>(glic::prefs::AssistantSelection::kAuto));
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kConsumer with a valid guest URL -> Consumer.
+  p->GetPrefs()->SetInteger(
+      glic::prefs::kGlicAssistantSelection,
+      static_cast<int>(glic::prefs::AssistantSelection::kConsumer));
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // kEnterprise with a valid guest URL -> Enterprise.
+  p->GetPrefs()->SetInteger(
+      glic::prefs::kGlicAssistantSelection,
+      static_cast<int>(glic::prefs::AssistantSelection::kEnterprise));
+  EXPECT_TRUE(ShouldLatchToGeminiEnterprise(p, kValidGuestUrl));
+
+  // Empty guest URL -> Consumer regardless of selection.
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(p, GURL()));
+
+  // Null BrowserContext -> Consumer.
+  EXPECT_FALSE(ShouldLatchToGeminiEnterprise(nullptr, kValidGuestUrl));
+}
+
 }  // namespace
 }  // namespace geic
