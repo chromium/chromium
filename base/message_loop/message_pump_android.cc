@@ -495,6 +495,10 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
   // additional ScheduleWork() since yielding to native) as delayed tasks might
   // have come in and we need to re-sample |next_work_info|.
 
+  if (is_type_ui_) {
+    YieldToLooperChecker::GetInstance().BeginNonDelayedLooperWork();
+  }
+
   // Runs all application tasks scheduled to run.
   Delegate::NextWorkInfo next_work_info;
   do {
@@ -505,8 +509,9 @@ void MessagePumpAndroid::DoNonDelayedLooperWork(bool do_idle_work) {
     next_work_info = delegate_->DoWork();
 
     if (is_type_ui_ && next_work_info.is_immediate()) {
-      // To reduce startup ANRs, yield if an embedder signifies that startup is
-      // currently running.
+      // To reduce startup and main-thread ANRs, yield if an embedder signifies
+      // that startup is currently running or if the periodic yield interval has
+      // elapsed.
       if (YieldToLooperChecker::GetInstance().ShouldYield()) {
         ScheduleWork();
         return;

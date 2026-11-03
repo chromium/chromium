@@ -31,6 +31,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/input_hint_checker.h"
 #include "base/android/yield_to_looper_checker.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_support_android.h"
 #endif
 
@@ -349,6 +350,74 @@ TEST_P(MessagePumpTest, YieldDuringStartup) {
   // after YieldDuringStartup() returns true. For non-UI MessagePumpType the
   // MessagePump::Create() does not intercept entering DoNonDelayedLooperWork(),
   // so it remains 0 instead of 1.
+  uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
+  EXPECT_EQ(initial_work_enters + work_loop_entered,
+            GetAndroidNonDelayedWorkEnterCount());
+}
+
+TEST_P(MessagePumpTest, PeriodicYieldToLooper) {
+  testing::InSequence sequence;
+  MessagePumpType pump_type = GetParam();
+  testing::StrictMock<MockMessagePumpDelegate> delegate(pump_type);
+
+  SimpleTestTickClock test_clock;
+  test_clock.Advance(Seconds(1));
+  auto& yield_checker = android::YieldToLooperChecker::GetInstance();
+  yield_checker.SetTickClockForTesting(&test_clock);
+  ScopedClosureRunner reset_checker(BindLambdaForTesting([&yield_checker] {
+    yield_checker.SetTickClockForTesting(nullptr);
+    yield_checker.InitializeFeatures();
+  }));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      android::kYieldToLooperPeriodically,
+      {{android::kYieldToLooperPeriod.name, "20ms"}});
+  yield_checker.InitializeFeatures();
+
+  uint32_t initial_work_enters = GetAndroidNonDelayedWorkEnterCount();
+  constexpr MessagePump::Delegate::NextWorkInfo kImmediateWork;
+  ASSERT_TRUE(kImmediateWork.is_immediate());
+
+  // First DoWork() advances by 10ms (under the 20ms period) and has immediate
+  // follow-up work, so DoNonDelayedLooperWork() should not yield yet.
+  EXPECT_CALL(delegate, DoWork).WillOnce([&test_clock, kImmediateWork] {
+    test_clock.Advance(Milliseconds(10));
+    return kImmediateWork;
+  });
+
+  // Second DoWork() runs in the same DoNonDelayedLooperWork() batch and
+  // advances by another 10ms (reaching `kYieldToLooperPeriod`), triggering a
+  // yield to the Looper on UI pumps.
+  EXPECT_CALL(delegate, DoWork)
+      .WillOnce([&test_clock, pump_type, initial_work_enters, kImmediateWork] {
+        uint32_t expected_enters = (pump_type == MessagePumpType::UI) ? 1 : 0;
+        EXPECT_EQ(initial_work_enters + expected_enters,
+                  GetAndroidNonDelayedWorkEnterCount());
+        test_clock.Advance(Milliseconds(10));
+        return kImmediateWork;
+      });
+
+  // Third DoWork() runs after resetting `batch_start_`. Returning immediate
+  // work without advancing past 20ms does not trigger another yield.
+  EXPECT_CALL(delegate, DoWork)
+      .WillOnce([pump_type, initial_work_enters, kImmediateWork] {
+        uint32_t expected_enters = (pump_type == MessagePumpType::UI) ? 2 : 0;
+        EXPECT_EQ(initial_work_enters + expected_enters,
+                  GetAndroidNonDelayedWorkEnterCount());
+        return kImmediateWork;
+      });
+
+  // Fourth DoWork() still runs in the 2nd batch on UI pumps and quits the loop.
+  EXPECT_CALL(delegate, DoWork).WillOnce([this] {
+    message_pump_->Quit();
+    return MessagePump::Delegate::NextWorkInfo{.delayed_run_time =
+                                                   TimeTicks::Max()};
+  });
+
+  EXPECT_CALL(delegate, DoIdleWork()).Times(0);
+
+  message_pump_->Run(&delegate);
+
   uint32_t work_loop_entered = (pump_type == MessagePumpType::UI) ? 2 : 0;
   EXPECT_EQ(initial_work_enters + work_loop_entered,
             GetAndroidNonDelayedWorkEnterCount());

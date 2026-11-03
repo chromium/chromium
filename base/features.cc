@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/input_hint_checker.h"
+#include "base/android/yield_to_looper_checker.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -295,6 +296,7 @@ void Init() {
 
 #if BUILDFLAG(IS_ANDROID)
   android::InputHintChecker::InitializeFeatures();
+  android::YieldToLooperChecker::GetInstance().InitializeFeatures();
 #endif
 
 #if BUILDFLAG(IS_WIN)
