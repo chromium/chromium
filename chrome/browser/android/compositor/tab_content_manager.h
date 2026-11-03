@@ -35,6 +35,9 @@ class ThumbnailLayer;
 // A native component of the Java TabContentManager class.
 class TabContentManager : public thumbnail::ThumbnailCacheObserver {
  public:
+  using JavaBitmapCallback =
+      base::OnceCallback<void(const base::android::JavaRef<jobject>&)>;
+
   static TabContentManager* FromJavaObject(
       const base::android::JavaRef<jobject>& jobj);
 
@@ -50,7 +53,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
   virtual ~TabContentManager();
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   void SetUIResourceProvider(
       base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
@@ -74,33 +77,23 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void UpdateVisibleIds(const std::vector<int>& priority_ids,
                         int primary_tab_id);
 
-  void CaptureThumbnail(JNIEnv* env,
-                        TabAndroid* tab_android,
+  void CaptureThumbnail(TabAndroid* tab_android,
                         float thumbnail_scale,
                         bool return_bitmap,
-                        const base::android::JavaRef<jobject>& j_callback);
-  void CacheTabWithBitmap(JNIEnv* env,
-                          TabAndroid* tab_android,
+                        JavaBitmapCallback callback);
+  void CacheTabWithBitmap(TabAndroid* tab_android,
                           const base::android::JavaRef<jobject>& bitmap,
                           float thumbnail_scale);
-  void InvalidateIfChanged(JNIEnv* env, int32_t tab_id, const GURL& url);
-  void UpdateVisibleIds(JNIEnv* env,
-                        const std::vector<int32_t>& priority_ids,
-                        int32_t primary_tab_id);
+  void InvalidateIfChanged(int32_t tab_id, const GURL& url);
   void NativeRemoveTabThumbnail(int tab_id);
-  void RemoveTabThumbnail(JNIEnv* env, int32_t tab_id);
-  void RemoveAllTabThumbnailsExceptForIds(JNIEnv* env,
-                                          std::vector<int32_t> tab_ids);
+  void RemoveTabThumbnail(int32_t tab_id);
+  void RemoveAllTabThumbnailsExceptForIds(std::vector<int32_t> tab_ids);
   void OnUIResourcesWereEvicted();
-  void WaitForJpegTabThumbnail(
-      JNIEnv* env,
-      int32_t tab_id,
-      const base::android::JavaRef<jobject>& j_callback);
-  void GetEtc1TabThumbnail(JNIEnv* env,
-                           int32_t tab_id,
-                           const base::android::JavaRef<jobject>& j_callback);
-  void SetCaptureMinRequestTimeForTesting(JNIEnv* env, int32_t time_ms);
-  bool IsTabCaptureInFlightForTesting(JNIEnv* env, int32_t tab_id);
+  void WaitForJpegTabThumbnail(int32_t tab_id,
+                               base::OnceCallback<void(bool)> callback);
+  void GetEtc1TabThumbnail(int32_t tab_id, JavaBitmapCallback callback);
+  void SetCaptureMinRequestTimeForTesting(int32_t time_ms);
+  bool IsTabCaptureInFlightForTesting(int32_t tab_id);
 
   // ThumbnailCacheObserver implementation;
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;
@@ -116,8 +109,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   using ThumbnailCaptureTrackerPtr =
       std::unique_ptr<thumbnail::ThumbnailCaptureTracker,
                       base::OnTaskRunnerDeleter>;
-  using JavaBitmapCallback =
-      base::OnceCallback<void(const base::android::JavaRef<jobject>&)>;
 
   ThumbnailCaptureTrackerPtr TrackCapture(thumbnail::TabId tab_id);
   void CleanupTrackers();

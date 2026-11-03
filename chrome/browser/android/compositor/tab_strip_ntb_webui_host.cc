@@ -230,7 +230,6 @@ content::WebContents* TabStripNtbWebUiHost::GetWebContents() {
 }
 
 static int64_t JNI_NtbWebUiCoordinator_Init(
-    JNIEnv* env,
     const base::android::JavaRef<jobject>& caller,
     int32_t session_id,
     int64_t activity_creation_uptime_ms) {
@@ -247,26 +246,23 @@ static int64_t JNI_NtbWebUiCoordinator_Init(
 }
 
 static content::WebContents* JNI_NtbWebUiCoordinator_GetWebContents(
-    JNIEnv* env,
     int64_t host_ptr) {
   return reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->GetWebContents();
 }
 
-static void JNI_NtbWebUiCoordinator_Resize(JNIEnv* env,
-                                           int64_t host_ptr,
+static void JNI_NtbWebUiCoordinator_Resize(int64_t host_ptr,
                                            int32_t width_px,
                                            int32_t height_px) {
   reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->Resize(width_px,
                                                             height_px);
 }
 
-static void JNI_NtbWebUiCoordinator_SetButtonVisible(JNIEnv* env,
-                                                     int64_t host_ptr,
+static void JNI_NtbWebUiCoordinator_SetButtonVisible(int64_t host_ptr,
                                                      bool visible) {
   reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->SetButtonVisible(visible);
 }
 
-static void JNI_NtbWebUiCoordinator_Destroy(JNIEnv* env, int64_t host_ptr) {
+static void JNI_NtbWebUiCoordinator_Destroy(int64_t host_ptr) {
   delete reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr);
 }
 

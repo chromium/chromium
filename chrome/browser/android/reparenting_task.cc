@@ -10,7 +10,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ReparentingTask_jni.h"
 
-using base::android::JavaRef;
 using chrome::android::BackgroundTabManager;
 using content::WebContents;
 

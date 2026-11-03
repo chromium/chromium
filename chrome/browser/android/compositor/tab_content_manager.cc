@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/callback_android.h"
+#include "base/android/callback_android.h"  // IWYU pragma: keep
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -55,9 +55,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
-using base::android::RunBooleanCallbackAndroid;
-using base::android::RunObjectCallbackAndroid;
-using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -230,7 +227,7 @@ TabContentManager::TabContentManager(JNIEnv* env,
 
 TabContentManager::~TabContentManager() = default;
 
-void TabContentManager::Destroy(JNIEnv* env) {
+void TabContentManager::Destroy() {
   thumbnail_cache_.RemoveThumbnailCacheObserver(this);
   delete this;
 }
@@ -250,12 +247,8 @@ scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
 
 TabAndroid* TabContentManager::GetTab(int tab_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jtab = Java_TabContentManager_getTabById(
+  return Java_TabContentManager_getTabById(
       env, weak_java_tab_content_manager_.get(env), tab_id);
-  if (!jtab) {
-    return nullptr;
-  }
-  return TabAndroid::GetNativeTab(env, jtab);
 }
 
 ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
@@ -323,12 +316,10 @@ void TabContentManager::CleanupTrackers() {
                  [](const auto& pair) -> bool { return !pair.second; });
 }
 
-void TabContentManager::CaptureThumbnail(
-    JNIEnv* env,
-    TabAndroid* tab_android,
-    float thumbnail_scale,
-    bool return_bitmap,
-    const base::android::JavaRef<jobject>& j_callback) {
+void TabContentManager::CaptureThumbnail(TabAndroid* tab_android,
+                                         float thumbnail_scale,
+                                         bool return_bitmap,
+                                         JavaBitmapCallback callback) {
   // Ensure capture only happens on UI thread.
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
@@ -341,25 +332,21 @@ void TabContentManager::CaptureThumbnail(
       web_contents->IsBeingDestroyed() ||
       !thumbnail_cache_.CheckAndUpdateThumbnailMetaData(
           tab_id, tab_android->GetURL(), /*force_update=*/false)) {
-    if (j_callback) {
-      RunObjectCallbackAndroid(j_callback, nullptr);
+    if (callback) {
+      std::move(callback).Run(nullptr);
     }
     return;
   }
 
   auto tracker = TrackCapture(tab_id);
-  TabReadbackCallback readback_done_callback =
-      base::BindOnce(&TabContentManager::OnTabReadback,
-                     weak_factory_.GetWeakPtr(), tab_id, std::move(tracker),
-                     base::BindOnce(&RunObjectCallbackAndroid,
-                                    ScopedJavaGlobalRef<jobject>(j_callback)),
-                     return_bitmap);
+  TabReadbackCallback readback_done_callback = base::BindOnce(
+      &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), tab_id,
+      std::move(tracker), std::move(callback), return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
       web_contents, thumbnail_scale, std::move(readback_done_callback));
 }
 
-void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
-                                           TabAndroid* tab_android,
+void TabContentManager::CacheTabWithBitmap(TabAndroid* tab_android,
                                            const JavaRef<jobject>& bitmap,
                                            float thumbnail_scale) {
   CHECK(tab_android, base::NotFatalUntil::M161);
@@ -381,17 +368,8 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
   }
 }
 
-void TabContentManager::InvalidateIfChanged(JNIEnv* env,
-                                            int32_t tab_id,
-                                            const GURL& url) {
+void TabContentManager::InvalidateIfChanged(int32_t tab_id, const GURL& url) {
   thumbnail_cache_.InvalidateThumbnailIfChanged(tab_id, url);
-}
-
-void TabContentManager::UpdateVisibleIds(
-    JNIEnv* env,
-    const std::vector<int32_t>& priority_ids,
-    int32_t primary_tab_id) {
-  UpdateVisibleIds(priority_ids, primary_tab_id);
 }
 
 void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
@@ -404,42 +382,34 @@ void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
   in_flight_captures_.erase(tab_id);
 }
 
-void TabContentManager::RemoveTabThumbnail(JNIEnv* env, int32_t tab_id) {
+void TabContentManager::RemoveTabThumbnail(int32_t tab_id) {
   NativeRemoveTabThumbnail(tab_id);
 }
 
 void TabContentManager::RemoveAllTabThumbnailsExceptForIds(
-    JNIEnv* env,
     std::vector<int> tab_ids) {
   thumbnail_cache_.RemoveAllTabThumbnailsExceptForIds(tab_ids);
 }
 
 void TabContentManager::WaitForJpegTabThumbnail(
-    JNIEnv* env,
     int32_t tab_id,
-    const base::android::JavaRef<jobject>& j_callback) {
+    base::OnceCallback<void(bool)> callback) {
   auto it = in_flight_captures_.find(tab_id);
   if (it != in_flight_captures_.end() && it->second) {
     // A capture is currently ongoing wait till it finishes.
-    it->second->AddOnJpegFinishedCallback(base::BindOnce(
-        &RunBooleanCallbackAndroid, ScopedJavaGlobalRef<jobject>(j_callback)));
+    it->second->AddOnJpegFinishedCallback(std::move(callback));
   } else {
     // Thumbnail is not currently being captured. Run the callback.
-    RunBooleanCallbackAndroid(j_callback, true);
+    std::move(callback).Run(true);
   }
 }
 
-void TabContentManager::GetEtc1TabThumbnail(
-    JNIEnv* env,
-    int32_t tab_id,
-    const base::android::JavaRef<jobject>& j_callback) {
+void TabContentManager::GetEtc1TabThumbnail(int32_t tab_id,
+                                            JavaBitmapCallback callback) {
   thumbnail_cache_.DecompressEtc1ThumbnailFromFile(
-      tab_id,
-      base::BindOnce(&TabContentManager::SendThumbnailToJava,
-                     weak_factory_.GetWeakPtr(),
-                     base::BindOnce(&RunObjectCallbackAndroid,
-                                    ScopedJavaGlobalRef<jobject>(j_callback)),
-                     /*need_downsampling=*/false));
+      tab_id, base::BindOnce(&TabContentManager::SendThumbnailToJava,
+                             weak_factory_.GetWeakPtr(), std::move(callback),
+                             /*need_downsampling=*/false));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {
@@ -504,13 +474,11 @@ void TabContentManager::SendThumbnailToJava(JavaBitmapCallback callback,
   std::move(callback).Run(j_bitmap);
 }
 
-void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
-                                                           int32_t time_ms) {
+void TabContentManager::SetCaptureMinRequestTimeForTesting(int32_t time_ms) {
   thumbnail_cache_.SetCaptureMinRequestTimeForTesting(time_ms);
 }
 
-bool TabContentManager::IsTabCaptureInFlightForTesting(JNIEnv* env,
-                                                       int32_t tab_id) {
+bool TabContentManager::IsTabCaptureInFlightForTesting(int32_t tab_id) {
   return in_flight_captures_.find(tab_id) != in_flight_captures_.end();
 }
 

@@ -299,7 +299,11 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     @NativeMethods
     interface Natives {
         @TabRestoreEntryId
-        int createHistoricalTab(Tab tab, int index, ByteBuffer state, int savedStateVersion);
+        int createHistoricalTab(
+                @JniType("TabAndroid*") Tab tab,
+                int index,
+                ByteBuffer state,
+                int savedStateVersion);
 
         @TabRestoreEntryId
         int createHistoricalGroup(

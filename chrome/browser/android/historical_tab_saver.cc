@@ -303,8 +303,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
 // Static JNI methods.
 
 static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
-    JNIEnv* env,
-    const JavaRef<jobject>& jtab_android,
+    TabAndroid* tab_android,
     int32_t index,
     const JavaRef<jobject>& state,
     int32_t saved_state_version) {
@@ -314,15 +313,13 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalTab(
       WebContentsStateByteBuffer(ScopedJavaLocalRef<jobject>(state),
                                  static_cast<int>(saved_state_version));
   int32_t session_id = ToJavaSessionId(CreateHistoricalTab(
-      TabAndroid::GetNativeTab(env, jtab_android), static_cast<int>(index),
-      std::move(web_contents_state)));
+      tab_android, static_cast<int>(index), std::move(web_contents_state)));
   base::UmaHistogramMicrosecondsTimes(
       "Tabs.HistoricalTabSaver.SaveDuration.Tab", timer.Elapsed());
   return session_id;
 }
 
 static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
-    JNIEnv* env,
     TabModel* model,
     const base::Token& tab_group_id_token,
     const std::u16string& serialized_saved_tab_group_id,
@@ -353,7 +350,6 @@ static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
 }
 
 static int32_t JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
-    JNIEnv* env,
     TabModel* model,
     const std::vector<std::optional<base::Token>>& tab_group_token_ids,
     const std::vector<std::u16string>& serialized_saved_tab_group_ids,
