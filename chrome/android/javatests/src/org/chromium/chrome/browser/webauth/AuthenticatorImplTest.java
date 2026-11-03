@@ -307,7 +307,6 @@ public class AuthenticatorImplTest {
         Fido2ApiTestHelper.validateMakeCredentialResponse(response);
         Assert.assertFalse(response.echoCredProps);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-        authenticator.clearNativePtr();
     }
 
     @Test
@@ -327,7 +326,6 @@ public class AuthenticatorImplTest {
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Assert.assertNull(mCallback.getMakeCredentialResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-        authenticator.clearNativePtr();
     }
 
     @Test
@@ -457,7 +455,6 @@ public class AuthenticatorImplTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-        authenticator.clearNativePtr();
     }
 
     @Test
@@ -477,7 +474,6 @@ public class AuthenticatorImplTest {
                 mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
         Assert.assertNull(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
-        authenticator.clearNativePtr();
     }
 
     @Test

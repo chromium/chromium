@@ -12,10 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.JniPtr;
-import org.jni_zero.JniRawPtr;
-import org.jni_zero.JniType;
-import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -45,15 +41,11 @@ import java.util.List;
 @JNINamespace("webauthn")
 @NullMarked
 public class InternalAuthenticator {
-    @JniType("::webauthn::InternalAuthenticatorAndroid")
-    public interface NativeInternalAuthenticatorAndroid extends JniTypeToken {}
-
-    private @Nullable JniRawPtr<NativeInternalAuthenticatorAndroid>
-            mNativeInternalAuthenticatorAndroid;
+    private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
     private InternalAuthenticator(
-            JniRawPtr<NativeInternalAuthenticatorAndroid> nativeInternalAuthenticatorAndroid,
+            long nativeInternalAuthenticatorAndroid,
             @Nullable Context context,
             @Nullable WebContents webContents,
             @Nullable FidoIntentSender intentSender,
@@ -77,18 +69,12 @@ public class InternalAuthenticator {
             RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         return new InternalAuthenticator(
-                JniRawPtr.createForTesting(-1),
-                context,
-                /* webContents= */ null,
-                intentSender,
-                renderFrameHost,
-                topOrigin);
+                -1, context, /* webContents= */ null, intentSender, renderFrameHost, topOrigin);
     }
 
     @CalledByNative
     public static InternalAuthenticator create(
-            JniRawPtr<NativeInternalAuthenticatorAndroid> nativeInternalAuthenticatorAndroid,
-            RenderFrameHost renderFrameHost) {
+            long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
         final WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
         assumeNonNull(webContents);
         final WindowAndroid window = webContents.getTopLevelNativeWindow();
@@ -105,8 +91,7 @@ public class InternalAuthenticator {
     }
 
     @CalledByNative
-    public static InternalAuthenticator create(
-            JniRawPtr<NativeInternalAuthenticatorAndroid> nativeInternalAuthenticatorAndroid) {
+    public static InternalAuthenticator create(long nativeInternalAuthenticatorAndroid) {
         return new InternalAuthenticator(
                 nativeInternalAuthenticatorAndroid,
                 ContextUtils.getApplicationContext(),
@@ -118,10 +103,7 @@ public class InternalAuthenticator {
 
     @CalledByNative
     public void clearNativePtr() {
-        if (mNativeInternalAuthenticatorAndroid != null) {
-            mNativeInternalAuthenticatorAndroid.release();
-            mNativeInternalAuthenticatorAndroid = null;
-        }
+        mNativeInternalAuthenticatorAndroid = 0;
     }
 
     @CalledByNative
@@ -147,7 +129,7 @@ public class InternalAuthenticator {
                     // extensions API, which doesn't exist on Android.
                     assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
                             && domExceptionDetails == null;
-                    if (mNativeInternalAuthenticatorAndroid != null) {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get()
                                 .invokeMakeCredentialResponse(
                                         mNativeInternalAuthenticatorAndroid,
@@ -174,7 +156,7 @@ public class InternalAuthenticator {
                                     != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
                             && getCredentialResponse.getGetAssertionResponse().domExceptionDetails
                                     == null;
-                    if (mNativeInternalAuthenticatorAndroid != null) {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get()
                                 .invokeGetAssertionResponse(
                                         mNativeInternalAuthenticatorAndroid,
@@ -199,7 +181,7 @@ public class InternalAuthenticator {
     public void isUserVerifyingPlatformAuthenticatorAvailable() {
         mAuthenticator.isUserVerifyingPlatformAuthenticatorAvailable(
                 (isUVPAA) -> {
-                    if (mNativeInternalAuthenticatorAndroid != null) {
+                    if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get()
                                 .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
                                         mNativeInternalAuthenticatorAndroid, isUVPAA);
@@ -233,7 +215,7 @@ public class InternalAuthenticator {
 
     private void handleGetMatchingCredentialIdsResponse(
             @Nullable List<byte[]> matchingCredentialIds) {
-        if (matchingCredentialIds == null || mNativeInternalAuthenticatorAndroid == null) {
+        if (matchingCredentialIds == null || mNativeInternalAuthenticatorAndroid == 0) {
             return;
         }
         InternalAuthenticatorJni.get()
@@ -251,19 +233,19 @@ public class InternalAuthenticator {
     @NativeMethods
     public interface Natives {
         void invokeMakeCredentialResponse(
-                JniPtr<NativeInternalAuthenticatorAndroid> self,
+                long nativeInternalAuthenticatorAndroid,
                 int status,
                 @Nullable ByteBuffer byteBuffer);
 
         void invokeGetAssertionResponse(
-                JniPtr<NativeInternalAuthenticatorAndroid> self,
+                long nativeInternalAuthenticatorAndroid,
                 int status,
                 @Nullable ByteBuffer byteBuffer);
 
         void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                JniPtr<NativeInternalAuthenticatorAndroid> self, boolean isUVPAA);
+                long nativeInternalAuthenticatorAndroid, boolean isUVPAA);
 
         void invokeGetMatchingCredentialIdsResponse(
-                JniPtr<NativeInternalAuthenticatorAndroid> self, byte[][] matchingCredentialIds);
+                long nativeInternalAuthenticatorAndroid, byte[][] matchingCredentialIds);
     }
 }
