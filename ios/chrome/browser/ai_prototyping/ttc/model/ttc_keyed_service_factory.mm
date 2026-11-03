@@ -22,7 +22,7 @@ TTCKeyedServiceFactory::TTCKeyedServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> TTCKeyedServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!IsTTCEnabled()) {
     return nullptr;
   }

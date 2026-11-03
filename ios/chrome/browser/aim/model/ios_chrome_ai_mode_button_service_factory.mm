@@ -21,7 +21,7 @@ IOSChromeAiModeButtonServiceFactory::IOSChromeAiModeButtonServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSChromeAiModeButtonServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   if (!template_url_service) {

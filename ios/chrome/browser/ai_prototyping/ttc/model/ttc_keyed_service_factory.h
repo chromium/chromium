@@ -20,7 +20,7 @@ class TTCKeyedServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_FACTORY_H_

@@ -24,7 +24,7 @@ IOSAccountSettingServiceFactory::IOSAccountSettingServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSAccountSettingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
     return nullptr;
   }

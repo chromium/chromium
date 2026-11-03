@@ -23,7 +23,7 @@ class AutocompleteScoringModelServiceFactory final
   // ProfileKeyedServiceFactoryIOS:
   // Returns nullptr if `OptimizationGuideKeyedService` is null.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace ios

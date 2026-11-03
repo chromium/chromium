@@ -26,7 +26,7 @@ OnDeviceTailModelServiceFactory::OnDeviceTailModelServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   const std::string locale(GetApplicationContext()
                                ->GetApplicationLocaleStorage()
                                ->GetTag()

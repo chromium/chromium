@@ -22,15 +22,15 @@ const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 const char kParcelTrackingDBFolder[] = "parcel_tracking_db";
 
 template <typename T>
-std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
-  DCHECK(!profile->IsOffTheRecord());
+std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS& profile) {
+  DCHECK(!profile.IsOffTheRecord());
 
   if constexpr (std::is_base_of<
                     commerce_subscription_db::CommerceSubscriptionContentProto,
                     T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
-        profile->GetProtoDatabaseProvider(),
-        profile->GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
+        profile.GetProtoDatabaseProvider(),
+        profile.GetStatePath().AppendASCII(kCommerceSubscriptionDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE,
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
@@ -38,8 +38,8 @@ std::unique_ptr<KeyedService> BuildSessionProtoDB(ProfileIOS* profile) {
   if constexpr (std::is_base_of<parcel_tracking_db::ParcelTrackingContent,
                                 T>::value) {
     return std::make_unique<SessionProtoDB<T>>(
-        profile->GetProtoDatabaseProvider(),
-        profile->GetStatePath().AppendASCII(kParcelTrackingDBFolder),
+        profile.GetProtoDatabaseProvider(),
+        profile.GetStatePath().AppendASCII(kParcelTrackingDBFolder),
         leveldb_proto::ProtoDbType::COMMERCE_PARCEL_TRACKING_DATABASE,
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
@@ -69,7 +69,7 @@ class SessionProtoDBFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final {
+      ProfileIOS& profile) const final {
     return session_proto_db::internal::BuildSessionProtoDB<T>(profile);
   }
 };

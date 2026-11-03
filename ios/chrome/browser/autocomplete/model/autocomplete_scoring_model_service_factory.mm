@@ -25,7 +25,7 @@ AutocompleteScoringModelServiceFactory::AutocompleteScoringModelServiceFactory(
 
 std::unique_ptr<KeyedService>
 AutocompleteScoringModelServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   OptimizationGuideService* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   return optimization_guide ? std::make_unique<AutocompleteScoringModelService>(

@@ -31,7 +31,7 @@ AIModeButtonServiceIOSFactory::AIModeButtonServiceIOSFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AIModeButtonServiceIOSFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<AIModeButtonServiceIOS>(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile),
