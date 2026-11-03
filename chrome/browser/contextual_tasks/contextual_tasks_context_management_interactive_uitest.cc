@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -921,6 +922,153 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
       VerifyUnderlinedTabs({1}), OpenShareTabsFlyout(kSidePanelWebContentsId),
       VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
       VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true));
+}
+
+// Adding a new tab in Turn 2 on top of a tab submitted in Turn 1 signposts both
+// tabs before and after Turn 2 submission across all four surfaces.
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextManagementInteractiveUiTest,
+                       MultiTurn_AddNewTabInTurn2_PersistsBothTabs) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+
+      // Turn 1: Attach Tab 1 and submit.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({1}),
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "First turn query"),
+      CommitActiveThreadUrlInSidePanel(kSidePanelWebContentsId,
+                                       "First+turn+query", "thread-1"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyUnderlinedTabs({1}),
+
+      // Turn 2: Attach Tab 2 and verify pre-submit signposting for both tabs.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title1", "title2"}),
+      VerifyUnderlinedTabs({1, 2}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true),
+
+      // Submit Turn 2 and verify both tabs remain signposted post-submit.
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "Second turn query"),
+      CommitActiveThreadUrlInSidePanel(kSidePanelWebContentsId,
+                                       "Second+turn+query", "thread-1"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title1", "title2"}),
+      VerifyUnderlinedTabs({1, 2}),
+      OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 2),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", true),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
+}
+
+// Deselecting a previously submitted tab in Turn 2 immediately removes its sign
+// posting pre-submit and keeps it removed after Turn 2 is submitted.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksContextManagementInteractiveUiTest,
+    MultiTurn_DeselectSubmittedTabInTurn2_RemovesFromContext) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+
+      // Turn 1: Attach Tab 1 and Tab 2 and submit.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({1, 2}),
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "First turn query"),
+      CommitActiveThreadUrlInSidePanel(kSidePanelWebContentsId,
+                                       "First+turn+query", "thread-1"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({1, 2}),
+
+      // Turn 2: Deselect previously submitted Tab 1 and verify pre-submit
+      // removal across all four signposting surfaces.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title2"}),
+      VerifyUnderlinedTabs({2}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", false),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true),
+
+      // Submit Turn 2 and verify only Tab 2 persists post-submit.
+      SubmitSidePanelQuery(kSidePanelWebContentsId, "Second turn query"),
+      CommitActiveThreadUrlInSidePanel(kSidePanelWebContentsId,
+                                       "Second+turn+query", "thread-1"),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title2"}),
+      VerifyUnderlinedTabs({2}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title1", false),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true));
+}
+
+// Navigating an attached tab to a new URL or closing an attached tab removes
+// its tab-strip underline and removes it from the composebox context.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksContextManagementInteractiveUiTest,
+    AttachedTabNavigatedOrClosed_RemovesUnderlineAndContext) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab2);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+  const GURL kUrl3 = embedded_test_server()->GetURL("/title3.html");
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), AddInstrumentedTab(kBackgroundTab1, kUrl1),
+      AddInstrumentedTab(kBackgroundTab2, kUrl2),
+      SelectTab(kTabStripElementId, 0), OpenSidePanelWithWebContents(),
+
+      // Attach both background tabs.
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title1"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 1),
+      ToggleFlyoutTab(kSidePanelWebContentsId, "title2"),
+      WaitForFileUploadsComplete(kSidePanelWebContentsId, 2),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 2),
+      VerifyUnderlinedTabs({1, 2}),
+
+      // Navigate attached Tab 1 to a new URL (`kUrl3`). Its underline and
+      // composebox context attachment must be removed while Tab 2 remains.
+      NavigateWebContents(kBackgroundTab1, kUrl3),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 1),
+      VerifyPlusButtonCoinTabs(kSidePanelWebContentsId, {"title2"}),
+      VerifyUnderlinedTabs({2}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 1),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title3", false),
+      VerifyFlyoutTabChecked(kSidePanelWebContentsId, "title2", true),
+
+      // Close attached Tab 2. All signposting must return to the empty state.
+      Do([this]() {
+        browser()->tab_strip_model()->CloseWebContentsAt(
+            2, TabCloseTypes::CLOSE_NONE);
+      }),
+      VerifyPlusButtonCoins(kSidePanelWebContentsId, 0),
+      VerifyUnderlinedTabs({}), OpenShareTabsFlyout(kSidePanelWebContentsId),
+      VerifyMenuTriggerState(kSidePanelWebContentsId, 0));
 }
 
 // Verifies that selecting a tab immediately disables incompatible "+" context
