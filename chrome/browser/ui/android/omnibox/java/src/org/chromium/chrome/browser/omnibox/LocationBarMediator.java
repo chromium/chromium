@@ -3461,7 +3461,10 @@ public class LocationBarMediator
 
     @Override
     public void shareText(String text) {
-        ShareParams params = new ShareParams.Builder(mWindowAndroid, /* title= */ "", text).build();
+        ShareParams params =
+                new ShareParams.Builder(mWindowAndroid, /* title= */ "", /* url= */ "")
+                        .setText(text)
+                        .build();
         ShareHelper.shareWithSystemShareSheetUi(params);
     }
 

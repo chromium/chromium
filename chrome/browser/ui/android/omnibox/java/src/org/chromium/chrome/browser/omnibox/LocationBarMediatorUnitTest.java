@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -69,6 +70,8 @@ import org.robolectric.config.ConfigurationRegistry;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.IntentUtils;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -6377,5 +6380,33 @@ public class LocationBarMediatorUnitTest {
         doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
         clearInvocations(mLocationBarLayout, mUrlCoordinator);
+    }
+
+    @Test
+    public void testShareText_plainTextPopulatesExtraText() {
+        Intent sendIntent = shareTextAndCaptureSendIntent("search query");
+
+        assertEquals(Intent.ACTION_SEND, sendIntent.getAction());
+        assertEquals("search query", sendIntent.getStringExtra(Intent.EXTRA_TEXT));
+    }
+
+    @Test
+    public void testShareText_urlTextIsForwardedVerbatim() {
+        Intent sendIntent = shareTextAndCaptureSendIntent("https://www.example.com/path");
+
+        assertEquals("https://www.example.com/path", sendIntent.getStringExtra(Intent.EXTRA_TEXT));
+    }
+
+    /** Invokes {@link LocationBarMediator#shareText} and returns the ACTION_SEND intent. */
+    private Intent shareTextAndCaptureSendIntent(String text) {
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        mMediator.shareText(text);
+
+        ArgumentCaptor<Intent> chooserCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mWindowAndroid).showIntent(chooserCaptor.capture(), any(), any());
+        Intent sendIntent =
+                IntentUtils.safeGetParcelableExtra(chooserCaptor.getValue(), Intent.EXTRA_INTENT);
+        assertNotNull(sendIntent);
+        return sendIntent;
     }
 }

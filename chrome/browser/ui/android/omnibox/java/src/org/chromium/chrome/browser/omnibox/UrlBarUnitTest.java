@@ -1816,6 +1816,46 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void onTextContextMenuItem_shareText_delegateDoesNotOverride() {
+        focusUrlBar();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn(null).when(mTextContextMenuDelegate).getReplacementCutCopyText(any(), any());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.shareText));
+
+        verify(mUrlBarDelegate).shareText("original");
+    }
+
+    @Test
+    public void onTextContextMenuItem_shareText_delegateOverrides() {
+        focusUrlBar();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn("https://override.text")
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(eq("original text"), any());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.shareText));
+
+        verify(mUrlBarDelegate).shareText("https://override.text");
+    }
+
+    @Test
+    public void onTextContextMenuItem_shareText_reverseSelection() {
+        focusUrlBar();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(8, 0); // Reverse selection
+        doReturn(null).when(mTextContextMenuDelegate).getReplacementCutCopyText(any(), any());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.shareText));
+
+        verify(mTextContextMenuDelegate)
+                .getReplacementCutCopyText("original text", new TextSelection(8, 0));
+        verify(mUrlBarDelegate).shareText("original");
+    }
+
+    @Test
     public void onTextContextMenuItem_paste_reverseSelection() {
         focusUrlBar();
         mUrlBar.setText("original text");
