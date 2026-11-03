@@ -36,8 +36,6 @@ class ProxyNativeTask {
 
   bool StopBackgroundTask(JNIEnv* env);
 
-  void Destroy(JNIEnv* env);
-
  private:
   std::unique_ptr<background_task::BackgroundTask> background_task_;
   background_task::TaskParameters task_params_;

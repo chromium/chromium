@@ -12,15 +12,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ProxyNativeTask_jni.h"
 
-static int64_t JNI_ProxyNativeTask_Init(JNIEnv* env,
-                                        const JavaRef<jobject>& jobj,
-                                        int32_t task_id,
-                                        const std::string& extras,
-                                        const JavaRef<jobject>& jcallback) {
+static jni_zero::JniUniquePtr<ProxyNativeTask> JNI_ProxyNativeTask_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& jobj,
+    int32_t task_id,
+    const std::string& extras,
+    const JavaRef<jobject>& jcallback) {
   std::unique_ptr<background_task::BackgroundTask> background_task =
       ChromeBackgroundTaskFactory::GetNativeBackgroundTaskFromTaskId(task_id);
 
@@ -35,10 +37,9 @@ static int64_t JNI_ProxyNativeTask_Init(JNIEnv* env,
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));
 
-  ProxyNativeTask* proxy_native_task =
-      new ProxyNativeTask(std::move(background_task), std::move(params),
-                          std::move(finish_callback));
-  return reinterpret_cast<intptr_t>(proxy_native_task);
+  return jni_zero::MakeUnique<ProxyNativeTask>(std::move(background_task),
+                                               std::move(params),
+                                               std::move(finish_callback));
 }
 
 ProxyNativeTask::ProxyNativeTask(
@@ -50,10 +51,6 @@ ProxyNativeTask::ProxyNativeTask(
       finish_callback_(std::move(finish_callback)) {}
 
 ProxyNativeTask::~ProxyNativeTask() = default;
-
-void ProxyNativeTask::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ProxyNativeTask::StartBackgroundTaskInReducedMode(
     JNIEnv* env,

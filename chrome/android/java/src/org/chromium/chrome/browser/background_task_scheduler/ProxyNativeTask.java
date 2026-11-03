@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.background_task_scheduler;
 
 import android.content.Context;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -28,7 +31,10 @@ import org.chromium.content_public.browser.BrowserStartupController.StartupMetri
  */
 @NullMarked
 public final class ProxyNativeTask extends NativeBackgroundTask {
-    private long mNativeProxyNativeTask;
+    @JniType("::ProxyNativeTask")
+    interface NativeProxyNativeTask extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeProxyNativeTask> mNativeProxyNativeTask;
 
     @Override
     protected int onStartTaskBeforeNativeLoaded(
@@ -65,7 +71,7 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
                             new BrowserStartupController.StartupCallback() {
                                 @Override
                                 public void onSuccess(@Nullable StartupMetrics metrics) {
-                                    if (mNativeProxyNativeTask == 0) return;
+                                    if (mNativeProxyNativeTask == null) return;
                                     ProxyNativeTaskJni.get()
                                             .onFullBrowserLoaded(
                                                     mNativeProxyNativeTask,
@@ -85,7 +91,7 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
 
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
-        if (mNativeProxyNativeTask == 0) return false;
+        if (mNativeProxyNativeTask == null) return false;
         boolean taskNeedsReschedule =
                 ProxyNativeTaskJni.get().stopBackgroundTask(mNativeProxyNativeTask);
         destroy();
@@ -99,28 +105,27 @@ public final class ProxyNativeTask extends NativeBackgroundTask {
     }
 
     private void destroy() {
-        if (mNativeProxyNativeTask == 0) return;
-        ProxyNativeTaskJni.get().destroy(mNativeProxyNativeTask);
-        mNativeProxyNativeTask = 0;
+        if (mNativeProxyNativeTask == null) return;
+        mNativeProxyNativeTask.destroy();
+        mNativeProxyNativeTask = null;
     }
 
     @NativeMethods
     interface Natives {
-        long init(
+        JniUniquePtr<NativeProxyNativeTask> init(
                 ProxyNativeTask self,
                 int taskType,
                 @JniType("std::string") String extras,
                 Callback<Boolean> callback);
 
-        void startBackgroundTaskInReducedMode(long nativeProxyNativeTask, ProfileKey key);
+        void startBackgroundTaskInReducedMode(JniPtr<NativeProxyNativeTask> self, ProfileKey key);
 
         void startBackgroundTaskWithFullBrowser(
-                long nativeProxyNativeTask, @JniType("Profile*") Profile profile);
+                JniPtr<NativeProxyNativeTask> self, @JniType("Profile*") Profile profile);
 
-        void onFullBrowserLoaded(long nativeProxyNativeTask, @JniType("Profile*") Profile profile);
+        void onFullBrowserLoaded(
+                JniPtr<NativeProxyNativeTask> self, @JniType("Profile*") Profile profile);
 
-        boolean stopBackgroundTask(long nativeProxyNativeTask);
-
-        void destroy(long nativeProxyNativeTask);
+        boolean stopBackgroundTask(JniPtr<NativeProxyNativeTask> self);
     }
 }
