@@ -228,8 +228,13 @@ filegroup {
     srcs: [
         "buildtools/third_party/libc++/__assertion_handler",
         "buildtools/third_party/libc++/__config_site",
-        "third_party/libc++/src/include/**/*",
+        "third_party/libc++/src/include/*",
         "third_party/libc++/src/src/support/runtime/*.ipp",
+    ],
+    // C++ standard library headers are extensionless. Exclude files with
+    // extensions to optimize build.ninja's size.
+    exclude_srcs: [
+        "third_party/libc++/src/include/*.*",
     ],
     visibility: [
         "//external/cronet:__subpackages__",
