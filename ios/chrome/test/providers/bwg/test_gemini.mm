@@ -239,6 +239,8 @@ std::optional<bool> GetLastShouldShowSuggestionChips() {
   return g_last_should_show_suggestion_chips;
 }
 
+void SetShouldShowInputPlate(bool should_show) {}
+
 void SetBlockQuerySubmissionWhileLoading(bool block_submission) {
   g_last_block_query_submission_while_loading = block_submission;
 }

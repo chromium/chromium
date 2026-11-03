@@ -280,6 +280,10 @@ int GetLiveCaptionsNumberOfLines();
 // Sets whether the suggestion chips should be shown on the floaty.
 void SetShouldShowSuggestionChips(bool should_show);
 
+// Sets whether the input plate should be shown on the floaty. This is a no-op
+// until a floaty view has been created in this session.
+void SetShouldShowInputPlate(bool should_show);
+
 // Sets whether query submission should be blocked while page context is
 // loading.
 void SetBlockQuerySubmissionWhileLoading(bool block_submission);
