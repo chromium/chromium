@@ -91,7 +91,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -4698,63 +4697,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabTop) {
   size_t index = model_and_index->second;
   EXPECT_EQ(model->GetLabelAt(index),
             l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKTOPVIEW));
-}
-
-class ContextMenuSplitViewHorizontalDirectAccessBrowserTest
-    : public ContextMenuBrowserTest {
- public:
-  ContextMenuSplitViewHorizontalDirectAccessBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{tabs::kSplitViewHorizontal,
-                               {{"split_view_horizontal_direct_access",
-                                 "true"}}}},
-        /*disabled_features=*/{});
-  }
-
-  void TestOpenLinkNewSplit(size_t index,
-                            SplitViewLayoutMenuModel::CommandId command_id,
-                            split_tabs::SplitTabLayout expected_layout) {
-    const GURL test_url("http://www.example.com/");
-    TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
-    ASSERT_EQ(tab_strip_model->count(), 1);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-    std::unique_ptr<TestRenderViewContextMenu> menu =
-        CreateContextMenuMediaTypeNone(test_url, test_url);
-
-    std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
-        menu->GetMenuModelAndItemIndex(static_cast<int>(command_id));
-    ASSERT_TRUE(model_and_index);
-    auto [submenu, _] = model_and_index.value();
-
-    EXPECT_EQ(2u, submenu->GetItemCount());
-    EXPECT_EQ(static_cast<int>(command_id), submenu->GetCommandIdAt(index));
-    submenu->ActivatedAt(index);
-
-    EXPECT_EQ(tab_strip_model->count(), 2);
-    EXPECT_TRUE(tab_strip_model->GetActiveTab()->GetSplit().has_value());
-    EXPECT_EQ(
-        expected_layout,
-        tab_strip_model
-            ->GetSplitData(tab_strip_model->GetActiveTab()->GetSplit().value())
-            ->visual_data()
-            ->split_layout());
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
-                       OpenLinkNewSplitSideBySide) {
-  TestOpenLinkNewSplit(0, SplitViewLayoutMenuModel::CommandId::kSideBySide,
-                       split_tabs::SplitTabLayout::kSideBySide);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextMenuSplitViewHorizontalDirectAccessBrowserTest,
-                       OpenLinkNewSplitStacked) {
-  TestOpenLinkNewSplit(1, SplitViewLayoutMenuModel::CommandId::kStacked,
-                       split_tabs::SplitTabLayout::kStacked);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

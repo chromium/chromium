@@ -298,7 +298,7 @@ void SplitTabsToolbarButton::UpdateAccessibilityLabel(bool is_enabled) {
 
 void SplitTabsToolbarButton::MaybeNotifyIndirectAccessIPHUsed() {
   if (auto* const user_ed = BrowserUserEducationInterface::From(browser_);
-      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed &&
+      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed &&
       user_ed->IsFeaturePromoActive(
           feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature)) {
     user_ed->NotifyFeaturePromoFeatureUsed(
@@ -309,7 +309,7 @@ void SplitTabsToolbarButton::MaybeNotifyIndirectAccessIPHUsed() {
 
 void SplitTabsToolbarButton::MaybeAbortIndirectAccessIPH() {
   if (auto* const user_ed = BrowserUserEducationInterface::From(browser_);
-      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed) {
+      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed) {
     TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
     tabs::TabInterface* const active_tab = tab_strip_model->GetActiveTab();
     if (!active_tab || !active_tab->IsSplit() ||

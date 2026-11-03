@@ -2351,7 +2351,7 @@ void MaybeRegisterChromeFeaturePromos(
 #endif  // BUILDFLAG(IS_WIN)
 
   // kIPHSplitViewHorizontalIndirectAccessFeature:
-  if (tabs::IsSplitViewHorizontalIndirectAccessEnabled()) {
+  if (base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
     registry.RegisterFeature(std::move(
         FeaturePromoSpecification::CreateForSnoozePromo(
             feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
@@ -2362,8 +2362,8 @@ void MaybeRegisterChromeFeaturePromos(
             .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
             .SetMetadata(152, "charlesmeng@chromium.org",
                          "Triggered when the split view horizontal feature is "
-                         "enabled with the direct access feature param off, "
-                         "and the user creates a side by side split.")));
+                         "enabled and the user creates a side by side "
+                         "split.")));
   }
 
   // kIPHGlassFrameOptInFeature:

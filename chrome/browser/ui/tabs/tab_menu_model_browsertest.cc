@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/split_tab_mute_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
-#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -79,16 +78,6 @@
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
-  TabMenuModelBrowserTest() {
-    // TODO(crbug.com/557287887): Fix SplitViewLayoutMenuModel so that it
-    // doesn't break TabMenuModelBrowserTest.Basics.
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{tabs::kSplitViewHorizontal,
-                               {{"split_view_horizontal_direct_tab_access",
-                                 "false"}}}},
-        /*disabled_features=*/{});
-  }
-
   Profile* profile() { return browser()->GetProfile(); }
 
   void ActivateSwapWithSplitSubmenuCommand(
@@ -104,9 +93,6 @@ class TabMenuModelBrowserTest : public MenuModelTest,
     submenu->ActivatedAt(static_cast<size_t>(
         submenu->GetIndexOfCommandId(static_cast<int>(command_id)).value()));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
@@ -740,89 +726,6 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalBrowserTest,
       arrange_submenu_2->GetIndexOfCommandId(toggle_cmd_id).value();
   EXPECT_EQ(arrange_submenu_2->GetLabelAt(item_idx_2),
             l10n_util::GetStringUTF16(IDS_SPLIT_TAB_SHOW_SIDE_BY_SIDE));
-}
-
-class TabMenuModelSplitViewHorizontalDirectAccessBrowserTest
-    : public TabMenuModelBrowserTest {
- public:
-  TabMenuModelSplitViewHorizontalDirectAccessBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/GetEnabledFeaturesAndParams(),
-        /*disabled_features=*/{});
-  }
-
-  virtual std::vector<base::test::FeatureRefAndParams>
-  GetEnabledFeaturesAndParams() {
-    return {{tabs::kSplitViewHorizontal,
-             {{"split_view_horizontal_direct_access", "true"}}}};
-  }
-
-  void TestNewSplit(SplitViewLayoutMenuModel::CommandId command_id,
-                    split_tabs::SplitTabLayout expected_layout) {
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    ASSERT_EQ(tab_strip_model->count(), 2);
-    ASSERT_EQ(tab_strip_model->active_index(), 1);
-
-    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
-                            tab_strip_model, 0);
-
-    size_t submenu_index =
-        menu_model.GetIndexOfCommandId(TabStripModel::CommandAddToSplit)
-            .value();
-    ui::SimpleMenuModel* submenu = static_cast<ui::SimpleMenuModel*>(
-        menu_model.GetSubmenuModelAt(submenu_index));
-    submenu->ActivatedAt(static_cast<size_t>(
-        submenu->GetIndexOfCommandId(static_cast<int>(command_id)).value()));
-
-    EXPECT_TRUE(tab_strip_model->GetActiveTab()->GetSplit().has_value());
-    EXPECT_EQ(
-        expected_layout,
-        tab_strip_model
-            ->GetSplitData(tab_strip_model->GetActiveTab()->GetSplit().value())
-            ->visual_data()
-            ->split_layout());
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalDirectAccessBrowserTest,
-                       NewSideBySideSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kSideBySide,
-               split_tabs::SplitTabLayout::kSideBySide);
-}
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalDirectAccessBrowserTest,
-                       NewStackedSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kStacked,
-               split_tabs::SplitTabLayout::kStacked);
-}
-
-class TabMenuModelSplitViewHorizontalDirectTabAccessBrowserTest
-    : public TabMenuModelSplitViewHorizontalDirectAccessBrowserTest {
- public:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeaturesAndParams()
-      override {
-    return {{tabs::kSplitViewHorizontal,
-             {{"split_view_horizontal_direct_tab_access", "true"}}}};
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    TabMenuModelSplitViewHorizontalDirectTabAccessBrowserTest,
-    NewSideBySideSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kSideBySide,
-               split_tabs::SplitTabLayout::kSideBySide);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    TabMenuModelSplitViewHorizontalDirectTabAccessBrowserTest,
-    NewStackedSplit) {
-  TestNewSplit(SplitViewLayoutMenuModel::CommandId::kStacked,
-               split_tabs::SplitTabLayout::kStacked);
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {

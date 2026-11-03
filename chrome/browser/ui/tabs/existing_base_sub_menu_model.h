@@ -45,7 +45,6 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   static constexpr int kMinExistingTabGroupCommandId = 1301;
   static constexpr int kMinSplitTabMenuModelCommandId = 1701;
   static constexpr int kMinSplitTabSwapMenuModelCommandId = 1801;
-  static constexpr int kMinSplitViewLayoutMenuModelCommandId = 1901;
   static constexpr int kMinSplitTabMuteMenuModelCommandId = 2001;
 
   ExistingBaseSubMenuModel(const ExistingBaseSubMenuModel&) = delete;

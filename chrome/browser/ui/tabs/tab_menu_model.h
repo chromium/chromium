@@ -100,7 +100,6 @@ class TabMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel>
       add_to_existing_comparison_table_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> swap_with_split_submenu_;
-  std::unique_ptr<ui::SimpleMenuModel> split_layout_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> arrange_split_view_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> split_mute_submenu_;
   std::unique_ptr<ui::SimpleMenuModel> glic_tab_sub_menu_model_;

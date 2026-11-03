@@ -5073,20 +5073,6 @@ const FeatureEntry::FeatureVariation kCanvasAccessibilityChoices[] = {
     {"Basic (Rendered Text)", kCanvasAccessibilityBasic, nullptr},
     {"Advanced (Rendered Text + OCR)", kCanvasAccessibilityAdvanced, nullptr}};
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kSplitViewHorizontalDirectAccess[] = {
-    {"split_view_horizontal_direct_access", "true"}};
-const FeatureEntry::FeatureParam kSplitViewHorizontalIndirectAccess[] = {
-    {"split_view_horizontal_direct_access", "false"}};
-const FeatureEntry::FeatureParam kSplitViewHorizontalDirectTabAccess[] = {
-    {"split_view_horizontal_direct_tab_access", "true"}};
-const FeatureEntry::FeatureVariation kSplitViewHorizontalVariations[] = {
-    {"Direct Access", kSplitViewHorizontalDirectAccess, nullptr},
-    {"Indirect Access", kSplitViewHorizontalIndirectAccess, nullptr},
-    {"Direct Access for Tab Context Menu", kSplitViewHorizontalDirectTabAccess,
-     nullptr}};
-#endif
-
 const FeatureEntry::FeatureParam kTabStripDeclutter80WithActiveCloseHide[] = {
     {"TabStripDeclutterMaxTabWidthForCloseHide", "80"},
     {"TabStripDeclutterActiveTabCloseHideEnabled", "true"}};
@@ -13615,9 +13601,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"split-view-horizontal", flag_descriptions::kSplitViewHorizontalName,
      flag_descriptions::kSplitViewHorizontalDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kSplitViewHorizontal,
-                                    kSplitViewHorizontalVariations,
-                                    "SplitViewHorizontal")},
+     FEATURE_VALUE_TYPE(tabs::kSplitViewHorizontal)},
 #endif
 
     {"prefetch-activation-beacon",

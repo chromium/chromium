@@ -549,7 +549,7 @@ class RenderViewContextMenu
   // next to the active tab. If the active tab is already in the split view,
   // then the tab that wasn't the source of the link will be navigated to the
   // link instead.
-  void OpenLinkInSplitView(split_tabs::SplitTabLayout layout);
+  void OpenLinkInSplitView();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // The destination URL to use if the user tries to search for or navigate to
@@ -655,7 +655,6 @@ class RenderViewContextMenu
   const bool is_paste_and_match_style_enabled_;
 
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
-  std::unique_ptr<ui::SimpleMenuModel> split_layout_submenu_;
 
   //  Used for CTR metrics of menu item for opening Glic.
   bool glic_item_shown_ = false;

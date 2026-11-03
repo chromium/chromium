@@ -2002,7 +2002,7 @@ void TabStripModel::UpdateSplitLayout(
 
   if (auto* const user_ed = BrowserUserEducationInterface::From(
           delegate_->GetBrowserWindowInterface());
-      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed &&
+      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed &&
       tab_layout == split_tabs::SplitTabLayout::kStacked) {
     user_ed->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
@@ -2100,7 +2100,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
 
   if (auto* const user_ed = BrowserUserEducationInterface::From(
           delegate_->GetBrowserWindowInterface());
-      tabs::IsSplitViewHorizontalIndirectAccessEnabled() && user_ed) {
+      base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal) && user_ed) {
     if (visual_data.split_layout() == split_tabs::SplitTabLayout::kStacked) {
       user_ed->NotifyFeaturePromoFeatureUsed(
           feature_engagement::kIPHSplitViewHorizontalIndirectAccessFeature,
@@ -3560,7 +3560,6 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
 void TabStripModel::ExecuteAddToNewSplitCommand(
     int context_index,
     split_tabs::SplitTabLayout layout) {
-  MaybeActivateBrowserWindow(delegate());
   base::UmaHistogramCounts1000("Tab.ContextMenu.AddToSplit.SelectedTabsCount",
                                selection_model_.size());
 

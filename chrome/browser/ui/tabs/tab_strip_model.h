@@ -853,12 +853,6 @@ class TabStripModel {
   // If `context_index` is selected the command applies to all selected tabs.
   void ExecuteAddToExistingWindowCommand(int context_index, int browser_index);
 
-  // Adds the tab at `context_index` to a new split with the current active tab.
-  // If `context_index` is active, the currently selected tabs are added to a
-  // new split.
-  void ExecuteAddToNewSplitCommand(int context_index,
-                                   split_tabs::SplitTabLayout layout);
-
   // Returns true if 'CommandToggleSiteMuted' will mute. `context_tab` is the
   // tab supplied to `ExecuteContextMenuCommand`.
   bool WillContextMenuMuteSites(tabs::TabHandle context_tab);
@@ -1287,6 +1281,12 @@ class TabStripModel {
 
   // Adds all selected indices provided by `context_index` into a new tab group.
   void AddToNewGroupFromContextIndex(int context_index);
+
+  // Adds the tab at `context_index` to a new split with the current active tab.
+  // If `context_index` is active, the currently selected tabs are added to a
+  // new split.
+  void ExecuteAddToNewSplitCommand(int context_index,
+                                   split_tabs::SplitTabLayout layout);
 
   // Implementation of MoveTabsAndSetPropertiesImpl. Moves the set of tabs in
   // `indices` to the `destination_index` and updates the tabs to the

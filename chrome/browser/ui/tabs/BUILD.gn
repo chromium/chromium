@@ -277,7 +277,6 @@ if (!is_android) {
       "split_tab_menu_model.h",
       "split_tab_mute_menu_model.h",
       "split_tab_swap_menu_model.h",
-      "split_view_layout_menu_model.h",
       "tab_model.h",
     ]
 
@@ -313,7 +312,6 @@ if (!is_android) {
       "split_tab_menu_model.cc",
       "split_tab_mute_menu_model.cc",
       "split_tab_swap_menu_model.cc",
-      "split_view_layout_menu_model.cc",
       "tab_model.cc",
     ]
 

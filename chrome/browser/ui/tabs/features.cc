@@ -17,16 +17,6 @@ BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSplitViewHorizontal, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kSplitViewHorizontalDirectAccess,
-                   &kSplitViewHorizontal,
-                   "split_view_horizontal_direct_access",
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kSplitViewHorizontalDirectTabAccess,
-                   &kSplitViewHorizontal,
-                   "split_view_horizontal_direct_tab_access",
-                   false);
 
 BASE_FEATURE(kTabSearchPerformanceImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -39,17 +29,6 @@ BASE_FEATURE(kNewHorizontalPinnedTabStyling, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Back-to-Opener behavior, allowing users to press the back button in a
 // newly opened tab to close that tab and return focus to the opener tab.
 BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsSplitViewHorizontalIndirectAccessEnabled() {
-  return base::FeatureList::IsEnabled(kSplitViewHorizontal) &&
-         !kSplitViewHorizontalDirectAccess.Get();
-}
-
-bool IsSplitViewHorizontalDirectAccessEnabledForTab() {
-  return base::FeatureList::IsEnabled(kSplitViewHorizontal) &&
-         (kSplitViewHorizontalDirectAccess.Get() ||
-          kSplitViewHorizontalDirectTabAccess.Get());
-}
 
 bool IsNewHorizontalPinnedTabStylingEnabled() {
   return base::FeatureList::IsEnabled(kTabStripUnification) &&

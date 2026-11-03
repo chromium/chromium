@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_mute_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
-#include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -356,42 +355,15 @@ void TabMenuModel::Build(int index) {
       SetEnabledAt(swap_with_split_index, num_tabs == 1);
       SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
     } else {
-      if (tabs::IsSplitViewHorizontalDirectAccessEnabledForTab()) {
-        split_layout_submenu_ =
-            std::make_unique<SplitViewLayoutMenuModel>(base::BindOnce(
-                [](TabStripModel* tab_strip_model, tabs::TabHandle tab_handle,
-                   split_tabs::SplitTabLayout layout) {
-                  if (!tab_handle.Get()) {
-                    return;
-                  }
-
-                  int context_index =
-                      tab_strip_model->GetIndexOfTab(tab_handle.Get());
-                  tab_strip_model->ExecuteAddToNewSplitCommand(context_index,
-                                                               layout);
-                },
-                tab_strip_, tab_strip_->GetTabAtIndex(index)->GetHandle()));
-        AddSubMenuWithStringIdAndIcon(
-            TabStripModel::CommandAddToSplit,
-            index == tab_strip_->active_index()
-                ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
-                : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
-            split_layout_submenu_.get(),
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
-                                                  : kSplitSceneOldIcon,
-                ui::kColorMenuIcon, kTabMenuIconSize));
-      } else {
-        AddItemWithStringIdAndIcon(
-            TabStripModel::CommandAddToSplit,
-            index == tab_strip_->active_index()
-                ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
-                : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
-            ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
-                                                  : kSplitSceneOldIcon,
-                ui::kColorMenuIcon, kTabMenuIconSize));
-      }
+      AddItemWithStringIdAndIcon(
+          TabStripModel::CommandAddToSplit,
+          index == tab_strip_->active_index()
+              ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
+              : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kSplitSceneIcon
+                                             : kSplitSceneOldIcon,
+                                         ui::kColorMenuIcon, kTabMenuIconSize));
       const int add_to_split_index = GetItemCount() - 1;
       SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
       SetElementIdentifierAt(add_to_split_index, kSplitTabsMenuItem);

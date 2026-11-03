@@ -9084,8 +9084,7 @@ TEST_F(TabStripModelTest, ContextMenuCommandWindowActivation) {
 
   ON_CALL(base_window, IsActive()).WillByDefault(::testing::Return(false));
   EXPECT_CALL(base_window, Activate()).Times(1);
-  tabstrip()->ExecuteAddToNewSplitCommand(
-      1, split_tabs::SplitTabLayout::kSideBySide);
+  tabstrip()->ExecuteContextMenuCommand(1, TabStripModel::CommandAddToSplit);
   testing::Mock::VerifyAndClearExpectations(&base_window);
 
   // Close commands should not activate an inactive window.
