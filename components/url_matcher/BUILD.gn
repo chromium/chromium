@@ -10,7 +10,6 @@ component("url_matcher") {
     "regex_set_matcher.h",
     "url_matcher.cc",
     "url_matcher.h",
-    "url_matcher_constants.cc",
     "url_matcher_constants.h",
     "url_matcher_export.h",
     "url_matcher_factory.cc",

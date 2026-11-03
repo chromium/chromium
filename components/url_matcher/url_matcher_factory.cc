@@ -6,10 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/lazy_instance.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
@@ -38,69 +39,47 @@ const char kInvalidCidrBlocks[] = "Invalid CIDR blocks in UrlFilter.";
 // Registry for all factory methods of URLMatcherConditionFactory
 // that allows translating string literals from the extension API into
 // the corresponding factory method to be called.
-class URLMatcherConditionFactoryMethods {
- public:
-  URLMatcherConditionFactoryMethods() {
-    typedef URLMatcherConditionFactory F;
-    factory_methods_[keys::kHostContainsKey] = &F::CreateHostContainsCondition;
-    factory_methods_[keys::kHostEqualsKey] = &F::CreateHostEqualsCondition;
-    factory_methods_[keys::kHostPrefixKey] = &F::CreateHostPrefixCondition;
-    factory_methods_[keys::kHostSuffixKey] = &F::CreateHostSuffixCondition;
-    factory_methods_[keys::kOriginAndPathMatchesKey] =
-        &F::CreateOriginAndPathMatchesCondition;
-    factory_methods_[keys::kPathContainsKey] = &F::CreatePathContainsCondition;
-    factory_methods_[keys::kPathEqualsKey] = &F::CreatePathEqualsCondition;
-    factory_methods_[keys::kPathPrefixKey] = &F::CreatePathPrefixCondition;
-    factory_methods_[keys::kPathSuffixKey] = &F::CreatePathSuffixCondition;
-    factory_methods_[keys::kQueryContainsKey] =
-        &F::CreateQueryContainsCondition;
-    factory_methods_[keys::kQueryEqualsKey] = &F::CreateQueryEqualsCondition;
-    factory_methods_[keys::kQueryPrefixKey] = &F::CreateQueryPrefixCondition;
-    factory_methods_[keys::kQuerySuffixKey] = &F::CreateQuerySuffixCondition;
-    factory_methods_[keys::kURLContainsKey] = &F::CreateURLContainsCondition;
-    factory_methods_[keys::kURLEqualsKey] = &F::CreateURLEqualsCondition;
-    factory_methods_[keys::kURLPrefixKey] = &F::CreateURLPrefixCondition;
-    factory_methods_[keys::kURLSuffixKey] = &F::CreateURLSuffixCondition;
-    factory_methods_[keys::kURLMatchesKey] = &F::CreateURLMatchesCondition;
-  }
-
-  URLMatcherConditionFactoryMethods(const URLMatcherConditionFactoryMethods&) =
-      delete;
-  URLMatcherConditionFactoryMethods& operator=(
-      const URLMatcherConditionFactoryMethods&) = delete;
-
-  // Returns whether a factory method for the specified |pattern_type| (e.g.
-  // "host_suffix") is known.
-  bool Contains(const std::string& pattern_type) const {
-    return factory_methods_.find(pattern_type) != factory_methods_.end();
-  }
-
-  // Creates a URLMatcherCondition instance from |url_matcher_condition_factory|
-  // of the given |pattern_type| (e.g. "host_suffix") for the given
-  // |pattern_value| (e.g. "example.com").
-  // The |pattern_type| needs to be known to this class (see Contains()) or
-  // a CHECK is triggered.
-  URLMatcherCondition Call(
-      URLMatcherConditionFactory* url_matcher_condition_factory,
-      const std::string& pattern_type,
-      const std::string& pattern_value) const {
-    auto i = factory_methods_.find(pattern_type);
-    CHECK(i != factory_methods_.end());
-    const FactoryMethod& method = i->second;
-    return (url_matcher_condition_factory->*method)(pattern_value);
-  }
-
- private:
-  typedef URLMatcherCondition
-      (URLMatcherConditionFactory::* FactoryMethod)
-      (const std::string& prefix);
-  typedef std::map<std::string, FactoryMethod> FactoryMethods;
-
-  FactoryMethods factory_methods_;
-};
-
-static base::LazyInstance<URLMatcherConditionFactoryMethods>::DestructorAtExit
-    g_url_matcher_condition_factory_methods = LAZY_INSTANCE_INITIALIZER;
+using FactoryMethod = URLMatcherCondition (URLMatcherConditionFactory::*)(
+    const std::string& pattern);
+constexpr auto kFactoryMethods =
+    base::MakeFixedFlatMap<std::string_view, FactoryMethod>({
+        {keys::kHostContainsKey,
+         &URLMatcherConditionFactory::CreateHostContainsCondition},
+        {keys::kHostEqualsKey,
+         &URLMatcherConditionFactory::CreateHostEqualsCondition},
+        {keys::kHostPrefixKey,
+         &URLMatcherConditionFactory::CreateHostPrefixCondition},
+        {keys::kHostSuffixKey,
+         &URLMatcherConditionFactory::CreateHostSuffixCondition},
+        {keys::kOriginAndPathMatchesKey,
+         &URLMatcherConditionFactory::CreateOriginAndPathMatchesCondition},
+        {keys::kPathContainsKey,
+         &URLMatcherConditionFactory::CreatePathContainsCondition},
+        {keys::kPathEqualsKey,
+         &URLMatcherConditionFactory::CreatePathEqualsCondition},
+        {keys::kPathPrefixKey,
+         &URLMatcherConditionFactory::CreatePathPrefixCondition},
+        {keys::kPathSuffixKey,
+         &URLMatcherConditionFactory::CreatePathSuffixCondition},
+        {keys::kQueryContainsKey,
+         &URLMatcherConditionFactory::CreateQueryContainsCondition},
+        {keys::kQueryEqualsKey,
+         &URLMatcherConditionFactory::CreateQueryEqualsCondition},
+        {keys::kQueryPrefixKey,
+         &URLMatcherConditionFactory::CreateQueryPrefixCondition},
+        {keys::kQuerySuffixKey,
+         &URLMatcherConditionFactory::CreateQuerySuffixCondition},
+        {keys::kURLContainsKey,
+         &URLMatcherConditionFactory::CreateURLContainsCondition},
+        {keys::kURLEqualsKey,
+         &URLMatcherConditionFactory::CreateURLEqualsCondition},
+        {keys::kURLMatchesKey,
+         &URLMatcherConditionFactory::CreateURLMatchesCondition},
+        {keys::kURLPrefixKey,
+         &URLMatcherConditionFactory::CreateURLPrefixCondition},
+        {keys::kURLSuffixKey,
+         &URLMatcherConditionFactory::CreateURLSuffixCondition},
+    });
 
 }  // namespace
 
@@ -178,8 +157,7 @@ URLMatcherFactory::CreateFromURLFilterDictionary(
 // static
 bool URLMatcherFactory::IsURLMatcherConditionAttribute(
     const std::string& condition_attribute_name) {
-  return g_url_matcher_condition_factory_methods.Get().Contains(
-      condition_attribute_name);
+  return kFactoryMethods.contains(condition_attribute_name);
 }
 
 namespace {
@@ -223,8 +201,9 @@ URLMatcherCondition URLMatcherFactory::CreateURLMatcherCondition(
       return URLMatcherCondition();
     }
   }
-  return g_url_matcher_condition_factory_methods.Get().Call(
-      url_matcher_condition_factory, condition_attribute_name, str_value);
+  auto it = kFactoryMethods.find(condition_attribute_name);
+  CHECK(it != kFactoryMethods.end());
+  return (url_matcher_condition_factory->*(it->second))(str_value);
 }
 
 // static

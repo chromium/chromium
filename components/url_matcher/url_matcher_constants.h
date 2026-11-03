@@ -7,34 +7,32 @@
 #ifndef COMPONENTS_URL_MATCHER_URL_MATCHER_CONSTANTS_H_
 #define COMPONENTS_URL_MATCHER_URL_MATCHER_CONSTANTS_H_
 
-#include "components/url_matcher/url_matcher_export.h"
-
 namespace url_matcher {
 namespace url_matcher_constants {
 
 // Keys of dictionaries for URL constraints
-URL_MATCHER_EXPORT extern const char kPortsKey[];
-URL_MATCHER_EXPORT extern const char kSchemesKey[];
-URL_MATCHER_EXPORT extern const char kHostContainsKey[];
-URL_MATCHER_EXPORT extern const char kHostEqualsKey[];
-URL_MATCHER_EXPORT extern const char kHostPrefixKey[];
-URL_MATCHER_EXPORT extern const char kHostSuffixKey[];
-URL_MATCHER_EXPORT extern const char kHostSuffixPathPrefixKey[];
-URL_MATCHER_EXPORT extern const char kOriginAndPathMatchesKey[];
-URL_MATCHER_EXPORT extern const char kPathContainsKey[];
-URL_MATCHER_EXPORT extern const char kPathEqualsKey[];
-URL_MATCHER_EXPORT extern const char kPathPrefixKey[];
-URL_MATCHER_EXPORT extern const char kPathSuffixKey[];
-URL_MATCHER_EXPORT extern const char kQueryContainsKey[];
-URL_MATCHER_EXPORT extern const char kQueryEqualsKey[];
-URL_MATCHER_EXPORT extern const char kQueryPrefixKey[];
-URL_MATCHER_EXPORT extern const char kQuerySuffixKey[];
-URL_MATCHER_EXPORT extern const char kURLContainsKey[];
-URL_MATCHER_EXPORT extern const char kURLEqualsKey[];
-URL_MATCHER_EXPORT extern const char kURLMatchesKey[];
-URL_MATCHER_EXPORT extern const char kURLPrefixKey[];
-URL_MATCHER_EXPORT extern const char kURLSuffixKey[];
-URL_MATCHER_EXPORT extern const char kCidrBlocksKey[];
+inline constexpr char kPortsKey[] = "ports";
+inline constexpr char kSchemesKey[] = "schemes";
+inline constexpr char kHostContainsKey[] = "hostContains";
+inline constexpr char kHostEqualsKey[] = "hostEquals";
+inline constexpr char kHostPrefixKey[] = "hostPrefix";
+inline constexpr char kHostSuffixKey[] = "hostSuffix";
+inline constexpr char kHostSuffixPathPrefixKey[] = "hostSuffixPathPrefix";
+inline constexpr char kOriginAndPathMatchesKey[] = "originAndPathMatches";
+inline constexpr char kPathContainsKey[] = "pathContains";
+inline constexpr char kPathEqualsKey[] = "pathEquals";
+inline constexpr char kPathPrefixKey[] = "pathPrefix";
+inline constexpr char kPathSuffixKey[] = "pathSuffix";
+inline constexpr char kQueryContainsKey[] = "queryContains";
+inline constexpr char kQueryEqualsKey[] = "queryEquals";
+inline constexpr char kQueryPrefixKey[] = "queryPrefix";
+inline constexpr char kQuerySuffixKey[] = "querySuffix";
+inline constexpr char kURLContainsKey[] = "urlContains";
+inline constexpr char kURLEqualsKey[] = "urlEquals";
+inline constexpr char kURLMatchesKey[] = "urlMatches";
+inline constexpr char kURLPrefixKey[] = "urlPrefix";
+inline constexpr char kURLSuffixKey[] = "urlSuffix";
+inline constexpr char kCidrBlocksKey[] = "cidrBlocks";
 
 }  // namespace url_matcher_constants
 }  // namespace url_matcher
