@@ -26,6 +26,10 @@
 // Sets whether the entity being saved is a private wallet pass.
 - (void)setIsPrivateWalletPass:(BOOL)isPrivateWalletPass;
 
+// Sets whether an explicit decline button ("No thanks") should be displayed in
+// the button stack instead of the navigation bar cancel button.
+- (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton;
+
 // Sets the legal message lines for the disclosure.
 - (void)setLegalMessages:(NSArray<AutofillLegalMessageLine*>*)legalMessages;
 

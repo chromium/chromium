@@ -131,6 +131,8 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   // `isPrivateWalletPass`, `userEmail`, and `legalMessages` separately and
   // duplicating footer construction across view controllers.
   [_consumer setIsPrivateWalletPass:[self isPrivateWalletPass]];
+  [_consumer
+      setShowsExplicitDeclineButton:_params->show_explicit_decline_button];
 
   [_consumer setNewEntity:_params->new_entity
                 oldEntity:_params->old_entity

@@ -26,6 +26,7 @@
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/form_predictions_tracker.h"
@@ -899,10 +900,22 @@ void ChromeAutofillClientIOS::ShowEntityImportBubble(
     infobar_manager_->RemoveInfoBar(*existing_infobar);
   }
 
-  SaveEntityParams params(std::move(new_entity), std::move(old_entity),
-                          *std::move(user_email), save_is_synchronous,
-                          std::move(prompt_result_callback),
-                          std::move(public_passes_notice));
+  // TODO(crbug.com/573949431): Update the logic to decide
+  // `show_explicit_decline_button` using Emmett Account Location:
+  // 1. GDPR countries: `show_explicit_decline_button = true`.
+  // 2. Non-GDPR countries: `show_explicit_decline_button = false`.
+  // 3. Unavailable or unknown Emmett country: Suppress the save prompt.
+  const bool show_explicit_decline_button =
+      base::FeatureList::IsEnabled(
+          features::kAutofillRegionalizedPrivatePassesUxRefine) &&
+      GetWalletPassType(new_entity.type(), new_entity.record_type()) ==
+          EntityInstance::WalletPassType::kPrivate;
+
+  SaveEntityParams params(
+      std::move(new_entity), std::move(old_entity), *std::move(user_email),
+      save_is_synchronous, std::move(prompt_result_callback),
+      std::move(public_passes_notice),
+      /*show_explicit_decline_button=*/show_explicit_decline_button);
 
   auto delegate = std::make_unique<AutofillAiSaveEntityInfoBarDelegateIOS>(
       std::move(params),

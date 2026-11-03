@@ -17,13 +17,15 @@ SaveEntityParams::SaveEntityParams(
     std::u16string user_email,
     bool save_is_synchronous,
     AutofillClient::EntityImportPromptResultCallback callback,
-    LegalMessageLines public_passes_notice)
+    LegalMessageLines public_passes_notice,
+    bool show_explicit_decline_button)
     : new_entity(std::move(new_entity)),
       old_entity(std::move(old_entity)),
       user_email(std::move(user_email)),
       save_is_synchronous(save_is_synchronous),
       callback(std::move(callback)),
-      public_passes_notice(std::move(public_passes_notice)) {}
+      public_passes_notice(std::move(public_passes_notice)),
+      show_explicit_decline_button(show_explicit_decline_button) {}
 
 SaveEntityParams::SaveEntityParams(SaveEntityParams&&) = default;
 SaveEntityParams& SaveEntityParams::operator=(SaveEntityParams&&) = default;

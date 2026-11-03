@@ -29,6 +29,7 @@ autofill::EntityInstance CreateTestEntity() {
 @property(nonatomic, strong) NSArray<AutofillLegalMessageLine*>* legalMessages;
 @property(nonatomic, assign) BOOL setNewEntityCalled;
 @property(nonatomic, assign) BOOL isPrivateWalletPass;
+@property(nonatomic, assign) BOOL showsExplicitDeclineButton;
 @end
 
 @implementation FakeAutofillAISaveEntityConsumer
@@ -53,13 +54,15 @@ class AutofillAISaveEntityMediatorTest : public PlatformTest {
   // Creates a mediator with the given entity, pushes data to a fake consumer,
   // and returns the consumer.
   FakeAutofillAISaveEntityConsumer* PushEntityToMediator(
-      autofill::EntityInstance entity) {
+      autofill::EntityInstance entity,
+      bool show_explicit_decline_button = false) {
     autofill::SaveEntityParams params(std::move(entity),
                                       /*old_entity=*/std::nullopt,
                                       /*user_email=*/u"test@example.com",
                                       /*save_is_synchronous=*/true,
                                       /*callback=*/base::DoNothing(),
-                                      /*public_passes_notice=*/{});
+                                      /*public_passes_notice=*/{},
+                                      show_explicit_decline_button);
 
     AutofillAISaveEntityMediator* mediator =
         [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
@@ -86,7 +89,8 @@ TEST_F(AutofillAISaveEntityMediatorTest, PushesLegalMessagesWhenPresent) {
       /*user_email=*/u"test@example.com",
       /*save_is_synchronous=*/true,
       /*callback=*/base::DoNothing(),
-      /*public_passes_notice=*/std::move(legal_message_lines));
+      /*public_passes_notice=*/std::move(legal_message_lines),
+      /*show_explicit_decline_button=*/false);
 
   AutofillAISaveEntityMediator* mediator =
       [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
@@ -112,7 +116,8 @@ TEST_F(AutofillAISaveEntityMediatorTest, DoesNotPushLegalMessagesWhenEmpty) {
                                     /*user_email=*/u"test@example.com",
                                     /*save_is_synchronous=*/true,
                                     /*callback=*/base::DoNothing(),
-                                    /*public_passes_notice=*/{});
+                                    /*public_passes_notice=*/{},
+                                    /*show_explicit_decline_button=*/false);
 
   AutofillAISaveEntityMediator* mediator =
       [[AutofillAISaveEntityMediator alloc] initWithParams:std::move(params)
@@ -149,4 +154,21 @@ TEST_F(AutofillAISaveEntityMediatorTest,
           {.record_type = autofill::EntityInstance::RecordType::kLocal}));
 
   EXPECT_FALSE(consumer.isPrivateWalletPass);
+}
+
+// Tests that `showsExplicitDeclineButton` is pushed to consumer when true in
+// params.
+TEST_F(AutofillAISaveEntityMediatorTest, PushesShowsExplicitDeclineButtonTrue) {
+  FakeAutofillAISaveEntityConsumer* consumer = PushEntityToMediator(
+      CreateTestEntity(), /*show_explicit_decline_button=*/true);
+  EXPECT_TRUE(consumer.showsExplicitDeclineButton);
+}
+
+// Tests that `showsExplicitDeclineButton` is false by default.
+TEST_F(AutofillAISaveEntityMediatorTest,
+       PushesShowsExplicitDeclineButtonFalse) {
+  FakeAutofillAISaveEntityConsumer* consumer =
+      PushEntityToMediator(CreateTestEntity());
+
+  EXPECT_FALSE(consumer.showsExplicitDeclineButton);
 }

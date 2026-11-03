@@ -16,6 +16,9 @@ extern NSString* const kAutofillAISaveEntityCancelButtonId;
 // Accessibility identifier for the Autofill AI Save Entity save button.
 extern NSString* const kAutofillAISaveEntitySaveButtonId;
 
+// Accessibility identifier for the Autofill AI Save Entity no thanks button.
+extern NSString* const kAutofillAISaveEntityNoThanksButtonId;
+
 // Accessibility identifier for the Autofill AI Sources table view.
 extern NSString* const kAutofillAISourcesTableViewId;
 

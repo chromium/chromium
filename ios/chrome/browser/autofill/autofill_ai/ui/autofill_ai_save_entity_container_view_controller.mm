@@ -37,23 +37,26 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   // The sticky "Save" or "Update" button at the bottom.
   ChromeButton* _saveButton;
 
+  // The sticky "No thanks" button at the bottom for explicit decline.
+  ChromeButton* _noThanksButton;
+
   // The stack containing the action button.
   UIStackView* _buttonStack;
-
-  // Tracks if the button is currently enabled.
-  BOOL _saveButtonEnabled;
 
   // Button title.
   NSString* _buttonTitle;
 
   // Denotes if the save is synchronous.
   BOOL _saveIsSynchronous;
+
+  // Denotes if an explicit decline button should be displayed in the button
+  // stack instead of the navigation bar cancel button.
+  BOOL _showsExplicitDeclineButton;
 }
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _saveButtonEnabled = YES;
     _tableViewController = [[AutofillAISaveEntityTableViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
     _tableViewController.delegate = self;
@@ -65,14 +68,6 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   [super viewDidLoad];
   self.view.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-
-  // Configure the NavigationBar.
-  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                           target:self
-                           action:@selector(handleCancelButton)];
-  cancelButton.accessibilityIdentifier = kAutofillAISaveEntityCancelButtonId;
-  self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
   // Setup the Action Button and Stack View.
@@ -83,15 +78,16 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   _buttonStack.translatesAutoresizingMaskIntoConstraints = NO;
 
   _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  _saveButton.enabled = _saveButtonEnabled;
   if (_buttonTitle) {
     [_saveButton setTitle:_buttonTitle forState:UIControlStateNormal];
   }
   _saveButton.accessibilityIdentifier = kAutofillAISaveEntitySaveButtonId;
   [_saveButton addTarget:self
-                  action:@selector(saveButtonWasPressed:)
+                  action:@selector(didTapSaveButton:)
         forControlEvents:UIControlEventTouchUpInside];
   [_buttonStack addArrangedSubview:_saveButton];
+
+  [self updateLayoutForExplicitDeclineButton];
 
   UIView* tableView = _tableViewController.view;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -165,9 +161,19 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   [_tableViewController setIsPrivateWalletPass:isPrivateWalletPass];
 }
 
+- (void)setShowsExplicitDeclineButton:(BOOL)showsExplicitDeclineButton {
+  if (_showsExplicitDeclineButton == showsExplicitDeclineButton) {
+    return;
+  }
+  _showsExplicitDeclineButton = showsExplicitDeclineButton;
+  if (self.isViewLoaded) {
+    [self updateLayoutForExplicitDeclineButton];
+  }
+}
+
 - (void)showLoadingState {
   _saveButton.enabled = NO;
-  _saveButtonEnabled = NO;
+  _noThanksButton.enabled = NO;
 
   [_saveButton setTitle:@"" forState:UIControlStateNormal];
   _saveButton.tunedDownStyle = YES;
@@ -187,7 +193,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   [_saveButton setTitle:@"" forState:UIControlStateNormal];
 
   _saveButton.enabled = NO;
-  _saveButtonEnabled = NO;
+  _noThanksButton.enabled = NO;
 
   _saveButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_AUTOFILL_AI_INFO_SAVED_TO_WALLET_ACCESSIBILITY_LABEL);
@@ -197,7 +203,7 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
       l10n_util::GetNSString(
           IDS_IOS_AUTOFILL_AI_INFO_SAVED_TO_WALLET_ACCESSIBILITY_LABEL));
 
-  self.navigationItem.leftBarButtonItem.enabled = YES;
+  self.navigationItem.leftBarButtonItem.enabled = NO;
   self.modalInPresentation = NO;
 }
 
@@ -205,17 +211,66 @@ constexpr CGFloat kButtonStackVerticalMargin = 16;
   [_tableViewController setLegalMessages:legalMessages];
 }
 
+#pragma mark - Private
+
+// Updates navigation and action buttons based on `_showsExplicitDeclineButton`.
+- (void)updateLayoutForExplicitDeclineButton {
+  if (_showsExplicitDeclineButton) {
+    self.navigationItem.leftBarButtonItem = nil;
+    if (!_noThanksButton) {
+      _noThanksButton = [self createNoThanksButton];
+      [_buttonStack addArrangedSubview:_noThanksButton];
+    }
+  } else {
+    if (!self.navigationItem.leftBarButtonItem) {
+      self.navigationItem.leftBarButtonItem = [self createCancelButton];
+    }
+    if (_noThanksButton) {
+      [_noThanksButton removeFromSuperview];
+      _noThanksButton = nil;
+    }
+  }
+}
+
+// Creates the cancel navigation bar button item.
+- (UIBarButtonItem*)createCancelButton {
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(didTapCancelButton)];
+  cancelButton.enabled = _saveButton ? _saveButton.enabled : YES;
+  cancelButton.accessibilityIdentifier = kAutofillAISaveEntityCancelButtonId;
+  return cancelButton;
+}
+
+// Creates the sticky "No thanks" action button.
+- (ChromeButton*)createNoThanksButton {
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  button.enabled = _saveButton ? _saveButton.enabled : YES;
+  [button
+      setTitle:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON)
+      forState:UIControlStateNormal];
+  button.accessibilityIdentifier = kAutofillAISaveEntityNoThanksButtonId;
+  [button addTarget:self
+                action:@selector(didTapNoThanksButton:)
+      forControlEvents:UIControlEventTouchUpInside];
+  return button;
+}
+
 #pragma mark - Actions
 
-- (void)handleCancelButton {
+- (void)didTapCancelButton {
   [self.mutator cancelSaving];
 }
 
-- (void)saveButtonWasPressed:(UIButton*)sender {
-  // Early return if the save button is disabled.
-  if (!_saveButtonEnabled) {
-    return;
-  }
+- (void)didTapNoThanksButton:(UIButton*)sender {
+  [self.mutator cancelSaving];
+}
+
+- (void)didTapSaveButton:(UIButton*)sender {
   [self.mutator acceptSaving];
 }
 

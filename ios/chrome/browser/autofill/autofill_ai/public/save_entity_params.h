@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_SAVE_ENTITY_PARAMS_H_
 
 #import <optional>
+#import <string>
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
@@ -20,7 +21,8 @@ struct SaveEntityParams {
                    std::u16string user_email,
                    bool save_is_synchronous,
                    AutofillClient::EntityImportPromptResultCallback callback,
-                   LegalMessageLines public_passes_notice = {});
+                   LegalMessageLines public_passes_notice,
+                   bool show_explicit_decline_button);
 
   SaveEntityParams(const SaveEntityParams&) = delete;
   SaveEntityParams& operator=(const SaveEntityParams&) = delete;
@@ -40,6 +42,7 @@ struct SaveEntityParams {
   bool save_is_synchronous;
   AutofillClient::EntityImportPromptResultCallback callback;
   LegalMessageLines public_passes_notice;
+  bool show_explicit_decline_button = false;
 };
 
 }  // namespace autofill
