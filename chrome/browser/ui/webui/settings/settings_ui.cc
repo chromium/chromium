@@ -250,7 +250,6 @@ void SettingsUI::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kImportDialogHistory, true);
   registry->RegisterBooleanPref(prefs::kImportDialogSavedPasswords, true);
   registry->RegisterBooleanPref(prefs::kImportDialogSearchEngine, true);
-  registry->RegisterDictionaryPref(prefs::kDeviceTabVisibilityHiddenSessions);
 }
 
 SettingsUI::SettingsUI(content::WebUI* web_ui)

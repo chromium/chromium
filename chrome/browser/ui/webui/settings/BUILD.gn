@@ -94,6 +94,7 @@ source_set("settings") {
     "//components/soda",
     "//components/soda:constants",
     "//components/sync/service",
+    "//components/sync_sessions",
     "//components/user_education/webui",
     "//components/user_manager",
     "//components/wallet/core/browser",

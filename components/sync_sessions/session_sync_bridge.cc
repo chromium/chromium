@@ -443,19 +443,29 @@ void SessionSyncBridge::DoGarbageCollection(SessionStore::WriteBatch* batch) {
   DCHECK(syncing_);
   DCHECK(batch);
 
+  std::set<std::string> tracked_session_tags;
+
   // Iterate through all the sessions and delete any with age older than
   // |kStaleSessionThreshold|.
   for (const sync_sessions::SyncedSession* session :
        store_->tracker()->LookupAllForeignSessions(SyncedSessionTracker::RAW)) {
     const base::TimeDelta session_age =
         base::Time::Now() - session->GetModifiedTime();
+    const std::string session_tag = session->GetSessionTag();
     if (session_age > kStaleSessionThreshold) {
-      const std::string session_tag = session->GetSessionTag();
       DVLOG(1) << "Found stale session " << session_tag << " with age "
                << session_age.InDays() << " days, deleting.";
       DeleteForeignSessionWithBatch(session_tag, batch);
+    } else {
+      tracked_session_tags.insert(session_tag);
     }
   }
+
+  // Prune hidden session entries that are no longer tracked in
+  // `SyncedSessionTracker` (including sessions deleted above after exceeding
+  // `kStaleSessionThreshold`).
+  sessions_client_->GetSessionSyncPrefs()->GarbageCollectUnknownHiddenSessions(
+      tracked_session_tags);
 }
 
 void SessionSyncBridge::DeleteForeignSessionWithBatch(

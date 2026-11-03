@@ -56,12 +56,16 @@ using syncer::FailedCommitResponseDataList;
 using syncer::IsEmptyMetadataBatch;
 using syncer::MetadataBatch;
 using syncer::MockDataTypeLocalChangeProcessor;
+using syncer::UpdateResponseDataList;
 using testing::_;
 using testing::AtLeast;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::Expectation;
 using testing::IsEmpty;
 using testing::IsNull;
+using testing::Mock;
+using testing::NiceMock;
 using testing::Not;
 using testing::NotNull;
 using testing::Pair;
@@ -69,6 +73,7 @@ using testing::Pointee;
 using testing::Return;
 using testing::SaveArg;
 using testing::SizeIs;
+using testing::Test;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
 
@@ -170,7 +175,7 @@ sync_pb::SessionSpecifics CreateTabSpecifics(const std::string& session_tag,
   return specifics;
 }
 
-class SessionSyncBridgeTest : public ::testing::Test {
+class SessionSyncBridgeTest : public Test {
  protected:
   SessionSyncBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest(
@@ -209,7 +214,7 @@ class SessionSyncBridgeTest : public ::testing::Test {
   void ShutdownBridge() {
     bridge_.reset();
     // The mock is still delegating to |real_processor_|, so we reset it too.
-    ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_processor_));
+    ASSERT_TRUE(Mock::VerifyAndClear(&mock_processor_));
     real_processor_.reset();
   }
 
@@ -227,13 +232,13 @@ class SessionSyncBridgeTest : public ::testing::Test {
     // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
-        std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
+        std::make_unique<NiceMock<syncer::MockCommitQueue>>());
   }
 
   void SendInitialRemoteData(
       const std::vector<SessionSpecifics>& remote_data = {}) {
     sync_pb::DataTypeState state = GetDataTypeStateWithInitialSyncDone();
-    syncer::UpdateResponseDataList initial_updates;
+    UpdateResponseDataList initial_updates;
     for (const SessionSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
     }
@@ -317,6 +322,8 @@ class SessionSyncBridgeTest : public ::testing::Test {
 
   syncer::DataTypeStore* underlying_store() { return store_.get(); }
 
+  SessionSyncPrefs& session_sync_prefs() { return session_sync_prefs_; }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   const std::unique_ptr<syncer::DataTypeStore> store_;
@@ -324,10 +331,10 @@ class SessionSyncBridgeTest : public ::testing::Test {
   // Dependencies.
   TestingPrefServiceSimple pref_service_;
   SessionSyncPrefs session_sync_prefs_;
-  testing::NiceMock<base::MockCallback<base::RepeatingClosure>>
+  NiceMock<base::MockCallback<base::RepeatingClosure>>
       mock_foreign_session_updated_cb_;
-  testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
-  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   TestSyncedWindowDelegatesGetter window_getter_;
 
   std::unique_ptr<SessionSyncBridge> bridge_;
@@ -504,7 +511,7 @@ TEST_F(SessionSyncBridgeTest, ShouldReportLocalTabCreation) {
   // so the event handler issues two commits as well (one for tab creation, one
   // for tab update). During the first update, however, the tab is not syncable
   // and is hence skipped.
-  testing::Expectation put_transient_header = EXPECT_CALL(
+  Expectation put_transient_header = EXPECT_CALL(
       mock_processor(), Put(_,
                             EntityDataHasSpecifics(MatchesHeader(
                                 kLocalCacheGuid, {kWindowId}, {kTabId1})),
@@ -1536,7 +1543,7 @@ TEST_F(SessionSyncBridgeTest, ShouldIgnoreRemoteDeletionOfLocalTab) {
 
   // Window creation already triggers a header update, which will be overriden
   // later below.
-  testing::Expectation put_transient_header =
+  Expectation put_transient_header =
       EXPECT_CALL(mock_processor(), Put(header_storage_key, _, _));
   AddWindow(kWindowId2);
 
@@ -1973,5 +1980,112 @@ TEST_F(SessionSyncBridgeTest, ShouldReturnBrowserTypeInGetData) {
   EXPECT_EQ(sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB,
             tab_data->specifics.session().tab().browser_type());
 }
+
+// Verifies that garbage collection retains hidden session preferences for
+// foreign sessions within `kStaleSessionThreshold` (28 days) while pruning
+// stale foreign sessions (> 28 days) and unknown session tags not tracked in
+// `SyncedSessionTracker`.
+TEST_F(SessionSyncBridgeTest,
+       ShouldPruneStaleAndUnknownHiddenSessionsDuringGarbageCollection) {
+  const base::Time stale_mtime = base::Time::Now() - base::Days(29);
+  const base::Time recent_mtime = base::Time::Now() - base::Days(27);
+  const std::string kRecentSessionTag = "recentsessiontag";
+  const std::string kStaleSessionTag = "stalesessiontag";
+  const std::string kUnknownSessionTag = "unknownsessiontag";
+  const int kWindowId = 2000001;
+  const int kTabId = 2000002;
+  const int kTabNodeId = 2003;
+  session_sync_prefs().SetSessionVisibility(kRecentSessionTag,
+                                            SessionVisibility::kHidden);
+  session_sync_prefs().SetSessionVisibility(kStaleSessionTag,
+                                            SessionVisibility::kHidden);
+  session_sync_prefs().SetSessionVisibility(kUnknownSessionTag,
+                                            SessionVisibility::kHidden);
+  InitializeBridge();
+  ConnectSync();
+
+  // Receive updates for both the 27-day-old session (within the 28-day
+  // threshold) and the 29-day-old stale session.
+  UpdateResponseDataList updates;
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateHeaderSpecificsWithOneTab(kRecentSessionTag, kWindowId, kTabId),
+      recent_mtime));
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateTabSpecifics(kRecentSessionTag, kWindowId, kTabId, kTabNodeId,
+                         "http://recent.com/"),
+      recent_mtime));
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateHeaderSpecificsWithOneTab(kStaleSessionTag, kWindowId, kTabId),
+      stale_mtime));
+  updates.push_back(SpecificsToUpdateResponse(
+      CreateTabSpecifics(kStaleSessionTag, kWindowId, kTabId, kTabNodeId,
+                         "http://stale.com/"),
+      stale_mtime));
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
+                                     std::move(updates),
+                                     /*gc_directive=*/std::nullopt);
+
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kRecentSessionTag),
+            SessionVisibility::kHidden);
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kStaleSessionTag),
+            SessionVisibility::kVisible);
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kUnknownSessionTag),
+            SessionVisibility::kVisible);
+}
+
+// Verifies that a hidden foreign session with no open windows or tabs (only a
+// header entity in `SyncedSessionTracker::RAW`) is still recognized as a known
+// session during garbage collection and retains its hidden state, while an
+// unknown session is pruned.
+TEST_F(SessionSyncBridgeTest,
+       ShouldRetainHiddenSessionWithoutOpenTabsDuringGarbageCollection) {
+  const std::string kHeaderOnlySessionTag = "headeronlysessiontag";
+  const std::string kUnknownSessionTag = "unknownsessiontag";
+  SessionSpecifics header_only_specifics;
+  header_only_specifics.set_session_tag(kHeaderOnlySessionTag);
+  header_only_specifics.mutable_header()->set_client_name("Phone with no tabs");
+  session_sync_prefs().SetSessionVisibility(kHeaderOnlySessionTag,
+                                            SessionVisibility::kHidden);
+  session_sync_prefs().SetSessionVisibility(kUnknownSessionTag,
+                                            SessionVisibility::kHidden);
+  InitializeBridge();
+
+  StartSyncing({header_only_specifics});
+
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kHeaderOnlySessionTag),
+            SessionVisibility::kHidden);
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kUnknownSessionTag),
+            SessionVisibility::kVisible);
+}
+
+// Verifies that when a hidden foreign session is explicitly deleted via a
+// remote tombstone, garbage collection prunes its hidden preference entry.
+TEST_F(SessionSyncBridgeTest,
+       ShouldPruneHiddenSessionAfterRemoteDeletionDuringGarbageCollection) {
+  const std::string kPhoneSessionTag = "phonesessiontag";
+  const int kWindowId = 2000001;
+  const int kTabId = 2000002;
+  const int kTabNodeId = 2003;
+  const SessionSpecifics phone_header =
+      CreateHeaderSpecificsWithOneTab(kPhoneSessionTag, kWindowId, kTabId);
+  session_sync_prefs().SetSessionVisibility(kPhoneSessionTag,
+                                            SessionVisibility::kHidden);
+  InitializeBridge();
+  StartSyncing(
+      {phone_header, CreateTabSpecifics(kPhoneSessionTag, kWindowId, kTabId,
+                                        kTabNodeId, "http://foo.com/")});
+
+  // Receive a remote tombstone deleting the foreign session's header entity.
+  UpdateResponseDataList deletion_updates;
+  deletion_updates.push_back(
+      CreateTombstone(SessionStore::GetClientTag(phone_header)));
+  real_processor()->OnUpdateReceived(GetDataTypeStateWithInitialSyncDone(),
+                                     std::move(deletion_updates),
+                                     /*gc_directive=*/std::nullopt);
+
+  EXPECT_EQ(session_sync_prefs().GetSessionVisibility(kPhoneSessionTag),
+            SessionVisibility::kVisible);
+}
+
 }  // namespace
 }  // namespace sync_sessions

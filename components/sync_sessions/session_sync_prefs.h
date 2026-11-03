@@ -5,14 +5,28 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_PREFS_H_
 #define COMPONENTS_SYNC_SESSIONS_SESSION_SYNC_PREFS_H_
 
+#include <set>
+#include <string>
+#include <string_view>
+
+#include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 class PrefRegistrySimple;
 
 namespace sync_sessions {
 
-// Use this for the unique machine tag used for session sync.
+// Visibility state of a foreign session's tabs in this profile.
+enum class SessionVisibility {
+  kVisible,
+  kHidden,
+};
+
+// Helper class for reading and writing preferences associated with session
+// sync.
 class SessionSyncPrefs {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -36,8 +50,33 @@ class SessionSyncPrefs {
   bool GetLocalDataOutOfSync();
   void SetLocalDataOutOfSync(bool local_data_out_of_sync);
 
+  // Returns the visibility state of the foreign session identified by
+  // `session_tag` in this profile.
+  SessionVisibility GetSessionVisibility(std::string_view session_tag) const;
+
+  // Updates the visibility state of the foreign session identified by
+  // `session_tag` in this profile. Only hidden sessions are persisted in
+  // preferences; unhiding a session removes the entry to keep the preference
+  // sparse.
+  void SetSessionVisibility(std::string_view session_tag,
+                            SessionVisibility visibility);
+
+  // Removes hidden session entries from preferences that are not present in
+  // `tracked_session_tags`.
+  void GarbageCollectUnknownHiddenSessions(
+      const std::set<std::string>& tracked_session_tags);
+
+  // Allows client code to be notified when foreign session visibility
+  // preferences change.
+  [[nodiscard]] base::CallbackListSubscription
+  SubscribeToSessionVisibilityChanged(const base::RepeatingClosure& cb);
+
  private:
+  void NotifySessionVisibilityChanged();
+
   const raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
+  base::RepeatingClosureList session_visibility_changed_closure_list_;
 };
 
 }  // namespace sync_sessions

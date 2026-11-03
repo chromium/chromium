@@ -13,16 +13,15 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/remote_device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/web_ui.h"
@@ -30,6 +29,14 @@
 namespace settings {
 
 namespace {
+
+using FormFactor = syncer::DeviceInfo::FormFactor;
+using sync_sessions::OpenTabsUIDelegate;
+using sync_sessions::SessionSyncPrefs;
+using sync_sessions::SessionSyncService;
+using sync_sessions::SessionVisibility;
+using sync_sessions::SyncedSession;
+using syncer::RemoteDeviceInfo;
 
 // Name of the WebUI event fired when the list of foreign sessions or their
 // visibility state changes.
@@ -40,45 +47,32 @@ constexpr char kDeviceTabVisibilityListChangedEvent[] =
 // WebUI (`"phone"`, `"tablet"`, or `"desktop"`). Non-mobile form factors fall
 // back to `"desktop"` because the subpage only renders phone, tablet, and
 // desktop icons.
-std::string_view GetFormFactorString(
-    syncer::DeviceInfo::FormFactor form_factor) {
+std::string_view GetFormFactorString(FormFactor form_factor) {
   switch (form_factor) {
-    case syncer::DeviceInfo::FormFactor::kPhone:
+    case FormFactor::kPhone:
       return "phone";
-    case syncer::DeviceInfo::FormFactor::kTablet:
+    case FormFactor::kTablet:
       return "tablet";
-    case syncer::DeviceInfo::FormFactor::kDesktop:
-    case syncer::DeviceInfo::FormFactor::kAutomotive:
-    case syncer::DeviceInfo::FormFactor::kWearable:
-    case syncer::DeviceInfo::FormFactor::kTv:
-    case syncer::DeviceInfo::FormFactor::kUnknown:
+    case FormFactor::kDesktop:
+    case FormFactor::kAutomotive:
+    case FormFactor::kWearable:
+    case FormFactor::kTv:
+    case FormFactor::kUnknown:
       return "desktop";
   }
 }
 
-// Returns true if the foreign session identified by `session_tag` is visible
-// in the local device tab list.
-bool IsSessionVisible(const PrefService& prefs, std::string_view session_tag) {
-  // Sessions are visible by default unless recorded in
-  // `prefs::kDeviceTabVisibilityHiddenSessions`.
-  const base::DictValue& hidden_sessions =
-      prefs.GetDict(prefs::kDeviceTabVisibilityHiddenSessions);
-  return !hidden_sessions.contains(session_tag);
-}
-
 // Serializes `session` and its local `visible` state into the
 // `DeviceTabVisibilityEntry` dictionary structure consumed by the WebUI.
-base::DictValue BuildSessionDictionary(
-    const sync_sessions::SyncedSession& session,
-    bool visible) {
+base::DictValue BuildSessionDictionary(const SyncedSession& session,
+                                       bool visible) {
   return base::DictValue()
       .Set("tag", session.GetSessionTag())
       .Set("name", session.GetSessionName())
       .Set("lastActiveTime",
-           base::UTF16ToUTF8(
-               syncer::RemoteDeviceInfo::GetLastActiveTimeForDisplay(
-                   session.GetModifiedTime(),
-                   /*has_high_precision_timestamp=*/true)))
+           base::UTF16ToUTF8(RemoteDeviceInfo::GetLastActiveTimeForDisplay(
+               session.GetModifiedTime(),
+               /*has_high_precision_timestamp=*/true)))
       .Set("formFactor", GetFormFactorString(session.GetDeviceFormFactor()))
       .Set("visible", visible);
 }
@@ -86,9 +80,8 @@ base::DictValue BuildSessionDictionary(
 }  // namespace
 
 DeviceTabVisibilityHandler::DeviceTabVisibilityHandler(Profile* profile)
-    : profile_(CHECK_DEREF(profile)) {
-  pref_change_registrar_.Init(profile_->GetPrefs());
-}
+    : profile_(CHECK_DEREF(profile)),
+      session_sync_prefs_(profile_->GetPrefs()) {}
 
 DeviceTabVisibilityHandler::~DeviceTabVisibilityHandler() = default;
 
@@ -106,19 +99,20 @@ void DeviceTabVisibilityHandler::RegisterMessages() {
 }
 
 void DeviceTabVisibilityHandler::OnJavascriptAllowed() {
-  pref_change_registrar_.Add(
-      prefs::kDeviceTabVisibilityHiddenSessions,
-      base::BindRepeating(&DeviceTabVisibilityHandler::OnForeignSessionsChanged,
-                          base::Unretained(this)));
+  // `base::Unretained` is safe because the subscriptions are destroyed when
+  // `this` is destroyed or when JavaScript is disallowed.
+  session_visibility_changed_subscription_ =
+      session_sync_prefs_.SubscribeToSessionVisibilityChanged(
+          base::BindRepeating(
+              &DeviceTabVisibilityHandler::OnForeignSessionsChanged,
+              base::Unretained(this)));
 
-  sync_sessions::SessionSyncService* service =
+  SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(&profile_.get());
   if (!service) {
     return;
   }
 
-  // `base::Unretained` is safe because `foreign_session_updated_subscription_`
-  // is destroyed when `this` is destroyed or when JavaScript is disallowed.
   foreign_session_updated_subscription_ =
       service->SubscribeToForeignSessionsChanged(base::BindRepeating(
           &DeviceTabVisibilityHandler::OnForeignSessionsChanged,
@@ -128,12 +122,12 @@ void DeviceTabVisibilityHandler::OnJavascriptAllowed() {
 void DeviceTabVisibilityHandler::OnJavascriptDisallowed() {
   // Unsubscribe from preference and foreign session updates while JavaScript is
   // disallowed to avoid firing WebUI events into an inactive page.
-  pref_change_registrar_.RemoveAll();
+  session_visibility_changed_subscription_ = base::CallbackListSubscription();
   foreign_session_updated_subscription_ = base::CallbackListSubscription();
 }
 
 base::ListValue DeviceTabVisibilityHandler::GetDeviceTabVisibilityList() const {
-  sync_sessions::SessionSyncService* service =
+  SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(&profile_.get());
   if (!service) {
     return {};
@@ -141,25 +135,24 @@ base::ListValue DeviceTabVisibilityHandler::GetDeviceTabVisibilityList() const {
 
   // `GetOpenTabsUIDelegate()` returns `nullptr` when tab sync is disabled or
   // not yet initialized.
-  sync_sessions::OpenTabsUIDelegate* open_tabs =
-      service->GetOpenTabsUIDelegate();
+  OpenTabsUIDelegate* open_tabs = service->GetOpenTabsUIDelegate();
   if (!open_tabs) {
     return {};
   }
 
   // TODO(crbug.com/572717502): Also include synced devices that have no open
   // tabs (`GetAllForeignSessions()` only returns sessions with open tabs).
-  std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-      sessions;
+  std::vector<raw_ptr<const SyncedSession, VectorExperimental>> sessions;
   if (!open_tabs->GetAllForeignSessions(&sessions)) {
     return {};
   }
 
-  const PrefService& prefs = CHECK_DEREF(profile_->GetPrefs());
   base::ListValue device_list;
-  for (const sync_sessions::SyncedSession* session : sessions) {
+  for (const SyncedSession* session : sessions) {
     CHECK(session);
-    const bool visible = IsSessionVisible(prefs, session->GetSessionTag());
+    const bool visible =
+        session_sync_prefs_.GetSessionVisibility(session->GetSessionTag()) ==
+        SessionVisibility::kVisible;
     device_list.Append(BuildSessionDictionary(*session, visible));
   }
   return device_list;
@@ -184,29 +177,9 @@ void DeviceTabVisibilityHandler::HandleSetDeviceTabVisibility(
   const bool visible = args[2].GetBool();
   AllowJavascript();
 
-  // TODO(crbug.com/570416929): Require OS re-authentication when `visible` is
-  // true before re-enabling visibility for a hidden device.
-
-  PrefService& prefs = CHECK_DEREF(profile_->GetPrefs());
-  if (IsSessionVisible(prefs, session_tag) == visible) {
-    ResolveJavascriptCallback(callback_id, base::Value(true));
-    return;
-  }
-
-  // Only hidden sessions are persisted in the dictionary preference;
-  // re-enabling visibility removes the entry to keep the preference sparse.
-  // When `update` goes out of scope, `PrefService` notifies
-  // `pref_change_registrar_`.
-  // TODO(crbug.com/570417844): Clean up stale `session_tag` entries from
-  // `prefs::kDeviceTabVisibilityHiddenSessions` when remote sessions expire.
-  ScopedDictPrefUpdate update(&prefs,
-                              prefs::kDeviceTabVisibilityHiddenSessions);
-  if (visible) {
-    update->Remove(session_tag);
-  } else {
-    update->Set(session_tag, true);
-  }
-
+  session_sync_prefs_.SetSessionVisibility(
+      session_tag,
+      visible ? SessionVisibility::kVisible : SessionVisibility::kHidden);
   ResolveJavascriptCallback(callback_id, base::Value(true));
 }
 
