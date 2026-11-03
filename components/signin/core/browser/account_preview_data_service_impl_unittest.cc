@@ -1196,12 +1196,12 @@ TEST_F(AccountPreviewDataServiceTest,
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.AllFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.SuccessfulFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
 }
 
@@ -1232,12 +1232,12 @@ TEST_F(AccountPreviewDataServiceTest,
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.AllFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.SuccessfulFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
 }
 
@@ -1341,7 +1341,7 @@ TEST_F(AccountPreviewDataServiceTest,
   histograms.ExpectUniqueSample(
       "Signin.AccountPreview.AllFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
 }
 
@@ -1436,12 +1436,12 @@ TEST_F(AccountPreviewDataServiceTest,
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.AllFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.SuccessfulFetchTriggerCause",
       AccountPreviewDataServiceImpl::FetchTriggerCause::
-          kPreferredAccountMissingForFRE,
+          kPreferredAccountMissingForAsyncFetch,
       1);
 }
 

@@ -109,8 +109,8 @@ class AccountPreviewDataService : public KeyedService {
   // stored preferred account immediately if available, or triggers a fetch and
   // waits for the preferred account computation to complete.
   //
-  // Note: This method is currently FRE-specific (for metrics and feature flag
-  // gating), but is ready to be easily reused for other callers if needed.
+  // Note: This method is currently FRE-specific (for feature flag gating), but
+  // is ready to be easily reused for other callers if needed.
   //
   // `callback` is run once, with the value of `GetPreferredAccountForSignin()`
   // at the time it runs:

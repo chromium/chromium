@@ -57,9 +57,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     kExternalAppAccountUpdated = 4,
     kPrimaryAccountSet = 5,
     kPrimaryAccountCleared = 6,
-    // TODO(crbug.com/580845583): Rename to more generic name.
-    kPreferredAccountMissingForFRE = 7,
-    kMaxValue = kPreferredAccountMissingForFRE,
+    kPreferredAccountMissingForAsyncFetch = 7,
+    kMaxValue = kPreferredAccountMissingForAsyncFetch,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewFetchTriggerCause)
 

@@ -108,7 +108,7 @@ void RecordSuccessfulFetchingMetrics(
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
         kPrimaryAccountCleared:
     case AccountPreviewDataServiceImpl::FetchTriggerCause::
-        kPreferredAccountMissingForFRE: {
+        kPreferredAccountMissingForAsyncFetch: {
       int count = pref_service->GetInteger(
           prefs::kAccountPreviewNonPeriodicFetchCountPref);
       pref_service->SetInteger(prefs::kAccountPreviewNonPeriodicFetchCountPref,
@@ -369,7 +369,8 @@ void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
                          OnPendingPreferredAccountRequestTimedOut,
                      weak_ptr_factory_.GetWeakPtr(), request.get()));
   pending_preferred_account_requests_.push_back(std::move(request));
-  EnsureAllAccountsFetched(FetchTriggerCause::kPreferredAccountMissingForFRE);
+  EnsureAllAccountsFetched(
+      FetchTriggerCause::kPreferredAccountMissingForAsyncFetch);
 }
 
 void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
@@ -695,12 +696,12 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
   // will directly be false for all periodic refreshes since the previous list
   // and results are cleared during periodic refreshes.
   // In case the external app account or primary account was updated, or the
-  // preferred account was missing when requested for the FRE, we want to
+  // preferred account was missing when requested asynchronously, we want to
   // trigger a new account computation, so we need to bypass this optimization.
   if (cause != FetchTriggerCause::kExternalAppAccountUpdated &&
       cause != FetchTriggerCause::kPrimaryAccountSet &&
       cause != FetchTriggerCause::kPrimaryAccountCleared &&
-      cause != FetchTriggerCause::kPreferredAccountMissingForFRE &&
+      cause != FetchTriggerCause::kPreferredAccountMissingForAsyncFetch &&
       switches::kAccountPreviewDataPersistAccounts.Get() &&
       !HaveAccountsMutatedSinceLastFetch(accounts)) {
     base::UmaHistogramEnumeration(
