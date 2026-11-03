@@ -40,7 +40,8 @@ using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
 // Removes browsing data associated with |origin|. Used when the Clear-Site-Data
 // header is sent.
 // Has to be called on the UI thread and will execute |callback| on the UI
-// thread when done.
+// thread when done. If |browser_context| is null or has started shutdown,
+// |callback| is run immediately without clearing data.
 CONTENT_EXPORT void ClearSiteData(
     base::WeakPtr<BrowserContext> browser_context,
     std::optional<StoragePartitionConfig> storage_partition_config,
