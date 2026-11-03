@@ -72,12 +72,11 @@ void BucketFileSystemAgent::getDirectory(
       execution_context, std::move(path_components),
       BindOnce(&BucketFileSystemAgent::DidGetDirectoryHandle,
                WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
-               storage_key, std::move(directory_name), std::move(callback)));
+               std::move(directory_name), std::move(callback)));
 }
 
 void BucketFileSystemAgent::DidGetDirectoryHandle(
     ExecutionContext* execution_context,
-    const String& storage_key,
     const String& directory_name,
     std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
         callback,
@@ -99,33 +98,25 @@ void BucketFileSystemAgent::DidGetDirectoryHandle(
     return;
   }
 
-  BucketFileSystemBuilder::BuildDirectoryTree(
-      execution_context, storage_key, directory_name,
-      BindOnce(
-          [](std::unique_ptr<
-                 protocol::FileSystem::Backend::GetDirectoryCallback> callback,
-             mojom::blink::FileSystemAccessErrorPtr result,
-             std::unique_ptr<protocol::FileSystem::Directory> directory) {
-            if (!result || !directory) {
-              callback->sendFailure(
-                  protocol::Response::ServerError("No result or directory."));
-              return;
-            }
+  auto* builder = MakeGarbageCollected<BucketFileSystemBuilder>(
+      this, execution_context, directory_name, std::move(callback));
+  builders_.insert(builder);
+  handle->MojoHandle()->GetEntries(builder->GetListener());
+}
 
-            if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-              callback->sendFailure(
-                  BucketFileSystemAgent::HandleError(std::move(result)));
-              return;
-            }
+void BucketFileSystemAgent::OnBuilderComplete(
+    BucketFileSystemBuilder* builder) {
+  builders_.erase(builder);
+}
 
-            callback->sendSuccess(std::move(directory));
-          },
-          std::move(callback)),
-      handle);
+void BucketFileSystemAgent::Dispose() {
+  builders_.clear();
+  InspectorBaseAgent::Dispose();
 }
 
 void BucketFileSystemAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
+  visitor->Trace(builders_);
   InspectorBaseAgent::Trace(visitor);
 }
 

@@ -10,9 +10,11 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/file_system.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
+class BucketFileSystemBuilder;
 class StorageBucket;
 
 const char kDefaultBucketName[] = "_default";
@@ -37,12 +39,14 @@ class MODULES_EXPORT BucketFileSystemAgent final
       std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
           callback) override;
 
+  void Dispose() override;
   void Trace(Visitor*) const override;
+
+  void OnBuilderComplete(BucketFileSystemBuilder* builder);
 
  private:
   void DidGetDirectoryHandle(
       ExecutionContext* execution_context,
-      const String& storage_key,
       const String& directory_name,
       std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
           callback,
@@ -53,6 +57,7 @@ class MODULES_EXPORT BucketFileSystemAgent final
                                   const String& bucket_name);
 
   Member<InspectedFrames> inspected_frames_;
+  HeapHashSet<Member<BucketFileSystemBuilder>> builders_;
 };
 
 }  // namespace blink

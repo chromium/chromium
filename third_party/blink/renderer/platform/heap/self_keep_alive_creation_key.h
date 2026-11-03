@@ -22,7 +22,6 @@ class SelfKeepAliveCreationKey final {
   friend class AudioContext;
   friend class BlobFileReaderClient;
   friend class BodyStreamBuffer;
-  friend class BucketFileSystemBuilder;
   friend class CachedResponseFileReaderLoaderClient;
   friend class ClipboardWriter;
   friend class DetachedClient;

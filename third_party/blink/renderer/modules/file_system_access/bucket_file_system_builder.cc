@@ -4,41 +4,24 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/bucket_file_system_builder.h"
 
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
+#include "third_party/blink/renderer/modules/file_system_access/bucket_file_system_agent.h"
 
 namespace blink {
 
-// static
-void BucketFileSystemBuilder::BuildDirectoryTree(
-    ExecutionContext* execution_context,
-    const String storage_key,
-    const String name,
-    DirectoryCallback callback,
-    FileSystemDirectoryHandle* handle) {
-  CHECK(handle);
-
-  // Create a GarbageCollected instance of this class to iterate of the
-  // directory handle. Once the iteration is completed, the completion callback
-  // will be called with the `protocol::FileSystem::Directory` object.
-  BucketFileSystemBuilder* builder =
-      MakeGarbageCollected<BucketFileSystemBuilder>(
-          execution_context, storage_key, name, std::move(callback));
-
-  handle->MojoHandle()->GetEntries(builder->GetListener());
-}
-
 BucketFileSystemBuilder::BucketFileSystemBuilder(
+    BucketFileSystemAgent* agent,
     ExecutionContext* execution_context,
-    const String storage_key,
-    const String name,
-    DirectoryCallback completion_callback)
-    : ExecutionContextClient(execution_context),
-      storage_key_(storage_key),
+    const String& name,
+    std::unique_ptr<protocol::FileSystem::Backend::GetDirectoryCallback>
+        completion_callback)
+    : ExecutionContextLifecycleObserver(execution_context),
+      agent_(agent),
       directory_name_(name),
-      /*file_system_handle_queue_(
-          std::make_unique<Deque<FileSystemHandle*>>()),*/
       completion_callback_(std::move(completion_callback)),
       receiver_(this, execution_context) {
   nested_directories_ = std::make_unique<protocol::Array<String>>();
@@ -51,11 +34,13 @@ void BucketFileSystemBuilder::DidReadDirectory(
     Vector<mojom::blink::FileSystemAccessEntryPtr> entries,
     bool has_more_entries) {
   ExecutionContext* execution_context = GetExecutionContext();
-  if (!execution_context || !result ||
-      result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-    std::move(completion_callback_)
-        .Run(std::move(result),
-             /*std::unique_ptr<protocol::FileSystem::Directory>*/ nullptr);
+  if (!execution_context || !result) {
+    SendFailure(protocol::Response::ServerError("No result or directory."));
+    return;
+  }
+
+  if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
+    SendFailure(BucketFileSystemAgent::HandleError(std::move(result)));
     return;
   }
 
@@ -71,7 +56,7 @@ void BucketFileSystemBuilder::DidReadDirectory(
     return;
   }
 
-  self_keep_alive_.Clear();
+  receiver_.reset();
 
   auto barrier_callback =
       base::BarrierClosure(file_system_handle_queue_.size(),
@@ -113,7 +98,7 @@ void BucketFileSystemBuilder::DidReadDirectory(
           },
           entry->name(),
           blink::BindOnce(&BucketFileSystemBuilder::DidBuildFile,
-                          WrapPersistent(this), barrier_callback)));
+                          WrapWeakPersistent(this), barrier_callback)));
 
     } else if (entry->isDirectory()) {
       nested_directories_->emplace_back(entry->name());
@@ -134,21 +119,21 @@ BucketFileSystemBuilder::GetListener() {
   auto remote = receiver_.BindNewPipeAndPassRemote(
       execution_context->GetTaskRunner(TaskType::kInternalInspector));
 
-  // `this` needs to be prevented from being garbage collected while
-  // waiting for `DidReadDirectory()` callbacks from the browser, so
-  // use self-referential GC root to pin this in memory. To reduce the
-  // possibility of an implementation bug introducing a memory leak,
-  // also clear the self reference if the Mojo pipe is disconnected.
   receiver_.set_disconnect_handler(BindOnce(
       &BucketFileSystemBuilder::OnMojoDisconnect, WrapWeakPersistent(this)));
 
   return remote;
 }
 
+void BucketFileSystemBuilder::ContextDestroyed() {
+  SendFailure(protocol::Response::ServerError("Execution context destroyed."));
+}
+
 void BucketFileSystemBuilder::Trace(Visitor* visitor) const {
+  visitor->Trace(agent_);
   visitor->Trace(receiver_);
   visitor->Trace(file_system_handle_queue_);
-  ExecutionContextClient::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void BucketFileSystemBuilder::DidBuildFile(
@@ -156,19 +141,13 @@ void BucketFileSystemBuilder::DidBuildFile(
     mojom::blink::FileSystemAccessErrorPtr result,
     std::unique_ptr<protocol::FileSystem::File> file) {
   if (!result || !file) {
-    std::move(completion_callback_)
-        .Run(mojom::blink::FileSystemAccessError::New(
-                 mojom::blink::FileSystemAccessStatus::kInvalidState,
-                 base::File::Error::FILE_ERROR_FAILED,
-                 "Failed to retrieve blob info"),
-             /*std::unique_ptr<protocol::FileSystem::Directory>*/ nullptr);
+    SendFailure(
+        protocol::Response::ServerError("Failed to retrieve blob info"));
     return;
   }
 
   if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
-    std::move(completion_callback_)
-        .Run(std::move(result),
-             /*std::unique_ptr<protocol::FileSystem::Directory>*/ nullptr);
+    SendFailure(BucketFileSystemAgent::HandleError(std::move(result)));
     return;
   }
 
@@ -177,19 +156,35 @@ void BucketFileSystemBuilder::DidBuildFile(
 }
 
 void BucketFileSystemBuilder::DidBuildDirectory() {
-  std::move(completion_callback_)
-      .Run(mojom::blink::FileSystemAccessError::New(
-               mojom::blink::FileSystemAccessStatus::kOk, base::File::FILE_OK,
-               /*message=*/""),
-           protocol::FileSystem::Directory::create()
-               .setName(directory_name_)
-               .setNestedDirectories(std::move(nested_directories_))
-               .setNestedFiles(std::move(nested_files_))
-               .build());
+  SendSuccess(protocol::FileSystem::Directory::create()
+                  .setName(directory_name_)
+                  .setNestedDirectories(std::move(nested_directories_))
+                  .setNestedFiles(std::move(nested_files_))
+                  .build());
 }
 
 void BucketFileSystemBuilder::OnMojoDisconnect() {
-  self_keep_alive_.Clear();
+  SendFailure(protocol::Response::ServerError("Mojo pipe disconnected."));
+}
+
+void BucketFileSystemBuilder::SendSuccess(
+    std::unique_ptr<protocol::FileSystem::Directory> directory) {
+  if (!completion_callback_) {
+    return;
+  }
+  receiver_.reset();
+  std::exchange(completion_callback_, nullptr)
+      ->sendSuccess(std::move(directory));
+  agent_->OnBuilderComplete(this);
+}
+
+void BucketFileSystemBuilder::SendFailure(const protocol::Response& response) {
+  if (!completion_callback_) {
+    return;
+  }
+  receiver_.reset();
+  std::exchange(completion_callback_, nullptr)->sendFailure(response);
+  agent_->OnBuilderComplete(this);
 }
 
 }  // namespace blink
