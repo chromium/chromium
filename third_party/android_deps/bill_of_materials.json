@@ -1357,12 +1357,12 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.5.0-alpha01"
+        "version": "1.5.0-alpha02"
     },
     {
         "name": "caffeine",
         "group": "com.github.ben-manes.caffeine",
-        "version": "3.3.0"
+        "version": "3.3.1"
     },
     {
         "name": "software-and-algorithms",
@@ -1562,22 +1562,22 @@
     {
         "name": "error_prone_annotation",
         "group": "com.google.errorprone",
-        "version": "2.51.0"
+        "version": "2.52.0"
     },
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.51.0"
+        "version": "2.52.0"
     },
     {
         "name": "error_prone_check_api",
         "group": "com.google.errorprone",
-        "version": "2.51.0"
+        "version": "2.52.0"
     },
     {
         "name": "error_prone_test_helpers",
         "group": "com.google.errorprone",
-        "version": "2.51.0"
+        "version": "2.52.0"
     },
     {
         "name": "firebase-annotations",
@@ -1652,7 +1652,7 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.7.2-jre"
+        "version": "33.8.0-jre"
     },
     {
         "name": "listenablefuture",
@@ -1697,7 +1697,7 @@
     {
         "name": "compile-testing",
         "group": "com.google.testing.compile",
-        "version": "0.23.0"
+        "version": "0.24.0"
     },
     {
         "name": "test-parameter-injector",
@@ -1862,7 +1862,7 @@
     {
         "name": "java-diff-utils",
         "group": "io.github.java-diff-utils",
-        "version": "4.17"
+        "version": "4.18"
     },
     {
         "name": "grpc-api",
@@ -1932,12 +1932,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "4.3.1"
+        "version": "4.4.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "4.3.1"
+        "version": "4.4.0"
     },
     {
         "name": "animal-sniffer-annotations",
@@ -2207,7 +2207,7 @@
     {
         "name": "safere",
         "group": "org.safere",
-        "version": "1.0.0"
+        "version": "1.1.0"
     },
     {
         "name": "snakeyaml",
