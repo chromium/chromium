@@ -14,6 +14,7 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.JniPtr;
 import org.junit.Assert;
 
 import org.chromium.base.Callback;
@@ -106,7 +107,9 @@ public class WebauthnTestUtils {
 
         @Override
         public void invokeMakeCredentialResponse(
-                long nativeInternalAuthenticator, int status, ByteBuffer byteBuffer) {
+                JniPtr<InternalAuthenticator.NativeInternalAuthenticatorAndroid> self,
+                int status,
+                ByteBuffer byteBuffer) {
             mCallback.onRegisterResponse(
                     status,
                     byteBuffer == null
@@ -116,7 +119,9 @@ public class WebauthnTestUtils {
 
         @Override
         public void invokeGetAssertionResponse(
-                long nativeInternalAuthenticator, int status, ByteBuffer byteBuffer) {
+                JniPtr<InternalAuthenticator.NativeInternalAuthenticatorAndroid> self,
+                int status,
+                ByteBuffer byteBuffer) {
             mCallback.onSignResponseWithStatus(
                     status,
                     byteBuffer == null
@@ -126,11 +131,13 @@ public class WebauthnTestUtils {
 
         @Override
         public void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                long nativeInternalAuthenticator, boolean isUvpaa) {}
+                JniPtr<InternalAuthenticator.NativeInternalAuthenticatorAndroid> self,
+                boolean isUvpaa) {}
 
         @Override
         public void invokeGetMatchingCredentialIdsResponse(
-                long nativeInternalAuthenticator, byte[][] matchingCredentials) {}
+                JniPtr<InternalAuthenticator.NativeInternalAuthenticatorAndroid> self,
+                byte[][] matchingCredentials) {}
     }
 
     public static class MockBrowserBridge extends WebauthnBrowserBridge {

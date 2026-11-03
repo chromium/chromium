@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -44,11 +45,11 @@ InternalAuthenticatorAndroid::InternalAuthenticatorAndroid(
   JNIEnv* env = AttachCurrentThread();
   if (render_frame_host) {
     java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-        env, reinterpret_cast<intptr_t>(this),
+        env, jni_zero::MakeRaw(this),
         render_frame_host->GetJavaRenderFrameHost());
   } else {
-    java_internal_authenticator_ref_ = Java_InternalAuthenticator_create(
-        env, reinterpret_cast<intptr_t>(this));
+    java_internal_authenticator_ref_ =
+        Java_InternalAuthenticator_create(env, jni_zero::MakeRaw(this));
   }
 }
 
