@@ -68,9 +68,9 @@ public abstract class Struct {
      *
      * @param header the header to prepend to the returned message.
      * @param core the |Core| implementation used to generate handles. Only used if the |Struct|
-     *            being encoded contains interfaces, can be |null| otherwise.
+     *     being encoded contains interfaces, can be |null| otherwise.
      */
-    public ServiceMessage serializeWithHeader(Core core, MessageHeader header) {
+    public ServiceMessage serializeWithHeader(@Nullable Core core, MessageHeader header) {
         Encoder encoder = new Encoder(core, mEncodedBaseSize + header.getSize());
         header.encode(encoder);
         encode(encoder);

@@ -1,0 +1,61 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- from 'cpp_macros.tmpl' import
+    namespace_begin, namespace_end, include_guard, variant_path %}
+
+{%- set header_guard = include_guard("JNI", module.path, variant) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include <jni.h>
+
+#include <concepts>
+#include <utility>
+
+#include "base/android/scoped_java_ref.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/bindings/mojo_jni_bridge.h"
+#include "{{variant_path(module.path, variant)}}.h"
+
+{{namespace_begin(namespaces_as_array, variant)}}
+
+{%- for interface in java_to_native_interfaces %}
+
+// Decodes a serialized {{interface.name}} method call received from Java
+// and invokes it on |stub|, returning the serialized result union. Crashes on
+// unknown ordinals and malformed messages.
+base::android::ScopedJavaLocalRef<jbyteArray> Dispatch{{interface.name}}JniCall(
+    JNIEnv* env,
+    {{interface.name}}DirectReturnStub* stub,
+    mojo::Message message);
+
+{%- endfor %}
+
+{{namespace_end(namespaces_as_array, variant)}}
+
+{%- if java_to_native_interfaces %}
+
+namespace mojo {
+{%-   set qualified_namespace = "::" + (namespaces_as_array|join("::")) if namespaces_as_array else "" %}
+{%-   for interface in java_to_native_interfaces %}
+{%-     set interface_type = interface|get_qualified_name_for_kind %}
+
+template <std::derived_from<{{interface_type}}DirectReturnStub> S>
+struct MojoJniBridgeTraits<S> {
+  static base::android::ScopedJavaLocalRef<jbyteArray> Dispatch(
+      JNIEnv* env,
+      S* stub,
+      Message message) {
+    return {{qualified_namespace}}::Dispatch{{interface.name}}JniCall(
+        env, stub, std::move(message));
+  }
+};
+{%-   endfor %}
+
+}  // namespace mojo
+{%- endif %}
+
+#endif  // {{header_guard}}

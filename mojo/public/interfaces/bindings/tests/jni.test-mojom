@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.mojo.bindings.test.mojom.jni"]
+module mojo.test.jni.mojom;
+
+struct JniTestError {
+  int32 code;
+  string message;
+};
+
+[GenerateDirectReturnStub]
+interface JniResultIface {
+  Add(int32 a, int32 b) => result<int32, JniTestError>;
+
+  Echo(string input) => result<string, JniTestError>;
+
+  Ping() => result<bool, JniTestError>;
+};

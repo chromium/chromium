@@ -104,9 +104,11 @@ mojom_generator_sources =
       "$mojom_generator_root/checks/mojom_restrictions_check.py",
       "$mojom_generator_root/generators/__init__.py",
       "$mojom_generator_root/generators/cpp_util.py",
+      "$mojom_generator_root/generators/jni_util.py",
       "$mojom_generator_root/generators/mojom_cpp_generator.py",
       "$mojom_generator_root/generators/mojom_fuzzilli_generator.py",
       "$mojom_generator_root/generators/mojom_java_generator.py",
+      "$mojom_generator_root/generators/mojom_jni_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_rust_generator.py",
@@ -579,6 +581,7 @@ template("mojom") {
              [
                "cpp_typemaps",
                "blink_cpp_typemaps",
+               "generate_jni",
              ])
 
   require_full_cpp_deps =
@@ -1324,6 +1327,11 @@ template("mojom") {
         defined(invoker.generate_java)) {
       generate_java = invoker.generate_java
     }
+    generate_jni = false
+    if (!defined(bindings_configuration.variant) &&
+        defined(invoker.generate_jni)) {
+      generate_jni = invoker.generate_jni
+    }
     type_mappings_target_name = "${target_name}${variant_suffix}__type_mappings"
     type_mappings_path =
         "$target_gen_dir/${target_name}${variant_suffix}__type_mappings"
@@ -1866,6 +1874,9 @@ template("mojom") {
             inputs += message_scrambling_inputs
             args += message_scrambling_args
           }
+          if (generate_jni) {
+            args += [ "--java_generate_jni" ]
+          }
         }
       } else {
         group(java_generator_target_name) {
@@ -1906,6 +1917,9 @@ template("mojom") {
           "//mojo/public/java:system_java",
           "//third_party/androidx:androidx_annotation_annotation_java",
         ]
+        if (generate_jni) {
+          deps += [ "//mojo/public/java:jni_transport_java" ]
+        }
 
         # Disable warnings/checks on these generated files.
         chromium_code = false
@@ -1919,6 +1933,95 @@ template("mojom") {
         }
 
         srcjar_deps = [ ":$java_srcjar_target_name" ]
+      }
+    }
+
+    # Generated C++ JNI dispatch glue is placed in a separate
+    # "${target_name}_jni" source_set so that only native targets hosting the
+    # JNI bridge depend on it (and on //mojo/public/cpp/bindings:jni_bridge),
+    # rather than every C++ consumer of the mojom target.
+    if (generate_jni && is_android && sources_list != []) {
+      jni_generator_target_name = "${target_name}_jni__generator"
+
+      action(jni_generator_target_name) {
+        visibility = [ ":*" ]
+        script = mojom_generator_script
+        inputs = mojom_generator_sources + jinja2_sources
+        sources = sources_list + [ type_mappings_path ]
+        deps = [
+          ":$parser_target_name",
+          ":$type_mappings_target_name",
+          "//mojo/public/tools/bindings:precompile_cpp_templates",
+        ]
+        if (defined(invoker.parser_deps)) {
+          deps += invoker.parser_deps
+        }
+        outputs = []
+        args = common_generator_args
+        filelist = []
+        foreach(source, sources_list) {
+          filelist += [ rebase_path(source, root_build_dir) ]
+        }
+        foreach(base_path, output_file_base_paths) {
+          filename = get_path_info(base_path, "file")
+          dirname = get_path_info(base_path, "dir")
+          inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
+          outputs += [
+            "$root_gen_dir/${base_path}-jni.cc",
+            "$root_gen_dir/${base_path}-jni.h",
+          ]
+        }
+
+        response_file_contents = filelist
+
+        args += [
+          "--filelist={{response_file_name}}",
+          "-g",
+          "jni",
+          "--jni_generate_all",
+          "--typemap",
+          rebase_path(type_mappings_path, root_build_dir),
+        ]
+
+        if (!defined(invoker.scramble_message_ids) ||
+            invoker.scramble_message_ids) {
+          inputs += message_scrambling_inputs
+          args += message_scrambling_args
+        }
+      }
+
+      source_set("${target_name}_jni") {
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+        sources = []
+        foreach(base_path, output_file_base_paths) {
+          sources += [
+            "$root_gen_dir/${base_path}-jni.cc",
+            "$root_gen_dir/${base_path}-jni.h",
+          ]
+        }
+        deps = [
+          ":$generator_cpp_message_ids_target_name",
+          "//mojo/public/cpp/bindings:struct_traits",
+          "//mojo/public/interfaces/bindings:bindings_headers",
+        ]
+        public_deps = [
+          ":$jni_generator_target_name",
+          ":$output_target_name",
+          ":$shared_cpp_library_target_name",
+          "//base",
+          "//mojo/public/cpp/bindings",
+          "//mojo/public/cpp/bindings:jni_bridge",
+        ]
+        foreach(config, cpp_typemap_configs) {
+          if (defined(config.traits_deps)) {
+            deps += config.traits_deps
+          }
+          if (defined(config.traits_public_deps)) {
+            public_deps += config.traits_public_deps
+          }
+        }
       }
     }
   }

@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 // Generic JNI transport for mojom(generate_jni = true) bindings.
@@ -95,6 +96,19 @@ base::android::ScopedJavaLocalRef<jbyteArray> MojoDirectJniSerialize(
   Message message =
       StructType::SerializeAsMessage(const_cast<PtrType*>(&value));
   CHECK(message.payload_num_bytes());
+  return internal::MessageToJavaByteArray(env, message);
+}
+
+// Serializes a direct-return result<T, E> as its generated response union
+// message for Java.
+template <typename UnionType, typename T, typename E>
+base::android::ScopedJavaLocalRef<jbyteArray> MojoDirectJniSerialize(
+    JNIEnv* env,
+    base::expected<T, E> result) {
+  auto response = result.has_value()
+                      ? UnionType::NewSuccess(std::move(result.value()))
+                      : UnionType::NewFailure(std::move(result.error()));
+  Message message = UnionType::SerializeAsMessage(&response);
   return internal::MessageToJavaByteArray(env, message);
 }
 

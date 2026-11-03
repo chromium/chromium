@@ -113,6 +113,7 @@ source_set("tests") {
     sources += [ "mojo_jni_bridge_unittest.cc" ]
     deps += [
       "//mojo/public/cpp/bindings:jni_bridge",
+      "//mojo/public/interfaces/bindings/tests:test_jni_interfaces_jni",
       "//mojo/public/java:jni_transport_java",
     ]
   }

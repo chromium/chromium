@@ -48,6 +48,7 @@ _BUILTIN_GENERATORS = {
   "fuzzilli": "mojom_fuzzilli_generator",
   "javascript": "mojom_js_generator",
   "java": "mojom_java_generator",
+  "jni": "mojom_jni_generator",
   "mojolpm": "mojom_mojolpm_generator",
   "typescript": "mojom_ts_generator",
   "rust": "mojom_rust_generator",
@@ -220,8 +221,9 @@ def LoadTypemaps(typemaps, langs):
             declared[lang] += names
 
   if 'c++' in loaded_typemap:
-    # The fuzzer also uses C++ typemappings.
+    # The fuzzer and JNI generator also use C++ typemappings.
     loaded_typemap['mojolpm'] = loaded_typemap['c++']
+    loaded_typemap['jni'] = loaded_typemap['c++']
 
   return loaded_typemap, declared
 

@@ -21,5 +21,11 @@ public class MojoJniBridgeTestUtil {
         void destroyBridge(long bridge);
 
         int getLastOneWayX(long stub);
+
+        long createResultStub();
+
+        void destroyResultStub(long stub);
+
+        long createResultBridge(long stub);
     }
 }

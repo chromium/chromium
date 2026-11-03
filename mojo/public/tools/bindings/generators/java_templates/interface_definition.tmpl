@@ -312,3 +312,26 @@ class {{interface|name}}_Internal {
 
 }
 {% endmacro %}
+
+{% macro interface_bridge_def(interface) %}
+public class {{interface|name}}Bridge extends org.chromium.mojo.bindings.MojoJniBridge {
+    public {{interface|name}}Bridge(long nativeBridge) {
+        super(nativeBridge);
+    }
+{%- set internal = (interface|name) ~ '_Internal' %}
+{% for method in interface.methods %}
+    public Result<{{method.result_response.success_kind|java_type(true)}}, {{method.result_response.failure_kind|java_type(true)}}> {{method|name}}({{declare_params(method.parameters)}}) {
+{%-   if method.parameters %}
+{%-     set request_struct = method.param_struct %}
+        {{internal}}.{{request_struct|name}} params = new {{internal}}.{{request_struct|name}}();
+{%-     for param in method.parameters %}
+        params.{{param|name}} = {{param|name}};
+{%-     endfor %}
+{%-   endif %}
+        return {{internal}}.{{result_converter_name(method)}}.convert(
+                {{method.response_parameters[0].kind|java_type(false)}}.deserialize(
+                        invoke({{'params, ' if method.parameters else ''}}{{method.ordinal}})));
+    }
+{% endfor -%}
+}
+{% endmacro %}

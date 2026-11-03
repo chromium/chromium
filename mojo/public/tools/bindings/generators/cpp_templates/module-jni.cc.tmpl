@@ -1,0 +1,79 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- from 'cpp_macros.tmpl' import
+    namespace_begin, namespace_end, variant_path %}
+
+#include "{{variant_path(module.path, variant)}}-jni.h"
+
+#include <utility>
+
+#include "base/check.h"
+#include "base/notreached.h"
+#include "{{module.path}}-params-data.h"
+#include "{{module.path}}-shared-message-ids.h"
+#include "{{variant_path(module.path, variant)}}-import-headers.h"
+
+{%- for header in extra_traits_headers %}
+#include "{{header}}"
+{%- endfor %}
+
+{{namespace_begin(namespaces_as_array, variant)}}
+
+{%- macro pass_param(param) -%}
+{%-   if param.kind|is_object_kind or param.kind|is_enum_kind -%}
+{%-     if param.kind|is_non_const_ref_kind -%}
+p_{{param.name}}
+{%-     else -%}
+std::move(p_{{param.name}})
+{%-     endif -%}
+{%-   else -%}
+params.{{param.name}}()
+{%-   endif -%}
+{%- endmacro %}
+
+{%- for interface in java_to_native_interfaces %}
+
+base::android::ScopedJavaLocalRef<jbyteArray> Dispatch{{interface.name}}JniCall(
+    JNIEnv* env,
+    {{interface.name}}DirectReturnStub* stub,
+    mojo::Message message) {
+  DCHECK({{interface.name}}RequestValidator().Accept(&message));
+{%- if interface.methods %}
+  switch (static_cast<messages::{{interface.name}}>(message.name())) {
+{%-   for method in interface.methods %}
+    case messages::{{interface.name}}::k{{method.name}}: {
+{%-     if method.parameters %}
+{%-       set input_struct = method.param_struct %}
+      {{input_struct.name}}DataView params(
+          reinterpret_cast<internal::{{input_struct.name}}_Data*>(
+              message.mutable_payload()),
+          &message);
+{%-       for param in method.parameters %}
+{%-         if param.kind|is_object_kind or param.kind|is_enum_kind %}
+      {{param.kind|cpp_wrapper_call_type}} p_{{param.name}}{};
+      CHECK(params.Read{{param.name|under_to_camel}}(&p_{{param.name}}));
+{%-         endif %}
+{%-       endfor %}
+{%-     endif %}
+{%-     set union_type = method.response_parameters[0].kind|get_name_for_kind %}
+      return mojo::MojoDirectJniSerialize<{{union_type}}>(
+          env,
+          stub->{{method.name}}(
+{%-       for param in method.parameters -%}
+              {{pass_param(param)}}
+{%-         if not loop.last %}, {% endif -%}
+{%-       endfor -%}));
+    }
+{%-   endfor %}
+    default:
+      break;
+  }
+{%- endif %}
+  NOTREACHED();
+}
+
+{%- endfor %}
+
+{{namespace_end(namespaces_as_array, variant)}}

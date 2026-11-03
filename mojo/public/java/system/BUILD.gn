@@ -135,6 +135,7 @@ android_library("mojo_javatests") {
     ":test_support_java",
     "//base:base_java_test_support",
     "//mojo/public/interfaces/bindings/tests:test_interfaces_java",
+    "//mojo/public/interfaces/bindings/tests:test_jni_interfaces_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import2_java",
     "//mojo/public/interfaces/bindings/tests:test_mojom_import_java",
     "//mojo/public/java:bindings_java",
@@ -170,6 +171,7 @@ shared_library_with_jni("mojo_java_unittests") {
     "//mojo/public/cpp/bindings/tests:test_types",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
+    "//mojo/public/interfaces/bindings/tests:test_jni_interfaces_jni",
   ]
   defines = [ "UNIT_TEST" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

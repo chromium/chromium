@@ -56,6 +56,13 @@ mojom("test_deserializer_interface") {
   js_generate_struct_deserializers = true
 }
 
+mojom("test_jni_interfaces") {
+  testonly = true
+  generate_java = true
+  generate_jni = true
+  sources = [ "jni.test-mojom" ]
+}
+
 mojom("test_interfaces") {
   generate_blink = true
   testonly = true

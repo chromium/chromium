@@ -67,7 +67,10 @@ def generate_for_corpus(corpus_dir, generators, output_dir):
       lang_output = f'{output_dir}/{generator}'
 
       if generator == 'java':
-        language_flags += ['--java_output_directory=' + lang_tmp_output]
+        language_flags += [
+          '--java_output_directory=' + lang_tmp_output,
+          '--java_generate_jni',
+        ]
       elif generator == 'fuzzilli':
         # Assume that the primary interface is always named "Primary"
         language_flags += ['--fuzzilli_primary_interface_name=Primary']
@@ -119,6 +122,9 @@ def generate_bindings(input_dir, output_dir):
 
   fuzzilli_corpus = os.path.join(input_dir, 'fuzzilli')
   generate_for_corpus(fuzzilli_corpus, ['fuzzilli'], output_dir)
+
+  jni_corpus = os.path.join(input_dir, 'jni')
+  generate_for_corpus(jni_corpus, ['jni'], output_dir)
 
 
 def main():

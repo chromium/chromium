@@ -70,7 +70,6 @@ android_library("bindings_java") {
     "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-
   srcjar_deps = [ "../interfaces/bindings:bindings_java_sources" ]
 }
 
@@ -87,10 +86,14 @@ android_library("base_java") {
 # The single JNI boundary used by mojom(generate_jni = true) bindings. The
 # native half lives in //mojo/public/cpp/bindings:jni_bridge.
 android_library("jni_transport_java") {
-  sources =
-      [ "bindings/src/org/chromium/mojo/bindings/jni/MojoJniTransport.java" ]
+  sources = [
+    "bindings/src/org/chromium/mojo/bindings/MojoJniBridge.java",
+    "bindings/src/org/chromium/mojo/bindings/jni/MojoJniTransport.java",
+  ]
 
   deps = [
+    ":bindings_java",
+    ":system_java",
     "//build/android:build_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
