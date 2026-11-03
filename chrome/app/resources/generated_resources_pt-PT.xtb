@@ -6006,6 +6006,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5558129378926964177">Amp&amp;liar</translation>
 <translation id="5558594314398017686">Predefinição do SO (quando disponível)</translation>
 <translation id="5559311991468302423">Apagar morada</translation>
+<translation id="5559646482656763170">Atualizar quando não estiver em utilização</translation>
 <translation id="555968128798542113">Este site pode controlar e reprogramar os seus dispositivos MIDI</translation>
 <translation id="5559768063688681413">Nenhuma impressora guardada</translation>
 <translation id="55601339223879446">Ajustar os limites do seu ambiente de trabalho no ecrã</translation>
@@ -6508,6 +6509,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todos numa &amp;nova janela}=1{Abrir numa &amp;nova janela}other{Abrir todos ({COUNT}) numa &amp;nova janela}}</translation>
 <translation id="5964247741333118902">Conteúdo incorporado</translation>
 <translation id="5965607173855879702">Eliminar dados…</translation>
+<translation id="5966067139745999860"><ph name="SHORTCUT_TITLE" /> movido para a posição <ph name="SHORTCUT_POSITION" /> de <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Os dados de sites são eliminados do dispositivo quando fecha todas as janelas</translation>
 <translation id="5968022600320704045">Nenhum resultado da pesquisa</translation>
 <translation id="5968400720580217226">Modo IA</translation>
@@ -7173,6 +7175,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6488266788670893993">O <ph name="BRAND" /> não consegue verificar as suas palavras-passe relativamente a violações de dados. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="648927581764831596">Nenhum disponível</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
+<translation id="6491890991754498129">Abrir &amp;com…</translation>
 <translation id="649396225532207613">Este ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
 <translation id="6493991254603208962">Diminuir o brilho</translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
@@ -10046,6 +10049,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8666268818656583275">As teclas F vão ter o comportamento das teclas da linha superior do sistema</translation>
 <translation id="8666321716757704924">Autorizações permitidas novamente para <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Tem palavras-passe que podem ser melhoradas</translation>
+<translation id="8667543835349994431">Abrir &amp;com…</translation>
 <translation id="8668378421690365723">O seu dispositivo pode deixar de funcionar corretamente e sofrer problemas de segurança e desempenho.</translation>
 <translation id="8669284339312441707">Mais quente</translation>
 <translation id="8670537393737592796">Para voltar aqui rapidamente, instale a app <ph name="APP_NAME" /> ao clicar no botão de instalação.</translation>
@@ -10154,6 +10158,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8738418093147087440">Pesquise por países, idioma ou nomes de introdução</translation>
 <translation id="8741944563400125534">Guia de configuração do acesso por interruptor</translation>
 <translation id="8743357966416354615">Ambiente de programação gerido (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Em alternativa, navegar para <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Reveja a alteração do URL para se certificar de que concorda com esta antes de atualizar.</translation>
 <translation id="8745034592125932220">Sem autorização para guardar dados no seu dispositivo</translation>

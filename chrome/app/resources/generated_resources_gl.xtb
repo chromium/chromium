@@ -6008,6 +6008,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5558129378926964177">Achegar</translation>
 <translation id="5558594314398017686">Sistema operativo predeterminado (cando estea dispoñible)</translation>
 <translation id="5559311991468302423">Eliminar o enderezo</translation>
+<translation id="5559646482656763170">Actualizar cando non estea en uso</translation>
 <translation id="555968128798542113">Este sitio pode controlar e volver programar os teus dispositivos MIDI</translation>
 <translation id="5559768063688681413">Non hai ningunha impresora gardada</translation>
 <translation id="55601339223879446">Axustar os límites do escritorio dentro da pantalla</translation>
@@ -6506,6 +6507,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todos nunha ventá &amp;nova}=1{Abrir nunha ventá &amp;nova}other{Abrir todos ({COUNT}) nunha ventá &amp;nova}}</translation>
 <translation id="5964247741333118902">Contido inserido</translation>
 <translation id="5965607173855879702">Eliminando datos…</translation>
+<translation id="5966067139745999860">Moveuse <ph name="SHORTCUT_TITLE" /> á posición <ph name="SHORTCUT_POSITION" /> de <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Os datos dos sitios eliminaranse do teu dispositivo cando peches todas as ventás</translation>
 <translation id="5968022600320704045">Non hai resultados da busca</translation>
 <translation id="5968400720580217226">Modo IA</translation>
@@ -7171,6 +7173,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> non puido comprobar se os teus contrasinais se viron afectados por violacións da seguranza dos datos. Verifica a conexión a Internet.</translation>
 <translation id="648927581764831596">Nada dispoñible</translation>
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
+<translation id="6491890991754498129">Abrir &amp;con…</translation>
 <translation id="649396225532207613">Este ficheiro pode danar as túas contas de redes sociais e persoais</translation>
 <translation id="6493991254603208962">Reduce o brillo</translation>
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
@@ -10043,6 +10046,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8666268818656583275">As teclas de función agora servirán como teclas da fila superior do sistema</translation>
 <translation id="8666321716757704924">Volvéronse conceder permisos a <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Tes contrasinais que se poden mellorar</translation>
+<translation id="8667543835349994431">Abrir &amp;con...</translation>
 <translation id="8668378421690365723">É posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e rendemento.</translation>
 <translation id="8669284339312441707">Cores máis cálidas</translation>
 <translation id="8670537393737592796">Para volver aquí rapidamente, instala a aplicación <ph name="APP_NAME" /> facendo clic no botón de instalar</translation>
@@ -10151,6 +10155,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8738418093147087440">Busca por país, idioma ou nome de entrada</translation>
 <translation id="8741944563400125534">Guía de configuración de Acceso con interruptores</translation>
 <translation id="8743357966416354615">Contorno de desenvolvemento xestionado (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Prefires ir a <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Revisa o cambio de URL para asegurarte de que é axeitado antes da actualización.</translation>
 <translation id="8745034592125932220">Permiso denegado para gardar datos no teu dispositivo</translation>

@@ -524,6 +524,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5940385492829620908">A sua Web, os seus marcadores e os seus outros itens do Chrome estão aqui.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Tornar o Google Chrome no browser padrão.</translation>
+<translation id="5944731887996253728">O Chromium irá ser atualizado quando o ecrã não estiver em utilização</translation>
 <translation id="5947104538377036631">Atalho do Chrome</translation>
 <translation id="5960071705175224773">As suas definições foram alteradas por uma app desconhecida</translation>
 <translation id="5980111191913430208">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda instalá-los apenas a partir da <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -826,6 +827,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="8367950957770994118">Abrir rapidamente o Gemini no Chrome sempre que precisar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8370748943308169953">Código QR para iniciar sessão no Chrome como <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558">Está disponível uma <ph name="IMPORTANT_UPDATE" />. Pode reiniciar agora ou definir o Chromium para ser atualizado na próxima vez que o ecrã permanecer ligado e não for usado durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
 <translation id="8377158135256176353">Ative/desative o Gemini no Chrome Canary</translation>
 <translation id="8380754585531979907">Use o teclado para navegar entre o Gemini no Chrome e o separador aberto.</translation>
@@ -869,6 +871,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="8669527147644353129">Ajudante do Google Chrome</translation>
 <translation id="8679801911857917785">Também controla a página apresentada quando inicia o Chrome.</translation>
 <translation id="8689408573494410517">O botão "Pesquisa Google no painel lateral" na barra de ferramentas tem um novo ícone. Clique no ícone para fazer perguntas enquanto navega com a Pesquisa Google no painel lateral.</translation>
+<translation id="8699232386626916686">Atualize o Chrome para manter a segurança</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Quase atualizado! Reinicie o Chrome para concluir a atualização.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso à sua Lista de leitura e muito mais do <ph name="DEVICE" />.</translation>

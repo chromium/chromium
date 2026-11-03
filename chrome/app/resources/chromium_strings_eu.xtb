@@ -320,6 +320,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4135244987012252068">Arakatzaileari itxura berria emateko, pertsonalizatu Chromium</translation>
 <translation id="4147856324248078748">Pertsonalizat&amp;u Chromium</translation>
 <translation id="4148957013307229264">Instalatzen…</translation>
+<translation id="4197500750628721662">Eguneratu Chromium seguru egoteko</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chromium</translation>
 <translation id="4208652172235621272"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan.</translation>
 <translation id="421369550622382712">Ezagutu Chromium-erako aplikazio, joko, luzapen eta gai bikainak.</translation>
@@ -457,6 +458,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5596063723521813107">{COUNT,plural, =1{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. Leiho isolatua ez da irekiko berriro.}other{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5605834417512968703">Hautatu edozer, irudi-bilaketarekin bilatzeko. Irudi-bilaketatik irteteko, sakatu Ihes.</translation>
+<translation id="5614149501995591823"><ph name="IMPORTANT_UPDATE" /> prest dago. Orain berriro exekutatu dezakezu, edo Chromium pantaila piztuta eta <ph name="IDLE_DURATION" /> inaktibo igarotzen dituzun hurrengo aldian eguneratzeko ezarri.</translation>
 <translation id="5618818588972826921">Hautatu testu bat edo irudi bat, hura irudi-bilaketarekin bilatzeko. Irudi-bilaketatik irteteko, sakatu Ihes.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium arakatzailearen eguneratze bat dago erabilgarri}=1{Chromium arakatzailearen eguneratze bat dago erabilgarri}other{Chromium arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
 <translation id="5643865575100044307">Chromium ixten duzunean, ezabatu beti webguneetako datuak gailutik</translation>
@@ -513,6 +515,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="6192070012454216182">Bilatu eta egin galderak edonondik, baita Chromium minimizatuta badago ere. Atzeko planoan exekutatzeko baimena ematen dio Chromium-i.</translation>
 <translation id="6212496753309875659">Ordenagailuak Chromium arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Chromium eta saiatu berriro.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Orain exekutatuko da Chromium berriro}=1{1 segundo barru exekutatuko da Chromium berriro}other{# segundo barru exekutatuko da Chromium berriro}}</translation>
+<translation id="6232046770428574552">Chromium eguneratu egingo da pantaila erabiltzen ez denean</translation>
 <translation id="6241367896540709610">Chromium-ek biltegia erabiltzeko baimena behar du fitxategiak deskargatu ahal izateko</translation>
 <translation id="6245734527075554892">URLak Chromium-en gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du.</translation>
 <translation id="6248213926982192922">Ezarri Chromium arakatzaile lehenetsi gisa</translation>

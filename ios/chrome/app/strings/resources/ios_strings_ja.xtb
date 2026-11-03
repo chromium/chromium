@@ -2176,7 +2176,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7719038820139380048">ログインすると、興味や関心に基づくコンテンツが表示されきます。</translation>
 <translation id="7720901330179380635"><ph name="SEARCH_ENGINE" /> で検索しています</translation>
 <translation id="7724085059277147439">{count,plural, =1{Google アカウント（{email}）にアイテムを保存しました}other{Google アカウント（{email}）にアイテムを保存しました}}</translation>
-<translation id="7729458878441927652">他のデバイスのタブを表示するには、タブと履歴を同期します。</translation>
+<translation id="7729458878441927652">他のデバイスのタブを表示するには、タブと履歴の同期をオンにしてください。</translation>
 <translation id="7730020510075123961">いいえ、データを結合します</translation>
 <translation id="7730937523779541003">フォーカス モードの新しいタブページを適用しました</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />、このデバイスのみ。</translation>

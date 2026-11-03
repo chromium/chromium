@@ -6659,13 +6659,13 @@ Se non viene configurata, la funzionalità "Aiutami a scrivere" verrà attivata 
 
 Questa policy non è più supportata e viene ignorata. Usa invece la policy <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
 
-La policy configura l'URL dell'applicazione web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tramite <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> e deve essere un URL valido che utilizzi il protocollo https, faccia riferimento a un dominio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e non contenga né nome utente né password. Se non soddisfa questi requisiti, la policy viene ignorata e <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+La policy configura l'URL dell'applicazione web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tramite <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, che deve essere un URL valido che utilizzi il protocollo https, faccia riferimento a un dominio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e non contenga nome utente o password. Se non soddisfa questi requisiti, la policy viene ignorata e <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
 
 Se questa policy viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> verrà configurato per gli utenti che hanno fatto l'accesso con un account gestito o un browser gestito.
 
 Se questa policy non viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non verrà configurato.
 
-Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere controllata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
+Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere gestita tramite la policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5087922428454325090">Gli utenti non possono installare app web tramite il browser.</translation>
 <translation id="5087932158260897375">Se questa policy viene impostata su false, la segnalazione di dati diagnostici relativi all'attendibilità dei domini viene disattivata e non vengono inviati dati a Google.
@@ -12462,15 +12462,15 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="8626826495474944836">Richiedi isolamento dei siti per ogni sito</translation>
 <translation id="8628954914373039931">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle app per Android, dopo avere fatto l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
 
-      Se questa policy è impostata su false, verrà bloccato l'accesso a un Account Google diverso all'interno delle aree dei contenuti del browser (non in Incognito) e delle app per Android.
+      Se questa policy è impostata su false, non sarà consentito accedere a un Account Google diverso dall'area dei contenuti del browser non in Incognito e dalle app per Android.
 
-      Se questa policy non viene impostata o viene impostata su true, verrà usato il comportamento predefinito: sarà possibile accedere a un altro Account Google dall'area dei contenuti del browser e dalle applicazioni Android, ad eccezione degli account di minori, per i quali l'accesso non sarà consentito dall'area dei contenuti non in Incognito.
+      Se questa policy non viene impostata o viene impostata su true, verrà usato il comportamento predefinito: sarà possibile accedere a un altro Account Google dall'area dei contenuti del browser e dalle app per Android, ad eccezione degli account per minori, per i quali l'accesso non sarà consentito dall'area dei contenuti non in Incognito.
 
-      Su Android, questa impostazione consente di stabilire se gli utenti possono aggiungere altri Account Google dall'area dei contenuti dei siti web di Google dopo aver fatto l'accesso a <ph name="PRODUCT_NAME" />. Se questa policy viene impostata su false, i siti web di Google non offriranno l'opzione per aggiungere un altro Account Google (ad esempio, il pulsante "Aggiungi un altro account" nel menu dell'account). Se questa policy non viene impostata o se viene impostata su true, sarà consentito aggiungere un altro Account Google dai siti web di Google. Questa policy non impedisce l'aggiunta di Account Google al dispositivo Android stesso.
+      Su Android, questa impostazione stabilisce se gli utenti possono aggiungere altri Account Google dall'area dei contenuti dei siti web di Google mentre sono connessi a <ph name="PRODUCT_NAME" />. Se questa policy viene impostata su false, i siti web di Google non offriranno l'opzione per aggiungere un altro Account Google (ad esempio, il pulsante "Aggiungi un altro account" nel menu dell'account). Se questa policy non viene impostata o se viene impostata su true, sarà consentito aggiungere un altro Account Google dai siti web di Google. Questa policy non impedisce l'aggiunta di Account Google al dispositivo Android stesso.
 
-      Se non deve essere consentito l'accesso a un altro account tramite la modalità Incognito, valuta la possibilità di bloccare questa modalità usando la policy IncognitoModeAvailability.
+      Se non deve essere consentito l'accesso a un altro account tramite la modalità Incognito, valuta la possibilità di bloccare questa modalità tramite la policy IncognitoModeAvailability.
 
-      Tieni presente che, bloccando i cookie, gli utenti potranno accedere ai servizi Google in modalità non autenticata.</translation>
+      Tieni presente che, bloccando i cookie, gli utenti potranno accedere ai servizi Google senza autenticazione.</translation>
 <translation id="8630797597241896082">Consenti lo Sfondo AI generativa per videoconferenze e migliora i modelli di AI</translation>
 <translation id="8631314130868563649">Disattiva la gestione della variazione dei picchi energetici</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>

@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Limpar histórico e dados dos sites</translation>
 <translation id="3190558889382726167">Palavra-passe guardada</translation>
 <translation id="3190736958609431397">Desativar acompanhamento</translation>
+<translation id="3192820089569442694">Algo correu mal com o seu pedido de exclusão de dados</translation>
 <translation id="3208260410153224535">A sua organização desativou o início de sessão. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
 <translation id="3211969308836412674">Desafixar site</translation>
 <translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Saiba mais acerca do Google Lens</translation>
 <translation id="3449029510150690417">Crie o seu novo grupo de separadores atribuindo-lhe um nome e uma cor</translation>
 <translation id="345348365500626747">Morada encontrada</translation>
+<translation id="3453878468834191501">O separador atual é partilhado com o Gemini quando inicia um novo chat. <ph name="BEGIN_LINK" />Saiba mais sobre a IA e a privacidade<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Use o Live com o Gemini para fazer perguntas sobre uma página, debater ideias em voz alta e conversar.</translation>
 <translation id="3462768334899086950">Isto significa que vai perder o ficheiro não guardado e os separadores atuais</translation>
 <translation id="3464194322481586217">Não foi possível acompanhar o preço.</translation>
@@ -1626,6 +1628,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6078236141387574983">Reajuste a altura da página</translation>
 <translation id="6084848228346514841">Selecionar separadores</translation>
 <translation id="6089212833343035912">PIN do Gestor de Palavras-passe da Google</translation>
+<translation id="6090690847556987004">Algo correu mal com esta definição. Atualize o Chrome e o iPadOS, e reinicie o dispositivo para tentar novamente. Se isto continuar a acontecer, o seu iPhone pode não ser compatível com esta definição.</translation>
 <translation id="6090760257419195752">Avisos ignorados</translation>
 <translation id="6094325891006032858">Ative a Navegação segura melhorada</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> encontrado(s)</translation>
@@ -2122,6 +2125,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
+<translation id="7562347727679121642">Adicionar imagem à pesquisa</translation>
 <translation id="7566349809380613217">Abrir <ph name="GROUP_TITLE" />, grupo partilhado de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Os marcadores estão ocultos</translation>
 <translation id="7575664680938145959">Abertura de links com um toque</translation>
@@ -2669,6 +2673,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="9203951165704618409">Mude a barra de endereço de cima para baixo para ter uma experiência de navegação personalizada.</translation>
 <translation id="9205189991633470489">Bloqueio da Navegação anónima</translation>
 <translation id="9206887540681440657">Velocidade</translation>
+<translation id="9218088788182688902">Algo correu mal com esta definição. Atualize o Chrome e o iPadOS, e reinicie o dispositivo para tentar novamente. Se isto continuar a acontecer, o seu iPad pode não ser compatível com esta definição.</translation>
 <translation id="9218430445555521422">Predefinir</translation>
 <translation id="9219103736887031265">Imagens</translation>
 <translation id="9219154867334666734">Pesquisar separadores…</translation>

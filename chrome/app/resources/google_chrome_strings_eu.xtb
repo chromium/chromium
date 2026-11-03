@@ -531,6 +531,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5940385492829620908">Zure weba, laster-markak eta Chrome-n dituzun beste gauzak hemen bizi dira.</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
+<translation id="5944731887996253728">Pantaila erabiltzen ez denean eguneratuko da Chrome</translation>
 <translation id="5947104538377036631">Chrome-ren lasterbidea</translation>
 <translation id="5960071705175224773">Aplikazio ezezagun batek zure ezarpenak aldatu ditu</translation>
 <translation id="5980111191913430208">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chrome-k.</translation>
@@ -833,6 +834,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8367950957770994118">Ireki bizkor Chrome-ko Gemini, behar duzunean</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8370748943308169953">Chrome-n <ph name="USER_NAME" /> gisa saioa hasteko QR kodea</translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> prest dago. Orain berriro exekutatu dezakezu Chrome, edo hurrengoan pantaila piztuta eta erabili gabe <ph name="IDLE_DURATION" /> irauten duenean eguneratzeko konfiguratu.</translation>
 <translation id="8376752431516546391">Google Bilaketa zerbitzuaren alboko panela</translation>
 <translation id="8377158135256176353">Aktibatu/Desaktibatu Chrome Canary-ko Gemini</translation>
 <translation id="8380754585531979907">Erabili teklatua Chrome-ko Gemini-ren eta irekita daukazun fitxaren artean nabigatzeko.</translation>
@@ -876,6 +878,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="8669527147644353129">Google Chrome laguntzailea</translation>
 <translation id="8679801911857917785">Chrome abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8689408573494410517">Tresna-barrako "Alboko paneleko Google Bilaketa" botoiak ikono berri bat du. Saka ezazu arakatu bitartean alboko paneleko Google Bilaketa zerbitzuarekin galderak egiteko.</translation>
+<translation id="8699232386626916686">Eguneratu Chrome seguru egoteko</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8712767363896337380">Ia amaitu dugu eguneratzen. Eguneratzen amaitzeko, exekutatu Chrome berriro.</translation>
 <translation id="8717554232729236539"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chrome-n zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). <ph name="DEVICE" /> gailuko irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu.</translation>

@@ -720,6 +720,7 @@
 <translation id="3186796054637504691">Clear History and Website Data (garbitu historiaren eta webguneen datuak)</translation>
 <translation id="3190558889382726167">Gorde da pasahitza</translation>
 <translation id="3190736958609431397">Utzi jarraipena egiteari</translation>
+<translation id="3192820089569442694">Arazoren bat izan da zure datuak ez erabiltzeko eskaerarekin.</translation>
 <translation id="3208260410153224535">Erakundeak saioa hasteko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
 <translation id="3211969308836412674">Kendu aingura webguneari</translation>
 <translation id="3213807041830307252">Erosi, itzuli eta identifikatu ikusten duzuna kameraren eta argazki-galeriaren bidez.</translation>
@@ -787,6 +788,7 @@
 <translation id="344589138074534176">Lortu Google Lens-i buruzko informazio gehiago</translation>
 <translation id="3449029510150690417">Sortu fitxa talde bat izena eta kolorea ezarrita.</translation>
 <translation id="345348365500626747">Helbidea aurkitu da</translation>
+<translation id="3453878468834191501">Txat bat hasten duzunean, une horretan irekita dagoen fitxa Gemini-rekin partekatzen da. <ph name="BEGIN_LINK" />Lortu AAri eta pribatutasunari buruzko informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3459644598174926977">Hasi Gemini Live erabiltzen orri bati buruzko galderak egiteko, ideia-jasak ozen egiteko eta elkarrizketak izateko.</translation>
 <translation id="3462768334899086950">Gorde gabeko fitxategia eta oraingo fitxak galduko dituzu</translation>
 <translation id="3464194322481586217">Ezin izan da egin prezioaren jarraipena.</translation>
@@ -1626,6 +1628,7 @@
 <translation id="6078236141387574983">Doitu orriaren altuera</translation>
 <translation id="6084848228346514841">Hautatu fitxak</translation>
 <translation id="6089212833343035912">Google-ren Pasahitz-kudeatzailea zerbitzuko PINa</translation>
+<translation id="6090690847556987004">Arazoren bat izan da ezarpen honekin. Eguneratu Chrome eta iOS, eta berrabiarazi gailua berriro saiatzeko. Arazoak badirau, baliteke iPhone-ak ez onartzea ezarpen hau.</translation>
 <translation id="6090760257419195752">Baztertutako abisuak</translation>
 <translation id="6094325891006032858">Aktibatu Arakatze seguru hobetua</translation>
 <translation id="6096965253650248286"><ph name="COUNT" /> aurkitu dira</translation>
@@ -2122,6 +2125,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7557508262441527045">Amaitu da saioa</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
+<translation id="7562347727679121642">Gehitu irudi bat bilaketan</translation>
 <translation id="7566349809380613217">Ireki <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> dituen talde partekatua, <ph name="CREATION_TEXT" /></translation>
 <translation id="7567579665882069209">Laster-markak ezkutatuta daude</translation>
 <translation id="7575664680938145959">Sakatze hutsarekin irekitzea</translation>
@@ -2669,6 +2673,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="9203951165704618409">Aldatu helbide-barra goialdetik behealdera, arakatzeko modua pertsonalizatzeko.</translation>
 <translation id="9205189991633470489">Ezkutuko moduko fitxak blokeatzea</translation>
 <translation id="9206887540681440657">Abiadura</translation>
+<translation id="9218088788182688902">Arazoren bat izan da ezarpen honekin. Eguneratu Chrome eta iPadOS, eta berrabiarazi gailua berriro saiatzeko. Errorea behin eta berriro gertatzen bada, baliteke iPad-ak ez onartzea ezarpen hau.</translation>
 <translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="9219154867334666734">Bilatu fitxetan…</translation>

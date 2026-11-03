@@ -6000,6 +6000,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5558129378926964177">&amp;Handitu</translation>
 <translation id="5558594314398017686">Sistema eragile lehenetsia (erabilgarri dagoenean)</translation>
 <translation id="5559311991468302423">Ezabatu helbidea</translation>
+<translation id="5559646482656763170">Eguneratu erabiltzen ari ez zarenean</translation>
 <translation id="555968128798542113">Webgune honek zure MIDI gailuak kontrolatu eta berriro programa ditzake</translation>
 <translation id="5559768063688681413">Ez dago inprimagailurik gordeta</translation>
 <translation id="55601339223879446">Doitu mahaigainaren mugak pantailaren barruan</translation>
@@ -6498,6 +6499,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5964113968897211042">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>
 <translation id="5964247741333118902">Eduki kapsulatua</translation>
 <translation id="5965607173855879702">Datuak ezabatzen…</translation>
+<translation id="5966067139745999860">Eraman da <ph name="SHORTCUT_TITLE" /> <ph name="TOTAL_SHORTCUTS" /> posiziotatik <ph name="SHORTCUT_POSITION" />garrenera.</translation>
 <translation id="5966511985653515929">Leiho guztiak ixtean, webguneetako datuak gailutik ezabatzen dira</translation>
 <translation id="5968022600320704045">Ez dago bilaketa-emaitzarik</translation>
 <translation id="5968400720580217226">AA modua</translation>
@@ -7163,6 +7165,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6488266788670893993"><ph name="BRAND" /> zerbitzuak ezin du egiaztatu zure pasahitzak datuen isilpekotasunaren urratze batean egon diren. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="648927581764831596">Ez dago bat ere erabilgarri</translation>
 <translation id="6490471652906364588">USB-C gailua (eskuinaldeko ataka)</translation>
+<translation id="6491890991754498129">Ireki honekin…</translation>
 <translation id="649396225532207613">Baliteke fitxategi honek zure kontu pertsonalak eta sare sozialetakoak kaltetzea</translation>
 <translation id="6493991254603208962">Txikitu distira</translation>
 <translation id="6494327278868541139">Erakutsi babes hobetuaren xehetasunak</translation>
@@ -10034,6 +10037,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8666268818656583275">Orain, funtzio-teklek sistemaren goiko errenkadako teklen portaera izango dute</translation>
 <translation id="8666321716757704924">Eman zaizkio baimenak berriro <ph name="WEBSITE" /> webguneari</translation>
 <translation id="8667261224612332309">Hobe daitezkeen pasahitzak dituzu</translation>
+<translation id="8667543835349994431">Ireki honekin…</translation>
 <translation id="8668378421690365723">Baliteke gailuak behar bezala funtzionatzeari uztea eta segurtasun- eta errendimendu-arazoak izatea.</translation>
 <translation id="8669284339312441707">Beroagoa</translation>
 <translation id="8670537393737592796">Hona bizkor itzuli ahal izateko, instalatu <ph name="APP_NAME" /> instalatzeko botoia sakatuta</translation>
@@ -10142,6 +10146,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8738418093147087440">Bilatu hizkuntzen, herrialdeen edo idazketa-metodoen arabera</translation>
 <translation id="8741944563400125534">Erabilerraztasun-osagarria konfiguratzeko gida</translation>
 <translation id="8743357966416354615">Garapen-ingurune kudeatua (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220"><ph name="URL" /> webgunera joan nahi duzu?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Eguneratu aurretik, berrikusi URLaren aldaketa, ondo iruditzen zaizula ziurtatzeko.</translation>
 <translation id="8745034592125932220">Ez du gailu honetan datuak gordetzeko baimenik</translation>
