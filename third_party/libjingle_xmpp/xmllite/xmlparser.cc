@@ -10,6 +10,7 @@
 
 #include "third_party/libjingle_xmpp/xmllite/xmlparser.h"
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,34 @@
 
 namespace jingle_xmpp {
 
+namespace {
+
+// XML_GetCurrentLineNumber64() and friends were added in Expat 2.9.0, which
+// then deprecated the XML_Size/XML_Index versions. The system Expat may be
+// older.
+#if XML_MAJOR_VERSION > 2 || (XML_MAJOR_VERSION == 2 && XML_MINOR_VERSION >= 9)
+uint64_t CurrentLineNumber(XML_Parser parser) {
+  return XML_GetCurrentLineNumber64(parser);
+}
+uint64_t CurrentColumnNumber(XML_Parser parser) {
+  return XML_GetCurrentColumnNumber64(parser);
+}
+int64_t CurrentByteIndex(XML_Parser parser) {
+  return XML_GetCurrentByteIndex64(parser);
+}
+#else
+XML_Size CurrentLineNumber(XML_Parser parser) {
+  return XML_GetCurrentLineNumber(parser);
+}
+XML_Size CurrentColumnNumber(XML_Parser parser) {
+  return XML_GetCurrentColumnNumber(parser);
+}
+XML_Index CurrentByteIndex(XML_Parser parser) {
+  return XML_GetCurrentByteIndex(parser);
+}
+#endif
+
+}  // namespace
 
 static void
 StartElementCallback(void * userData, const char *name, const char **atts) {
@@ -94,9 +123,9 @@ XmlParser::ExpatStartElement(const char *name, const char **atts) {
       }
     }
   }
-  context_.SetPosition(XML_GetCurrentLineNumber(expat_),
-                       XML_GetCurrentColumnNumber(expat_),
-                       XML_GetCurrentByteIndex(expat_));
+  context_.SetPosition(CurrentLineNumber(expat_),
+                       CurrentColumnNumber(expat_),
+                       CurrentByteIndex(expat_));
   pxph_->StartElement(&context_, name, atts);
 }
 
@@ -105,9 +134,9 @@ XmlParser::ExpatEndElement(const char *name) {
   if (context_.RaisedError() != XML_ERROR_NONE)
     return;
   context_.EndElement();
-  context_.SetPosition(XML_GetCurrentLineNumber(expat_),
-                       XML_GetCurrentColumnNumber(expat_),
-                       XML_GetCurrentByteIndex(expat_));
+  context_.SetPosition(CurrentLineNumber(expat_),
+                       CurrentColumnNumber(expat_),
+                       CurrentByteIndex(expat_));
   pxph_->EndElement(&context_, name);
 }
 
@@ -115,9 +144,9 @@ void
 XmlParser::ExpatCharacterData(const char *text, int len) {
   if (context_.RaisedError() != XML_ERROR_NONE)
     return;
-  context_.SetPosition(XML_GetCurrentLineNumber(expat_),
-                       XML_GetCurrentColumnNumber(expat_),
-                       XML_GetCurrentByteIndex(expat_));
+  context_.SetPosition(CurrentLineNumber(expat_),
+                       CurrentColumnNumber(expat_),
+                       CurrentByteIndex(expat_));
   pxph_->CharacterData(&context_, text, len);
 }
 
@@ -153,9 +182,9 @@ XmlParser::Parse(const char *data, size_t len, bool isFinal) {
 
   if (XML_Parse(expat_, data, static_cast<int>(len), isFinal) !=
       XML_STATUS_OK) {
-    context_.SetPosition(XML_GetCurrentLineNumber(expat_),
-                         XML_GetCurrentColumnNumber(expat_),
-                         XML_GetCurrentByteIndex(expat_));
+    context_.SetPosition(CurrentLineNumber(expat_),
+                         CurrentColumnNumber(expat_),
+                         CurrentByteIndex(expat_));
     context_.RaiseError(XML_GetErrorCode(expat_));
   }
 
