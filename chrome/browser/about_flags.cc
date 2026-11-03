@@ -13965,7 +13965,8 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
     {"critical-action-history", flag_descriptions::kCriticalActionHistoryName,
-     flag_descriptions::kCriticalActionHistoryDescription, kOsDesktop,
+     flag_descriptions::kCriticalActionHistoryDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(critical_actions::features::kCriticalActionHistory)},
 
     {"autofill-enable-wallet-direct-offers",

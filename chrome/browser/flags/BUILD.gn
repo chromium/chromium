@@ -96,6 +96,7 @@ static_library("flags_android_impl") {
     "//components/content_settings/core/common:features",
     "//components/contextual_tasks/public:feature_list",
     "//components/credential_management/android:features",
+    "//components/critical_actions/core/browser",
     "//components/data_sharing/public:features",
     "//components/download/public/common:public",
     "//components/embedder_support/android:util",

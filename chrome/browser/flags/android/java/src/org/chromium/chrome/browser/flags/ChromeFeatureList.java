@@ -572,6 +572,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTROLS_IN_BROWSER_TOOLBAR_SWIPE_MOCK =
             "ControlsInBrowserToolbarSwipeMock";
     public static final String COPY_LINK_TO_HIGHLIGHT = "CopyLinkToHighlight";
+    public static final String CRITICAL_ACTION_HISTORY = "CriticalActionHistory";
     public static final String CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS =
             "CrossDevicePrefTrackerExtraLogs";
     public static final String CROSS_DEVICE_TAB_PANE_ANDROID = "CrossDeviceTabPaneAndroid";
@@ -1828,6 +1829,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_ACTOR, false);
     public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDomainV2 =
             newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_DOMAIN_V2, false);
+    public static final MutableFlagWithSafeDefault sCriticalActionHistory =
+            newMutableFlagWithSafeDefault(CRITICAL_ACTION_HISTORY, false);
     public static final MutableFlagWithSafeDefault sCrossWindowTabGroupOperations =
             newMutableFlagWithSafeDefault(CROSS_WINDOW_TAB_GROUP_OPERATIONS, true);
     public static final MutableFlagWithSafeDefault sDebugToolbarPositioning =

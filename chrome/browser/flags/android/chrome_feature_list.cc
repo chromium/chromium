@@ -37,6 +37,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/credential_management/android/features.h"
+#include "components/critical_actions/core/browser/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
@@ -183,6 +184,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &contextual_tasks::kContextualTasks,
     &contextual_tasks::kContextualTasksSidePanel,
     &credential_management::features::kCredentialManagementThirdPartyWebApiRequestForwarding,
+    &critical_actions::features::kCriticalActionHistory,
     &data_controls::kDataControlsSearchWith,
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,
     &data_sharing::features::kDataSharingFeature,
