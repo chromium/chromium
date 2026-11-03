@@ -209,6 +209,8 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseNoTimeout) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
@@ -247,6 +249,8 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestNetErrorResponse) {
@@ -382,6 +386,8 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithLogin) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestAccessTokenFailureWithLogin) {
@@ -398,6 +404,8 @@ TEST_F(ModelExecutionFetcherImplTest, TestAccessTokenFailureWithLogin) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       ModelExecutionFetcherRequestStatus::kUserNotSignedIn, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 0);
   EXPECT_EQ(ModelExecutionError::kPermissionDenied,
             last_execute_response_->error().error());
 }
@@ -411,6 +419,8 @@ TEST_F(ModelExecutionFetcherImplTest, TestNoUserSignIn) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       ModelExecutionFetcherRequestStatus::kUserNotSignedIn, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 0);
   EXPECT_EQ(ModelExecutionError::kPermissionDenied,
             last_execute_response_->error().error());
 }
@@ -439,6 +449,8 @@ TEST_F(ModelExecutionFetcherImplTest,
                 last_execute_response_->value().response_metadata())
                 ->test());
   EXPECT_TRUE(last_server_timeout_header_.empty());
+  histogram_tester_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.ScamDetection", 0);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, DevHttpUrlAllowedWithSwitch) {

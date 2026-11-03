@@ -238,6 +238,31 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
       "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.FetchLatency2.Compose", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenLatency.Compose", 1);
+}
+
+TEST_F(ModelExecutionManagerTest, PrewarmModelExecutionWithoutSignIn) {
+  base::HistogramTester histogram_tester;
+  model_execution_manager()->PrewarmModelExecution(
+      ModelBasedCapabilityKey::kCompose);
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenPrewarmLatency.Compose", 0);
+}
+
+TEST_F(ModelExecutionManagerTest, PrewarmModelExecutionWithUserSignIn) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  model_execution_manager()->PrewarmModelExecution(
+      ModelBasedCapabilityKey::kCompose);
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.AccessTokenPrewarmLatency.Compose", 1);
 }
 
 // Tests that when a new request is issued and the total number of active

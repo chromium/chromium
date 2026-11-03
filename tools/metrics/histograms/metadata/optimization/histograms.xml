@@ -1186,6 +1186,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.AccessTokenLatency.{ModelExecutionFeature}"
+    units="ms" expires_after="2027-04-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time spent waiting for an OAuth access token from
+    IdentityManager during a model execution request for
+    {ModelExecutionFeature}. Recorded when a non-empty access token is
+    successfully received before the network request is sent.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.AccessTokenPrewarmLatency.{ModelExecutionFeature}"
+    units="ms" expires_after="2027-04-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time spent prefetching an OAuth access token from
+    IdentityManager when PrewarmModelExecution is called for
+    {ModelExecutionFeature}. Recorded only when a non-empty access token is
+    successfully received.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.ContextStartToExecutionTime.{ModelExecutionFeature}"
     units="ms" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>

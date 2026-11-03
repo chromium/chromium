@@ -44,6 +44,8 @@ class FakeOptimizationGuideService : public OptimizationGuideService {
       const optimization_guide::ModelExecutionOptions& options,
       optimization_guide::OptimizationGuideModelExecutionResultCallback
           callback) override;
+  void PrewarmModelExecution(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
 
   // Helpers for testing:
 

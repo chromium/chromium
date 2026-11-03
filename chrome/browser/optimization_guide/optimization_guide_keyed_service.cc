@@ -560,6 +560,15 @@ OptimizationGuideKeyedService::StartStreamingSession(
       optimization_guide_logger_.get());
 }
 
+void OptimizationGuideKeyedService::PrewarmModelExecution(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_manager_) {
+    return;
+  }
+  model_execution_manager_->PrewarmModelExecution(feature);
+}
+
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
     optimization_guide::mojom::OnDeviceFeature feature,
     optimization_guide::OnDeviceModelAvailabilityObserver* observer) {

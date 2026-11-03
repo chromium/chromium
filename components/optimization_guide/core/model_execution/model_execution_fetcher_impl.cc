@@ -9,6 +9,8 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
@@ -85,7 +87,6 @@ void ModelExecutionFetcherImpl::ExecuteModel(
     return;
   }
 
-  fetch_start_time_ = base::TimeTicks::Now();
   model_execution_feature_ = feature;
   model_execution_callback_ = std::move(callback);
 
@@ -99,23 +100,30 @@ void ModelExecutionFetcherImpl::ExecuteModel(
       signin::OAuthConsumerId::kOptimizationGuideModelExecution,
       base::BindOnce(&ModelExecutionFetcherImpl::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), feature,
-                     serialized_request, timeout));
+                     serialized_request, timeout, base::TimeTicks::Now()));
 }
 
 void ModelExecutionFetcherImpl::OnAccessTokenReceived(
     ModelBasedCapabilityKey feature,
     const std::string& serialized_request,
     std::optional<base::TimeDelta> timeout,
+    base::TimeTicks access_token_request_start_time,
     const std::string& access_token) {
-  if (IsAccessTokenRequiredForFeature(feature) && access_token.empty()) {
-    RecordRequestStatusHistogram(
-        *model_execution_feature_,
-        ModelExecutionFetcherRequestStatus::kUserNotSignedIn);
-    std::move(model_execution_callback_)
-        .Run(base::unexpected(
-            OptimizationGuideModelExecutionError::FromModelExecutionError(
-                ModelExecutionError::kPermissionDenied)));
-    return;
+  if (IsAccessTokenRequiredForFeature(feature)) {
+    if (access_token.empty()) {
+      RecordRequestStatusHistogram(
+          *model_execution_feature_,
+          ModelExecutionFetcherRequestStatus::kUserNotSignedIn);
+      std::move(model_execution_callback_)
+          .Run(base::unexpected(
+              OptimizationGuideModelExecutionError::FromModelExecutionError(
+                  ModelExecutionError::kPermissionDenied)));
+      return;
+    }
+    base::UmaHistogramTimes(
+        base::StrCat({"OptimizationGuide.ModelExecution.AccessTokenLatency.",
+                      GetStringNameForModelExecutionFeature(feature)}),
+        base::TimeTicks::Now() - access_token_request_start_time);
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();

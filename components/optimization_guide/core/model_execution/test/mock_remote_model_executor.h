@@ -30,6 +30,10 @@ class MockRemoteModelExecutor : public RemoteModelExecutor {
                const StreamingModelExecutionOptions& options,
                OptimizationGuideModelExecutionStreamingCallback callback),
               (override));
+  MOCK_METHOD(void,
+              PrewarmModelExecution,
+              (ModelBasedCapabilityKey feature),
+              (override));
 };
 
 }  // namespace optimization_guide

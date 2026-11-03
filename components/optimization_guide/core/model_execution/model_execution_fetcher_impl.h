@@ -59,6 +59,7 @@ class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
   void OnAccessTokenReceived(ModelBasedCapabilityKey feature,
                              const std::string& serialized_request,
                              std::optional<base::TimeDelta> timeout,
+                             base::TimeTicks access_token_request_start_time,
                              const std::string& access_token);
 
   // URL loader completion callback.
@@ -76,10 +77,6 @@ class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
 
   // Used for creating an `active_url_loader_` when needed for request hints.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // The start time of the current fetch, used to determine the latency in
-  // retrieving from the remote Optimization Guide Service.
-  base::TimeTicks fetch_start_time_;
 
   // The model execution feature the fetch is happening for.
   std::optional<ModelBasedCapabilityKey> model_execution_feature_;

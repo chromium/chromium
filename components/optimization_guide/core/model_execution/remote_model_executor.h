@@ -176,6 +176,10 @@ class RemoteModelExecutor {
       ModelBasedCapabilityKey feature,
       const StreamingModelExecutionOptions& options,
       OptimizationGuideModelExecutionStreamingCallback callback) = 0;
+
+  // Prewarms authentication state (e.g. prefetching the OAuth access token) for
+  // an upcoming `ExecuteModel()` call for `feature`.
+  virtual void PrewarmModelExecution(ModelBasedCapabilityKey feature) = 0;
 };
 
 }  // namespace optimization_guide

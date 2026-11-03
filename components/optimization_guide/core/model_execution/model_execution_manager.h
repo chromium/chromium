@@ -73,6 +73,10 @@ class ModelExecutionManager final {
       ModelBasedCapabilityKey feature,
       OptimizationGuideModelExecutionResult result);
 
+  // Prewarms authentication state (e.g. prefetching the OAuth access token) for
+  // an upcoming `ExecuteModel()` call for `feature`.
+  void PrewarmModelExecution(ModelBasedCapabilityKey feature);
+
   void Shutdown();
 
  private:

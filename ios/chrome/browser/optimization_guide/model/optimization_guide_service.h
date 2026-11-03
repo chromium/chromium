@@ -118,6 +118,8 @@ class OptimizationGuideService
       const optimization_guide::StreamingModelExecutionOptions& options,
       optimization_guide::OptimizationGuideModelExecutionStreamingCallback
           callback) override;
+  void PrewarmModelExecution(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
 
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(

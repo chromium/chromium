@@ -107,3 +107,6 @@ void FakeOptimizationGuideService::SetError(
     int error_code) {
   errors_[feature] = error_code;
 }
+
+void FakeOptimizationGuideService::PrewarmModelExecution(
+    optimization_guide::ModelBasedCapabilityKey feature) {}

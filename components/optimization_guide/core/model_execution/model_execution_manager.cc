@@ -13,16 +13,20 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace optimization_guide {
@@ -164,6 +168,32 @@ void ModelExecutionManager::Shutdown() {
   // all processing during destructor.
   weak_ptr_factory_.InvalidateWeakPtrs();
   active_model_execution_fetchers_.clear();
+}
+
+void ModelExecutionManager::PrewarmModelExecution(
+    ModelBasedCapabilityKey feature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsAccessTokenRequiredForFeature(feature) || !identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  HandleTokenRequestFlow(
+      /*require_token=*/true, identity_manager_,
+      signin::OAuthConsumerId::kOptimizationGuideModelExecution,
+      base::BindOnce(
+          [](ModelBasedCapabilityKey feature, base::TimeTicks start_time,
+             const std::string& access_token) {
+            if (!access_token.empty()) {
+              base::UmaHistogramTimes(
+                  base::StrCat(
+                      {"OptimizationGuide.ModelExecution."
+                       "AccessTokenPrewarmLatency.",
+                       GetStringNameForModelExecutionFeature(feature)}),
+                  base::TimeTicks::Now() - start_time);
+            }
+          },
+          feature, start_time));
 }
 
 void ModelExecutionManager::AddExecutionResultForTesting(

@@ -371,3 +371,11 @@ OptimizationGuideService::StartStreamingSession(
       feature, options, std::move(callback), network_context_getter_,
       identity_manager_, optimization_guide_logger_.get());
 }
+
+void OptimizationGuideService::PrewarmModelExecution(
+    optimization_guide::ModelBasedCapabilityKey feature) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  if (model_execution_manager_) {
+    model_execution_manager_->PrewarmModelExecution(feature);
+  }
+}
