@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,6 +64,19 @@ class OmniboxEverywhereUIManager
       public OmniboxEverywhereContextMenuController::Delegate,
       public PermissionPromptObserver::Observer {
  public:
+  // Modal surfaces owned by the widget that keep it from being dismissed on
+  // deactivation.
+  enum class Modal {
+    kFileChooser,
+    kDrivePicker,
+    kHotkeyDropdown,
+    kScreensharePicker,
+    kScreenshareDisclosure,
+    kPermissionPrompt,
+    kMinValue = kFileChooser,
+    kMaxValue = kPermissionPrompt,
+  };
+
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOmniboxEverywhereElementId);
 
   // Fixed popup window width:
@@ -252,26 +266,11 @@ class OmniboxEverywhereUIManager
   const std::optional<SkRegion>& draggable_region_for_testing() const {
     return draggable_region_;
   }
-  bool is_file_chooser_open_for_testing() const {
-    return is_file_chooser_open_;
-  }
-  bool is_drive_picker_open_for_testing() const {
-    return is_drive_picker_open_;
-  }
-  bool is_screenshare_picker_open_for_testing() const {
-    return is_screenshare_picker_open_;
-  }
-  bool is_screenshare_disclosure_open_for_testing() const {
-    return is_screenshare_disclosure_open_;
+  bool IsModalOpenForTesting(Modal modal) const {
+    return open_modals_.Has(modal);
   }
   views::Widget* disclosure_dialog_widget_for_testing() {
     return disclosure_dialog_widget_.get();
-  }
-  bool is_permission_prompt_open_for_testing() const {
-    return is_permission_prompt_open_;
-  }
-  bool is_hotkey_dropdown_open_for_testing() const {
-    return is_hotkey_dropdown_open_;
   }
   bool is_hotkey_dropdown_deactivation_task_pending_for_testing() const {
     return !hotkey_dropdown_deactivation_task_.IsCancelled();
@@ -295,6 +294,8 @@ class OmniboxEverywhereUIManager
   bool is_demoted() const { return is_demoted_; }
 
  private:
+  using ModalSet = base::EnumSet<Modal, Modal::kMinValue, Modal::kMaxValue>;
+
   void EnsureContentsWrapperInitialized(Profile* profile);
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
@@ -356,6 +357,7 @@ class OmniboxEverywhereUIManager
   void OnScreenshotDisclosureClosed(base::OnceClosure on_accepted,
                                     base::OnceClosure on_cancelled,
                                     views::Widget::ClosedReason reason);
+  void SetModalOpen(Modal modal, bool open);
   void UpdateModalInteractionState();
 
 #if defined(USE_AURA)
@@ -377,13 +379,11 @@ class OmniboxEverywhereUIManager
       scoped_ignore_input_events_;
   base::OneShotTimer capture_release_timer_;
 
-  bool is_file_chooser_open_ = false;
-  bool is_drive_picker_open_ = false;
-  bool is_hotkey_dropdown_open_ = false;
+  // Tracks the modal surfaces (file chooser, pickers, permission prompt, etc.)
+  // that keep the widget from being dismissed. The region select overlay is
+  // tracked by `region_select_overlay_` instead.
+  ModalSet open_modals_;
   bool is_demoted_ = false;
-  bool is_screenshare_picker_open_ = false;
-  bool is_screenshare_disclosure_open_ = false;
-  bool is_permission_prompt_open_ = false;
   bool suppress_restore_on_screenshare_picker_closed_ = false;
   bool is_dragging_ = false;
   // True while an external drag is hovering over `web_contents()` during a

@@ -848,7 +848,6 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(disclosure_dialog_widget_));
   }
-  is_screenshare_disclosure_open_ = false;
   scoped_ignore_input_events_.reset();
   if (widget_) {
     static_cast<OmniboxEverywhereWidget*>(widget_.get())->ResetThemeObserver();
@@ -879,13 +878,8 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
             std::move(widget_), std::move(widget_delegate_)));
   }
   context_menu_controller_->Reset();
-  is_file_chooser_open_ = false;
-  is_drive_picker_open_ = false;
-  is_hotkey_dropdown_open_ = false;
+  open_modals_.Clear();
   is_demoted_ = false;
-  is_screenshare_picker_open_ = false;
-  is_screenshare_disclosure_open_ = false;
-  is_permission_prompt_open_ = false;
   is_dragging_ = false;
   is_adjusting_bounds_ = false;
   pending_auto_resize_size_.reset();
@@ -926,14 +920,12 @@ bool OmniboxEverywhereUIManager::IsActive() const {
 }
 
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
-  return is_file_chooser_open_ || is_drive_picker_open_ ||
-         is_screenshare_picker_open_ || is_screenshare_disclosure_open_ ||
-         is_permission_prompt_open_ || region_select_overlay_ != nullptr ||
-         is_hotkey_dropdown_open_;
+  return !open_modals_.empty() || region_select_overlay_ != nullptr;
 }
 
 bool OmniboxEverywhereUIManager::IsScreenshareCaptureInProgress() const {
-  return is_screenshare_picker_open_ || region_select_overlay_ != nullptr;
+  return open_modals_.Has(Modal::kScreensharePicker) ||
+         region_select_overlay_ != nullptr;
 }
 
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
@@ -1122,7 +1114,8 @@ void OmniboxEverywhereUIManager::ResizeDueToAutoResize(
   if (!widget_) {
     return;
   }
-  if (is_dragging_ || is_screenshare_picker_open_ || widget_->IsMinimized()) {
+  if (is_dragging_ || open_modals_.Has(Modal::kScreensharePicker) ||
+      widget_->IsMinimized()) {
     pending_auto_resize_size_ = new_size;
     return;
   }
@@ -1164,37 +1157,32 @@ void OmniboxEverywhereUIManager::RequestMediaAccessPermission(
 void OmniboxEverywhereUIManager::OnPermissionPromptChanged(
     bool is_showing,
     const gfx::Size& prompt_size) {
-  is_permission_prompt_open_ = is_showing;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kPermissionPrompt, is_showing);
 }
 
 void OmniboxEverywhereUIManager::OnFileChooserOpened() {
-  is_file_chooser_open_ = true;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kFileChooser, true);
 }
 
 void OmniboxEverywhereUIManager::OnFileChooserClosed() {
-  is_file_chooser_open_ = false;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kFileChooser, false);
 }
 
 void OmniboxEverywhereUIManager::OnDrivePickerOpened() {
-  is_drive_picker_open_ = true;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kDrivePicker, true);
 }
 
 void OmniboxEverywhereUIManager::OnDrivePickerClosed() {
-  is_drive_picker_open_ = false;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kDrivePicker, false);
 }
 
 void OmniboxEverywhereUIManager::OnHotkeyDropdownOpened() {
   hotkey_dropdown_deactivation_task_.Cancel();
-  is_hotkey_dropdown_open_ = true;
+  SetModalOpen(Modal::kHotkeyDropdown, true);
 }
 
 void OmniboxEverywhereUIManager::OnHotkeyDropdownClosed() {
-  is_hotkey_dropdown_open_ = false;
+  SetModalOpen(Modal::kHotkeyDropdown, false);
   // Delay check by a tick to allow native window activation to settle if widget
   // was reactivated.
   hotkey_dropdown_deactivation_task_.Reset(base::BindOnce(
@@ -1222,16 +1210,14 @@ void OmniboxEverywhereUIManager::OnDragExited() {
 }
 
 void OmniboxEverywhereUIManager::OnScreensharePickerOpened() {
-  is_screenshare_picker_open_ = true;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kScreensharePicker, true);
   if (widget_) {
     widget_->Hide();
   }
 }
 
 void OmniboxEverywhereUIManager::OnScreensharePickerClosed() {
-  is_screenshare_picker_open_ = false;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kScreensharePicker, false);
   if (pending_auto_resize_size_.has_value()) {
     gfx::Size size = *pending_auto_resize_size_;
     pending_auto_resize_size_.reset();
@@ -1267,7 +1253,7 @@ bool OmniboxEverywhereUIManager::CancelChromeDefaultPicker(
                  : nullptr;
 
   if (ui && ui->CancelChromeDefaultPicker()) {
-    if (is_screenshare_picker_open_) {
+    if (open_modals_.Has(Modal::kScreensharePicker)) {
       OnScreensharePickerClosed();
     } else if (widget_ && !widget_->IsVisible() &&
                !suppress_restore_on_screenshare_picker_closed_) {
@@ -1279,7 +1265,7 @@ bool OmniboxEverywhereUIManager::CancelChromeDefaultPicker(
   // Fallback only for test harnesses (e.g. TestWebUIContentsWrapper) where
   // WebUI is mocked. In production, a failed cancellation (e.g. native OS
   // picker) must return false so the invocation is ignored.
-  if (!ui && is_screenshare_picker_open_) {
+  if (!ui && open_modals_.Has(Modal::kScreensharePicker)) {
     OnScreensharePickerClosed();
     return true;
   }
@@ -1304,8 +1290,7 @@ void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(
     return;
   }
 
-  is_screenshare_disclosure_open_ = true;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kScreenshareDisclosure, true);
 
   auto dialog_model =
       ui::DialogModel::Builder()
@@ -1355,39 +1340,30 @@ void OmniboxEverywhereUIManager::OnScreenshotDisclosureClosed(
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(disclosure_dialog_widget_));
-  is_screenshare_disclosure_open_ = false;
-  UpdateModalInteractionState();
+  SetModalOpen(Modal::kScreenshareDisclosure, false);
 
   if (reason == views::Widget::ClosedReason::kAcceptButtonClicked) {
     if (on_accepted) {
       // Defer dispatching on_accepted to ensure the disclosure dialog window
       // is completely closed and removed from display before any screenshot
-      // capture begins. Keep `is_screenshare_disclosure_open_` true until
-      // `on_accepted` runs to prevent ephemeral deactivation while the dialog
-      // hides and before the screenshare picker opens.
+      // capture begins.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(
                          [](base::WeakPtr<OmniboxEverywhereUIManager> self,
                             base::OnceClosure on_accepted) {
-                           if (!self) {
-                             return;
-                           }
-                           self->is_screenshare_disclosure_open_ = false;
-                           if (!self->widget_) {
+                           if (!self || !self->widget_) {
                              return;
                            }
                            std::move(on_accepted).Run();
                          },
                          weak_factory_.GetWeakPtr(), std::move(on_accepted)));
-    } else {
-      is_screenshare_disclosure_open_ = false;
     }
   } else {
-    is_screenshare_disclosure_open_ = false;
     if (on_cancelled) {
       std::move(on_cancelled).Run();
     }
-    if (widget_ && !widget_->IsClosed() && !is_screenshare_picker_open_ &&
+    if (widget_ && !widget_->IsClosed() &&
+        !open_modals_.Has(Modal::kScreensharePicker) &&
         !region_select_overlay_) {
       ActivateAndFocus();
     }
@@ -1423,8 +1399,17 @@ void OmniboxEverywhereUIManager::OnRegionSelectOverlayClosed(
   std::move(callback).Run(result_bitmap);
 }
 
+void OmniboxEverywhereUIManager::SetModalOpen(Modal modal, bool open) {
+  open_modals_.PutOrRemove(modal, open);
+  UpdateModalInteractionState();
+}
+
 void OmniboxEverywhereUIManager::UpdateModalInteractionState() {
-  if (HasOpenModalDialog()) {
+  // Unlike external modal dialogs, the hotkey dropdown is rendered inside the
+  // WebUI and requires input events to remain enabled.
+  ModalSet input_blocking_modals = open_modals_;
+  input_blocking_modals.Remove(Modal::kHotkeyDropdown);
+  if (!input_blocking_modals.empty() || region_select_overlay_ != nullptr) {
     if (!scoped_ignore_input_events_ && web_contents()) {
       scoped_ignore_input_events_ =
           web_contents()->IgnoreInputEvents(std::nullopt);

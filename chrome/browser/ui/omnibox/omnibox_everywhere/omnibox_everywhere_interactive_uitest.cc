@@ -1383,8 +1383,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereAimEligibleBrowserTest,
       WaitForState(kScreenshotDisclosureAcceptedState, true), Check([&]() {
         return !controller->ui_manager()
                     ->disclosure_dialog_widget_for_testing() &&
-               !controller->ui_manager()
-                    ->is_screenshare_disclosure_open_for_testing();
+               !controller->ui_manager()->IsModalOpenForTesting(
+                   OmniboxEverywhereUIManager::Modal::kScreenshareDisclosure);
       }),
       // Dismiss the screenshare picker dialog that opened upon accepting
       // disclosure.

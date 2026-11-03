@@ -101,6 +101,8 @@ namespace omnibox_everywhere {
 
 namespace {
 
+using Modal = OmniboxEverywhereUIManager::Modal;
+
 class ScopedScreenOverride {
  public:
   explicit ScopedScreenOverride(display::Screen* new_screen)
@@ -668,15 +670,15 @@ TEST_F(OmniboxEverywhereUIManagerTest, FileChooserStateTracking) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->web_contents());
 
-  EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnFileChooserOpened();
-  EXPECT_TRUE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
   EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnFileChooserClosed();
-  EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
@@ -1326,7 +1328,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringFileChooser) {
 
   // Mark file chooser as open.
   ui_manager->OnFileChooserOpened();
-  EXPECT_TRUE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
 
   // Simulating deactivation while a file chooser is open should NOT close the
   // widget.
@@ -1394,8 +1396,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShutdownSynchronouslyDestroysResources) {
   EXPECT_FALSE(ui_manager->widget());
   EXPECT_FALSE(ui_manager->contents_wrapper_for_testing());
   EXPECT_EQ(ui_manager->profile(), nullptr);
-  EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
-  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kFileChooser));
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1484,15 +1486,15 @@ TEST_F(OmniboxEverywhereUIManagerTest, DrivePickerStateTracking) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->web_contents());
 
-  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kDrivePicker));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnDrivePickerOpened();
-  EXPECT_TRUE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kDrivePicker));
   EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnDrivePickerClosed();
-  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kDrivePicker));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
@@ -1510,7 +1512,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringDrivePicker) {
 
   // Mark drive picker as open.
   ui_manager->OnDrivePickerOpened();
-  EXPECT_TRUE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kDrivePicker));
 
   // Simulating deactivation while drive picker is open should NOT close the
   // widget.
@@ -1563,7 +1565,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->Close();
 
   EXPECT_FALSE(ui_manager->widget());
-  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kDrivePicker));
   EXPECT_EQ(ui_manager->contents_wrapper_for_testing(), contents_wrapper);
   EXPECT_EQ(ui_manager->web_contents(), web_contents);
   EXPECT_FALSE(web_contents->ShouldIgnoreInputEventsForTesting());
@@ -2469,17 +2471,17 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreensharePickerStateTracking) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->web_contents());
 
-  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnScreensharePickerOpened();
-  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnScreensharePickerClosed();
-  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
@@ -2492,12 +2494,12 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_TRUE(ui_manager->widget()->IsVisible());
 
   ui_manager->OnScreensharePickerOpened();
-  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(ui_manager->widget()->IsVisible());
 
   EXPECT_TRUE(ui_manager->CancelChromeDefaultPicker());
-  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_TRUE(ui_manager->widget()->IsVisible());
 }
@@ -2522,14 +2524,14 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_TRUE(ui_manager->widget()->IsVisible());
 
   ui_manager->OnScreensharePickerOpened();
-  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_TRUE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(ui_manager->widget()->IsVisible());
 
   // When invoked for a different profile, the picker is cancelled but the old
   // profile's widget is not restored/focused (preventing visual flicker).
   EXPECT_TRUE(ui_manager->CancelChromeDefaultPicker(&other_profile));
-  EXPECT_FALSE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_FALSE(ui_manager->IsScreenshareCaptureInProgress());
   EXPECT_FALSE(ui_manager->widget()->IsVisible());
 }
@@ -2549,7 +2551,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringScreensharePicker) {
   // Mark screenshare picker as open. Opening the screenshare picker hides the
   // widget to prevent it from obstructing screen capture.
   ui_manager->OnScreensharePickerOpened();
-  EXPECT_TRUE(ui_manager->is_screenshare_picker_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreensharePicker));
   EXPECT_FALSE(widget->IsVisible());
 
   // Simulating deactivation while screenshare picker is open should NOT destroy
@@ -2589,7 +2591,7 @@ TEST_F(OmniboxEverywhereUIManagerTest,
 
   // Show screenshare disclosure dialog.
   ui_manager->ShowScreenshotDisclosureDialog(base::DoNothing());
-  EXPECT_TRUE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreenshareDisclosure));
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
@@ -2636,7 +2638,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_AcceptFlow) {
 
   EXPECT_TRUE(accepted_future.Wait());
   EXPECT_FALSE(cancelled_future.IsReady());
-  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_FALSE(
+      ui_manager->IsModalOpenForTesting(Modal::kScreenshareDisclosure));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
@@ -2657,7 +2660,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
   views::Widget* disclosure_widget =
       ui_manager->disclosure_dialog_widget_for_testing();
   ASSERT_TRUE(disclosure_widget);
-  EXPECT_TRUE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kScreenshareDisclosure));
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
   EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
   EXPECT_EQ(disclosure_widget->GetZOrderLevel(), widget->GetZOrderLevel());
@@ -2671,7 +2674,8 @@ TEST_F(OmniboxEverywhereUIManagerTest, ScreenshareDisclosure_CancelFlow) {
 
   EXPECT_FALSE(accepted_future.IsReady());
   EXPECT_TRUE(cancelled_future.Wait());
-  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_FALSE(
+      ui_manager->IsModalOpenForTesting(Modal::kScreenshareDisclosure));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
@@ -2695,7 +2699,8 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   EXPECT_FALSE(cancelled);
   EXPECT_FALSE(ui_manager->widget());
   EXPECT_FALSE(ui_manager->disclosure_dialog_widget_for_testing());
-  EXPECT_FALSE(ui_manager->is_screenshare_disclosure_open_for_testing());
+  EXPECT_FALSE(
+      ui_manager->IsModalOpenForTesting(Modal::kScreenshareDisclosure));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
@@ -3272,16 +3277,16 @@ TEST_F(OmniboxEverywhereUIManagerTest, PermissionPromptStateTracking) {
   ui_manager->ShowForProfile(&profile_, GetContext());
   ASSERT_TRUE(ui_manager->web_contents());
 
-  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
                                         gfx::Size(100, 100));
-  EXPECT_TRUE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
   EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
-  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
   EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
@@ -3313,7 +3318,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringPermissionPrompt) {
   // Mark permission prompt as showing.
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
                                         gfx::Size(100, 100));
-  EXPECT_TRUE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
 
   // Simulating deactivation while permission prompt is open should NOT close
@@ -3325,7 +3330,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringPermissionPrompt) {
   // Mark permission prompt as closed and simulate deactivation after grace
   // period.
   ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
-  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kPermissionPrompt));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 
   task_environment()->FastForwardBy(
@@ -3339,15 +3344,29 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringPermissionPrompt) {
 
 TEST_F(OmniboxEverywhereUIManagerTest, HotkeyDropdownStateTracking) {
   auto ui_manager = CreateUIManager();
-  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->web_contents());
+
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnHotkeyDropdownOpened();
-  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
+
+  // Closing another modal while the hotkey dropdown is open must release
+  // input-blocking while keeping HasOpenModalDialog() true.
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
+                                        gfx::Size(100, 100));
+  EXPECT_TRUE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+  EXPECT_FALSE(ui_manager->web_contents()->ShouldIgnoreInputEventsForTesting());
 
   ui_manager->OnHotkeyDropdownClosed();
-  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 }
 
@@ -3365,7 +3384,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
 
   // Mark hotkey dropdown as open.
   ui_manager->OnHotkeyDropdownOpened();
-  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
   EXPECT_TRUE(ui_manager->HasOpenModalDialog());
 
   // Simulating deactivation while hotkey dropdown is open should NOT close
@@ -3376,7 +3395,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
 
   // Closing hotkey dropdown posts a deactivation check.
   ui_manager->OnHotkeyDropdownClosed();
-  EXPECT_FALSE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_FALSE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
   EXPECT_TRUE(
       ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
@@ -3385,7 +3404,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringHotkeyDropdown) {
   ui_manager->OnHotkeyDropdownOpened();
   EXPECT_FALSE(
       ui_manager->is_hotkey_dropdown_deactivation_task_pending_for_testing());
-  EXPECT_TRUE(ui_manager->is_hotkey_dropdown_open_for_testing());
+  EXPECT_TRUE(ui_manager->IsModalOpenForTesting(Modal::kHotkeyDropdown));
 
   // Close it again, verify the pending task is scheduled, and run it.
   ui_manager->OnHotkeyDropdownClosed();
