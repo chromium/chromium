@@ -38,10 +38,10 @@ constexpr std::string_view kWallpaperSearchHistoryMood = "mood";
 constexpr std::string_view kWallpaperSearchHistoryStyle = "style";
 constexpr std::string_view kWallpaperSearchHistorySubject = "subject";
 
-void DeleteWallpaperSearchImage(std::string_view id,
+void DeleteWallpaperSearchImage(const base::Token& id,
                                 const base::FilePath& profile_path) {
   base::FilePath path = profile_path.AppendASCII(base::StrCat(
-      {id, chrome::kChromeUIUntrustedNewTabPageBackgroundFilename}));
+      {id.ToString(), chrome::kChromeUIUntrustedNewTabPageBackgroundFilename}));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::GetDeleteFileCallback(path));
@@ -110,24 +110,26 @@ void WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
   auto* pref_service = profile->GetPrefs();
   const std::string& local_background_id =
       pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId);
-  if (!local_background_id.empty()) {
-    const auto& history =
-        pref_service->GetList(prefs::kNtpWallpaperSearchHistory);
-    std::optional<base::Token> local_background_token =
-        base::Token::FromString(local_background_id);
-    // If it is not in history, we delete its file. Otherwise, we leave
-    // the file there for history to use.
-    bool found = false;
-    for (const base::Value& entry : history) {
-      const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
-      if (entry_obj.has_value() && entry_obj->id == local_background_token) {
-        found = true;
-        break;
-      }
+  std::optional<base::Token> local_background_token =
+      base::Token::FromString(local_background_id);
+  if (!local_background_token.has_value()) {
+    return;
+  }
+
+  const auto& history =
+      pref_service->GetList(prefs::kNtpWallpaperSearchHistory);
+  // If it is not in history, we delete its file. Otherwise, we leave
+  // the file there for history to use.
+  bool found = false;
+  for (const base::Value& entry : history) {
+    const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
+    if (entry_obj.has_value() && entry_obj->id == *local_background_token) {
+      found = true;
+      break;
     }
-    if (!found) {
-      DeleteWallpaperSearchImage(local_background_id, profile->GetPath());
-    }
+  }
+  if (!found) {
+    DeleteWallpaperSearchImage(*local_background_token, profile->GetPath());
   }
 }
 
@@ -138,7 +140,7 @@ void WallpaperSearchBackgroundManager::ResetProfilePrefs(Profile* profile) {
        pref_service->GetList(prefs::kNtpWallpaperSearchHistory)) {
     const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
     if (entry_obj.has_value()) {
-      DeleteWallpaperSearchImage(entry_obj->id.ToString(), profile->GetPath());
+      DeleteWallpaperSearchImage(entry_obj->id, profile->GetPath());
     }
   }
   pref_service->ClearPref(prefs::kNtpWallpaperSearchHistory);
@@ -266,8 +268,7 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
         if (value_obj.value() != history_entry) {
           if (new_history.size() >= 6) {
             // Delete values that will no longer be in the history.
-            DeleteWallpaperSearchImage(value_obj->id.ToString(),
-                                       profile_->GetPath());
+            DeleteWallpaperSearchImage(value_obj->id, profile_->GetPath());
           } else {
             new_history.Append(GetHistoryEntryDict(value_obj.value()));
           }

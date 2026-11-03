@@ -4,11 +4,16 @@
 
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 
+#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -605,6 +610,77 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
 
   // The theme file created above should now be gone.
   EXPECT_FALSE(base::PathExists(GetFilePathForBackground(token)));
+}
+
+// Test that invalid or path-traversing local background IDs are ignored and
+// never delete arbitrary files inside or outside the profile directory.
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       RemoveWallpaperSearchBackground_InvalidIdDoesNotDeleteFiles) {
+  base::ScopedTempDir outer_dir;
+  ASSERT_TRUE(outer_dir.CreateUniqueTempDir());
+  const base::FilePath nested_profile_path =
+      outer_dir.GetPath().AppendASCII("Profile 1");
+  ASSERT_TRUE(base::CreateDirectory(nested_profile_path));
+
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetPath(nested_profile_path);
+  std::unique_ptr<TestingProfile> nested_profile = profile_builder.Build();
+
+  const base::FilePath outside_victim =
+      outer_dir.GetPath().AppendASCII("outside_victim");
+  const base::FilePath outside_suffixed_victim =
+      outer_dir.GetPath().AppendASCII(
+          std::string("outside_") +
+          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  const base::FilePath inside_victim =
+      nested_profile_path.AppendASCII("inside_victim");
+  const base::FilePath inside_suffixed_victim = nested_profile_path.AppendASCII(
+      std::string("not_a_token_") +
+      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  const base::Token history_token = base::Token::CreateRandom();
+  const base::FilePath history_image_path = nested_profile_path.AppendASCII(
+      history_token.ToString() +
+      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  ASSERT_TRUE(base::WriteFile(outside_victim, "hi"));
+  ASSERT_TRUE(base::WriteFile(outside_suffixed_victim, "hi"));
+  ASSERT_TRUE(base::WriteFile(inside_victim, "hi"));
+  ASSERT_TRUE(base::WriteFile(inside_suffixed_victim, "hi"));
+  ASSERT_TRUE(base::WriteFile(history_image_path, "hi"));
+
+  nested_profile->GetPrefs()->SetList(
+      prefs::kNtpWallpaperSearchHistory,
+      base::ListValue().Append(base::DictValue().Set(
+          kWallpaperSearchHistoryId, history_token.ToString())));
+
+  const std::vector<std::string> invalid_ids = {
+      std::string("../outside_victim") + '\0',
+      "../outside_",
+      std::string("..\\outside_victim") + '\0',
+      "..\\outside_",
+      "../0123456789ABCDEF0123456789ABC",
+      std::string("inside_victim") + '\0',
+      "not_a_token_",
+      "\xc3\xa9",
+      outside_victim.AsUTF8Unsafe() + '\0',
+      base::ToLowerASCII(history_token.ToString()),
+      history_token.ToString() +
+          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename + '\0',
+  };
+  for (const std::string& invalid_id : invalid_ids) {
+    nested_profile->GetPrefs()->SetString(
+        prefs::kNtpCustomBackgroundLocalToDeviceId, invalid_id);
+    WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
+        nested_profile.get());
+  }
+  base::RunLoop run_loop;
+  base::ThreadPoolInstance::Get()->FlushAsyncForTesting(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(base::PathExists(outside_victim));
+  EXPECT_TRUE(base::PathExists(outside_suffixed_victim));
+  EXPECT_TRUE(base::PathExists(inside_victim));
+  EXPECT_TRUE(base::PathExists(inside_suffixed_victim));
+  EXPECT_TRUE(base::PathExists(history_image_path));
 }
 
 // Test that a wallpaper search background is not removed if it is in history
