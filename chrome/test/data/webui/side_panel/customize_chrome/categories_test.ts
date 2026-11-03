@@ -285,11 +285,35 @@ suite('CategoriesTest', () => {
             1, metrics.count('NTPRicherPicker.Backgrounds.UploadClicked'));
       });
 
-  test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
-    await setInitialSettings({numCollections: 0});
+  suite('ChromeWebStoreThemesEnabled', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        chromeWebStoreThemesEnabled: true,
+      });
+    });
 
-    categoriesElement.$.chromeWebStoreTile.click();
-    assertEquals(1, handler.getCallCount('openChromeWebStore'));
+    test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {
+      await setInitialSettings({numCollections: 0});
+
+      const tile = $$<HTMLElement>(categoriesElement, '#chromeWebStoreTile');
+      assertTrue(!!tile);
+      tile.click();
+      assertEquals(1, handler.getCallCount('openChromeWebStore'));
+    });
+  });
+
+  suite('ChromeWebStoreThemesDisabled', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        chromeWebStoreThemesEnabled: false,
+      });
+    });
+
+    test('Chrome Web Store tile is not shown', async () => {
+      await setInitialSettings({numCollections: 0});
+
+      assertFalse(!!$$(categoriesElement, '#chromeWebStoreTile'));
+    });
   });
 
   test('checks selected category', async () => {

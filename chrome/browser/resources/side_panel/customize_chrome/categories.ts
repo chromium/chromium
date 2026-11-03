@@ -50,7 +50,6 @@ const CategoriesElementBase = I18nMixinLit(HelpBubbleMixinLit(CrLitElement));
 
 export interface CategoriesElement {
   $: {
-    chromeWebStoreTile: HTMLElement,
     classicChromeTile: HTMLElement,
     heading: SpHeadingElement,
     uploadImageTile: HTMLElement,
@@ -79,6 +78,7 @@ export class CategoriesElement extends CategoriesElementBase {
       isLocalImageSelected_: {type: Boolean},
       isWallpaperSearchSelected_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
+      chromeWebStoreThemesEnabled_: {type: Boolean},
     };
   }
 
@@ -91,6 +91,8 @@ export class CategoriesElement extends CategoriesElementBase {
   protected accessor isWallpaperSearchSelected_: boolean = false;
   protected accessor wallpaperSearchEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchEnabled');
+  protected accessor chromeWebStoreThemesEnabled_: boolean =
+      loadTimeData.getBoolean('chromeWebStoreThemesEnabled');
   protected imageErrorDetectionEnabled_: boolean =
       loadTimeData.getBoolean('imageErrorDetectionEnabled');
 

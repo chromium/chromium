@@ -304,6 +304,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                      ntp_features::kNtpNextDisablementParam.Get());
   source->AddBoolean("wallpaperSearchEnabled", wallpaper_search_enabled);
   source->AddBoolean("toolbarCustomizationEnabled", !BUILDFLAG(IS_ANDROID));
+  // Chrome Web Store themes are extension themes, which aren't supported on
+  // Android.
+  source->AddBoolean("chromeWebStoreThemesEnabled", !BUILDFLAG(IS_ANDROID));
   source->AddBoolean(
       "wallpaperSearchInspirationCardEnabled",
       wallpaper_search_enabled &&

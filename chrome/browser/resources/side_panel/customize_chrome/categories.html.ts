@@ -69,16 +69,18 @@ export function getHtml(this: CategoriesElement) {
         <div class="label">${item.label}</div>
       </div>
     `)}
-    <div class="tile" tabindex="0" role="button"
-        @click="${this.onChromeWebStoreClick_}" id="chromeWebStoreTile">
-      <div class="image-container">
-        <img id="chromeWebStore" src="icons/chrome_web_store.svg">
+    ${this.chromeWebStoreThemesEnabled_ ? html`
+      <div class="tile" tabindex="0" role="button"
+          @click="${this.onChromeWebStoreClick_}" id="chromeWebStoreTile">
+        <div class="image-container">
+          <img id="chromeWebStore" src="icons/chrome_web_store.svg">
+        </div>
+        <div class="label">
+          <div class="cr-icon icon-external"></div>
+          $i18n{chromeWebStore}
+        </div>
       </div>
-      <div class="label">
-        <div class="cr-icon icon-external"></div>
-        $i18n{chromeWebStore}
-      </div>
-    </div>
+    ` : ''}
   </cr-grid>
 </div>
 <!--_html_template_end_-->`;

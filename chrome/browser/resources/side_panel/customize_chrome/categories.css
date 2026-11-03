@@ -18,6 +18,7 @@ sp-heading {
 cr-grid {
   --cr-column-width: 1fr;
   --cr-grid-gap: var(--customize-chrome-grid-gap);
+  --cr-grid-width: 100%;
   display: block;
   padding: 0 var(--sp-card-inline-padding) 16px;
 }
