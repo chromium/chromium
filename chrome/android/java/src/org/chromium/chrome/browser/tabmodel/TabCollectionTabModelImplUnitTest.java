@@ -20,6 +20,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,8 +56,11 @@ import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCaus
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link TabCollectionTabModelImpl}. More substantive tests are in {@link
@@ -833,6 +837,103 @@ public class TabCollectionTabModelImplUnitTest {
         assertFalse(newTabModel.getTabAt(0).isDestroyed());
 
         newTabModel.destroy();
+    }
+
+    @Test
+    public void testSetTabsMultiSelected_Add() {
+        addTabsAndResetObserver(/* count= */ 4);
+
+        Set<Integer> tabsToAdd = new HashSet<>(Arrays.asList(1, 2, 3));
+        mTabModel.setTabsMultiSelected(tabsToAdd, /* isSelected= */ true);
+
+        for (int tabId : tabsToAdd) {
+            assertTrue(mTabModel.isTabMultiSelected(tabId));
+        }
+        assertFalse(mTabModel.isTabMultiSelected(4));
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testSetTabsMultiSelected_Remove() {
+        addTabsAndResetObserver(/* count= */ 4);
+        mTabModel.setTabsMultiSelected(
+                new HashSet<>(Arrays.asList(1, 2, 3, 4)), /* isSelected= */ true);
+        reset(mTabModelObserver);
+
+        mTabModel.setTabsMultiSelected(new HashSet<>(Arrays.asList(2, 4)), /* isSelected= */ false);
+
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertFalse(mTabModel.isTabMultiSelected(4));
+        assertTrue(mTabModel.isTabMultiSelected(1));
+        assertTrue(mTabModel.isTabMultiSelected(3));
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testClearMultiSelection_WithNotification() {
+        addTabsAndResetObserver(/* count= */ 4);
+        mTabModel.setTabsMultiSelected(
+                new HashSet<>(Arrays.asList(1, 2, 3)), /* isSelected= */ true);
+        reset(mTabModelObserver);
+
+        mTabModel.clearMultiSelection(/* notifyObservers= */ true);
+
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertFalse(mTabModel.isTabMultiSelected(3));
+        verify(mTabModelObserver, times(1)).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testClearMultiSelection_WithoutNotification() {
+        addTabsAndResetObserver(/* count= */ 4);
+        mTabModel.setTabsMultiSelected(
+                new HashSet<>(Arrays.asList(1, 2, 3)), /* isSelected= */ true);
+        reset(mTabModelObserver);
+
+        mTabModel.clearMultiSelection(/* notifyObservers= */ false);
+
+        assertFalse(mTabModel.isTabMultiSelected(2));
+        assertFalse(mTabModel.isTabMultiSelected(3));
+        verify(mTabModelObserver, never()).onTabsSelectionChanged();
+    }
+
+    @Test
+    public void testIsTabMultiSelected() {
+        // The first tab added becomes the active tab.
+        addTabsAndResetObserver(/* count= */ 3);
+        int currentTabId = mTabModel.getCurrentTabSupplier().get().getId();
+        int otherSelectedTabId = 2;
+        int unselectedTabId = 3;
+        assertTrue(
+                "The active tab should always be considered selected.",
+                mTabModel.isTabMultiSelected(currentTabId));
+        mTabModel.setTabsMultiSelected(
+                new HashSet<>(Arrays.asList(currentTabId, otherSelectedTabId)),
+                /* isSelected= */ true);
+
+        assertTrue(
+                "Tab explicitly added to the set should be selected.",
+                mTabModel.isTabMultiSelected(otherSelectedTabId));
+        assertTrue(
+                "The active tab should always be considered selected.",
+                mTabModel.isTabMultiSelected(currentTabId));
+        assertFalse(
+                "A tab not in the set and not active should not be selected.",
+                mTabModel.isTabMultiSelected(unselectedTabId));
+    }
+
+    private void addTabsAndResetObserver(int count) {
+        for (int i = 1; i <= count; i++) {
+            MockTab tab = createMockTab(i, mProfile);
+            tab.setIsInitialized(/* isInitialized= */ true);
+            mTabModel.addTab(
+                    tab,
+                    /* index= */ i - 1,
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabCreationState.LIVE_IN_FOREGROUND);
+            verifyBatchedAndReset();
+        }
+        reset(mTabModelObserver);
     }
 
     private void verifyBatchedAndReset() {

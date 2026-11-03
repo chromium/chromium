@@ -763,8 +763,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public void setTabsMultiSelected(Set<Integer> tabIds, boolean isSelected) {
         assertOnUiThread();
-        TabModelImplUtil.setTabsMultiSelected(
-                tabIds, isSelected, mMultiSelectedTabs, mTabModelObservers);
+        if (isSelected) {
+            mMultiSelectedTabs.addAll(tabIds);
+        } else {
+            mMultiSelectedTabs.removeAll(tabIds);
+        }
+        for (TabModelObserver obs : mTabModelObservers) {
+            obs.onTabsSelectionChanged();
+        }
         assert mMultiSelectedTabs.isEmpty()
                         || TabModelUtils.getCurrentTabId(this) == Tab.INVALID_TAB_ID
                         || mMultiSelectedTabs.contains(TabModelUtils.getCurrentTabId(this))
@@ -775,14 +781,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public void clearMultiSelection(boolean notifyObservers) {
         assertOnUiThread();
-        TabModelImplUtil.clearMultiSelection(
-                notifyObservers, mMultiSelectedTabs, mTabModelObservers);
+        if (mMultiSelectedTabs.isEmpty()) return;
+        mMultiSelectedTabs.clear();
+        if (notifyObservers) {
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.onTabsSelectionChanged();
+            }
+        }
     }
 
     @Override
     public boolean isTabMultiSelected(int tabId) {
         assertOnUiThread();
-        return TabModelImplUtil.isTabMultiSelected(tabId, mMultiSelectedTabs, this);
+        // A tab is selected if it is either the active tab or explicitly multi-selected.
+        return mMultiSelectedTabs.contains(tabId) || tabId == TabModelUtils.getCurrentTabId(this);
     }
 
     @Override
