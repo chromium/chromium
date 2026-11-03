@@ -332,8 +332,7 @@ class UkmBrowserTest : public UkmBrowserTestBase {
 // This tests if UKM service is enabled/disabled appropriately based on an
 // input bool param. The bool reflects if metrics reporting state is
 // enabled/disabled via prefs.
-#if !BUILDFLAG(IS_ANDROID)
-class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
+class UkmConsentParamBrowserTest : public UkmBrowserTest,
                                    public testing::WithParamInterface<bool> {
  public:
   UkmConsentParamBrowserTest() = default;
@@ -346,7 +345,7 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
     return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   }
 
-  // InProcessBrowserTest overrides.
+  // PlatformBrowserTest:
   bool SetUpUserDataDirectory() override {
     local_state_path_ = SetUpUserDataDirectoryForTesting(
         is_metrics_reporting_enabled_initial_value());
@@ -354,7 +353,7 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-    UkmBrowserTestBase::CreatedBrowserMainParts(parts);
+    UkmBrowserTest::CreatedBrowserMainParts(parts);
     // IsMetricsReportingEnabled() in non-official builds always returns false.
     // Enable the official build checks so that this test can work in both
     // official and non-official builds.
@@ -362,12 +361,25 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
         true);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void PreRunTestOnMainThread() override {
+    UkmBrowserTest::PreRunTestOnMainThread();
+    // On Android, ChromeBrowserTestsActivity::finishNativeInitialization()
+    // syncs SharedPreferences (default false) over Local State during startup.
+    // Re-apply the test parameter to Local State and refresh upload
+    // permissions before running the test body.
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kMetricsReportingEnabled,
+        is_metrics_reporting_enabled_initial_value());
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   bool is_metrics_reporting_enabled_initial_value() const { return GetParam(); }
 
  private:
   base::FilePath local_state_path_;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test the reporting of the synced user's birth year and gender.
 class UkmBrowserTestWithDemographics
@@ -1222,7 +1234,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotEnabledForNonSyncingAccountSync) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(UkmConsentParamBrowserTest, GroupPolicyConsentCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   // Note we are not using the synthetic MetricsConsentOverride since we are
@@ -1232,7 +1243,7 @@ IN_PROC_BROWSER_TEST_P(UkmConsentParamBrowserTest, GroupPolicyConsentCheck) {
   std::unique_ptr<SyncServiceImplHarness> harness =
       EnableSyncForProfile(profile);
 
-  BrowserWindowInterface* sync_browser = CreateBrowser(profile);
+  PlatformBrowser sync_browser = CreatePlatformBrowser(profile);
 
   // The input param controls whether we set the prefs related to group policy
   // enabled or not. Based on its value, we should report the same value for
@@ -1242,15 +1253,13 @@ IN_PROC_BROWSER_TEST_P(UkmConsentParamBrowserTest, GroupPolicyConsentCheck) {
             UkmConsentParamBrowserTest::IsMetricsAndCrashReportingEnabled());
   EXPECT_EQ(is_enabled, ukm_test_helper.IsRecordingEnabled());
 
-  CloseBrowserSynchronously(sync_browser);
+  ClosePlatformBrowser(sync_browser);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
 // Verify UKM is enabled/disabled for both potential settings of group policy.
 INSTANTIATE_TEST_SUITE_P(UkmConsentParamBrowserTests,
-                         UkmConsentParamBrowserTest, testing::Bool());
-#endif  // !BUILDFLAG(IS_ANDROID)
+                         UkmConsentParamBrowserTest,
+                         testing::Bool());
 
 // Verify that sources kept alive in-memory will be discarded by UKM service in
 // one reporting cycle after the web contents are destroyed when the tab is
