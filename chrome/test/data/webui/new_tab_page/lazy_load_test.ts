@@ -80,7 +80,9 @@ const LAZY_ELEMENTS = [
   'cr-composebox-tool-chip',
   'cr-composebox-voice-search',
   'cr-dialog',
+  // <if expr="not is_official_build">
   'cr-grid',
+  // </if>
   'cr-input',
   'cr-most-visited',
   'cr-page-selector',
