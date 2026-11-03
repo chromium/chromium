@@ -10596,12 +10596,20 @@ should be able to be added at any place in this file.
     <variant name=".OpenThreadHistory"
         summary="The user opened the thread history."/>
     <variant name=".PinSidePanel" summary="The user pinned the side panel."/>
+    <variant name=".PinSidePanel.AiPage"
+        summary="The user pinned the side panel while on the AI page."/>
+    <variant name=".PinSidePanel.Srp"
+        summary="The user pinned the side panel while on the SRP."/>
     <variant name=".SignOutFromAccountMenu"
         summary="The user clicked the sign out item in the account menu."/>
     <variant name=".TabFromSourcesMenuClicked"
         summary="The user clicked on a tab from the sources menu."/>
     <variant name=".UnpinSidePanel"
         summary="The user unpinned the side panel."/>
+    <variant name=".UnpinSidePanel.AiPage"
+        summary="The user unpinned the side panel while on the AI page."/>
+    <variant name=".UnpinSidePanel.Srp"
+        summary="The user unpinned the side panel while on the SRP."/>
   </token>
 </action>
 

@@ -168,9 +168,17 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
     this.isPinned = !this.isPinned;
     if (this.isPinned) {
       recordAction('ContextualTasks.WebUI.UserAction.PinSidePanel');
+      recordAction(
+          this.isAiPage ?
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.AiPage' :
+              'ContextualTasks.WebUI.UserAction.PinSidePanel.Srp');
       this.toolbarBrowserProxy_.handler.pinSidePanel();
     } else {
       recordAction('ContextualTasks.WebUI.UserAction.UnpinSidePanel');
+      recordAction(
+          this.isAiPage ?
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.AiPage' :
+              'ContextualTasks.WebUI.UserAction.UnpinSidePanel.Srp');
       this.toolbarBrowserProxy_.handler.unpinSidePanel();
     }
     this.dispatchEvent(new CustomEvent('pin-click'));
