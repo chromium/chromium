@@ -59,9 +59,30 @@ export const ToolbarActionMixin =
         highlightTracker: HighlightTracker = new HighlightTracker();
 
         private registerHelpBubbleController_: AbortController|null = null;
+        // Set when HelpBubbleMixin has dropped this element's help bubble
+        // registrations due to a disconnect, and they must be re-registered
+        // when the element is re-attached.
+        private needsReregistrationOnConnect_: boolean = false;
+
+        override connectedCallback() {
+          super.connectedCallback();
+          if (this.needsReregistrationOnConnect_) {
+            this.needsReregistrationOnConnect_ = false;
+            this.abortPendingRegistration_();
+            const id = this.state ? this.getElementId(this.state) : undefined;
+            if (id) {
+              this.registerHelpBubble_(id);
+            }
+          }
+        }
 
         override disconnectedCallback() {
           super.disconnectedCallback();
+          this.abortPendingRegistration_();
+          this.needsReregistrationOnConnect_ = true;
+        }
+
+        private abortPendingRegistration_() {
           if (this.registerHelpBubbleController_) {
             this.registerHelpBubbleController_.abort();
             this.registerHelpBubbleController_ = null;
@@ -78,10 +99,7 @@ export const ToolbarActionMixin =
                 this.state ? this.getElementId(this.state) : undefined;
 
             if (oldId !== newId) {
-              if (this.registerHelpBubbleController_) {
-                this.registerHelpBubbleController_.abort();
-                this.registerHelpBubbleController_ = null;
-              }
+              this.abortPendingRegistration_();
               if (oldId) {
                 this.unregisterHelpBubble(oldId);
               }
@@ -109,6 +127,7 @@ export const ToolbarActionMixin =
         }
 
         private async registerHelpBubble_(newId: string) {
+          this.needsReregistrationOnConnect_ = false;
           this.registerHelpBubbleController_ = new AbortController();
           const signal = this.registerHelpBubbleController_.signal;
 

@@ -16,6 +16,7 @@ export function getHtml(this: LocationIconElement) {
   return html`<!--_html_template_start_-->
 <toolbar-chip-button id="button" has-label outset-focus-ring
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
+    ?is-menu-open="${this.trackedHighlighted}"
     ?disable-hover-highlight="${!this.clickable}"
     ?disable-pressed-highlight="${!this.clickable || this.glowUpActive}"
     .buttonTabIndex="${this.clickable ? 0 : -1}"

@@ -16,7 +16,6 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import {TimerHelper} from '/shared/timer_helper.js';
-import {HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import {LhsChipIdentifier, SecurityChipRole, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -24,6 +23,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
 import {getHtml} from './location_icon.html.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
+import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface LocationIconElement {
@@ -32,7 +32,23 @@ export interface LocationIconElement {
   };
 }
 
-const LocationIconElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const initialState: SecurityChipState = {
+  icon: {handleId: 0n},
+  securityLevel: 0,
+  text: '',
+  tooltip: '',
+  accessibilityState: {
+    role: SecurityChipRole.kButton,
+    label: '',
+    description: '',
+  },
+  isClickable: false,
+  isTextDangerous: false,
+  isVisible: true,
+  isContextMenuVisible: false,
+};
+
+const LocationIconElementBase = ToolbarActionMixin(CrLitElement, initialState);
 
 export class LocationIconElement extends LocationIconElementBase {
   static get is() {
@@ -49,7 +65,6 @@ export class LocationIconElement extends LocationIconElementBase {
 
   static override get properties() {
     return {
-      state: {type: Object},
       clickable: {
         type: Boolean,
         reflect: true,
@@ -79,22 +94,6 @@ export class LocationIconElement extends LocationIconElementBase {
     };
   }
 
-  accessor state: SecurityChipState = {
-    icon: {handleId: 0n},
-    securityLevel: 0,
-    text: '',
-    tooltip: '',
-    accessibilityState: {
-      role: SecurityChipRole.kButton,
-      label: '',
-      description: '',
-    },
-    isClickable: false,
-    isTextDangerous: false,
-    isVisible: true,
-    isContextMenuVisible: false,
-  };
-
   accessor clickable: boolean = false;
 
   // True when the SecurityLevel is kDangerous (e.g. expired cert). The text
@@ -122,37 +121,15 @@ export class LocationIconElement extends LocationIconElementBase {
   private animationTimer_: TimerHelper = new TimerHelper();
   private isSecureIcon_: boolean = false;
 
-  // TODO(crbug.com/575229109): Use ToolbarActionMixin, like
-  // content-setting-icon and page-action-icon, once it registers help bubbles
-  // again when the element is re-attached. It currently only registers when
-  // getElementId() changes, while HelpBubbleMixin unregisters everything on
-  // disconnect.
-  override connectedCallback() {
-    super.connectedCallback();
-    this.registerHelpBubble('kLocationIconElementId', this, {
-      onHighlightChanged: (highlighted: boolean) => {
-        // Manually toggle the DOM attribute on the inner chip to bypass Lit's
-        // asynchronous update batching, ensuring the style updates
-        // synchronously without a 1-frame tear against the fast native IPCs.
-        this.$.button.toggleAttribute('is-menu-open', highlighted);
-      },
-      // Forwards the IPH pulse highlight to the inner toolbar-chip-button,
-      // whose shadow root hosts the .iph-visual-target element.
-      onHelpBubbleShown: () => {
-        this.hasHelpBubble = true;
-      },
-      onHelpBubbleHidden: () => {
-        this.hasHelpBubble = false;
-      },
-    });
-  }
-
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.unregisterHelpBubble('kLocationIconElementId');
     this.eventTracker_.removeAll();
     this.animationTimer_.clearTimeout();
     this.isAnimating_ = false;
+  }
+
+  override getElementId(_state: SecurityChipState): string {
+    return 'kLocationIconElementId';
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

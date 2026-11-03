@@ -157,6 +157,31 @@ suite('ToolbarActionMixinTest', function() {
     assertEquals(element, stopTrackingCalls[0]);
   });
 
+  test('ReregistersOnReattach', async function() {
+    element.state = {id: 'action-1'};
+    await microtasksFinished();
+    assertEquals(1, element.registerCalls.length);
+    assertEquals(1, startTrackingCalls.length);
+
+    element.remove();
+    assertEquals(1, stopTrackingCalls.length);
+
+    document.body.appendChild(element);
+    await microtasksFinished();
+    assertEquals(2, element.registerCalls.length);
+    assertEquals('action-1', element.registerCalls[1]![0]);
+    assertEquals(2, startTrackingCalls.length);
+    assertEquals(element, startTrackingCalls[1]![0]);
+    assertEquals('action-1', startTrackingCalls[1]![1]);
+  });
+
+  test('DoesNotRegisterOnReattachWithoutId', async function() {
+    element.remove();
+    document.body.appendChild(element);
+    await microtasksFinished();
+    assertEquals(0, element.registerCalls.length);
+  });
+
   test('WaitsForFiniteAnimationsBeforeRegistering', async function() {
     const animation =
         element.animate([{opacity: 0}, {opacity: 1}], {duration: 500});
