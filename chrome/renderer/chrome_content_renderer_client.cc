@@ -757,9 +757,14 @@ void ChromeContentRendererClient::RenderFrameCreated(
         render_frame, associated_interfaces);
     auto password_generation_agent = std::make_unique<PasswordGenerationAgent>(
         render_frame, password_autofill_agent.get(), associated_interfaces);
-    new AutofillAgent(render_frame, std::move(password_autofill_agent),
-                      std::move(password_generation_agent),
-                      associated_interfaces);
+    auto* autofill_agent = new AutofillAgent(
+        render_frame, std::move(password_autofill_agent),
+        std::move(password_generation_agent), associated_interfaces);
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillCustomFormControlScripts)) {
+      autofill_agent->EnableCustomFormControlScripts(
+          ISOLATED_WORLD_ID_AUTOFILL_CUSTOM_FORM_CONTROLS);
+    }
   }
 
 #if !BUILDFLAG(IS_ANDROID)
