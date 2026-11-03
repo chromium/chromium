@@ -1228,7 +1228,7 @@ TEST_F(NotificationViewBaseTest, MAYBE_SlideOutWithMessageCenterView) {
   EXPECT_FALSE(IsRemovedAfterIdle(kDefaultNotificationId));
 }
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_SlideOutByTrackpad DISABLED_SlideOutByTrackpad
 #else
 #define MAYBE_SlideOutByTrackpad SlideOutByTrackpad
