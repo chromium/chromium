@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/android/restore_entity_tracker_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_group_collection_data_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/storage_loading_context.h"
@@ -25,6 +24,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/StorageLoadedData_jni.h"
+#include "chrome/browser/tab/jni_headers/TabGroupCollectionData_jni.h"
 
 namespace tabs {
 
@@ -73,22 +73,24 @@ base::android::ScopedJavaLocalRef<jobject> CreateStorageLoadWarning(
       env, static_cast<int>(warning.status), warning.message);
 }
 
+base::android::ScopedJavaLocalRef<jobject> CreateTabGroupCollectionData(
+    JNIEnv* env,
+    const TabGroupCollectionData& data) {
+  return Java_TabGroupCollectionData_create(
+      env, data.tab_group_id_, data.title_, static_cast<int>(data.color_),
+      data.is_collapsed_);
+}
+
 StorageLoadedDataAndroid::StorageLoadedDataAndroid(
     JNIEnv* env,
     std::unique_ptr<StorageLoadedData> data)
     : data_(std::move(data)) {
-  std::vector<TabGroupCollectionDataAndroid*> tab_group_collection_data_android;
-  for (auto& loaded_group : data_->GetLoadedGroups()) {
-    auto* android_group =
-        new TabGroupCollectionDataAndroid(std::move(loaded_group));
-    tab_group_collection_data_android.push_back(android_group);
-  }
   const StorageLoadingContext& context = data_->GetLoadingContext();
 
   j_object_ = Java_StorageLoadedData_createData(
       env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
-      tab_group_collection_data_android,
-      data_->GetActiveTabIndex().value_or(-1), context.warnings());
+      data_->GetLoadedGroups(), data_->GetActiveTabIndex().value_or(-1),
+      context.warnings());
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
@@ -131,3 +133,4 @@ StorageLoadedDataAndroid* StorageLoadedDataAndroid::FromJavaObject(
 }  // namespace tabs
 
 DEFINE_JNI(StorageLoadedData)
+DEFINE_JNI(TabGroupCollectionData)

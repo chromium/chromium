@@ -148,8 +148,7 @@ public class StorageLoadedDataUnitTest {
         // Null contents state must be marked claimed or destroyed.
         assertTrue(loadedStateNullContents.isClaimedOrDestroyed());
 
-        // Group data and native pointer must be destroyed.
-        verify(groupData).destroy();
+        // Native pointer must be destroyed.
         verify(mStorageLoadedDataJniMock).destroy(NATIVE_PTR);
         assertEquals(0, storageLoadedData.getNativePtr());
     }

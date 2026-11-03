@@ -19,7 +19,6 @@
 #include "base/token.h"
 #include "chrome/browser/android/storage_loaded_data_android.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_group_collection_data_android.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_id_mapping.h"

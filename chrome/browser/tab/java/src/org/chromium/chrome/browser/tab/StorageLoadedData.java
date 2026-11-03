@@ -106,10 +106,6 @@ public class StorageLoadedData implements Destroyable {
 
     @Override
     public void destroy() {
-        for (TabGroupCollectionData groupData : getGroupsData()) {
-            groupData.destroy();
-        }
-
         for (LoadedTabState loadedTabState : mLoadedTabStates) {
             loadedTabState.destroy();
         }
@@ -128,7 +124,7 @@ public class StorageLoadedData implements Destroyable {
     public static StorageLoadedData createData(
             long nativePtr,
             @JniType("std::vector<tabs_pb::TabState>") LoadedTabState[] loadedTabStates,
-            @JniType("std::vector<tabs::TabGroupCollectionDataAndroid*>")
+            @JniType("std::vector<std::unique_ptr<tabs::TabGroupCollectionData>>")
                     TabGroupCollectionData[] groups,
             int activeTabIndex,
             @JniType("std::vector<tabs::StorageLoadingContext::Warning>")

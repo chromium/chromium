@@ -7,75 +7,60 @@ package org.chromium.chrome.browser.tab;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
-/**
- * Java counterpart for TabGroupCollectionDataAndroid. This class provides access to the data of a
- * tab group collection stored in native.
- */
+/** Data container for the visual data of a tab group collection loaded from storage. */
 @NullMarked
 @JNINamespace("tabs")
-public class TabGroupCollectionData implements Destroyable {
-    private long mNativePtr;
+public class TabGroupCollectionData {
+    private final Token mTabGroupId;
+    private final String mTitle;
+    private final @TabGroupColorId int mColor;
+    private final boolean mIsCollapsed;
 
-    private TabGroupCollectionData(long nativePtr) {
-        mNativePtr = nativePtr;
+    /**
+     * @param tabGroupId The tab group ID.
+     * @param title The title of the tab group collection.
+     * @param color The color of the tab group collection.
+     * @param isCollapsed True if the tab group collection is collapsed.
+     */
+    public TabGroupCollectionData(
+            Token tabGroupId, String title, @TabGroupColorId int color, boolean isCollapsed) {
+        mTabGroupId = tabGroupId;
+        mTitle = title;
+        mColor = color;
+        mIsCollapsed = isCollapsed;
     }
 
     @CalledByNative
-    public static TabGroupCollectionData init(long nativePtr) {
-        return new TabGroupCollectionData(nativePtr);
-    }
-
-    @Override
-    public void destroy() {
-        assert mNativePtr != 0;
-        TabGroupCollectionDataJni.get().destroy(mNativePtr);
-        mNativePtr = 0;
+    public static TabGroupCollectionData create(
+            @JniType("base::Token") Token tabGroupId,
+            @JniType("std::u16string") String title,
+            @TabGroupColorId int color,
+            boolean isCollapsed) {
+        return new TabGroupCollectionData(tabGroupId, title, color, isCollapsed);
     }
 
     /** Returns the tab group ID. */
     public Token getTabGroupId() {
-        assert mNativePtr != 0;
-        return TabGroupCollectionDataJni.get().getTabGroupId(mNativePtr);
+        return mTabGroupId;
     }
 
     /** Returns the title of the tab group collection. */
     public String getTitle() {
-        assert mNativePtr != 0;
-        return TabGroupCollectionDataJni.get().getTitle(mNativePtr);
+        return mTitle;
     }
 
     /** Returns the color of the tab group collection. */
     public @TabGroupColorId int getColor() {
-        assert mNativePtr != 0;
-        return TabGroupCollectionDataJni.get().getColor(mNativePtr);
+        return mColor;
     }
 
     /** Returns true if the tab group collection is collapsed. */
     public boolean isCollapsed() {
-        assert mNativePtr != 0;
-        return TabGroupCollectionDataJni.get().isCollapsed(mNativePtr);
-    }
-
-    @NativeMethods
-    interface Natives {
-        void destroy(long nativeTabGroupCollectionDataAndroid);
-
-        @JniType("base::Token")
-        Token getTabGroupId(long nativeTabGroupCollectionDataAndroid);
-
-        @JniType("const std::u16string&")
-        String getTitle(long nativeTabGroupCollectionDataAndroid);
-
-        @JniType("tab_groups::TabGroupColorId")
-        int getColor(long nativeTabGroupCollectionDataAndroid);
-
-        boolean isCollapsed(long nativeTabGroupCollectionDataAndroid);
+        return mIsCollapsed;
     }
 }

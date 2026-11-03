@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/storage_loading_context.h"
+#include "chrome/browser/tab/tab_group_collection_data.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace tabs {
@@ -53,6 +54,10 @@ base::android::ScopedJavaLocalRef<jobject> CreateStorageLoadWarning(
     JNIEnv* env,
     const StorageLoadingContext::Warning& warning);
 
+base::android::ScopedJavaLocalRef<jobject> CreateTabGroupCollectionData(
+    JNIEnv* env,
+    const TabGroupCollectionData& data);
+
 }  // namespace tabs
 
 namespace jni_zero {
@@ -77,6 +82,21 @@ ToJniType<tabs::StorageLoadingContext::Warning>(
     JNIEnv* env,
     const tabs::StorageLoadingContext::Warning& input) {
   return tabs::CreateStorageLoadWarning(env, input);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<tabs::TabGroupCollectionData>(
+    JNIEnv* env,
+    const tabs::TabGroupCollectionData& input) {
+  return tabs::CreateTabGroupCollectionData(env, input);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject>
+ToJniType<std::unique_ptr<tabs::TabGroupCollectionData>>(
+    JNIEnv* env,
+    const std::unique_ptr<tabs::TabGroupCollectionData>& input) {
+  return input ? ToJniType(env, *input) : nullptr;
 }
 
 // TODO(469809169): Rather than using a const_cast, declare the function as
