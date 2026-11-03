@@ -489,10 +489,6 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        &HTMLElement::OnContainerTimingAttrChanged},
       {html_names::kContainertimingignoreAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnContainerTimingIgnoreAttrChanged},
-      // Deprecated dashed spelling: still functional, but warns. Remove once
-      // the origin trial ends.
-      {html_names::kContainertimingIgnoreAttr, kNoWebFeature, kNoEvent,
-       &HTMLElement::OnContainerTimingIgnoreAttrChanged},
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
@@ -4670,31 +4666,16 @@ void HTMLElement::OnContainerTimingAttrChanged(
 
 void HTMLElement::OnContainerTimingIgnoreAttrChanged(
     const AttributeModificationParams& params) {
-  // Both spellings are handled here and share the same use counter. The dashed
-  // `containertiming-ignore` one is deprecated in favor of
-  // `containertimingignore`: it stays functional for the remainder of the
-  // origin trial, but warns. The warning fires on every occurrence on purpose:
-  // measured usage is negligible and the spelling goes away when the trial
-  // ends, so it is not worth tracking per-page state to suppress repeats.
+  // Count attribute adoption, but ignore attributes in user agent shadow DOM
+  // (consistent with the generic attribute use-counting in ParseAttribute).
   if (!params.new_value.IsNull() && !IsInUserAgentShadowRoot()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kContainerTimingIgnoreAttribute);
-    if (params.name == html_names::kContainertimingIgnoreAttr) {
-      AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kDeprecation,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "The 'containertiming-ignore' attribute is deprecated and will be "
-          "removed. Use 'containertimingignore' instead.");
-    }
   }
 
   if (!RuntimeEnabledFeatures::ContainerTimingEnabled(GetExecutionContext())) {
     return;
   }
-  // Only this spelling's presence is tracked here. That is still correct when
-  // the element carries both spellings: all this does is mark the subtree for
-  // re-attribution, and the pre-paint walk resolves the effective ignore state
-  // through HasContainerTimingIgnoreAttribute(), which sees both spellings.
   bool had_container_timing_ignore = !params.old_value.IsNull();
   bool has_container_timing_ignore = !params.new_value.IsNull();
   if (had_container_timing_ignore == has_container_timing_ignore) {

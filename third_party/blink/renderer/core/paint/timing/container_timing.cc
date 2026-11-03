@@ -201,7 +201,8 @@ void ContainerTiming::OnElementPainted(
                                           enclosing_rect);
     // A container root with containertimingignore does not propagate to
     // ancestor roots.
-    if (container_root->HasContainerTimingIgnoreAttribute()) {
+    if (container_root->FastHasAttribute(
+            html_names::kContainertimingignoreAttr)) {
       break;
     }
     container_root =

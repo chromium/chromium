@@ -507,24 +507,6 @@ TEST_F(ContainerTimingTest, TextRootWithIgnore_SelfReported) {
 
 // An ancestor with only `containertimingignore` (no `containertiming`) must
 // stop the upward walk and produce no entries.
-// The deprecated dashed spelling must keep working until it is removed.
-TEST_F(ContainerTimingTest, Propagation_DeprecatedDashedIgnoreStopsWalk) {
-  SetBodyContent(R"HTML(
-    <div id="root" containertiming="root">
-      <div id="ignored" containertiming-ignore>
-        <div id="content">x</div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* content = GetElementById("content");
-  ASSERT_TRUE(content);
-
-  SimulatePaint(content, gfx::RectF(0, 0, 100, 100));
-  TriggerPopulateEntries();
-  EXPECT_EQ(0u, GetContainerEntryCount());
-}
-
 TEST_F(ContainerTimingTest, Propagation_IgnoreOnlyStopsWalk) {
   SetBodyContent(R"HTML(
     <div containertiming="outer">

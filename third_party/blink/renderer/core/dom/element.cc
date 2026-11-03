@@ -14411,11 +14411,6 @@ Element* Element::ImplicitAnchorElement() const {
   return nullptr;
 }
 
-bool Element::HasContainerTimingIgnoreAttribute() const {
-  return FastHasAttribute(html_names::kContainertimingignoreAttr) ||
-         FastHasAttribute(html_names::kContainertimingIgnoreAttr);
-}
-
 void Element::SetHTMLUnsafeWithoutTrustedTypes(
     const String& html,
     ExceptionState& exception_state) {

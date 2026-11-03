@@ -3,42 +3,43 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class HTMLElementContainerTimingAttributesTest : public PageTestBase {};
+// Parameterized on whether Container Timing is enabled.
+class HTMLElementContainerTimingAttributesTest
+    : public PageTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  HTMLElementContainerTimingAttributesTest() : scoped_feature_(GetParam()) {}
 
-TEST_F(HTMLElementContainerTimingAttributesTest,
-       DeprecatedDashedIgnoreWarnsInConsole) {
-  ConsoleMessageStorage& storage = GetPage().GetConsoleMessageStorage();
-  wtf_size_t initial_size = storage.size();
+ private:
+  ScopedContainerTimingForTest scoped_feature_;
+};
 
-  SetBodyContent("<div id=a containertimingignore></div>");
+INSTANTIATE_TEST_SUITE_P(All,
+                         HTMLElementContainerTimingAttributesTest,
+                         testing::Bool());
 
-  // The canonical spelling must not warn.
-  EXPECT_EQ(storage.size(), initial_size);
+// The attributes are counted whether or not Container Timing is enabled (e.g.
+// outside the origin trial), so adoption can be measured before it ships.
+TEST_P(HTMLElementContainerTimingAttributesTest, UseCounters) {
+  SetBodyContent(R"HTML(
+    <div containertiming="root">
+      <div containertimingignore></div>
+    </div>
+  )HTML");
 
-  Element* element_a = GetElementById("a");
-  element_a->setAttribute(html_names::kContainertimingIgnoreAttr, g_empty_atom);
-
-  ASSERT_EQ(storage.size(), initial_size + 1);
-  const ConsoleMessage* message = storage.at(storage.size() - 1);
-  EXPECT_EQ(message->GetSource(),
-            mojom::blink::ConsoleMessageSource::kDeprecation);
-  EXPECT_EQ(message->GetLevel(), mojom::blink::ConsoleMessageLevel::kWarning);
-  EXPECT_TRUE(message->Message().contains("containertiming-ignore"));
-  EXPECT_TRUE(message->Message().contains("containertimingignore"));
-
-  // Removing the attribute must not warn again.
-  element_a->removeAttribute(html_names::kContainertimingIgnoreAttr);
-  EXPECT_EQ(storage.size(), initial_size + 1);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kContainerTimingAttribute));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kContainerTimingAttributeHasRootName));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kContainerTimingIgnoreAttribute));
 }
 
 }  // namespace blink

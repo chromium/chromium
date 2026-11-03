@@ -28,7 +28,8 @@ ContainerTimingPaintAttributionTracker::UpdateOnPrePaint(
   const bool has_container_timing =
       element && element->FastHasAttribute(html_names::kContainertimingAttr);
   const bool has_ignore =
-      element && element->HasContainerTimingIgnoreAttribute();
+      element &&
+      element->FastHasAttribute(html_names::kContainertimingignoreAttr);
   if (element) {
     if (has_container_timing) {
       container_root_parents_.Set(
