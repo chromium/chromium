@@ -467,7 +467,7 @@ class MockRasterInterface : public viz::TestRasterInterface {
                       const gfx::Vector2dF& post_translate,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
-                      const ScrollOffsetMap* raster_inducing_scroll_offsets,
+                      const cc::RasterInducingValues* raster_inducing_values,
                       size_t* max_op_size_hint,
                       base::RepeatingCallback<void(SkCanvas*, uint32_t)>
                           custom_raster_callback) override {

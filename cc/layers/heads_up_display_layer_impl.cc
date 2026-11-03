@@ -315,11 +315,11 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       DummyImageProvider image_provider;
       size_t max_op_size_limit =
           gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-      ri->RasterCHROMIUM(
-          display_item_list.get(), &image_provider, size, gfx::Rect(size),
-          gfx::Rect(size), post_translate, post_scale, /*requires_clear=*/false,
-          /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_limit,
-          base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
+      ri->RasterCHROMIUM(display_item_list.get(), &image_provider, size,
+                         gfx::Rect(size), gfx::Rect(size), post_translate,
+                         post_scale, /*requires_clear=*/false,
+                         /*raster_inducing_values=*/nullptr, &max_op_size_limit,
+                         base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
       ri->EndRasterCHROMIUM();
     } else {
       // If not using |gpu_raster| but using gpu compositing, DrawHudContents()

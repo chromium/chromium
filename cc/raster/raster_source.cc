@@ -126,8 +126,7 @@ void RasterSource::PlaybackDisplayListToCanvas(
   CHECK(display_list_);
   int repeat_count = std::max(1, slow_down_raster_scale_factor_for_debug_);
   PlaybackParams params(settings.image_provider, SkM44());
-  params.raster_inducing_scroll_offsets =
-      settings.raster_inducing_scroll_offsets;
+  params.raster_inducing_values = settings.raster_inducing_values;
   params.destination_hdr_headroom = settings.hdr_headroom;
   for (int i = 0; i < repeat_count; ++i) {
     display_list_->Raster(raster_canvas, params);

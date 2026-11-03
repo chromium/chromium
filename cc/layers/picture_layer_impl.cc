@@ -256,11 +256,11 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   }
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
-  quad->SetNew(
-      shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
-      texture_rect, GetNearestNeighbor(), quad_content_rect, max_contents_scale,
-      std::move(image_animation_map), raster_source_->GetDisplayItemList(),
-      GetRasterInducingScrollOffsets());
+  quad->SetNew(shared_quad_state, geometry_rect, visible_geometry_rect,
+               needs_blending, texture_rect, GetNearestNeighbor(),
+               quad_content_rect, max_contents_scale,
+               std::move(image_animation_map),
+               raster_source_->GetDisplayItemList(), GetRasterInducingValues());
   ValidateQuadResources(quad);
 }
 
@@ -932,6 +932,12 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
     }
   }
   return map;
+}
+
+RasterInducingValues PictureLayerImpl::GetRasterInducingValues() const {
+  RasterInducingValues values;
+  values.scroll_offsets = GetRasterInducingScrollOffsets();
+  return values;
 }
 
 const GlobalStateThatImpactsTilePriority& PictureLayerImpl::global_tile_state()

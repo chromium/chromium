@@ -73,10 +73,10 @@ void RunBenchmark(const PictureLayerTiling& tiling,
       PlaybackImageProvider image_provider(
           image_decode_cache, TargetColorParams(), std::move(image_settings));
       RasterSource::PlaybackSettings settings;
-      ScrollOffsetMap raster_inducing_scroll_offsets =
-          tiling.client()->GetRasterInducingScrollOffsets();
+      RasterInducingValues raster_inducing_values =
+          tiling.client()->GetRasterInducingValues();
       settings.image_provider = &image_provider;
-      settings.raster_inducing_scroll_offsets = &raster_inducing_scroll_offsets;
+      settings.raster_inducing_values = &raster_inducing_values;
 
       raster_source->PlaybackToCanvas(
           &canvas, raster_source->GetContentSize(contents_scale), content_rect,
@@ -135,8 +135,8 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->GetDiscardableImagesInRect(rect);
   }
 
-  ScrollOffsetMap GetRasterInducingScrollOffsets() const override {
-    return base_client_->GetRasterInducingScrollOffsets();
+  RasterInducingValues GetRasterInducingValues() const override {
+    return base_client_->GetRasterInducingValues();
   }
 
   const GlobalStateThatImpactsTilePriority& global_tile_state() const override {

@@ -54,7 +54,7 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
     int max_texture_size,
-    const ScrollOffsetMap* raster_inducing_scroll_offsets)
+    const RasterInducingValues* raster_inducing_values)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -65,7 +65,7 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
       context_supports_distance_field_text(
           context_supports_distance_field_text),
       max_texture_size(max_texture_size),
-      raster_inducing_scroll_offsets(raster_inducing_scroll_offsets) {}
+      raster_inducing_values(raster_inducing_values) {}
 
 PaintOpBuffer::SerializeOptions::SerializeOptions() = default;
 PaintOpBuffer::SerializeOptions::SerializeOptions(const SerializeOptions&) =

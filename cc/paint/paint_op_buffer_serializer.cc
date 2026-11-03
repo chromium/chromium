@@ -18,6 +18,7 @@
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/paint_op_writer.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -64,8 +65,7 @@ PlaybackParams PaintOpBufferSerializer::MakeParams(
   PlaybackCallbacks callbacks;
   callbacks.custom_callback = options_.custom_callback;
   PlaybackParams params(nullptr, canvas->getLocalToDevice(), callbacks);
-  params.raster_inducing_scroll_offsets =
-      options_.raster_inducing_scroll_offsets;
+  params.raster_inducing_values = options_.raster_inducing_values;
   params.is_analyzing = true;
   return params;
 }
@@ -284,9 +284,10 @@ bool PaintOpBufferSerializer::WillSerializeNextOp<float>(
   if (op.GetType() == PaintOpType::kDrawScrollingContents) {
     auto& scrolling_contents_op =
         static_cast<const DrawScrollingContentsOp&>(op);
-    CHECK(params.raster_inducing_scroll_offsets);
-    gfx::PointF scroll_offset = params.raster_inducing_scroll_offsets->at(
-        scrolling_contents_op.scroll_element_id);
+    CHECK(params.raster_inducing_values);
+    gfx::PointF scroll_offset =
+        params.raster_inducing_values->scroll_offsets.at(
+            scrolling_contents_op.scroll_element_id);
     int save_count = canvas->getSaveCount();
     if (!scroll_offset.IsOrigin()) {
       Save(canvas, params);

@@ -51,7 +51,7 @@ class CC_PAINT_EXPORT DisplayItemList
   void Raster(
       SkCanvas* canvas,
       ImageProvider* image_provider = nullptr,
-      const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr) const;
+      const RasterInducingValues* raster_inducing_values = nullptr) const;
   void Raster(SkCanvas* canvas, const PlaybackParams& params) const;
   std::vector<size_t> OffsetsOfOpsToRaster(SkCanvas* canvas) const;
 

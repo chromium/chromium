@@ -107,9 +107,9 @@ FakePictureLayerTilingClient::GetDiscardableImagesInRect(
   return {};
 }
 
-ScrollOffsetMap FakePictureLayerTilingClient::GetRasterInducingScrollOffsets()
+RasterInducingValues FakePictureLayerTilingClient::GetRasterInducingValues()
     const {
-  return ScrollOffsetMap();
+  return {};
 }
 
 const GlobalStateThatImpactsTilePriority&

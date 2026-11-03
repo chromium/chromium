@@ -17,6 +17,7 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/picture_debug_util.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/solid_color_analyzer.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -89,9 +90,9 @@ DisplayItemList::~DisplayItemList() = default;
 void DisplayItemList::Raster(
     SkCanvas* canvas,
     ImageProvider* image_provider,
-    const ScrollOffsetMap* raster_inducing_scroll_offsets) const {
+    const RasterInducingValues* raster_inducing_values) const {
   PlaybackParams params(image_provider);
-  params.raster_inducing_scroll_offsets = raster_inducing_scroll_offsets;
+  params.raster_inducing_values = raster_inducing_values;
   Raster(canvas, params);
 }
 
@@ -272,9 +273,9 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   state->BeginDictionary("params");
 
   // DisplayItemList doesn't know the current scroll offsets, so use zero.
-  ScrollOffsetMap zero_scroll_offsets;
+  RasterInducingValues zero_values;
   for (auto [element_id, _] : raster_inducing_scrolls()) {
-    zero_scroll_offsets[element_id] = gfx::PointF();
+    zero_values.scroll_offsets[element_id] = gfx::PointF();
   }
 
   // For tracing code, just use the entire positive quadrant if the |rtree_|
@@ -284,7 +285,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
     state->BeginArray("items");
 
     PlaybackParams params(nullptr, SkM44());
-    params.raster_inducing_scroll_offsets = &zero_scroll_offsets;
+    params.raster_inducing_values = &zero_values;
     std::map<size_t, gfx::Rect> visual_rects = rtree_.GetAllBoundsForTracing();
     for (const PaintOp& op : paint_op_buffer_) {
       state->BeginDictionary();
@@ -326,7 +327,7 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
     SkCanvas* canvas = recorder.beginRecording(bounds.width(), bounds.height());
     canvas->translate(-bounds.x(), -bounds.y());
     canvas->clipRect(gfx::RectToSkRect(bounds));
-    Raster(canvas, /*image_provider=*/nullptr, &zero_scroll_offsets);
+    Raster(canvas, /*image_provider=*/nullptr, &zero_values);
     sk_sp<SkPicture> picture = recorder.finishRecordingAsPicture();
 
     std::string b64_picture;

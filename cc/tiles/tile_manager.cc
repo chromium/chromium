@@ -110,7 +110,7 @@ class RasterTaskImpl : public TileTask {
                  bool is_gpu_rasterization,
                  DispatchingImageProvider image_provider,
                  GURL url,
-                 ScrollOffsetMap raster_inducing_scroll_offsets)
+                 RasterInducingValues raster_inducing_values)
       : TileTask(
             is_gpu_rasterization ? TileTask::SupportsConcurrentExecution::kNo
                                  : TileTask::SupportsConcurrentExecution::kYes,
@@ -135,12 +135,10 @@ class RasterTaskImpl : public TileTask {
         raster_buffer_(std::move(raster_buffer)),
         image_provider_(std::move(image_provider)),
         url_(std::move(url)),
-        raster_inducing_scroll_offsets_(
-            std::move(raster_inducing_scroll_offsets)) {
+        raster_inducing_values_(std::move(raster_inducing_values)) {
     DCHECK(origin_thread_checker_.CalledOnValidThread());
     playback_settings_.image_provider = &image_provider_;
-    playback_settings_.raster_inducing_scroll_offsets =
-        &raster_inducing_scroll_offsets_;
+    playback_settings_.raster_inducing_values = &raster_inducing_values_;
   }
   RasterTaskImpl(const RasterTaskImpl&) = delete;
   RasterTaskImpl& operator=(const RasterTaskImpl&) = delete;
@@ -207,7 +205,7 @@ class RasterTaskImpl : public TileTask {
   std::unique_ptr<RasterBuffer> raster_buffer_;
   DispatchingImageProvider image_provider_;
   const GURL url_;
-  const ScrollOffsetMap raster_inducing_scroll_offsets_;
+  const RasterInducingValues raster_inducing_values_;
 };
 
 TaskCategory TaskCategoryForTileTask(TileTask* task,
@@ -1627,7 +1625,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
       invalidated_rect, prepare_tiles_count_, std::move(raster_buffer),
       &decode_tasks, use_gpu_rasterization_,
       std::move(dispatching_image_provider), active_url_,
-      prioritized_tile.GetRasterInducingScrollOffsets());
+      prioritized_tile.GetRasterInducingValues());
 }
 
 void TileManager::InsertNodeForDecodeTask(TileTask* task,

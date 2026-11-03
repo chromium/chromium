@@ -30,7 +30,7 @@ void PictureDrawQuad::SetNew(
     float scale,
     ImageAnimationMap animation_map,
     scoped_refptr<const cc::DisplayItemList> display_items,
-    cc::ScrollOffsetMap raster_inducing_scrolls) {
+    cc::RasterInducingValues raster_values) {
   ContentDrawQuadBase::SetNew(
       shared_quad_state, DrawQuad::Material::kPictureContent, rect,
       visible_rect, needs_blending, tex_coord_rect, nearest_neighbor, false);
@@ -38,7 +38,7 @@ void PictureDrawQuad::SetNew(
   contents_scale = scale;
   image_animation_map = std::move(animation_map);
   display_item_list = std::move(display_items);
-  raster_inducing_scroll_offsets = std::move(raster_inducing_scrolls);
+  raster_inducing_values = std::move(raster_values);
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {
@@ -53,7 +53,7 @@ void PictureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   // TODO(zmo):
   //   * image_animation_map
   //   * display_item_list
-  //   * raster_inducing_scroll_offsets
+  //   * raster_inducing_values
 }
 
 }  // namespace viz

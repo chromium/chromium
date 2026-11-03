@@ -20,7 +20,7 @@
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
 #include "cc/paint/paint_worklet_input.h"
-#include "cc/paint/scroll_offset_map.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/raster/raster_source.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_index.h"
@@ -60,7 +60,7 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual const PaintWorkletRecordMap& GetPaintWorkletRecords() const = 0;
   virtual std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const = 0;
-  virtual ScrollOffsetMap GetRasterInducingScrollOffsets() const = 0;
+  virtual RasterInducingValues GetRasterInducingValues() const = 0;
   virtual const GlobalStateThatImpactsTilePriority& global_tile_state()
       const = 0;
 
@@ -137,8 +137,8 @@ class CC_EXPORT PictureLayerTiling {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
     return client_->GetPaintWorkletRecords();
   }
-  ScrollOffsetMap GetRasterInducingScrollOffsets() const {
-    return client_->GetRasterInducingScrollOffsets();
+  RasterInducingValues GetRasterInducingValues() const {
+    return client_->GetRasterInducingValues();
   }
   const gfx::Rect& tiling_rect() const { return tiling_data_.tiling_rect(); }
   const gfx::Rect& live_tiles_rect() const { return live_tiles_rect_; }

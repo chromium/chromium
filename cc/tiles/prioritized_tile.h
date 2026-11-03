@@ -37,8 +37,8 @@ class CC_EXPORT PrioritizedTile {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const {
     return source_tiling_->GetPaintWorkletRecords();
   }
-  ScrollOffsetMap GetRasterInducingScrollOffsets() const {
-    return source_tiling_->GetRasterInducingScrollOffsets();
+  RasterInducingValues GetRasterInducingValues() const {
+    return source_tiling_->GetRasterInducingValues();
   }
   const TilePriority& priority() const { return priority_; }
   bool is_occluded() const { return is_occluded_; }

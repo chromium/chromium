@@ -214,10 +214,10 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   auto* blue_quad =
       this->render_pass_->template CreateAndAppendDrawQuad<PictureDrawQuad>();
 
-  blue_quad->SetNew(
-      this->front_quad_state_, this->quad_rect_, this->quad_rect_,
-      needs_blending, gfx::RectF(this->quad_rect_), false, this->quad_rect_,
-      1.f, {}, blue_raster_source->GetDisplayItemList(), cc::ScrollOffsetMap());
+  blue_quad->SetNew(this->front_quad_state_, this->quad_rect_, this->quad_rect_,
+                    needs_blending, gfx::RectF(this->quad_rect_), false,
+                    this->quad_rect_, 1.f, {},
+                    blue_raster_source->GetDisplayItemList(), {});
 
   cc::FakeRecordingSource green_recording(quad_rect_.size());
   green_recording.add_draw_rect_with_flags(outer_rect, green_flags);
@@ -231,8 +231,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
   green_quad->SetNew(this->back_quad_state_, this->quad_rect_, this->quad_rect_,
                      needs_blending, gfx::RectF(this->quad_rect_), false,
                      this->quad_rect_, 1.f, {},
-                     green_raster_source->GetDisplayItemList(),
-                     cc::ScrollOffsetMap());
+                     green_raster_source->GetDisplayItemList(), {});
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
       base::FilePath(FILE_PATH_LITERAL("intersecting_blue_green_squares.png")));

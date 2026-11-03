@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_image.h"
-#include "cc/paint/scroll_offset_map.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "components/viz/common/quads/content_draw_quad_base.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -38,13 +38,13 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               float scale,
               ImageAnimationMap animation_map,
               scoped_refptr<const cc::DisplayItemList> display_items,
-              cc::ScrollOffsetMap raster_inducing_scroll_offsets);
+              cc::RasterInducingValues raster_values);
 
   gfx::Rect content_rect;
   float contents_scale;
   ImageAnimationMap image_animation_map;
   scoped_refptr<const cc::DisplayItemList> display_item_list;
-  cc::ScrollOffsetMap raster_inducing_scroll_offsets;
+  cc::RasterInducingValues raster_inducing_values;
 
   static const PictureDrawQuad* MaterialCast(const DrawQuad* quad);
 

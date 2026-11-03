@@ -97,7 +97,7 @@ SyncToken RasterInterface::RasterSharedImage(
   RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
                  playback_rect, post_translate, post_scale,
                  /*requires_clear=*/false,
-                 /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint,
+                 /*raster_inducing_values=*/nullptr, &max_op_size_hint,
                  std::move(custom_callback));
 
   EndRasterCHROMIUM();

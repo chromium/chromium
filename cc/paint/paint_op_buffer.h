@@ -20,7 +20,6 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_export.h"
-#include "cc/paint/scroll_offset_map.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -41,6 +40,7 @@ class ClientPaintCache;
 class ImageProvider;
 class PaintOp;
 class PaintRecord;
+struct RasterInducingValues;
 class ServicePaintCache;
 class SkottieSerializationHistory;
 class TransferCacheDeserializeHelper;
@@ -86,7 +86,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   SkM44 original_ctm;
   PlaybackCallbacks callbacks;
   std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
-  const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
+  const RasterInducingValues* raster_inducing_values = nullptr;
   bool is_analyzing = false;
 
   // The HDR headroom to tone map to.
@@ -129,7 +129,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
         bool can_use_lcd_text,
         bool context_supports_distance_field_text,
         int max_texture_size,
-        const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr);
+        const RasterInducingValues* raster_inducing_values = nullptr);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -144,7 +144,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
-    const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
+    const RasterInducingValues* raster_inducing_values = nullptr;
     PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   };
 

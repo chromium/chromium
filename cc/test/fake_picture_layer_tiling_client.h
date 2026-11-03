@@ -49,7 +49,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   std::vector<const DrawImage*> GetDiscardableImagesInRect(
       const gfx::Rect& rect) const override;
-  ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
+  RasterInducingValues GetRasterInducingValues() const override;
   const GlobalStateThatImpactsTilePriority& global_tile_state() const override;
 
   void set_twin_tiling_set(PictureLayerTilingSet* set) {

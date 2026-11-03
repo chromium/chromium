@@ -31,6 +31,7 @@
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/skottie_serialization_history.h"
 #include "skia/ext/draw_gainmap_image.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
@@ -1676,9 +1677,9 @@ void DrawScrollingContentsOp::Raster(const DrawScrollingContentsOp* op,
                                      SkCanvas* canvas,
                                      const PlaybackParams& params) {
   canvas->save();
-  CHECK(params.raster_inducing_scroll_offsets);
+  CHECK(params.raster_inducing_values);
   gfx::PointF scroll_offset =
-      params.raster_inducing_scroll_offsets->at(op->scroll_element_id);
+      params.raster_inducing_values->scroll_offsets.at(op->scroll_element_id);
   canvas->translate(-scroll_offset.x(), -scroll_offset.y());
   op->display_item_list->Raster(canvas, params);
   canvas->restore();

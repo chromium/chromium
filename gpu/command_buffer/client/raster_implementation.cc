@@ -1357,7 +1357,7 @@ void RasterImplementation::RasterCHROMIUM(
     const gfx::Vector2dF& post_translate,
     const gfx::Vector2dF& post_scale,
     bool requires_clear,
-    const ScrollOffsetMap* raster_inducing_scroll_offsets,
+    const cc::RasterInducingValues* raster_inducing_values,
     size_t* max_op_size_hint,
     base::RepeatingCallback<void(SkCanvas*, uint32_t)> custom_raster_callback) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
@@ -1410,7 +1410,7 @@ void RasterImplementation::RasterCHROMIUM(
       raster_properties_->color_space, &skottie_serialization_history_,
       raster_properties_->can_use_lcd_text,
       capabilities().context_supports_distance_field_text,
-      capabilities().max_texture_size, raster_inducing_scroll_offsets);
+      capabilities().max_texture_size, raster_inducing_values);
   options.custom_callback = custom_raster_callback;
 
   cc::PaintOpBufferSerializer serializer(PaintOpSerializer::Serialize,

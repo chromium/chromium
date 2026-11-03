@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 #if DCHECK_IS_ON()
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/property_tree.h"
 #endif
@@ -79,17 +80,17 @@ void ContentLayerClientImpl::AppendAdditionalInfoAsJSON(
 #if DCHECK_IS_ON()
   if (flags & kLayerTreeIncludesPaintRecords) {
     LoggingCanvas canvas;
-    base::flat_map<cc::ElementId, gfx::PointF> raster_inducing_scroll_offsets;
+    cc::RasterInducingValues raster_inducing_values;
     for (auto& [scroll_element_id, _] :
          cc_display_item_list_->raster_inducing_scrolls()) {
-      raster_inducing_scroll_offsets[scroll_element_id] =
+      raster_inducing_values.scroll_offsets[scroll_element_id] =
           layer.layer_tree_host()
               ->property_trees()
               ->scroll_tree()
               .current_scroll_offset(scroll_element_id);
     }
     cc_display_item_list_->Raster(&canvas, /*image_provider=*/nullptr,
-                                  &raster_inducing_scroll_offsets);
+                                  &raster_inducing_values);
     json.SetValue("paintRecord", canvas.Log());
   }
 #endif
