@@ -125,14 +125,6 @@ bool String::ContainsOnlyLatin1OrEmpty() const {
   return empty() || Is8Bit() || ContainsOnlyLatin1(Span16());
 }
 
-CodePointIterator String::begin() const {
-  return CodePointIterator(*this);
-}
-
-CodePointIterator String::end() const {
-  return CodePointIterator::End(*this);
-}
-
 void String::Ensure16Bit() {
   if (IsNull())
     return;

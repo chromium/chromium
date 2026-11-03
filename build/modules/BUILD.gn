@@ -171,6 +171,18 @@ if (use_unified_system_module) {
       # module, so we need to manually remove it so it compiles.
       "--exclude-module",
       "_Builtin_stdatomic",
+
+      # Temporary module re-exports for third-party headers that rely on
+      # transitive includes removed in libc++ (#213114 and #213158):
+      # - third_party/skia/src/core/SkVx.h uses std::numeric_limits via <cmath>
+      #   without including <limits>.
+      # - third_party/fuchsia-sdk/.../extract_resource_on_destruction.h uses
+      #   std::move via <optional> without including <utility>.
+      # - v8/src/base/container-utils.h uses std::declval via <optional>
+      #   without including <utility>.
+      # TODO(crbug.com/581023696): remove these
+      "--append-module=std.cmath:export std_core.limits",
+      "--append-module=std.optional:export std.utility.move\nexport std_core.utility_core.declval",
     ]
     if (root_include_dir != "") {
       args += [

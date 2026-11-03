@@ -110,4 +110,9 @@
 // TODO(thakis): If upstream adds a "latest" magic number, switch to that.
 #define _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION 999
 
+// Suppress [[gnu::warn_unused]] diagnostics on standard containers, iterators,
+// and synchronization primitives (introduced upstream in #203084 and #213963).
+// TODO(crbug.com/581374525): remove this suppression.
+#define _LIBCPP_DISABLE_UNUSED_STRUCT_WARNINGS
+
 #endif // _LIBCPP_CONFIG_SITE

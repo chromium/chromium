@@ -192,8 +192,17 @@ class WTF_EXPORT String {
 
   // `begin()` and `end()` return iterators for `UChar32`, neither `UChar` nor
   // `LChar`. If you'd like to iterate code units, use `[]` and `length()`.
-  CodePointIterator begin() const;
-  CodePointIterator end() const;
+  // Templated with a trailing return type so SFINAE cleanly excludes `begin()`
+  // (e.g. in `std::begin` / `perfetto::WriteIntoTracedValue`) when
+  // `CodePointIterator` is only forward-declared.
+  template <typename Iterator = CodePointIterator>
+  auto begin() const -> decltype(Iterator(*this)) {
+    return Iterator(*this);
+  }
+  template <typename Iterator = CodePointIterator>
+  auto end() const -> decltype(Iterator::End(*this)) {
+    return Iterator::End(*this);
+  }
 
   // [string.capacity] ----------------------------------------------
 
