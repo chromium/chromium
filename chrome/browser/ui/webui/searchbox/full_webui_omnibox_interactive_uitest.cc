@@ -99,6 +99,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/page_classification_functions.h"
@@ -122,6 +123,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -2126,6 +2128,70 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClearAndSwitchTab) {
       // Verify that SaveStateToTab reverted the cleared draft, restoring the
       // permanent URL of Tab 1 instead of an empty string.
       WaitForOmniboxText(u"chrome://version"));
+}
+
+// Verifies that deleting all of the permanent URL of a search results page at
+// once (e.g. selecting it and pressing Backspace) keeps the suggestions
+// dropdown open with the same zero-prefix suggestions, without querying them
+// again, as in the Views omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClearPermanentTextKeepsZeroSuggestDropdownOpen) {
+  RunTestSequence(
+      // Open a search results page, and focus the omnibox to show zero-prefix
+      // suggestions. Wait for the popup handler first, so that the zero-prefix
+      // query requested on focus isn't dropped.
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, GURL("https://www.google.com/search?q=cats")),
+      WaitForWebContentsReady(kTab1), WaitForPopupHandlerReady(),
+      FocusOmniboxAndWaitForPopupReady(),
+      CheckResult(
+          [this]() {
+            return GetOmniboxControllerForTest()
+                ->client()
+                ->GetPageClassification(
+                    /*is_prefetch=*/false);
+          },
+          metrics::OmniboxEventProto::
+              SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+          "CheckSearchResultsPage"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      CheckUserInputInProgress(false),
+      InAnyContext(ExecuteJsAt(kPopupWebView, kPopupSearchbox,
+                               "(el) => { el.dataset.zpsQueryId = "
+                               "el.activeQueryId; }")),
+      // Select and delete all of the permanent text.
+      SelectAllWebUIInput(), ClearWebUIText(), WaitForOmniboxText(u""),
+      // The dropdown stays open with the zero-prefix suggestions, and no new
+      // query is issued.
+      InAnyContext(CheckJsResultAt(
+          kPopupWebView, kPopupSearchbox,
+          "(el) => el.dropdownIsVisible && el.result.matches.length > 0 && "
+          "el.activeQueryId === Number(el.dataset.zpsQueryId)",
+          true)),
+      CheckUserInputInProgress(true), WaitForOmniboxFocus(true),
+      // The input stays empty.
+      InAnyContext(CheckJsResultAt(kPopupWebView, kWebUIInput,
+                                   "(el) => el.value === ''", true)));
+}
+
+// Verifies that deleting all of the user's own text on the New Tab Page closes
+// the suggestions dropdown without querying zero-prefix suggestions, unlike
+// deleting the permanent text (see
+// `ClearPermanentTextKeepsZeroSuggestDropdownOpen`).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ClearUserTextOnNtpClosesDropdown) {
+  RunTestSequence(
+      FocusOmniboxOnInitialNtp(kTab1), InputWebUIText("hello world"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      // Select and delete all of the typed text.
+      SelectAllWebUIInput(), ClearWebUIText(), WaitForOmniboxText(u""),
+      // The dropdown closes, no query is pending, and the omnibox keeps focus.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible && "
+                           "el.result === null && el.activeQueryId === -1"),
+      WaitForOmniboxFocus(true));
 }
 
 // Verifies that opening multiple New Tab Pages (NTPs) consecutively focuses the

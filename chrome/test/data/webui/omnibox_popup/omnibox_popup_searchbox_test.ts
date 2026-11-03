@@ -1040,6 +1040,162 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(5, handler.getArgs('onInputCleared')[0]);
   });
 
+  test('ClearingPermanentTextKeepsDropdownOpenWithZeroSuggest', async () => {
+    // Focus the omnibox on a search results page. The permanent URL is shown
+    // and selected, and zero-prefix suggestions are shown. No navigation
+    // happens: the URL is only used as the input state pushed to the WebUI.
+    const url = 'https://www.google.com/search?q=cats';
+    const zeroSuggestMatches = [
+      createSearchMatchForTesting({fillIntoEdit: 'dogs'}),
+      createSearchMatchForTesting({fillIntoEdit: 'birds'}),
+    ];
+    const getMatchTexts = () =>
+        searchbox.result?.matches.map(match => match.fillIntoEdit);
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 5,
+      text: url,
+      selection: {start: 0, end: url.length},
+      fullUrl: url,
+      permanentDisplayText: url,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    const zeroSuggestQueryId = searchbox.activeQueryId;
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: zeroSuggestQueryId,
+          input: url,
+          matches: zeroSuggestMatches,
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    assertDeepEquals(['dogs', 'birds'], getMatchTexts());
+    handler.reset();
+    testProxy.handler.reset();
+
+    // Delete all of the permanent text (e.g. press Backspace).
+    const input = searchbox.$.input.inputElement;
+    input.value = '';
+    input.dispatchEvent(new InputEvent(
+        'input',
+        {inputType: 'deleteContentBackward', bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    // Like the Views omnibox, the dropdown stays open with the same matches,
+    // without stopping or querying autocomplete again.
+    assertTrue(searchbox.dropdownIsVisible);
+    assertDeepEquals(['dogs', 'birds'], getMatchTexts());
+    assertEquals(1, handler.getCallCount('onInputCleared'));
+    // The sequence number of the input state.
+    assertEquals(5, handler.getArgs('onInputCleared')[0]);
+    assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(zeroSuggestQueryId, searchbox.activeQueryId);
+
+    // Further updates of the zero-prefix query are still shown, but a default
+    // match doesn't restore the deleted text.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: zeroSuggestQueryId,
+          input: url,
+          matches: [
+            createSearchMatchForTesting(
+                {allowedToBeDefaultMatch: true, fillIntoEdit: url}),
+            ...zeroSuggestMatches,
+          ],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    assertDeepEquals([url, 'dogs', 'birds'], getMatchTexts());
+    assertEquals('', input.value);
+  });
+
+  test('ClearingPermanentTextKeepsPendingZeroSuggest', async () => {
+    // Focus the omnibox on a search results page, but delete all of the
+    // permanent text before the zero-prefix suggestions arrive.
+    const url = 'https://www.google.com/search?q=cats';
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 5,
+      text: url,
+      selection: {start: 0, end: url.length},
+      fullUrl: url,
+      permanentDisplayText: url,
+      isFocused: true,
+      matchesUpdate: MatchesUpdate.kQueryZps,
+    }));
+    await microtasksFinished();
+    const zeroSuggestQueryId = searchbox.activeQueryId;
+    assertFalse(searchbox.dropdownIsVisible);
+    testProxy.handler.reset();
+
+    const input = searchbox.$.input.inputElement;
+    input.value = '';
+    input.dispatchEvent(new InputEvent(
+        'input',
+        {inputType: 'deleteContentBackward', bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    // Like the Views omnibox, the pending zero-prefix query isn't stopped or
+    // issued again.
+    assertEquals(0, testProxy.handler.getCallCount('stopAutocomplete'));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(zeroSuggestQueryId, searchbox.activeQueryId);
+
+    // Its suggestions are shown once they arrive.
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: zeroSuggestQueryId,
+          input: url,
+          matches: [createSearchMatchForTesting({fillIntoEdit: 'dogs'})],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    assertEquals('', input.value);
+  });
+
+  test('ClearingUserTextClosesDropdown', async () => {
+    // Focus the omnibox on the New Tab Page and type some text.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      sequenceNumber: 5,
+      isFocused: true,
+    }));
+    await microtasksFinished();
+    const input = searchbox.$.input.inputElement;
+    input.value = 'hello world';
+    input.setSelectionRange(11, 11);
+    input.dispatchEvent(new InputEvent(
+        'input', {inputType: 'insertText', bubbles: true, composed: true}));
+    await microtasksFinished();
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: searchbox.activeQueryId,
+          input: 'hello world',
+          matches: [createSearchMatchForTesting()],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.dropdownIsVisible);
+    handler.reset();
+    testProxy.handler.reset();
+
+    // Select all of the typed text and delete it.
+    input.value = '';
+    input.setSelectionRange(0, 0);
+    input.dispatchEvent(new InputEvent(
+        'input',
+        {inputType: 'deleteContentBackward', bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    // The dropdown closes, and no zero-prefix suggestions are queried.
+    assertFalse(searchbox.dropdownIsVisible);
+    assertEquals(null, searchbox.result);
+    assertEquals(1, handler.getCallCount('onInputCleared'));
+    assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+    // `clearResult` is true, so the matches are cleared.
+    assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
   test('SetInputState_ExecutesDeferredFocusOnVisibilityChange', async () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', configurable: true});

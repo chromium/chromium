@@ -1932,6 +1932,7 @@ export class OmniboxPopupSearchboxElement extends
 
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
+    const wasUserInputInProgress = this.userInputInProgress_;
     this.selectAllOnMouseRelease_ = false;
     this.queryZpsOnMouseRelease_ = false;
     this.userInputInProgress_ = true;
@@ -1948,7 +1949,25 @@ export class OmniboxPopupSearchboxElement extends
       // it knows the draft was manually cleared and can revert empty drafts on
       // tab switch (restoring the permanent URL instead of a blank string).
       this.lastSelectedMatch_ = null;
-      this.clearAutocompleteMatches();
+      if (!wasUserInputInProgress && this.hasReceivedInitialInputState_) {
+        // Deleting all of the permanent text at once (e.g. selecting the URL
+        // and pressing Backspace) shows zero-prefix suggestions instead of
+        // closing the dropdown, like
+        // `OmniboxEditModel::StartZeroSuggestRequest()` does for the Views
+        // omnibox. Clearing the user's own text still closes it.
+        const isQueryPending = this.activeQueryId !== -1 && !this.result;
+        if (this.dropdownIsVisible || isQueryPending) {
+          // Like the Views omnibox, keep the visible (or pending) zero-prefix
+          // suggestions rather than querying them again. Since the input is
+          // now empty, they must not restore the deleted text.
+          this.lastQueriedInput = '';
+        } else {
+          this.queryAutocomplete(
+              '', /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ true);
+        }
+      } else {
+        this.clearAutocompleteMatches();
+      }
       this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
     } else if (this.hasReceivedInitialInputState_) {
       this.onSearchboxInputTextUpdated(e);
