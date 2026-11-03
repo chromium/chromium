@@ -72,10 +72,6 @@ namespace {
 enum ItemType : NSInteger {
   kItemTypeHistoryEntry = kItemTypeEnumZero,
 };
-// The default UIButton font size used by UIKit.
-const CGFloat kButtonDefaultFontSize = 15.0;
-// Horizontal width representing UIButton's padding.
-const CGFloat kButtonHorizontalPadding = 30.0;
 }  // namespace
 
 @interface HistoryTableViewController () <UISearchBarDelegate,
@@ -638,13 +634,13 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 // presented.
 - (UIBarButtonItem*)clearBrowsingDataButton {
   if (!_clearBrowsingDataButton) {
-    NSString* titleString = l10n_util::GetNSStringWithFixup(
-        IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG);
-    _clearBrowsingDataButton =
-        [[UIBarButtonItem alloc] initWithTitle:titleString
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(openPrivacySettings)];
+    _clearBrowsingDataButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                             target:self
+                             action:@selector(openPrivacySettings)];
+    _clearBrowsingDataButton.accessibilityLabel =
+        l10n_util::GetNSStringWithFixup(
+            IDS_HISTORY_OPEN_CLEAR_BROWSING_DATA_DIALOG);
     _clearBrowsingDataButton.accessibilityIdentifier =
         kHistoryToolbarClearBrowsingButtonIdentifier;
     _clearBrowsingDataButton.tintColor = [UIColor colorNamed:kRedColor];
@@ -677,13 +673,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                         target:self
                                         action:@selector(didTapEditButton)];
     _editButton.accessibilityIdentifier = kHistoryToolbarEditButtonIdentifier;
-    // Buttons don't conform to dynamic types. So it's safe to just use the
-    // default font size.
-    CGSize stringSize = [titleString sizeWithAttributes:@{
-      NSFontAttributeName : [UIFont boldSystemFontOfSize:kButtonDefaultFontSize]
-    }];
-    // Include button padding to ensure string does not get truncated
-    _editButton.width = stringSize.width + kButtonHorizontalPadding;
   }
   return _editButton;
 }
