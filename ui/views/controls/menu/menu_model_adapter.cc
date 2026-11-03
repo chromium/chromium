@@ -16,8 +16,10 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace views {
 
@@ -349,6 +351,14 @@ void MenuModelAdapter::BuildMenuImpl(MenuItemView* menu, ui::MenuModel* model) {
                             type == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU;
     if (!item) {
       CHECK(!is_submenu);
+      // Separators are added directly as MenuSeparator views and no
+      // MenuItemView is returned, so apply the model's visibility here.
+      if (type == ui::MenuModel::TYPE_SEPARATOR && menu->HasSubmenu()) {
+        const auto& children = menu->GetSubmenu()->children();
+        CHECK(!children.empty());
+        CHECK(IsViewClass<MenuSeparator>(children.back()));
+        children.back()->SetVisible(model->IsVisibleAt(i));
+      }
       continue;
     }
 

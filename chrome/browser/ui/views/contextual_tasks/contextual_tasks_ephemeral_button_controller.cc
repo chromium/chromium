@@ -36,9 +36,12 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_menu_model.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_utils.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -46,12 +49,14 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -229,6 +234,11 @@ void ContextualTasksEphemeralButtonController::OnTaskRemoved(
 
 void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
   FlushOpenClickCounts(/*flush_all=*/true);
+  if (contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
+      was_ephemeral_button_visible_) {
+    UpdateEphemeralStateInToolbar(false);
+    was_ephemeral_button_visible_ = false;
+  }
   should_update_visibility_callbacks_.Notify(false);
   ephemeral_button_auto_dismiss_timers_.clear();
   contextual_task_observation_.Reset();
@@ -744,6 +754,10 @@ void ContextualTasksEphemeralButtonController::
     MaybeNotifyVisibilityShouldChange() {
   const bool should_show = ShouldShowEphemeralButton();
   if (contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
+    contextual_tasks::UpdatePinButtonVisibilityState(browser_window_interface_);
+    if (should_show || was_ephemeral_button_visible_) {
+      UpdateEphemeralStateInToolbar(should_show);
+    }
     const bool is_panel_open = IsPanelOpen();
     const bool was_active_panel_open =
         was_ephemeral_button_visible_ && was_ephemeral_panel_open_;
@@ -758,6 +772,14 @@ void ContextualTasksEphemeralButtonController::
     } else if (!was_active_panel_collapsed && will_be_active_panel_collapsed) {
       ephemeral_button_shown_time_ticks_ = NowTicks();
       contextual_tasks::RecordEphemeralButtonShown(/*is_panel_open=*/false);
+      if (auto* user_education =
+              BrowserUserEducationInterface::From(browser_window_interface_)) {
+        user_education::FeaturePromoParams params(
+            feature_engagement::
+                kIPHContextualTasksEphemeralToolbarButtonFeature);
+        params.show_promo_result_callback = base::DoNothing();
+        user_education->MaybeShowFeaturePromo(std::move(params));
+      }
     }
     if (!should_show && was_ephemeral_button_visible_) {
       if (removal_reason_.has_value()) {
@@ -774,6 +796,12 @@ void ContextualTasksEphemeralButtonController::
         }
       }
       ephemeral_button_shown_time_ticks_.reset();
+      if (auto* user_education = BrowserUserEducationInterface::From(
+              browser_window_interface_)) {
+        user_education->AbortFeaturePromo(
+            feature_engagement::
+                kIPHContextualTasksEphemeralToolbarButtonFeature);
+      }
     }
     was_ephemeral_button_visible_ = should_show;
     was_ephemeral_panel_open_ = is_panel_open;
@@ -908,6 +936,18 @@ void ContextualTasksEphemeralButtonController::UpdatePinButtonTooltip() {
   const std::u16string tooltip_text = l10n_util::GetStringUTF16(tooltip_id);
   action_item->SetTooltipText(tooltip_text);
   action_item->SetAccessibleName(tooltip_text);
+}
+
+void ContextualTasksEphemeralButtonController::UpdateEphemeralStateInToolbar(
+    bool show) {
+  if (auto* toolbar_button_provider =
+          ToolbarButtonProvider::From(browser_window_interface_)) {
+    if (auto* pinned_toolbar_actions =
+            toolbar_button_provider->GetPinnedToolbarActions()) {
+      pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
+          kActionSidePanelShowContextualTasks, show);
+    }
+  }
 }
 
 void ContextualTasksEphemeralButtonController::RecordShownDuration(

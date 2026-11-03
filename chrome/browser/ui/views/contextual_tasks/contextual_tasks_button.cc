@@ -549,6 +549,11 @@ ui::Layer* ContextualTasksButton::GetDropShadowLayerForTesting() const {
 }
 
 void ContextualTasksButton::MaybeUpdateVisibility() {
+  if (contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled()) {
+    SetVisible(false);
+    return;
+  }
+
   if (contextual_tasks::kShowEntryPoint.Get() !=
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     return;

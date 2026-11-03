@@ -155,6 +155,7 @@ class ContextualTasksEphemeralButtonController
   void FlushOpenClickCounts(bool flush_all);
   void UpdatePinnedButtonActiveIndicator();
   void UpdatePinButtonTooltip();
+  void UpdateEphemeralStateInToolbar(bool show);
   void RecordShownDuration(std::string_view end_reason);
   void UpdateActiveTabObservation();
   void OnTabDiscarded(tabs::TabInterface* tab,
