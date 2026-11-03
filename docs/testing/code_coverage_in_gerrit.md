@@ -101,7 +101,6 @@ files that are affected by the CL for the sake of performance and a
 in Gerrit.
 
 
-[choose_tryjobs]: images/code_coverage_choose_tryjobs.png
 [code_coverage_annotations]: images/code_coverage_annotations.png
 [code_coverage_percentages]: images/code_coverage_percentages.png
 [low_coverage_message]: images/low_coverage_message.png
