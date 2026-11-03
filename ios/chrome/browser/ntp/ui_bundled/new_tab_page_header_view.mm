@@ -2203,8 +2203,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (CGFloat)headerHeight {
-  return content_suggestions::HeightForLogoHeader(
-      self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
+  return content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
+                                                  self.traitCollection);
 }
 
 #pragma mark - Private (Fakebox & Logo Layout Helpers)
@@ -2226,7 +2226,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (void)updateFakeboxDisplay {
   self.doodleTopMarginConstraint.constant = content_suggestions::LogoTopPadding(
-      self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
+      self.searchEngineLogoState, self.traitCollection);
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(self.searchEngineLogoState,
                                                     self.traitCollection)];
@@ -2237,8 +2237,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       CanShowTabStrip(self) &&
       (self.searchEngineLogoState == SearchEngineLogoState::kNone);
   self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(
-          self.searchEngineLogoState, self.traitCollection, _isAIMAllowed);
+      content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
+                                               self.traitCollection);
   if (self.window) {
     [self layoutIfNeeded];
   } else {
@@ -2253,7 +2253,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::LogoTopPadding(
                                   self.searchEngineLogoState,
-                                  self.traitCollection, _isAIMAllowed)];
+                                  self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::DoodleHeight(
                                     self.searchEngineLogoState,
