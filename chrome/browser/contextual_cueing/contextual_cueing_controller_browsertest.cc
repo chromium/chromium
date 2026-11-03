@@ -20,12 +20,15 @@
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
+#include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/private_insights/private_insights_service_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -60,6 +63,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/page_content_annotations/core/page_category_classifier_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/private_insights/private_insights_features.h"
@@ -128,6 +132,16 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override { return u"Test InfoBar"; }
 };
 
+class FakePageCategoryClassifierBridge
+    : public page_content_annotations::PageCategoryClassifierBridge {
+ public:
+  void SetDemandActive(bool active) override { demand_active_ = active; }
+  bool demand_active() const { return demand_active_; }
+
+ private:
+  bool demand_active_ = false;
+};
+
 class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
                                                   public TabStripModelObserver {
  public:
@@ -171,6 +185,15 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
     GetTestSyncService()->SetSignedIn(signin::ConsentLevel::kSignin);
     GetTestSyncService()->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kHistory, enabled);
+    GetTestSyncService()->FireStateChanged();
+  }
+
+  FakePageCategoryClassifierBridge* AttachFakeCategoryClassifierBridge() {
+    auto bridge = std::make_unique<FakePageCategoryClassifierBridge>();
+    FakePageCategoryClassifierBridge* bridge_ptr = bridge.get();
+    PageContentAnnotationsServiceFactory::GetForProfile(browser()->GetProfile())
+        ->SetPageCategoryClassifierBridge(std::move(bridge));
+    return bridge_ptr;
   }
 
   ContextualCueingController* contextual_cueing_controller() {
@@ -269,6 +292,11 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+  }
+
   MockPrivateInsightsService* GetMockPrivateInsightsService() {
     return static_cast<MockPrivateInsightsService*>(
         private_insights::PrivateInsightsServiceFactory::GetForProfile(
@@ -286,11 +314,6 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   }
 
  private:
-  syncer::TestSyncService* GetTestSyncService() {
-    return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
-  }
-
   ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
@@ -3586,6 +3609,100 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ContextualCueingInteraction::kCueDismissed, CueTargetType::kGlic, *cue,
       /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"TRAVEL",
       /*action=*/{}, /*cue_id=*/"fake_id_4");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       CategoryClassifierObservation_TogglesWithHistorySync) {
+  FakePageCategoryClassifierBridge* bridge =
+      AttachFakeCategoryClassifierBridge();
+  EXPECT_TRUE(bridge->demand_active());
+  EXPECT_TRUE(
+      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
+  glic::GlicCueTabState* tab_state =
+      glic::GlicCueTabState::From(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(tab_state);
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(tab_state));
+  contextual_search::ContextualSearchCueTabState* cs_tab_state =
+      contextual_search::ContextualSearchCueTabState::From(
+          browser()->GetActiveTabInterface());
+  ASSERT_TRUE(cs_tab_state);
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(cs_tab_state));
+
+  // Open a second tab and verify closing it keeps demand active while the first
+  // tab remains open with History Sync enabled.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com/tab2"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(bridge->demand_active());
+  browser()->GetTabStripModel()->CloseWebContentsAt(1,
+                                                    TabCloseTypes::CLOSE_NONE);
+  EXPECT_TRUE(bridge->demand_active());
+
+  EnableHistorySync(false);
+  EXPECT_FALSE(bridge->demand_active());
+
+  EnableHistorySync(true);
+  EXPECT_TRUE(bridge->demand_active());
+
+  contextual_cueing_controller()->OnSyncShutdown(GetTestSyncService());
+  EXPECT_FALSE(bridge->demand_active());
+  EXPECT_FALSE(
+      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
+
+  EnableHistorySync(true);
+  EXPECT_FALSE(bridge->demand_active());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerMultiSourceBrowserTest,
+    CategoryClassifierObservation_DisabledInControllerAndGatedInTabState) {
+  FakePageCategoryClassifierBridge* bridge =
+      AttachFakeCategoryClassifierBridge();
+  glic::GlicCueTabState* tab_state =
+      glic::GlicCueTabState::From(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(tab_state);
+  contextual_search::ContextualSearchCueTabState* cs_tab_state =
+      contextual_search::ContextualSearchCueTabState::From(
+          browser()->GetActiveTabInterface());
+  ASSERT_TRUE(cs_tab_state);
+
+  // With V2MultiSource and History Sync enabled, GlicCueTabState and
+  // ContextualSearchCueTabState observe SyncService and kCategoryClassifier,
+  // while ContextualCueingController observes neither.
+  EXPECT_TRUE(bridge->demand_active());
+  EXPECT_FALSE(
+      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(tab_state));
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cs_tab_state));
+
+  // Open a second tab and verify closing it keeps demand active while the first
+  // tab remains open with History Sync enabled.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com/tab2"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_FALSE(
+      GetTestSyncService()->HasObserver(contextual_cueing_controller()));
+  EXPECT_TRUE(bridge->demand_active());
+  browser()->GetTabStripModel()->CloseWebContentsAt(1,
+                                                    TabCloseTypes::CLOSE_NONE);
+  EXPECT_TRUE(bridge->demand_active());
+
+  // When History Sync is disabled, neither ContextualCueingController nor
+  // the tab states observe kCategoryClassifier.
+  EnableHistorySync(false);
+  EXPECT_FALSE(bridge->demand_active());
+
+  // Detach GlicCueTabState and ContextualSearchCueTabState to isolate
+  // ContextualCueingController and verify that ContextualCueingController does
+  // not register for kCategoryClassifier when kContextualCueingV2MultiSource is
+  // enabled, even with History Sync on.
+  tab_state->SetAnnotationServiceForTesting(nullptr);
+  cs_tab_state->SetAnnotationServiceForTesting(nullptr);
+
+  EnableHistorySync(true);
+  EXPECT_FALSE(bridge->demand_active());
 }
 
 }  // namespace

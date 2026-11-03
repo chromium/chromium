@@ -25,6 +25,7 @@ source_set("suggestions") {
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/prefs",
+    "//components/sync/service",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
   ]

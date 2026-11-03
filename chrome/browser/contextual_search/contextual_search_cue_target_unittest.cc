@@ -9,6 +9,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -569,7 +570,24 @@ class ContextualSearchCueTargetAsyncTest
                  base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
                    return nullptr;
+                 })},
+             TestingProfile::TestingFactory{
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
                  })}});
+  }
+
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
+  void SetHistorySyncEnabled(bool enabled) {
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
+    GetTestSyncService()->FireStateChanged();
   }
 
   void SetUp() override {
@@ -598,19 +616,14 @@ class ContextualSearchCueTargetAsyncTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void CallCheckEligibility(base::WeakPtr<content::WebContents> contents,
-                            bool* out_eligible) {
-    base::RunLoop run_loop;
-    target_->CheckEligibility(
-        std::move(contents), contextual_cueing::CueIntrusiveness::kLoud,
-        base::BindOnce(
-            [](bool* out, base::OnceClosure quit, bool eligible,
-               contextual_cueing::CueTarget::ContentGenerator) {
-              *out = eligible;
-              std::move(quit).Run();
-            },
-            out_eligible, run_loop.QuitClosure()));
-    run_loop.Run();
+  bool IsEligible(base::WeakPtr<content::WebContents> contents) {
+    base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+        future;
+    target_->CheckEligibility(std::move(contents),
+                              contextual_cueing::CueIntrusiveness::kLoud,
+                              future.GetCallback());
+    const auto& [eligible, unused_generator] = future.Get();
+    return eligible;
   }
 
   PageContentAnnotationsResult CreateEligibleResult() {
@@ -646,17 +659,13 @@ class ContextualSearchCueTargetAsyncTest
 };
 
 TEST_F(ContextualSearchCueTargetAsyncTest, CheckEligibility_NullWebContents) {
-  bool eligible = true;
-  CallCheckEligibility(nullptr, &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(nullptr));
 }
 
 TEST_F(ContextualSearchCueTargetAsyncTest,
        CheckEligibility_NoAnnotationService) {
   cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
-  bool eligible = true;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(ContextualSearchCueTargetAsyncTest, CheckEligibility_CacheHit_Eligible) {
@@ -666,9 +675,7 @@ TEST_F(ContextualSearchCueTargetAsyncTest, CheckEligibility_CacheHit_Eligible) {
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateEligibleResult());
 
-  bool eligible = false;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_TRUE(eligible);
+  EXPECT_TRUE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(ContextualSearchCueTargetAsyncTest,
@@ -679,9 +686,7 @@ TEST_F(ContextualSearchCueTargetAsyncTest,
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateIneligibleResult());
 
-  bool eligible = true;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(ContextualSearchCueTargetAsyncTest,
@@ -709,6 +714,54 @@ TEST_F(ContextualSearchCueTargetAsyncTest,
 
   EXPECT_TRUE(callback_ran);
   EXPECT_TRUE(eligible);
+}
+
+TEST_F(ContextualSearchCueTargetAsyncTest,
+       CheckEligibility_DisablingHistorySyncCancelsPendingAndClearsCache) {
+  const GURL url("https://example.com/edu");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+
+  // Start an in-flight eligibility check (cache miss).
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      future;
+  target_->CheckEligibility(web_contents()->GetWeakPtr(),
+                            contextual_cueing::CueIntrusiveness::kLoud,
+                            future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  // Disabling History Sync should immediately cancel the pending check without
+  // waiting for the annotation timeout timer.
+  SetHistorySyncEnabled(false);
+  const auto& [eligible, unused_generator] = future.Get();
+  EXPECT_FALSE(eligible);
+
+  // While History Sync is off, CheckEligibility() should fail fast.
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
+
+  // Re-enable History Sync, populate the cache, then disable History Sync
+  // and verify that cached_result_ was cleared.
+  SetHistorySyncEnabled(true);
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
+  EXPECT_TRUE(IsEligible(web_contents()->GetWeakPtr()));
+
+  SetHistorySyncEnabled(false);
+  SetHistorySyncEnabled(true);
+
+  // Because disabling History Sync cleared cached_result_, a subsequent check
+  // must wait for a new annotation rather than resolving from the stale cache.
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      trailing_future;
+  target_->CheckEligibility(web_contents()->GetWeakPtr(),
+                            contextual_cueing::CueIntrusiveness::kLoud,
+                            trailing_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(trailing_future.IsReady());
+
+  SetHistorySyncEnabled(false);
+  const auto& [trailing_eligible, unused_trailing_generator] =
+      trailing_future.Get();
+  EXPECT_FALSE(trailing_eligible);
 }
 
 }  // namespace contextual_search

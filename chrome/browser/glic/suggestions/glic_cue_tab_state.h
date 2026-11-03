@@ -9,10 +9,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
@@ -38,7 +41,8 @@ class GlicCueTarget;
 class GlicCueTabState
     : public content::WebContentsObserver,
       public page_content_annotations::PageContentAnnotationsService::
-          PageContentAnnotationsObserver {
+          PageContentAnnotationsObserver,
+      public syncer::SyncServiceObserver {
  public:
   DECLARE_USER_DATA(GlicCueTabState);
 
@@ -72,10 +76,12 @@ class GlicCueTabState
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
 
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
   void SetAnnotationServiceForTesting(
-      page_content_annotations::PageContentAnnotationsService* service) {
-    annotation_service_ = service;
-  }
+      page_content_annotations::PageContentAnnotationsService* service);
 
  private:
   // Cancels `pending_check_` by firing its callback with false.
@@ -87,6 +93,9 @@ class GlicCueTabState
 
   // Called if the annotation timeout expires before an annotation arrives.
   void OnAnnotationTimeout();
+
+  void UpdateCategoryClassifierObservation();
+  bool IsHistorySyncEnabled() const;
 
   // Tracked parameters to match incoming annotations to the current navigation.
   GURL last_committed_url_;
@@ -104,10 +113,14 @@ class GlicCueTabState
 
   raw_ptr<page_content_annotations::PageContentAnnotationsService>
       annotation_service_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
   // Used for logging to chrome://optimization-guide-internals with the
   // CUEING_LOG macro.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
+  bool is_observing_category_classifier_ = false;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 
   base::OneShotTimer annotation_timeout_timer_;
 

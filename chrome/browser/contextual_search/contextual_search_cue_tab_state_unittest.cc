@@ -6,16 +6,20 @@
 
 #include <memory>
 
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/page_content_annotations/core/page_category_classifier_bridge.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -30,6 +34,16 @@ namespace {
 
 using ::page_content_annotations::CategoryType;
 using ::page_content_annotations::PageContentAnnotationsResult;
+
+class FakePageCategoryClassifierBridge
+    : public page_content_annotations::PageCategoryClassifierBridge {
+ public:
+  void SetDemandActive(bool active) override { demand_active_ = active; }
+  bool demand_active() const { return demand_active_; }
+
+ private:
+  bool demand_active_ = false;
+};
 
 class FakeCueTarget : public contextual_cueing::CueTarget {
  public:
@@ -87,16 +101,23 @@ class FakeCueTarget : public contextual_cueing::CueTarget {
 class ContextualSearchCueTabStateTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  ContextualSearchCueTabStateTest()
+  explicit ContextualSearchCueTabStateTest(bool enable_v2_multi_source = true)
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {contextual_cueing::kContextualCueingV2, {}},
-            {contextual_cueing::kContextualCueingV2MultiSource,
-             {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}},
-        },
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {contextual_cueing::kContextualCueingV2, {}},
+    };
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_v2_multi_source) {
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2MultiSource,
+           {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}});
+    } else {
+      disabled_features.push_back(
+          contextual_cueing::kContextualCueingV2MultiSource);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -115,11 +136,21 @@ class ContextualSearchCueTabStateTest
             base::BindRepeating([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
               return nullptr;
+            })},
+        TestingProfile::TestingFactory{
+            SyncServiceFactory::GetInstance(),
+            base::BindRepeating([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
             })}};
   }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    auto bridge = std::make_unique<FakePageCategoryClassifierBridge>();
+    classifier_bridge_ = bridge.get();
+    PageContentAnnotationsServiceFactory::GetForProfile(profile())
+        ->SetPageCategoryClassifierBridge(std::move(bridge));
     mock_tab_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*mock_tab_, GetProfile())
         .WillRepeatedly(testing::Return(profile()));
@@ -135,23 +166,30 @@ class ContextualSearchCueTabStateTest
   void TearDown() override {
     target_.reset();
     cue_tab_state_.reset();
+    classifier_bridge_ = nullptr;
     mock_tab_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void CallCheckEligibility(bool* out_eligible) {
-    base::RunLoop run_loop;
-    cue_tab_state_->CheckEligibility(
-        contextual_cueing::CueIntrusiveness::kLoud,
-        base::BindOnce(
-            [](bool* out, base::OnceClosure quit, bool eligible,
-               contextual_cueing::CueTarget::ContentGenerator) {
-              *out = eligible;
-              std::move(quit).Run();
-            },
-            out_eligible, run_loop.QuitClosure()),
-        target_->GetWeakPtr());
-    run_loop.Run();
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
+  void SetHistorySyncEnabled(bool enabled) {
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
+    GetTestSyncService()->FireStateChanged();
+  }
+
+  bool IsEligible() {
+    base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+        future;
+    cue_tab_state_->CheckEligibility(contextual_cueing::CueIntrusiveness::kLoud,
+                                     future.GetCallback(),
+                                     target_->GetWeakPtr());
+    const auto& [eligible, unused_generator] = future.Get();
+    return eligible;
   }
 
   PageContentAnnotationsResult CreateEligibleResult() {
@@ -177,6 +215,7 @@ class ContextualSearchCueTabStateTest
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<FakePageCategoryClassifierBridge> classifier_bridge_ = nullptr;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
   std::unique_ptr<FakeCueTarget> target_;
@@ -185,9 +224,7 @@ class ContextualSearchCueTabStateTest
 
 TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_NoAnnotationService) {
   cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
-  bool eligible = true;
-  CallCheckEligibility(&eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible());
 }
 
 TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_CacheHit_Eligible) {
@@ -197,9 +234,7 @@ TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_CacheHit_Eligible) {
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateEligibleResult());
 
-  bool eligible = false;
-  CallCheckEligibility(&eligible);
-  EXPECT_TRUE(eligible);
+  EXPECT_TRUE(IsEligible());
 }
 
 TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_CacheHit_Ineligible) {
@@ -209,9 +244,7 @@ TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_CacheHit_Ineligible) {
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateIneligibleResult());
 
-  bool eligible = true;
-  CallCheckEligibility(&eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible());
 }
 
 TEST_F(ContextualSearchCueTabStateTest,
@@ -219,26 +252,15 @@ TEST_F(ContextualSearchCueTabStateTest,
   const GURL url("https://example.com/pending");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
-  bool eligible = false;
-  bool callback_ran = false;
-  cue_tab_state_->CheckEligibility(
-      contextual_cueing::CueIntrusiveness::kLoud,
-      base::BindOnce(
-          [](bool* out_eligible, bool* out_ran, bool eligible,
-             contextual_cueing::CueTarget::ContentGenerator) {
-            *out_eligible = eligible;
-            *out_ran = true;
-          },
-          &eligible, &callback_ran),
-      target_->GetWeakPtr());
-
-  EXPECT_FALSE(callback_ran);
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      future;
+  cue_tab_state_->CheckEligibility(contextual_cueing::CueIntrusiveness::kLoud,
+                                   future.GetCallback(), target_->GetWeakPtr());
+  EXPECT_FALSE(future.IsReady());
 
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateEligibleResult());
-  EXPECT_TRUE(base::test::RunUntil([&]() { return callback_ran; }));
-
-  EXPECT_TRUE(callback_ran);
+  const auto& [eligible, unused_generator] = future.Get();
   EXPECT_TRUE(eligible);
 }
 
@@ -246,25 +268,121 @@ TEST_F(ContextualSearchCueTabStateTest, CheckEligibility_CacheMiss_Timeout) {
   const GURL url("https://example.com/timeout");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
-  bool eligible = true;
-  bool callback_ran = false;
-  cue_tab_state_->CheckEligibility(
-      contextual_cueing::CueIntrusiveness::kLoud,
-      base::BindOnce(
-          [](bool* out_eligible, bool* out_ran, bool eligible,
-             contextual_cueing::CueTarget::ContentGenerator) {
-            *out_eligible = eligible;
-            *out_ran = true;
-          },
-          &eligible, &callback_ran),
-      target_->GetWeakPtr());
-
-  EXPECT_FALSE(callback_ran);
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      future;
+  cue_tab_state_->CheckEligibility(contextual_cueing::CueIntrusiveness::kLoud,
+                                   future.GetCallback(), target_->GetWeakPtr());
+  EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(base::Seconds(4));
 
-  EXPECT_TRUE(callback_ran);
+  ASSERT_TRUE(future.IsReady());
+  const auto& [eligible, unused_generator] = future.Get();
   EXPECT_FALSE(eligible);
+}
+
+TEST_F(ContextualSearchCueTabStateTest,
+       CheckEligibility_DisablingHistorySyncCancelsPendingAndClearsCache) {
+  const GURL url("https://example.com/edu");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      future;
+  cue_tab_state_->CheckEligibility(contextual_cueing::CueIntrusiveness::kLoud,
+                                   future.GetCallback(), target_->GetWeakPtr());
+  EXPECT_FALSE(future.IsReady());
+
+  SetHistorySyncEnabled(false);
+  const auto& [eligible, unused_generator] = future.Get();
+  EXPECT_FALSE(eligible);
+
+  EXPECT_FALSE(IsEligible());
+
+  SetHistorySyncEnabled(true);
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
+  EXPECT_TRUE(IsEligible());
+
+  SetHistorySyncEnabled(false);
+  SetHistorySyncEnabled(true);
+
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      trailing_future;
+  cue_tab_state_->CheckEligibility(contextual_cueing::CueIntrusiveness::kLoud,
+                                   trailing_future.GetCallback(),
+                                   target_->GetWeakPtr());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(trailing_future.IsReady());
+
+  SetHistorySyncEnabled(false);
+  const auto& [trailing_eligible, unused_trailing_generator] =
+      trailing_future.Get();
+  EXPECT_FALSE(trailing_eligible);
+}
+
+TEST_F(ContextualSearchCueTabStateTest,
+       CategoryClassifierObservation_TogglesWithHistorySync) {
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(false);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(true);
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+
+  cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  cue_tab_state_->SetAnnotationServiceForTesting(
+      PageContentAnnotationsServiceFactory::GetForProfile(profile()));
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+}
+
+TEST_F(ContextualSearchCueTabStateTest,
+       CategoryClassifierObservation_InitiallyHistorySyncDisabled) {
+  cue_tab_state_.reset();
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(false);
+  cue_tab_state_ = std::make_unique<ContextualSearchCueTabState>(*mock_tab_);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(true);
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+}
+
+TEST_F(ContextualSearchCueTabStateTest,
+       CategoryClassifierObservation_SyncShutdownUnregistersObserver) {
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  GetTestSyncService()->Shutdown();
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(true);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+}
+
+class ContextualSearchCueTabStateV1Test
+    : public ContextualSearchCueTabStateTest {
+ public:
+  ContextualSearchCueTabStateV1Test()
+      : ContextualSearchCueTabStateTest(/*enable_v2_multi_source=*/false) {}
+};
+
+TEST_F(ContextualSearchCueTabStateV1Test,
+       CategoryClassifierObservation_DisabledWhenV2MultiSourceOff) {
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(false);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(true);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
 }
 
 }  // namespace

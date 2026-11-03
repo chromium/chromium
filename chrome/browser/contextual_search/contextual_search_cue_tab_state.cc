@@ -16,6 +16,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -49,10 +52,11 @@ ContextualSearchCueTabState::ContextualSearchCueTabState(
           contextual_cueing::kContextualCueingV2MultiSource)) {
     annotation_service_ =
         PageContentAnnotationsServiceFactory::GetForProfile(profile);
-    if (annotation_service_) {
-      annotation_service_->AddObserver(
-          page_content_annotations::AnnotationType::kCategoryClassifier, this);
+    sync_service_ = SyncServiceFactory::GetForProfile(profile);
+    if (sync_service_) {
+      sync_service_observation_.Observe(sync_service_);
     }
+    UpdateCategoryClassifierObservation();
   }
   last_committed_url_ = web_contents->GetLastCommittedURL();
 }
@@ -65,7 +69,7 @@ ContextualSearchCueTabState* ContextualSearchCueTabState::From(
 
 ContextualSearchCueTabState::~ContextualSearchCueTabState() {
   CancelPendingCheck();
-  if (annotation_service_) {
+  if (is_observing_category_classifier_ && annotation_service_) {
     annotation_service_->RemoveObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
   }
@@ -105,14 +109,64 @@ void ContextualSearchCueTabState::OnPageContentAnnotated(
   ResolvePendingCheck();
 }
 
+void ContextualSearchCueTabState::OnStateChanged(syncer::SyncService* sync) {
+  UpdateCategoryClassifierObservation();
+}
+
+void ContextualSearchCueTabState::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+  sync_service_ = nullptr;
+  UpdateCategoryClassifierObservation();
+}
+
+void ContextualSearchCueTabState::SetAnnotationServiceForTesting(
+    page_content_annotations::PageContentAnnotationsService* service) {
+  if (is_observing_category_classifier_ && annotation_service_) {
+    annotation_service_->RemoveObserver(
+        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+    is_observing_category_classifier_ = false;
+  }
+  annotation_service_ = service;
+  UpdateCategoryClassifierObservation();
+}
+
+void ContextualSearchCueTabState::UpdateCategoryClassifierObservation() {
+  if (!annotation_service_) {
+    return;
+  }
+  const bool should_observe =
+      base::FeatureList::IsEnabled(
+          contextual_cueing::kContextualCueingV2MultiSource) &&
+      IsHistorySyncEnabled();
+  if (should_observe == is_observing_category_classifier_) {
+    return;
+  }
+  is_observing_category_classifier_ = should_observe;
+  if (should_observe) {
+    annotation_service_->AddObserver(
+        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+  } else {
+    annotation_service_->RemoveObserver(
+        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+    cached_result_ = std::nullopt;
+    CancelPendingCheck();
+  }
+}
+
+bool ContextualSearchCueTabState::IsHistorySyncEnabled() const {
+  return sync_service_ &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kHistory);
+}
+
 void ContextualSearchCueTabState::CheckEligibility(
     contextual_cueing::CueIntrusiveness intrusiveness,
     contextual_cueing::CueTarget::EligibilityCallback callback,
     base::WeakPtr<contextual_cueing::CueTarget> target) {
-  if (!annotation_service_) {
+  if (!annotation_service_ || !is_observing_category_classifier_) {
     CUEING_LOG(
         "ContextualSearchCueTabState::CheckEligibility failed: No annotation "
-        "service.");
+        "service or not observing category classifier.");
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), false,

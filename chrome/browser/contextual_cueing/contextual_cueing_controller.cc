@@ -64,6 +64,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -197,9 +198,11 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
       base::BindRepeating(&ContextualCueingController::OnCueFormFactorHidden,
                           weak_ptr_factory_.GetWeakPtr()));
 #endif
-  if (page_content_annotations_service_) {
-    page_content_annotations_service_->AddObserver(
-        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+  if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
+    if (sync_service_) {
+      sync_service_observation_.Observe(sync_service_);
+    }
+    UpdateCategoryClassifierObservation();
   }
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ContextualCueingController::OnTabActivated,
@@ -213,7 +216,7 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
 }
 
 ContextualCueingController::~ContextualCueingController() {
-  if (page_content_annotations_service_) {
+  if (is_observing_category_classifier_ && page_content_annotations_service_) {
     page_content_annotations_service_->RemoveObserver(
         page_content_annotations::AnnotationType::kCategoryClassifier, this);
   }
@@ -274,6 +277,42 @@ void ContextualCueingController::OnPageContentAnnotated(
     return;
   }
   RunGlicSingleSourcePath(visit, result);
+}
+
+void ContextualCueingController::OnStateChanged(syncer::SyncService* sync) {
+  UpdateCategoryClassifierObservation();
+}
+
+void ContextualCueingController::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+  sync_service_ = nullptr;
+  UpdateCategoryClassifierObservation();
+}
+
+void ContextualCueingController::UpdateCategoryClassifierObservation() {
+  if (!page_content_annotations_service_) {
+    return;
+  }
+  const bool should_observe =
+      !base::FeatureList::IsEnabled(kContextualCueingV2MultiSource) &&
+      IsHistorySyncEnabled();
+  if (should_observe == is_observing_category_classifier_) {
+    return;
+  }
+  is_observing_category_classifier_ = should_observe;
+  if (should_observe) {
+    page_content_annotations_service_->AddObserver(
+        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+  } else {
+    page_content_annotations_service_->RemoveObserver(
+        page_content_annotations::AnnotationType::kCategoryClassifier, this);
+  }
+}
+
+bool ContextualCueingController::IsHistorySyncEnabled() const {
+  return sync_service_ &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kHistory);
 }
 
 void ContextualCueingController::RunGlicSingleSourcePath(
@@ -670,9 +709,7 @@ void ContextualCueingController::InitiateModelExecutionRequest(
   tab_favicons_.clear();
   FetchFavicon(tab_, active_web_contents);
 
-  if (!sync_service_ ||
-      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
+  if (!IsHistorySyncEnabled()) {
     CUEING_LOG("History sync is off.");
     RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
     return;
@@ -853,9 +890,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
-  if (!sync_service_ ||
-      !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kHistory)) {
+  if (!IsHistorySyncEnabled()) {
     CUEING_LOG("History sync is off.");
     OnShowCueFailed(ContextualCueingDecision::kHistorySyncOff);
     return;

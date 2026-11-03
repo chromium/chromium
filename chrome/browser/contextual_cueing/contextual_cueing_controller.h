@@ -23,6 +23,8 @@
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -53,10 +55,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -69,6 +67,7 @@ struct CueTabMetrics;
 class ContextualCueingController
     : public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver,
+      public syncer::SyncServiceObserver,
       public TabListInterfaceObserver {
  public:
   DECLARE_USER_DATA(ContextualCueingController);
@@ -94,6 +93,10 @@ class ContextualCueingController
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
+
+  // syncer::SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // TabListInterfaceObserver:
   void OnTabRemoved(TabListInterface& tab_list,
@@ -276,6 +279,9 @@ class ContextualCueingController
   absl::flat_hash_set<optimization_guide::proto::ContextualCueingSurface>
   GetEligibleCueSurfaces();
 
+  void UpdateCategoryClassifierObservation();
+  bool IsHistorySyncEnabled() const;
+
   // Not owned. Guaranteed to outlive `this`.
   const raw_ptr<tabs::TabInterface> tab_;
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
@@ -296,6 +302,9 @@ class ContextualCueingController
   raw_ptr<TemplateURLService> template_url_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<favicon::FaviconService> favicon_service_;
+  bool is_observing_category_classifier_ = false;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
   base::CallbackListSubscription side_panel_shown_subscription_;
   base::TimeTicks cue_shown_time_;

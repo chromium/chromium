@@ -8,6 +8,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -24,9 +25,11 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/page_content_annotations/core/page_category_classifier_bridge.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/pdf/common/constants.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -406,20 +409,37 @@ TEST_F(GlicCueTargetDoNotDiscardShoppingPdfsTest,
 // Async CheckEligibility tests for GlicCueTabState
 // ---------------------------------------------------------------------------
 
+class FakePageCategoryClassifierBridge
+    : public page_content_annotations::PageCategoryClassifierBridge {
+ public:
+  void SetDemandActive(bool active) override { demand_active_ = active; }
+  bool demand_active() const { return demand_active_; }
+
+ private:
+  bool demand_active_ = false;
+};
+
 class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
  public:
-  GlicCueTargetAsyncTest()
+  explicit GlicCueTargetAsyncTest(bool enable_v2_multi_source = true)
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {contextual_cueing::kContextualCueingV2,
-             {{"ContextualCueingV2EduClassifierThreshold", "0.7"},
-              {"ContextualCueingV2ShoppingClassifierThreshold", "0.6"}}},
-            {contextual_cueing::kContextualCueingV2MultiSource,
-             {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}},
-        },
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {contextual_cueing::kContextualCueingV2,
+         {{"ContextualCueingV2EduClassifierThreshold", "0.7"},
+          {"ContextualCueingV2ShoppingClassifierThreshold", "0.6"}}},
+    };
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_v2_multi_source) {
+      enabled_features.push_back(
+          {contextual_cueing::kContextualCueingV2MultiSource,
+           {{"ContextualCueingV2MultiSourceAnnotationTimeout", "3s"}}});
+    } else {
+      disabled_features.push_back(
+          contextual_cueing::kContextualCueingV2MultiSource);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -440,6 +460,12 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
                  base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
                    return nullptr;
+                 })},
+             TestingProfile::TestingFactory{
+                 SyncServiceFactory::GetInstance(),
+                 base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+                   return std::make_unique<syncer::TestSyncService>();
                  })}});
   }
 
@@ -449,6 +475,10 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+    auto bridge = std::make_unique<FakePageCategoryClassifierBridge>();
+    classifier_bridge_ = bridge.get();
+    PageContentAnnotationsServiceFactory::GetForProfile(profile())
+        ->SetPageCategoryClassifierBridge(std::move(bridge));
     mock_glic_keyed_service_ = std::make_unique<MockGlicKeyedService>(
         profile(), IdentityManagerFactory::GetForProfile(profile()),
         TestingBrowserProcess::GetGlobal()->profile_manager(),
@@ -471,6 +501,7 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     target_.reset();
     cue_tab_state_.reset();
+    classifier_bridge_ = nullptr;
     mock_tab_.reset();
     mock_glic_keyed_service_.reset();
     identity_test_env_adaptor_.reset();
@@ -478,19 +509,25 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
-  void CallCheckEligibility(base::WeakPtr<content::WebContents> contents,
-                            bool* out_eligible) {
-    base::RunLoop run_loop;
-    target_->CheckEligibility(
-        std::move(contents), contextual_cueing::CueIntrusiveness::kLoud,
-        base::BindOnce(
-            [](bool* out, base::OnceClosure quit, bool eligible,
-               contextual_cueing::CueTarget::ContentGenerator) {
-              *out = eligible;
-              std::move(quit).Run();
-            },
-            out_eligible, run_loop.QuitClosure()));
-    run_loop.Run();
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
+  void SetHistorySyncEnabled(bool enabled) {
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, enabled);
+    GetTestSyncService()->FireStateChanged();
+  }
+
+  bool IsEligible(base::WeakPtr<content::WebContents> contents) {
+    base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+        future;
+    target_->CheckEligibility(std::move(contents),
+                              contextual_cueing::CueIntrusiveness::kLoud,
+                              future.GetCallback());
+    const auto& [eligible, unused_generator] = future.Get();
+    return eligible;
   }
 
   PageContentAnnotationsResult CreateEligibleResult() {
@@ -520,6 +557,7 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  raw_ptr<FakePageCategoryClassifierBridge> classifier_bridge_ = nullptr;
   GlicProfileManager glic_profile_manager_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
@@ -529,16 +567,12 @@ class GlicCueTargetAsyncTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NullWebContents) {
-  bool eligible = true;
-  CallCheckEligibility(nullptr, &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(nullptr));
 }
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_NoAnnotationService) {
   cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
-  bool eligible = true;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Eligible) {
@@ -549,9 +583,7 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Eligible) {
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateEligibleResult());
 
-  bool eligible = false;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_TRUE(eligible);
+  EXPECT_TRUE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Ineligible) {
@@ -561,9 +593,7 @@ TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheHit_Ineligible) {
   cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
                                          CreateIneligibleResult());
 
-  bool eligible = true;
-  CallCheckEligibility(web_contents()->GetWeakPtr(), &eligible);
-  EXPECT_FALSE(eligible);
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(GlicCueTargetAsyncTest, CheckEligibility_CacheMiss_AnnotationArrives) {
@@ -761,6 +791,118 @@ TEST_F(GlicCueTargetAsyncTest, DestructorFiresPendingCallback) {
 
   EXPECT_TRUE(callback_ran);
   EXPECT_FALSE(eligible);
+}
+
+TEST_F(GlicCueTargetAsyncTest,
+       CategoryClassifierObservation_TogglesWithHistorySync) {
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(false);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(true);
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+
+  cue_tab_state_->SetAnnotationServiceForTesting(nullptr);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  cue_tab_state_->SetAnnotationServiceForTesting(
+      PageContentAnnotationsServiceFactory::GetForProfile(profile()));
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+}
+
+TEST_F(GlicCueTargetAsyncTest,
+       CategoryClassifierObservation_InitiallyHistorySyncDisabled) {
+  cue_tab_state_.reset();
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(false);
+  cue_tab_state_ = std::make_unique<GlicCueTabState>(*mock_tab_);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(true);
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+}
+
+TEST_F(GlicCueTargetAsyncTest,
+       CategoryClassifierObservation_SyncShutdownUnregistersObserver) {
+  EXPECT_TRUE(classifier_bridge_->demand_active());
+  EXPECT_TRUE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  GetTestSyncService()->Shutdown();
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(true);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+}
+
+TEST_F(GlicCueTargetAsyncTest,
+       CheckEligibility_DisablingHistorySyncCancelsPendingAndClearsCache) {
+  const GURL url("https://example.com/edu");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+
+  // Start an in-flight eligibility check (cache miss).
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      future;
+  target_->CheckEligibility(web_contents()->GetWeakPtr(),
+                            contextual_cueing::CueIntrusiveness::kLoud,
+                            future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  // Disabling History Sync should immediately cancel the pending check without
+  // waiting for the annotation timeout timer.
+  SetHistorySyncEnabled(false);
+  const auto& [eligible, unused_generator] = future.Get();
+  EXPECT_FALSE(eligible);
+
+  // While History Sync is off, CheckEligibility() should fail fast.
+  EXPECT_FALSE(IsEligible(web_contents()->GetWeakPtr()));
+
+  // Re-enable History Sync, populate the cache, then disable History Sync
+  // and verify that cached_result_ was cleared.
+  SetHistorySyncEnabled(true);
+  cue_tab_state_->OnPageContentAnnotated(CreateVisit(url),
+                                         CreateEligibleResult());
+  EXPECT_TRUE(IsEligible(web_contents()->GetWeakPtr()));
+
+  SetHistorySyncEnabled(false);
+  SetHistorySyncEnabled(true);
+
+  // Because disabling History Sync cleared cached_result_, a subsequent check
+  // must wait for a new annotation rather than resolving from the stale cache.
+  base::test::TestFuture<bool, contextual_cueing::CueTarget::ContentGenerator>
+      trailing_future;
+  target_->CheckEligibility(web_contents()->GetWeakPtr(),
+                            contextual_cueing::CueIntrusiveness::kLoud,
+                            trailing_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(trailing_future.IsReady());
+
+  SetHistorySyncEnabled(false);
+  const auto& [trailing_eligible, unused_trailing_generator] =
+      trailing_future.Get();
+  EXPECT_FALSE(trailing_eligible);
+}
+
+class GlicCueTargetV1AsyncTest : public GlicCueTargetAsyncTest {
+ public:
+  GlicCueTargetV1AsyncTest()
+      : GlicCueTargetAsyncTest(/*enable_v2_multi_source=*/false) {}
+};
+
+TEST_F(GlicCueTargetV1AsyncTest,
+       CategoryClassifierObservation_DisabledWhenV2MultiSourceOff) {
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+  EXPECT_FALSE(GetTestSyncService()->HasObserver(cue_tab_state_.get()));
+
+  SetHistorySyncEnabled(false);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
+
+  SetHistorySyncEnabled(true);
+  EXPECT_FALSE(classifier_bridge_->demand_active());
 }
 
 TEST_F(GlicCueTargetTest, RequiresModelExecutionAndSupportsIntrusiveness) {
