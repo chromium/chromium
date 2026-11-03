@@ -83,7 +83,7 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
       return ActorControlState::kActorControlled;
     case ActorTaskState::kInit:
       return ActorControlState::kInactive;
-    // TODO(crbug.com/496164697): Add all states and remove the default case.
+    // TODO(crbug.com/580899072): Add all states and remove the default case.
     default:
       return ActorControlState::kInactive;
   }
@@ -308,7 +308,6 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
                        stop_reason == ActorTaskStoppedReason::kStoppedByUser;
   background_worker_->OnStopped(success);
 
-  // TODO(crbug.com/496164697): Implement and test.
   // TODO(crbug.com/565875367): Remove once observers migrate to
   // `ActorTaskLifecycleObserver`.
   const ActorTaskId task_id = task_id_;
@@ -321,11 +320,12 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
 }
 
 void ActorTask::Pause(bool from_actor) {
-  // TODO(crbug.com/496164697): Implement and test.
+  // TODO(crbug.com/567039302): Implement and test user-triggered pause.
+  // TODO(crbug.com/567040651): Implement and test actor-triggered pause.
 }
 
 void ActorTask::Resume() {
-  // TODO(crbug.com/496164697): Implement and test.
+  // TODO(crbug.com/567039302): Implement and test.
 }
 
 void ActorTask::SetInterventionDelegate(

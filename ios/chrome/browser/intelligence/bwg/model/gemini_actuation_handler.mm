@@ -476,7 +476,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
         // clarification once `ActorTask` supports it.
         // TODO(crbug.com/567096140): Interrupt and hand control to the user
         // once `ActorTask` supports takeover.
-        // TODO(crbug.com/496163986): Pause the task until the user resumes it
+        // TODO(crbug.com/567040651): Pause the task until the user resumes it
         // once `ActorTask` supports pausing.
         completionBlock(MakeUnsupportedYieldResponse());
         break;

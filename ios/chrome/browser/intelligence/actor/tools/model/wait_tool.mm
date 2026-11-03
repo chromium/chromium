@@ -45,8 +45,7 @@ void WaitTool::Validate(ToolExecutionCallback callback) {
 
 void WaitTool::Execute(ToolExecutionCallback callback) {
   if (observe_web_state_ && observe_web_state_->IsRealized()) {
-    // TODO(crbug.com/496164697): Observe the tab and monitor page stability,
-    // see also crbug.com/498991756.
+    // TODO(crbug.com/498991756): Observe the tab and monitor page stability.
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

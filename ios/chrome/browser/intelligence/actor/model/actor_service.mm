@@ -214,7 +214,7 @@ void ActorService::PerformActions(
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/496163986): Implement and test. Must be enqueued as a
+  // TODO(crbug.com/567039302): Implement and test. Must be enqueued as a
   // command.
 }
 
