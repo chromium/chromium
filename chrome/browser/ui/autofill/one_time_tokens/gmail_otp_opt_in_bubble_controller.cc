@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -26,6 +27,15 @@
 namespace autofill {
 
 namespace {
+
+void FinishWithResult(GmailOtpOptInBubbleController::ResultCallback callback,
+                      GmailOtpOptInResult result) {
+  if (callback) {
+    base::UmaHistogramEnumeration("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                  result);
+    std::move(callback).Run(result);
+  }
+}
 
 AutofillBubbleBase* CreateGmailOtpOptInBubbleView(
     content::WebContents* web_contents,
@@ -69,9 +79,7 @@ GmailOtpOptInBubbleController::~GmailOtpOptInBubbleController() {
     DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
     HideBubble(/*initiated_by_bubble_manager=*/false);
   }
-  if (callback_) {
-    std::move(callback_).Run(GmailOtpOptInResult::kDiscarded);
-  }
+  FinishWithResult(std::move(callback_), GmailOtpOptInResult::kDiscarded);
 }
 
 // static
@@ -84,9 +92,7 @@ void GmailOtpOptInBubbleController::SetUpAndShowBubble(
     const std::u16string& account_email,
     ResultCallback callback) {
   if (!IsBubbleManagerEnabled() || IsShowingBubble() || !MaySetUpBubble()) {
-    if (callback) {
-      std::move(callback).Run(GmailOtpOptInResult::kDiscarded);
-    }
+    FinishWithResult(std::move(callback), GmailOtpOptInResult::kDiscarded);
     return;
   }
   account_email_ = account_email;
@@ -105,9 +111,7 @@ void GmailOtpOptInBubbleController::OnBubbleClosed(GmailOtpOptInResult result) {
     return;
   }
 
-  if (callback_) {
-    std::move(callback_).Run(result);
-  }
+  FinishWithResult(std::move(callback_), result);
 }
 
 void GmailOtpOptInBubbleController::SetBubbleViewFactoryForTesting(
@@ -132,9 +136,7 @@ void GmailOtpOptInBubbleController::HideBubble(
 }
 
 void GmailOtpOptInBubbleController::OnBubbleDiscarded() {
-  if (callback_) {
-    std::move(callback_).Run(GmailOtpOptInResult::kDiscarded);
-  }
+  FinishWithResult(std::move(callback_), GmailOtpOptInResult::kDiscarded);
 }
 
 BubbleType GmailOtpOptInBubbleController::GetBubbleType() const {

@@ -136,6 +136,18 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.Gmail.OptIn.BubbleResult"
+    enum="GmailOtpOptInResult" expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>trangm@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the outcome of the Gmail OTP opt-in bubble. Recorded once when the
+    opt-in bubble finishes its lifecycle (without being re-queued for reshow) or
+    is discarded.
+  </summary>
+</histogram>
+
 <histogram
     name="OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">

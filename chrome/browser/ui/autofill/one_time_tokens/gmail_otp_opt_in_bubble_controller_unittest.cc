@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -212,6 +213,7 @@ TEST_F(GmailOtpOptInBubbleControllerTest, GetBubbleControllerBaseWeakPtr) {
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        SetUpAndShowBubble_ShowsBubbleImmediately) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(controller()->IsShowingBubble());
   EXPECT_CALL(page_action_controller(), Show(kActionGmailOtpOptIn));
 
@@ -219,10 +221,13 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
 
   EXPECT_TRUE(controller()->IsShowingBubble());
   EXPECT_EQ(controller()->account_email(), u"user@gmail.com");
+  histogram_tester.ExpectTotalCount("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                    0);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        SetUpAndShowBubble_WhenAlreadyShowing_DiscardsNewRequest) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<GmailOtpOptInResult> first_future;
   controller()->SetUpAndShowBubble(u"first@gmail.com",
                                    first_future.GetCallback());
@@ -235,6 +240,8 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   EXPECT_EQ(second_future.Get(), GmailOtpOptInResult::kDiscarded);
   EXPECT_FALSE(first_future.IsReady());
   EXPECT_EQ(controller()->account_email(), u"first@gmail.com");
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
@@ -280,6 +287,7 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        Destructor_HidesShowingBubbleAndRunsCallbackWithDiscarded) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<GmailOtpOptInResult> future;
   controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
   ASSERT_TRUE(controller()->IsShowingBubble());
@@ -288,6 +296,8 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   EXPECT_CALL(page_action_controller(), Hide(kActionGmailOtpOptIn));
   controller_.reset();
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest, IsMouseHovered) {
@@ -305,6 +315,7 @@ TEST_F(GmailOtpOptInBubbleControllerTest, IsMouseHovered) {
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        OnBubbleClosed_RunsCallbackWithResult) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<GmailOtpOptInResult> future;
   controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
   ASSERT_TRUE(controller()->IsShowingBubble());
@@ -313,10 +324,13 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
 
   EXPECT_FALSE(controller()->IsShowingBubble());
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDeclined);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDeclined, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
-       OnBubbleClosed_WhenPendingInQueue_DoesNotRunCallback) {
+       OnBubbleClosed_WhenPendingInQueue_DoesNotRunCallbackUntilReshown) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<GmailOtpOptInResult> future;
   controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
   ASSERT_TRUE(controller()->IsShowingBubble());
@@ -330,10 +344,22 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   // run the callback while the bubble is queued.
   controller()->OnBubbleClosed(GmailOtpOptInResult::kUnknown);
   EXPECT_FALSE(future.IsReady());
+  histogram_tester.ExpectTotalCount("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                    0);
+
+  // Reactivating the tab reshows the bubble, and closing it records the result
+  // once.
+  tab_interface()->Activate();
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  controller()->OnBubbleClosed(GmailOtpOptInResult::kAccepted);
+  EXPECT_EQ(future.Get(), GmailOtpOptInResult::kAccepted);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kAccepted, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        Destructor_WhenQueued_RunsCallbackWithDiscarded) {
+  base::HistogramTester histogram_tester;
   // Show a higher-priority password bubble so the Gmail OTP opt-in bubble is
   // queued in BubbleManager.
   NiceMock<MockOtherBubbleController> password_controller(
@@ -351,16 +377,22 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   // `autofill_bubble_manager_`, so it is destroyed first on tab teardown.
   controller_.reset();
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
        OnBubbleDiscarded_RunsCallbackWithDiscarded) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<GmailOtpOptInResult> future;
   controller()->SetUpAndShowBubble(u"user@gmail.com", future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   controller()->OnBubbleDiscarded();
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+  controller_.reset();
+  histogram_tester.ExpectUniqueSample("OneTimeTokens.Gmail.OptIn.BubbleResult",
+                                      GmailOtpOptInResult::kDiscarded, 1);
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,

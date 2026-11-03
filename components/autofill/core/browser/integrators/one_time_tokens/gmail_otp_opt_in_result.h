@@ -8,6 +8,11 @@
 namespace autofill {
 
 // Outcome of the Gmail OTP opt-in prompt.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GmailOtpOptInResult)
 enum class GmailOtpOptInResult {
   // The bubble closed for an unspecified reason.
   kUnknown = 0,
@@ -25,6 +30,7 @@ enum class GmailOtpOptInResult {
   kDiscarded = 5,
   kMaxValue = kDiscarded,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:GmailOtpOptInResult)
 
 }  // namespace autofill
 
