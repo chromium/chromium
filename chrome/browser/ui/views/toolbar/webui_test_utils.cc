@@ -1153,6 +1153,38 @@ bool WebUIToolbarDropSimulator::PerformDrop(content::DropData drop_data,
   return true;
 }
 
+void WebUIToolbarDropSimulator::SendDrop(content::DropData drop_data,
+                                         int key_modifiers) {
+  const gfx::PointF screen_pt(
+      drop_point_ + toolbar_view_->GetBoundsInScreen().OffsetFromOrigin());
+
+  content::RenderWidgetHost* rwh =
+      toolbar_web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  content::DropData filtered_drop_data = drop_data;
+  rwh->FilterDropData(&filtered_drop_data);
+  rwh->DragTargetDragEnter(filtered_drop_data, drop_point_, screen_pt,
+                           blink::kDragOperationEvery, key_modifiers,
+                           base::DoNothing());
+  toolbar_web_contents_->GetDelegate()->PreHandleDragUpdate(drop_data,
+                                                            drop_point_);
+  rwh->DragTargetDragOver(drop_point_, screen_pt, blink::kDragOperationEvery,
+                          key_modifiers, base::DoNothing());
+
+  base::test::TestFuture<std::optional<content::DropData>>
+      performing_drop_future;
+  HandleOnPerformingDrop(toolbar_web_contents_, std::move(filtered_drop_data),
+                         performing_drop_future.GetCallback());
+  ASSERT_TRUE(performing_drop_future.IsReady());
+  std::optional<content::DropData> final_drop_data =
+      performing_drop_future.Take();
+  ASSERT_TRUE(final_drop_data.has_value());
+
+  rwh->DragTargetDrop(*final_drop_data, drop_point_, screen_pt, key_modifiers,
+                      base::DoNothing());
+}
+
 void WebUIToolbarDropSimulator::SimulateLinkDrop(const std::string& url,
                                                  DragOrigin origin) {
   content::DropData drop_data;

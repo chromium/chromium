@@ -47,6 +47,8 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -110,6 +112,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -129,6 +132,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -1353,6 +1358,9 @@ class TestDragDropClient : public aura::client::DragDropClient,
     for (auto& observer : observers_) {
       observer.OnDragStarted();
     }
+    if (drop_callback_) {
+      std::move(drop_callback_).Run(*data);
+    }
     // A real drop target can only pick an operation that the source allowed.
     // `ui::mojom::DragOperation` values match the `ui::DragDropTypes` bits.
     reported_drop_result_ =
@@ -1393,8 +1401,16 @@ class TestDragDropClient : public aura::client::DragDropClient,
     drop_result_ = drop_result;
   }
 
+  // Sets a callback run with the drag data while the drag is in progress, like
+  // the platform does while it delivers the drag to a drop target.
+  void set_drop_callback(
+      base::OnceCallback<void(const ui::OSExchangeData&)> drop_callback) {
+    drop_callback_ = std::move(drop_callback);
+  }
+
  private:
   bool drag_triggered_ = false;
+  base::OnceCallback<void(const ui::OSExchangeData&)> drop_callback_;
   GURL dragged_url_;
   std::u16string dragged_text_;
   int dragged_formats_ = 0;
@@ -1592,6 +1608,46 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
     drop_simulator.SimulateTextDrop(text, origin);
   }
 
+  // Returns the bounds, in the toolbar WebUI's client coordinates, of the
+  // omnibox text from `start` to `end`, exclusive. Uses #textContainer, which
+  // renders the same text at the same position as the input, split into
+  // pieces.
+  gfx::Rect GetOmniboxTextBounds(size_t start, size_t end) {
+    const content::EvalJsResult result =
+        EvalOmniboxJs(base::StringPrintf(R"(
+      const start = %zu;
+      const end = %zu;
+      const walker = document.createTreeWalker(omnibox.$.textContainer,
+                                               NodeFilter.SHOW_TEXT);
+      const range = document.createRange();
+      let offset = 0;
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const nodeEnd = offset + node.length;
+        if (offset <= start && start < nodeEnd) {
+          range.setStart(node, start - offset);
+        }
+        if (offset < end && end <= nodeEnd) {
+          range.setEnd(node, end - offset);
+        }
+        offset = nodeEnd;
+      }
+      const r = range.getBoundingClientRect();
+      return [r.x, r.y, r.width, r.height].map(Math.round);
+    )",
+                                         start, end));
+    const base::ListValue& bounds = result.ExtractList();
+    return gfx::Rect(bounds[0].GetInt(), bounds[1].GetInt(), bounds[2].GetInt(),
+                     bounds[3].GetInt());
+  }
+
+  // Returns the browser's omnibox edit model.
+  OmniboxEditModel* GetOmniboxEditModel() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model();
+  }
+
 #if defined(USE_AURA)
   // The drag data expected from the omnibox. Like the native omnibox, both copy
   // and move are always allowed.
@@ -1659,6 +1715,86 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
                  WaitForOmniboxValue("dropped text"));
   }
 
+  // Navigates to a page, types `text` in the omnibox, and selects it from
+  // `start` to `end`, exclusive.
+  MultiStep SetUpOmniboxSelection(const std::string& text,
+                                  size_t start,
+                                  size_t end) {
+    return Steps(
+        WaitForToolbarLoaded(),
+        NavigateWebContents(TabId(),
+                            embedded_test_server()->GetURL("/title1.html")),
+        WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
+                          "el => el.value.includes('title1')"),
+        TypeInOmniboxAndSelectAll(text), SelectOmniboxRange(start, end),
+        WaitForAdjustedCopyUrl(
+            GURL(),
+            base::StringPrintf("el.adjustedCopyResult.adjustedText === '%s'",
+                               text.substr(start, end - start).c_str())),
+        WaitForJsResultAt(
+            WebUIToolbarId(), kOmniboxDeepQuery,
+            base::StringPrintf("el => el.$.textContainer.textContent === '%s'",
+                               text.c_str())));
+  }
+
+  // Drags the omnibox selection from `press_point` and drops it at
+  // `drop_point`, both in the toolbar WebUI's client coordinates. `after_drop`
+  // runs before the mouse release, which a real drop does not deliver to the
+  // page. The mouse events go to aura directly, so that the OS does not send
+  // moves with the button held after the drop.
+  void DragAndDropWithinOmnibox(const gfx::Point& press_point,
+                                const gfx::Point& drop_point,
+                                MultiStep after_drop,
+                                int key_modifiers = 0) {
+    views::View* const toolbar_view = ::GetWebUIToolbarWebView(browser());
+    const gfx::Rect toolbar_bounds = toolbar_view->GetBoundsInScreen();
+    // Over the back button, so that the mouseup does not reach the omnibox.
+    const gfx::Point drag_point =
+        toolbar_bounds.left_center() + gfx::Vector2d(10, 0);
+    RunTestSequence(
+        // Move the OS cursor too, without pressing, since aura takes the mouse
+        // location from native events, which the drag start checks.
+        MoveMouseTo(drag_point), SetupDragDropClient(),
+        Do(base::BindLambdaForTesting([&]() {
+          drag_drop_client_->set_drop_result(
+              key_modifiers & blink::WebInputEvent::kControlKey
+                  ? ui::mojom::DragOperation::kCopy
+                  : ui::mojom::DragOperation::kMove);
+          drag_drop_client_->set_drop_callback(
+              base::BindLambdaForTesting([&](const ui::OSExchangeData& data) {
+                // Like `WebContentsViewAura::PrepareDropData()`.
+                content::DropData drop_data;
+                drop_data.did_originate_from_renderer = true;
+                drop_data.text = data.GetString();
+                drop_data.url_infos = data.GetURLs(
+                    ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+                WebUIToolbarDropSimulator drop_simulator(
+                    toolbar_view, GetWebUIToolbarWebView()->GetWebContents());
+                drop_simulator.set_drop_point(gfx::PointF(drop_point));
+                drop_simulator.SendDrop(drop_data, key_modifiers);
+              }));
+        })));
+
+    ui::test::EventGenerator event_generator(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->GetNativeWindow()
+            ->GetRootWindow());
+    event_generator.MoveMouseTo(press_point +
+                                toolbar_bounds.OffsetFromOrigin());
+    event_generator.PressLeftButton();
+    event_generator.MoveMouseTo(drag_point);
+
+    RunTestSequence(PollUntil(base::BindLambdaForTesting([this]() {
+                                return drag_drop_client_->drag_triggered();
+                              }),
+                              "Drag was triggered"),
+                    std::move(after_drop), Do(base::BindLambdaForTesting([&]() {
+                      event_generator.ReleaseLeftButton();
+                    })),
+                    ResetDragDropClient());
+  }
+
   MultiStep SetupDragDropClient() {
     return Steps(Do(base::BindLambdaForTesting([this]() {
       auto* root_window = BrowserView::GetBrowserViewForBrowser(browser())
@@ -1681,6 +1817,19 @@ class WebUIToolbarViewsLocationBarInteractiveUiTest
 
   std::unique_ptr<TestDragDropClient> drag_drop_client_;
 #endif
+
+  void TearDownOnMainThread() override {
+#if defined(USE_AURA)
+    // Restore the original drag client while the browser window is alive, in
+    // case a failed step skipped `ResetDragDropClient()`.
+    if (drag_drop_client_) {
+      aura::test::EnvTestHelper(aura::Env::GetInstance())
+          .SetInputStateLookup(aura::InputStateLookup::Create());
+      drag_drop_client_.reset();
+    }
+#endif
+    WebUIAndViewsToolbarInteractiveUiTestBase::TearDownOnMainThread();
+  }
 
  private:
   // Runs `body` in the toolbar WebUI with `omnibox` bound to the omnibox
@@ -1781,6 +1930,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #define MAYBE_Omnibox_DragPlainText Omnibox_DragPlainText
 #define MAYBE_Omnibox_DragPlainText_MoveKeepsText \
   Omnibox_DragPlainText_MoveKeepsText
+#define MAYBE_Omnibox_DragPlainText_DropOnSelf Omnibox_DragPlainText_DropOnSelf
+#define MAYBE_Omnibox_DragPlainText_DropOnSelf_CopyWithCtrl \
+  Omnibox_DragPlainText_DropOnSelf_CopyWithCtrl
+#define MAYBE_Omnibox_DragPartialUrl_DropOnSelf \
+  Omnibox_DragPartialUrl_DropOnSelf
 #define MAYBE_Omnibox_DragPlainText_StateAfterDrop \
   Omnibox_DragPlainText_StateAfterDrop
 #define MAYBE_Omnibox_DragPlainText_StateAfterCancel \
@@ -1809,6 +1963,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 #define MAYBE_Omnibox_DragPlainText DISABLED_Omnibox_DragPlainText
 #define MAYBE_Omnibox_DragPlainText_MoveKeepsText \
   DISABLED_Omnibox_DragPlainText_MoveKeepsText
+#define MAYBE_Omnibox_DragPlainText_DropOnSelf \
+  DISABLED_Omnibox_DragPlainText_DropOnSelf
+#define MAYBE_Omnibox_DragPlainText_DropOnSelf_CopyWithCtrl \
+  DISABLED_Omnibox_DragPlainText_DropOnSelf_CopyWithCtrl
+#define MAYBE_Omnibox_DragPartialUrl_DropOnSelf \
+  DISABLED_Omnibox_DragPartialUrl_DropOnSelf
 #define MAYBE_Omnibox_DragPlainText_StateAfterDrop \
   DISABLED_Omnibox_DragPlainText_StateAfterDrop
 #define MAYBE_Omnibox_DragPlainText_StateAfterCancel \
@@ -1873,6 +2033,98 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       DragFromOmniboxAndCheck({.text = u"hello world"}, kTextSpanDeepQuery,
                               ui::mojom::DragOperation::kMove),
       CheckOmniboxAfterDragOut("hello world"));
+#endif
+}
+
+// Like the native omnibox, text dragged within the omnibox is moved to where it
+// is dropped, without navigating. The moved text is user input sent to the
+// browser, the caret is after the dropped text, without selection, and the
+// popup opens for the new text.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_Omnibox_DragPlainText_DropOnSelf) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  RunTestSequence(SetUpOmniboxSelection("helloworld", 5, 10));
+  NavigationCounter navigation_counter(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Press on "world", and drop it before "hello".
+  DragAndDropWithinOmnibox(
+      GetOmniboxTextBounds(5, 10).CenterPoint(),
+      GetOmniboxTextBounds(0, 1).left_center(),
+      Steps(WaitForOmniboxValue("worldhello"),
+            PollUntil(
+                base::BindLambdaForTesting([this]() {
+                  return GetOmniboxEditModel()->user_input_in_progress() &&
+                         GetOmniboxEditModel()->user_text() == u"worldhello";
+                }),
+                "Browser has the dropped text as user input"),
+            PollUntil(base::BindLambdaForTesting(
+                          [this]() { return IsOmniboxPopupOpen(); }),
+                      "Popup is open"),
+            // Both the browser and the input have the caret after the dropped
+            // text, also once the popup opened.
+            PollUntil(base::BindLambdaForTesting([this]() {
+                        return BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->GetLocationBar()
+                                   ->GetOmniboxView()
+                                   ->GetSelectionBounds() == gfx::Range(5);
+                      }),
+                      "Browser has the caret after the dropped text"),
+            CheckJsResultAt(
+                WebUIToolbarId(), kTextInputDeepQuery,
+                "el => el.selectionStart === 5 && el.selectionEnd === 5")));
+  navigation_counter.WaitForNoNavigations();
+#endif
+}
+
+// Like the native omnibox, text dragged within the omnibox with Ctrl held is
+// copied to where it is dropped, rather than moved.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_Omnibox_DragPlainText_DropOnSelf_CopyWithCtrl) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  RunTestSequence(SetUpOmniboxSelection("helloworld", 5, 10));
+  NavigationCounter navigation_counter(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Press on "world", and drop it before "hello" with Ctrl held.
+  DragAndDropWithinOmnibox(GetOmniboxTextBounds(5, 10).CenterPoint(),
+                           GetOmniboxTextBounds(0, 1).left_center(),
+                           Steps(WaitForOmniboxValue("worldhelloworld")),
+                           blink::WebInputEvent::kControlKey);
+  navigation_counter.WaitForNoNavigations();
+#endif
+}
+
+// A selection of the host at the beginning of the URL, dropped at the end of
+// the URL. Like the native omnibox, the selected text as displayed is moved,
+// rather than the URL that the drag also carries.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
+                       MAYBE_Omnibox_DragPartialUrl_DropOnSelf) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+  const GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const std::string host =
+      base::StrCat({initial_url.host(), ":", initial_url.port()});
+  const std::string displayed_text = base::StrCat({host, "/title1.html"});
+
+  RunTestSequence(
+      WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForOmniboxValue(displayed_text), SelectOmniboxRange(0, host.size()),
+      WaitForAdjustedCopyUrl(GURL(base::StrCat({"http://", host, "/"}))),
+      WaitForJsResultAt(
+          WebUIToolbarId(), kOmniboxDeepQuery,
+          base::StringPrintf("el => el.$.textContainer.textContent === '%s'",
+                             displayed_text.c_str())));
+  NavigationCounter navigation_counter(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Press on the host, and drop it at the end.
+  DragAndDropWithinOmnibox(
+      GetOmniboxTextBounds(0, host.size()).CenterPoint(),
+      GetOmniboxTextBounds(displayed_text.size() - 1, displayed_text.size())
+          .right_center(),
+      Steps(WaitForOmniboxValue(base::StrCat({"/title1.html", host}))));
+  navigation_counter.WaitForNoNavigations();
 #endif
 }
 
