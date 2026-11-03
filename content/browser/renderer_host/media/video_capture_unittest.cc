@@ -156,6 +156,8 @@ class VideoCaptureTest : public testing::Test,
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
       GetMediaDeviceSaltAndOrigin(render_frame_host_id, future.GetCallback());
       MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
+      media_stream_manager_->media_devices_manager()
+          ->SetVideoEnumerationModeToDevicesWithCapabilities();
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
           base::BindOnce(&VideoInputDevicesEnumerated, run_loop.QuitClosure(),

@@ -11,6 +11,7 @@
 #include <functional>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -43,6 +44,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/device_notifications.mojom.h"
@@ -336,14 +338,24 @@ bool MediaDevicesManager::IsRelaxedCacheFeatureEnabled() {
 }
 
 struct MediaDevicesManager::EnumerationRequest {
-  EnumerationRequest(const BoolDeviceTypes& requested_types,
-                     EnumerationCallback callback)
-      : callback(std::move(callback)) {
+  EnumerationRequest(
+      uint64_t request_id,
+      const BoolDeviceTypes& requested_types,
+      media::mojom::VideoCaptureDeviceEnumerationMode video_enumeration_mode,
+      EnumerationCallback callback)
+      : request_id(request_id),
+        video_enumeration_mode(video_enumeration_mode),
+        callback(std::move(callback)) {
     requested = requested_types;
   }
 
+  // Keep this request's ID for logging if an ongoing `kDevicesOnly`
+  // enumeration cannot satisfy it and a subsequent `kDevicesWithCapabilities`
+  // enumeration is needed.
+  uint64_t request_id;
   BoolDeviceTypes requested;
   BoolDeviceTypes has_seen_result_for_request;
+  media::mojom::VideoCaptureDeviceEnumerationMode video_enumeration_mode;
   EnumerationCallback callback;
 };
 
@@ -580,6 +592,7 @@ MediaDevicesManager::MediaDevicesManager(
       stop_removed_input_device_cb_(std::move(stop_removed_input_device_cb)),
       ui_input_device_change_cb_(std::move(ui_input_device_change_cb)),
       permission_checker_(std::make_unique<MediaDevicesPermissionChecker>()),
+      video_enumeration_mode_(media::GetDefaultVideoEnumerationMode()),
       get_salt_and_origin_cb_(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M155);
@@ -612,6 +625,12 @@ MediaDevicesManager::~MediaDevicesManager() {
 #endif
 }
 
+void MediaDevicesManager::SetVideoEnumerationModeToDevicesWithCapabilities() {
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  video_enumeration_mode_ =
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities;
+}
+
 void MediaDevicesManager::EnumerateDevices(
     const BoolDeviceTypes& requested_types,
     EnumerationCallback callback,
@@ -635,7 +654,8 @@ void MediaDevicesManager::EnumerateDevices(
   }
   StartMonitoringAndPopulateCache(request_id, start_mode);
 
-  client_requests_.emplace_back(requested_types, std::move(callback));
+  client_requests_.emplace_back(request_id, requested_types,
+                                video_enumeration_mode_, std::move(callback));
   bool all_results_cached = true;
   for (size_t i = 0;
        i < static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes); ++i) {
@@ -645,7 +665,11 @@ void MediaDevicesManager::EnumerateDevices(
       // returning potentially outdated results.
       cache_infos_[i].ResetSpuriousInvalidations();
     }
-    if (requested_types[i] && cache_policies_[i] == CachePolicy::NO_CACHE) {
+    const bool video_cache_insufficient =
+        i == static_cast<size_t>(MediaDeviceType::kMediaVideoInput) &&
+        !CanVideoInputCacheSatisfyEnumerationMode(video_enumeration_mode_);
+    if (requested_types[i] && (cache_policies_[i] == CachePolicy::NO_CACHE ||
+                               video_cache_insufficient)) {
       all_results_cached = false;
       EnumerateSystemDevices(request_id, static_cast<MediaDeviceType>(i));
     }
@@ -1144,6 +1168,9 @@ void MediaDevicesManager::OnPermissionsCheckDone(
       MediaDeviceType::kMediaAudioOutput)] =
       requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)];
 
+  if (requested_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]) {
+    SetVideoEnumerationModeToDevicesWithCapabilities();
+  }
   EnumerateAndRankDevices(
       render_frame_host_id, internal_requested_types,
       base::BindOnce(&MediaDevicesManager::OnDevicesEnumeratedAndRanked,
@@ -1448,10 +1475,10 @@ void MediaDevicesManager::EnumerateSystemDevices(uint64_t request_id,
       EnumerateAudioDevices(request_id, true /* is_input */);
       break;
     case MediaDeviceType::kMediaVideoInput:
+      ongoing_update_video_enumeration_mode_ = video_enumeration_mode_;
       ReportVideoEnumerationStart();
       video_capture_manager_->EnumerateDevices(
-          media::mojom::VideoCaptureDeviceEnumerationMode::
-              kDevicesWithCapabilities,
+          video_enumeration_mode_,
           base::BindOnce(&MediaDevicesManager::VideoInputDevicesEnumerated,
                          weak_factory_.GetWeakPtr(), request_id));
       break;
@@ -1527,14 +1554,26 @@ void MediaDevicesManager::DevicesEnumerated(
     const blink::WebMediaDeviceInfoArray& snapshot) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M155);
   CHECK(blink::IsValidMediaDeviceType(type), base::NotFatalUntil::M155);
+  CacheInfo& cache_info = cache_infos_[static_cast<size_t>(type)];
+  if (type == MediaDeviceType::kMediaVideoInput) {
+    CHECK(ongoing_update_video_enumeration_mode_.has_value());
+  }
   UpdateSnapshot(type, snapshot);
-  cache_infos_[static_cast<size_t>(type)].UpdateCompleted();
+  cache_info.UpdateCompleted();
+  if (type == MediaDeviceType::kMediaVideoInput) {
+    cached_video_enumeration_mode_ = ongoing_update_video_enumeration_mode_;
+    ongoing_update_video_enumeration_mode_ = std::nullopt;
+  }
   cache_is_populated_[static_cast<size_t>(type)] = true;
   SendLogMessage(GetDevicesEnumeratedLogString(request_id, type, snapshot));
 
   if (cache_policies_[static_cast<size_t>(type)] == CachePolicy::NO_CACHE) {
     for (auto& request : client_requests_) {
-      request.has_seen_result_for_request[static_cast<size_t>(type)] = true;
+      if (type != MediaDeviceType::kMediaVideoInput ||
+          CanVideoInputCacheSatisfyEnumerationMode(
+              request.video_enumeration_mode)) {
+        request.has_seen_result_for_request[static_cast<size_t>(type)] = true;
+      }
     }
   }
 
@@ -1654,6 +1693,9 @@ void MediaDevicesManager::ProcessClientRequests() {
     }
     return false;
   });
+  // Check if a video enumeration with capabilities is needed for any pending
+  // request.
+  MaybeStartVideoEnumerationWithCapabilities();
 }
 
 bool MediaDevicesManager::IsEnumerationRequestReady(
@@ -1663,6 +1705,11 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
        i < static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes); ++i) {
     if (!request_info.requested[i]) {
       continue;
+    }
+    if (i == static_cast<size_t>(MediaDeviceType::kMediaVideoInput) &&
+        !CanVideoInputCacheSatisfyEnumerationMode(
+            request_info.video_enumeration_mode)) {
+      return false;
     }
     switch (cache_policies_[i]) {
       case CachePolicy::SYSTEM_MONITOR:
@@ -1680,6 +1727,41 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
     }
   }
   return true;
+}
+
+bool MediaDevicesManager::CanVideoInputCacheSatisfyEnumerationMode(
+    media::mojom::VideoCaptureDeviceEnumerationMode requested_mode) const {
+  const size_t video_index =
+      static_cast<size_t>(MediaDeviceType::kMediaVideoInput);
+  if (!cache_is_populated_[video_index]) {
+    return false;
+  }
+  CHECK(cached_video_enumeration_mode_.has_value());
+  return media::CanEnumerationResultSatisfyRequest(
+      *cached_video_enumeration_mode_, requested_mode);
+}
+
+void MediaDevicesManager::MaybeStartVideoEnumerationWithCapabilities() {
+  if (client_requests_.empty() ||
+      cache_infos_[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]
+          .is_update_ongoing() ||
+      CanVideoInputCacheSatisfyEnumerationMode(
+          media::mojom::VideoCaptureDeviceEnumerationMode::
+              kDevicesWithCapabilities)) {
+    return;
+  }
+  const auto request_it = std::ranges::find_if(
+      client_requests_, [](const EnumerationRequest& request) {
+        return request.requested[static_cast<size_t>(
+                   MediaDeviceType::kMediaVideoInput)] &&
+               request.video_enumeration_mode ==
+                   media::mojom::VideoCaptureDeviceEnumerationMode::
+                       kDevicesWithCapabilities;
+      });
+  if (request_it != client_requests_.end()) {
+    EnumerateSystemDevices(request_it->request_id,
+                           MediaDeviceType::kMediaVideoInput);
+  }
 }
 
 void MediaDevicesManager::HandleDevicesChanged(MediaDeviceType type) {

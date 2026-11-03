@@ -118,6 +118,8 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
           types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] = true;
           types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] = true;
           base::test::TestFuture<const MediaDeviceEnumeration&> future;
+          media_stream_manager->media_devices_manager()
+              ->SetVideoEnumerationModeToDevicesWithCapabilities();
           media_stream_manager->media_devices_manager()->EnumerateDevices(
               types, base::BindLambdaForTesting(
                          [&](const MediaDeviceEnumeration& enumeration) {

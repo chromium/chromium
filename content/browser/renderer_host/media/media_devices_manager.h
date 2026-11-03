@@ -8,6 +8,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
 #include "media/audio/audio_device_description.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -168,6 +170,10 @@ class CONTENT_EXPORT MediaDevicesManager
                                const BoolDeviceTypes& requested_types,
                                EnumerationCallback callback,
                                uint64_t request_id = 0);
+
+  // Permanently sets `video_enumeration_mode_` to `kDevicesWithCapabilities`.
+  // An enumeration already in progress retains its original mode.
+  void SetVideoEnumerationModeToDevicesWithCapabilities();
 
   // Performs a possibly cached device enumeration for the requested device
   // types and reports the results to `callback`. The enumeration results are
@@ -443,6 +449,9 @@ class CONTENT_EXPORT MediaDevicesManager
                       bool use_group_id = false);
   void ProcessClientRequests();
   bool IsEnumerationRequestReady(const EnumerationRequest& request_info);
+  bool CanVideoInputCacheSatisfyEnumerationMode(
+      media::mojom::VideoCaptureDeviceEnumerationMode requested_mode) const;
+  void MaybeStartVideoEnumerationWithCapabilities();
 
   // Helpers to handle device-change notification.
   void HandleDevicesChanged(MediaDeviceType type);
@@ -506,6 +515,19 @@ class CONTENT_EXPORT MediaDevicesManager
   using CacheInfos = std::vector<CacheInfo>;
   CacheInfos cache_infos_;
 
+  // Starts at the platform default (`kDevicesOnly` only on Windows with
+  // `kWinDeviceEnumerationWithoutActivation` enabled). Once a caller requests
+  // enumeration with capabilities, subsequent enumerations use
+  // `kDevicesWithCapabilities`.
+  media::mojom::VideoCaptureDeviceEnumerationMode video_enumeration_mode_;
+  // Mode of the most recent video enumeration result, if any.
+  std::optional<media::mojom::VideoCaptureDeviceEnumerationMode>
+      cached_video_enumeration_mode_;
+  // Mode of the video enumeration started for the ongoing update, if any. We
+  // track it here in case `video_enumeration_mode_` changes before that
+  // enumeration completes.
+  std::optional<media::mojom::VideoCaptureDeviceEnumerationMode>
+      ongoing_update_video_enumeration_mode_;
   BoolDeviceTypes cache_is_populated_;
   std::vector<EnumerationRequest> client_requests_;
   MediaDeviceEnumeration current_snapshot_;

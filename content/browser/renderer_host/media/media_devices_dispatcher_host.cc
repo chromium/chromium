@@ -399,6 +399,8 @@ void MediaDevicesDispatcherHost::OnVideoGotSaltAndOrigin(
   // the video group ID works.
   requested_types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       true;
+  media_stream_manager_->media_devices_manager()
+      ->SetVideoEnumerationModeToDevicesWithCapabilities();
   media_stream_manager_->media_devices_manager()->EnumerateAndRankDevices(
       render_frame_host_id_, requested_types,
       base::BindOnce(
@@ -479,6 +481,9 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
       "MDDH::GetVideoInputDeviceFormats({hashed_device_id=%s}, "
       "{try_in_use_first=%s})",
       hashed_device_id.c_str(), base::ToString(try_in_use_first)));
+  // Supported video formats require an enumeration with capabilities.
+  media_stream_manager_->media_devices_manager()
+      ->SetVideoEnumerationModeToDevicesWithCapabilities();
   GetRawDeviceIDForMediaStreamHMAC(
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
       hashed_device_id, base::SequencedTaskRunner::GetCurrentDefault(),

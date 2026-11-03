@@ -272,6 +272,8 @@ class MediaDevicesDispatcherHostTest
         MediaDeviceType::kMediaVideoInput)] = true;
     devices_to_enumerate[static_cast<size_t>(
         MediaDeviceType::kMediaAudioOutput)] = true;
+    media_stream_manager_->media_devices_manager()
+        ->SetVideoEnumerationModeToDevicesWithCapabilities();
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&PhysicalDevicesEnumerated, run_loop.QuitClosure(),

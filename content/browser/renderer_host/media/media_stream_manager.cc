@@ -2324,6 +2324,9 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
   } else if (request_video_input) {
     start_mode = MediaDevicesManager::DeviceStartMonitoringMode::kStartVideo;
   }
+  if (request_video_input) {
+    media_devices_manager_->SetVideoEnumerationModeToDevicesWithCapabilities();
+  }
   // Start monitoring the requested devices when doing the first enumeration.
   media_devices_manager_->StartMonitoringAndPopulateCache(0, start_mode);
 
