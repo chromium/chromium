@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_PERMISSION_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -39,6 +40,13 @@ class RemoteActorCredentialPermissionClient {
     // TODO(crbug.com/532483845): Use this to grant permission for a specific
     // credential instead of all affiliated passwords.
     std::string password_client_tag_hash;
+    // Optional override for the actor's OAuth client ID. If empty, falls back
+    // to `features::kRemoteActorOAuthClientId`.
+    std::string actor_oauth_client_id;
+    // Optional override for the task ID namespace. Must be positive if set. If
+    // `std::nullopt`, falls back to the default Spark conversation namespace
+    // (30).
+    std::optional<int> task_namespace_id;
   };
 
   using GrantPasswordPermissionCallback = base::OnceCallback<void(bool)>;

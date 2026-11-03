@@ -4,6 +4,9 @@
 
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_service_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
@@ -11,12 +14,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -103,6 +108,61 @@ TEST_F(RemoteActorCredentialSharingServiceImplTest, SharePasswordSuccess) {
   EXPECT_TRUE(future.Get());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.RemoteActorCredentialSharing.SharingFailureReason", 0);
+}
+
+TEST_F(RemoteActorCredentialSharingServiceImplTest,
+       SharePasswordForwardsAgentParametersToAPS) {
+  identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<bool> future;
+  RemoteActorCredentialSharingService::ShareParameters params;
+  params.obfuscated_gaia_id = "12345";
+  params.web_origin = "https://nike.com";
+  params.password_data.set_signon_realm("https://nike.com");
+  params.password_data.set_origin("https://nike.com");
+  params.password_data.set_username_value("alice");
+  params.password_data.set_password_value("password");
+  params.time_to_live = base::Minutes(10);
+  params.task_id = "glic_task_456";
+  params.actor_oauth_client_id = "test_agent_client_id";
+  params.task_namespace_id = 41;
+
+  service_->SharePassword(params, future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token1", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  auto* passbox_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(passbox_request);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      passbox_request->request.url.spec(), "{}");
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "token2", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  auto* aps_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(aps_request);
+
+  std::string upload_data = network::GetUploadData(aps_request->request);
+  EXPECT_THAT(base::test::ParseJson(upload_data),
+              base::test::IsSupersetOfValue(base::test::ParseJson(R"({
+                "agent": {
+                  "agentOauthClientId": "test_agent_client_id"
+                },
+                "delegationContext": {
+                  "taskConstraint": {
+                    "taskId": {
+                      "namespaceId": 41,
+                      "id": "glic_task_456"
+                    }
+                  }
+                }
+              })")));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      aps_request->request.url.spec(), "{}");
+  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(RemoteActorCredentialSharingServiceImplTest,
@@ -226,6 +286,7 @@ struct InvalidParamsTestCase {
   std::string obfuscated_gaia_id;
   std::string web_origin;
   std::string task_id;
+  std::optional<int> task_namespace_id = std::nullopt;
 };
 
 class RemoteActorCredentialSharingServiceImplInvalidParamsTest
@@ -249,6 +310,7 @@ TEST_P(RemoteActorCredentialSharingServiceImplInvalidParamsTest,
   params.password_data.set_password_value("password");
   params.time_to_live = base::Minutes(10);
   params.task_id = tc.task_id;
+  params.task_namespace_id = tc.task_namespace_id;
 
   service_->SharePassword(params, future.GetCallback());
 
@@ -266,7 +328,11 @@ INSTANTIATE_TEST_SUITE_P(
         InvalidParamsTestCase{"EmptyTaskId", "12345", "https://nike.com", ""},
         InvalidParamsTestCase{"EmptyWebOrigin", "12345", "", "task_id_123"},
         InvalidParamsTestCase{"EmptyGaiaId", "", "https://nike.com",
-                              "task_id_123"}),
+                              "task_id_123"},
+        InvalidParamsTestCase{"ZeroTaskNamespaceId", "12345",
+                              "https://nike.com", "task_id_123", 0},
+        InvalidParamsTestCase{"NegativeTaskNamespaceId", "12345",
+                              "https://nike.com", "task_id_123", -5}),
     [](const testing::TestParamInfo<InvalidParamsTestCase>& info) {
       return info.param.test_name;
     });

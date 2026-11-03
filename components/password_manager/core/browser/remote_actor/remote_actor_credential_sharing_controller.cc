@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -99,6 +100,14 @@ void RemoteActorCredentialSharingController::Start(std::string_view gaia_id,
   }
 
   QueryPasswordStores(domain);
+}
+
+void RemoteActorCredentialSharingController::SetActorParameters(
+    std::string_view actor_oauth_client_id,
+    std::optional<int> task_namespace_id) {
+  CHECK(!IsActive());
+  actor_oauth_client_id_ = actor_oauth_client_id;
+  task_namespace_id_ = task_namespace_id;
 }
 
 bool RemoteActorCredentialSharingController::IsActive() const {
@@ -339,6 +348,8 @@ void RemoteActorCredentialSharingController::ProceedWithCredential(
   params.password_data = std::move(specifics_data);
   params.time_to_live = kShareTimeToLive;
   params.task_id = task_id_;
+  params.actor_oauth_client_id = actor_oauth_client_id_;
+  params.task_namespace_id = task_namespace_id_;
 
   sharing_service_->SharePassword(
       params,

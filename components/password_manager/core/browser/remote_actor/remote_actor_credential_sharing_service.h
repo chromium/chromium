@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_REMOTE_ACTOR_REMOTE_ACTOR_CREDENTIAL_SHARING_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -37,6 +38,14 @@ class RemoteActorCredentialSharingService : public KeyedService {
 
     // The task ID of the remote actor requesting the credential.
     std::string task_id;
+
+    // Optional override for the actor's OAuth client ID. If empty, falls back
+    // to `features::kRemoteActorOAuthClientId`.
+    std::string actor_oauth_client_id;
+
+    // Optional override for the task ID namespace. Must be positive if set. If
+    // `std::nullopt`, falls back to the default Spark conversation namespace.
+    std::optional<int> task_namespace_id;
 
     // Computes the client tag hash identifying the credential from its
     // specifics data.

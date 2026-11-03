@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -90,6 +91,13 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
              std::string_view task_id,
              ResultCallback callback);
 
+  // Configures optional per-actor OAuth client ID and task namespace ID
+  // overrides to forward when sharing a credential. Must be called before
+  // `Start()`. If not set (or empty / `std::nullopt`), the permission client
+  // falls back to default values.
+  void SetActorParameters(std::string_view actor_oauth_client_id,
+                          std::optional<int> task_namespace_id);
+
   // Returns whether `Start()` was called and the result was not reported yet.
   bool IsActive() const;
 
@@ -145,6 +153,10 @@ class RemoteActorCredentialSharingController : public PasswordStoreConsumer {
   url::Origin origin_;
   // The ID of the remote actor task requesting credentials.
   std::string task_id_;
+  // Optional override for the remote actor's OAuth client ID.
+  std::string actor_oauth_client_id_;
+  // Optional override for the remote actor's task ID namespace.
+  std::optional<int> task_namespace_id_;
   // The callback to return the result to the caller.
   ResultCallback callback_;
   // The number of password store queries started.

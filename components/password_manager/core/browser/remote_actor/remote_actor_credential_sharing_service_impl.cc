@@ -52,7 +52,9 @@ void RemoteActorCredentialSharingServiceImpl::SharePassword(
   CHECK(!callback.is_null());
 
   if (params.task_id.empty() || params.web_origin.empty() ||
-      params.obfuscated_gaia_id.empty()) {
+      params.obfuscated_gaia_id.empty() ||
+      (params.task_namespace_id.has_value() &&
+       *params.task_namespace_id <= 0)) {
     LogSharingFailureReason(
         RemoteActorCredentialSharingFailureReason::kInvalidParameters);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -83,6 +85,8 @@ void RemoteActorCredentialSharingServiceImpl::OnPassboxCompleted(
   permission.task_id = params.task_id;
   permission.web_origin = params.web_origin;
   permission.password_client_tag_hash = params.password_client_tag_hash();
+  permission.actor_oauth_client_id = params.actor_oauth_client_id;
+  permission.task_namespace_id = params.task_namespace_id;
 
   permission_client_->GrantPasswordPermission(
       permission,
