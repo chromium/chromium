@@ -1559,4 +1559,73 @@ public class TabStateStoreUnitTest {
         verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ false);
         verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ true);
     }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testLoadAndRestore_WillCloseOnlyIncognito_Authoritative() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+
+        LoadedTabState regularTab = new LoadedTabState(0, new TabState());
+        LoadedTabState incognitoTab = new LoadedTabState(1, new TabState());
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {regularTab});
+        when(mIncognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {incognitoTab});
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mIncognitoTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+
+        observer.willCloseAllTabs(/* incognito= */ true);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        verify(mModelTrackingOrchestrator).onCancelledForModel(/* incognito= */ true);
+        verify(mModelTrackingOrchestrator, never()).onCancelledForModel(/* incognito= */ false);
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+
+        clearInvocations(mModelTrackingOrchestrator);
+        mTabStateStore.destroy();
+        verify(mModelTrackingOrchestrator, never()).onCancelledForModel(anyBoolean());
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void testLoadAndRestore_WillCloseOnlyIncognito_NonAuthoritative() {
+        createNonAuthoritativeStore();
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+
+        LoadedTabState regularTab = new LoadedTabState(0, new TabState());
+        LoadedTabState incognitoTab = new LoadedTabState(1, new TabState());
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {regularTab});
+        when(mIncognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {incognitoTab});
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mIncognitoTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+
+        observer.willCloseAllTabs(/* incognito= */ true);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        verify(mModelTrackingOrchestrator, never()).onCancelledForModel(anyBoolean());
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+    }
 }

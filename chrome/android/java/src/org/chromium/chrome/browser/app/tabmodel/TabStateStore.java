@@ -144,6 +144,12 @@ public class TabStateStore implements TabPersistentStore {
                 }
 
                 @Override
+                public void onCancelledForModel(boolean incognito) {
+                    if (mIsDestroyed || !mIsAuthoritative) return;
+                    assumeNonNull(mModelTrackingManager).onCancelledForModel(incognito);
+                }
+
+                @Override
                 public void onRestoredForModel(boolean incognito) {
                     if (!mIsAuthoritative) return;
                     assumeNonNull(mModelTrackingManager).onRestoredForModel(incognito);

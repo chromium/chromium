@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -1110,6 +1111,80 @@ public class ModelTrackingOrchestratorUnitTest {
         observer.onIncognitoModelCreated();
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
+    }
+
+    @Test
+    public void testOnCancelledForModel_Restoring_CallsCancelRestoreOnlyForCancelledModel() {
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+
+        mOrchestrator.onCancelledForModel(/* incognito= */ true);
+
+        verify(mIncognitoSynchronizer).cancelRestore();
+        verify(mRegularSynchronizer, never()).cancelRestore();
+    }
+
+    @Test
+    public void testOnCancelledForModel_ModelPending_ClearsPendingRestoreCallback() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoObserverCaptor.capture());
+        IncognitoTabModelObserver observer = mIncognitoObserverCaptor.getValue();
+
+        // Data finishes loading before incognito model is created (MODEL_PENDING).
+        mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+
+        mOrchestrator.onCancelledForModel(/* incognito= */ true);
+
+        verify(mIncognitoSynchronizer, never()).cancelRestore();
+
+        // Late model creation after cancellation must not invoke the stale callback and instead
+        // initializes fresh collection tracking.
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        observer.onIncognitoModelCreated();
+
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
+        verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
+    }
+
+    @Test
+    public void testOnCancelledForModel_BothModelsThenOnRestoreCancelled_IsIdempotent() {
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+
+        mOrchestrator.onCancelledForModel(/* incognito= */ true);
+        mOrchestrator.onCancelledForModel(/* incognito= */ false);
+        mOrchestrator.onRestoreCancelled();
+
+        verify(mIncognitoSynchronizer, times(1)).cancelRestore();
+        verify(mRegularSynchronizer, times(1)).cancelRestore();
+    }
+
+    @Test
+    public void testOnCancelledForModel_AlreadyTracking_DoesNotCancelRestore() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        clearInvocations(mRegularSynchronizer);
+        mOrchestrator.onCancelledForModel(/* incognito= */ true);
+        mOrchestrator.onRestoreCancelled();
+
+        verify(mIncognitoSynchronizer).cancelRestore();
+        verify(mRegularSynchronizer, never()).cancelRestore();
     }
 
     private MockTab createTab(int id, Profile profile, boolean hasParentCollection) {

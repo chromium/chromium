@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,6 +22,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
@@ -101,5 +104,30 @@ public class CombinedTabRestorerUnitTest {
 
         mRestorer.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
         verify(mDelegate).onLoadFinished(/* loadedTabCount= */ anyInt());
+    }
+
+    @Test
+    public void testCancelOnlyIncognito_NotifiesOnCancelledForModel() {
+        mRestorer =
+                createRestorer(/* restoreIncognitoTabs= */ true, /* restoreRegularTabs= */ true);
+        StorageLoadedData regularData = mock(StorageLoadedData.class);
+        when(regularData.getLoadedTabStates())
+                .thenReturn(new LoadedTabState[] {new LoadedTabState(0, new TabState())});
+
+        mRestorer.onDataLoaded(regularData, /* incognito= */ false);
+        mRestorer.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+
+        mRestorer.cancelLoadingTabs(/* incognito= */ true);
+
+        verify(mDelegate).onCancelledForModel(/* incognito= */ true);
+        verify(mDelegate, never()).onCancelledForModel(/* incognito= */ false);
+        verify(mDelegate, never()).onCancelled();
+        verify(mDelegate, never()).onRestoreFinished();
+
+        mRestorer.cancelLoadingTabs(/* incognito= */ false);
+
+        verify(mDelegate).onCancelledForModel(/* incognito= */ false);
+        verify(mDelegate).onCancelled();
+        verify(mDelegate, never()).onRestoreFinished();
     }
 }
