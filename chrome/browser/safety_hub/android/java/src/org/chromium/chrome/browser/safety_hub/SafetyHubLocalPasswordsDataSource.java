@@ -194,6 +194,7 @@ public class SafetyHubLocalPasswordsDataSource
         mSafetyHubFetchService.removeObserver(this);
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
+            mPasswordStoreBridge.destroy();
         }
         mObservers.clear();
     }

@@ -228,6 +228,8 @@ public class SafetyHubAccountPasswordsDataSource
         }
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
+            mPasswordStoreBridge.destroy();
+            mPasswordStoreBridge = null;
         }
         mObservers.clear();
     }
@@ -270,6 +272,7 @@ public class SafetyHubAccountPasswordsDataSource
     public void onSignedOut() {
         if (mPasswordStoreBridge != null) {
             mPasswordStoreBridge.removeObserver(this);
+            mPasswordStoreBridge.destroy();
             mPasswordStoreBridge = null;
         }
         updateState();

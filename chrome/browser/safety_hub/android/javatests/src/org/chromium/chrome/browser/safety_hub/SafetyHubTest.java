@@ -44,6 +44,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.view.View;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceGroup;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -68,6 +70,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
@@ -2185,6 +2188,23 @@ public final class SafetyHubTest {
     }
 
     private void scrollToExpandedPreference(String text) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SafetyHubFragment fragment = mSafetyHubFragmentTestRule.getFragment();
+                    Criteria.checkThat(fragment, Matchers.notNullValue());
+                    PreferenceGroup safetyModules = fragment.findPreference("safety_modules");
+                    Criteria.checkThat(safetyModules, Matchers.notNullValue());
+                    for (int i = 0; i < safetyModules.getPreferenceCount(); i++) {
+                        Preference pref = safetyModules.getPreference(i);
+                        if (pref.isVisible()
+                                && (text.equals(String.valueOf(pref.getTitle()))
+                                        || text.equals(String.valueOf(pref.getSummary())))) {
+                            return;
+                        }
+                    }
+                    throw new CriteriaNotSatisfiedException(
+                            "Visible preference with title or summary '" + text + "' not found.");
+                });
         onView(allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_detail))))
                 .perform(
                         RecyclerViewActions.scrollTo(
@@ -2308,6 +2328,7 @@ public final class SafetyHubTest {
                             passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore(),
                             is(1));
                 });
+        ThreadUtils.runOnUiThreadBlocking(passwordStoreBridge::destroy);
     }
 
     private void addCredentialToProfileStore() {
@@ -2326,6 +2347,7 @@ public final class SafetyHubTest {
                             passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore(),
                             is(1));
                 });
+        ThreadUtils.runOnUiThreadBlocking(passwordStoreBridge::destroy);
     }
 
     private void clearAllPasswords() {
@@ -2342,6 +2364,7 @@ public final class SafetyHubTest {
                             passwordStoreBridge.getPasswordStoreCredentialsCountForAllStores(),
                             is(0));
                 });
+        ThreadUtils.runOnUiThreadBlocking(passwordStoreBridge::destroy);
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int state) {
