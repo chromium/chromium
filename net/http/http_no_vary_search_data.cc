@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -52,6 +53,15 @@ std::optional<std::vector<std::string>> ParseStringList(
     keys.push_back(UnescapePercentEncodedUrl(*string));
   }
   return keys;
+}
+
+std::vector<structured_headers::ParameterizedItem> ToParameterizedItems(
+    const base::flat_set<std::string>& affected_params) {
+  return base::ToVector(affected_params, [](const std::string& param) {
+    return structured_headers::ParameterizedItem(structured_headers::Item(
+        structured_headers::Item::string,
+        base::EscapeQueryParamValue(param, /*use_plus=*/true)));
+  });
 }
 
 // Extracts the "base URL" (everything before the query or fragment) from `url`.
@@ -353,25 +363,15 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
 
   if (vary_by_default_) {
     if (!affected_params_.empty()) {
-      std::vector<structured_headers::ParameterizedItem> param_items;
-      for (const auto& param : affected_params_) {
-        param_items.emplace_back(structured_headers::Item(
-            structured_headers::Item::string,
-            base::EscapeQueryParamValue(param, /*use_plus=*/true)));
-      }
-      members.emplace_back(keys::kParams, std::move(param_items));
+      members.emplace_back(keys::kParams,
+                           ToParameterizedItems(affected_params_));
     }
   } else {
     members.emplace_back(keys::kParams, structured_headers::Item(true));
 
     if (!affected_params_.empty()) {
-      std::vector<structured_headers::ParameterizedItem> except_items;
-      for (const auto& param : affected_params_) {
-        except_items.emplace_back(structured_headers::Item(
-            structured_headers::Item::string,
-            base::EscapeQueryParamValue(param, /*use_plus=*/true)));
-      }
-      members.emplace_back(keys::kExcept, std::move(except_items));
+      members.emplace_back(keys::kExcept,
+                           ToParameterizedItems(affected_params_));
     }
   }
 
