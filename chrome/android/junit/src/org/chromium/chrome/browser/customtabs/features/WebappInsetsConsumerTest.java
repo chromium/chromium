@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.customtabs.features;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.app.Activity;
 import android.graphics.Rect;
@@ -195,5 +198,29 @@ public class WebappInsetsConsumerTest {
         mConsumer.destroy();
 
         verify(mInsetObserver).removeInsetsConsumer(mConsumer);
+    }
+
+    @Test
+    public void tokenReleasedAfterDestroyIsIgnored() {
+        int token = mConsumer.acquireEdgeToEdgeToken();
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        mConsumer
+                .getDrawEdgeToEdgeSupplier()
+                .addSyncObserver(
+                        drawEdgeToEdge -> {
+                            if (!drawEdgeToEdge) {
+                                fail("Observers must not be notified after destroy().");
+                            }
+                        });
+
+        // During activity teardown the consumer is destroyed before the display cutout
+        // controller and immersive mode release their tokens; the late release must neither
+        // notify supplier observers nor re-dispatch insets on the dying activity.
+        clearInvocations(mInsetObserver);
+        mConsumer.destroy();
+        mConsumer.releaseEdgeToEdgeToken(token);
+
+        verify(mInsetObserver).removeInsetsConsumer(mConsumer);
+        verifyNoMoreInteractions(mInsetObserver);
     }
 }

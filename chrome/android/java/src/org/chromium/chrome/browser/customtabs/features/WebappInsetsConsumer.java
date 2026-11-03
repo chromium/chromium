@@ -36,6 +36,7 @@ public class WebappInsetsConsumer implements WindowInsetsConsumer {
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
     private final SettableNonNullObservableSupplier<Boolean> mDrawEdgeToEdgeSupplier =
             ObservableSuppliers.createNonNull(false);
+    private boolean mIsDestroyed;
 
     /**
      * Creates the consumer and registers it on the given {@link InsetObserver} at {@link
@@ -90,10 +91,16 @@ public class WebappInsetsConsumer implements WindowInsetsConsumer {
 
     /** Unregisters the consumer from the {@link InsetObserver}. */
     public void destroy() {
+        mIsDestroyed = true;
         mInsetObserver.removeInsetsConsumer(this);
+        mDrawEdgeToEdgeSupplier.destroy();
     }
 
     private void onTokenUpdate() {
+        // Token holders outlive this consumer: tabs are destroyed and lifecycle observers are
+        // dispatched after the activity destroys it, so releases can arrive once
+        // mDrawEdgeToEdgeSupplier is already destroyed.
+        if (mIsDestroyed) return;
         boolean drawEdgeToEdge = mTokenHolder.hasTokens();
         if (drawEdgeToEdge == mDrawEdgeToEdgeSupplier.get()) return;
 
