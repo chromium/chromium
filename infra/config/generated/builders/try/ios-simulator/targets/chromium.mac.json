@@ -820,7 +820,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -994,7 +993,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1052,7 +1050,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2271,7 +2268,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2445,7 +2441,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2503,7 +2498,6 @@
           "27a266a",
           "--xctest"
         ],
-        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
