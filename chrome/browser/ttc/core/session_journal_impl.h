@@ -12,12 +12,21 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/ttc/app/public/session_journal.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+namespace base {
+class FilePath;
+}
+
+namespace actor {
+class AggregatedJournalFileSerializer;
+}
 
 namespace ttc {
 
@@ -71,12 +80,18 @@ class SessionJournalImpl : public SessionJournal {
   base::TimeDelta server_clock_delta() const { return server_clock_delta_; }
 
  private:
+  void StartSerializingToFile(const base::FilePath& file_path);
+  void OnSerializerInitDone(bool success);
+
   const raw_ref<actor::AggregatedJournal> journal_;
   actor::TaskId task_id_;
   bool received_clock_sync_ = false;
   base::TimeDelta server_clock_delta_;
+  std::unique_ptr<actor::AggregatedJournalFileSerializer>
+      file_journal_serializer_;
   absl::flat_hash_map<int32_t, std::unique_ptr<PendingAsyncEvent>>
       pending_server_async_events_;
+  base::WeakPtrFactory<SessionJournalImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ttc

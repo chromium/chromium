@@ -8,7 +8,17 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/strings/cstring_view.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/ttc/core/switches.h"
+#include "components/actor/core/aggregated_journal_file_serializer.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/ttc/app/public/server_journal_event.h"
 #include "url/gurl.h"
@@ -28,11 +38,30 @@ uint64_t MakeTrackUUID(SessionJournal::Track track, actor::TaskId task_id) {
   }
 }
 
+void EnsureUniquePath(
+    const base::FilePath& file_path,
+    base::OnceCallback<void(const base::FilePath&)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&base::GetUniquePathWithSuffixFormat, file_path,
+                     base::cstring_view("_%d")),
+      std::move(callback));
+}
+
 }  // namespace
 
 SessionJournalImpl::SessionJournalImpl(actor::AggregatedJournal& journal,
                                        actor::TaskId task_id)
-    : journal_(journal), task_id_(task_id) {}
+    : journal_(journal), task_id_(task_id) {
+  base::FilePath path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          switches::kTtcActorJournal);
+  if (!path.empty()) {
+    EnsureUniquePath(path,
+                     base::BindOnce(&SessionJournalImpl::StartSerializingToFile,
+                                    weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 SessionJournalImpl::~SessionJournalImpl() = default;
 
@@ -153,6 +182,23 @@ void SessionJournalImpl::HandleServerJournalEvent(
     }
     case ServerJournalEvent::Type::kUnspecified:
       break;
+  }
+}
+
+void SessionJournalImpl::StartSerializingToFile(
+    const base::FilePath& file_path) {
+  LOG(ERROR) << "Ttc Journal: " << file_path;
+  file_journal_serializer_ =
+      std::make_unique<actor::AggregatedJournalFileSerializer>(*journal_);
+  file_journal_serializer_->Init(
+      file_path, base::BindOnce(&SessionJournalImpl::OnSerializerInitDone,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SessionJournalImpl::OnSerializerInitDone(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to serialize Ttc Journal";
+    file_journal_serializer_.reset();
   }
 }
 

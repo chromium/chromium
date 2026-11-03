@@ -10,6 +10,9 @@ namespace ttc::switches {
 // Enables the TTC evaluation test harness API on eval harness WebUI.
 inline constexpr char kEnableTtcTestApi[] = "enable-ttc-test-api";
 
+// File path where TTC actor journal trace should be recorded.
+inline constexpr char kTtcActorJournal[] = "ttc-actor-journal";
+
 }  // namespace ttc::switches
 
 #endif  // CHROME_BROWSER_TTC_CORE_SWITCHES_H_
