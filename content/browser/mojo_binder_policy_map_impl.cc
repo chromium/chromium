@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
@@ -36,12 +35,6 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 
 namespace content {
-
-#if BUILDFLAG(IS_MAC)
-// Put crbug.com/115920 fix under flag, so we can measure its CWV impact.
-BASE_FEATURE(kTextInputHostMojoCapabilityControlWorkaround,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 namespace {
 
@@ -103,11 +96,8 @@ void RegisterNonAssociatedPolicies(MojoBinderPolicyMap& map) {
   // This is used to return macOS IME sync call results to the browser process,
   // and will hang entire Chrome if paused.
   // This is a prospective fix added for crbug.com/1480850
-  if (base::FeatureList::IsEnabled(
-          kTextInputHostMojoCapabilityControlWorkaround)) {
-    map.SetNonAssociatedPolicy<blink::mojom::TextInputHost>(
-        MojoBinderNonAssociatedPolicy::kGrant);
-  }
+  map.SetNonAssociatedPolicy<blink::mojom::TextInputHost>(
+      MojoBinderNonAssociatedPolicy::kGrant);
 #endif
 }
 
