@@ -365,6 +365,12 @@ omnibox-popup-contextual-entrypoint {
   padding-inline-start: 8px;
 }
 
+:host([persistent-aim-button-enabled_]) #composeButton::part(compose-button) {
+  font-family: var(--omnibox-chip-font-family);
+  font-size: var(--omnibox-chip-font-size);
+  font-weight: var(--omnibox-chip-font-weight);
+}
+
 #composeButton[dynamic]::part(compose-button) {
   padding-inline-end: 11px;
 }

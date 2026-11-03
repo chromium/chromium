@@ -173,6 +173,7 @@ source_set("impl") {
       "//components/omnibox/browser",
       "//components/omnibox/browser:vector_icons",
       "//components/omnibox/common",
+      "//components/omnibox/common:features",
       "//components/performance_manager",
       "//components/record_replay/core/browser",
       "//components/record_replay/core/common",

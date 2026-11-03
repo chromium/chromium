@@ -166,7 +166,7 @@
 :host([is-aim-button-shown_]) #composeboxInput {
   --cr-composebox-icon-container-height: 40px;
   --cr-composebox-input-padding-block: 8px;
-  --text-input-inline-end-spacing: 12px;
+  --text-input-inline-end-spacing: 15px;
   --text-input-inline-start-spacing: 16px;
 }
 
@@ -177,8 +177,8 @@ cr-composebox-aim-button {
   --cr-composebox-aim-button-icon-size: 16px;
   --cr-composebox-aim-button-leading-glyph-size: 16px;
   font-size: 12px;
-  margin-block-start: 12px;
-  margin-inline-end: 14px;
+  margin-block-start: 10px;
+  margin-inline-end: 11px;
 }
 
 #context {
