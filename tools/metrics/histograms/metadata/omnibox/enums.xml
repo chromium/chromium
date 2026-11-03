@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="VoicePlateResult">
   <summary>Outcome returned by the Google app Voice Plate activity.</summary>
-  <int value="0" label="Success"/>
+  <int value="0" label="Success (auto-endpointed)"/>
   <int value="1" label="Aborted: User canceled"/>
   <int value="2" label="Aborted: Navigated away"/>
   <int value="3" label="Aborted: Permission denied"/>
@@ -863,6 +863,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Refused: Account mismatch"/>
   <int value="6" label="Refused: Error"/>
   <int value="7" label="Refused: Other or missing reason"/>
+  <int value="8" label="Success (submitted)"/>
+  <int value="9" label="Success (stopped)"/>
 </enum>
 
 <!-- LINT.IfChange(VoiceSearchAction) -->
