@@ -213,6 +213,7 @@ source_set("impl") {
     "//chrome/common/extensions",
     "//components/google/core/common",
     "//components/image_fetcher/core",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/sessions",
     "//components/strings:components_strings",

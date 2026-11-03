@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -38,6 +39,8 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
@@ -54,6 +57,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -114,6 +118,12 @@ bool IsPrepopulated(const TemplateURL* template_url,
   return false;
 }
 
+// Formats a search URL for display in the explicit choice dialog.
+std::u16string FormatSearchUrl(const GURL& search_url) {
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      search_url);
+}
+
 // Returns the display name for a search engine based on whether it is
 // prepopulated. This is used when the kSearchEngineExplicitChoiceDialog
 // feature is enabled.
@@ -126,8 +136,34 @@ std::u16string GetDialogDisplayName(const TemplateURL* search_engine,
     return search_engine->short_name();
   }
 
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      search_url);
+  return FormatSearchUrl(search_url);
+}
+
+// Helper to find the matching built-in prepopulated engine for a search URL,
+// if any, by matching the URL's domain against known prepopulated engines.
+const TemplateURLPrepopulateData::PrepopulatedEngine*
+GetPrepopulatedEngineForSearchUrl(const GURL& search_url) {
+  CHECK(search_url.is_valid());
+
+  // First, look up the search engine type by matching the URL's domain against
+  // known prepopulated engines (including alternate URLs and migrated engines).
+  const SearchEngineType engine_type =
+      search_engine_utils::GetEngineType(search_url);
+  if (engine_type == SEARCH_ENGINE_OTHER) {
+    return nullptr;
+  }
+
+  // Next, locate the corresponding entry in the full list of prepopulated
+  // engines.
+  // TODO(http://crbug.com/562972276): Improve this lookup to disambiguate
+  // regional variants that share the same search engine type.
+  const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
+  for (const auto& engine : all_engines) {
+    if (engine->type == engine_type) {
+      return engine.get();
+    }
+  }
+  return nullptr;
 }
 
 // Returns the number of extensions that are currently enabled that override the
@@ -633,11 +669,6 @@ GetSearchOverriddenParams(Profile* profile) {
   // The parameters fetched will depend on the style of dialog being shown.
   if (base::FeatureList::IsEnabled(
           extensions_features::kSearchEngineExplicitChoiceDialog)) {
-    const bool is_prepopulated =
-        IsPrepopulated(default_search, template_url_service);
-    std::u16string search_name =
-        GetDialogDisplayName(default_search, is_prepopulated, search_url);
-
     // Build an explicit-choice dialog.
     std::u16string dialog_title = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_EXPLICIT_CHOICE);
@@ -681,13 +712,21 @@ GetSearchOverriddenParams(Profile* profile) {
     // New search engine from the overriding extension:
     SettingsOverriddenDialogController::SettingOption& new_setting =
         params->content.new_setting.emplace();
-    new_setting.text = search_name;
     new_setting.description = l10n_util::GetStringUTF16(
         IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_RECENT_CHANGE);
-    new_setting.image = CreateFallbackSearchIcon(
-        is_prepopulated ? extension->name() : std::string());
-    if (is_prepopulated) {
-      new_setting.favicon_url = default_search->favicon_url();
+
+    // Display the known name and favicon for the extension's search,
+    // if it is known by the browser. Otherwise, show the formatted search URL
+    // and a generic fallback icon.
+    if (const auto* prepopulated_engine =
+            GetPrepopulatedEngineForSearchUrl(search_url)) {
+      new_setting.text = prepopulated_engine->name;
+      new_setting.favicon_url = GURL(prepopulated_engine->favicon_url);
+      new_setting.image = CreateFallbackSearchIcon(extension->name());
+    } else {
+      new_setting.text = FormatSearchUrl(search_url);
+      new_setting.image =
+          CreateFallbackSearchIcon(/*extension_name=*/std::string());
     }
 
     LogMissingParams(*params);

@@ -999,10 +999,18 @@ IN_PROC_BROWSER_TEST_F(
   const GURL expected_favicon_url = extension_turl->favicon_url();
   EXPECT_FALSE(expected_favicon_url.is_empty());
 
+  // Use a name and favicon URL in the extension manifest that differ from the
+  // prepopulated engine's values to verify that the dialog uses the
+  // authoritative prepopulated values rather than those from the manifest.
+  constexpr char kManifestName[] = "PrimaryPrepopulatedExtension";
+  const GURL manifest_favicon_url("https://example.com/manifest_favicon.ico");
+  ASSERT_NE(kManifestName, base::UTF16ToUTF8(extension_turl->short_name()));
+  ASSERT_NE(manifest_favicon_url, expected_favicon_url);
+
   const extensions::Extension* extension = InstallCustomSearchExtension(
-      base::UTF16ToUTF8(extension_turl->short_name()),
-      base::UTF16ToUTF8(extension_turl->keyword()), extension_turl->url(),
-      extension_turl->prepopulate_id(), expected_favicon_url);
+      kManifestName, base::UTF16ToUTF8(extension_turl->keyword()),
+      extension_turl->url(), extension_turl->prepopulate_id(),
+      manifest_favicon_url);
   ASSERT_TRUE(extension);
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
@@ -1013,6 +1021,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(new_setting.has_value());
   EXPECT_EQ(extension_turl->short_name(), new_setting.value().text);
   EXPECT_EQ(expected_favicon_url, new_setting.value().favicon_url);
+  // TODO(http://crbug.com/562972276): Use a mock image fetcher to assert that
+  // the correct image was fetched.
+  EXPECT_FALSE(new_setting.value().image.IsEmpty());
   EXPECT_EQ(u"Changed to this by extension", new_setting.value().description);
 }
 
