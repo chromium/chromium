@@ -30,6 +30,15 @@
 
 namespace {
 
+// Returns the NetworkContext from `weak_profile` or nullptr.
+network::mojom::NetworkContext* GetNetworkContext(
+    base::WeakPtr<ProfileIOS> weak_profile) {
+  if (ProfileIOS* profile = weak_profile.get()) {
+    return profile->GetNetworkContext();
+  }
+  return nullptr;
+}
+
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
     ProfileIOS& profile) {
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
@@ -72,11 +81,7 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       BrowserListFactory::GetForProfile(profile),
       GetApplicationContext()->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), std::move(delegate),
-      base::BindRepeating(
-          [](base::WeakPtr<ProfileIOS> profile) {
-            return profile ? profile->GetNetworkContext() : nullptr;
-          },
-          profile.AsWeakPtr()));
+      base::BindRepeating(&GetNetworkContext, profile.AsWeakPtr()));
 
   service->DoFinalInit(
       BackgroundDownloadServiceFactory::GetForProfile(profile));

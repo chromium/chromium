@@ -15,6 +15,6 @@ CredentialsCleanerRunnerFactory::CredentialsCleanerRunnerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 CredentialsCleanerRunnerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<password_manager::CredentialsCleanerRunner>();
 }

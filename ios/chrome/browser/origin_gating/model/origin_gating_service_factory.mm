@@ -19,7 +19,7 @@ OriginGatingServiceFactory::OriginGatingServiceFactory(PassKey key)
           ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
-OriginGatingServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+OriginGatingServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<OriginGatingService>(
       base::PassKey<OriginGatingServiceFactory>());
 }

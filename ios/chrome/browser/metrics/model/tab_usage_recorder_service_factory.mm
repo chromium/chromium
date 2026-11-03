@@ -23,7 +23,7 @@ TabUsageRecorderServiceFactory::TabUsageRecorderServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 TabUsageRecorderServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<TabUsageRecorderService>(
       BrowserListFactory::GetForProfile(profile),
       SessionRestorationServiceFactory::GetForProfile(profile));

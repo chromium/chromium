@@ -20,7 +20,7 @@ class IOSChromeActorLoginPermissionCleaningServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_ACTOR_LOGIN_IOS_CHROME_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_

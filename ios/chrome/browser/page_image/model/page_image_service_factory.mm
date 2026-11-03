@@ -25,7 +25,7 @@ PageImageServiceFactory::PageImageServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> PageImageServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   TemplateURLService* template_url_service =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   RemoteSuggestionsService* remote_suggestions_service =

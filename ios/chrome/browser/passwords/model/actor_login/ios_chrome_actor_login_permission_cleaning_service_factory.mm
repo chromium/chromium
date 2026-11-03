@@ -31,7 +31,7 @@ IOSChromeActorLoginPermissionCleaningServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeActorLoginPermissionCleaningServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ActorLoginPermissionCleaningServiceImpl>(
       IOSChromeActorLoginPermissionServiceFactory::GetForProfile(profile),
       IOSChromeProfilePasswordStoreFactory::GetForProfile(

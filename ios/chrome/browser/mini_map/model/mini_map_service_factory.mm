@@ -21,10 +21,10 @@ MiniMapServiceFactory::MiniMapServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> MiniMapServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   CHECK(IsMiniMapUniversalLinkEnabled());
 
   return std::make_unique<MiniMapService>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile));
 }

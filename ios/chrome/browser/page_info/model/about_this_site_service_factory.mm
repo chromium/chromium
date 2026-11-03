@@ -27,7 +27,7 @@ AboutThisSiteServiceFactory::AboutThisSiteServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   const bool is_about_this_site_language_supported =
       page_info::IsAboutThisSiteFeatureEnabled(
           std::string(GetApplicationContext()
@@ -56,6 +56,6 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   }
 
   return std::make_unique<page_info::AboutThisSiteService>(
-      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
+      optimization_guide, profile.IsOffTheRecord(), profile.GetPrefs(),
       template_service);
 }

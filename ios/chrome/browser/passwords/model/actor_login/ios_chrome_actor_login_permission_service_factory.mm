@@ -24,8 +24,8 @@ IOSChromeActorLoginPermissionServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeActorLoginPermissionServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ActorLoginPermissionServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }
