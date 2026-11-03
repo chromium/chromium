@@ -45,7 +45,7 @@ build_webui("build") {
 
   if (is_ios) {
     ts_files += [
-      "ios/mojo_api.js",
+      "ios/mojo_api.ts",
       "ios/web_ui.js",
     ]
   }
