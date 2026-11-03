@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher().OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   AddBlankTabAndShow(new_browser);
@@ -1096,7 +1096,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher().OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   // Verify ShowRequestedToFirstPaint was not recorded.
@@ -1157,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
           InitialWebUIWindowMetricsManager::From(restored_browser)) {
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
-    manager->GetMetricsDispatcher()->OnFirstPaint(t1 + base::Milliseconds(50));
+    manager->GetMetricsDispatcher().OnFirstPaint(t1 + base::Milliseconds(50));
   }
 
   // Verify no metrics were recorded, since it is treated as startup as we
@@ -1250,8 +1250,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISameStartupPopupBrowserTest,
   normal_manager->OnBrowserWindowShowRequested(t0);
   normal_manager->OnBrowserWindowFirstPresentation(t0 +
                                                    base::Milliseconds(100));
-  normal_manager->GetMetricsDispatcher()->OnFirstPaint(t0 +
-                                                       base::Milliseconds(150));
+  normal_manager->GetMetricsDispatcher().OnFirstPaint(t0 +
+                                                      base::Milliseconds(150));
 
   // Verify histograms.
   // We expect all startup metrics to be recorded from the normal window.

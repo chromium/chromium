@@ -64,15 +64,18 @@ source_set("window_metrics_manager") {
     "initial_webui_window_metrics_manager.cc",
     "initial_webui_window_metrics_manager.h",
   ]
-  public_deps = [ ":waap_utils" ]
+  public_deps = [
+    ":waap_utils",
+    "//base",
+    "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
   deps = [
     ":waap",
-    "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
-    "//content/public/browser",
     "//third_party/blink/public/common",
   ]
 }

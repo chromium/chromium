@@ -453,7 +453,7 @@ void ToolbarView::Init() {
     reload_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->GetProfile(),
         chrome::BrowserCommandController::From(browser_),
-        window_manager ? window_manager->GetMetricsDispatcher() : nullptr));
+        window_manager ? &window_manager->GetMetricsDispatcher() : nullptr));
   }
 
   if (!features::IsWebUIHomeButtonEnabled()) {

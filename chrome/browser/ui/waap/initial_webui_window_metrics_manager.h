@@ -5,20 +5,18 @@
 #ifndef CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_
 #define CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_
 
-#include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/waap/initial_webui_metrics_dispatcher.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class WaapUIMetricsService;
 class BrowserWindowInterface;
-class InitialWebUIMetricsDispatcher;
-class InitialWebUINativeMetricsDispatcher;
 
 // Manages the recording of InitialWebUI latency metrics related to the
 // creation and first paint of browser windows and its UI elements, e.g.
@@ -51,8 +49,8 @@ class InitialWebUIWindowMetricsManager {
       BrowserWindowInterface* browser_window_interface);
 
   // Returns the metrics dispatcher used by native views (e.g. the Views
-  // ReloadButton) in this window. Never null.
-  InitialWebUIMetricsDispatcher* GetMetricsDispatcher();
+  // `ReloadButton`) in this window.
+  InitialWebUIMetricsDispatcher& GetMetricsDispatcher();
 
   // Sets the window creation info. This should be called immediately after the
   // `Browser` object is created, with `creation_time` sampled prior to calling
@@ -140,13 +138,12 @@ class InitialWebUIWindowMetricsManager {
   // reload button paint.
   void OnUnpainted10sTimeout();
 
-  // The service used to record metrics. May be null if the profile is null.
+  // The service used to record metrics. Never null.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
   const raw_ptr<BrowserWindowInterface> browser_;
 
-  const std::unique_ptr<InitialWebUINativeMetricsDispatcher>
-      metrics_dispatcher_;
+  InitialWebUINativeMetricsDispatcher metrics_dispatcher_;
 
   ui::ScopedUnownedUserData<InitialWebUIWindowMetricsManager>
       scoped_data_holder_;

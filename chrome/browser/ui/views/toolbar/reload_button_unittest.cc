@@ -530,7 +530,7 @@ TEST_F(ReloadButtonWindowMetricsTest, RecordsCreationThroughDispatcher) {
   base::HistogramTester histogram_tester;
 
   ReloadButton button(profile_.get(), /*command_updater=*/nullptr,
-                      manager_->GetMetricsDispatcher());
+                      &manager_->GetMetricsDispatcher());
 
   histogram_tester.ExpectUniqueSample("InitialWebUI.View.Creation",
                                       /*sample=*/1, 1);
@@ -543,7 +543,7 @@ TEST_F(ReloadButtonWindowMetricsTest, RecordsNewWindowPaintsThroughDispatcher) {
   manager_->SetWindowCreationInfo(
       waap::NewWindowCreationSource::kNewEmptyWindow, start_time);
   ReloadButton button(profile_.get(), /*command_updater=*/nullptr,
-                      manager_->GetMetricsDispatcher());
+                      &manager_->GetMetricsDispatcher());
 
   const base::TimeDelta latency = base::Milliseconds(100);
   SimulatePresentation(button, start_time + latency);

@@ -32,17 +32,15 @@ InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
     BrowserWindowInterface* browser)
     : waap_service_(WaapUIMetricsService::Get(browser->GetProfile())),
       browser_(browser),
-      metrics_dispatcher_(
-          std::make_unique<InitialWebUINativeMetricsDispatcher>(waap_service_,
-                                                                this)),
+      metrics_dispatcher_(waap_service_, this),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
       was_created_with_existing_windows_(
           ProfileBrowserCollection::GetForProfile(browser->GetProfile())
               ->GetSize() > 0) {}
 
-InitialWebUIMetricsDispatcher*
+InitialWebUIMetricsDispatcher&
 InitialWebUIWindowMetricsManager::GetMetricsDispatcher() {
-  return metrics_dispatcher_.get();
+  return metrics_dispatcher_;
 }
 
 InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() {

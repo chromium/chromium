@@ -359,14 +359,13 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
 TEST_F(InitialWebUIMetricsDispatcherTest, NativeDispatcherLogsStartupMetrics) {
   base::HistogramTester histograms;
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  auto* dispatcher = manager.GetMetricsDispatcher();
-  ASSERT_TRUE(dispatcher);
-  dispatcher->OnCreated();
+  auto& dispatcher = manager.GetMetricsDispatcher();
+  dispatcher.OnCreated();
   histograms.ExpectBucketCount("InitialWebUI.View.Creation", 1, 1);
 
   base::TimeTicks paint_time = base::TimeTicks::Now();
-  dispatcher->OnFirstPaint(paint_time);
-  dispatcher->OnFirstContentfulPaint(paint_time);
+  dispatcher.OnFirstPaint(paint_time);
+  dispatcher.OnFirstContentfulPaint(paint_time);
 
   histograms.ExpectTotalCount("InitialWebUI.Startup.ReloadButton.FirstPaint",
                               1);
@@ -385,11 +384,10 @@ TEST_F(InitialWebUIMetricsDispatcherTest,
   manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
                                 start_time);
 
-  auto* dispatcher = manager.GetMetricsDispatcher();
-  ASSERT_TRUE(dispatcher);
+  auto& dispatcher = manager.GetMetricsDispatcher();
   base::TimeTicks paint_time = start_time + kTestLatency;
-  dispatcher->OnFirstPaint(paint_time);
-  dispatcher->OnFirstContentfulPaint(paint_time);
+  dispatcher.OnFirstPaint(paint_time);
+  dispatcher.OnFirstContentfulPaint(paint_time);
 
   histograms.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
