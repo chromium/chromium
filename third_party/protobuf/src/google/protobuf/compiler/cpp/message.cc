@@ -2201,7 +2201,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
           static constexpr int kIndexInFileMessages = $index_in_file_messages$;
           $decl_any_methods$;
           friend void swap($Msg$& a, $Msg$& b) { a.Swap(&b); }
-          PROTOBUF_NOINLINE void Swap($Msg$* $nonnull$ other) {
+          inline void Swap($Msg$* $nonnull$ other) {
             if (other == this) return;
             if ($pbi$::CanUseInternalSwap(GetArena(), other->GetArena())) {
               InternalSwap(other);

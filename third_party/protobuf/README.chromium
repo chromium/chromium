@@ -279,13 +279,6 @@ Description of the patches:
   binary size across generated protobuf code. Upstreaming is tracked in
   https://crbug.com/567566717.
 
-- 0010-uninline-generated-code.patch
-
-  Uninlines generated `Swap()` methods (`PROTOBUF_NOINLINE`) to reduce binary
-  size. Obsoleted upstream because generated move-assignment now calls
-  `InternalSwap(&from)` directly rather than `Swap(&from)`:
-  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/compiler/cpp/message.cc#L2173-L2181.
-
 - 0022-Allow-deprecated-fields.patch
 
   Allows deprecated fields to be used without extra C++ compiler warnings.

@@ -1318,7 +1318,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
   }
   static constexpr int kIndexInFileMessages = 24;
   friend void swap(UninterpretedOption_NamePart& a, UninterpretedOption_NamePart& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(UninterpretedOption_NamePart* PROTOBUF_NONNULL other) {
+  inline void Swap(UninterpretedOption_NamePart* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1543,7 +1543,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo_Loca
   }
   static constexpr int kIndexInFileMessages = 31;
   friend void swap(SourceCodeInfo_Location& a, SourceCodeInfo_Location& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(SourceCodeInfo_Location* PROTOBUF_NONNULL other) {
+  inline void Swap(SourceCodeInfo_Location* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1840,7 +1840,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo_A
   }
   static constexpr int kIndexInFileMessages = 33;
   friend void swap(GeneratedCodeInfo_Annotation& a, GeneratedCodeInfo_Annotation& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(GeneratedCodeInfo_Annotation* PROTOBUF_NONNULL other) {
+  inline void Swap(GeneratedCodeInfo_Annotation* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2129,7 +2129,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Featur
   }
   static constexpr int kIndexInFileMessages = 17;
   friend void swap(FieldOptions_FeatureSupport& a, FieldOptions_FeatureSupport& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FieldOptions_FeatureSupport* PROTOBUF_NONNULL other) {
+  inline void Swap(FieldOptions_FeatureSupport* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2393,7 +2393,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions_Editio
   }
   static constexpr int kIndexInFileMessages = 16;
   friend void swap(FieldOptions_EditionDefault& a, FieldOptions_EditionDefault& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FieldOptions_EditionDefault* PROTOBUF_NONNULL other) {
+  inline void Swap(FieldOptions_EditionDefault* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2612,7 +2612,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet_Visibili
   }
   static constexpr int kIndexInFileMessages = 26;
   friend void swap(FeatureSet_VisibilityFeature& a, FeatureSet_VisibilityFeature& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FeatureSet_VisibilityFeature* PROTOBUF_NONNULL other) {
+  inline void Swap(FeatureSet_VisibilityFeature* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2773,7 +2773,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet_ProtoLim
   }
   static constexpr int kIndexInFileMessages = 27;
   friend void swap(FeatureSet_ProtoLimitsFeature& a, FeatureSet_ProtoLimitsFeature& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FeatureSet_ProtoLimitsFeature* PROTOBUF_NONNULL other) {
+  inline void Swap(FeatureSet_ProtoLimitsFeature* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -2933,7 +2933,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSet final : 
   }
   static constexpr int kIndexInFileMessages = 28;
   friend void swap(FeatureSet& a, FeatureSet& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FeatureSet* PROTOBUF_NONNULL other) {
+  inline void Swap(FeatureSet* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -3586,7 +3586,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
   }
   static constexpr int kIndexInFileMessages = 5;
   friend void swap(ExtensionRangeOptions_Declaration& a, ExtensionRangeOptions_Declaration& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(ExtensionRangeOptions_Declaration* PROTOBUF_NONNULL other) {
+  inline void Swap(ExtensionRangeOptions_Declaration* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -3850,7 +3850,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
   }
   static constexpr int kIndexInFileMessages = 9;
   friend void swap(EnumDescriptorProto_EnumReservedRange& a, EnumDescriptorProto_EnumReservedRange& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(EnumDescriptorProto_EnumReservedRange* PROTOBUF_NONNULL other) {
+  inline void Swap(EnumDescriptorProto_EnumReservedRange* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -4065,7 +4065,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Res
   }
   static constexpr int kIndexInFileMessages = 3;
   friend void swap(DescriptorProto_ReservedRange& a, DescriptorProto_ReservedRange& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(DescriptorProto_ReservedRange* PROTOBUF_NONNULL other) {
+  inline void Swap(DescriptorProto_ReservedRange* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -4280,7 +4280,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED UninterpretedOption
   }
   static constexpr int kIndexInFileMessages = 25;
   friend void swap(UninterpretedOption& a, UninterpretedOption& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(UninterpretedOption* PROTOBUF_NONNULL other) {
+  inline void Swap(UninterpretedOption* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -4590,7 +4590,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SourceCodeInfo fina
   }
   static constexpr int kIndexInFileMessages = 32;
   friend void swap(SourceCodeInfo& a, SourceCodeInfo& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(SourceCodeInfo* PROTOBUF_NONNULL other) {
+  inline void Swap(SourceCodeInfo* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -4998,7 +4998,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GeneratedCodeInfo f
   }
   static constexpr int kIndexInFileMessages = 34;
   friend void swap(GeneratedCodeInfo& a, GeneratedCodeInfo& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(GeneratedCodeInfo* PROTOBUF_NONNULL other) {
+  inline void Swap(GeneratedCodeInfo* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -5210,7 +5210,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults_
   }
   static constexpr int kIndexInFileMessages = 29;
   friend void swap(FeatureSetDefaults_FeatureSetEditionDefault& a, FeatureSetDefaults_FeatureSetEditionDefault& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FeatureSetDefaults_FeatureSetEditionDefault* PROTOBUF_NONNULL other) {
+  inline void Swap(FeatureSetDefaults_FeatureSetEditionDefault* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -5451,7 +5451,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceOptions fina
   }
   static constexpr int kIndexInFileMessages = 22;
   friend void swap(ServiceOptions& a, ServiceOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(ServiceOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(ServiceOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -5888,7 +5888,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofOptions final 
   }
   static constexpr int kIndexInFileMessages = 19;
   friend void swap(OneofOptions& a, OneofOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(OneofOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(OneofOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -6312,7 +6312,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodOptions final
   }
   static constexpr int kIndexInFileMessages = 23;
   friend void swap(MethodOptions& a, MethodOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(MethodOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(MethodOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -6783,7 +6783,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MessageOptions fina
   }
   static constexpr int kIndexInFileMessages = 15;
   friend void swap(MessageOptions& a, MessageOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(MessageOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(MessageOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -7272,7 +7272,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileOptions final :
   }
   static constexpr int kIndexInFileMessages = 14;
   friend void swap(FileOptions& a, FileOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FileOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(FileOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -8014,7 +8014,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldOptions final 
   }
   static constexpr int kIndexInFileMessages = 18;
   friend void swap(FieldOptions& a, FieldOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FieldOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(FieldOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -8709,7 +8709,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FeatureSetDefaults 
   }
   static constexpr int kIndexInFileMessages = 30;
   friend void swap(FeatureSetDefaults& a, FeatureSetDefaults& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FeatureSetDefaults* PROTOBUF_NONNULL other) {
+  inline void Swap(FeatureSetDefaults* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -8952,7 +8952,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ExtensionRangeOptio
   }
   static constexpr int kIndexInFileMessages = 6;
   friend void swap(ExtensionRangeOptions& a, ExtensionRangeOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(ExtensionRangeOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(ExtensionRangeOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -9432,7 +9432,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueOptions fi
   }
   static constexpr int kIndexInFileMessages = 21;
   friend void swap(EnumValueOptions& a, EnumValueOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(EnumValueOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(EnumValueOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -9899,7 +9899,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumOptions final :
   }
   static constexpr int kIndexInFileMessages = 20;
   friend void swap(EnumOptions& a, EnumOptions& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(EnumOptions* PROTOBUF_NONNULL other) {
+  inline void Swap(EnumOptions* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -10362,7 +10362,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED OneofDescriptorProt
   }
   static constexpr int kIndexInFileMessages = 8;
   friend void swap(OneofDescriptorProto& a, OneofDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(OneofDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(OneofDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -10591,7 +10591,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED MethodDescriptorPro
   }
   static constexpr int kIndexInFileMessages = 13;
   friend void swap(MethodDescriptorProto& a, MethodDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(MethodDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(MethodDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -10882,7 +10882,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FieldDescriptorProt
   }
   static constexpr int kIndexInFileMessages = 7;
   friend void swap(FieldDescriptorProto& a, FieldDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FieldDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(FieldDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -11305,7 +11305,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumValueDescriptor
   }
   static constexpr int kIndexInFileMessages = 11;
   friend void swap(EnumValueDescriptorProto& a, EnumValueDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(EnumValueDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(EnumValueDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -11547,7 +11547,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto_Ext
   }
   static constexpr int kIndexInFileMessages = 2;
   friend void swap(DescriptorProto_ExtensionRange& a, DescriptorProto_ExtensionRange& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(DescriptorProto_ExtensionRange* PROTOBUF_NONNULL other) {
+  inline void Swap(DescriptorProto_ExtensionRange* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -11784,7 +11784,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ServiceDescriptorPr
   }
   static constexpr int kIndexInFileMessages = 12;
   friend void swap(ServiceDescriptorProto& a, ServiceDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(ServiceDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(ServiceDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -12035,7 +12035,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnumDescriptorProto
   }
   static constexpr int kIndexInFileMessages = 10;
   friend void swap(EnumDescriptorProto& a, EnumDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(EnumDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(EnumDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -12350,7 +12350,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DescriptorProto fin
   }
   static constexpr int kIndexInFileMessages = 4;
   friend void swap(DescriptorProto& a, DescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(DescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(DescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -12776,7 +12776,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorProto
   }
   static constexpr int kIndexInFileMessages = 1;
   friend void swap(FileDescriptorProto& a, FileDescriptorProto& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FileDescriptorProto* PROTOBUF_NONNULL other) {
+  inline void Swap(FileDescriptorProto* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -13257,7 +13257,7 @@ class PROTOBUF_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FileDescriptorSet f
   }
   static constexpr int kIndexInFileMessages = 0;
   friend void swap(FileDescriptorSet& a, FileDescriptorSet& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(FileDescriptorSet* PROTOBUF_NONNULL other) {
+  inline void Swap(FileDescriptorSet* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);

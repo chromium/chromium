@@ -204,7 +204,7 @@ class PROTOC_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED Version final : publi
   }
   static constexpr int kIndexInFileMessages = 0;
   friend void swap(Version& a, Version& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(Version* PROTOBUF_NONNULL other) {
+  inline void Swap(Version* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -450,7 +450,7 @@ class PROTOC_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CodeGeneratorResponse
   }
   static constexpr int kIndexInFileMessages = 2;
   friend void swap(CodeGeneratorResponse_File& a, CodeGeneratorResponse_File& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(CodeGeneratorResponse_File* PROTOBUF_NONNULL other) {
+  inline void Swap(CodeGeneratorResponse_File* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -710,7 +710,7 @@ class PROTOC_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CodeGeneratorResponse
   }
   static constexpr int kIndexInFileMessages = 3;
   friend void swap(CodeGeneratorResponse& a, CodeGeneratorResponse& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(CodeGeneratorResponse* PROTOBUF_NONNULL other) {
+  inline void Swap(CodeGeneratorResponse* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1000,7 +1000,7 @@ class PROTOC_EXPORT  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CodeGeneratorRequest 
   }
   static constexpr int kIndexInFileMessages = 1;
   friend void swap(CodeGeneratorRequest& a, CodeGeneratorRequest& b) { a.Swap(&b); }
-  PROTOBUF_NOINLINE void Swap(CodeGeneratorRequest* PROTOBUF_NONNULL other) {
+  inline void Swap(CodeGeneratorRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
