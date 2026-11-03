@@ -5,12 +5,14 @@
 #include "remoting/host/linux/user_desktop_session_backend.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -20,8 +22,11 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -31,6 +36,7 @@
 #include "remoting/base/source_location.h"
 #include "remoting/host/daemon_process.h"
 #include "remoting/host/desktop_session.h"
+#include "remoting/host/linux/created_session_tracker.h"
 #include "remoting/host/linux/desktop_session_linux.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gdm_remote_user_desktop_session_creator.h"
@@ -51,6 +57,19 @@ namespace {
 // only way to detect them. The D-Bus call timeout in
 // GdmRemoteUserDesktopSessionCreator is longer than this.
 constexpr base::TimeDelta kSessionCreationTimeout = base::Seconds(30);
+
+// Substring of the D-Bus error returned by logind when a session doesn't
+// exist.
+constexpr std::string_view kNoSuchSessionError =
+    "org.freedesktop.login1.NoSuchSession";
+
+void LogIfTrackerError(std::string_view operation,
+                       base::expected<void, Loggable> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to " << operation
+               << " created sessions: " << result.error();
+  }
+}
 
 }  // namespace
 
@@ -144,11 +163,40 @@ UserDesktopSessionBackend::CheckCreateRemoteSessionEligibility(
   return base::ok();
 }
 
+// static
+bool UserDesktopSessionBackend::ShouldTrackCreatedSession(
+    const LoginSessionManager::SessionInfo& session) {
+  // Sessions created via `session_creator_` are remote. Don't record a local
+  // session that the user happened to start while CRD was waiting for the
+  // requested session.
+  return session.is_remote;
+}
+
+// static
+bool UserDesktopSessionBackend::ShouldTerminateTrackedSession(
+    const CreatedSessionTracker::Entry& entry,
+    const LoginSessionManager::SessionInfo& session) {
+  // Only graphical sessions are ever tracked, so this also rules out e.g. an
+  // SSH session of the same user that reuses the session ID.
+  return session.session_id == entry.session_id && session.uid == entry.uid &&
+         session.username == entry.username && session.is_remote &&
+         session.session_class == "user" &&
+         (session.session_type == "wayland" || session.session_type == "x11") &&
+         session.state != "closing";
+}
+
+// static
+bool UserDesktopSessionBackend::IsNoSuchSessionError(std::string_view error) {
+  return error.contains(kNoSuchSessionError);
+}
+
 UserDesktopSessionBackend::UserDesktopSessionBackend(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     SessionRoutingConfig routing_config)
     : io_task_runner_(io_task_runner),
-      routing_config_(std::move(routing_config)) {}
+      routing_config_(std::move(routing_config)),
+      created_session_tracker_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
 
 UserDesktopSessionBackend::~UserDesktopSessionBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -237,13 +285,29 @@ UserDesktopSessionBackend::ValidateClientSession(
 void UserDesktopSessionBackend::TerminateAllSessions(Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // User login sessions are externally managed (or persist across daemon
-  // restarts), so we do not terminate the underlying systemd-logind sessions
-  // when CRD is shutting down. DaemonProcess destroys the DesktopSessionLinux
-  // objects (and their worker processes) during shutdown.
+  // DaemonProcess destroys the DesktopSessionLinux objects (and their worker
+  // processes) during shutdown. Login sessions not created by CRD are
+  // externally managed, so they are left alone. Login sessions that CRD
+  // created via `session_creator_`, including ones created by an earlier
+  // daemon instance, are terminated, so that they don't conflict with whatever
+  // runs next (e.g. after migrate-host) or linger after the host is removed.
+  // This only runs on SIGTERM. Host upgrades and config updates kill the
+  // daemon without running this, so those sessions are kept and re-adopted.
   desktop_sessions_.clear();
 
-  std::move(callback).Run(base::ok());
+  if (!login_session_manager_) {
+    // The system D-Bus connection hasn't been established yet. Keep the
+    // tracked sessions, so that the next daemon instance can terminate them.
+    LOG(WARNING) << "Not terminating created sessions, since the system D-Bus "
+                 << "connection is not ready.";
+    std::move(callback).Run(base::ok());
+    return;
+  }
+
+  created_session_tracker_.AsyncCall(&CreatedSessionTracker::Load)
+      .Then(base::BindOnce(&UserDesktopSessionBackend::OnTrackedSessionsLoaded,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
 }
 
 DesktopSession* UserDesktopSessionBackend::GetSessionByUid(uid_t uid) {
@@ -355,7 +419,13 @@ void UserDesktopSessionBackend::OnListUserSessionsResult(
         "No graphical user session found for user.", FROM_HERE);
     return;
   }
+  bool was_pending_creation = entry.creation_timeout != nullptr;
   entry.creation_timeout.reset();
+  if (was_pending_creation && ShouldTrackCreatedSession(*best_session)) {
+    // Track the session before any of the checks below, since it has been
+    // created regardless of whether the connection can attach to it.
+    TrackCreatedSession(*best_session);
+  }
 
   auto user_info = GetPasswdUserInfo(best_session->username);
   if (!user_info.has_value()) {
@@ -493,6 +563,12 @@ void UserDesktopSessionBackend::OnSessionRemoved(
     gvariant::ObjectPath /*object_path*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The session no longer needs to be terminated if CRD created it. This is a
+  // no-op for sessions that aren't tracked.
+  created_session_tracker_.AsyncCall(&CreatedSessionTracker::Remove)
+      .WithArgs(std::vector<std::string>{session_id})
+      .Then(base::BindOnce(&LogIfTrackerError, "untrack"));
+
   std::vector<base::WeakPtr<DesktopSessionLinux>> sessions_to_terminate;
   for (const auto& [id, entry] : desktop_sessions_) {
     if (entry.desktop_session &&
@@ -513,6 +589,159 @@ void UserDesktopSessionBackend::RemoveDesktopSession(int terminal_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   desktop_sessions_.erase(terminal_id);
+}
+
+void UserDesktopSessionBackend::TrackCreatedSession(
+    const LoginSessionManager::SessionInfo& session) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  HOST_LOG << "Recording graphical session " << session.session_id
+           << " as created by CRD for user " << session.username << ".";
+  created_session_tracker_.AsyncCall(&CreatedSessionTracker::Add)
+      .WithArgs(CreatedSessionTracker::Entry{session.session_id,
+                                             session.username, session.uid})
+      .Then(base::BindOnce(&LogIfTrackerError, "track"));
+}
+
+void UserDesktopSessionBackend::OnTrackedSessionsLoaded(
+    Callback callback,
+    base::expected<std::vector<CreatedSessionTracker::Entry>, Loggable>
+        entries) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(login_session_manager_);
+
+  if (!entries.has_value()) {
+    std::move(callback).Run(std::move(entries).error().UnexpectedWithContext(
+        FROM_HERE, "While loading created sessions"));
+    return;
+  }
+  if (entries->empty()) {
+    std::move(callback).Run(base::ok());
+    return;
+  }
+
+  // Look up and terminate all sessions in parallel, so that a slow session
+  // doesn't hold up the others within the SIGTERM time budget.
+  auto barrier = base::BarrierCallback<std::optional<std::string>>(
+      entries->size(),
+      base::BindOnce(&UserDesktopSessionBackend::OnAllTrackedSessionsHandled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  for (CreatedSessionTracker::Entry& entry : *entries) {
+    std::string session_id = entry.session_id;
+    login_session_manager_->GetSessionInfo(
+        session_id,
+        base::BindOnce(&UserDesktopSessionBackend::OnTrackedSessionInfo,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(entry),
+                       barrier));
+  }
+}
+
+void UserDesktopSessionBackend::OnTrackedSessionInfo(
+    CreatedSessionTracker::Entry entry,
+    TrackedSessionDoneCallback done,
+    base::expected<LoginSessionManager::SessionInfo, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!result.has_value()) {
+    // Note that if the session ends between the two D-Bus calls made by
+    // GetSessionInfo(), the error is not NoSuchSession, so the entry is kept
+    // and dropped the next time the host is stopped.
+    if (IsNoSuchSessionError(result.error().ToString())) {
+      // The session has already ended.
+      done.Run(std::move(entry.session_id));
+      return;
+    }
+    LOG(ERROR) << "Failed to look up created session " << entry.session_id
+               << ": " << result.error();
+    done.Run(std::nullopt);
+    return;
+  }
+  if (!ShouldTerminateTrackedSession(entry, *result)) {
+    LOG(WARNING) << "Not terminating session " << entry.session_id
+                 << ", since it doesn't match the session that CRD created "
+                 << "for user " << entry.username << " (UID " << entry.uid
+                 << "). Found: user " << result->username << " (UID "
+                 << result->uid << "), class " << result->session_class
+                 << ", type " << result->session_type << ", "
+                 << (result->is_remote ? "remote" : "local") << ", state "
+                 << result->state << ".";
+    done.Run(std::move(entry.session_id));
+    return;
+  }
+
+  HOST_LOG << "Terminating graphical session " << entry.session_id
+           << " created by CRD for user " << entry.username << ".";
+  login_session_manager_->TerminateSession(
+      result->object_path,
+      base::BindOnce(&UserDesktopSessionBackend::OnTrackedSessionTerminated,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(entry.session_id), std::move(done)));
+}
+
+void UserDesktopSessionBackend::OnTrackedSessionTerminated(
+    std::string session_id,
+    TrackedSessionDoneCallback done,
+    base::expected<void, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to terminate created session " << session_id << ": "
+               << result.error();
+    done.Run(std::nullopt);
+    return;
+  }
+  done.Run(std::move(session_id));
+}
+
+void UserDesktopSessionBackend::OnAllTrackedSessionsHandled(
+    Callback callback,
+    std::vector<std::optional<std::string>> removable_session_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::string> session_ids_to_remove;
+  size_t failure_count = 0;
+  for (std::optional<std::string>& session_id : removable_session_ids) {
+    if (session_id.has_value()) {
+      session_ids_to_remove.push_back(std::move(*session_id));
+    } else {
+      ++failure_count;
+    }
+  }
+  base::expected<void, Loggable> termination_result = base::ok();
+  if (failure_count > 0) {
+    termination_result = base::unexpected(Loggable(
+        FROM_HERE,
+        base::StringPrintf("Failed to terminate %zu created session(s). They "
+                           "will be retried the next time the host is stopped.",
+                           failure_count)));
+  }
+  if (session_ids_to_remove.empty()) {
+    std::move(callback).Run(std::move(termination_result));
+    return;
+  }
+
+  // Run `callback` only after the tracker has been updated, since the daemon
+  // process exits right after.
+  created_session_tracker_.AsyncCall(&CreatedSessionTracker::Remove)
+      .WithArgs(std::move(session_ids_to_remove))
+      .Then(base::BindOnce(&UserDesktopSessionBackend::OnTrackedSessionsRemoved,
+                           std::move(callback), std::move(termination_result)));
+}
+
+// static
+void UserDesktopSessionBackend::OnTrackedSessionsRemoved(
+    Callback callback,
+    base::expected<void, Loggable> termination_result,
+    base::expected<void, Loggable> remove_result) {
+  if (!remove_result.has_value()) {
+    std::move(callback).Run(
+        std::move(remove_result)
+            .error()
+            .UnexpectedWithContext(FROM_HERE,
+                                   "While untracking terminated sessions"));
+    return;
+  }
+  std::move(callback).Run(std::move(termination_result));
 }
 
 }  // namespace remoting

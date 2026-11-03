@@ -81,8 +81,10 @@ class SessionRoutingConfig {
 
   // Returns whether the host should create a new remote session for the
   // resolved user, if supported, when the user has no graphical session.
-  // Created sessions are not terminated when the client disconnects or the
-  // host stops, and are reused by the next connection. Defaults to `false`.
+  // Created sessions are not terminated when the client disconnects, and are
+  // reused by the next connection, including across host upgrades and daemon
+  // crashes. They are terminated when the host service is stopped. Defaults to
+  // `false`.
   bool create_remote_user_sessions() const {
     return create_remote_user_sessions_;
   }

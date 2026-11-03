@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "remoting/base/loggable.h"
 #include "remoting/base/passwd_utils.h"
+#include "remoting/host/linux/created_session_tracker.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,6 +76,22 @@ class UserDesktopSessionBackendTest : public testing::Test {
                requested_username, user_info, GetTestValidShells())
         .transform_error(
             [](const Loggable& error) { return error.ToString(); });
+  }
+
+  static bool ShouldTrackCreatedSession(
+      const LoginSessionManager::SessionInfo& session) {
+    return UserDesktopSessionBackend::ShouldTrackCreatedSession(session);
+  }
+
+  static bool ShouldTerminateTrackedSession(
+      const CreatedSessionTracker::Entry& entry,
+      const LoginSessionManager::SessionInfo& session) {
+    return UserDesktopSessionBackend::ShouldTerminateTrackedSession(entry,
+                                                                    session);
+  }
+
+  static bool IsNoSuchSessionError(std::string_view error) {
+    return UserDesktopSessionBackend::IsNoSuchSessionError(error);
   }
 };
 
@@ -219,6 +236,83 @@ TEST_F(UserDesktopSessionBackendTest,
   EXPECT_THAT(CheckCreateRemoteSessionUserInfo(
                   "alice", CreateUserInfo("alice", 1000, "/usr/sbin/nologin")),
               base::test::ErrorIs(testing::HasSubstr("Login shell")));
+}
+
+TEST_F(UserDesktopSessionBackendTest, TracksRemoteCreatedSession) {
+  EXPECT_TRUE(ShouldTrackCreatedSession(
+      CreateSession("3", "user", "wayland", "active", "gdm-direct-login",
+                    /*is_remote=*/true)));
+}
+
+TEST_F(UserDesktopSessionBackendTest, DoesNotTrackLocalSession) {
+  EXPECT_FALSE(ShouldTrackCreatedSession(CreateSession(
+      "3", "user", "wayland", "active", "gdm-password", /*is_remote=*/false)));
+}
+
+TEST_F(UserDesktopSessionBackendTest, TerminatesMatchingTrackedSession) {
+  auto session = CreateSession("3", "user", "wayland", "active",
+                               "gdm-direct-login", /*is_remote=*/true);
+  const CreatedSessionTracker::Entry kEntry{session.session_id,
+                                            session.username, session.uid};
+  EXPECT_TRUE(ShouldTerminateTrackedSession(kEntry, session));
+
+  auto online = session;
+  online.state = "online";
+  EXPECT_TRUE(ShouldTerminateTrackedSession(kEntry, online));
+
+  auto x11 = session;
+  x11.session_type = "x11";
+  EXPECT_TRUE(ShouldTerminateTrackedSession(kEntry, x11));
+}
+
+TEST_F(UserDesktopSessionBackendTest, DoesNotTerminateMismatchedSession) {
+  auto session = CreateSession("3", "user", "wayland", "active",
+                               "gdm-direct-login", /*is_remote=*/true);
+  const CreatedSessionTracker::Entry kEntry{session.session_id,
+                                            session.username, session.uid};
+
+  auto other_id = session;
+  other_id.session_id = "4";
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, other_id));
+
+  auto other_uid = session;
+  other_uid.uid = session.uid + 1;
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, other_uid));
+
+  auto other_username = session;
+  other_username.username = "otheruser";
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, other_username));
+
+  auto local = session;
+  local.is_remote = false;
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, local));
+
+  auto closing = session;
+  closing.state = "closing";
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, closing));
+
+  auto tty = session;
+  tty.session_type = "tty";
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, tty));
+
+  auto greeter = session;
+  greeter.session_class = "greeter";
+  EXPECT_FALSE(ShouldTerminateTrackedSession(kEntry, greeter));
+}
+
+TEST_F(UserDesktopSessionBackendTest, DetectsNoSuchSessionError) {
+  EXPECT_TRUE(IsNoSuchSessionError(
+      "Error invoking method: GDBus.Error:org.freedesktop.login1."
+      "NoSuchSession: No session '3' known"));
+  EXPECT_FALSE(IsNoSuchSessionError(""));
+  EXPECT_FALSE(IsNoSuchSessionError(
+      "Error invoking method: GDBus.Error:org.freedesktop.DBus.Error."
+      "NoReply: Did not receive a reply."));
+  // If the session ends between GetSession and GetAll, GetAll fails with a
+  // different error. It is intentionally treated as retryable.
+  EXPECT_FALSE(IsNoSuchSessionError(
+      "Error invoking method: GDBus.Error:org.freedesktop.DBus.Error."
+      "UnknownObject: Unknown object '/org/freedesktop/login1/session/_33'."));
 }
 
 }  // namespace remoting

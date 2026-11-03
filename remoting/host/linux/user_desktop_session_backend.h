@@ -16,16 +16,19 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "remoting/base/loggable.h"
 #include "remoting/base/passwd_utils.h"
 #include "remoting/host/desktop_session.h"
+#include "remoting/host/linux/created_session_tracker.h"
 #include "remoting/host/linux/desktop_session_backend.h"
 #include "remoting/host/linux/gdbus_connection_ref.h"
 #include "remoting/host/linux/gvariant_ref.h"
@@ -41,6 +44,16 @@ class DesktopSessionLinux;
 
 // DesktopSessionBackend implementation that manages desktop sessions for
 // local Linux users based on `SessionRoutingConfig`.
+//
+// Graphical sessions that this class asks `session_creator_` to create are
+// recorded in a CreatedSessionTracker, and are terminated by
+// TerminateAllSessions(), i.e. when the daemon process receives SIGTERM. Other
+// graphical sessions are never terminated. Since `session_creator_` doesn't
+// report the ID of the session it creates, a session is only recorded when a
+// connection that was waiting for it finds it. To avoid terminating a session
+// that the host didn't create, a session that only appears after the
+// connection has stopped waiting (e.g. after the creation timeout or
+// TerminateAllSessions()) is not recorded, and therefore won't be terminated.
 class UserDesktopSessionBackend final : public DesktopSessionBackend {
  public:
   UserDesktopSessionBackend(
@@ -64,6 +77,11 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
  private:
   friend class UserDesktopSessionBackendTest;
 
+  // Run with the session ID of a tracked session once it has been handled by
+  // TerminateAllSessions(). See OnTrackedSessionInfo().
+  using TrackedSessionDoneCallback =
+      base::RepeatingCallback<void(std::optional<std::string>)>;
+
   // Selects the highest-priority graphical session from `sessions`. Returns
   // nullptr if no suitable session is found.
   static const LoginSessionManager::SessionInfo* SelectBestGraphicalSession(
@@ -83,6 +101,24 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
   // log in. Returns an error describing why not otherwise.
   static base::expected<void, Loggable> CheckCreateRemoteSessionEligibility(
       const std::string& username);
+
+  // Returns whether `session`, which a connection attached to while waiting
+  // for a session requested via `session_creator_`, should be recorded as
+  // created by CRD.
+  static bool ShouldTrackCreatedSession(
+      const LoginSessionManager::SessionInfo& session);
+
+  // Returns whether the tracked `entry` may be terminated, given the current
+  // `session` info of the logind session with the same ID. Session IDs may be
+  // reused (e.g. after systemd-logind restarts), so this checks that the
+  // session is still a remote graphical session of the tracked user.
+  static bool ShouldTerminateTrackedSession(
+      const CreatedSessionTracker::Entry& entry,
+      const LoginSessionManager::SessionInfo& session);
+
+  // Returns whether `error`, returned by LoginSessionManager, means that the
+  // requested session doesn't exist.
+  static bool IsNoSuchSessionError(std::string_view error);
 
   // A connection is in one of these states:
   // - Looking for the user's graphical session: `creation_timeout` is null and
@@ -123,6 +159,39 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
                         gvariant::ObjectPath object_path);
   void RemoveDesktopSession(int terminal_id);
 
+  // Records `session` as created by CRD in `created_session_tracker_`.
+  void TrackCreatedSession(const LoginSessionManager::SessionInfo& session);
+
+  // Called by TerminateAllSessions() with the sessions in
+  // `created_session_tracker_`. Terminates the ones that still exist and pass
+  // ShouldTerminateTrackedSession(), then removes them from the tracker.
+  void OnTrackedSessionsLoaded(
+      Callback callback,
+      base::expected<std::vector<CreatedSessionTracker::Entry>, Loggable>
+          entries);
+
+  // `done` is run with the session ID of `entry` if it should be removed from
+  // the tracker (i.e. the session was terminated or no longer exists), or with
+  // std::nullopt if it should be kept so that a later attempt can retry.
+  void OnTrackedSessionInfo(
+      CreatedSessionTracker::Entry entry,
+      TrackedSessionDoneCallback done,
+      base::expected<LoginSessionManager::SessionInfo, Loggable> result);
+  void OnTrackedSessionTerminated(std::string session_id,
+                                  TrackedSessionDoneCallback done,
+                                  base::expected<void, Loggable> result);
+  void OnAllTrackedSessionsHandled(
+      Callback callback,
+      std::vector<std::optional<std::string>> removable_session_ids);
+
+  // Runs `callback` with the error from removing the terminated sessions from
+  // the tracker if that failed, and with `termination_result` otherwise. This
+  // is static so that `callback` runs even if `this` has been destroyed.
+  static void OnTrackedSessionsRemoved(
+      Callback callback,
+      base::expected<void, Loggable> termination_result,
+      base::expected<void, Loggable> remove_result);
+
   // Returns the entry for `terminal_id` if it is waiting for a requested
   // session to show up, or nullptr otherwise.
   ActiveSessionEntry* GetEntryPendingCreation(int terminal_id);
@@ -145,6 +214,11 @@ class UserDesktopSessionBackend final : public DesktopSessionBackend {
       session_removed_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::flat_map<int /*terminal_id*/, ActiveSessionEntry> desktop_sessions_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Records the sessions created via `session_creator_`. Lives on a sequence
+  // that allows blocking, since it performs file I/O.
+  base::SequenceBound<CreatedSessionTracker> created_session_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<UserDesktopSessionBackend> weak_ptr_factory_{this};
