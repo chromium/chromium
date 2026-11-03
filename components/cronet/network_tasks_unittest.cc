@@ -6,6 +6,8 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/cronet/cronet_context.h"
@@ -129,7 +131,6 @@ class NetworkTasksTest : public testing::Test {
     file_task_runner_ = file_thread_->task_runner();
 
     scoped_ncn_->mock_network_change_notifier()->ForceNetworkHandlesSupported();
-    Initialize();
   }
 
   ~NetworkTasksTest() override {
@@ -139,7 +140,9 @@ class NetworkTasksTest : public testing::Test {
         std::move(network_tasks_)));
   }
 
-  void Initialize() {
+  void Initialize(bool enable_multi_network_v2) {
+    feature_list_.InitWithFeatureState(kCronetUseMultiNetworkV2,
+                                       enable_multi_network_v2);
     PostToNetworkThreadSync(
         base::BindOnce(&CronetContext::NetworkTasks::Initialize,
                        base::Unretained(network_tasks_.get()),
@@ -171,10 +174,6 @@ class NetworkTasksTest : public testing::Test {
       url_request_ = context->CreateRequest(
           GURL("http://www.foo.com"), net::DEFAULT_PRIORITY, nullptr,
           TRAFFIC_ANNOTATION_FOR_TESTS,
-          // TODO(crbug.com/495684670): Update
-          // multi-network Cronet to rely on
-          // UrlRequest's target_network
-          // instead of URLRequestContext's.
           net::handles::kInvalidNetworkHandle);
       url_request_created = !!url_request_;
     }));
@@ -200,6 +199,7 @@ class NetworkTasksTest : public testing::Test {
     callback_executed.wait();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::NetworkChangeNotifier> ncn_;
   std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier> scoped_ncn_;
@@ -211,7 +211,11 @@ class NetworkTasksTest : public testing::Test {
   std::unique_ptr<net::URLRequest> url_request_;
 };
 
+// TODO(crbug.com/495684670): Delete this test once multi-network Cronet always
+// relies on UrlRequest's target_network instead of URLRequestContext's.
 TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
+  Initialize(/*enable_multi_network_v2=*/false);
+
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -224,7 +228,11 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
   CheckURLRequestContextExistence(kNetwork, false);
 }
 
+// TODO(crbug.com/495684670): Delete this test once multi-network Cronet always
+// relies on UrlRequest's target_network instead of URLRequestContext's.
 TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
+  Initialize(/*enable_multi_network_v2=*/false);
+
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -245,6 +253,20 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
   ReleaseURLRequest();
   MaybeDestroyURLRequestContext(kNetwork);
   CheckURLRequestContextExistence(kNetwork, false);
+}
+
+TEST_F(NetworkTasksTest, UseTargetNetworkForMultiNetworkGetURLRequestContext) {
+  Initialize(/*enable_multi_network_v2=*/true);
+
+  // When the feature is enabled, requesting the default context succeeds.
+  PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
+    EXPECT_NE(nullptr, network_tasks_->GetURLRequestContext(
+                           net::handles::kInvalidNetworkHandle));
+  }));
+
+  // When the feature is enabled, requesting a non-default context CHECK-fails.
+  EXPECT_CHECK_DEATH(PostToNetworkThreadSync(base::BindLambdaForTesting(
+      [&]() { network_tasks_->GetURLRequestContext(1); })));
 }
 
 }  // namespace

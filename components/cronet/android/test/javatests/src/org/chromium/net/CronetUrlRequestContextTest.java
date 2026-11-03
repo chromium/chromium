@@ -825,11 +825,18 @@ public class CronetUrlRequestContextTest {
         urlRequest.cancel();
     }
 
+    // TODO(crbug.com/495684670): Delete this test once multi-network Cronet always relies on
+    // UrlRequest's target_network instead of URLRequestContext's.
     @Test
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "Tests native implementation internals")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testNetworkBoundContextLifetime() throws Exception {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         ConnectivityManagerWrapper wrapper =
@@ -879,11 +886,18 @@ public class CronetUrlRequestContextTest {
         assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
     }
 
+    // TODO(crbug.com/495684670): Delete this test once multi-network Cronet always relies on
+    // UrlRequest's target_network instead of URLRequestContext's.
     @Test
     @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "Tests native implementation internals")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testNetworkBoundRequestCancel() throws Exception {
         // Upon a network disconnection, NCN posts a tasks onto the network thread that calls
         // CronetContext::NetworkTasks::OnNetworkDisconnected.
@@ -934,7 +948,115 @@ public class CronetUrlRequestContextTest {
     }
 
     @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "Tests native implementation internals")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testNetworkBoundContextNotSpawnedWithMultiNetworkV2() throws Exception {
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        ConnectivityManagerWrapper wrapper =
+                new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = wrapper.getDefaultNetwork();
+        assume().that(defaultNetwork).isNotNull();
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        // Allows to check the underlying network-bound context state while the request is in
+        // progress.
+        callback.setAutoAdvance(false);
+
+        ExperimentalUrlRequest.Builder urlRequestBuilder =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
+        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
+        UrlRequest urlRequest = urlRequestBuilder.build();
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+        urlRequest.start();
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+
+        // Resume callback execution.
+        callback.waitForNextStep();
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+        callback.setAutoAdvance(true);
+        callback.startNextRead(urlRequest);
+        callback.blockForDone();
+        assertThat(callback.mError).isNull();
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "Tests native implementation internals")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testNetworkBoundRequestCancelWithMultiNetworkV2() throws Exception {
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        callback.setAutoAdvance(false);
+        ExperimentalUrlRequest.Builder urlRequestBuilder =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
+        ConnectivityManagerWrapper delegate =
+                new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = delegate.getDefaultNetwork();
+        assume().that(defaultNetwork).isNotNull();
+
+        urlRequestBuilder.bindToNetwork(defaultNetwork.getNetworkHandle());
+        UrlRequest urlRequest = urlRequestBuilder.build();
+
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+        urlRequest.start();
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+
+        callback.waitForNextStep();
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+
+        CronetLibraryLoader.postToInitThread(
+                () -> {
+                    NetworkChangeNotifier.fakeNetworkDisconnected(
+                            defaultNetwork.getNetworkHandle());
+                    urlRequest.cancel();
+                });
+
+        callback.blockForDone();
+        assertThat(callback.mOnCanceledCalled).isTrue();
+        assertThat(callback.mError).isNull();
+        assertThat(ApiHelper.doesContextExistForNetwork(cronetEngine, defaultNetwork)).isFalse();
+    }
+
+    @Test
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToInvalidNetworkFails() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToInvalidNetworkFailsWithMultiNetworkV2() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    private void testBindToInvalidNetworkFailsImpl() {
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         if (mTestRule.implementationUnderTest() == CronetImplementation.AOSP_PLATFORM) {
@@ -966,7 +1088,29 @@ public class CronetUrlRequestContextTest {
     }
 
     @Test
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToDefaultNetworkSucceeds() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToDefaultNetworkSucceedsWithMultiNetworkV2() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    private void testBindToDefaultNetworkSucceedsImpl() {
         ConnectivityManagerWrapper delegate =
                 new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = delegate.getDefaultNetwork();

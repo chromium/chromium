@@ -42,10 +42,12 @@ import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.TestBidirectionalStreamCallback.FailureType;
 import org.chromium.net.TestBidirectionalStreamCallback.ResponseStep;
+import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.impl.AndroidRequestFinishedInfoWrapper;
 import org.chromium.net.impl.BidirectionalStreamNetworkException;
 import org.chromium.net.impl.CronetBidirectionalStream;
 import org.chromium.net.impl.CronetExceptionImpl;
+import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
@@ -87,6 +89,7 @@ public class BidirectionalStreamTest {
     private TestLogger mTestLogger;
 
     private boolean mDropConnectionPackets;
+    private ConditionVariable mPacketDropped;
 
     @ChannelHandler.Sharable
     private final class DroppingPacketHandler extends ChannelInboundHandlerAdapter {
@@ -94,6 +97,7 @@ public class BidirectionalStreamTest {
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             if (mDropConnectionPackets) {
                 Log.i(TAG, "Dropping packet" + msg);
+                mPacketDropped.open();
                 return;
             }
             ctx.fireChannelRead(msg);
@@ -104,6 +108,7 @@ public class BidirectionalStreamTest {
     public void setUp() throws Exception {
         mTestLogger = mLoggerTestRule.mTestLogger;
         mDropConnectionPackets = false;
+        mPacketDropped = new ConditionVariable();
         mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertThat(
                         Http2TestServer.startHttp2TestServer(
@@ -2036,7 +2041,29 @@ public class BidirectionalStreamTest {
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason = "b/309112420 BidiStream bindToNetwork API not exposed in AOSP")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToInvalidNetworkFails() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToInvalidNetworkFailsWithMultiNetworkV2() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    private void testBindToInvalidNetworkFailsImpl() {
         String url = Http2TestServer.getEchoMethodUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
 
@@ -2073,7 +2100,29 @@ public class BidirectionalStreamTest {
     }
 
     @Test
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToDefaultNetworkSucceeds() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToDefaultNetworkSucceedsWithMultiNetworkV2() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    private void testBindToDefaultNetworkSucceedsImpl() {
         ConnectivityManagerWrapper wrapper =
                 new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
         Network defaultNetwork = wrapper.getDefaultNetwork();
@@ -2091,6 +2140,57 @@ public class BidirectionalStreamTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+    }
+
+    // Regression test for b/571700376: disconnecting a bound network while a BidirectionalStream's
+    // HttpStreamRequest is in-flight and then canceling the stream must not UAF/crash.
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "Tests native implementation internals")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testNetworkBoundStreamCancelWithMultiNetworkV2() throws Exception {
+        ConnectivityManagerWrapper wrapper =
+                new ConnectivityManagerWrapper(mTestRule.getTestFramework().getContext());
+        Network defaultNetwork = wrapper.getDefaultNetwork();
+        assume().that(defaultNetwork).isNotNull();
+
+        // Drop pre-TLS packets so that net::BidirectionalStream stays in the stream_request_
+        // (net::HttpStreamRequest) phase before OnBidirectionalStreamImplReady resets
+        // stream_request_.
+        mDropConnectionPackets = true;
+
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(
+                                Http2TestServer.getEchoMethodUrl(),
+                                callback,
+                                callback.getExecutor())
+                        .setHttpMethod("GET")
+                        .bindToNetwork(defaultNetwork.getNetworkHandle())
+                        .build();
+        stream.start();
+
+        // Wait until the TLS ClientHello is dropped so stream_request_ is guaranteed to be
+        // in-flight on the network thread.
+        assertThat(mPacketDropped.block(/* timeoutMs= */ 5000)).isTrue();
+
+        CronetLibraryLoader.postToInitThread(
+                () -> {
+                    NetworkChangeNotifier.fakeNetworkDisconnected(
+                            defaultNetwork.getNetworkHandle());
+                    stream.cancel();
+                });
+
+        callback.blockForDone();
+        assertThat(callback.mOnCanceledCalled).isTrue();
+        assertThat(callback.mError).isNull();
     }
 
     // While our documentation does not specify that the stream passed to the callbacks is the same

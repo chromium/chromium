@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -54,11 +55,16 @@ namespace cronet {
 class CronetPrefsManager;
 class TestUtil;
 
+BASE_DECLARE_FEATURE(kCronetUseMultiNetworkV2);
+
 struct URLRequestContextConfig;
 
 // Wrapper around net::URLRequestContext.
 class CronetContext {
  public:
+  static bool use_multi_network_v2() {
+    return base::FeatureList::IsEnabled(kCronetUseMultiNetworkV2);
+  }
   // Callback implemented by CronetContext() caller and owned by
   // CronetContext::NetworkTasks.
   class Callback {

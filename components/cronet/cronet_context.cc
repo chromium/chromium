@@ -212,6 +212,8 @@ bool IsNetworkNoLongerConnected(net::handles::NetworkHandle network) {
 
 namespace cronet {
 
+BASE_FEATURE(kCronetUseMultiNetworkV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 CronetContext::CronetContext(
     std::unique_ptr<URLRequestContextConfig> context_config,
     std::unique_ptr<Callback> callback,
@@ -265,8 +267,10 @@ CronetContext::NetworkTasks::~NetworkTasks() {
     network_quality_estimator_->RemoveRTTAndThroughputEstimatesObserver(this);
   }
 
-  if (net::NetworkChangeNotifier::AreNetworkHandlesSupported())
+  if (!CronetContext::use_multi_network_v2() &&
+      net::NetworkChangeNotifier::AreNetworkHandlesSupported()) {
     net::NetworkChangeNotifier::RemoveNetworkObserver(this);
+  }
 }
 
 void CronetContext::InitRequestContextOnInitThread() {
@@ -543,8 +547,10 @@ void CronetContext::NetworkTasks::Initialize(
       BuildDefaultURLRequestContext(std::move(proxy_config_service));
   default_context_ = contexts_[default_network].get();
 
-  if (net::NetworkChangeNotifier::AreNetworkHandlesSupported())
+  if (!CronetContext::use_multi_network_v2() &&
+      net::NetworkChangeNotifier::AreNetworkHandlesSupported()) {
     net::NetworkChangeNotifier::AddNetworkObserver(this);
+  }
 
   callback_->OnInitNetworkThread();
   is_default_context_initialized_ = true;
@@ -569,6 +575,7 @@ net::URLRequestContext* CronetContext::NetworkTasks::GetURLRequestContext(
   if (network == net::handles::kInvalidNetworkHandle)
     return default_context_;
 
+  CHECK(!CronetContext::use_multi_network_v2());
   // Non-default contexts are created on the fly.
   if (contexts_.find(network) == contexts_.end())
     contexts_[network] = BuildNetworkBoundURLRequestContext(network);
@@ -578,6 +585,7 @@ net::URLRequestContext* CronetContext::NetworkTasks::GetURLRequestContext(
 void CronetContext::NetworkTasks::MaybeDestroyURLRequestContext(
     net::handles::NetworkHandle network) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  CHECK(!CronetContext::use_multi_network_v2());
 
   // Default network context is never deleted.
   if (network == net::handles::kInvalidNetworkHandle)
@@ -721,6 +729,8 @@ void CronetContext::FlushWritePropertiesForTesting() {
 void CronetContext::MaybeDestroyURLRequestContext(
     net::handles::NetworkHandle network) {
   DCHECK(IsOnNetworkThread());
+  CHECK(!CronetContext::use_multi_network_v2());
+
   network_tasks_->MaybeDestroyURLRequestContext(network);
 }
 
@@ -785,6 +795,7 @@ void CronetContext::NetworkTasks::OnThroughputObservation(
 void CronetContext::NetworkTasks::OnNetworkDisconnected(
     net::handles::NetworkHandle network) {
   DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  CHECK(!CronetContext::use_multi_network_v2());
 
   auto it = contexts_.find(network);
   if (it == contexts_.end()) {

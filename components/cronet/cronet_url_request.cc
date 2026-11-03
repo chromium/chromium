@@ -307,11 +307,18 @@ void CronetURLRequest::NetworkTasks::Start(
   VLOG(1) << "Starting chromium request: "
           << initial_url_.possibly_invalid_spec().c_str()
           << " priority: " << RequestPriorityToString(initial_priority_);
-  url_request_ = context->GetURLRequestContext(network_)->CreateRequest(
+  net::URLRequestContext* url_request_context;
+  net::handles::NetworkHandle target_network;
+  if (CronetContext::use_multi_network_v2()) {
+    url_request_context = context->GetURLRequestContext();
+    target_network = network_;
+  } else {
+    url_request_context = context->GetURLRequestContext(network_);
+    target_network = net::handles::kInvalidNetworkHandle;
+  }
+  url_request_ = url_request_context->CreateRequest(
       initial_url_, net::DEFAULT_PRIORITY, this, MISSING_TRAFFIC_ANNOTATION,
-      // TODO(crbug.com/495684670): Update multi-network Cronet to rely on
-      // UrlRequest's target_network instead of URLRequestContext's.
-      net::handles::kInvalidNetworkHandle);
+      target_network);
   url_request_->SetLoadFlags(initial_load_flags_);
   url_request_->set_method(method);
   url_request_->SetExtraRequestHeaders(*request_headers);
@@ -322,7 +329,7 @@ void CronetURLRequest::NetworkTasks::Start(
           .value_or(url_request_->referrer()));
   url_request_->set_referrer_policy(net::ReferrerPolicy::NEVER_CLEAR);
   if (shared_dictionary_) {
-    if (!context->GetURLRequestContext(network_)->enable_brotli()) {
+    if (!url_request_context->enable_brotli()) {
       // Ideally this would be impossible. Unfortunately, due to Cronet's API
       // structure, it is impossible to know within UrlRequest.Builder's API
       // code whether the associated CronetEngine has Brotli enabled or not.
@@ -407,13 +414,15 @@ void CronetURLRequest::NetworkTasks::Destroy(CronetURLRequest* request,
   if (send_on_canceled)
     callback_->OnCanceled();
   callback_->OnDestroyed();
-  // Check if the URLRequestContext associated to `network_` has become eligible
-  // for destruction. To simplify MaybeDestroyURLRequestContext's logic: destroy
-  // the underlying URLRequest in advance, so that it has already deregistered
-  // from its URLRequestContext by the time MaybeDestroyURLRequestContext is
-  // called.
-  url_request_.reset();
-  request->context_->MaybeDestroyURLRequestContext(network_);
+  if (!CronetContext::use_multi_network_v2()) {
+    // Check if the URLRequestContext associated to `network_` has become
+    // eligible for destruction. To simplify MaybeDestroyURLRequestContext's
+    // logic: destroy the underlying URLRequest in advance, so that it has
+    // already deregistered from its URLRequestContext by the time
+    // MaybeDestroyURLRequestContext is called.
+    url_request_.reset();
+    request->context_->MaybeDestroyURLRequestContext(network_);
+  }
   // Deleting owner request also deletes `this`.
   delete request;
 }

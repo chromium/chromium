@@ -369,17 +369,22 @@ void CronetBidirectionalStreamAdapter::StartOnNetworkThread(
           ->bidi_stream_detect_broken_connection();
   request_info->heartbeat_interval =
       context_->cronet_url_request_context()->heartbeat_interval();
+
+  net::URLRequestContext* url_request_context;
+  if (CronetContext::use_multi_network_v2()) {
+    url_request_context = context_->GetURLRequestContext();
+    request_info->target_network = network_;
+  } else {
+    url_request_context = context_->GetURLRequestContext(network_);
+  }
+
   request_info->extra_headers.SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
-      context_->GetURLRequestContext(network_)
-          ->http_user_agent_settings()
-          ->GetUserAgent());
-  bidi_stream_.reset(
-      new net::BidirectionalStream(std::move(request_info),
-                                   context_->GetURLRequestContext(network_)
-                                       ->http_transaction_factory()
-                                       ->GetSession(),
-                                   send_request_headers_automatically_, this));
+      url_request_context->http_user_agent_settings()->GetUserAgent());
+  bidi_stream_.reset(new net::BidirectionalStream(
+      std::move(request_info),
+      url_request_context->http_transaction_factory()->GetSession(),
+      send_request_headers_automatically_, this));
 }
 
 void CronetBidirectionalStreamAdapter::SendRequestHeadersOnNetworkThread() {

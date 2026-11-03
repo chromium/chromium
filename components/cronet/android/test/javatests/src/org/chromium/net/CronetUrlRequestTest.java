@@ -34,12 +34,15 @@ import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
+import org.chromium.net.CronetTestRule.BoolFlag;
+import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.apihelpers.UploadDataProviders;
+import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetUrlRequest;
@@ -3120,7 +3123,29 @@ public class CronetUrlRequestTest {
     }
 
     @Test
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToInvalidNetworkFails() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToInvalidNetworkFailsWithMultiNetworkV2() {
+        testBindToInvalidNetworkFailsImpl();
+    }
+
+    private void testBindToInvalidNetworkFailsImpl() {
         String url = mNativeTestServer.getEchoMethodURL();
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -3152,7 +3177,25 @@ public class CronetUrlRequestTest {
     }
 
     @Test
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = false)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
     public void testBindToDefaultNetworkSucceeds() {
+        testBindToDefaultNetworkSucceedsImpl();
+    }
+
+    @Test
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason = "CronetUseMultiNetworkV2 is only supported by the native implementation")
+    @Flags(
+            boolFlags = {
+                @BoolFlag(name = BaseFeature.FLAG_PREFIX + "CronetUseMultiNetworkV2", value = true)
+            })
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testBindToDefaultNetworkSucceedsWithMultiNetworkV2() {
         testBindToDefaultNetworkSucceedsImpl();
     }
 
