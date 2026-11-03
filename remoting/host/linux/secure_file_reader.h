@@ -38,6 +38,15 @@ base::expected<std::optional<std::string>, Loggable> ReadSecureFile(
     uid_t expected_owner_uid,
     size_t max_size_bytes);
 
+// Checks that `path` is a directory that isn't a symlink, is owned by
+// `expected_owner_uid`, and isn't writable by group or others, i.e. the same
+// checks that ReadSecureFile() applies to the parent directory. Useful before
+// writing a file into the directory. Only `path` itself is checked; its
+// ancestors are trusted. Returns an error if the directory doesn't exist or
+// any of the checks fail. Performs blocking file I/O.
+base::expected<void, Loggable> CheckSecureDirectory(const base::FilePath& path,
+                                                    uid_t expected_owner_uid);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_LINUX_SECURE_FILE_READER_H_

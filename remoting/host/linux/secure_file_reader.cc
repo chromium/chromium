@@ -70,6 +70,39 @@ base::expected<void, Loggable> CheckOwnerAndMode(const struct stat& stat_buf,
   return base::ok();
 }
 
+// Opens `path` as a directory without following symlinks, and checks that it
+// is owned by `expected_owner_uid` and isn't writable by group or others.
+// Returns std::nullopt if the directory doesn't exist.
+base::expected<std::optional<base::ScopedFD>, Loggable> OpenSecureDirectory(
+    const base::FilePath& path,
+    uid_t expected_owner_uid) {
+  base::ScopedFD directory_fd(HANDLE_EINTR(open(
+      path.value().c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
+  if (!directory_fd.is_valid()) {
+    int error = errno;
+    if (error == ENOENT) {
+      return base::ok(std::nullopt);
+    }
+    // With O_DIRECTORY, a symlink fails with ENOTDIR rather than ELOOP.
+    struct stat link_stat;
+    if (error == ENOTDIR && lstat(path.value().c_str(), &link_stat) == 0 &&
+        S_ISLNK(link_stat.st_mode)) {
+      error = ELOOP;
+    }
+    return base::unexpected(
+        ErrnoLoggable(FROM_HERE, "open directory", path, error));
+  }
+  struct stat directory_stat;
+  if (fstat(directory_fd.get(), &directory_stat) != 0) {
+    return base::unexpected(ErrnoLoggable(FROM_HERE, "stat", path, errno));
+  }
+  auto check = CheckOwnerAndMode(directory_stat, path, expected_owner_uid);
+  if (!check.has_value()) {
+    return base::unexpected(std::move(check).error());
+  }
+  return base::ok(std::move(directory_fd));
+}
+
 }  // namespace
 
 base::expected<std::optional<std::string>, Loggable> ReadSecureFile(
@@ -80,38 +113,20 @@ base::expected<std::optional<std::string>, Loggable> ReadSecureFile(
                                                 base::BlockingType::MAY_BLOCK);
 
   base::FilePath directory = path.DirName();
-  base::ScopedFD directory_fd(
-      HANDLE_EINTR(open(directory.value().c_str(),
-                        O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
-  if (!directory_fd.is_valid()) {
-    int error = errno;
-    if (error == ENOENT) {
-      return base::ok(std::nullopt);
-    }
-    // With O_DIRECTORY, a symlink fails with ENOTDIR rather than ELOOP.
-    struct stat link_stat;
-    if (error == ENOTDIR && lstat(directory.value().c_str(), &link_stat) == 0 &&
-        S_ISLNK(link_stat.st_mode)) {
-      error = ELOOP;
-    }
-    return base::unexpected(
-        ErrnoLoggable(FROM_HERE, "open directory", directory, error));
+  auto directory_fd = OpenSecureDirectory(directory, expected_owner_uid);
+  if (!directory_fd.has_value()) {
+    return base::unexpected(std::move(directory_fd).error());
   }
-  struct stat directory_stat;
-  if (fstat(directory_fd.get(), &directory_stat) != 0) {
-    return base::unexpected(ErrnoLoggable(FROM_HERE, "stat", directory, errno));
+  if (!directory_fd->has_value()) {
+    return base::ok(std::nullopt);
   }
-  auto directory_check =
-      CheckOwnerAndMode(directory_stat, directory, expected_owner_uid);
-  if (!directory_check.has_value()) {
-    return base::unexpected(std::move(directory_check).error());
-  }
+  const base::ScopedFD& checked_directory_fd = **directory_fd;
 
   // O_NONBLOCK prevents blocking if the path is a FIFO, which is then rejected
   // by the S_ISREG check below. It has no effect on reading regular files.
-  base::ScopedFD file_fd(
-      HANDLE_EINTR(openat(directory_fd.get(), path.BaseName().value().c_str(),
-                          O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)));
+  base::ScopedFD file_fd(HANDLE_EINTR(
+      openat(checked_directory_fd.get(), path.BaseName().value().c_str(),
+             O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)));
   if (!file_fd.is_valid()) {
     int error = errno;
     if (error == ENOENT) {
@@ -156,6 +171,22 @@ base::expected<std::optional<std::string>, Loggable> ReadSecureFile(
         FROM_HERE, base::StrCat({"Failed to read '", path.value(), "'."})));
   }
   return base::ok(std::move(content));
+}
+
+base::expected<void, Loggable> CheckSecureDirectory(const base::FilePath& path,
+                                                    uid_t expected_owner_uid) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  auto directory_fd = OpenSecureDirectory(path, expected_owner_uid);
+  if (!directory_fd.has_value()) {
+    return base::unexpected(std::move(directory_fd).error());
+  }
+  if (!directory_fd->has_value()) {
+    return base::unexpected(
+        ErrnoLoggable(FROM_HERE, "open directory", path, ENOENT));
+  }
+  return base::ok();
 }
 
 }  // namespace remoting

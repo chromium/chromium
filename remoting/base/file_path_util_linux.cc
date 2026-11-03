@@ -19,6 +19,10 @@ base::FilePath GetVarLibDir() {
   return base::FilePath("/var/lib").Append(kChromeRemoteDesktopDir);
 }
 
+base::FilePath GetRunDir() {
+  return base::FilePath("/run").Append(kChromeRemoteDesktopDir);
+}
+
 base::FilePath GetMultiProcessHostGlobalConfigDir() {
   return base::FilePath("/etc").Append(kChromeRemoteDesktopDir);
 }

@@ -174,4 +174,41 @@ TEST_F(SecureFileReaderTest, RejectsOversizedFile) {
   EXPECT_THAT(Read(), ErrorContains("exceeds the size limit"));
 }
 
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryAcceptsSecureDirectory) {
+  ASSERT_NO_FATAL_FAILURE(CreateDirectory(0755));
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_),
+              base::test::HasValue());
+}
+
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryRejectsMissingDirectory) {
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_),
+              ErrorContains(directory_.value()));
+}
+
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryRejectsSymlink) {
+  base::FilePath real_directory = temp_dir_.GetPath().Append("real");
+  ASSERT_TRUE(base::CreateDirectory(real_directory));
+  ASSERT_TRUE(base::CreateSymbolicLink(real_directory, directory_));
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_),
+              ErrorContains("symbolic link"));
+}
+
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryRejectsRegularFile) {
+  ASSERT_TRUE(base::WriteFile(directory_, kContent));
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_),
+              ErrorContains(directory_.value()));
+}
+
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryRejectsWrongOwner) {
+  ASSERT_NO_FATAL_FAILURE(CreateDirectory());
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_ + 1),
+              ErrorContains("has owner UID"));
+}
+
+TEST_F(SecureFileReaderTest, CheckSecureDirectoryRejectsWritableByOthers) {
+  ASSERT_NO_FATAL_FAILURE(CreateDirectory(0777));
+  EXPECT_THAT(CheckSecureDirectory(directory_, current_uid_),
+              ErrorContains("writable by group or others"));
+}
+
 }  // namespace remoting

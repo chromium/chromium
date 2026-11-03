@@ -251,6 +251,8 @@ static_library("platform_impls") {
     "clipboard_gnome.h",
     "clipboard_portal.cc",
     "clipboard_portal.h",
+    "created_session_tracker.cc",
+    "created_session_tracker.h",
     "curtain_mode_wayland.cc",
     "curtain_mode_wayland.h",
     "curtain_mode_x11.cc",
@@ -487,6 +489,7 @@ source_set("unit_tests") {
   sources = [
     "audio_pipe_reader_unittest.cc",
     "certificate_watcher_unittest.cc",
+    "created_session_tracker_unittest.cc",
     "fake_capture_stream.cc",
     "fake_capture_stream.h",
     "gdbus_connection_ref_unittest.cc",
