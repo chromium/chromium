@@ -1817,6 +1817,65 @@ ContextualSearchSessionHandle::OnTabClosedOrNavigated(
   return removed_tokens;
 }
 
+bool ContextualSearchSessionHandle::IsTabDisplaced(
+    SessionID tab_session_id,
+    const GURL& url,
+    const std::string& title) const {
+  if (!tab_session_id.is_valid()) {
+    return false;
+  }
+  const int32_t tab_id = tab_session_id.id();
+  auto matches_url = [&](const GURL& other_url,
+                         const std::string& other_title) {
+    if (url.is_empty() || other_url.is_empty()) {
+      return true;
+    }
+    return url == other_url ||
+           AreUrlsEquivalent(url, title, other_url, other_title);
+  };
+  const bool in_displaced =
+      std::ranges::any_of(displaced_submitted_tabs_, [&](const TabInfo& tab) {
+        return tab.tab_id == tab_id && matches_url(tab.url, tab.title);
+      });
+  if (!in_displaced) {
+    return false;
+  }
+  const base::UnguessableToken token = GetTokenForTab(tab_session_id);
+  if (!token.is_empty()) {
+    ContextualSearchContextController* context_controller = GetController();
+    const FileInfo* info =
+        context_controller ? context_controller->GetFileInfo(token) : nullptr;
+    if (info && info->tab_url.has_value() &&
+        matches_url(*info->tab_url, info->tab_title.value_or(""))) {
+      return false;
+    }
+  }
+  auto matches_active_tab = [&](const TabInfo& tab) {
+    return tab.tab_id == tab_id && matches_url(tab.url, tab.title);
+  };
+  const bool in_attached =
+      std::ranges::any_of(tab_context_.attached, matches_active_tab);
+  const bool in_restored =
+      std::ranges::any_of(tab_context_.restored, matches_active_tab);
+  return !in_attached && !in_restored;
+}
+
+bool ContextualSearchSessionHandle::IsContextDisplaced(
+    int64_t context_id) const {
+  return std::ranges::any_of(
+      displaced_submitted_tabs_, [&](const TabInfo& tab) {
+        if (!tab.request_id.has_value() || !tab.request_id->has_context_id() ||
+            tab.request_id->context_id() != context_id) {
+          return false;
+        }
+        // A tab that was recontextualized or re-attached at the same page
+        // still owns this context.
+        return !tab.tab_id.has_value() ||
+               IsTabDisplaced(SessionID::FromSerializedValue(*tab.tab_id),
+                              tab.url, tab.title);
+      });
+}
+
 void ContextualSearchSessionHandle::AddAttachedTab(TabInfo tab) {
   CHECK(tab.tab_id.has_value());
   tab.restored_from_aim = false;

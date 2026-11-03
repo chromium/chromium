@@ -6597,6 +6597,152 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    ActiveThread_NavigationEvictsStaleTabAndUpdatesImplicitContext) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  EmbedHandlerInSidePanel();
+  ContextualTasksPanelController::From(browser())->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(panel_web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // Transition into an active non-zero-state thread where `url1` was already
+  // submitted and acknowledged by the server.
+  {
+    lens::SearchToClientMessage page_changed;
+    page_changed.mutable_on_page_changed()->set_is_zero_state(false);
+    std::vector<uint8_t> bytes(page_changed.ByteSizeLong());
+    page_changed.SerializeToArray(bytes.data(), bytes.size());
+    handler_->OnWebviewMessage(bytes, std::nullopt);
+  }
+  user_data->ClearFiles(/*should_block_auto_suggested_tabs=*/false);
+
+  const SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(web_contents_);
+  const base::UnguessableToken submitted_token =
+      base::UnguessableToken::Create();
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(4242);
+  request_id.set_context_id(101);
+  contextual_search::FileInfo persisted_file;
+  persisted_file.file_token = submitted_token;
+  persisted_file.tab_session_id = session_id;
+  persisted_file.tab_url = url1;
+  persisted_file.tab_title = "title1.html";
+  persisted_file.request_id = request_id;
+  ON_CALL(*mock_controller_, GetFileInfo(submitted_token))
+      .WillByDefault(testing::Return(&persisted_file));
+  mock_session_handle_->SetPersistedTabs(
+      {{session_id, {submitted_token, request_id}}});
+  auto* panel_session = mock_session_handle_.get();
+  ON_CALL(*panel_session, GetSubmittedContextFileInfos())
+      .WillByDefault([panel_session, submitted_token, persisted_file]() {
+        const auto& attached = panel_session->GetTabContextState().attached;
+        if (std::ranges::any_of(attached, [&](const auto& tab) {
+              return tab.context_token == submitted_token;
+            })) {
+          return std::vector<contextual_search::FileInfo>{persisted_file};
+        }
+        return std::vector<contextual_search::FileInfo>{};
+      });
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary turn1_library;
+  AddWebpageContext(turn1_library, 101, url1.spec(), "title1.html");
+  SendUpdateThreadContextLibrary(turn1_library);
+
+  // Staying on `url1` keeps the submitted/restored tab without adding a
+  // duplicate pending chip.
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+  EXPECT_FALSE(user_data->GetAutoSuggestedTabHandle().has_value());
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().attached.size(), 1u);
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+  mock_panel_page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
+
+  // Navigating the active tab to `url2` in a non-zero-state thread evicts the
+  // stale `url1` from both `attached` and `restored`, records `request_id` for
+  // removal on the next submit, mounts `CONTEXT_LIBRARY`, and sends `[url2]` as
+  // an unsubmitted active-tab coin.
+  base::RunLoop nav_loop;
+  bool saw_mount_context_library = false;
+  bool saw_updated_tab_coin = false;
+  EXPECT_CALL(mock_panel_page_, PostSearchMessage(_))
+      .WillRepeatedly([&saw_mount_context_library, &saw_updated_tab_coin,
+                       &nav_loop](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (message.has_value() && message->has_inject_chrome_input() &&
+            message->inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::
+                    CONTEXT_LIBRARY &&
+            message->inject_chrome_input().is_active()) {
+          saw_mount_context_library = true;
+          if (saw_updated_tab_coin) {
+            nav_loop.Quit();
+          }
+        }
+      });
+  EXPECT_CALL(mock_panel_page_, OnTabContextUpdated(_, _))
+      .WillRepeatedly(
+          [&url2, &saw_updated_tab_coin, &saw_mount_context_library, &nav_loop](
+              std::vector<searchbox::mojom::TabInfoPtr> tabs,
+              const std::vector<int32_t>& submitted_tab_ids) {
+            if (tabs.size() == 1u && tabs[0]->url == url2 &&
+                tabs[0]->title == "Title Of Awesomeness" &&
+                submitted_tab_ids.empty()) {
+              saw_updated_tab_coin = true;
+              if (saw_mount_context_library) {
+                nav_loop.Quit();
+              }
+            }
+          });
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  nav_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
+
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+
+  // If a delayed server `UpdateThreadContextLibrary` for Turn 1 arrives after
+  // `url1` was already evicted (and before `TakeRemovedContexts()` drains the
+  // pending removal), `url1` is not resurrected into `state.restored`.
+  SendUpdateThreadContextLibrary(turn1_library);
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
+
+  const std::vector<lens::LensOverlayRequestId> removed_contexts =
+      mock_session_handle_->TakeRemovedContexts();
+  ASSERT_EQ(removed_contexts.size(), 1u);
+  EXPECT_EQ(removed_contexts[0].uuid(), 4242u);
+
+  // Navigating to `about:blank` removes the pending delayed tab without
+  // resurrecting `url1`, and navigating back to `url1` re-attaches `url1`
+  // cleanly (proving navigation did not falsely mark `url1` user-deselected).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().attached.empty());
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url1);
+
+  testing::Mock::VerifyAndClearExpectations(mock_controller_.get());
+  testing::Mock::VerifyAndClearExpectations(panel_session);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
     ActiveThread_HistoryThreadRestore_AttachesDifferentActiveTabWithoutDuplicatingMatch) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL cats_url = embedded_test_server()->GetURL("/title1.html");

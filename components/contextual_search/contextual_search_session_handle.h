@@ -613,6 +613,17 @@ class ContextualSearchSessionHandle {
       std::optional<GURL> current_url,
       std::optional<std::string> current_title);
 
+  // Returns true if `tab_session_id` had submitted context that was displaced
+  // (e.g. by tab closure, navigation, or deletion) and has no active attached
+  // or restored context matching `url` and `title` in the session.
+  bool IsTabDisplaced(SessionID tab_session_id,
+                      const GURL& url = GURL(),
+                      const std::string& title = "") const;
+
+  // Returns true if `context_id` had submitted context that was displaced (e.g.
+  // by tab closure, navigation, or deletion) and is pending removal.
+  bool IsContextDisplaced(int64_t context_id) const;
+
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
