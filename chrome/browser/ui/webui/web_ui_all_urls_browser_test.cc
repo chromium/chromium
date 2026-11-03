@@ -29,6 +29,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/ash_features.h"
@@ -73,6 +77,7 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
 
 #if !BUILDFLAG(IS_ANDROID)
   enable_feature(features::kIsolatedWebApps);
+  enable_feature(organizer_panel::kOrganizerPanel);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

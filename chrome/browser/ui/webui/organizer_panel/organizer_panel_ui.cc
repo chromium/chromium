@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
 #include "base/check.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
@@ -43,6 +44,24 @@
 OrganizerPanelUIConfig::OrganizerPanelUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   chrome::kChromeUIOrganizerPanelHost) {}
+
+bool OrganizerPanelUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return organizer_panel::IsOrganizerPanelFeatureEnabled();
+}
+
+bool OrganizerPanelUIConfig::IsPreloadable() {
+  return organizer_panel::IsOrganizerPanelFeatureEnabled();
+}
+
+std::optional<int> OrganizerPanelUIConfig::GetCommandIdForTesting() {
+  return IDC_TAB_SEARCH;
+}
+
+std::optional<GURL> OrganizerPanelUIConfig::GetPreloadEngagementAliasURL()
+    const {
+  return GURL(chrome::kChromeUITabSearchURL);
+}
 
 OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,

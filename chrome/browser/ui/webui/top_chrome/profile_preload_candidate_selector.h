@@ -10,7 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace webui {
 
@@ -39,6 +42,15 @@ class ProfilePreloadCandidateSelector : public PreloadCandidateSelector {
   }
 
  private:
+  // Returns the effective site engagement score for `url`, considering any
+  // alias URL configured in its TopChromeWebUIConfig.
+  double GetEngagementScore(Profile* profile, const GURL& url) const;
+
+  // Returns the effective engagement level for `url`, considering any alias
+  // URL configured in its TopChromeWebUIConfig.
+  blink::mojom::EngagementLevel GetEngagementLevel(Profile* profile,
+                                                   const GURL& url) const;
+
   // The WebUI tracker should always outlive this class.
   raw_ptr<PerProfileWebUITracker> webui_tracker_;
   std::vector<GURL> preloadable_urls_;

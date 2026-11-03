@@ -1052,6 +1052,7 @@ if (!is_android) {
         ":theme_source",
         "//chrome/browser/contextual_cueing",
         "//chrome/browser/ui:ui_features",
+        "//chrome/browser/ui/tabs/organizer",
         "//chrome/browser/ui/webui/iwa_dev",
         "//chrome/browser/ui/webui/whats_new",
         "//chrome/test/data/webui:browser_tests",

@@ -92,8 +92,16 @@ class TestWebUIController2 : public TopChromeWebUIController {
 class TestWebUIConfig2
     : public DefaultTopChromeWebUIConfig<TestWebUIController2> {
  public:
-  TestWebUIConfig2()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, "example2") {}
+  explicit TestWebUIConfig2(std::optional<GURL>& alias_url)
+      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme, "example2"),
+        alias_url_(alias_url) {}
+
+  std::optional<GURL> GetPreloadEngagementAliasURL() const override {
+    return *alias_url_;
+  }
+
+ private:
+  raw_ref<std::optional<GURL>> alias_url_;
 };
 
 }  // namespace
@@ -105,7 +113,8 @@ class ProfilePreloadCandidateSelectorTest
  public:
   ProfilePreloadCandidateSelectorTest()
       : registration1_(std::make_unique<TestWebUIConfig1>(enabled_webui_1_)),
-        registration2_(std::make_unique<TestWebUIConfig2>()) {}
+        registration2_(std::make_unique<TestWebUIConfig2>(alias_url_webui_2_)) {
+  }
   ~ProfilePreloadCandidateSelectorTest() override = default;
   ProfilePreloadCandidateSelectorTest(
       const ProfilePreloadCandidateSelectorTest&) = delete;
@@ -152,6 +161,7 @@ class ProfilePreloadCandidateSelectorTest
 
  protected:
   bool enabled_webui_1_ = true;
+  std::optional<GURL> alias_url_webui_2_;
 
  private:
   // Use NiceMock because the exact interaction between the candidate selector
@@ -293,6 +303,35 @@ TEST_F(ProfilePreloadCandidateSelectorTest, IgnoreDisabledWebUIs) {
 
   // If URL1 is disabled, selects URL2.
   base::AutoReset<bool> disable_webui_1(&enabled_webui_1_, false);
+  EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
+}
+
+TEST_F(ProfilePreloadCandidateSelectorTest, PreloadEngagementAlias) {
+  // Set URL1 engagement score to high, and URL2 engagement score to 0.
+  const double high_engagement_score =
+      SiteEngagementScore::GetHighEngagementBoundary();
+  SetEngagementScore(profile(), GURL(kWebUIUrl1), high_engagement_score);
+  SetEngagementScore(profile(), GURL(kWebUIUrl2), 0.0);
+
+  // Without alias, if URL1 is disabled, URL2 has EngagementLevel::NONE so
+  // no candidate is selected.
+  base::AutoReset<bool> disable_webui_1(&enabled_webui_1_, false);
+  EXPECT_FALSE(GetURLToPreload(profile()).has_value());
+
+  // With URL1 configured as alias for URL2, URL2 inherits URL1's score and is
+  // selected.
+  alias_url_webui_2_ = GURL(kWebUIUrl1);
+  EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
+
+  // If URL2 is already present, it is not selected even with an active alias.
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl2))
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(GetURLToPreload(profile()).has_value());
+  ON_CALL(mock_webui_tracker(), ProfileHasWebUI(_, kWebUIUrl2))
+      .WillByDefault(Return(false));
+
+  // If URL2 has a higher native score than URL1, its score is preserved.
+  SetEngagementScore(profile(), GURL(kWebUIUrl2), high_engagement_score + 10);
   EXPECT_EQ(GURL(kWebUIUrl2), *GetURLToPreload(profile()));
 }
 
