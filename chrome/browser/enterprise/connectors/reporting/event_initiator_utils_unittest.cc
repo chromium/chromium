@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -31,13 +34,25 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+#include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
+#include "components/enterprise/connectors/core/process_extractor.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
 
+using EventInitiatorInfo = chrome::cros::reporting::proto::EventInitiatorInfo;
 using ExtensionInfo =
     safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
 using extensions::mojom::ManifestLocation;
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+using chrome::cros::reporting::proto::BrowserFeatureInfo;
+using chrome::cros::reporting::proto::ExternalProcessInfo;
+#endif
 
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kUninstalledExtensionId[] = "ponmlkjihgfedcbaponmlkjihgfedcba";
@@ -54,6 +69,10 @@ class EventInitiatorUtilsTest : public testing::Test {
     policy::SetDMTokenForTesting(
         policy::DMToken::CreateValidToken("fake-token"));
     test::SetOnSecurityEventReporting(profile_.GetPrefs(), /*enabled=*/true);
+  }
+
+  ~EventInitiatorUtilsTest() override {
+    policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
   }
 
   // Creates an extension without registering it in `profile_`.
@@ -395,5 +414,156 @@ TEST_F(EventInitiatorUtilsTest, TabIdWithFeatureDisabledReturnsNullopt) {
       GetActiveExtensionInitiatorInfo(&profile_, SessionID::NewUnique())
           .has_value());
 }
+
+TEST_F(EventInitiatorUtilsTest, EventInitiatorNullWebContentsReturnsNullopt) {
+  EXPECT_FALSE(
+      GetActiveEventInitiatorInfo(/*web_contents=*/nullptr).has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorWebContentsWithoutActiveActorReturnsNullopt) {
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(web_contents).has_value());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorWebContentsPopulatesChromeExtension) {
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents);
+
+  ASSERT_TRUE(initiator.has_value());
+  ASSERT_TRUE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_external_process_info());
+  EXPECT_FALSE(initiator->has_browser_feature_info());
+  EXPECT_EQ(kExtensionId, initiator->chrome_extension().id());
+  EXPECT_EQ(kExtensionName, initiator->chrome_extension().name());
+  EXPECT_EQ(kExtensionVersion, initiator->chrome_extension().version());
+  EXPECT_EQ(ExtensionInfo::INTERNAL,
+            initiator->chrome_extension().install_location());
+  EXPECT_TRUE(initiator->chrome_extension().is_from_store());
+}
+
+TEST_F(EventInitiatorUtilsTest, EventInitiatorTabIdGuardConditions) {
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(/*browser_context=*/nullptr,
+                                           SessionID::NewUnique())
+                   .has_value());
+  EXPECT_FALSE(GetActiveEventInitiatorInfo(&profile_, SessionID::InvalidValue())
+                   .has_value());
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents,
+                                                   base::NullCallback());
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+  EXPECT_FALSE(
+      GetActiveEventInitiatorInfo(
+          &profile_, sessions::SessionTabHelper::IdForTab(web_contents))
+          .has_value());
+}
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorWebContentsFallsBackToCdpExternalProcess) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEventReportingCdpAttribution},
+      /*disabled_features=*/{kEnterpriseExtensionActorAttribution});
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ProcessTree tree;
+  tree.process_nodes.emplace_back(/*process_id=*/4242,
+                                  /*parent_process_id=*/100, "/usr/bin/node",
+                                  "/tmp/agent.js");
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorAttached(
+          ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
+          std::move(tree));
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents);
+
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_FALSE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_browser_feature_info());
+  ASSERT_TRUE(initiator->has_external_process_info());
+  ASSERT_EQ(1, initiator->external_process_info().external_processes_size());
+  const auto& process =
+      initiator->external_process_info().external_processes(0);
+  EXPECT_EQ(ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+            process.transport_type());
+  ASSERT_EQ(1, process.process_nodes_size());
+  EXPECT_EQ(4242, process.process_nodes(0).process_id());
+  EXPECT_EQ("/usr/bin/node", process.process_nodes(0).executable_path());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorWebContentsFallsBackToCdpDevToolsUi) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEventReportingCdpAttribution},
+      /*disabled_features=*/{kEnterpriseExtensionActorAttribution});
+
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnDevToolsUiAttached();
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents);
+
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_FALSE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_external_process_info());
+  ASSERT_TRUE(initiator->has_browser_feature_info());
+  EXPECT_EQ(BrowserFeatureInfo::FEATURE_TYPE_DEVTOOLS_UI,
+            initiator->browser_feature_info().feature_type());
+}
+
+TEST_F(EventInitiatorUtilsTest,
+       EventInitiatorExtensionTakesPrecedenceOverCdpActor) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{kEnterpriseExtensionActorAttribution,
+                            kEventReportingCdpAttribution},
+      /*disabled_features=*/{});
+
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  content::WebContents* web_contents =
+      web_contents_factory_.CreateWebContents(&profile_);
+  ExtensionActorTracker::SetActiveActor(web_contents, kExtensionId,
+                                        "Page.navigate");
+  ProcessTree tree;
+  tree.process_nodes.emplace_back(/*process_id=*/4242,
+                                  /*parent_process_id=*/100, "/usr/bin/node",
+                                  "");
+  TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+      ->buffer()
+      .OnExternalActorAttached(
+          ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+          net::IPEndPoint(net::IPAddress::IPv4Localhost(), 51234),
+          std::move(tree));
+
+  std::optional<EventInitiatorInfo> initiator =
+      GetActiveEventInitiatorInfo(web_contents);
+  ASSERT_TRUE(initiator.has_value());
+  ASSERT_TRUE(initiator->has_chrome_extension());
+  EXPECT_FALSE(initiator->has_external_process_info());
+  EXPECT_EQ(kExtensionId, initiator->chrome_extension().id());
+}
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
 
 }  // namespace enterprise_connectors

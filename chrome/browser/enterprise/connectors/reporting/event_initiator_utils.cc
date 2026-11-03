@@ -6,12 +6,14 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/version.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -34,10 +36,15 @@
 #include "extensions/common/extension_id.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+#include "chrome/browser/enterprise/connectors/reporting/cdp_actor_session_tracker.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
 
+using EventInitiatorInfo = chrome::cros::reporting::proto::EventInitiatorInfo;
 using ExtensionInfo =
     safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
 
@@ -210,6 +217,52 @@ std::optional<ExtensionInfo> GetActiveExtensionInitiatorInfo(
   return std::nullopt;
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
         // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+}
+
+std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
+    content::WebContents* web_contents) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!web_contents) {
+    return std::nullopt;
+  }
+
+  if (std::optional<ExtensionInfo> extension_info =
+          GetActiveExtensionInitiatorInfo(web_contents)) {
+    EventInitiatorInfo initiator;
+    *initiator.mutable_chrome_extension() = std::move(*extension_info);
+    return initiator;
+  }
+
+#if BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+  return CdpActorSessionTracker::GetEventInitiatorInfo(web_contents);
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENTERPRISE_CDP_ATTRIBUTION)
+}
+
+std::optional<EventInitiatorInfo> GetActiveEventInitiatorInfo(
+    content::BrowserContext* browser_context,
+    SessionID tab_id) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if ((!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) &&
+       !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) ||
+      !browser_context || !tab_id.is_valid()) {
+    return std::nullopt;
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  content::WebContents* web_contents = nullptr;
+  if (!extensions::ExtensionTabUtil::GetTabById(tab_id.id(), browser_context,
+                                                /*include_incognito=*/true,
+                                                &web_contents)) {
+    return std::nullopt;
+  }
+  return GetActiveEventInitiatorInfo(web_contents);
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 }  // namespace enterprise_connectors
