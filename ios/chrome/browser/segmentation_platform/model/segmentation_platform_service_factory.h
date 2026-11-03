@@ -28,11 +28,15 @@ class SegmentationPlatformServiceFactory final
   // for the user in the given profile. Do not call for OTR profiles.
   static DeviceSwitcherResultDispatcher* GetDispatcherForProfile(
       ProfileIOS* profile);
+  static DeviceSwitcherResultDispatcher* GetDispatcherForProfile(
+      ProfileIOS& profile);
 
   // Returns the registry used to manage the home cards for the given `context`.
   // Do not call for OTR context.
   static home_modules::HomeModulesCardRegistry* GetHomeCardRegistryForProfile(
       ProfileIOS* profile);
+  static home_modules::HomeModulesCardRegistry* GetHomeCardRegistryForProfile(
+      ProfileIOS& profile);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with AddTestingFactory to use real instances during testing.
