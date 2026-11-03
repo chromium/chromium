@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_future.h"
@@ -206,13 +207,7 @@ const ManagementDisclaimerTestParam kManagementDisclaimerTestParams[] = {
     // - Profile creation is enforced by policy
     // - No User choice
     {
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-        // TODO(crbug.com/505194363): Re-enable on Mac once deflaked.
-        // TODO(crbug.com/549938845): Flaky on Win ASan.
-        .test_name = "DISABLED_Managed_EnforcedByPolicy_Dismiss",
-#else
         .test_name = "Managed_EnforcedByPolicy_Dismiss",
-#endif
         .user_choice = std::nullopt,
         .policies = policy::ProfileSeparationPolicies(
             /*profile_separation_settings=*/policy::ProfileSeparationSettings::
@@ -292,10 +287,12 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
   }
 
   void ReplaceCurrentBrowserWithNewOne() {
+    BrowserWindowInterface* const old_browser = browser();
     BrowserWindowInterface* const new_browser =
-        CreateBrowser(browser()->GetProfile());
-    CloseBrowserSynchronously(browser());
+        CreateBrowser(old_browser->GetProfile());
     SetBrowser(new_browser);
+    CloseBrowserSynchronously(old_browser);
+    ui_test_utils::WaitForBrowserSetLastActive(new_browser);
     ASSERT_EQ(browser(), new_browser);
   }
 
@@ -354,8 +351,8 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   if (!GetParam().user_choice.has_value()) {
-    base::RunLoop().RunUntilIdle();
-    ASSERT_TRUE(signin_view_controller->ShowsModalDialog());
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return signin_view_controller->ShowsModalDialog(); }));
 
     // Dismiss the dialog without any user choice.
     signin_view_controller->CloseModalSignin();
@@ -388,10 +385,12 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(enterprise_util::UserAcceptedAccountManagement(verify_profile),
             GetParam().expected_management_accepted);
-  EXPECT_EQ(
-      GetIdentityManager(verify_profile)
-          ->HasAccountWithRefreshToken(primary_account_info.GetAccountId()),
-      GetParam().expected_refresh_token);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetIdentityManager(verify_profile)
+               ->HasAccountWithRefreshToken(
+                   primary_account_info.GetAccountId()) ==
+           GetParam().expected_refresh_token;
+  }));
 
   if (verify_profile != GetProfile()) {
     EXPECT_EQ(GetIdentityManager(verify_profile)
@@ -552,8 +551,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
   }
 
   if (!GetParam().user_choice.has_value()) {
-    base::RunLoop().RunUntilIdle();
-    ASSERT_TRUE(signin_view_controller->ShowsModalDialog());
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return signin_view_controller->ShowsModalDialog(); }));
 
     // Dismiss the dialog without any user choice.
     signin_view_controller->CloseModalSignin();
@@ -577,10 +576,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
 
   EXPECT_EQ(enterprise_util::UserAcceptedAccountManagement(verify_profile),
             GetParam().expected_management_accepted);
-  EXPECT_EQ(
-      GetIdentityManager(verify_profile)
-          ->HasAccountWithRefreshToken(primary_account_info.GetAccountId()),
-      GetParam().expected_refresh_token);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetIdentityManager(verify_profile)
+               ->HasAccountWithRefreshToken(
+                   primary_account_info.GetAccountId()) ==
+           GetParam().expected_refresh_token;
+  }));
 
   if (verify_profile != GetProfile()) {
     EXPECT_EQ(GetIdentityManager(verify_profile)
