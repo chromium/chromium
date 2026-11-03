@@ -400,6 +400,48 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
   parent2->Close();
 }
 
+TEST_F(WebViewUnitTest, AttachNewWebContentsToHiddenWebView) {
+  ASSERT_TRUE(top_level_widget()->IsVisible());
+  for (const bool hide_parent : {false, true}) {
+    SCOPED_TRACE(hide_parent ? "Hidden parent" : "Hidden WebView");
+    View* hidden_view = hide_parent ? web_view()->parent() : web_view();
+    hidden_view->SetVisible(false);
+    ASSERT_EQ(hide_parent, web_view()->GetVisible());
+    ASSERT_FALSE(web_view()->IsDrawn());
+
+    const auto web_contents = CreateWebContents();
+    ASSERT_EQ(content::Visibility::VISIBLE, web_contents->GetVisibility());
+    WebViewTestWebContentsObserver observer(web_contents.get());
+
+    // A fresh WebContents must not receive a transient show/hide pair while
+    // being attached to a WebView hidden directly or through its parent.
+    web_view()->SetWebContents(web_contents.get());
+    views::test::RunScheduledLayout(web_view());
+    EXPECT_EQ(0, observer.shown_count());
+    EXPECT_EQ(0, observer.hidden_count());
+
+    hidden_view->SetVisible(true);
+    views::test::RunScheduledLayout(web_view());
+    EXPECT_TRUE(observer.was_shown());
+    EXPECT_EQ(1, observer.shown_count());
+    EXPECT_EQ(0, observer.hidden_count());
+    EXPECT_TRUE(observer.valid_root_while_shown());
+
+    // Actual visibility changes must still reach the WebContents.
+    hidden_view->SetVisible(false);
+    views::test::RunScheduledLayout(web_view());
+    EXPECT_FALSE(observer.was_shown());
+    EXPECT_EQ(1, observer.shown_count());
+    EXPECT_EQ(1, observer.hidden_count());
+
+    hidden_view->SetVisible(true);
+    views::test::RunScheduledLayout(web_view());
+    EXPECT_TRUE(observer.was_shown());
+    EXPECT_EQ(2, observer.shown_count());
+    EXPECT_EQ(1, observer.hidden_count());
+  }
+}
+
 // Tests that the WebView correctly toggles its focus behavior and accessibility
 // tree properties when the ScopedAxDisconnectLock is acquired and released.
 TEST_F(WebViewUnitTest, AccessibilityDisconnectsFocusAndAXTree) {

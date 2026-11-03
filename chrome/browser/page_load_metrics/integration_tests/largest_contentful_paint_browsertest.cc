@@ -37,6 +37,17 @@
 #endif
 #include "ui/events/test/event_generator.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/test/run_until.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
+#include "content/public/browser/web_contents.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 // `gn check` doesn't recognize that this is included conditionally, with the
 // same condition as the dependencies.
@@ -101,7 +112,108 @@ bool compare_candidate_index(const TraceEvent* lhs, const TraceEvent* rhs) {
   return GetCandidateIndex(*lhs) < GetCandidateIndex(*rhs);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Use the production metrics pipeline for an HTTP page hosted outside the tab
+// strip, without installing Chrome's tab-specific observers.
+class HttpPageMetricsEmbedder
+    : public page_load_metrics::PageLoadMetricsEmbedderBase {
+ public:
+  explicit HttpPageMetricsEmbedder(content::WebContents* web_contents)
+      : PageLoadMetricsEmbedderBase(web_contents) {}
+
+  bool IsNewTabPageUrl(const GURL& url) override { return false; }
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override {
+    return false;
+  }
+  bool IsExtensionUrl(const GURL& url) override { return false; }
+  bool IsNonTabWebUI(const GURL& url) override { return false; }
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LargestContentfulPaintAfterHiddenWebViewAttachment) {
+  net::test_server::ControllableHttpResponse response(
+      embedded_test_server(), "/lcp-after-attachment.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto contents = content::WebContents::Create(
+      content::WebContents::CreateParams(web_contents()->GetBrowserContext()));
+  ASSERT_EQ(contents->GetVisibility(), content::Visibility::VISIBLE);
+  auto* metrics =
+      page_load_metrics::MetricsWebContentsObserver::CreateForWebContents(
+          contents.get(),
+          std::make_unique<HttpPageMetricsEmbedder>(contents.get()));
+
+  views::Widget widget;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect(100, 100, 800, 600);
+  widget.Init(std::move(params));
+  auto* web_view = widget.SetContentsView(std::make_unique<views::WebView>());
+  web_view->SetVisible(false);
+  widget.Show();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return widget.IsActive(); }));
+  RunScheduledLayouts();
+  ASSERT_TRUE(widget.IsVisible());
+  ASSERT_FALSE(web_view->IsDrawn());
+  ASSERT_FALSE(web_view->web_contents());
+
+  base::HistogramTester histograms;
+  const GURL url = embedded_test_server()->GetURL("/lcp-after-attachment.html");
+  contents->GetController().LoadURL(url, content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  response.WaitForRequest();
+
+  // Reproduce DevTools' hidden-host attachment with an ordinary HTTP page.
+  // Withhold the response until after any transient show/hide pair.
+  ASSERT_EQ(contents->GetVisibility(), content::Visibility::VISIBLE);
+  web_view->SetWebContents(contents.get());
+  ASSERT_FALSE(web_view->IsDrawn());
+  web_view->SetVisible(true);
+  RunScheduledLayouts();
+  ASSERT_TRUE(web_view->IsDrawn());
+  ASSERT_EQ(contents->GetVisibility(), content::Visibility::VISIBLE);
+
+  // Wait for the actual renderer timing, not a foreground-only histogram: the
+  // candidate should arrive even when a spurious HIDDEN excludes it from UMA.
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(contents.get());
+  waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                TimingField::kLargestContentfulPaint);
+  response.Send(net::HTTP_OK, "text/html",
+                "<!doctype html><title>LCP after attachment</title>"
+                "<p style='font-size:48px'>Largest contentful paint</p>");
+  response.Done();
+  ASSERT_TRUE(content::WaitForLoadStop(contents.get()));
+  ASSERT_EQ(contents->GetLastCommittedURL(), url);
+  waiter.Wait();
+
+  const auto* delegate = metrics->GetDelegateForCommittedLoadOrNull();
+  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(delegate->StartedInForeground());
+  const auto& lcp = delegate->GetLargestContentfulPaintHandler()
+                        .MainFrameLargestContentfulPaint();
+  ASSERT_TRUE(lcp.ContainsValidTime());
+  const auto first_background = delegate->GetTimeToFirstBackground();
+  SCOPED_TRACE(testing::Message()
+               << "LCP ms=" << lcp.Time()->InMillisecondsF()
+               << ", first background ms="
+               << (first_background ? first_background->InMillisecondsF()
+                                    : -1));
+
+  constexpr char kLcpHistogram[] =
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2";
+  histograms.ExpectTotalCount(kLcpHistogram, 0);
+  // Navigating away finalizes the page-load metrics before checking UMA.
+  ASSERT_TRUE(content::NavigateToURL(contents.get(), GURL("about:blank")));
+  histograms.ExpectTotalCount(kLcpHistogram, 1);
+  histograms.ExpectTotalCount(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame", 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/385580803): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {

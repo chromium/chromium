@@ -137,6 +137,13 @@ void NativeViewHostMac::AttachNativeView() {
   NSWindow* ns_window = [native_view_ window];
   Widget* widget = Widget::GetWidgetForNativeView(host_->native_view());
 
+  // Adding an NSView to a visible window can synchronously report it as shown.
+  // Hide it first if the Views host is hidden to avoid a transient show/hide
+  // pair for the hosted WebContents.
+  if (!host_->IsDrawn()) {
+    HideWidget();
+  }
+
   // TODO(crbug.com/41442285): This is lifted out the ViewsHostableAttach
   // call below because of crashes being observed in the field.
   NSView* superview =

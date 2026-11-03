@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <array>
 #include <deque>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/cfi_buildflags.h"
@@ -150,6 +152,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -169,7 +172,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1235,6 +1241,73 @@ IN_PROC_BROWSER_TEST_F(DevToolsBeforeUnloadTest,
   for (auto& close_observer : close_observers) {
     close_observer->Wait();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       DockedDevToolsDoesNotTransientlyHideContents) {
+  class VisibilityObserver : public content::WebContentsObserver {
+   public:
+    explicit VisibilityObserver(WebContents* contents)
+        : content::WebContentsObserver(contents),
+          initial_visibility_(contents->GetVisibility()) {}
+
+    void OnVisibilityChanged(content::Visibility visibility) override {
+      events_.push_back(visibility);
+    }
+
+    content::Visibility initial_visibility() const {
+      return initial_visibility_;
+    }
+    const std::vector<content::Visibility>& events() const { return events_; }
+
+   private:
+    const content::Visibility initial_visibility_;
+    std::vector<content::Visibility> events_;
+  };
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  RunScheduledLayouts();
+
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view->IsDrawn());
+  views::WebView* devtools_view =
+      browser_view->GetActiveContentsContainerView()->devtools_web_view();
+  ASSERT_FALSE(devtools_view->web_contents());
+  ASSERT_FALSE(devtools_view->IsDrawn());
+
+  // Observe from creation, before attaching DevTools to the hidden WebView can
+  // synchronously emit a transient show/hide pair.
+  std::map<WebContents*, std::unique_ptr<VisibilityObserver>> observers;
+  auto creation_subscription = content::RegisterWebContentsCreationCallback(
+      base::BindLambdaForTesting([&](WebContents* contents) {
+        observers.emplace(contents,
+                          std::make_unique<VisibilityObserver>(contents));
+      }));
+  int attachment_count = 0;
+  auto attachment_subscription = devtools_view->AddWebContentsAttachedCallback(
+      base::BindLambdaForTesting([&](views::WebView* web_view) {
+        ++attachment_count;
+        EXPECT_FALSE(web_view->IsDrawn());
+      }));
+
+  OpenDevToolsWindow(GetInspectedTab(), /*is_docked=*/true);
+  ASSERT_TRUE(window_);
+  RunScheduledLayouts();
+
+  WebContents* const devtools_contents = main_web_contents();
+  ASSERT_EQ(devtools_view->web_contents(), devtools_contents);
+  ASSERT_EQ(attachment_count, 1);
+  ASSERT_TRUE(devtools_view->IsDrawn());
+  const auto observer = observers.find(devtools_contents);
+  ASSERT_NE(observer, observers.end());
+  // Require initially visible contents to keep coverage of the macOS
+  // attachment regression, which initially hidden contents would mask.
+  ASSERT_EQ(observer->second->initial_visibility(),
+            content::Visibility::VISIBLE);
+  EXPECT_EQ(devtools_contents->GetVisibility(), content::Visibility::VISIBLE);
+  EXPECT_THAT(observer->second->events(),
+              testing::ElementsAre(content::Visibility::VISIBLE));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
