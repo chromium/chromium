@@ -407,7 +407,9 @@ class ComposeboxQueryControllerTest
       // be sent.
       EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
     } else {
-      EXPECT_GT(controller().num_file_upload_requests_sent(), 0);
+      EXPECT_GT(controller().num_file_upload_requests_sent() +
+                    controller().num_chunk_upload_requests_sent(),
+                0);
       EXPECT_THAT(GetGsessionIdFromUrl(controller().last_sent_fetch_url()),
                   testing::Optional(std::string(kTestServerSessionId)));
       // The file upload request should have the cors variations header.
@@ -9053,6 +9055,7 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_ChunkingEnabled) {
+  base::HistogramTester histogram_tester;
   CreateController(
       /*send_lns_surface=*/false,
       /*suppress_lns_surface_param_if_no_image=*/true,
@@ -9109,6 +9112,136 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_ChunkingEnabled) {
                 .stored_chunk_options()
                 .total_stored_chunks(),
             2);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.HttpStatus",
+                                      200, 2);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.NetError",
+                                      net::OK, 2);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequest_ChunkingEnabled_HttpError) {
+  base::HistogramTester histogram_tester;
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/false,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*enable_send_contextual_input_upload_type=*/false,
+      /*send_contextual_input_upload_type_in_search_url=*/true,
+      /*send_contextual_input_upload_type_in_aim_request=*/true,
+      /*exclude_raw_and_drive_files=*/true,
+      /*enable_contextual_tasks_upload_chunking=*/true);
+  controller().InitializeIfNeeded();
+
+  controller().set_next_file_upload_request_should_return_error(true);
+
+  size_t chunk_size = lens::features::GetLensOverlayChunkSizeBytes();
+  std::vector<uint8_t> large_pdf(chunk_size + 100, 'a');
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, large_pdf);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.HttpStatus",
+                                      500, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.NetError",
+                                      net::OK, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequest_ChunkingEnabled_NetError) {
+  base::HistogramTester histogram_tester;
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/false,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*enable_send_contextual_input_upload_type=*/false,
+      /*send_contextual_input_upload_type_in_search_url=*/true,
+      /*send_contextual_input_upload_type_in_aim_request=*/true,
+      /*exclude_raw_and_drive_files=*/true,
+      /*enable_contextual_tasks_upload_chunking=*/true);
+  controller().InitializeIfNeeded();
+
+  controller().set_next_file_upload_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(-1);
+  controller().set_fake_server_response_net_error_code(
+      net::ERR_INTERNET_DISCONNECTED);
+
+  size_t chunk_size = lens::features::GetLensOverlayChunkSizeBytes();
+  std::vector<uint8_t> large_pdf(chunk_size + 100, 'a');
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, large_pdf);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.UploadChunk.HttpStatus",
+                                    0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.NetError",
+                                      std::abs(net::ERR_INTERNET_DISCONNECTED),
+                                      1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequest_ChunkingEnabled_HttpErrorAndNetError) {
+  base::HistogramTester histogram_tester;
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/true,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/false,
+      /*enable_only_send_aai_for_modality_chips=*/true,
+      /*enable_send_contextual_input_upload_type=*/false,
+      /*send_contextual_input_upload_type_in_search_url=*/true,
+      /*send_contextual_input_upload_type_in_aim_request=*/true,
+      /*exclude_raw_and_drive_files=*/true,
+      /*enable_contextual_tasks_upload_chunking=*/true);
+  controller().InitializeIfNeeded();
+
+  controller().set_next_file_upload_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(502);
+  controller().set_fake_server_response_net_error_code(net::ERR_FAILED);
+
+  size_t chunk_size = lens::features::GetLensOverlayChunkSizeBytes();
+  std::vector<uint8_t> large_pdf(chunk_size + 100, 'a');
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, large_pdf);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.HttpStatus",
+                                      502, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.UploadChunk.NetError",
+                                      std::abs(net::ERR_FAILED), 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_ChunkingRetry) {
@@ -9495,6 +9628,10 @@ TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnSuccess) {
       ComposeboxQueryController::ClusterInfoStatus::kSuccess, 1);
   histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
                                     1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.HttpStatus",
+                                      200, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.NetError",
+                                      net::OK, 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnHttpError) {
@@ -9509,6 +9646,53 @@ TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnHttpError) {
       ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
   histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
                                     1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.HttpStatus",
+                                      500, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.NetError",
+                                      net::OK, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnNetError) {
+  base::HistogramTester histogram_tester;
+  controller().set_next_cluster_info_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(-1);
+  controller().set_fake_server_response_net_error_code(
+      net::ERR_INTERNET_DISCONNECTED);
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("ContextualTasks.ClusterInfo.HttpStatus",
+                                    0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.NetError",
+                                      std::abs(net::ERR_INTERNET_DISCONNECTED),
+                                      1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ClusterInfoMetricsRecordedOnHttpErrorAndNetError) {
+  base::HistogramTester histogram_tester;
+  controller().set_next_cluster_info_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(502);
+  controller().set_fake_server_response_net_error_code(net::ERR_FAILED);
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.HttpStatus",
+                                      502, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.ClusterInfo.NetError",
+                                      std::abs(net::ERR_FAILED), 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest,

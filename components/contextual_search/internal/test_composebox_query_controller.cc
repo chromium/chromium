@@ -175,13 +175,15 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   // Create the fake endpoint fetcher to return the fake response.
   EndpointResponse fake_endpoint_response;
   fake_endpoint_response.response = fake_server_response_string;
+  const bool use_custom_error_codes =
+      !reject_with_401 && (!is_cluster_info_request ||
+                           next_cluster_info_request_should_return_error_);
   fake_endpoint_response.http_status_code =
-      (is_cluster_info_request || reject_with_401)
-          ? fake_server_response_code
-          : fake_server_response_http_status_code_.value_or(
-                fake_server_response_code);
+      use_custom_error_codes ? fake_server_response_http_status_code_.value_or(
+                                   fake_server_response_code)
+                             : fake_server_response_code;
   fake_endpoint_response.net_error_code =
-      is_cluster_info_request ? 0 : fake_server_response_net_error_code_;
+      use_custom_error_codes ? fake_server_response_net_error_code_ : 0;
 
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
   response->disable_responding_ = disable_response;
