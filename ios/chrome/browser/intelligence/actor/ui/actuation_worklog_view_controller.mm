@@ -284,8 +284,6 @@ using intelligence::actor::kSpacingLarge;
   _scrollView.hidden = _displayMode != ActuationWorklogDisplayModeExpanded;
   // `_interventionView` drives its own `hidden` state from its data, so it is
   // concealed through `alpha` instead while minimized.
-  // TODO(crbug.com/532204179): Handle interventions that arrive while
-  // minimized.
   BOOL minimized = _displayMode == ActuationWorklogDisplayModeMinimized;
   _interventionView.alpha = minimized ? 0.0 : 1.0;
   _interventionView.accessibilityElementsHidden = minimized;

@@ -190,7 +190,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   return contentViewHeight == 0 ? 0 : contentViewHeight + 2 * padding;
 }
 
-// TODO(crbug.com/532204179): Push the minimized height alongside the compact
+// TODO(crbug.com/581337477): Push the minimized height alongside the compact
 // height so the minimized detent stays in sync with header height changes.
 - (CGFloat)actuationMinimizedDetentHeight {
   return
@@ -215,7 +215,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 
 // Returns the container height needed to fit `worklogHeight`, accounting for
 // the insets applied around the worklog in `addWorklogSubviews`.
-// TODO(crbug.com/532204179): Move `kWorklogContainerInsets` into
+// TODO(crbug.com/581337610): Move `kWorklogContainerInsets` into
 // `ActuationWorklogViewController` so it reports padded heights directly.
 - (CGFloat)containerHeightForWorklogHeight:(CGFloat)worklogHeight {
   return worklogHeight + kWorklogContainerInsets.top +
