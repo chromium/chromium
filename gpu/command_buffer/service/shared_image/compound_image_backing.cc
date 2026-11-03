@@ -1537,17 +1537,12 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     if (copy_succeeded) {
       updated_backing = true;
 
-      // When we sync data, we also sync the logical clear state. Propagate the
-      // clear rect from the source to the destination, all child backings, and
-      // the container itself.
+      // Sync the clear rect from the source backing to the destination backing
+      // and the container itself.
       const gfx::Rect src_cleared_rect =
           latest_content_element->GetBacking()->ClearedRect();
       SetClearedRectInternal(src_cleared_rect);
-      for (auto& element : elements_) {
-        if (element.backing) {
-          element.backing->SetClearedRect(src_cleared_rect);
-        }
-      }
+      backing->SetClearedRect(src_cleared_rect);
     } else {
       LOG(ERROR) << "Failed to copy from "
                  << latest_content_element->GetBacking()->GetName() << " to "
@@ -1639,8 +1634,10 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
     auto cleared_rect = backing->ClearedRect();
     if (cleared_rect != ClearedRect()) {
       // For transient backings, only update if it's more cleared to avoid
-      // overwriting CSI with stale state.
-      if (!is_transient_backing || cleared_rect.Contains(ClearedRect())) {
+      // overwriting CSI with stale state. Check `ClearedRect().IsEmpty()`
+      // explicitly as `Contains(gfx::Rect())` is false for non-zero origins.
+      if (!is_transient_backing || ClearedRect().IsEmpty() ||
+          cleared_rect.Contains(ClearedRect())) {
         SetClearedRectInternal(cleared_rect);
       }
     }
@@ -1662,6 +1659,8 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
             element.content_id_ != latest_content_id_) {
           if (copy_manager_->CopyImage(backing, dst_backing)) {
             element.content_id_ = latest_content_id_;
+            // Propagate the cleared rect after the copy.
+            dst_backing->SetClearedRect(ClearedRect());
           } else {
             LOG(ERROR) << "DCSI: Proactive copy from " << backing->GetName()
                        << " to " << dst_backing->GetName() << " failed.";
@@ -1806,14 +1805,13 @@ void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   AutoLock auto_lock(this);
   SetClearedRectInternal(cleared_rect);
 
-  // Propagate the cleared rect to all underlying backings. This is important
-  // because SetClearedRect can be called on a CompoundImageBacking without a
-  // preceding BeginAccess call (e.g. in WebGPU's AssociateMailbox with the
-  // WEBGPU_MAILBOX_DISCARD flag). In such cases, it is hard to know which
-  // backing is currently being accessed. so we must ensure all potential
-  // backings are updated
+  // Only mark backings that hold the latest content as cleared so stale
+  // backings aren't marked cleared before their pixels are synced. When
+  // resetting to empty (e.g. WEBGPU_MAILBOX_DISCARD before BeginAccess), reset
+  // all backings so none retain an old cleared state.
   for (auto& element : elements_) {
-    if (element.backing) {
+    if (element.backing &&
+        (HasLatestContent(element) || cleared_rect.IsEmpty())) {
       element.backing->SetClearedRect(cleared_rect);
     }
   }
