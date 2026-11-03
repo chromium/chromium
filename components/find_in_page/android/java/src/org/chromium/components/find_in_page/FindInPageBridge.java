@@ -5,6 +5,10 @@
 package org.chromium.components.find_in_page;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -14,7 +18,10 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("find_in_page")
 @NullMarked
 public class FindInPageBridge {
-    private long mNativeFindInPageBridge;
+    @JniType("::find_in_page::FindInPageBridge")
+    interface NativeFindInPageBridge extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeFindInPageBridge> mNativeFindInPageBridge;
 
     public FindInPageBridge(WebContents webContents) {
         assert webContents != null;
@@ -23,8 +30,7 @@ public class FindInPageBridge {
 
     /** Destroys this instance so no further calls can be executed. */
     public void destroy() {
-        FindInPageBridgeJni.get().destroy(mNativeFindInPageBridge);
-        mNativeFindInPageBridge = 0;
+        mNativeFindInPageBridge.destroy();
     }
 
     /**
@@ -33,7 +39,6 @@ public class FindInPageBridge {
      * Set a listener using setFindResultListener to receive the results.
      */
     public void startFinding(String searchString, boolean forwardDirection, boolean caseSensitive) {
-        assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get()
                 .startFinding(
                         mNativeFindInPageBridge, searchString, forwardDirection, caseSensitive);
@@ -44,7 +49,6 @@ public class FindInPageBridge {
      * accessibility focus to the next find result.
      */
     public void activateFindInPageResultForAccessibility() {
-        assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get().activateFindInPageResultForAccessibility(mNativeFindInPageBridge);
     }
 
@@ -54,19 +58,16 @@ public class FindInPageBridge {
      * @param clearSelection Whether the selection on the page should be cleared.
      */
     public void stopFinding(boolean clearSelection) {
-        assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get().stopFinding(mNativeFindInPageBridge, clearSelection);
     }
 
     /** Returns the most recent find text before the current one. */
     public String getPreviousFindText() {
-        assert mNativeFindInPageBridge != 0;
         return FindInPageBridgeJni.get().getPreviousFindText(mNativeFindInPageBridge);
     }
 
     /** Asks the renderer to send the bounding boxes of current find matches. */
     public void requestFindMatchRects(int currentVersion) {
-        assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get().requestFindMatchRects(mNativeFindInPageBridge, currentVersion);
     }
 
@@ -75,30 +76,27 @@ public class FindInPageBridge {
      * of the content document's width and height.
      */
     public void activateNearestFindResult(float x, float y) {
-        assert mNativeFindInPageBridge != 0;
         FindInPageBridgeJni.get().activateNearestFindResult(mNativeFindInPageBridge, x, y);
     }
 
     @NativeMethods
     interface Natives {
-        long init(FindInPageBridge self, WebContents webContents);
-
-        void destroy(long nativeFindInPageBridge);
+        JniUniquePtr<NativeFindInPageBridge> init(FindInPageBridge self, WebContents webContents);
 
         void startFinding(
-                long nativeFindInPageBridge,
+                JniPtr<NativeFindInPageBridge> self,
                 String searchString,
                 boolean forwardDirection,
                 boolean caseSensitive);
 
-        void stopFinding(long nativeFindInPageBridge, boolean clearSelection);
+        void stopFinding(JniPtr<NativeFindInPageBridge> self, boolean clearSelection);
 
-        String getPreviousFindText(long nativeFindInPageBridge);
+        String getPreviousFindText(JniPtr<NativeFindInPageBridge> self);
 
-        void requestFindMatchRects(long nativeFindInPageBridge, int currentVersion);
+        void requestFindMatchRects(JniPtr<NativeFindInPageBridge> self, int currentVersion);
 
-        void activateNearestFindResult(long nativeFindInPageBridge, float x, float y);
+        void activateNearestFindResult(JniPtr<NativeFindInPageBridge> self, float x, float y);
 
-        void activateFindInPageResultForAccessibility(long nativeFindInPageBridge);
+        void activateFindInPageResultForAccessibility(JniPtr<NativeFindInPageBridge> self);
     }
 }

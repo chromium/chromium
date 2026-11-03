@@ -8,6 +8,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/find_in_page/android/jni_headers/FindInPageBridge_jni.h"
@@ -23,10 +24,6 @@ FindInPageBridge::FindInPageBridge(JNIEnv* env,
                                    const JavaRef<jobject>& j_web_contents)
     : weak_java_ref_(env, obj) {
   web_contents_ = content::WebContents::FromJavaWebContents(j_web_contents);
-}
-
-void FindInPageBridge::Destroy(JNIEnv*) {
-  delete this;
 }
 
 void FindInPageBridge::StartFinding(JNIEnv* env,
@@ -71,12 +68,11 @@ void FindInPageBridge::ActivateFindInPageResultForAccessibility(JNIEnv* env) {
 }
 
 // static
-static int64_t JNI_FindInPageBridge_Init(
+static jni_zero::JniUniquePtr<FindInPageBridge> JNI_FindInPageBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& self,
     const JavaRef<jobject>& j_web_contents) {
-  FindInPageBridge* bridge = new FindInPageBridge(env, self, j_web_contents);
-  return reinterpret_cast<intptr_t>(bridge);
+  return jni_zero::MakeUnique<FindInPageBridge>(env, self, j_web_contents);
 }
 
 }  // namespace find_in_page

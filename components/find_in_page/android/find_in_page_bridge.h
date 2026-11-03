@@ -20,8 +20,6 @@ class FindInPageBridge {
   FindInPageBridge(const FindInPageBridge&) = delete;
   FindInPageBridge& operator=(const FindInPageBridge&) = delete;
 
-  void Destroy(JNIEnv*);
-
   void StartFinding(JNIEnv* env,
                     const base::android::JavaRef<jstring>& search_string,
                     bool forward_direction,

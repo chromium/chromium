@@ -410,6 +410,10 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     /** Cleans up observers and listeners. */
     public void destroy() {
+        if (mFindInPageBridge != null) {
+            mFindInPageBridge.destroy();
+            mFindInPageBridge = null;
+        }
         if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
             mSideUiStateProvider.removeObserver(observer);
             mSideUiStateProvider = null;
