@@ -20,7 +20,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
+import android.view.WindowInsetsController;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -30,10 +32,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -46,6 +51,7 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
+import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.webapk.test.WebApkTestHelper;
 
@@ -197,6 +203,76 @@ public class WebappActivityTest {
         insetsConsumer.releaseEdgeToEdgeToken(token);
         activity.callUpdateNavigationBarColor();
         verify(colorHelper, times(2)).setNavigationBarColor(Color.RED);
+    }
+
+    @Test
+    public void navigationBarIconAppearanceFollowsTokenTransitions() {
+        TestWebappActivity activity = Robolectric.buildActivity(TestWebappActivity.class).get();
+        BrowserServicesIntentDataProvider provider = mock(BrowserServicesIntentDataProvider.class);
+        ColorProvider colorProvider = mock(ColorProvider.class);
+        EdgeToEdgeManager manager = mock(EdgeToEdgeManager.class);
+        BrowserServicesThemeColorProvider themeColorProvider =
+                mock(BrowserServicesThemeColorProvider.class);
+        Window window = activity.getWindow();
+        EdgeToEdgeSystemBarColorHelper colorHelper =
+                new EdgeToEdgeSystemBarColorHelper(
+                        window,
+                        ObservableSuppliers.createNonNull(false),
+                        new OneshotSupplierImpl<SystemBarColorHelper>(),
+                        /* canColorStatusBarColor= */ true);
+        // A light manifest navigation bar: dark buttons and the implicit black_alpha_12 divider
+        // while fitted.
+        when(provider.getColorProvider()).thenReturn(colorProvider);
+        when(colorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
+        // Mockito answers boxed types with 0, which getDividerColor() would read as an explicit
+        // transparent divider; apps without one report null.
+        when(colorProvider.getNavigationBarDividerColor()).thenReturn(null);
+        when(manager.getEdgeToEdgeSystemBarColorHelper()).thenReturn(colorHelper);
+        when(themeColorProvider.getThemeColor()).thenReturn(Color.WHITE);
+        activity.setMockIntentDataProvider(provider);
+        activity.setNavigationBarTestDependencies(manager, window);
+        ReflectionHelpers.setField(
+                activity, "mBrowserServicesThemeColorProvider", themeColorProvider);
+        WebappInsetsConsumer insetsConsumer = new WebappInsetsConsumer(mock(InsetObserver.class));
+        ReflectionHelpers.setField(activity, "mWebappInsetsConsumer", insetsConsumer);
+        // Fitted: dark buttons over the light manifest bar.
+        activity.callUpdateNavigationBarColor();
+        assertTrue(hasLightNavigationBarAppearance(window));
+
+        // Token acquired: the bar goes transparent, the divider is cleared, and the buttons
+        // stay dark over the white page.
+        int token = insetsConsumer.acquireEdgeToEdgeToken();
+        activity.callUpdateNavigationBarColor();
+        assertTrue(hasLightNavigationBarAppearance(window));
+        assertEquals(Color.TRANSPARENT, colorHelper.getNavigationBarColor());
+        assertEquals(Color.TRANSPARENT, colorHelper.getNavigationBarDividerColor());
+
+        // Still edge-to-edge, but over dark page content: the buttons follow the content.
+        when(themeColorProvider.getThemeColor()).thenReturn(Color.BLACK);
+        activity.callUpdateNavigationBarColor();
+        assertFalse(hasLightNavigationBarAppearance(window));
+
+        // Token released: back to the light manifest bar, so the dark buttons and the implicit
+        // divider both return even though the page content is still dark.
+        insetsConsumer.releaseEdgeToEdgeToken(token);
+        activity.callUpdateNavigationBarColor();
+        assertTrue(hasLightNavigationBarAppearance(window));
+        assertEquals(Color.WHITE, colorHelper.getNavigationBarColor());
+        assertEquals(
+                activity.getColor(R.color.black_alpha_12),
+                colorHelper.getNavigationBarDividerColor());
+        colorHelper.destroy();
+    }
+
+    private static boolean hasLightNavigationBarAppearance(Window window) {
+        View root = window.getDecorView().getRootView();
+        WindowInsetsController controller = root.getWindowInsetsController();
+        if (controller != null) {
+            return (controller.getSystemBarsAppearance()
+                            & WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
+                    != 0;
+        }
+        return (root.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR) != 0;
     }
 
     @Test

@@ -76,19 +76,15 @@ public class CustomTabNavigationBarController {
                     edgeToEdgeContentColor != null
                             && !ColorUtils.shouldUseLightForegroundOnBackground(
                                     edgeToEdgeContentColor);
+            // A divider applied while fitted (e.g. the implicit light-bar divider) must not
+            // survive into edge-to-edge, where there is no bar to divide from.
             updateBarColor(
                     window,
                     Color.TRANSPARENT,
+                    /* dividerColor= */ Color.TRANSPARENT,
                     /* supportsDarkButtons= */ true,
                     needsDarkButtons,
                     systemBarColorHelper);
-            // A divider applied while fitted (e.g. the implicit light-bar divider) must not
-            // survive into edge-to-edge, where there is no bar to divide from.
-            if (systemBarColorHelper != null) {
-                systemBarColorHelper.setNavigationBarDividerColor(Color.TRANSPARENT);
-            } else {
-                window.setNavigationBarDividerColor(Color.TRANSPARENT);
-            }
             return;
         }
 
@@ -114,31 +110,25 @@ public class CustomTabNavigationBarController {
         updateBarColor(
                 window,
                 navigationBarColor,
+                getDividerColor(
+                        context, navigationBarColor, navigationBarDividerColor, needsDarkButtons),
                 supportsDarkButtons,
                 needsDarkButtons,
                 systemBarColorHelper);
-
-        Integer dividerColor =
-                getDividerColor(
-                        context, navigationBarColor, navigationBarDividerColor, needsDarkButtons);
-
-        if (dividerColor != null) {
-            if (systemBarColorHelper != null) {
-                systemBarColorHelper.setNavigationBarDividerColor(dividerColor);
-            } else {
-                window.setNavigationBarDividerColor(dividerColor);
-            }
-        }
     }
 
-    /** Sets the navigation bar color according to intent extras. */
+    /** Sets the navigation bar and divider colors, then the matching button appearance. */
     private static void updateBarColor(
             Window window,
             @Nullable Integer navigationBarColor,
+            @Nullable Integer dividerColor,
             boolean supportsDarkButtons,
             boolean needsDarkButtons,
             @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
-        if (navigationBarColor == null) return;
+        if (navigationBarColor == null) {
+            setDividerColor(window, dividerColor, systemBarColorHelper);
+            return;
+        }
 
         if (!supportsDarkButtons && needsDarkButtons) {
             // Can't make the buttons dark, darken the background instead with the same algorithm
@@ -151,17 +141,33 @@ public class CustomTabNavigationBarController {
         } else {
             window.setNavigationBarColor(navigationBarColor);
         }
+        setDividerColor(window, dividerColor, systemBarColorHelper);
 
-        // The icon color must be applied after the bar color: EdgeToEdgeSystemBarColorHelper
-        // derives it from the bar color, which is transparent while drawing edge-to-edge.
+        // Applied last: a bar- or divider-color change makes
+        // EdgeToEdgeSystemBarColorHelper#updateNavBarColors() re-derive the icon color from the
+        // bar color using a luminance threshold rather than the contrast rule used here, which
+        // would otherwise overwrite this.
         if (supportsDarkButtons) {
             UiUtils.setNavigationBarIconColor(
                     window.getDecorView().getRootView(), needsDarkButtons);
         }
     }
 
+    private static void setDividerColor(
+            Window window,
+            @Nullable Integer dividerColor,
+            @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
+        if (dividerColor == null) return;
+        if (systemBarColorHelper != null) {
+            systemBarColorHelper.setNavigationBarDividerColor(dividerColor);
+        } else {
+            window.setNavigationBarDividerColor(dividerColor);
+        }
+    }
+
     /**
      * Return the navigation bar divider color.
+     *
      * @param context {@link Context} to get color resource from.
      * @param navigationBarColor Color of the navigation bar.
      * @param navigationBarDividerColor Color of the divider.
