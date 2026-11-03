@@ -6,6 +6,7 @@
 
 #import <optional>
 #import <string>
+#import <string_view>
 #import <utility>
 #import <vector>
 
@@ -19,6 +20,14 @@
 namespace {
 
 using TtcToolValidatorTest = PlatformTest;
+
+// Creates a post-processed `node_id` dictionary containing `document_id` and
+// `dom_node_id`.
+base::DictValue CreateNodeIdDict(std::string_view doc_id, int dom_node_id) {
+  return base::DictValue()
+      .Set("document_id", doc_id)
+      .Set("dom_node_id", dom_node_id);
+}
 
 // Tests syntactic validation for valid tool calls.
 TEST_F(TtcToolValidatorTest, TestValidToolCalls) {
@@ -248,6 +257,58 @@ TEST_F(TtcToolValidatorTest, CreateActuationRequestForTabManagementTools) {
   ASSERT_TRUE(close_action.ParseFromString(close_result->action_protos[0]));
   ASSERT_TRUE(close_action.has_close_tab());
   EXPECT_FALSE(close_action.close_tab().has_tab_id());
+}
+
+// Tests validation and `ClickAction` creation for `click_element`, including
+// rejection of missing, non-dictionary, missing/empty-`document_id`, or
+// missing/non-positive `dom_node_id` targets.
+TEST_F(TtcToolValidatorTest,
+       CreateActuationRequestForClickElementAndTargetValidation) {
+  base::DictValue valid_args;
+  valid_args.Set("node_id", CreateNodeIdDict("doc-token-1", 42));
+
+  base::expected<TtcActuationRequest, std::string> click_result =
+      TtcToolValidator::CreateActuationRequest(
+          ttc::ToolRequest{ttc::kToolClickElement, std::move(valid_args)});
+
+  ASSERT_TRUE(click_result.has_value());
+  ASSERT_EQ(click_result->action_protos.size(), 1u);
+  optimization_guide::proto::Action action;
+  ASSERT_TRUE(action.ParseFromString(click_result->action_protos[0]));
+  ASSERT_TRUE(action.has_click());
+  EXPECT_EQ(action.click().click_type(),
+            optimization_guide::proto::ClickAction::LEFT);
+  EXPECT_EQ(action.click().click_count(),
+            optimization_guide::proto::ClickAction::SINGLE);
+  EXPECT_EQ(action.click().target().content_node_id(), 42);
+  EXPECT_EQ(action.click().target().document_identifier().serialized_token(),
+            "doc-token-1");
+
+  // Missing `node_id`, raw integer `node_id`, missing or empty `document_id`,
+  // and missing or non-positive `dom_node_id` values must fail with
+  // `kErrorMessageInvalidArguments`.
+  std::vector<base::DictValue> invalid_arg_cases;
+  invalid_arg_cases.push_back(base::DictValue());
+  invalid_arg_cases.push_back(base::DictValue().Set("node_id", 42));
+  invalid_arg_cases.push_back(base::DictValue().Set(
+      "node_id", base::DictValue().Set("dom_node_id", 42)));
+  invalid_arg_cases.push_back(
+      base::DictValue().Set("node_id", CreateNodeIdDict("", 42)));
+  invalid_arg_cases.push_back(base::DictValue().Set(
+      "node_id", base::DictValue().Set("document_id", "doc-token-1")));
+  invalid_arg_cases.push_back(
+      base::DictValue().Set("node_id", CreateNodeIdDict("doc-token-1", 0)));
+  invalid_arg_cases.push_back(
+      base::DictValue().Set("node_id", CreateNodeIdDict("doc-token-1", -5)));
+
+  for (size_t i = 0; i < invalid_arg_cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    base::expected<TtcActuationRequest, std::string> invalid_result =
+        TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+            ttc::kToolClickElement, std::move(invalid_arg_cases[i])});
+    ASSERT_FALSE(invalid_result.has_value());
+    EXPECT_EQ(invalid_result.error(), ttc::kErrorMessageInvalidArguments);
+  }
 }
 
 }  // namespace

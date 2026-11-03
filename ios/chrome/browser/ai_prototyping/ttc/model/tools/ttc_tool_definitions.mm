@@ -14,7 +14,9 @@ namespace {
 // JSON schema keys and type strings, sorted alphabetically.
 constexpr char kBooleanType[] = "boolean";
 constexpr char kDescriptionKey[] = "description";
+constexpr char kIntegerType[] = "integer";
 constexpr char kNewTabKey[] = "new_tab";
+constexpr char kNodeIdKey[] = "node_id";
 constexpr char kObjectType[] = "object";
 constexpr char kPropertiesKey[] = "properties";
 constexpr char kRequiredKey[] = "required";
@@ -32,6 +34,24 @@ namespace ttc {
 std::vector<ToolDefinition> GetDefaultToolDefinitions() {
   std::vector<ToolDefinition> tools;
 
+  ToolDefinition click_element;
+  click_element.name = kToolClickElement;
+  click_element.description =
+      "Clicks an interactive element on the current page.";
+  click_element.parameters_json_schema =
+      base::DictValue()
+          .Set(kTypeKey, kObjectType)
+          .Set(kPropertiesKey,
+               base::DictValue().Set(
+                   kNodeIdKey,
+                   base::DictValue()
+                       .Set(kTypeKey, kIntegerType)
+                       .Set(kDescriptionKey,
+                            "The DOM node ID of the element to click.")))
+          .Set(kRequiredKey, base::ListValue().Append(kNodeIdKey));
+  click_element.behavior = ToolDefinition::Behavior::kBlocking;
+  click_element.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(click_element));
   ToolDefinition close_current_tab;
   close_current_tab.name = kToolCloseCurrentTab;
   close_current_tab.description = "Closes the currently active tab.";

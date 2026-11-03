@@ -18,11 +18,42 @@
 namespace {
 
 // Tool argument keys, sorted alphabetically.
+constexpr char kDocumentIdKey[] = "document_id";
+constexpr char kDomNodeIdKey[] = "dom_node_id";
 constexpr char kNewTabKey[] = "new_tab";
+constexpr char kNodeIdKey[] = "node_id";
 constexpr char kUrlKey[] = "url";
 
 // Task update string.
 constexpr char kSingleToolTaskUpdate[] = "Executing TTC tool";
+
+// Parses a post-processed `node_id` dictionary into `out_target` (if non-null).
+// Returns true if `dict` contains a non-empty `document_id` string and a
+// positive integer `dom_node_id`.
+bool ParseTargetFromDict(const base::DictValue& dict,
+                         optimization_guide::proto::ActionTarget* out_target) {
+  const std::string* doc_id = dict.FindString(kDocumentIdKey);
+  std::optional<int> dom_node_id = dict.FindInt(kDomNodeIdKey);
+  if (!doc_id || doc_id->empty() || !dom_node_id.has_value() ||
+      *dom_node_id <= 0) {
+    return false;
+  }
+  if (out_target) {
+    out_target->set_content_node_id(*dom_node_id);
+    out_target->mutable_document_identifier()->set_serialized_token(*doc_id);
+  }
+  return true;
+}
+
+// Parses the required post-processed `node_id` dictionary in `arguments` into
+// `out_target` (if non-null). Returns true if `arguments` contains a `node_id`
+// dictionary with a non-empty `document_id` string and a positive
+// `dom_node_id`.
+bool ParseElementTarget(const base::DictValue& arguments,
+                        optimization_guide::proto::ActionTarget* out_target) {
+  const base::DictValue* node_id_dict = arguments.FindDict(kNodeIdKey);
+  return node_id_dict && ParseTargetFromDict(*node_id_dict, out_target);
+}
 
 // Converts a boolean-like `base::Value` into an optional bool.
 std::optional<bool> ParseBooleanValue(const base::Value& value) {
@@ -55,7 +86,14 @@ optimization_guide::proto::Action BuildActionProto(
     const std::string& name,
     const base::DictValue& arguments) {
   optimization_guide::proto::Action action;
-  if (name == ttc::kToolCloseCurrentTab) {
+  if (name == ttc::kToolClickElement) {
+    optimization_guide::proto::ClickAction* click_action =
+        action.mutable_click();
+    click_action->set_click_type(optimization_guide::proto::ClickAction::LEFT);
+    click_action->set_click_count(
+        optimization_guide::proto::ClickAction::SINGLE);
+    ParseElementTarget(arguments, click_action->mutable_target());
+  } else if (name == ttc::kToolCloseCurrentTab) {
     action.mutable_close_tab();
   } else if (name == ttc::kToolCreateTab) {
     action.mutable_create_tab()->set_foreground(true);
@@ -102,6 +140,13 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
   if (name == ttc::kToolCloseCurrentTab || name == ttc::kToolCloseSession ||
       name == ttc::kToolCreateTab || name == ttc::kToolGoBack ||
       name == ttc::kToolGoForward) {
+    return base::ok();
+  }
+
+  if (name == ttc::kToolClickElement) {
+    if (!ParseElementTarget(arguments, nullptr)) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
+    }
     return base::ok();
   }
 
