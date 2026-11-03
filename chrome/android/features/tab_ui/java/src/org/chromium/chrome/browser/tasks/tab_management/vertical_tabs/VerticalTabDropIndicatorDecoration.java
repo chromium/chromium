@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -62,7 +61,7 @@ public class VerticalTabDropIndicatorDecoration extends BaseVerticalTabDropIndic
         float right;
         if (result.isZeroPinnedState
                 || result.isGroupTopOrBottomBoundary
-                || result.destGroupTabId == TabList.INVALID_TAB_INDEX) {
+                || result.destGroupId == null) {
             left = parentPaddingLeft;
             right = parentWidth - parentPaddingRight;
         } else {

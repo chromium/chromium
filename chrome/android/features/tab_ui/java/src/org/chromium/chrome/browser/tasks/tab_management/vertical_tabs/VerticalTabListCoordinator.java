@@ -1787,23 +1787,22 @@ public class VerticalTabListCoordinator {
 
                     maybeUngroupTab(tab, (ChromeTabDropDataAndroid) globalState.getData());
 
-                    int destGroupTabId = dropTarget.destGroupTabId;
+                    Token destGroupId = dropTarget.destGroupId;
                     int destTabIndex = dropTarget.destTabIndex;
                     int indexInGroup = 0;
-                    Token destGroupId = null;
 
-                    if (destGroupTabId != TabList.INVALID_TAB_INDEX) {
-                        Tab destGroupTab = tabModel.getTabById(destGroupTabId);
-                        if (destGroupTab != null) {
-                            destGroupId = destGroupTab.getTabGroupId();
-                        }
-                    }
                     if (destGroupId != null) {
                         List<Tab> groupTabs = tabModel.getTabsInGroup(destGroupId);
-                        int firstGroupModelIndex = tabModel.indexOf(groupTabs.get(0));
-                        indexInGroup =
-                                MathUtils.clamp(
-                                        destTabIndex - firstGroupModelIndex, 0, groupTabs.size());
+                        if (groupTabs.isEmpty()) {
+                            destGroupId = null;
+                        } else {
+                            int firstGroupModelIndex = tabModel.indexOf(groupTabs.get(0));
+                            indexInGroup =
+                                    MathUtils.clamp(
+                                            destTabIndex - firstGroupModelIndex,
+                                            0,
+                                            groupTabs.size());
+                        }
                     }
 
                     MultiInstanceOrchestratorFactory.getInstance()

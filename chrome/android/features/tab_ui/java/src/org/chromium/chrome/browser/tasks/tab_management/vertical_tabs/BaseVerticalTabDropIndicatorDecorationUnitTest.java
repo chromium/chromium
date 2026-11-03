@@ -36,7 +36,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -115,7 +114,7 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
         return new DropTargetResult(
                 DropTargetResult.TargetType.MAIN_LIST,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupId= */ null,
                 /* isPinned= */ false,
                 /* isZeroPinnedState= */ false,
                 /* isZeroNormalTabsState= */ false,

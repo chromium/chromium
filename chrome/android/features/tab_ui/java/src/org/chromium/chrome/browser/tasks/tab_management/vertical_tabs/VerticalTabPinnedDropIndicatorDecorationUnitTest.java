@@ -33,7 +33,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalExternalViewDragDropReorderStrategy.DropTargetResult;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -103,7 +102,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.MAIN_LIST,
                         /* destTabIndex= */ 1,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ false,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -125,7 +124,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.MAIN_LIST,
                         /* destTabIndex= */ 0,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ true,
                         /* isZeroNormalTabsState= */ false,
@@ -150,7 +149,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.PINNED_GRID,
                         /* destTabIndex= */ 1,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -193,7 +192,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.PINNED_GRID,
                         /* destTabIndex= */ 2,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -235,7 +234,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.PINNED_GRID,
                         /* destTabIndex= */ 1,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -277,7 +276,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.PINNED_GRID,
                         /* destTabIndex= */ 2,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -314,7 +313,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.PINNED_GRID,
                         /* destTabIndex= */ 0,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ true,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ false,
@@ -354,7 +353,7 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                 new DropTargetResult(
                         DropTargetResult.TargetType.MAIN_LIST,
                         /* destTabIndex= */ 2,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* destGroupId= */ null,
                         /* isPinned= */ false,
                         /* isZeroPinnedState= */ false,
                         /* isZeroNormalTabsState= */ true,

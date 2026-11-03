@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -54,7 +53,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
 
         public final @TargetType int targetType;
         public final int destTabIndex;
-        public final int destGroupTabId;
+        public final @Nullable Token destGroupId;
         public final boolean isPinned;
         public final boolean isZeroPinnedState;
         public final boolean isZeroNormalTabsState;
@@ -67,7 +66,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         public DropTargetResult(
                 @TargetType int targetType,
                 int destTabIndex,
-                int destGroupTabId,
+                @Nullable Token destGroupId,
                 boolean isPinned,
                 boolean isZeroPinnedState,
                 boolean isZeroNormalTabsState,
@@ -78,7 +77,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
                 Rect anchorBounds) {
             this.targetType = targetType;
             this.destTabIndex = destTabIndex;
-            this.destGroupTabId = destGroupTabId;
+            this.destGroupId = destGroupId;
             this.isPinned = isPinned;
             this.isZeroPinnedState = isZeroPinnedState;
             this.isZeroNormalTabsState = isZeroNormalTabsState;
@@ -95,7 +94,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
             if (!(obj instanceof DropTargetResult that)) return false;
             return targetType == that.targetType
                     && destTabIndex == that.destTabIndex
-                    && destGroupTabId == that.destGroupTabId
+                    && Objects.equals(destGroupId, that.destGroupId)
                     && isPinned == that.isPinned
                     && isZeroPinnedState == that.isZeroPinnedState
                     && isZeroNormalTabsState == that.isZeroNormalTabsState
@@ -111,7 +110,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
             return Objects.hash(
                     targetType,
                     destTabIndex,
-                    destGroupTabId,
+                    destGroupId,
                     isPinned,
                     isZeroPinnedState,
                     isZeroNormalTabsState,
@@ -129,8 +128,8 @@ public class VerticalExternalViewDragDropReorderStrategy {
                     + targetType
                     + ", destTabIndex="
                     + destTabIndex
-                    + ", destGroupTabId="
-                    + destGroupTabId
+                    + ", destGroupId="
+                    + destGroupId
                     + ", isPinned="
                     + isPinned
                     + ", isZeroPinnedState="
@@ -311,33 +310,25 @@ public class VerticalExternalViewDragDropReorderStrategy {
     private static class TabGroupRange {
         public final int firstIndex;
         public final int lastIndex;
-        public final int representativeTabId;
 
-        TabGroupRange(int firstIndex, int lastIndex, int representativeTabId) {
+        TabGroupRange(int firstIndex, int lastIndex) {
             this.firstIndex = firstIndex;
             this.lastIndex = lastIndex;
-            this.representativeTabId = representativeTabId;
         }
     }
 
     private static TabGroupRange getTabGroupRange(
-            TabModel tabModel,
-            @Nullable Token groupId,
-            int fallbackTabId,
-            int firstNonPinnedIndex) {
+            TabModel tabModel, @Nullable Token groupId, int firstNonPinnedIndex) {
         if (groupId != null) {
             List<Tab> groupTabs = tabModel.getTabsInGroup(groupId);
             if (!groupTabs.isEmpty()) {
                 int firstIndex = TabGroupUtils.getFirstTabModelIndexForList(tabModel, groupTabs);
                 int lastIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, groupTabs);
-                int repTabId = groupTabs.get(0).getId();
-                return new TabGroupRange(firstIndex, lastIndex, repTabId);
+                return new TabGroupRange(firstIndex, lastIndex);
             }
         }
 
-        int repTabId =
-                fallbackTabId != Tab.INVALID_TAB_ID ? fallbackTabId : TabList.INVALID_TAB_INDEX;
-        return new TabGroupRange(firstNonPinnedIndex, firstNonPinnedIndex, repTabId);
+        return new TabGroupRange(firstNonPinnedIndex, firstNonPinnedIndex);
     }
 
     private static @Nullable Token getGroupId(PropertyModel model) {
@@ -456,7 +447,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         return new DropTargetResult(
                 DropTargetResult.TargetType.MAIN_LIST,
                 destTabIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupId= */ null,
                 /* isPinned= */ false,
                 /* isZeroPinnedState= */ false,
                 /* isZeroNormalTabsState= */ false,
@@ -476,7 +467,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         return new DropTargetResult(
                 DropTargetResult.TargetType.MAIN_LIST,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupId= */ null,
                 /* isPinned= */ true,
                 /* isZeroPinnedState= */ true,
                 /* isZeroNormalTabsState= */ false,
@@ -492,7 +483,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         return new DropTargetResult(
                 DropTargetResult.TargetType.MAIN_LIST,
                 /* destTabIndex= */ firstNonPinnedIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupId= */ null,
                 /* isPinned= */ false,
                 /* isZeroPinnedState= */ false,
                 /* isZeroNormalTabsState= */ isZeroNormalTabsState(tabModel),
@@ -546,7 +537,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
             return new DropTargetResult(
                     DropTargetResult.TargetType.PINNED_GRID,
                     /* destTabIndex= */ 0,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* destGroupId= */ null,
                     /* isPinned= */ true,
                     /* isZeroPinnedState= */ false,
                     /* isZeroNormalTabsState= */ false,
@@ -607,7 +598,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         return new DropTargetResult(
                 DropTargetResult.TargetType.PINNED_GRID,
                 destTabIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* destGroupId= */ null,
                 /* isPinned= */ true,
                 /* isZeroPinnedState= */ false,
                 /* isZeroNormalTabsState= */ false,
@@ -648,8 +639,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
 
         // Sub-rule 1: Over Collapsed Tab Group (Atomic rule: NEVER merges into collapsed group)
         if (isGroupHeader && isCollapsed) {
-            TabGroupRange range =
-                    getTabGroupRange(tabModel, groupId, targetTabId, firstNonPinnedIndex);
+            TabGroupRange range = getTabGroupRange(tabModel, groupId, firstNonPinnedIndex);
             boolean insertBefore = isTopHalf;
             int destTabIndex = insertBefore ? range.firstIndex : range.lastIndex + 1;
             destTabIndex = MathUtils.clamp(destTabIndex, firstNonPinnedIndex, tabCount);
@@ -657,7 +647,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* destGroupId= */ null,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     /* isZeroNormalTabsState= */ false,
@@ -672,18 +662,16 @@ public class VerticalExternalViewDragDropReorderStrategy {
         // 2a. Over Group Header -> top half: standalone above group; bottom half: 1st child inside
         // group
         if (isGroupHeader && !isCollapsed) {
-            TabGroupRange range =
-                    getTabGroupRange(tabModel, groupId, targetTabId, firstNonPinnedIndex);
+            TabGroupRange range = getTabGroupRange(tabModel, groupId, firstNonPinnedIndex);
             int destTabIndex = MathUtils.clamp(range.firstIndex, firstNonPinnedIndex, tabCount);
             boolean insertBefore = isTopHalf;
-            int destGroupTabId =
-                    insertBefore ? TabList.INVALID_TAB_INDEX : range.representativeTabId;
+            Token destGroupId = insertBefore ? null : groupId;
             boolean isGroupTopOrBottomBoundary = insertBefore;
 
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    destGroupTabId,
+                    destGroupId,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     /* isZeroNormalTabsState= */ false,
@@ -697,8 +685,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
         // 2b. Over Child Tab in Expanded Group -> top half / bottom half sets insertion slot within
         // group, or standalone slot below group if past lower threshold on last child
         if (isChildTab) {
-            TabGroupRange range =
-                    getTabGroupRange(tabModel, groupId, targetTabId, firstNonPinnedIndex);
+            TabGroupRange range = getTabGroupRange(tabModel, groupId, firstNonPinnedIndex);
             Tab targetTab = tabModel.getTabById(targetTabId);
             int modelIndex =
                     targetTab != null ? tabModel.indexOf(targetTab) : TabModel.INVALID_TAB_INDEX;
@@ -715,23 +702,23 @@ public class VerticalExternalViewDragDropReorderStrategy {
                                     || localY > child.getBottom());
 
             int destTabIndex;
-            int destGroupTabId;
+            Token destGroupId;
             boolean isGroupTopOrBottomBoundary;
             if (isBelowGroupThreshold) {
                 destTabIndex = MathUtils.clamp(range.lastIndex + 1, firstNonPinnedIndex, tabCount);
-                destGroupTabId = TabList.INVALID_TAB_INDEX;
+                destGroupId = null;
                 isGroupTopOrBottomBoundary = true;
             } else {
                 destTabIndex = insertBefore ? modelIndex : modelIndex + 1;
                 destTabIndex = MathUtils.clamp(destTabIndex, firstNonPinnedIndex, tabCount);
-                destGroupTabId = range.representativeTabId;
+                destGroupId = groupId;
                 isGroupTopOrBottomBoundary = false;
             }
 
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    destGroupTabId,
+                    destGroupId,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     /* isZeroNormalTabsState= */ false,
@@ -777,8 +764,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
 
         // Target is part of a Tab Group -> snap to top or bottom boundary of entire group
         if (targetGroupId != null) {
-            TabGroupRange range =
-                    getTabGroupRange(tabModel, targetGroupId, targetTabId, firstNonPinnedIndex);
+            TabGroupRange range = getTabGroupRange(tabModel, targetGroupId, firstNonPinnedIndex);
 
             // Compute envelope from top of header to bottom of last visible child
             int envelopeTop = Integer.MAX_VALUE;
@@ -835,7 +821,7 @@ public class VerticalExternalViewDragDropReorderStrategy {
             return new DropTargetResult(
                     DropTargetResult.TargetType.MAIN_LIST,
                     destTabIndex,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* destGroupId= */ null,
                     /* isPinned= */ false,
                     /* isZeroPinnedState= */ false,
                     /* isZeroNormalTabsState= */ false,
