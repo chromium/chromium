@@ -15,6 +15,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 
 /** Utility methods for resolving UI labels and resources from {@link InputState}. */
 @NullMarked
@@ -75,5 +77,21 @@ public final class InputStateUtils {
             FuseboxMetrics.notifyAttachmentIconFallback(inputSource);
         }
         return defaultIconRes;
+    }
+
+    /**
+     * Returns the client drawable for {@code toolMode} in {@code inputState}, or {@code
+     * defaultIconRes} if absent or unmapped.
+     */
+    public static @DrawableRes int resolveToolIconRes(
+            @Nullable InputState inputState,
+            @ToolMode int toolMode,
+            @DrawableRes int defaultIconRes) {
+        if (inputState == null) {
+            return defaultIconRes;
+        }
+        ToolConfig config = inputState.getToolConfig(toolMode);
+        return FuseboxIconUtils.resolveIconRes(
+                config != null && config.hasIcon() ? config.getIcon() : null, defaultIconRes);
     }
 }

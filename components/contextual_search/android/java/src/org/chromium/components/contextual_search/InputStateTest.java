@@ -301,4 +301,25 @@ public class InputStateTest {
                         .build()
                         .getInputTypeConfig(InputSource.INPUT_SOURCE_GALLERY));
     }
+
+    @Test
+    public void testGetToolConfig() {
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .build();
+        ToolConfig imageGenConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setMenuLabel("Create images")
+                        .build();
+        InputState state =
+                new InputStateBuilder().withToolConfigs(deepSearchConfig, imageGenConfig).build();
+
+        assertEquals(deepSearchConfig, state.getToolConfig(ToolMode.TOOL_MODE_DEEP_SEARCH));
+        assertEquals(imageGenConfig, state.getToolConfig(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertNull(state.getToolConfig(ToolMode.TOOL_MODE_CANVAS));
+        assertNull(new InputStateBuilder().build().getToolConfig(ToolMode.TOOL_MODE_IMAGE_GEN));
+    }
 }

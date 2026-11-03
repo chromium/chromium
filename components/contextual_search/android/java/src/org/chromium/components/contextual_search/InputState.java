@@ -135,6 +135,16 @@ public class InputState {
         return mLazyToolConfigs;
     }
 
+    /** Returns the {@link ToolConfig} matching {@code toolMode}, or null if absent. */
+    public @Nullable ToolConfig getToolConfig(@ToolMode int toolMode) {
+        for (ToolConfig config : getToolConfigs()) {
+            if (config.getToolValue() == toolMode) {
+                return config;
+            }
+        }
+        return null;
+    }
+
     public SectionConfig getToolsSectionConfig() {
         if (mLazyToolsSectionConfig == null) {
             mLazyToolsSectionConfig = parseSectionConfig(mRawToolsSectionConfig);

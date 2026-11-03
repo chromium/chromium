@@ -23,6 +23,8 @@ import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputSourceProtoIntDef.InputSource;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
+import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 
 /** Unit tests for {@link InputStateUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,6 +46,10 @@ public class InputStateUtilsUnitTest {
                 state, source, defaultIconRes, /* shouldRecordFallback= */ true);
     }
 
+    private static int resolveToolIcon(InputState state, @ToolMode int toolMode) {
+        return InputStateUtils.resolveToolIconRes(state, toolMode, R.drawable.image_create_24dp);
+    }
+
     private static InputTypeConfig createLabelConfig(@InputSource int source, String label) {
         return InputTypeConfig.newBuilder().setInputSourceValue(source).setMenuLabel(label).build();
     }
@@ -63,6 +69,13 @@ public class InputStateUtilsUnitTest {
                         InputTypeConfig.newBuilder()
                                 .setInputSourceValue(InputSource.INPUT_SOURCE_FILE_PICKER)
                                 .build())
+                .build();
+    }
+
+    private static ToolConfig createToolIconConfig(@ToolMode int toolMode, IconResourceIds iconId) {
+        return ToolConfig.newBuilder()
+                .setToolValue(toolMode)
+                .setIcon(Icon.newBuilder().setIconId(iconId))
                 .build();
     }
 
@@ -211,6 +224,51 @@ public class InputStateUtilsUnitTest {
                         InputSource.INPUT_SOURCE_GALLERY,
                         R.drawable.add_photo_alternate_24dp,
                         /* shouldRecordFallback= */ false));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void resolveToolIconRes_usesConfiguredIcon() {
+        InputState state =
+                new InputStateBuilder()
+                        .withToolConfigs(
+                                createToolIconConfig(
+                                        ToolMode.TOOL_MODE_DEEP_SEARCH,
+                                        IconResourceIds.TRAVEL_EXPLORE),
+                                createToolIconConfig(
+                                        ToolMode.TOOL_MODE_IMAGE_GEN, IconResourceIds.BANANA))
+                        .build();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM)
+                        .build();
+
+        assertEquals(
+                R.drawable.create_image_24dp, resolveToolIcon(state, ToolMode.TOOL_MODE_IMAGE_GEN));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void resolveToolIconRes_fallsBackWhenNullMissingOrUnmapped() {
+        int defaultIcon = R.drawable.image_create_24dp;
+        InputState state =
+                new InputStateBuilder()
+                        .withToolConfigs(
+                                createToolIconConfig(
+                                        ToolMode.TOOL_MODE_DEEP_SEARCH, IconResourceIds.SOCCER),
+                                ToolConfig.newBuilder()
+                                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                                        .build())
+                        .build();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM)
+                        .build();
+
+        assertEquals(defaultIcon, resolveToolIcon(null, ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertEquals(defaultIcon, resolveToolIcon(state, ToolMode.TOOL_MODE_CANVAS));
+        assertEquals(defaultIcon, resolveToolIcon(state, ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertEquals(defaultIcon, resolveToolIcon(state, ToolMode.TOOL_MODE_DEEP_SEARCH));
         watcher.assertExpected();
     }
 }
