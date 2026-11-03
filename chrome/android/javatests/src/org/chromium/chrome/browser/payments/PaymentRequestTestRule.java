@@ -229,14 +229,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
     // TODO(crbug.com/490460408): Move test observers to before(), migrate
     // PaymentRequestContactDetailsTest#testPaymentRequestIncognitoMode to Public Transit, and check
-    // whether WebPageStation's enter conditions let us drop Thread.sleep(2000) and the scale-factor
-    // wait.
-    /* package */ void setObserversAndWaitForInitialPageLoad(ChromeActivity activity)
-            throws InterruptedException {
-        // TODO(crbug.com/40728764): Figure out what these tests need to wait on to not be flaky
-        // instead of sleeping.
-        Thread.sleep(2000);
-
+    // whether WebPageStation's enter conditions let us drop the scale-factor wait.
+    /* package */ void setObserversAndWaitForInitialPageLoad(ChromeActivity activity) {
         boolean useDesktopUserAgent =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1355,7 +1349,7 @@ import java.util.concurrent.atomic.AtomicReference;
      *
      * @return the entry {@link WebPageStation} showing the test page.
      */
-    /* package */ WebPageStation startOnTestPage() throws InterruptedException {
+    /* package */ WebPageStation startOnTestPage() {
         assert mWebContentsRef.get() == null : "Test already started";
 
         WebPageStation page;
