@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
@@ -102,7 +103,9 @@ class SettingsWindowFinderWin {
   HWINEVENTHOOK uncloak_hook_ = nullptr;
 
   // Hooks on `observed_hwnd_`, installed and released as a set.
-  std::vector<HWINEVENTHOOK> observation_hooks_;
+  // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
+  // pointer, and never allocated by PartitionAlloc).
+  RAW_PTR_EXCLUSION std::vector<HWINEVENTHOOK> observation_hooks_;
 
   bool is_active_ = false;
 

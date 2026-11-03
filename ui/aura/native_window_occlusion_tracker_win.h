@@ -20,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -249,11 +250,15 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
 
     // Values returned by SetWinEventHook are stored so that hooks can be
     // unregistered when necessary.
-    std::vector<HWINEVENTHOOK> global_event_hooks_;
-    std::optional<HWINEVENTHOOK> minimize_end_event_hook_;
+    // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
+    // pointer, and never allocated by PartitionAlloc).
+    RAW_PTR_EXCLUSION std::vector<HWINEVENTHOOK> global_event_hooks_;
+    RAW_PTR_EXCLUSION std::optional<HWINEVENTHOOK> minimize_end_event_hook_;
 
     // Map from process id to EVENT_OBJECT_LOCATIONCHANGE event hook.
-    base::flat_map<DWORD, HWINEVENTHOOK> process_event_hooks_;
+    // RAW_PTR_EXCLUSION: HWINEVENTHOOK is an opaque Win32 handle (not a real
+    // pointer, and never allocated by PartitionAlloc).
+    RAW_PTR_EXCLUSION base::flat_map<DWORD, HWINEVENTHOOK> process_event_hooks_;
 
     // Pids of processes for which the EVENT_OBJECT_LOCATIONCHANGE event hook is
     // set. These are the processes hosting windows in
