@@ -105,6 +105,24 @@ ActorFormSuggestion* CreateAutofillSuggestion(
   }
 }
 
+- (void)setLastItem:(ActuationWorklogItem*)item
+               chip:(ActuationWorklogChip*)chip {
+  if (_items.count > 0) {
+    _items[_items.count - 1] = item;
+  } else if (item) {
+    [_items addObject:item];
+  }
+  if (_chips.count > 0) {
+    if (chip) {
+      _chips[_chips.count - 1] = chip;
+    } else {
+      [_chips removeLastObject];
+    }
+  } else if (chip) {
+    [_chips addObject:chip];
+  }
+}
+
 - (void)setIntervention:(ActuationInterventionData*)intervention {
   _intervention = intervention;
 }
@@ -131,6 +149,14 @@ ActorFormSuggestion* CreateAutofillSuggestion(
 - (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
     forActiveWorklogItem:(ActuationWorklogItem*)worklogItem {
   _suggestions = [suggestions copy];
+  _worklogItem = worklogItem;
+}
+
+- (void)updateActiveWorklogItemForReselectedSuggestion:
+            (ActuationWorklogItem*)worklogItem
+                                       fromCoordinator:
+                                           (ActuationSuggestionsCoordinator*)
+                                               coordinator {
   _worklogItem = worklogItem;
 }
 
@@ -614,7 +640,8 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromCredentialsAllow) {
 }
 
 // Tests that selecting a suggestion via the suggestions coordinator delegate
-// updates the selected suggestion used by the completion handler.
+// updates the selected suggestion used by the completion handler, and updates
+// the active worklog item on the suggestions consumer.
 TEST_F(ActuationWorklogMediatorTest, TestSelectFromSuggestionsDelegateUpdate) {
   StartObservingTask(task_id_);
   [fake_consumer_.items removeAllObjects];
@@ -636,6 +663,10 @@ TEST_F(ActuationWorklogMediatorTest, TestSelectFromSuggestionsDelegateUpdate) {
               @"user1@example.com");
 
   [mediator_ suggestionsCoordinator:nil didSelectSuggestion:suggestion2];
+
+  EXPECT_NSEQ(fake_consumer_.items[0].accessoryItem.title,
+              @"user2@example.com");
+  EXPECT_EQ(fake_suggestions_consumer_.worklogItem, fake_consumer_.items[0]);
 
   [mediator_
       didTriggerInterventionAction:fake_consumer_.intervention.actions[1]];

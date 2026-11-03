@@ -26,6 +26,10 @@
                          chip:(ActuationWorklogChip*)chip
                      animated:(BOOL)animated;
 
+// Replaces the active (last) worklog item in-place and its tool chip.
+- (void)setLastItem:(ActuationWorklogItem*)item
+               chip:(ActuationWorklogChip*)chip;
+
 // Displays an interactive intervention below the worklog, or dismisses any
 // active intervention if `intervention` is nil.
 - (void)setIntervention:(ActuationInterventionData*)intervention;

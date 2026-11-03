@@ -8,6 +8,7 @@
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
@@ -69,6 +70,44 @@ TEST_F(ActuationWorklogCoordinatorTest, TestStartAndStopLifecycle) {
 
   [coordinator stop];
   EXPECT_EQ(coordinator.viewController, nil);
+}
+
+// Tests that updating the active worklog item updates the worklog item on the
+// suggestions coordinator.
+TEST_F(ActuationWorklogCoordinatorTest,
+       TestUpdateActiveWorklogItemForReselectedSuggestion) {
+  ActuationWorklogCoordinator* coordinator =
+      [[ActuationWorklogCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()];
+
+  [coordinator start];
+  ASSERT_NE(coordinator.viewController, nil);
+
+  id<ActuationSuggestionsConsumer> consumer =
+      static_cast<id<ActuationSuggestionsConsumer>>(coordinator);
+
+  ActorFormSuggestion* suggestion =
+      CreateCredentialSuggestion(u"user@example.com", u"example.com");
+  ActuationWorklogItem* item = [ActuationWorklogItem simpleItemWithTitle:@"Item"
+                                                                  active:YES];
+  [consumer setSuggestions:@[ suggestion ] forActiveWorklogItem:item];
+  id<ActuationSuggestionsPresenter> presenter =
+      coordinator.viewController.suggestionsPresenter;
+  ASSERT_NE(presenter, nil);
+
+  ActuationSuggestionsCoordinator* suggestions_coordinator =
+      base::apple::ObjCCastStrict<ActuationSuggestionsCoordinator>(presenter);
+  EXPECT_EQ(suggestions_coordinator.worklogItem, item);
+
+  ActuationWorklogItem* updated_item =
+      [ActuationWorklogItem simpleItemWithTitle:@"Updated" active:YES];
+  [consumer
+      updateActiveWorklogItemForReselectedSuggestion:updated_item
+                                     fromCoordinator:suggestions_coordinator];
+  EXPECT_EQ(suggestions_coordinator.worklogItem, updated_item);
+
+  [coordinator stop];
 }
 
 // Tests that stopping a suggestions intervention and restarting it cleanly

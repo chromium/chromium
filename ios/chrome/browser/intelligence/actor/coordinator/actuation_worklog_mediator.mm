@@ -215,6 +215,22 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
           accessoryItem:paymentAccessory];
 }
 
+// Creates an `ActuationWorklogItem` corresponding to `suggestion`.
+ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
+  switch (suggestion.type) {
+    case autofill::SuggestionType::kPasswordEntry:
+    case autofill::SuggestionType::kIdentityCredential:
+      return CardItemForNonFederatedCredential(suggestion.formSuggestion);
+    case autofill::SuggestionType::kAddressEntry:
+      return CardItemForAddress(suggestion.formSuggestion);
+    case autofill::SuggestionType::kCreditCardEntry:
+      return CardItemForCreditCard(suggestion.formSuggestion);
+    default:
+      NOTREACHED(base::NotFatalUntil::M165);
+      return nil;
+  }
+}
+
 }  // namespace
 
 @implementation ActuationWorklogMediator {
@@ -451,27 +467,18 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
   CHECK(_currentTaskId == taskID, base::NotFatalUntil::M165);
   CHECK(!_pendingInterventionCompletion, base::NotFatalUntil::M165);
 
-  ActorFormSuggestion* firstSuggestion = suggestions.firstObject;
-  CHECK(firstSuggestion.formSuggestion, base::NotFatalUntil::M165);
-  _selectedSuggestion = firstSuggestion;
+  _selectedSuggestion = suggestions.firstObject;
+  CHECK(_selectedSuggestion.formSuggestion, base::NotFatalUntil::M165);
 
-  ActuationWorklogItem* cardItem = nil;
   NSString* manuallyEnterButtonText;
-  switch (firstSuggestion.type) {
+  switch (_selectedSuggestion.type) {
     case autofill::SuggestionType::kPasswordEntry:
     case autofill::SuggestionType::kIdentityCredential:
-      cardItem =
-          CardItemForNonFederatedCredential(firstSuggestion.formSuggestion);
       manuallyEnterButtonText = l10n_util::GetNSString(
           IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_MANUAL_FILL_BUTTON);
       break;
     case autofill::SuggestionType::kAddressEntry:
-      cardItem = CardItemForAddress(firstSuggestion.formSuggestion);
-      manuallyEnterButtonText = l10n_util::GetNSString(
-          IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_MANUAL_FILL_BUTTON);
-      break;
     case autofill::SuggestionType::kCreditCardEntry:
-      cardItem = CardItemForCreditCard(firstSuggestion.formSuggestion);
       manuallyEnterButtonText = l10n_util::GetNSString(
           IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_MANUAL_FILL_BUTTON);
       break;
@@ -480,6 +487,7 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
       break;
   }
 
+  ActuationWorklogItem* cardItem = CardItemForSuggestion(_selectedSuggestion);
   [_consumer updateWorklogWithItem:cardItem chip:nil animated:YES];
 
   [self.suggestionsConsumer setSuggestions:suggestions
@@ -560,8 +568,11 @@ ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
 - (void)suggestionsCoordinator:(ActuationSuggestionsCoordinator*)coordinator
            didSelectSuggestion:(ActorFormSuggestion*)suggestion {
   _selectedSuggestion = suggestion;
-  // TODO(crbug.com/571139088): Update accessory item to reflect newly chosen
-  // suggestion.
+  ActuationWorklogItem* item = CardItemForSuggestion(_selectedSuggestion);
+  [_consumer setLastItem:item chip:nil];
+  [self.suggestionsConsumer
+      updateActiveWorklogItemForReselectedSuggestion:item
+                                     fromCoordinator:coordinator];
 }
 
 @end

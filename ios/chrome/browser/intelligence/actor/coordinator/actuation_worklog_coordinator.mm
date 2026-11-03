@@ -66,6 +66,15 @@
   _viewController.suggestionsPresenter = _suggestionsCoordinator;
 }
 
+- (void)updateActiveWorklogItemForReselectedSuggestion:
+            (ActuationWorklogItem*)worklogItem
+                                       fromCoordinator:
+                                           (ActuationSuggestionsCoordinator*)
+                                               coordinator {
+  CHECK_EQ(_suggestionsCoordinator, coordinator);
+  _suggestionsCoordinator.worklogItem = worklogItem;
+}
+
 - (void)clearSuggestions {
   [_suggestionsCoordinator stop];
   _suggestionsCoordinator = nil;

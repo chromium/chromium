@@ -150,6 +150,14 @@ using intelligence::actor::kSpacingLarge;
   [self scrollToBottomAnimated:animated];
 }
 
+- (void)setLastItem:(ActuationWorklogItem*)item
+               chip:(ActuationWorklogChip*)chip {
+  [_fullView setLastItem:item];
+  [_fullView setChip:chip];
+  [_compactView transitionToItem:item chip:chip animated:NO];
+  [self notifyHeightDidChange];
+}
+
 - (void)setIntervention:(ActuationInterventionData*)intervention {
   [_interventionView configureWithData:intervention];
   [self notifyHeightDidChange];
