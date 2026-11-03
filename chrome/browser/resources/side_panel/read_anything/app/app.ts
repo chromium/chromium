@@ -830,6 +830,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     }
   }
 
+  protected onSendFeedback_() {
+    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+      this.contentBrowserProxy_.onSendFeedback();
+    }
+  }
+
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {
     const granularity = event.detail.data;
     this.audioBrowserProxy_.onHighlightGranularityChanged(granularity);

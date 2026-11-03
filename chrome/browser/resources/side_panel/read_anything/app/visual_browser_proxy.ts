@@ -27,7 +27,6 @@ export interface VisualBrowserProxy {
   isReadAnythingImprovedUiEnabled(): boolean;
   isReadAnythingReadAloudExperimentalPlaybackUiEnabled(): boolean;
   isReadAnythingTranslateEntryPointEnabled(): boolean;
-  isReadAnythingSendFeedbackEnabled(): boolean;
   isImagesEnabled(): boolean;
   isLinksEnabled(): boolean;
   isPdf(): boolean;
@@ -367,10 +366,6 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   onTranslationRequested(): void {
     chrome.readingMode.onTranslationRequested();
-  }
-
-  isReadAnythingSendFeedbackEnabled(): boolean {
-    return chrome.readingMode.isReadAnythingSendFeedbackEnabled;
   }
 
   togglePresentation(): void {

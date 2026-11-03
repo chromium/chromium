@@ -74,6 +74,7 @@ export interface ContentBrowserProxy {
   isReadabilityEnabled(): boolean;
   isContentTranslated(): boolean;
   isTranslatePdfEnabled(): boolean;
+  isReadAnythingSendFeedbackEnabled(): boolean;
   isGoogleDocs(): boolean;
   isLeafNode(nodeId: number): boolean;
   isOverline(nodeId: number): boolean;
@@ -94,6 +95,7 @@ export interface ContentBrowserProxy {
       anchorNodeId: number, anchorOffset: number, focusNodeId: number,
       focusOffset: number): void;
   onScroll(scrollingOnSelection: boolean): void;
+  onSendFeedback(): void;
 }
 
 export class ContentBrowserProxyImpl implements ContentBrowserProxy {
@@ -191,6 +193,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isTranslatePdfEnabled(): boolean {
     return chrome.readingMode.isTranslatePdfEnabled;
+  }
+
+  isReadAnythingSendFeedbackEnabled(): boolean {
+    return chrome.readingMode.isReadAnythingSendFeedbackEnabled;
   }
 
   isGoogleDocs(): boolean {
@@ -342,6 +348,10 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   onDistilled(wordCount: number): void {
     chrome.readingMode.onDistilled(wordCount);
+  }
+
+  onSendFeedback(): void {
+    chrome.readingMode.onSendFeedback();
   }
 
   static getInstance(): ContentBrowserProxy {

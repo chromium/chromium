@@ -1113,5 +1113,19 @@ suite('AppReceivesToolbarChanges', () => {
       assertEquals(
           1, visualBrowserProxy.getCallCount('onTranslationRequested'));
     });
+
+    test('send feedback requested', () => {
+      contentBrowserProxy.sendFeedbackEnabled = true;
+      emitEvent(app, ToolbarEvent.SEND_FEEDBACK);
+
+      assertEquals(1, contentBrowserProxy.getCallCount('onSendFeedback'));
+    });
+
+    test('send feedback ignored when flag disabled', () => {
+      contentBrowserProxy.sendFeedbackEnabled = false;
+      emitEvent(app, ToolbarEvent.SEND_FEEDBACK);
+
+      assertEquals(0, contentBrowserProxy.getCallCount('onSendFeedback'));
+    });
   });
 });

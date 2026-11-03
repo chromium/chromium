@@ -29,6 +29,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   readabilityEnabled: boolean = true;
   contentTranslated: boolean = false;
   translatePdfEnabled: boolean = false;
+  sendFeedbackEnabled: boolean = false;
   textContentMap: {[key: number]: string} = {2: 'some text content'};
   prefixText: string = '';
   rootId: number = 1;
@@ -67,6 +68,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'isReadabilityEnabled',
       'isContentTranslated',
       'isTranslatePdfEnabled',
+      'isReadAnythingSendFeedbackEnabled',
       'getActiveDistillationMethod',
       'getDistillationTypeReadability',
       'getDistillationTypeScreen2x',
@@ -104,6 +106,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'onDistilled',
       'onLinkClicked',
       'onRenderedTextBlocksAvailable',
+      'onSendFeedback',
     ]);
   }
 
@@ -145,6 +148,11 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   isTranslatePdfEnabled(): boolean {
     this.methodCalled('isTranslatePdfEnabled');
     return this.translatePdfEnabled;
+  }
+
+  isReadAnythingSendFeedbackEnabled(): boolean {
+    this.methodCalled('isReadAnythingSendFeedbackEnabled');
+    return this.sendFeedbackEnabled;
   }
 
   onConnected(): void {
@@ -324,5 +332,9 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
 
   onDistilled(wordCount: number): void {
     this.methodCalled('onDistilled', wordCount);
+  }
+
+  onSendFeedback(): void {
+    this.methodCalled('onSendFeedback');
   }
 }

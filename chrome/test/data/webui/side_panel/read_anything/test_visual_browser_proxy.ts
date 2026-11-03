@@ -66,7 +66,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   letterSpacing: number = 0;
   colorTheme: number = 0;
   translateEntryPointEnabled: boolean = false;
-  sendFeedbackEnabled: boolean = false;
   experimentalPlaybackUiEnabled: boolean = false;
   imagesEnabled: boolean = true;
   linksEnabled: boolean = true;
@@ -126,7 +125,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'onFontSizeReset',
       'isReadAnythingTranslateEntryPointEnabled',
       'onTranslationRequested',
-      'isReadAnythingSendFeedbackEnabled',
       'togglePresentation',
       'togglePinState',
       'sendPinStateRequest',
@@ -454,11 +452,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
 
   onTranslationRequested(): void {
     this.methodCalled('onTranslationRequested');
-  }
-
-  isReadAnythingSendFeedbackEnabled(): boolean {
-    this.methodCalled('isReadAnythingSendFeedbackEnabled');
-    return this.sendFeedbackEnabled;
   }
 
   onLinksEnabledToggled(): void {

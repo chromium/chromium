@@ -57,6 +57,7 @@ export function getHtml(this: AppElement) {
         @images-toggle="${this.onImagesToggle_}"
         @pin-toggle="${this.onPinToggle_}"
         @translation-requested="${this.onTranslationRequested_}"
+        @send-feedback="${this.onSendFeedback_}"
         @letter-spacing-change="${this.onLetterSpacingChange_}"
         @theme-change="${this.onThemeChange_}"
         @presentation-change="${this.onPresentationChange_}"

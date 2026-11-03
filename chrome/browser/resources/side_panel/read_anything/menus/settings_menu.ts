@@ -19,6 +19,8 @@ import {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
+import type {ContentBrowserProxy} from '../content/content_browser_proxy.js';
+import {ContentBrowserProxyImpl} from '../content/content_browser_proxy.js';
 import {SettingsOption, ToolbarEvent} from '../content/read_anything_types.js';
 import {openMenu} from '../shared/common.js';
 import {isActivationKey, isBackwardArrow, isForwardArrow, isVerticalArrow} from '../shared/keyboard_util.js';
@@ -238,6 +240,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private pointerEventCallback_: (e: Event) => void = () => {};
   private keyDownCallback_: (e: KeyboardEvent) => void = () => {};
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+  private contentBrowserProxy_: ContentBrowserProxy =
+      ContentBrowserProxyImpl.getInstance();
   private visualBrowserProxy_: VisualBrowserProxy =
       VisualBrowserProxyImpl.getInstance();
 
@@ -303,7 +307,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
     }
 
-    if (this.visualBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
       optionIDs.push(SettingsOption.SEND_FEEDBACK);
     }
 
@@ -330,7 +334,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       optionIDs.push(SettingsOption.PINNED_TO_TOOLBAR);
     }
 
-    if (this.visualBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
+    if (this.contentBrowserProxy_.isReadAnythingSendFeedbackEnabled()) {
       optionIDs.push(SettingsOption.SEND_FEEDBACK);
     }
 
