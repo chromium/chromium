@@ -79,6 +79,7 @@ class Origin;
 namespace actor {
 
 struct ActionResultWithLatencyInfo;
+class ActorSurface;
 class ActorTask;
 class AutofillSelectionDialogEventHandler;
 class ToolRequest;
@@ -415,6 +416,12 @@ class ExecutionEngine : public ToolDelegate,
   // It is an error to call this when an action is not in progress.
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
+
+  // Returns the surface `request` validates against, looked up in this task's
+  // profile. Returns null if the surface is gone or belongs to another profile.
+  // `ActorSurfaceHandle::Get()` is profile-agnostic, so it must not be used to
+  // resolve a handle from the client before the target has been validated.
+  ActorSurface* GetSurfaceForValidation(const ToolRequest& request);
 
   void LogNavigationGating(const url::Origin& source,
                            base::optional_ref<const url::Origin> initiator,

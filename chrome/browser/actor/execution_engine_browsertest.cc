@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -37,8 +38,13 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -95,6 +101,10 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #endif
 
 using ::base::test::TestFuture;
@@ -253,6 +263,40 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
   FakeChromeContentBrowserClient mock_browser_client_;
   base::ScopedTempDir temp_dir_;
 };
+
+class ExecutionEngineCrossProfileBrowserTest
+    : public ExecutionEngineBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExecutionEngineBrowserTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_CHROMEOS)
+    command_line->AppendSwitch(
+        ash::switches::kIgnoreUserProfileMappingForTests);
+#endif
+  }
+};
+
+// A Wait action can't observe a tab in another profile: the engine resolves
+// surfaces within the task's profile, so the other profile's tab is treated as
+// absent.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineCrossProfileBrowserTest,
+                       WaitCannotObserveCrossProfileTab) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& profile2 = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
+  tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
+
+  std::unique_ptr<ToolRequest> action_request = MakeWaitRequest(tab2);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action_request), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+
+  browser2->GetWindow()->Close();
+}
 
 // The coordinator does not yet handle multi-tab cases. For now,
 // while acting on a tab, we override attempts by the page to create new

@@ -44,6 +44,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -1500,8 +1501,7 @@ void ExecutionEngine::KickOffNextAction() {
 
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
-  if (ActorSurface* actor_surface =
-          GetNextAction().GetActorSurfaceForValidation().Get();
+  if (ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
       actor_surface &&
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
@@ -1534,8 +1534,7 @@ void ExecutionEngine::KickOffNextAction() {
 
 void ExecutionEngine::SafetyChecksForNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForNextAction");
-  ActorSurface* actor_surface =
-      GetNextAction().GetActorSurfaceForValidation().Get();
+  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
 
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
@@ -1580,8 +1579,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!action_sequence_.empty());
 
-  ActorSurface* actor_surface =
-      GetNextAction().GetActorSurfaceForValidation().Get();
+  ActorSurface* actor_surface = GetSurfaceForValidation(GetNextAction());
   if (!actor_surface) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
@@ -1677,8 +1675,7 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
   // critical action under the correct pre-navigation page context.
   pre_invoke_navigation_id_ = 0;
   const ToolRequest& current_action = GetInProgressAction();
-  ActorSurface* actor_surface =
-      current_action.GetActorSurfaceForValidation().Get();
+  ActorSurface* actor_surface = GetSurfaceForValidation(current_action);
   content::WebContents* contents =
       actor_surface ? actor_surface->GetWebContents() : nullptr;
   if (contents && contents->GetPrimaryMainFrame()) {
@@ -2219,6 +2216,12 @@ size_t ExecutionEngine::InProgressActionIndex() const {
 
 const ToolRequest& ExecutionEngine::GetInProgressAction() const {
   return *action_sequence_.at(InProgressActionIndex()).get();
+}
+
+ActorSurface* ExecutionEngine::GetSurfaceForValidation(
+    const ToolRequest& request) {
+  return task_->actor_keyed_service().GetSurfaceRegistry().Get(
+      request.GetActorSurfaceForValidation());
 }
 
 size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {
