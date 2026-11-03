@@ -1546,6 +1546,16 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     /**
+     * Whether app-mode UI is shown for this installed web app with the browser controls hidden,
+     * i.e. the current page is still verified and no transient controls (security warning, in-scope
+     * child tab) are visible. Unlike {@link #isInTwaMode()} this also covers webapps and WebAPKs.
+     */
+    public boolean isInAppMode() {
+        return mSharedActivityCoordinator != null
+                && mSharedActivityCoordinator.isAppModeWithHiddenBrowserControls();
+    }
+
+    /**
      * @return The package name of the Trusted Web Activity, if the activity is a TWA; null
      *     otherwise.
      */
@@ -1918,6 +1928,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                             getCustomTabActivityNavigationController(),
                             getVerifier(),
                             getBrowserServicesThemeColorProvider(),
+                            getCustomTabActivityTabProvider(),
                             getLifecycleDispatcher());
         }
         return mSharedActivityCoordinator;

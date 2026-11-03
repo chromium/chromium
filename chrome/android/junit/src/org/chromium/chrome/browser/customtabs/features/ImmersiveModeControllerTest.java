@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs.features;
 
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -149,9 +151,37 @@ public class ImmersiveModeControllerTest {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertSystemBarsVisible(false);
+        assertEquals(LAYOUT, mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode);
+
         mController.exitImmersiveMode();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertSystemBarsVisible(true);
+        assertEquals(
+                LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode);
+    }
+
+    @Test
+    public void exitImmersiveModeResetsCutoutModeBeforeReleasingInsetsToken() {
+        when(mWebappInsetsConsumer.acquireEdgeToEdgeToken()).thenReturn(7);
+        mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Releasing the last token re-dispatches window insets synchronously, and that pass
+        // reads the cutout mode to decide whether to pad the display cutout.
+        int[] modeAtTokenRelease = new int[1];
+        doAnswer(
+                        invocation -> {
+                            modeAtTokenRelease[0] =
+                                    mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode;
+                            return null;
+                        })
+                .when(mWebappInsetsConsumer)
+                .releaseEdgeToEdgeToken(7);
+
+        mController.exitImmersiveMode();
+
+        assertEquals(LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT, modeAtTokenRelease[0]);
     }
 
     @Test

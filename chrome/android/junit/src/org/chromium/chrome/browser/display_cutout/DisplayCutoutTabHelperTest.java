@@ -29,12 +29,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.features.WebappInsetsConsumer;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -50,6 +52,7 @@ public class DisplayCutoutTabHelperTest {
     private static class TestCustomTabActivity extends CustomTabActivity {
         private WebappInsetsConsumer mWebappInsetsConsumer;
         private BrowserServicesIntentDataProvider mIntentDataProvider;
+        private boolean mInAppMode = true;
 
         void setWebappInsetsConsumerForTesting(WebappInsetsConsumer consumer) {
             mWebappInsetsConsumer = consumer;
@@ -57,6 +60,15 @@ public class DisplayCutoutTabHelperTest {
 
         void setIntentDataProviderForTesting(BrowserServicesIntentDataProvider provider) {
             mIntentDataProvider = provider;
+        }
+
+        void setInAppModeForTesting(boolean inAppMode) {
+            mInAppMode = inAppMode;
+        }
+
+        @Override
+        public boolean isInAppMode() {
+            return mInAppMode;
         }
 
         @Override
@@ -101,6 +113,33 @@ public class DisplayCutoutTabHelperTest {
         activity.setIntentDataProviderForTesting(mIntentDataProvider);
         when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
         when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testShortEdgesRequiresAppMode() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mTab.isUserInteractable()).thenReturn(true);
+        setUpFullscreenWebapp(mActivityA);
+        mActivityA.setWebappInsetsConsumerForTesting(mInsetsConsumerA);
+        when(mInsetsConsumerA.acquireEdgeToEdgeToken()).thenReturn(1);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+        DisplayCutoutController controller = new DisplayCutoutController(delegate);
+
+        // In app mode, a viewport-fit=cover page acquires the consumer token.
+        controller.setViewportFit(ViewportFit.COVER);
+        verify(mInsetsConsumerA).acquireEdgeToEdgeToken();
+
+        // Verification failed, so the browser controls are shown and the cutout paths stop
+        // applying: re-evaluating the layout must release the held token.
+        mActivityA.setInAppModeForTesting(false);
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+        // An ImmersiveMode TWA would otherwise keep reporting FULLSCREEN from the intent, so
+        // the cutout controller would still compute SHORT_EDGES for viewport-fit=cover.
+        assertEquals(DisplayMode.BROWSER, delegate.getDisplayMode());
+        controller.maybeUpdateLayout();
+        verify(mInsetsConsumerA).releaseEdgeToEdgeToken(1);
     }
 
     @Test

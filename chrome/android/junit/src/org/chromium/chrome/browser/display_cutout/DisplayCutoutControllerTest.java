@@ -71,6 +71,13 @@ public class DisplayCutoutControllerTest {
         public BrowserServicesIntentDataProvider getIntentDataProvider() {
             return mTestIntentDataProvider;
         }
+
+        @Override
+        public boolean isInAppMode() {
+            // The coordinator deciding app mode is only wired during real startup; these tests
+            // model a verified web app.
+            return true;
+        }
     }
 
     private static final Insets INITIAL_STATUS_BAR_INSETS = Insets.of(0, 80, 0, 0);
@@ -290,42 +297,16 @@ public class DisplayCutoutControllerTest {
 
     @Test
     public void testStandaloneCoverMergesSafeAreaWithSystemBars() {
-        WindowInsetsCompat initialInsets = mock(WindowInsetsCompat.class);
-        WindowInsetsCompat updatedInsets = mock(WindowInsetsCompat.class);
-        WindowInsetsCompat zeroInsets = mock(WindowInsetsCompat.class);
-
-        when(initialInsets.getInsetsIgnoringVisibility(statusBars()))
-                .thenReturn(INITIAL_STATUS_BAR_INSETS);
-        when(initialInsets.getInsetsIgnoringVisibility(navigationBars()))
-                .thenReturn(INITIAL_NAV_BAR_INSETS);
-
-        when(updatedInsets.getInsetsIgnoringVisibility(statusBars()))
-                .thenReturn(UPDATED_STATUS_BAR_INSETS);
-        when(updatedInsets.getInsetsIgnoringVisibility(navigationBars()))
-                .thenReturn(UPDATED_NAV_BAR_INSETS);
-
-        when(zeroInsets.getInsetsIgnoringVisibility(statusBars())).thenReturn(Insets.NONE);
-        when(zeroInsets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(Insets.NONE);
+        WindowInsetsCompat initialInsets =
+                mockStableBarInsets(INITIAL_STATUS_BAR_INSETS, INITIAL_NAV_BAR_INSETS);
+        WindowInsetsCompat updatedInsets =
+                mockStableBarInsets(UPDATED_STATUS_BAR_INSETS, UPDATED_NAV_BAR_INSETS);
+        WindowInsetsCompat zeroInsets = mockStableBarInsets(Insets.NONE, Insets.NONE);
 
         // A real soft keyboard is far taller than the navigation bar.
         when(updatedInsets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, 392));
 
-        when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
-        when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
-        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
-        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
-        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(initialInsets);
-
-        DisplayCutoutController controller =
-                new DisplayCutoutController(mDelegate) {
-                    @Override
-                    protected float getDipScale() {
-                        return 1f;
-                    }
-                };
+        DisplayCutoutController controller = createShortEdgesController(initialInsets);
 
         clearInvocations(mWebContents);
         controller.setViewportFit(ViewportFit.COVER);
@@ -382,37 +363,72 @@ public class DisplayCutoutControllerTest {
         Assert.assertEquals(UPDATED_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
     }
 
-    /**
-     * Builds a controller whose window insets report the given navigation bar and IME bottoms with
-     * a visible keyboard in the given {@link VirtualKeyboardMode}.
-     */
-    private DisplayCutoutController createControllerForImeTest(
-            int navBarBottom, int imeBottom, @VirtualKeyboardMode.EnumType int keyboardMode) {
+    /** Mocks raw window insets with the given stable status/navigation bar insets. */
+    private static WindowInsetsCompat mockStableBarInsets(
+            Insets statusBarInsets, Insets navBarInsets) {
         WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
-        when(insets.getInsetsIgnoringVisibility(statusBars()))
-                .thenReturn(UPDATED_STATUS_BAR_INSETS);
-        when(insets.getInsetsIgnoringVisibility(navigationBars()))
-                .thenReturn(Insets.of(0, 0, 0, navBarBottom));
-        when(insets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, imeBottom));
-        when(insets.isVisible(ime())).thenReturn(true);
+        when(insets.getInsetsIgnoringVisibility(statusBars())).thenReturn(statusBarInsets);
+        when(insets.getInsetsIgnoringVisibility(navigationBars())).thenReturn(navBarInsets);
+        return insets;
+    }
 
+    /**
+     * Stubs the delegate as a standalone web app in short-edges cutout mode with {@code insets}.
+     */
+    private DisplayCutoutController createShortEdgesController(WindowInsetsCompat insets) {
         when(mDelegate.getAttachedActivity()).thenReturn(mActivity);
         when(mDelegate.getInsetObserver()).thenReturn(mInsetObserver);
         when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.STANDALONE);
         when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(true);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        when(mWebContents.getVirtualKeyboardMode()).thenReturn(keyboardMode);
         when(mInsetObserver.getCurrentSafeArea()).thenReturn(new Rect());
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        return new DisplayCutoutController(mDelegate) {
+            @Override
+            protected float getDipScale() {
+                return 1f;
+            }
+        };
+    }
 
+    @Test
+    public void testLeavingAppModeRePushesUnmergedSafeArea() {
         DisplayCutoutController controller =
-                new DisplayCutoutController(mDelegate) {
-                    @Override
-                    protected float getDipScale() {
-                        return 1f;
-                    }
-                };
+                createShortEdgesController(
+                        mockStableBarInsets(INITIAL_STATUS_BAR_INSETS, INITIAL_NAV_BAR_INSETS));
+
+        // In app mode on a viewport-fit=cover page, Blink gets the merged safe area.
+        clearInvocations(mWebContents);
+        controller.setViewportFit(ViewportFit.COVER);
+        ArgumentCaptor<Rect> safeAreaCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(INITIAL_EXPECTED_SAFE_AREA, safeAreaCaptor.getValue());
+
+        // Verification fails asynchronously (no navigation): the merge decision flips without any
+        // inset changing, so the layout update itself must re-push the now-unmerged safe area.
+        clearInvocations(mWebContents);
+        when(mDelegate.isShortEdgesCutoutModeEnabled()).thenReturn(false);
+        when(mDelegate.getDisplayMode()).thenReturn(DisplayMode.BROWSER);
+        controller.maybeUpdateLayout();
+
+        verify(mWebContents).setDisplayCutoutSafeArea(safeAreaCaptor.capture());
+        Assert.assertEquals(new Rect(), safeAreaCaptor.getValue());
+    }
+
+    /**
+     * Builds a controller whose window insets report the given navigation bar and IME bottoms with
+     * a visible keyboard in the given {@link VirtualKeyboardMode}.
+     */
+    private DisplayCutoutController createControllerForImeTest(
+            int navBarBottom, int imeBottom, @VirtualKeyboardMode.EnumType int keyboardMode) {
+        WindowInsetsCompat insets =
+                mockStableBarInsets(UPDATED_STATUS_BAR_INSETS, Insets.of(0, 0, 0, navBarBottom));
+        when(insets.getInsets(ime())).thenReturn(Insets.of(0, 0, 0, imeBottom));
+        when(insets.isVisible(ime())).thenReturn(true);
+        when(mWebContents.getVirtualKeyboardMode()).thenReturn(keyboardMode);
+
+        DisplayCutoutController controller = createShortEdgesController(insets);
         // Browser edge-to-edge, and therefore the browser safe area merge, only applies to a
         // page that asked for viewport-fit=cover.
         controller.setViewportFit(ViewportFit.COVER);

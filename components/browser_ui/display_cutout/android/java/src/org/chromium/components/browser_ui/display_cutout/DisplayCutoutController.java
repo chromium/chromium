@@ -350,12 +350,6 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         if (!viewportFitChanged && !shouldTreatViewportFitAsCover(value)) return;
 
         maybeUpdateLayout();
-        if (mDelegate.isDrawEdgeToEdgeEnabled()) {
-            // Re-push the safe area when a cover-mode page reports viewport-fit=cover again after
-            // reload. Blink needs the current insets for CSS env() variables even if the enum value
-            // did not change.
-            maybePushSafeAreaInsets(mCachedSafeAreaInsets);
-        }
     }
 
     /**
@@ -672,6 +666,9 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Should be called to refresh the activity window's layout based on current state. */
     public void maybeUpdateLayout() {
         updateEdgeToEdgeMode(shouldUseBrowserEdgeToEdge());
+        if (mDelegate.isDrawEdgeToEdgeEnabled()) {
+            maybePushSafeAreaInsets(mCachedSafeAreaInsets);
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
         LayoutParams attributes = getWindowAttributes();

@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -107,8 +108,7 @@ public class ImmersiveModeController
 
         // In order to avoid a flicker during launch, set the display cutout mode now (vs
         // waiting for DisplayCutoutController to set the mode).
-        window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
-        mCutoutSupplier.set(layoutInDisplayCutoutMode);
+        setLayoutInDisplayCutoutMode(layoutInDisplayCutoutMode);
         // Same reason: withhold the insets before the first inset pass, so the edge-to-edge
         // layout never pads the root view for a frame while the posted flags task is pending.
         updateEdgeToEdge(/* drawEdgeToEdge= */ true);
@@ -122,8 +122,24 @@ public class ImmersiveModeController
 
         mInImmersiveMode = false;
         mHandler.removeCallbacks(mUpdateImmersiveFlagsRunnable);
+        setLayoutInDisplayCutoutMode(LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+        updateEdgeToEdge(/* drawEdgeToEdge= */ false);
         updateImmersiveFlags();
-        mCutoutSupplier.set(LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+    }
+
+    private void setLayoutInDisplayCutoutMode(int mode) {
+        Window window = mActivity.getWindow();
+        WindowManager.LayoutParams attributes = window.getAttributes();
+        if (attributes.layoutInDisplayCutoutMode != mode) {
+            attributes.layoutInDisplayCutoutMode = mode;
+            window.setAttributes(attributes);
+        }
+
+        // Notify last: supplier observers (DisplayCutoutController, when the page uses
+        // viewport-fit) synchronously write their own resolution of the cutout mode to this
+        // window, which may differ from `mode`; notifying before the write above would let it
+        // be overwritten.
+        mCutoutSupplier.set(mode);
     }
 
     private void postSetImmersiveFlags(int delayInMills) {
@@ -143,8 +159,6 @@ public class ImmersiveModeController
         } else {
             updateImmersiveFlagsOnAndroidNot11();
         }
-
-        updateEdgeToEdge(/* drawEdgeToEdge= */ mInImmersiveMode);
     }
 
     private void updateImmersiveFlagsOnAndroid11() {

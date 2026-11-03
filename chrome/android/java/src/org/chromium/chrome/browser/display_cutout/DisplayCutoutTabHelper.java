@@ -11,7 +11,6 @@ import android.app.Activity;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
@@ -84,11 +83,15 @@ public class DisplayCutoutTabHelper implements UserData {
             };
 
     public static DisplayCutoutTabHelper from(Tab tab) {
-        UserDataHost host = tab.getUserDataHost();
-        DisplayCutoutTabHelper tabHelper = host.getUserData(USER_DATA_KEY);
-        return tabHelper == null
-                ? host.setUserData(USER_DATA_KEY, new DisplayCutoutTabHelper(tab))
-                : tabHelper;
+        DisplayCutoutTabHelper tabHelper = get(tab);
+        return tabHelper != null
+                ? tabHelper
+                : tab.getUserDataHost().setUserData(USER_DATA_KEY, new DisplayCutoutTabHelper(tab));
+    }
+
+    /** Returns the helper of {@code tab}, or null when the tab never set a viewport fit. */
+    public static @Nullable DisplayCutoutTabHelper get(Tab tab) {
+        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
     @VisibleForTesting
@@ -136,6 +139,9 @@ public class DisplayCutoutTabHelper implements UserData {
             if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) {
                 return DisplayMode.BROWSER;
             }
+            // The resolved display mode comes from the launch intent and does not change when
+            // app mode ends.
+            if (!baseCustomTabActivity.isInAppMode()) return DisplayMode.BROWSER;
             return assumeNonNull(baseCustomTabActivity.getIntentDataProvider())
                     .getResolvedDisplayMode();
         }
@@ -149,8 +155,9 @@ public class DisplayCutoutTabHelper implements UserData {
         public boolean isShortEdgesCutoutModeEnabled() {
             Activity activity = getAttachedActivity();
             if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) return false;
-            return BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForApp(
-                    assumeNonNull(baseCustomTabActivity.getIntentDataProvider()));
+            return baseCustomTabActivity.isInAppMode()
+                    && BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForApp(
+                            assumeNonNull(baseCustomTabActivity.getIntentDataProvider()));
         }
 
         /**
@@ -215,6 +222,11 @@ public class DisplayCutoutTabHelper implements UserData {
         mCutoutController.setViewportFit(value);
     }
 
+    /** Re-evaluates the window's cutout mode and edge-to-edge state for the current page. */
+    public void maybeUpdateLayout() {
+        mCutoutController.maybeUpdateLayout();
+    }
+
     /**
      * Set whether there are safe area constraint on the current web page.
      *
@@ -230,7 +242,7 @@ public class DisplayCutoutTabHelper implements UserData {
         mCutoutController.destroy();
     }
 
-    static void initForTesting(Tab tab, DisplayCutoutController controller) {
+    public static void initForTesting(Tab tab, DisplayCutoutController controller) {
         DisplayCutoutTabHelper tabHelper = new DisplayCutoutTabHelper(tab);
         tabHelper.mCutoutController = controller;
         tab.getUserDataHost().setUserData(USER_DATA_KEY, tabHelper);

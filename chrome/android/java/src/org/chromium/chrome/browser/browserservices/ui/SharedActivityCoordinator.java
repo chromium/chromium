@@ -19,8 +19,10 @@ import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
+import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.function.Supplier;
 
@@ -45,6 +47,7 @@ public class SharedActivityCoordinator implements InflationObserver {
     private final Supplier<ImmersiveModeController> mImmersiveModeController;
     private final CustomTabOrientationController mCustomTabOrientationController;
     private final BrowserServicesThemeColorProvider mBrowserServicesThemeColorProvider;
+    private final Supplier<@Nullable Tab> mActivityTabSupplier;
 
     private final @Nullable ImmersiveMode mImmersiveDisplayMode;
 
@@ -60,6 +63,7 @@ public class SharedActivityCoordinator implements InflationObserver {
             CustomTabActivityNavigationController customTabActivityNavigationController,
             Verifier verifier,
             BrowserServicesThemeColorProvider browserServicesThemeColorProvider,
+            Supplier<@Nullable Tab> activityTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mCurrentPageVerifier = currentPageVerifier;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -68,28 +72,47 @@ public class SharedActivityCoordinator implements InflationObserver {
         mImmersiveDisplayMode = computeImmersiveMode(intentDataProvider);
         mCustomTabOrientationController = customTabOrientationController;
         mBrowserServicesThemeColorProvider = browserServicesThemeColorProvider;
+        mActivityTabSupplier = activityTabSupplier;
         mUseAppModeUi = appModeUiAllowedFor(mCurrentPageVerifier.getState());
 
         customTabActivityNavigationController.setLandingPageOnCloseCriterion(
                 verifier::wasPreviouslyVerified);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
-        // Browser controls can become visible while staying in app mode, e.g. for a child tab
-        // opened by a contextual web search; immersive mode must yield to them.
-        mBrowserControlsVisibilityManager
-                .getControlsVisibleSupplier()
-                .addSyncObserver(visible -> updateImmersiveMode());
+        observeBrowserControlsVisibility();
         lifecycleDispatcher.register(this);
 
-        // Apply immersive mode ASAP, before layout inflation. This is a no-op unless the
-        // intent's display mode is TrustedWebActivityDisplayMode.ImmersiveMode -- non-immersive
-        // edge-to-edge (e.g. display: standalone webapps) is handled by DisplayCutoutController
-        // once the page's viewport-fit value is known.
-        updateImmersiveMode();
+        // Applied before layout inflation to avoid a visible transition on launch.
+        updateImmersiveMode(isAppModeWithHiddenBrowserControls());
+    }
+
+    /**
+     * Browser controls can become visible while app mode stays on, e.g. a child tab opened by a
+     * contextual web search or a security warning on an in-scope page. Immersive mode and the
+     * cutout treatment yield to them.
+     */
+    private void observeBrowserControlsVisibility() {
+        mBrowserControlsVisibilityManager
+                .getControlsVisibleSupplier()
+                .addSyncObserver(
+                        controlsVisible -> {
+                            updateImmersiveMode(isAppModeWithHiddenBrowserControls());
+                            updateDisplayCutoutLayout();
+                        });
     }
 
     public boolean shouldUseAppModeUi() {
         return mUseAppModeUi;
+    }
+
+    /**
+     * Whether app-mode UI is used and the browser controls are hidden, i.e. the web app owns the
+     * full window. Transient browser controls (a security warning on an in-scope page, an in-scope
+     * child tab) suspend window treatments like the cutout paths without leaving app mode.
+     */
+    public boolean isAppModeWithHiddenBrowserControls() {
+        return mUseAppModeUi
+                && !mBrowserControlsVisibilityManager.getControlsVisibleSupplier().get();
     }
 
     @Override
@@ -111,22 +134,32 @@ public class SharedActivityCoordinator implements InflationObserver {
     }
 
     private void updateUi() {
-        updateImmersiveMode();
-        mBrowserServicesThemeColorProvider.setUseTabTheme(mUseAppModeUi);
         mBrowserControlsVisibilityManager.updateIsInAppMode(mUseAppModeUi);
+        updateImmersiveMode(isAppModeWithHiddenBrowserControls());
+        mBrowserServicesThemeColorProvider.setUseTabTheme(mUseAppModeUi);
         mStatusBarColorProvider.setUseTabThemeColor(mUseAppModeUi);
         mCustomTabOrientationController.setCanControlOrientation(mUseAppModeUi);
+        updateDisplayCutoutLayout();
     }
 
-    // TrustedWebActivityDisplayMode.ImmersiveMode is used for TWA immersive mode and for webapps
-    // with display: fullscreen. Non-immersive edge-to-edge for standalone webapps is controlled by
-    // DisplayCutoutController after the page's viewport-fit value is known.
-    private void updateImmersiveMode() {
+    private void updateDisplayCutoutLayout() {
+        Tab tab = mActivityTabSupplier.get();
+        if (tab == null) return;
+
+        DisplayCutoutTabHelper tabHelper = DisplayCutoutTabHelper.get(tab);
+        if (tabHelper != null) tabHelper.maybeUpdateLayout();
+    }
+
+    /**
+     * Applies {@link TrustedWebActivityDisplayMode.ImmersiveMode}, used by TWA immersive mode and
+     * by webapps with {@code display: fullscreen}. Non-immersive edge-to-edge for standalone
+     * webapps is controlled by {@code DisplayCutoutController} once the page's viewport-fit value
+     * is known.
+     */
+    private void updateImmersiveMode(boolean appModeWithHiddenBrowserControls) {
         if (mImmersiveDisplayMode == null) return;
 
-        boolean controlsVisible =
-                mBrowserControlsVisibilityManager.getControlsVisibleSupplier().get();
-        if (mUseAppModeUi && !controlsVisible) {
+        if (appModeWithHiddenBrowserControls) {
             mImmersiveModeController
                     .get()
                     .enterImmersiveMode(
