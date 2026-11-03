@@ -5763,34 +5763,42 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 }
 
 namespace {
-// Redirects (with 307 code) requests with a redirect_to_http path to
-// http://example.org. This custom handler is required for tests that include
-// GET method forms to the redirect URL, since the built in /server-redirect-307
-// handler takes the redirect-to URL as a query parameter, so it is not usable
-// for GET method forms.
+// Redirects (with 307 or 302 code) requests with a redirect_to_http or
+// redirect_302_to_http path to http://example.org, preserving any query
+// parameters. This custom handler is required for tests that include GET method
+// forms to the redirect URL, since the built in /server-redirect-307 handler
+// takes the redirect-to URL as a query parameter, so it is not usable for GET
+// method forms.
 std::unique_ptr<net::test_server::HttpResponse> FormActionHTTPRedirectHandler(
     const net::EmbeddedTestServer* test_server,
     const net::test_server::HttpRequest& request) {
   GURL absolute_url = test_server->GetURL(request.relative_url);
-  if (absolute_url.GetPath() != "/redirect_to_http") {
+  if (absolute_url.GetPath() != "/redirect_to_http" &&
+      absolute_url.GetPath() != "/redirect_302_to_http") {
     return nullptr;
   }
   GURL::Replacements replacements;
   replacements.SetHostStr("example.org");
   replacements.SetSchemeStr("http");
+  if (!absolute_url.query().empty()) {
+    replacements.SetQueryStr(absolute_url.query());
+  }
   const GURL redirect_url =
       test_server->base_url().ReplaceComponents(replacements);
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
-  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+  http_response->set_code(absolute_url.GetPath() == "/redirect_302_to_http"
+                              ? net::HTTP_FOUND
+                              : net::HTTP_TEMPORARY_REDIRECT);
   http_response->AddCustomHeader("Location", redirect_url.spec());
   return std::move(http_response);
 }
 }  // namespace
 
 // Checks no interstitial is shown for mixed forms caused for a GET form with
-// a 307 redirect to http, and that metrics are logged correctly.
+// no form data and a 307 redirect to http, and that metrics are logged
+// correctly.
 IN_PROC_BROWSER_TEST_F(SSLUITest,
                        TestDisplaysInsecureFormSubmissionWarningRedirectGet) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5819,6 +5827,106 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
           tab);
   // There should have been no interstitial triggered.
   EXPECT_FALSE(helper);
+}
+
+// Checks interstitial is shown for mixed forms caused by a GET form with query
+// parameters redirecting (via 302 or 307) to http.
+IN_PROC_BROWSER_TEST_F(
+    SSLUITest,
+    TestDisplaysInsecureFormSubmissionWarningRedirectGetWithFormData) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
+  ASSERT_TRUE(https_server_.Start());
+
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"example.org"}, browser()->GetProfile()->GetPrefs());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure_get.html",
+      embedded_test_server()->host_port_pair());
+
+  for (const char* redirect_path :
+       {"/redirect_302_to_http", "/redirect_to_http"}) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(replacement_path)));
+    WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(tab, 1);
+    ASSERT_TRUE(content::ExecJs(
+        tab, content::JsReplace(
+                 "const form = document.getElementById('insecureForm');"
+                 "form.action = $1;"
+                 "const input = document.createElement('input');"
+                 "input.type = 'hidden';"
+                 "input.name = 'field';"
+                 "input.value = 'sample_data';"
+                 "form.appendChild(input);"
+                 "submitForm();",
+                 redirect_path)));
+    nav_observer.Wait();
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            tab);
+    ASSERT_TRUE(helper);
+    EXPECT_TRUE(helper->IsDisplayingInterstitial());
+    EXPECT_EQ(
+        helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
+            ->GetTypeForTesting(),
+        security_interstitials::InsecureFormBlockingPage::kTypeForTesting);
+  }
+}
+
+class SSLUITestMixedFormsGetRedirectsDisabled : public SSLUITest {
+ public:
+  SSLUITestMixedFormsGetRedirectsDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        security_interstitials::kBlockMixedFormsGetRedirects);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Checks no interstitial is shown for mixed forms caused by a GET form with
+// query parameters redirecting to http when kBlockMixedFormsGetRedirects is
+// disabled.
+IN_PROC_BROWSER_TEST_F(SSLUITestMixedFormsGetRedirectsDisabled,
+                       NoInterstitialOnGetRedirectWithFormData) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  https_server_.RegisterRequestHandler(
+      base::BindRepeating(&FormActionHTTPRedirectHandler, &https_server_));
+  ASSERT_TRUE(https_server_.Start());
+
+  ScopedAllowHttpForHostnamesForTesting scoped_allow_http(
+      {"example.org"}, browser()->GetProfile()->GetPrefs());
+
+  std::string replacement_path = GetFilePathWithHostAndPortReplacement(
+      "/ssl/page_displays_form_redirects_insecure_get.html",
+      embedded_test_server()->host_port_pair());
+
+  for (const char* redirect_path :
+       {"/redirect_302_to_http", "/redirect_to_http"}) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(replacement_path)));
+    WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(tab, 1);
+    ASSERT_TRUE(content::ExecJs(
+        tab, content::JsReplace(
+                 "const form = document.getElementById('insecureForm');"
+                 "form.action = $1;"
+                 "const input = document.createElement('input');"
+                 "input.type = 'hidden';"
+                 "input.name = 'field';"
+                 "input.value = 'sample_data';"
+                 "form.appendChild(input);"
+                 "submitForm();",
+                 redirect_path)));
+    nav_observer.Wait();
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            tab);
+    EXPECT_FALSE(helper);
+  }
 }
 
 class MixedFormsPolicyTest : public policy::PolicyTest {};

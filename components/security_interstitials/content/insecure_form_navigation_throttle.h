@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_INSECURE_FORM_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_INSECURE_FORM_NAVIGATION_THROTTLE_H_
 
+#include "base/feature_list.h"
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class PrefService;
 
 namespace security_interstitials {
+
+BASE_DECLARE_FEATURE(kBlockMixedFormsGetRedirects);
 
 class InsecureFormNavigationThrottle : public content::NavigationThrottle {
  public:
