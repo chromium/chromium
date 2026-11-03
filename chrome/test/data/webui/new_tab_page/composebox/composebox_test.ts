@@ -68,6 +68,45 @@ suite('NewTabPageComposeboxTest', () => {
         assertTrue(composeboxInput.disableCaretColorAnimation);
       });
 
+  test(
+      'updates input placeholder to Ask Google when willFulfillInAim is false',
+      async () => {
+        loadTimeData.overrideValues({dynamicAimFulfillmentEnabled: true});
+        try {
+          testProxy.searchboxHandler.setPromiseResolveFor('getInputState', {
+            state: new MockInputState({
+              toolConfigs: [],
+              toolsSectionConfig: {header: ''},
+              modelSectionConfig: {header: ''},
+              hintText: 'Ask anything',
+              willFulfillInAim: false,
+            }),
+          });
+          createComposeboxElement(testProxy);
+          await microtasksFinished();
+
+          const srpHint =
+              loadTimeData.getString('searchboxSrpComposePlaceholder');
+          assertTrue(srpHint.length > 0);
+          assertNotEquals(srpHint, 'Ask anything');
+
+          const input =
+              testProxy.element.getInputElement()
+                  .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+          assertEquals(srpHint, input.placeholder);
+
+          testProxy.element.willFulfillInAim = true;
+          await microtasksFinished();
+          assertEquals('Ask anything', input.placeholder);
+
+          testProxy.element.willFulfillInAim = false;
+          await microtasksFinished();
+          assertEquals(srpHint, input.placeholder);
+        } finally {
+          loadTimeData.overrideValues({dynamicAimFulfillmentEnabled: false});
+        }
+      });
+
   test('ntp composebox uses configured forward submit icon', async () => {
     createComposeboxElement(testProxy, {
       searchboxNextEnabled: true,

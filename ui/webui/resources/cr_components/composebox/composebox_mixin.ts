@@ -331,9 +331,9 @@ export const ComposeboxEmbedderMixin =
         accessor fileUploadsComplete: boolean = true;
         accessor hasAllowedInputs: boolean = false;
         accessor input: string = '';
-        accessor inputPlaceholder: string =
-            loadTimeData.getString('searchboxComposePlaceholder');
         accessor inputState: InputState|null = null;
+        accessor inputPlaceholder: string =
+            this.getDefaultComposePlaceholder_();
         accessor inToolMode: boolean = false;
         accessor submitButtonIconType: SubmitButtonIconType =
             SubmitButtonIconType.UPWARD;
@@ -634,6 +634,12 @@ export const ComposeboxEmbedderMixin =
             if (this.hasContent()) {
               this.suggestInventory = null;
             }
+          }
+
+          if (changedPrivateProperties.has('attachedContext') ||
+              changedPrivateProperties.has('inputState') ||
+              changedPrivateProperties.has('inputState.activeTool') ||
+              changedPrivateProperties.has('willFulfillInAim')) {
             this.updateInputPlaceholder();
           }
 
@@ -1331,6 +1337,16 @@ export const ComposeboxEmbedderMixin =
           handlers[e.key]!(e);
         }
 
+        private getDefaultComposePlaceholder_(): string {
+          if (!this.willFulfillInAim) {
+            return loadTimeData.valueExists('searchboxSrpComposePlaceholder') ?
+                loadTimeData.getString('searchboxSrpComposePlaceholder') :
+                loadTimeData.getString('searchboxComposePlaceholder');
+          }
+          return this.inputState?.hintText ||
+              loadTimeData.getString('searchboxComposePlaceholder');
+        }
+
         updateInputPlaceholder() {
           if (this.fuseboxChipHint_ !== null) {
             this.inputPlaceholder = this.fuseboxChipHint_;
@@ -1344,6 +1360,16 @@ export const ComposeboxEmbedderMixin =
                 this.inputPlaceholder = config.hintText;
                 return;
               }
+              if (this.inputState.activeTool === ToolMode.kDeepSearch) {
+                this.inputPlaceholder =
+                    loadTimeData.getString('composeDeepSearchPlaceholder');
+                return;
+              }
+              if (this.inputState.activeTool === ToolMode.kImageGen) {
+                this.inputPlaceholder =
+                    loadTimeData.getString('composeCreateImagePlaceholder');
+                return;
+              }
             }
 
             if (this.inputState.activeModel !== ModelMode.kUnspecified) {
@@ -1354,22 +1380,8 @@ export const ComposeboxEmbedderMixin =
                 return;
               }
             }
-
-            if (this.inputState.hintText) {
-              this.inputPlaceholder = this.inputState.hintText;
-              return;
-            }
           }
-          if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
-            this.inputPlaceholder =
-                loadTimeData.getString('composeDeepSearchPlaceholder');
-          } else if (this.inputState?.activeTool === ToolMode.kImageGen) {
-            this.inputPlaceholder =
-                loadTimeData.getString('composeCreateImagePlaceholder');
-          } else {
-            this.inputPlaceholder =
-                loadTimeData.getString('searchboxComposePlaceholder');
-          }
+          this.inputPlaceholder = this.getDefaultComposePlaceholder_();
         }
 
         isTogglingOff(tool: ToolMode): boolean {

@@ -265,6 +265,12 @@ TEST_F(SearchboxHandlerTest,
   base::DictValue dependent_strings =
       SearchboxHandler::GetProfileDependentWebUIDataSourceDict(profile(), {});
   EXPECT_TRUE(independent_strings.contains("searchBoxHint"));
+  const std::string* srp_placeholder =
+      independent_strings.FindString("searchboxSrpComposePlaceholder");
+  ASSERT_NE(srp_placeholder, nullptr);
+  EXPECT_EQ(*srp_placeholder,
+            l10n_util::GetStringUTF8(
+                IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
   EXPECT_TRUE(dependent_strings.contains("keywordSpaceTriggeringEnabled"));
 
   // Each value is in exactly one of them.
