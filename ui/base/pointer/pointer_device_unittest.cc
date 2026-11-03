@@ -44,6 +44,31 @@ TEST(PointerDeviceTest, PrimaryPointerType) {
   }
 }
 
+TEST(PointerDeviceTest, PrimaryPointerAndHoverTypesFromPrecomputedBitmasks) {
+  // Set the global testing override to NONE and verify that the parameterized
+  // overloads compute primary types from the passed-in bitmasks rather than
+  // re-querying GetAvailablePointerAndHoverTypes().
+  ScopedSetPointerAndHoverTypesForTesting scoper(POINTER_TYPE_NONE,
+                                                 HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_NONE), POINTER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_COARSE), POINTER_TYPE_COARSE);
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_FINE), POINTER_TYPE_FINE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_NONE, HOVER_TYPE_NONE),
+            HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_FINE, HOVER_TYPE_HOVER),
+            HOVER_TYPE_HOVER);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_FINE, HOVER_TYPE_NONE),
+            HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_COARSE, HOVER_TYPE_NONE),
+            HOVER_TYPE_NONE);
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_COARSE | POINTER_TYPE_FINE),
+            POINTER_TYPE_FINE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_COARSE, HOVER_TYPE_HOVER),
+            HOVER_TYPE_HOVER);
+#endif
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Regression test for https://crbug.com/41445959.
 TEST(PointerDeviceTest, AndroidPrimaryHoverNoneWhenTouchscreenPresent) {
@@ -51,6 +76,11 @@ TEST(PointerDeviceTest, AndroidPrimaryHoverNoneWhenTouchscreenPresent) {
       POINTER_TYPE_COARSE | POINTER_TYPE_FINE, HOVER_TYPE_HOVER);
   EXPECT_EQ(GetPrimaryPointerType(), POINTER_TYPE_COARSE);
   EXPECT_EQ(GetPrimaryHoverType(), HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_COARSE | POINTER_TYPE_FINE),
+            POINTER_TYPE_COARSE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_COARSE | POINTER_TYPE_FINE,
+                                HOVER_TYPE_HOVER),
+            HOVER_TYPE_NONE);
 }
 
 TEST(PointerDeviceTest, AndroidAnyHoverStillReportsHover) {
@@ -58,7 +88,7 @@ TEST(PointerDeviceTest, AndroidAnyHoverStillReportsHover) {
       POINTER_TYPE_COARSE | POINTER_TYPE_FINE, HOVER_TYPE_HOVER);
   auto [pointer_types, hover_types] = GetAvailablePointerAndHoverTypes();
   EXPECT_TRUE(hover_types & HOVER_TYPE_HOVER);
-  EXPECT_EQ(GetPrimaryHoverType(), HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryHoverType(pointer_types, hover_types), HOVER_TYPE_NONE);
 }
 
 TEST(PointerDeviceTest, AndroidTouchOnlyHoverNone) {
@@ -66,6 +96,9 @@ TEST(PointerDeviceTest, AndroidTouchOnlyHoverNone) {
                                                  HOVER_TYPE_NONE);
   EXPECT_EQ(GetPrimaryPointerType(), POINTER_TYPE_COARSE);
   EXPECT_EQ(GetPrimaryHoverType(), HOVER_TYPE_NONE);
+  EXPECT_EQ(GetPrimaryPointerType(POINTER_TYPE_COARSE), POINTER_TYPE_COARSE);
+  EXPECT_EQ(GetPrimaryHoverType(POINTER_TYPE_COARSE, HOVER_TYPE_NONE),
+            HOVER_TYPE_NONE);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

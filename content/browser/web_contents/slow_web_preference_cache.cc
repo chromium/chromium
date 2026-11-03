@@ -168,10 +168,11 @@ bool SlowWebPreferenceCache::Update() {
 
   std::tie(available_pointer_types_, available_hover_types_) =
       GetAvailablePointerAndHoverTypes();
-  primary_pointer_type_ =
-      static_cast<blink::mojom::PointerType>(ui::GetPrimaryPointerType());
+  primary_pointer_type_ = static_cast<blink::mojom::PointerType>(
+      ui::GetPrimaryPointerType(available_pointer_types_));
   primary_hover_type_ =
-      static_cast<blink::mojom::HoverType>(ui::GetPrimaryHoverType());
+      static_cast<blink::mojom::HoverType>(ui::GetPrimaryHoverType(
+          available_pointer_types_, available_hover_types_));
 
   pointer_events_max_touch_points_ = ui::MaxTouchPoints();
 

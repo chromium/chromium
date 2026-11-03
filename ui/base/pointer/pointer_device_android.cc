@@ -33,8 +33,7 @@ int MaxTouchPoints() {
   return Java_TouchDevice_maxTouchPoints(jni_zero::AttachCurrentThread());
 }
 
-PointerType GetPrimaryPointerType() {
-  const int available_pointer_types = GetAvailablePointerAndHoverTypes().first;
+PointerType GetPrimaryPointerType(int available_pointer_types) {
   // In desktop mode, prefer fine pointer (mouse/trackpad) as primary.
   if (base::android::device_info::is_desktop()) {
     if (available_pointer_types & POINTER_TYPE_FINE) {
@@ -51,9 +50,8 @@ PointerType GetPrimaryPointerType() {
   return POINTER_TYPE_NONE;
 }
 
-HoverType GetPrimaryHoverType() {
-  auto [available_pointer_types, available_hover_types] =
-      GetAvailablePointerAndHoverTypes();
+HoverType GetPrimaryHoverType(int available_pointer_types,
+                              int available_hover_types) {
   // In desktop mode, the mouse is the primary input, so report hover.
   if (base::android::device_info::is_desktop()) {
     if (available_hover_types & HOVER_TYPE_HOVER) {

@@ -47,6 +47,7 @@ COMPONENT_EXPORT(UI_BASE) int MaxTouchPoints();
 // third_party/blink/public/common/web_preferences/web_preferences.cc.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
 // GENERATED_JAVA_PREFIX_TO_STRIP: POINTER_TYPE_
+// LINT.IfChange(PointerType)
 enum PointerType {
   POINTER_TYPE_NONE = 1 << 0,
   POINTER_TYPE_FIRST = POINTER_TYPE_NONE,
@@ -54,18 +55,21 @@ enum PointerType {
   POINTER_TYPE_FINE = 1 << 2,
   POINTER_TYPE_LAST = POINTER_TYPE_FINE
 };
+// LINT.ThenChange(/ui/android/java/src/org/chromium/ui/base/TouchDevice.java:PointerType)
 
 // Bit field values indicating available hover types. Identical to
 // blink::HoverType enums, enforced by compile-time assertions in
 // third_party/blink/public/common/web_preferences/web_preferences.cc.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
 // GENERATED_JAVA_PREFIX_TO_STRIP: HOVER_TYPE_
+// LINT.IfChange(HoverType)
 enum HoverType {
   HOVER_TYPE_NONE = 1 << 0,
   HOVER_TYPE_FIRST = HOVER_TYPE_NONE,
   HOVER_TYPE_HOVER = 1 << 1,
   HOVER_TYPE_LAST = HOVER_TYPE_HOVER
 };
+// LINT.ThenChange(/ui/android/java/src/org/chromium/ui/base/TouchDevice.java:HoverType)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. See PointerDigitizerType in:
@@ -115,7 +119,12 @@ class COMPONENT_EXPORT(UI_BASE)
 
 COMPONENT_EXPORT(UI_BASE)
 std::pair<int, int> GetAvailablePointerAndHoverTypes();
+COMPONENT_EXPORT(UI_BASE)
+PointerType GetPrimaryPointerType(int available_pointer_types);
 COMPONENT_EXPORT(UI_BASE) PointerType GetPrimaryPointerType();
+COMPONENT_EXPORT(UI_BASE)
+HoverType GetPrimaryHoverType(int available_pointer_types,
+                              int available_hover_types);
 COMPONENT_EXPORT(UI_BASE) HoverType GetPrimaryHoverType();
 
 COMPONENT_EXPORT(UI_BASE)

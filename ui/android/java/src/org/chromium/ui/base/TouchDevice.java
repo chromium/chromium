@@ -97,8 +97,26 @@ public class TouchDevice {
                 pointerTypes |= PointerType.COARSE;
             }
 
-            if (hasMouseLikeSource && isRealPointerDevice(inputDevice, sources)) {
+            // Short-circuit isRealPointerDevice() once HoverType.HOVER is set, and exit the
+            // device loop early once all non-NONE PointerType (FINE | COARSE) and HoverType
+            // (HOVER) capability bits have been collected. If a new non-NONE HoverType or
+            // PointerType bitflag is added to ui/base/pointer/pointer_device.h, the checks
+            // below must be updated or capabilities from remaining devices will be missed.
+            // LINT.IfChange(HoverType)
+            if ((hoverTypes & HoverType.HOVER) == 0
+                    && hasMouseLikeSource
+                    && isRealPointerDevice(inputDevice, sources)) {
                 hoverTypes |= HoverType.HOVER;
+            }
+            boolean hasAllHoverTypes = hoverTypes == HoverType.HOVER;
+            // LINT.ThenChange(/ui/base/pointer/pointer_device.h:HoverType)
+
+            // LINT.IfChange(PointerType)
+            boolean hasAllPointerTypes = pointerTypes == (PointerType.FINE | PointerType.COARSE);
+            // LINT.ThenChange(/ui/base/pointer/pointer_device.h:PointerType)
+
+            if (hasAllPointerTypes && hasAllHoverTypes) {
+                break;
             }
 
             // Remaining InputDevice sources: SOURCE_DPAD, SOURCE_GAMEPAD, SOURCE_JOYSTICK,
