@@ -426,17 +426,6 @@ Description of the patches:
   third-party callers (e.g. MediaPipe). Options for simplifying or eliminating
   this patch are tracked in https://crbug.com/567654954.
 
-- 0068-remove-arena-heavy-includes.patch
-
-  Removes `absl/strings/str_format.h` and `absl/hash/hash.h` from `arena.h`
-  and removes unused `AbslStringify`, `ArenaPtrContainerHash`, and
-  `AbslHashValue` implementations on `Arena::UniquePtr` and `Arena::Ptr` to
-  avoid massive compile size and build time bloat across every translation unit
-  that includes `.pb.h`. Obsoleted in practice because `io/coded_stream.h`
-  transitively includes `absl/strings/cord.h`, which already pulls
-  `absl/strings/str_format.h` and `absl/hash/hash.h` into every `.pb.h`:
-  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/io/coded_stream.h#L113.
-
 - 0069-remove-btree-map-includes.patch
 
   Removes `absl/container/btree_map.h` from `extension_set.h` and `map.h` by
