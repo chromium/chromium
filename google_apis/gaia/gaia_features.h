@@ -20,6 +20,11 @@ BASE_DECLARE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex);
 COMPONENT_EXPORT(GOOGLE_APIS)
 BASE_DECLARE_FEATURE(kOAuth2MintTokenUnexpectedResponseBodyIsTransient);
 
+// When enabled, IssueToken fetches return transient failure instead of a
+// permanent one when receiving an HTTP 408 (Request Timeout) response.
+COMPONENT_EXPORT(GOOGLE_APIS)
+BASE_DECLARE_FEATURE(kOAuth2MintTokenHttp408IsTransient);
+
 }  // namespace gaia::features
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_FEATURES_H_

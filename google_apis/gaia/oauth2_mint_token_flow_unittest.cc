@@ -343,6 +343,14 @@ std::vector<MintTokenFailureTestParam> GetMintTokenFailureTestParams() {
           .expected_oauth2_response = OAuth2Response::kErrorUnexpectedFormat,
       },
       {
+          .test_name = "NotAJson408",
+          .http_response_code = net::HTTP_REQUEST_TIMEOUT,
+          .response_body = "error=badFormat",
+          .expected_error = GoogleServiceAuthError::FromServiceUnavailable(
+              "Couldn't parse an error. HTTP code 408"),
+          .expected_oauth2_response = OAuth2Response::kErrorUnexpectedFormat,
+      },
+      {
           .test_name = "NotAJson500",
           .http_response_code = net::HTTP_INTERNAL_SERVER_ERROR,
           .response_body = "error=badFormat",
@@ -1168,6 +1176,46 @@ TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallSuccess_NoGrantedScopes) {
       OAuth2MintTokenApiCallResult::kParseMintTokenFailure, 1);
   histogram_tester_.ExpectUniqueSample(kOAuth2MintTokenResponseHistogram,
                                        OAuth2Response::kOkUnexpectedFormat, 1);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_Http408_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      gaia::features::kOAuth2MintTokenHttp408IsTransient);
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromServiceError(
+          "Couldn't parse an error. HTTP code 408");
+  EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(net::HTTP_REQUEST_TIMEOUT));
+  ProcessApiCallFailure(net::OK, head.get(), "error=badFormat");
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kApiCallFailure, 1);
+  histogram_tester_.ExpectUniqueSample(kOAuth2MintTokenResponseHistogram,
+                                       OAuth2Response::kErrorUnexpectedFormat,
+                                       1);
+}
+
+TEST_F(OAuth2MintTokenFlowTest, ProcessApiCallFailure_Http408_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      gaia::features::kOAuth2MintTokenHttp408IsTransient);
+  CreateClientFlow(/*bound_oauth_token=*/std::string());
+  GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromServiceUnavailable(
+          "Couldn't parse an error. HTTP code 408");
+  EXPECT_CALL(delegate_, OnMintTokenFailure(expected_error));
+  network::mojom::URLResponseHeadPtr head(
+      network::CreateURLResponseHead(net::HTTP_REQUEST_TIMEOUT));
+  ProcessApiCallFailure(net::OK, head.get(), "error=badFormat");
+  histogram_tester_.ExpectUniqueSample(
+      kOAuth2MintTokenApiCallResultHistogram,
+      OAuth2MintTokenApiCallResult::kApiCallFailure, 1);
+  histogram_tester_.ExpectUniqueSample(kOAuth2MintTokenResponseHistogram,
+                                       OAuth2Response::kErrorUnexpectedFormat,
+                                       1);
 }
 
 class OAuth2MintTokenFlowApiCallFailureParamTest

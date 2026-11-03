@@ -17,4 +17,8 @@ BASE_FEATURE(kSigninChromeSyncKeysUrlUsesAccountIndex,
 BASE_FEATURE(kOAuth2MintTokenUnexpectedResponseBodyIsTransient,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Intended as a Finch killswitch.
+BASE_FEATURE(kOAuth2MintTokenHttp408IsTransient,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace gaia::features
