@@ -187,6 +187,9 @@ public class NewTabGroupDialogFacility<
 
     /** Select a color. */
     public NewTabGroupDialogFacility<HostStationT> pickColor(@TabGroupColorId int newColor) {
+        // The dialog opens with the title input focused, which raises the soft keyboard and can
+        // obscure the color picker icons on smaller or landscape screens.
+        ensureSoftKeyboardClosed();
         return colorElements[newColor]
                 .clickTo()
                 .exitFacilityAnd()
