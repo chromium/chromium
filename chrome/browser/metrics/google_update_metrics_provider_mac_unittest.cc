@@ -46,6 +46,7 @@ TEST(GoogleUpdateMetricsProviderMacTest, SetsCohortHash) {
 
   updater::UpdateService::AppState app;
   app.app_id = updater::GetAppId();
+  app.ecp = updater::GetExpectedEcp();
   app.cohort = "1:A:B";
   base::ScopedClosureRunner scoped_override =
       updater::OverrideService(updater::UpdateService::Result::kSuccess, {app});
