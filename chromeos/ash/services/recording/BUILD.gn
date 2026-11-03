@@ -36,6 +36,8 @@ source_set("recording") {
     "webm_encoder_muxer.h",
   ]
 
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
   deps = [
     "//ash/constants",
     "//base",

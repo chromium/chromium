@@ -6,12 +6,11 @@
 #define CHROMEOS_ASH_SERVICES_RECORDING_LZW_PIXEL_COLOR_INDICES_WRITER_H_
 
 #include <cstdint>
-#include <unordered_map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/recording/gif_encoding_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace recording {
 
@@ -67,25 +66,19 @@ class LzwPixelColorIndicesWriter {
                       uint8_t color_bit_depth);
 
  private:
-  // Defines an entry in the below `code_table_`. An LZW compression code maps
-  // in `code_table_` to a value of `CodeTableEntry` to determine if followed by
-  // a certain pixel color index, does this map to an existing LZW code or not.
-  struct CodeTableEntry {
-    CodeTableEntry();
-    CodeTableEntry(CodeTableEntry&&);
-    CodeTableEntry& operator=(CodeTableEntry&&);
-    ~CodeTableEntry();
+  // A packed key into `code_table_` combining `current_code` and
+  // `next_color_index`.
+  using CodeTableKey = uint32_t;
+  static constexpr CodeTableKey MakeCodeTableKey(LzwCode current_code,
+                                                 ColorIndex next_color_index) {
+    static_assert(sizeof(LzwCode) + sizeof(ColorIndex) <= sizeof(CodeTableKey));
+    return (CodeTableKey{current_code} << (sizeof(ColorIndex) * 8)) |
+           CodeTableKey{next_color_index};
+  }
 
-    // Maps from a color index appearing in a sequence of color indices in the
-    // input stream to an LZW compression code that represents this sequence of
-    // indices.
-    // This map doesn't need to be sorted, and contains generally small number
-    // of entries. Therefore, a flat hash data structure achieved better results
-    // in the benchmarks done in http://b/308218563. However,
-    // `absl::flat_hash_map` is still not allowed in the Chromium codebase, so
-    // we'll keep this as a `base::flat_map` for now.
-    base::flat_map<ColorIndex, LzwCode> next_index_to_code;
-  };
+  // Clears all entries from `code_table_` while retaining its reserved backing
+  // array (`absl::flat_hash_map::clear()` deallocates the backing storage).
+  void ResetCodeTable();
 
   // Appends the given `code` to the `byte_stream_buffer_` by first appending it
   // bit-by-bit to `pending_byte_` using the number of bits provided in
@@ -142,15 +135,14 @@ class LzwPixelColorIndicesWriter {
   std::vector<uint8_t> byte_stream_buffer_;
 
   // This is the LZW compression table, which is re-built every frame or when
-  // the number of generated codes exceeds the `kMaxNumberOfLzwCodes` (4096).
-  // We key into this table with the "current LZW compression code" (which
-  // represents the pattern of color indices seen so far in the input stream
-  // `pixel_color_indices`), to get a value of type `CodeTableEntry` (which is
-  // another map from a color index to an LZW compression code). What this table
-  // tells us is, for the current LZW code [G] when the next color index in the
-  // input stream [K] is appended: Do we have an existing LZW code for this new
-  // pattern (indices represented by [G])[K]?
-  // - Either yes, and in this `case code_table_[G].next_index_to_code[K]` is a
+  // the number of generated codes reaches `kMaxNumberOfLzwCodes` (4096).
+  // We key into this table with `MakeCodeTableKey(current_code,
+  // next_color_index)`, where `current_code` represents the pattern of
+  // color indices seen so far in the input stream `pixel_color_indices`. What
+  // this table tells us is, for the current LZW code [G] when the next color
+  // index in the input stream [K] is appended: Do we have an existing LZW code
+  // for this new pattern (indices represented by [G])[K]?
+  // - Either yes, and in this case `code_table_[MakeCodeTableKey(G, K)]` is a
   //   valid code [H], so we now use [H] to represent all the pattern or color
   //   indices seen so far in the input stream.
   // - Or no, and therefore we append the code [G] to the `byte_stream_buffer_`,
@@ -158,13 +150,11 @@ class LzwPixelColorIndicesWriter {
   //   (sequence of indices mapped to [G])[K], and use [K] as the code that
   //   represents a new color indices pattern that starts at this pixel.
   //
-  // This table implements a variant of an R-way Trie data structure.
-  //
-  // This map doesn't need to be sorted, and shouldn't be flat, since it will
-  // have a lot of insertions in it (at least `kMaxNumberOfLzwCodes` (4096)
-  // before it gets reset and reused). `std::unordered_map` achieved better
-  // results in the benhcmarks (see http://b/308218563).
-  std::unordered_map<LzwCode, CodeTableEntry> code_table_;
+  // Because fewer than `kMaxNumberOfLzwCodes` transitions are inserted before
+  // the table is reset, reserving `kMaxNumberOfLzwCodes` upfront and erasing
+  // all entries via `ResetCodeTable()` retains the backing allocation across
+  // resets and frames without runtime heap allocations or rehashes.
+  absl::flat_hash_map<CodeTableKey, LzwCode> code_table_;
 };
 
 }  // namespace recording

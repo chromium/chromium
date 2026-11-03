@@ -40,7 +40,7 @@ void LzwPixelColorIndicesWriter::EncodeAndWrite(
   }
 
   // Start the process with an empty table.
-  code_table_.clear();
+  ResetCodeTable();
 
   // The `color_bit_depth` is the minimum number of bits needed to represent all
   // the indices in `pixel_color_indices`. For example, if we have 4 colors,
@@ -95,7 +95,7 @@ void LzwPixelColorIndicesWriter::EncodeAndWrite(
     // to an existing LZW code in the table?
     const ColorIndex next_color_index = pixel_color_indices[i];
     LzwCode& code_in_table =
-        code_table_[current_code].next_index_to_code[next_color_index];
+        code_table_[MakeCodeTableKey(current_code, next_color_index)];
     if (code_in_table) {
       // If yes, then `code_in_table` is a valid one, which means we have seen
       // this pattern of indices before and mapped it to a code in the table.
@@ -128,7 +128,7 @@ void LzwPixelColorIndicesWriter::EncodeAndWrite(
       if (next_available_code >= kMaxNumberOfLzwCodes) {
         AppendCodeToStreamBuffer(clear_code, current_code_bit_size);
 
-        code_table_.clear();
+        ResetCodeTable();
         next_available_code = eoi_code + 1;
         current_code_bit_size = color_bit_depth + 1;
       }
@@ -155,19 +155,12 @@ void LzwPixelColorIndicesWriter::EncodeAndWrite(
   gif_file_writer_->WriteByte(0x00);
 }
 
-// -----------------------------------------------------------------------------
-// LzwPixelColorIndicesWriter::CodeTableEntry:
-
-LzwPixelColorIndicesWriter::CodeTableEntry::CodeTableEntry() = default;
-LzwPixelColorIndicesWriter::CodeTableEntry::CodeTableEntry(CodeTableEntry&&) =
-    default;
-LzwPixelColorIndicesWriter::CodeTableEntry&
-LzwPixelColorIndicesWriter::CodeTableEntry::operator=(CodeTableEntry&&) =
-    default;
-LzwPixelColorIndicesWriter::CodeTableEntry::~CodeTableEntry() = default;
-
-// -----------------------------------------------------------------------------
-// LzwPixelColorIndicesWriter:
+void LzwPixelColorIndicesWriter::ResetCodeTable() {
+  // Clear entries via erase(begin(), end()) instead of clear() so the
+  // reserved 4096-code backing buffer is reused across mid-frame dictionary
+  // resets and subsequent GIF frames.
+  code_table_.erase(code_table_.begin(), code_table_.end());
+}
 
 void LzwPixelColorIndicesWriter::AppendCodeToStreamBuffer(
     LzwCode code,
