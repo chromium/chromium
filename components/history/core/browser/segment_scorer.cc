@@ -13,6 +13,7 @@
 #include "base/features.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/features.h"
 
 namespace history {
@@ -119,6 +120,7 @@ float SegmentScorer::Compute(const std::vector<base::Time>& time_slots,
   size_t n = time_slots.size();
   CHECK_EQ(n, visit_counts.size());
   float score = 0.0f;
+  const base::Time today_midnight = now.LocalMidnight();
 
   for (size_t i = 0; i < n; ++i) {
     base::Time time_slot = time_slots[i];
@@ -129,7 +131,11 @@ float SegmentScorer::Compute(const std::vector<base::Time>& time_slots,
                                  : 1.0f + log(static_cast<float>(visit_count));
     // Recent visits count more than historical ones, so multiply a
     // recency factor related to how long ago this day was.
-    int days_ago = (now - time_slot).InDays();
+    // Round the difference between local midnights to the nearest 24-hour
+    // day so 23-hour and 25-hour DST transition days count as 1 calendar day
+    // and visits after 23:00 on a 25-hour fall-back day have `days_ago == 0`.
+    int days_ago =
+        (today_midnight - time_slot.LocalMidnight() + base::Hours(12)).InDays();
     // Ignore entries older than `recency_window_days`.
     if (recency_window_days &&
         days_ago > static_cast<int>(recency_window_days.value())) {

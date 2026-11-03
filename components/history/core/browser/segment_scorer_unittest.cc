@@ -17,7 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +45,7 @@ class SegmentScorerTest : public ::testing::Test {
       for (int days_ago = 0; days_ago < n; ++days_ago) {
         int visit_count = daily_visit_counts[days_ago];
         if (visit_count > 0) {
-          time_slots.push_back(midnight - base::Days(days_ago));
+          time_slots.push_back(midnight.LocalMidnightWithOffset(-days_ago));
           visit_counts.push_back(visit_count);
         }
       }
@@ -57,8 +59,8 @@ class SegmentScorerTest : public ::testing::Test {
 
  protected:
   SegmentScorerTest() {
-    EXPECT_TRUE(base::Time::FromString("1 Sep 2024 10:00 GMT", &fake_now));
-    fake_midnight = fake_now.UTCMidnight();
+    EXPECT_TRUE(base::Time::FromString("1 Sep 2024 10:00", &fake_now));
+    fake_midnight = fake_now.LocalMidnight();
   }
 
   std::vector<SegmentTestItem> MakeTestItems() {
@@ -209,6 +211,22 @@ TEST_F(SegmentScorerTest, DesktopRankByDecayDefaultVisitCap10DayCap5Scorer) {
   ASSERT_EQ("10 over 2 days week apart", names_by_rank[cur++]);
   ASSERT_EQ("10 last 19 days", names_by_rank[cur++]);
   ASSERT_EQ("1 today", names_by_rank[cur++]);
+}
+
+// Regression test for crbug.com/580747375: on a 25-hour DST fall-back day,
+// timestamps after 23:00 are more than 24 hours after that day's local
+// midnight, so `days_ago` must still be 0 rather than 1.
+TEST_F(SegmentScorerTest, DstFallBack25HourDay) {
+  base::test::ScopedRestoreDefaultTimezone la_icu_tz("America/Los_Angeles");
+  base::test::ScopedLibcTimezoneOverride la_libc_tz("America/Los_Angeles");
+  base::Time fall_back_night;
+  ASSERT_TRUE(base::Time::FromString("1 Nov 2026 23:30", &fall_back_night));
+  std::unique_ptr<SegmentScorer> scorer =
+      SegmentScorer::Create(history::kMvtScoringParamRecencyFactor_Classic);
+  EXPECT_GT(
+      scorer->Compute({fall_back_night.LocalMidnight()}, /*visit_counts=*/{5},
+                      fall_back_night, /*recency_window_days=*/0),
+      0.0f);
 }
 
 }  // namespace history
