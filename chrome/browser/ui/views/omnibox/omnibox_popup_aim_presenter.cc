@@ -31,13 +31,7 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
   // If the content is not created here, it is created on demand by `Show()`
   // or by the classic popup's context menu, which needs the AIM WebContents.
-  WebUIContentCreationStrategy strategy =
-      GetWebUIContentCreationStrategy(omnibox::kOmniboxAimPopupDeferCreation);
-  if (strategy == WebUIContentCreationStrategy::kAfterWindowPresentation &&
-      !omnibox::kOmniboxAimPopupCreateOnFirstPresentation.Get()) {
-    strategy = WebUIContentCreationStrategy::kOnDemand;
-  }
-  ApplyWebUIContentCreationStrategy(strategy);
+  ApplyWebUIContentCreationStrategy(omnibox::kOmniboxAimPopupDeferCreation);
 }
 
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;
@@ -72,6 +66,13 @@ OmniboxPopupAimPresenter::CreateWebUIContent(
     std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
   return std::make_unique<OmniboxAimPopupWebUIContent>(
       this, location_bar(), controller(), std::move(contents));
+}
+
+OmniboxPopupPresenterBase::WebUIContentCreationStrategy
+OmniboxPopupAimPresenter::GetDeferredWebUIContentCreationStrategy() const {
+  return omnibox::kOmniboxAimPopupCreateOnFirstPresentation.Get()
+             ? WebUIContentCreationStrategy::kAfterWindowPresentation
+             : WebUIContentCreationStrategy::kOnDemand;
 }
 
 void OmniboxPopupAimPresenter::LogResultToContentReadyMetric(

@@ -63,6 +63,7 @@ class TestShadowOmniboxPopupPresenter : public TestOmniboxPopupPresenter {
 // creation attempt can be counted.
 class TestCountingDeferredPresenter : public TestOmniboxPopupPresenter {
  public:
+  using TestOmniboxPopupPresenter::ApplyWebUIContentCreationStrategy;
   using TestOmniboxPopupPresenter::TestOmniboxPopupPresenter;
 
   int create_count() const { return create_count_; }
@@ -77,6 +78,19 @@ class TestCountingDeferredPresenter : public TestOmniboxPopupPresenter {
 
  private:
   int create_count_ = 0;
+};
+
+// Counting presenter whose deferred creation waits for omnibox focus, as the
+// classic popup's does with `create_on_focus`.
+class TestCreateOnFocusPresenter : public TestCountingDeferredPresenter {
+ public:
+  using TestCountingDeferredPresenter::TestCountingDeferredPresenter;
+
+ protected:
+  WebUIContentCreationStrategy GetDeferredWebUIContentCreationStrategy()
+      const override {
+    return WebUIContentCreationStrategy::kOnOmniboxFocus;
+  }
 };
 
 class TestDeferredOmniboxPopupPresenter : public OmniboxPopupPresenterBase {
@@ -542,4 +556,55 @@ TEST_F(OmniboxPopupPresenterBaseTest,
   base::AutoReset<bool> on_demand =
       omnibox::SetCreatePopupWebUIOnDemandForTesting(true);
   EXPECT_EQ(GetStrategy(), Strategy::kOnDemand);
+}
+
+// With `kOnOmniboxFocus`, presenting the browser window alone does not create
+// the content; focusing the omnibox afterwards creates it immediately.
+TEST_F(OmniboxPopupPresenterBaseTest,
+       OnOmniboxFocusCreatesContentWhenFocusedAfterPresentation) {
+  auto presenter = std::make_unique<TestCountingDeferredPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+  presenter->ApplyWebUIContentCreationStrategy(Strategy::kOnOmniboxFocus);
+
+  presenter->OnBrowserWindowPresented();
+  RunPostedTasks();
+  EXPECT_EQ(presenter->create_count(), 0);
+
+  presenter->OnOmniboxFocused();
+  EXPECT_EQ(presenter->create_count(), 1);
+}
+
+// With `kOnOmniboxFocus`, focusing the omnibox before the browser window has
+// presented a frame waits for the window's presentation rather than creating
+// the content before first paint.
+TEST_F(OmniboxPopupPresenterBaseTest,
+       OnOmniboxFocusDefersEarlyFocusUntilPresentation) {
+  auto presenter = std::make_unique<TestCountingDeferredPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+  presenter->ApplyWebUIContentCreationStrategy(Strategy::kOnOmniboxFocus);
+
+  presenter->OnOmniboxFocused();
+  EXPECT_EQ(presenter->create_count(), 0);
+
+  presenter->OnBrowserWindowPresented();
+  EXPECT_EQ(presenter->create_count(), 0);
+  RunPostedTasks();
+  EXPECT_EQ(presenter->create_count(), 1);
+}
+
+// With its deferral feature enabled, a presenter applies the strategy its
+// `GetDeferredWebUIContentCreationStrategy()` override returns: here it waits
+// for omnibox focus rather than creating the content after the presentation.
+TEST_F(OmniboxPopupPresenterBaseTest, AppliesDeferredStrategyOverride) {
+  base::test::ScopedFeatureList features(kTestDeferWebUIContentCreation);
+  auto presenter = std::make_unique<TestCreateOnFocusPresenter>(
+      nullptr, dummy_delegate_, controller_.get());
+  presenter->ApplyWebUIContentCreationStrategy(kTestDeferWebUIContentCreation);
+
+  presenter->OnBrowserWindowPresented();
+  RunPostedTasks();
+  EXPECT_EQ(presenter->create_count(), 0);
+
+  presenter->OnOmniboxFocused();
+  EXPECT_EQ(presenter->create_count(), 1);
 }

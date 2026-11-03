@@ -94,6 +94,12 @@ inline constexpr base::FeatureParam<bool>
     kOmniboxAimPopupCreateOnFirstPresentation{
         &kOmniboxAimPopupDeferCreation, "create_on_first_presentation", true};
 BASE_DECLARE_FEATURE(kOmniboxWebUIPopupDeferCreation);
+// When true, the deferred suggestion popup content is not created after every
+// browser window's first presentation, only once the omnibox has been focused
+// and the window has presented (or when the popup opens), so windows whose
+// omnibox is never focused never create it.
+inline constexpr base::FeatureParam<bool> kOmniboxWebUIPopupCreateOnFocus{
+    &kOmniboxWebUIPopupDeferCreation, "create_on_focus", false};
 BASE_DECLARE_FEATURE(kOmniboxWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxAimDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDebounceResize);

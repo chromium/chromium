@@ -48,6 +48,8 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldSizeWebViewToPreferredHeight() const override;
   std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
+  WebUIContentCreationStrategy GetDeferredWebUIContentCreationStrategy()
+      const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

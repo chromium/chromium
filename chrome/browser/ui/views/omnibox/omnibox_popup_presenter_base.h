@@ -74,6 +74,7 @@ class OmniboxPopupPresenterBase
     kAfterWindowPresentation,
     kShow,
     kContextMenu,
+    kOmniboxFocus,
   };
 
   // An RAII-style helper that registers itself as a blocker upon creation and
@@ -157,7 +158,15 @@ class OmniboxPopupPresenterBase
   // Called when the browser window that hosts this popup presents a frame
   // after `CreateWebUIContentAfterWindowPresentation()`. If the WebUI content
   // does not exist yet, posts a task that creates it. Later calls do nothing.
+  // With `kOnOmniboxFocus`, it posts the task only if the omnibox has already
+  // been focused, and otherwise leaves creation to `OnOmniboxFocused()`.
   void OnBrowserWindowPresented();
+
+  // Called when the omnibox of the window that hosts this popup gains focus.
+  // When the presenter's creation strategy is `kOnOmniboxFocus`, creates the
+  // WebUI content once the browser window has presented its first frame, so
+  // the page loads while the user types without delaying window presentation.
+  void OnOmniboxFocused();
 
   // Returns the timeout if showing should be deferred until the WebUI has
   // painted a new frame, or std::nullopt if it should not be deferred.
@@ -243,6 +252,9 @@ class OmniboxPopupPresenterBase
     kEager,
     // After the browser window presents its first frame.
     kAfterWindowPresentation,
+    // Once the omnibox has been focused and the browser window has presented
+    // its first frame.
+    kOnOmniboxFocus,
     // Never ahead of time.
     kOnDemand,
   };
@@ -274,10 +286,22 @@ class OmniboxPopupPresenterBase
   static WebUIContentCreationStrategy GetWebUIContentCreationStrategy(
       const base::Feature& defer_creation_feature);
 
+  // Returns the strategy to use when the presenter's deferred creation feature
+  // is enabled. Presenters whose feature params defer creation further
+  // override this.
+  virtual WebUIContentCreationStrategy GetDeferredWebUIContentCreationStrategy()
+      const;
+
+  // Applies the strategy for `defer_creation_feature`: the one from
+  // `GetWebUIContentCreationStrategy()`, with
+  // `GetDeferredWebUIContentCreationStrategy()` in place of
+  // `kAfterWindowPresentation`. Called from the constructor of presenters that
+  // override `CreateWebUIContent()`.
+  void ApplyWebUIContentCreationStrategy(
+      const base::Feature& defer_creation_feature);
+
   // Creates the WebUI content now, requests its creation after the browser
   // window's first presentation, or does nothing, according to `strategy`.
-  // Called from the constructor of presenters that override
-  // `CreateWebUIContent()`.
   void ApplyWebUIContentCreationStrategy(WebUIContentCreationStrategy strategy);
 
   void EnsureWidgetCreated();
@@ -405,6 +429,15 @@ class OmniboxPopupPresenterBase
 
   // The WebUI content WebView. Owned by the container.
   raw_ptr<OmniboxPopupWebUIBaseContent> omnibox_popup_webui_content_ = nullptr;
+
+  WebUIContentCreationStrategy content_creation_strategy_ =
+      WebUIContentCreationStrategy::kOnDemand;
+
+  // Whether the browser window that hosts this popup has presented a frame.
+  bool has_browser_window_presented_ = false;
+
+  // Whether the omnibox of the window that hosts this popup has gained focus.
+  bool omnibox_focused_ = false;
 
   // Whether `OnBrowserWindowPresented()` has posted the creation task.
   bool deferred_creation_scheduled_ = false;

@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
@@ -302,6 +303,11 @@ void WebUILocationBar::SetFocusWithin(bool focused) {
 
   // Focus state affects whether AI mode button is visible or not.
   RefreshAiModePageAction();
+
+  // Lets a popup that creates its content on demand start loading it.
+  if (focused && omnibox_popup_view_ && omnibox_popup_view_->presenter()) {
+    omnibox_popup_view_->presenter()->OnOmniboxFocused();
+  }
 
   NotifyFocusChanged();
 }

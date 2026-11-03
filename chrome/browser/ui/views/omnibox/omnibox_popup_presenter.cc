@@ -24,10 +24,10 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
     OmniboxPopupPresenterDelegate& presenter_delegate,
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar, presenter_delegate, controller) {
-  // If the content is not created here, `Show()` creates it on demand.
+  // If the content is not created here, it is created once the omnibox is
+  // focused and the window has presented (`kOnOmniboxFocus`), or from `Show()`.
   // `OmniboxPopupViewWebUI` reads the content only while the popup is shown.
-  ApplyWebUIContentCreationStrategy(GetWebUIContentCreationStrategy(
-      omnibox::kOmniboxWebUIPopupDeferCreation));
+  ApplyWebUIContentCreationStrategy(omnibox::kOmniboxWebUIPopupDeferCreation);
 
   // By initializing `content_height_` to 1, we ensure the widget starts 1px
   // taller than the location bar on first show. This creates a tiny visible
@@ -53,6 +53,13 @@ OmniboxPopupPresenter::CreateWebUIContent(
       this, location_bar(), controller(),
       /*include_location_bar_cutout=*/true,
       /*wants_focus=*/false, /*set_content_url=*/true, std::move(contents));
+}
+
+OmniboxPopupPresenterBase::WebUIContentCreationStrategy
+OmniboxPopupPresenter::GetDeferredWebUIContentCreationStrategy() const {
+  return omnibox::kOmniboxWebUIPopupCreateOnFocus.Get()
+             ? WebUIContentCreationStrategy::kOnOmniboxFocus
+             : WebUIContentCreationStrategy::kAfterWindowPresentation;
 }
 
 bool OmniboxPopupPresenter::ShouldHideForInitialLayout() const {

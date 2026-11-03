@@ -65,6 +65,8 @@ class OmniboxPopupAimPresenter
   void WidgetDestroyed() override;
   std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
+  WebUIContentCreationStrategy GetDeferredWebUIContentCreationStrategy()
+      const override;
 
  private:
   // views::WidgetObserver:

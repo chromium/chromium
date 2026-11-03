@@ -61,6 +61,8 @@ std::string_view CreationReasonToString(
       return "Show";
     case OmniboxPopupPresenterBase::CreationReason::kContextMenu:
       return "ContextMenu";
+    case OmniboxPopupPresenterBase::CreationReason::kOmniboxFocus:
+      return "OmniboxFocus";
     case OmniboxPopupPresenterBase::CreationReason::kAfterWindowPresentation:
       return "AfterWindowPresentation";
   }
@@ -513,13 +515,30 @@ OmniboxPopupPresenterBase::GetWebUIContentCreationStrategy(
   return WebUIContentCreationStrategy::kEager;
 }
 
+OmniboxPopupPresenterBase::WebUIContentCreationStrategy
+OmniboxPopupPresenterBase::GetDeferredWebUIContentCreationStrategy() const {
+  return WebUIContentCreationStrategy::kAfterWindowPresentation;
+}
+
+void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
+    const base::Feature& defer_creation_feature) {
+  WebUIContentCreationStrategy strategy =
+      GetWebUIContentCreationStrategy(defer_creation_feature);
+  if (strategy == WebUIContentCreationStrategy::kAfterWindowPresentation) {
+    strategy = GetDeferredWebUIContentCreationStrategy();
+  }
+  ApplyWebUIContentCreationStrategy(strategy);
+}
+
 void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
     WebUIContentCreationStrategy strategy) {
+  content_creation_strategy_ = strategy;
   switch (strategy) {
     case WebUIContentCreationStrategy::kEager:
       GetOrCreateWebUIContent(CreationReason::kEager);
       return;
     case WebUIContentCreationStrategy::kAfterWindowPresentation:
+    case WebUIContentCreationStrategy::kOnOmniboxFocus:
       CreateWebUIContentAfterWindowPresentation();
       return;
     case WebUIContentCreationStrategy::kOnDemand:
@@ -557,18 +576,44 @@ void OmniboxPopupPresenterBase::CreateWebUIContentAfterWindowPresentation() {
 }
 
 void OmniboxPopupPresenterBase::OnBrowserWindowPresented() {
+  has_browser_window_presented_ = true;
+  // With `kOnOmniboxFocus`, wait for the omnibox to be focused. If it was
+  // focused before this first frame, e.g. in a new window opened on the New Tab
+  // page, `OnOmniboxFocused()` skipped creation so as not to delay the window,
+  // and the content is created here instead.
+  if (content_creation_strategy_ ==
+          WebUIContentCreationStrategy::kOnOmniboxFocus &&
+      !omnibox_focused_) {
+    return;
+  }
   if (deferred_creation_scheduled_ || GetWebUIContent()) {
     return;
   }
   deferred_creation_scheduled_ = true;
+  CreationReason reason = content_creation_strategy_ ==
+                                  WebUIContentCreationStrategy::kOnOmniboxFocus
+                              ? CreationReason::kOmniboxFocus
+                              : CreationReason::kAfterWindowPresentation;
   // Post rather than create inline, so that the WebContents is not created
   // inside the presentation feedback callback.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &OmniboxPopupPresenterBase::GetOrCreateWebUIContent),
-                     weak_factory_.GetWeakPtr(),
-                     CreationReason::kAfterWindowPresentation));
+                     weak_factory_.GetWeakPtr(), reason));
+}
+
+void OmniboxPopupPresenterBase::OnOmniboxFocused() {
+  omnibox_focused_ = true;
+  // A window that opens with its omnibox focused gets here before its first
+  // frame. Creating the content then would put the popup's WebContents back on
+  // the window's critical path, so `OnBrowserWindowPresented()` creates it.
+  if (content_creation_strategy_ !=
+          WebUIContentCreationStrategy::kOnOmniboxFocus ||
+      !has_browser_window_presented_) {
+    return;
+  }
+  GetOrCreateWebUIContent(CreationReason::kOmniboxFocus);
 }
 
 bool OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide() const {

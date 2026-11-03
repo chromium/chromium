@@ -2179,6 +2179,13 @@ void LocationBarView::OnOmniboxFocused() {
   // The AI mode page action should only be visible when the omnibox
   // is focused, so if there is a change in focus, refresh the icon.
   RefreshAiModePageAction();
+
+  // Lets a popup that creates its content on demand start loading it.
+  if (OmniboxPopupView* popup_view = GetOmniboxPopupView()) {
+    if (OmniboxPopupPresenterBase* presenter = popup_view->presenter()) {
+      presenter->OnOmniboxFocused();
+    }
+  }
 }
 
 void LocationBarView::OpenOmniboxPopup(bool query_zps) {
