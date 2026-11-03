@@ -296,17 +296,6 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
 
 }  // namespace
 
-OfflinePageDownloadBridge::OfflinePageDownloadBridge(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj)
-    : weak_java_ref_(env, obj) {}
-
-OfflinePageDownloadBridge::~OfflinePageDownloadBridge() = default;
-
-void OfflinePageDownloadBridge::Destroy() {
-  delete this;
-}
-
 static void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
     const JavaRef<jobject>& j_tab,
@@ -354,14 +343,10 @@ static void JNI_OfflinePageDownloadBridge_StartDownload(
                      origin));
 }
 
-static int64_t JNI_OfflinePageDownloadBridge_Init(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj) {
+static void JNI_OfflinePageDownloadBridge_Init(JNIEnv* env) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(
       key, base::BindOnce(&InitializeBackendOnProfileCreated));
-
-  return reinterpret_cast<int64_t>(new OfflinePageDownloadBridge(env, obj));
 }
 
 // static

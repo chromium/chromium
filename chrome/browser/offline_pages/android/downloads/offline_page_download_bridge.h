@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_ANDROID_DOWNLOADS_OFFLINE_PAGE_DOWNLOAD_BRIDGE_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_DOWNLOADS_OFFLINE_PAGE_DOWNLOAD_BRIDGE_H_
 
-#include <stdint.h>
-
-#include "base/android/jni_weak_ref.h"
-
 namespace offline_pages {
 namespace android {
 
@@ -19,21 +15,12 @@ namespace android {
  */
 class OfflinePageDownloadBridge {
  public:
-  OfflinePageDownloadBridge(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& obj);
-
+  OfflinePageDownloadBridge() = delete;
   OfflinePageDownloadBridge(const OfflinePageDownloadBridge&) = delete;
   OfflinePageDownloadBridge& operator=(const OfflinePageDownloadBridge&) =
       delete;
 
-  ~OfflinePageDownloadBridge();
-
-  void Destroy();
-
   static void ShowDownloadingToast();
-
- private:
-  JavaObjectWeakGlobalRef weak_java_ref_;
 };
 
 }  // namespace android

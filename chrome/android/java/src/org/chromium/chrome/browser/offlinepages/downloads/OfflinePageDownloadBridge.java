@@ -49,11 +49,10 @@ import org.chromium.content_public.browser.LoadUrlParams;
 public class OfflinePageDownloadBridge {
     private static @Nullable OfflinePageDownloadBridge sInstance;
     private static boolean sIsTesting;
-    private long mNativeOfflinePageDownloadBridge;
 
     /**
-     * @return An {@link OfflinePageDownloadBridge} instance singleton.  If one
-     *         is not available this will create a new one.
+     * @return An {@link OfflinePageDownloadBridge} instance singleton. If one is not available this
+     *     will create a new one.
      */
     public static OfflinePageDownloadBridge getInstance() {
         if (sInstance == null) {
@@ -63,15 +62,8 @@ public class OfflinePageDownloadBridge {
     }
 
     private OfflinePageDownloadBridge() {
-        mNativeOfflinePageDownloadBridge =
-                sIsTesting ? 0L : OfflinePageDownloadBridgeJni.get().init(this);
-    }
-
-    /** Destroys the native portion of the bridge. */
-    public void destroy() {
-        if (mNativeOfflinePageDownloadBridge != 0) {
-            OfflinePageDownloadBridgeJni.get().destroy(mNativeOfflinePageDownloadBridge);
-            mNativeOfflinePageDownloadBridge = 0;
+        if (!sIsTesting) {
+            OfflinePageDownloadBridgeJni.get().init();
         }
     }
 
@@ -220,9 +212,7 @@ public class OfflinePageDownloadBridge {
 
     @NativeMethods
     interface Natives {
-        long init(OfflinePageDownloadBridge self);
-
-        void destroy(long nativeOfflinePageDownloadBridge);
+        void init();
 
         void startDownload(Tab tab, @JniType("std::string") String origin);
     }
