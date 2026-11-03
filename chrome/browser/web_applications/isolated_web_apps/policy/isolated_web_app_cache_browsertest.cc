@@ -697,7 +697,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kUserDataDir);
     ASSERT_FALSE(user_data_dir.empty());
-    cache_root_dir_ = user_data_dir;
+    cache_root_dir_ = user_data_dir.AppendASCII("iwa_bundle_cache");
     cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_);
   }
@@ -1286,13 +1286,18 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
   // Verify that the bundle was evicted from the cache.
   CheckCacheManagerDebugOperationResult(
       kEvictUnnecessaryIwasFromKioskCache,
-      "Successfully finished cleanup, number of cleaned up directories: 2");
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 
   WaitUntilPathDoesNotExist(cached_bundle_path);
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
                        PolicyAllowDowngradesChangeEvictsBundle) {
+  ConfigureSession(IwaPolicyConfig{GetWebBundleId1(),
+                                   /*update_channel=*/std::nullopt,
+                                   /*pinned_version=*/GetBaseVersion(),
+                                   /*allow_downgrades=*/false});
+
   network_state_.SimulateOnline();
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
@@ -1306,13 +1311,13 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
   // Update the policy to set allow_downgrades to true.
   ConfigureSession(IwaPolicyConfig{GetWebBundleId1(),
                                    /*update_channel=*/std::nullopt,
-                                   /*pinned_version=*/std::nullopt,
+                                   /*pinned_version=*/GetBaseVersion(),
                                    /*allow_downgrades=*/true});
 
   // Verify that the bundle was evicted from the cache.
   CheckCacheManagerDebugOperationResult(
       kEvictUnnecessaryIwasFromKioskCache,
-      "Successfully finished cleanup, number of cleaned up directories: 2");
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 
   WaitUntilPathDoesNotExist(cached_bundle_path);
 }
@@ -1376,7 +1381,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
 
   CheckCacheManagerDebugOperationResult(
       kEvictUnnecessaryIwasFromKioskCache,
-      "Successfully finished cleanup, number of cleaned up directories: 2");
+      "Successfully finished cleanup, number of cleaned up directories: 1");
 
   WaitUntilPathDoesNotExist(v2_cache_path);
 
