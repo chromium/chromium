@@ -79,6 +79,11 @@ constexpr float kClusterTolerancePx = 5.0f;
 // Minimum number of rows and of columns in a table.
 constexpr size_t kMinTableRowsAndColumns = 2;
 
+// Minimum fraction of cells, after trimming empty edges, that must contain
+// text. Grids with mostly empty cells are more likely forms or decorative
+// boxes than data tables.
+constexpr float kMinPopulatedCellFraction = 0.50f;
+
 // An axis-aligned line segment. `position` is the fixed perpendicular
 // coordinate (y for horizontal, x for vertical), and `start` to `end` is the
 // span along the axis.
@@ -584,6 +589,46 @@ size_t CountAssignedRuns(const RunIndicesByCell& cells) {
   return count;
 }
 
+// Smallest row and column ranges that cover every non-empty cell, and how many
+// cells are non-empty.
+struct PopulatedRange {
+  gfx::Range rows;
+  gfx::Range cols;
+  size_t populated_cell_count = 0;
+};
+
+// Finds the smallest block of rows and columns that contains every cell with
+// text, and counts those cells. At least one cell must have text. For example,
+// with text in the X cells below, the block is rows 1-3 and columns 0-1, with 4
+// populated cells:
+//   . . . .
+//   X X . .
+//   X . . .
+//   . X . .
+PopulatedRange FindPopulatedRange(const RunIndicesByCell& cells) {
+  size_t min_row = cells.size();
+  size_t max_row = 0;
+  size_t min_col = cells[0].size();
+  size_t max_col = 0;
+  size_t populated_cell_count = 0;
+
+  for (size_t r = 0; r < cells.size(); ++r) {
+    for (size_t c = 0; c < cells[r].size(); ++c) {
+      if (!cells[r][c].empty()) {
+        ++populated_cell_count;
+        min_row = std::min(min_row, r);
+        max_row = std::max(max_row, r);
+        min_col = std::min(min_col, c);
+        max_col = std::max(max_col, c);
+      }
+    }
+  }
+
+  CHECK_GT(populated_cell_count, 0u);
+  return {gfx::Range(min_row, max_row + 1), gfx::Range(min_col, max_col + 1),
+          populated_cell_count};
+}
+
 // Builds a table from the cells in the given rows and columns, at least one of
 // which must have a run. Moves each cell's run indices from `cells` into the
 // table. The table's anchor is its lowest run index, i.e. its first text in
@@ -766,9 +811,23 @@ std::vector<HeuristicTable> DetectGridTables(
       continue;
     }
 
-    tables.push_back(BuildTable(
-        std::move(cells), grid, gfx::Range(0, grid.row_boundaries.size() - 1),
-        gfx::Range(0, grid.column_boundaries.size() - 1)));
+    // Find the block of rows and columns that have text, leaving out empty
+    // outer ones. Skip grids smaller than 2x2.
+    const PopulatedRange populated = FindPopulatedRange(cells);
+    if (populated.rows.length() < kMinTableRowsAndColumns ||
+        populated.cols.length() < kMinTableRowsAndColumns) {
+      continue;
+    }
+
+    // Skip grids that are mostly empty.
+    const size_t cell_count = populated.rows.length() * populated.cols.length();
+    if (populated.populated_cell_count <
+        kMinPopulatedCellFraction * cell_count) {
+      continue;
+    }
+
+    tables.push_back(
+        BuildTable(std::move(cells), grid, populated.rows, populated.cols));
   }
   std::ranges::sort(tables, {}, &HeuristicTable::anchor_text_run_index);
   return tables;
