@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_BANNERS_TEST_APP_BANNER_MANAGER_DESKTOP_H_
 #define CHROME_BROWSER_BANNERS_TEST_APP_BANNER_MANAGER_DESKTOP_H_
 
-#include <optional>
-
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -90,7 +89,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
   // AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated(
       InstallableWebAppCheckResult,
-      const std::optional<WebAppBannerData>&) override {}
+      base::optional_ref<const WebAppBannerData>) override {}
   void WillFetchManifest() override;
   void OnInstall() override;
   void OnBannerShown() override;

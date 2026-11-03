@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/webapps/browser/installable/installable_page_data.h"
+
+#include <memory>
+#include <utility>
+
 namespace webapps {
 
 namespace {
@@ -47,8 +51,10 @@ void InstallablePageData::OnManifestFetched(
     GURL manifest_url,
     InstallableStatusCode error_code) {
   CHECK(!manifest_->fetched);
-  manifest_->manifest = std::move(manifest);
-  manifest_->url = manifest_url;
+  manifest_->manifest =
+      manifest ? std::make_unique<blink::Manifest>(*std::move(manifest))
+               : nullptr;
+  manifest_->url = std::move(manifest_url);
   manifest_->error = error_code;
   manifest_->fetched = true;
 }
@@ -85,7 +91,7 @@ void InstallablePageData::OnScreenshotsDownloaded(
 
 base::optional_ref<const blink::Manifest> InstallablePageData::GetManifest()
     const {
-  return manifest_->manifest;
+  return manifest_->manifest.get();
 }
 
 const mojom::WebPageMetadata& InstallablePageData::WebPageMetadata() const {

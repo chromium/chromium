@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -544,7 +545,7 @@ class AppBannerManagerInstallStateObserver
   // AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated(
       InstallableWebAppCheckResult result,
-      const std::optional<WebAppBannerData>& data) override {
+      base::optional_ref<const WebAppBannerData> data) override {
     OnStateObserverStateChanged(result);
   }
 };

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_WEBSITE_METRICS_H_
 
 #include <map>
-#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +15,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -170,7 +170,7 @@ class WebsiteMetrics : public BrowserCollectionObserver,
     // webapps::AppBannerManager::Observer:
     void OnInstallableWebAppStatusUpdated(
         webapps::InstallableWebAppCheckResult result,
-        const std::optional<webapps::WebAppBannerData>& data) override;
+        base::optional_ref<const webapps::WebAppBannerData> data) override;
 
    private:
     // The AppBannerManager's lifetime is tied to the tab, which can be
@@ -238,7 +238,7 @@ class WebsiteMetrics : public BrowserCollectionObserver,
   virtual void OnInstallableWebAppStatusUpdated(
       content::WebContents* web_contents,
       webapps::InstallableWebAppCheckResult result,
-      const std::optional<webapps::WebAppBannerData>& data);
+      base::optional_ref<const webapps::WebAppBannerData> data);
 
   // Adds the url info to `url_infos_`.
   void AddUrlInfo(const GURL& url,

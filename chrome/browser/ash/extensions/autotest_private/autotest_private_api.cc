@@ -78,6 +78,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -4243,7 +4244,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
 
   void OnInstallableWebAppStatusUpdated(
       webapps::InstallableWebAppCheckResult result,
-      const std::optional<webapps::WebAppBannerData>& data) override {
+      base::optional_ref<const webapps::WebAppBannerData> data) override {
     switch (result) {
       case Installable::kNo:
         [[fallthrough]];

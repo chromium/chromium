@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -215,7 +216,7 @@ void PwaInstallPageActionController::Hide() {
 
 void PwaInstallPageActionController::OnInstallableWebAppStatusUpdated(
     webapps::InstallableWebAppCheckResult result,
-    const std::optional<webapps::WebAppBannerData>& data) {
+    base::optional_ref<const webapps::WebAppBannerData> data) {
   UpdateVisibility();
 }
 

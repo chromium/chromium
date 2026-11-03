@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -65,7 +66,7 @@ class PwaInstallPageActionController
   // webapps::AppBannerManager::Observer:
   void OnInstallableWebAppStatusUpdated(
       webapps::InstallableWebAppCheckResult result,
-      const std::optional<webapps::WebAppBannerData>& data) override;
+      base::optional_ref<const webapps::WebAppBannerData> data) override;
 
   // content::WebContentsObserver
   void PrimaryMainFrameRenderProcessGone(

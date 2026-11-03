@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_PAGE_DATA_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_PAGE_DATA_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -68,10 +69,12 @@ class InstallablePageData {
     ManifestProperty();
     ~ManifestProperty();
 
-    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
+    // Heap-allocated rather than inline std::optional so pages without a
+    // manifest do not reserve ~2.2 KiB per tab.
+    std::unique_ptr<blink::Manifest> manifest;
     //  This can be empty if the page doesn't have a manifest url.
     GURL url;
-    std::optional<blink::Manifest> manifest;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
     bool fetched = false;
   };
 

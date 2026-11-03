@@ -26,6 +26,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_controller.h"
 
@@ -112,7 +113,7 @@ class AppBannerManagerObserverAdapter : public AppBannerManager::Observer {
  private:
   void OnInstallableWebAppStatusUpdated(
       InstallableWebAppCheckResult result,
-      const std::optional<WebAppBannerData>& data) override {
+      base::optional_ref<const WebAppBannerData> data) override {
     if (result != filter_) {
       LOG(WARNING) << "Filtered result: " << base::ToString(result);
       return;

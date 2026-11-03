@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/website_metrics.h"
 
+#include <optional>
 #include <random>
 
 #include "base/functional/bind.h"
@@ -11,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -170,7 +172,7 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::WebContentsDestroyed() {
 void WebsiteMetrics::ActiveTabWebContentsObserver::
     OnInstallableWebAppStatusUpdated(
         webapps::InstallableWebAppCheckResult result,
-        const std::optional<webapps::WebAppBannerData>& data) {
+        base::optional_ref<const webapps::WebAppBannerData> data) {
   owner_->OnInstallableWebAppStatusUpdated(web_contents(), result, data);
 }
 
@@ -569,7 +571,7 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
 void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
     content::WebContents* web_contents,
     webapps::InstallableWebAppCheckResult result,
-    const std::optional<webapps::WebAppBannerData>& data) {
+    base::optional_ref<const webapps::WebAppBannerData> data) {
   auto it = webcontents_to_ukm_key_.find(web_contents);
   if (it == webcontents_to_ukm_key_.end()) {
     // If the `web_contents` has been removed or replaced, we don't need to set

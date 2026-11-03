@@ -5,6 +5,7 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -193,7 +194,8 @@ void MLInstallabilityPromoter::OnDidCollectSiteQualityMetrics(
 
 void MLInstallabilityPromoter::OnDidGetManifestForCurrentURL(
     std::optional<blink::Manifest> manifest) {
-  manifest_ = std::move(manifest);
+  manifest_ = manifest ? std::make_unique<blink::Manifest>(*std::move(manifest))
+                       : nullptr;
   site_manifest_metrics_task_.reset();
   MaybeCompleteMetricsCollection();
 }
@@ -242,8 +244,7 @@ GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {
     case MLPipelineState::kComplete:
       break;
   }
-  GURL manifest_id =
-      manifest_.has_value() ? manifest_->id() : site_url_.GetWithoutRef();
+  GURL manifest_id = manifest_ ? manifest_->id() : site_url_.GetWithoutRef();
   CHECK(manifest_id.is_valid()) << " invalid manifest_id: " << manifest_id;
   return manifest_id;
 }
@@ -272,7 +273,7 @@ void MLInstallabilityPromoter::EmitUKMs() {
 
   // Record Site.Manifest Event data.
   ukm::builders::Site_Manifest manifest_builder(source_id);
-  if (!manifest_.has_value()) {
+  if (!manifest_) {
     // See NullableBoolean in enums.xml for more information.
     manifest_builder
         .SetDisplayMode(
@@ -392,7 +393,7 @@ void MLInstallabilityPromoter::OnClassificationResult(
   }
   GURL manifest_id = GetProjectedManifestIdAfterMetricsCollection();
   bool has_icons = site_quality_metrics_.non_default_favicons_count > 0 ||
-                   (manifest_.has_value() && !manifest_->icons().empty());
+                   (manifest_ && !manifest_->icons().empty());
   bool blocked_by_history_guardrails =
       client->IsMlPromotionBlockedByHistoryGuardrail(
           web_contents()->GetBrowserContext(), manifest_id);

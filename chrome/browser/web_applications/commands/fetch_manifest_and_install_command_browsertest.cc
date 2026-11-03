@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
     void OnInstallableWebAppStatusUpdated(
         webapps::InstallableWebAppCheckResult result,
-        const std::optional<webapps::WebAppBannerData>& data) override {}
+        base::optional_ref<const webapps::WebAppBannerData> data) override {}
 
     void OnBannerShown() override {
       observation_.Reset();

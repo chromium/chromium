@@ -13,6 +13,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/browser/installable/installable_page_data.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -142,6 +143,8 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
                           : errors[0];
   }
 
+  InstallablePageData* page_data() { return page_data_.get(); }
+
  private:
   std::unique_ptr<InstallablePageData> page_data_;
 };
@@ -149,6 +152,27 @@ class InstallableEvaluatorUnitTest : public content::RenderViewHostTestHarness {
 TEST_F(InstallableEvaluatorUnitTest, DoNotCheck) {
   EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
             GetCheckInstallabilityErrorCode(InstallableCriteria::kDoNotCheck));
+}
+
+TEST_F(InstallableEvaluatorUnitTest, ManifestFetchAndResetClearsManifest) {
+  const GURL manifest_url("https://www.example.com/manifest.json");
+  page_data()->OnManifestFetched(GetValidManifest(), manifest_url,
+                                 InstallableStatusCode::NO_ERROR_DETECTED);
+  EXPECT_TRUE(page_data()->manifest_fetched());
+  ASSERT_TRUE(page_data()->GetManifest().has_value());
+  EXPECT_EQ(page_data()->GetManifest()->name(), u"foo");
+  EXPECT_EQ(page_data()->manifest_url(), manifest_url);
+
+  page_data()->Reset();
+  EXPECT_FALSE(page_data()->manifest_fetched());
+  EXPECT_FALSE(page_data()->GetManifest().has_value());
+  EXPECT_TRUE(page_data()->manifest_url().is_empty());
+
+  page_data()->OnManifestFetched(std::nullopt, GURL(),
+                                 InstallableStatusCode::NO_MANIFEST);
+  EXPECT_TRUE(page_data()->manifest_fetched());
+  EXPECT_FALSE(page_data()->GetManifest().has_value());
+  EXPECT_EQ(page_data()->manifest_error(), InstallableStatusCode::NO_MANIFEST);
 }
 
 class InstallableEvaluatorCriteriaUnitTest

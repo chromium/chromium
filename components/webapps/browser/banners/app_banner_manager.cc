@@ -5,6 +5,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -51,6 +52,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace webapps {
+
 namespace {
 
 bool IsManifestUrlChange(const InstallableData& result) {
@@ -186,7 +188,7 @@ std::optional<WebAppBannerData> AppBannerManager::GetCurrentWebAppBannerData()
       mode_ == AppBannerMode::kNativeApp) {
     return std::nullopt;
   }
-  return web_app_data_;
+  return *web_app_data_;
 }
 
 void AppBannerManager::RequestAppBanner() {
@@ -367,8 +369,9 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
       webapps::ManifestId::Create(data.manifest->id());
   CHECK(manifest_id.has_value());
 
-  web_app_data_.emplace(*manifest_id, *data.manifest,
-                        data.web_page_metadata->Clone(), *(data.manifest_url));
+  web_app_data_ = std::make_unique<WebAppBannerData>(
+      *manifest_id, *data.manifest, data.web_page_metadata->Clone(),
+      *(data.manifest_url));
   WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
                                        web_app_data_->manifest());
 
@@ -599,7 +602,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
 
   delegate_->InstallableWebAppStatusUpdate();
   for (Observer& observer : observer_list_) {
-    observer.OnInstallableWebAppStatusUpdated(result, web_app_data_);
+    observer.OnInstallableWebAppStatusUpdated(result, web_app_data_.get());
   }
 }
 

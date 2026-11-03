@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
@@ -64,7 +65,7 @@ class AppBannerManager final : public content::WebContentsObserver {
    public:
     virtual void OnInstallableWebAppStatusUpdated(
         InstallableWebAppCheckResult result,
-        const std::optional<WebAppBannerData>& data) = 0;
+        base::optional_ref<const WebAppBannerData> data) = 0;
 
     virtual void WillFetchManifest() {}
 
@@ -453,7 +454,9 @@ class AppBannerManager final : public content::WebContentsObserver {
   State state_ = State::INACTIVE;
 
   AppBannerMode mode_ = AppBannerMode::kWebApp;
-  std::optional<WebAppBannerData> web_app_data_;
+  // Heap-allocated rather than inline std::optional so pages without
+  // banner data do not reserve ~2.7 KiB per tab.
+  std::unique_ptr<WebAppBannerData> web_app_data_;
   std::optional<NativeAppBannerData> native_app_data_;
 
   std::unique_ptr<BeforeInstallPromptEvent> before_install_prompt_event_;

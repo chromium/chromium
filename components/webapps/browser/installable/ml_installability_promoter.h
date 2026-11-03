@@ -203,7 +203,9 @@ class MLInstallabilityPromoter : public content::WebContentsObserver,
   // Variables & tasks used during metrics collection.
   std::unique_ptr<SiteQualityMetricsTask> site_quality_metrics_task_;
   std::unique_ptr<SiteManifestMetricsTask> site_manifest_metrics_task_;
-  std::optional<blink::Manifest> manifest_;
+  // Heap-allocated rather than inline std::optional so inactive pages do
+  // not reserve ~2.2 KiB per tab.
+  std::unique_ptr<blink::Manifest> manifest_;
   SiteQualityMetrics site_quality_metrics_;
   SiteInstallMetrics site_install_metrics_;
   bool is_timeout_complete_ = false;
