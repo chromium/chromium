@@ -6,7 +6,6 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/ios/ios_util.h"
-#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/translate/core/browser/translate_step.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -36,7 +35,6 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
     std::unique_ptr<FakeTranslateInfoBarDelegate> delegate =
         delegate_factory_.CreateFakeTranslateInfoBarDelegate("fr", "en", step,
                                                              error_type);
-    translate_delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                             std::move(delegate));
     request_ =
@@ -63,7 +61,6 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
@@ -126,8 +123,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   [mediator_ didSelectTargetLanguageIndex:spanish_index
                                  withName:SysUTF16ToNSString(kTargetLanguage)];
 
-  EXPECT_EQ(kSourceLanguage, translate_delegate_->source_language_name());
-  EXPECT_EQ(kTargetLanguage, translate_delegate_->target_language_name());
+  EXPECT_EQ(kSourceLanguage, delegate().source_language_name());
+  EXPECT_EQ(kTargetLanguage, delegate().target_language_name());
   // TODO(crbug.com/40280062): Change translate_delegate_ to a mock
   // object, and verify that Translate is called.
 
