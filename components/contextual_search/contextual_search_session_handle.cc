@@ -2071,6 +2071,27 @@ bool ContextualSearchSessionHandle::AreUrlsEquivalent(
   return url1.GetWithoutRef() == url2.GetWithoutRef();
 }
 
+bool ContextualSearchSessionHandle::HasTabInContext(
+    SessionID tab_session_id,
+    const GURL& url,
+    const std::string& title,
+    std::optional<base::UnguessableToken> ignored_token) const {
+  auto shows_same_page = [&](const TabInfo& tab) {
+    return !tab.url.is_empty() &&
+           (tab.url == url ||
+            AreUrlsEquivalent(tab.url, tab.title, url, title));
+  };
+  if (std::ranges::any_of(tab_context_.restored, shows_same_page)) {
+    return true;
+  }
+  return std::ranges::any_of(tab_context_.attached, [&](const TabInfo& tab) {
+    if (ignored_token && tab.context_token == *ignored_token) {
+      return false;
+    }
+    return tab.tab_id == tab_session_id.id() || shows_same_page(tab);
+  });
+}
+
 void ContextualSearchSessionHandle::AddDeselectedTab(SessionID tab_session_id,
                                                      const GURL& url,
                                                      const std::string& title) {

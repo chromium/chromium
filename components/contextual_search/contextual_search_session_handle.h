@@ -360,6 +360,16 @@ class ContextualSearchSessionHandle {
                          const GURL& url2,
                          const std::string& title2) const;
 
+  // Returns true if the tab context already includes `tab_session_id` or a
+  // page equivalent to `url`/`title`: a restored tab with an equivalent URL,
+  // or an attached tab with the same ID or an equivalent URL. The attached tab
+  // with `ignored_token`, if set, is skipped.
+  bool HasTabInContext(
+      SessionID tab_session_id,
+      const GURL& url,
+      const std::string& title,
+      std::optional<base::UnguessableToken> ignored_token) const;
+
   // Records `tab_session_id` as explicitly deselected at `url` and `title`.
   void AddDeselectedTab(SessionID tab_session_id,
                         const GURL& url,
