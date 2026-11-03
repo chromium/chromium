@@ -16,8 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ImageFormatSniffer.ImageFormat;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
@@ -411,13 +409,6 @@ public class FuseboxMetrics {
     static void notifyModelButtonSelected(@ModelMode int modelMode) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.MobileFusebox.ModelButtonSelected", modelMode, MODEL_MODE_HISTOGRAM_BOUND);
-    }
-
-    static void notifyPlusMenuShown() {
-        ChromeSharedPreferences.getInstance()
-                .writeLong(
-                        ChromePreferenceKeys.OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME,
-                        TimeUtils.currentTimeMillis());
     }
 
     static void notifyAttachmentsPopupClosed(boolean itemSelected) {

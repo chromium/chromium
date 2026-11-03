@@ -74,6 +74,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.IsRoaming",
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
+                "Chrome.Omnibox.FuseboxPlusMenuLastOpenTime",
                 "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser",
                 "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp",
                 "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser",

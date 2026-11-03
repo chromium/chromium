@@ -655,15 +655,11 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineMeasurements.SystemStateList";
 
     /**
-     * Serialized GroupsInfo data used by Omnibox Suggestions to present suggestions before
-     * natives are ready.
+     * Serialized GroupsInfo data used by Omnibox Suggestions to present suggestions before natives
+     * are ready.
      */
     public static final String OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO =
             "Chrome.Omnibox.CachedZeroSuggestGroupsInfo";
-
-    /** Wall-clock time (ms) of the most recent Fusebox Plus menu open. */
-    public static final String OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME =
-            "Chrome.Omnibox.FuseboxPlusMenuLastOpenTime";
 
     /**
      * Prefix of the preferences to persist pushed notifications when native is not initialized.
@@ -1312,7 +1308,6 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST,
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
-                OMNIBOX_FUSEBOX_PLUS_MENU_LAST_OPEN_TIME,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 OS_ADVANCED_PROTECTION_SETTING,
                 OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
