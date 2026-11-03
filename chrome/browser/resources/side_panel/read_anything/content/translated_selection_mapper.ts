@@ -69,6 +69,27 @@ export class TranslatedSelectionMapper {
         blocks.startBlockId, blocks.endBlockId);
   }
 
+  // Returns the reading mode selection that selects the whole blocks that
+  // contain the text selected in the reading mode panel, in the same direction
+  // as the given selection. Returns null if no text in a block is selected, if
+  // the blocks aren't shown in the content container, if TranslatePdf is
+  // disabled, or if the page isn't a PDF.
+  getBlockAlignedSelection(
+      selection: ReadingModeSelection,
+      contentContainer: Node): ReadingModeSelection|null {
+    if (!isBlockTrackingEnabled()) {
+      return null;
+    }
+    const blocks = this.getBlockRangeForSelection_(selection, contentContainer);
+    if (!blocks) {
+      return null;
+    }
+    const isBackward = isBackwardSelection(
+        selection.anchorNode, selection.anchorOffset, selection.focusNode,
+        selection.focusOffset);
+    return this.getSelectionOfBlocks_(blocks, contentContainer, isBackward);
+  }
+
   // Returns the forward selection in the reading mode panel that selects the
   // whole blocks that contain the text selected by the given forward AX
   // selection. Returns null if either endpoint has no AXNodeID, if no text in a
@@ -89,6 +110,16 @@ export class TranslatedSelectionMapper {
     if (!blocks) {
       return null;
     }
+    return this.getSelectionOfBlocks_(
+        blocks, contentContainer, /* isBackward= */ false);
+  }
+
+  // Returns the reading mode selection that selects the whole blocks in the
+  // given range, backward if isBackward is true, or null if the blocks aren't
+  // shown in the content container.
+  private getSelectionOfBlocks_(
+      blocks: BlockRange, contentContainer: Node,
+      isBackward: boolean): ReadingModeSelection|null {
     const startBlock =
         this.getBlockElement_(blocks.startBlockId, contentContainer);
     const endBlock = this.getBlockElement_(blocks.endBlockId, contentContainer);
@@ -96,15 +127,19 @@ export class TranslatedSelectionMapper {
       return null;
     }
 
-    // The NodeStore keeps blocks in tree order, so the start block never comes
-    // after the end block, and the selection is forward.
+    // The start block's selected text comes before the end block's, so the
+    // point before the start block never comes after the point after the end
+    // block. This is true even if one block contains the other, in which case
+    // the blocks themselves aren't necessarily in tree order.
     const start = getPointBefore(startBlock);
     const end = getPointAfter(endBlock);
+    const anchor = isBackward ? end : start;
+    const focus = isBackward ? start : end;
     return {
-      anchorNode: start.node,
-      anchorOffset: start.offset,
-      focusNode: end.node,
-      focusOffset: end.offset,
+      anchorNode: anchor.node,
+      anchorOffset: anchor.offset,
+      focusNode: focus.node,
+      focusOffset: focus.offset,
     };
   }
 

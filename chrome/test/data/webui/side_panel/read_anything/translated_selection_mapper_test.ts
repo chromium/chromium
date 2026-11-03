@@ -246,6 +246,90 @@ suite('TranslatedSelectionMapper', () => {
     });
   });
 
+  suite('getBlockAlignedSelection', () => {
+    test('selects whole blocks', () => {
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 3),
+          mapper.getBlockAlignedSelection(
+              select(text13, 1, text21, 2), contentContainer));
+    });
+
+    test('keeps the direction of the selection', () => {
+      assertSelection(
+          select(contentContainer, 3, contentContainer, 0),
+          mapper.getBlockAlignedSelection(
+              select(text21, 2, text13, 1), contentContainer));
+    });
+
+    test('handles element endpoints', () => {
+      // From the start of block 10 to inside text 21.
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 3),
+          mapper.getBlockAlignedSelection(
+              select(block10, 0, text21, 3), contentContainer));
+      // Backward, from the end of block 20 to inside text 11.
+      assertSelection(
+          select(contentContainer, 3, contentContainer, 0),
+          mapper.getBlockAlignedSelection(
+              select(block20, 1, text11, 1), contentContainer));
+      // From inside text 13 to the end of block 10, which contains text 13.
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 1),
+          mapper.getBlockAlignedSelection(
+              select(text13, 2, block10, 2), contentContainer));
+      // TODO(crbug.com/578130985): Also test backward selections where one
+      // endpoint's node contains the other's, e.g. from inside text 13 to the
+      // start of block 10.
+    });
+
+    test('returns null if no text is selected', () => {
+      assertNull(mapper.getBlockAlignedSelection(
+          select(whitespace, 0, whitespace, 1), contentContainer));
+    });
+
+    test('handles triple-click selections', () => {
+      // Triple-clicking a paragraph can end the selection at the start of the
+      // next block, which doesn't include the next block.
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 1),
+          mapper.getBlockAlignedSelection(
+              select(text11, 0, block20, 0), contentContainer));
+      // It can also put both endpoints in the paragraph's element.
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 1),
+          mapper.getBlockAlignedSelection(
+              select(block10, 0, block10, 2), contentContainer));
+      // The last paragraph has no next block, so the selection can end after it
+      // in its parent.
+      assertSelection(
+          select(contentContainer, 4, contentContainer, 5),
+          mapper.getBlockAlignedSelection(
+              select(text31, 0, contentContainer, 5), contentContainer));
+    });
+
+    test('maps translated text by its block', () => {
+      // Translation replaces the text nodes with text nodes that aren't in the
+      // NodeStore, sometimes wrapped in other elements, but keeps the block
+      // elements.
+      const translated10 = document.createTextNode('Bonjour le monde');
+      const font = document.createElement('font');
+      font.appendChild(translated10);
+      block10.replaceChildren(font);
+      const translated20 = document.createTextNode('Seconde');
+      block20.replaceChildren(translated20);
+
+      assertSelection(
+          select(contentContainer, 0, contentContainer, 3),
+          mapper.getBlockAlignedSelection(
+              select(translated10, 3, translated20, 2), contentContainer));
+      // Backward.
+      assertSelection(
+          select(contentContainer, 3, contentContainer, 0),
+          mapper.getBlockAlignedSelection(
+              select(translated20, 2, translated10, 3), contentContainer));
+    });
+  });
+
   suite('getReadingModeSelection', () => {
     test('selects the whole block with the selection', () => {
       const result = mapper.getReadingModeSelection(
@@ -320,6 +404,11 @@ suite('TranslatedSelectionMapper', () => {
           select(text11, 1, text11, 3), contentContainer));
     });
 
+    test('getBlockAlignedSelection returns null', () => {
+      assertNull(mapper.getBlockAlignedSelection(
+          select(text13, 1, text21, 2), contentContainer));
+    });
+
     test('getReadingModeSelection returns null', () => {
       assertNull(mapper.getReadingModeSelection(
           selectIds(11, 1, 11, 3), contentContainer));
@@ -334,6 +423,11 @@ suite('TranslatedSelectionMapper', () => {
     test('getAxSelection returns null', () => {
       assertNull(mapper.getAxSelection(
           select(text11, 1, text11, 3), contentContainer));
+    });
+
+    test('getBlockAlignedSelection returns null', () => {
+      assertNull(mapper.getBlockAlignedSelection(
+          select(text13, 1, text21, 2), contentContainer));
     });
 
     test('getReadingModeSelection returns null', () => {
