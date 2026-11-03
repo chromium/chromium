@@ -343,6 +343,11 @@ void SwitchToPanel(DevToolsWindow* window, const char* panel) {
   DispatchOnTestSuite(window, "switchToPanel", panel);
 }
 
+void SwitchToExtensionSidebarPane(DevToolsWindow* window,
+                                  const char* sidebar_title) {
+  DispatchOnTestSuite(window, "switchToExtensionSidebarPane", sidebar_title);
+}
+
 // Version of SwitchToPanel that works with extension-created panels.
 void SwitchToExtensionPanel(DevToolsWindow* window,
                             const Extension* devtools_extension,
@@ -1589,9 +1594,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // Now that we know the sidebarpane is loaded, switch to it.
   content::TestNavigationManager web_manager(main_web_contents(), web_url);
   SwitchToPanel(window_, "elements");
-  // This is a bit of a hack to switch to the sidebar pane in the elements panel
-  // that the Iframe has been added to.
-  SwitchToPanel(window_, "iframe-pane");
+  SwitchToExtensionSidebarPane(window_, "iframe-pane");
   ASSERT_TRUE(web_manager.WaitForNavigationFinished());
 
   std::vector<RenderFrameHost*> rfhs =
