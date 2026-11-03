@@ -91,5 +91,6 @@ source_set("unit_tests") {
     "//components/wallet/core/browser",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
 }

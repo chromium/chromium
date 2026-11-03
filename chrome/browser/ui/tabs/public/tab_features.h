@@ -470,13 +470,6 @@ class TabFeatures {
   TabAlertController* SetTabAlertControllerForTesting(
       std::unique_ptr<TabAlertController> tab_alert_controller);
 
-  autofill::BubbleManager* autofill_bubble_manager() {
-    return autofill_bubble_manager_.get();
-  }
-
-  autofill::BubbleManager* SetBubbleManagerForTesting(
-      std::unique_ptr<autofill::BubbleManager> bubble_manager);
-
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 

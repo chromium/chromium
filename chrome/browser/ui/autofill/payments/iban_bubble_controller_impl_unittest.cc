@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -67,15 +66,14 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(web_contents()));
     ON_CALL(mock_tab_interface_, IsActivated())
         .WillByDefault(testing::Return(true));
-    ON_CALL(mock_tab_interface_, GetTabFeatures())
-        .WillByDefault(testing::Return(&tab_features_));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(testing::Return(&mock_browser_window_interface_));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
 
-    tab_features_.SetBubbleManagerForTesting(
-        std::make_unique<TestBubbleManager>());
+    test_bubble_manager_registration_ =
+        std::make_unique<ui::ScopedUnownedUserData<BubbleManager>>(
+            mock_tab_interface_.GetUnownedUserDataHost(), test_bubble_manager_);
 
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_interface_);
@@ -133,9 +131,11 @@ class IbanBubbleControllerImplTest : public ChromeRenderViewHostTestHarness {
 
   std::u16string_view saved_nickname_;
   tabs::MockTabInterface mock_tab_interface_;
+  TestBubbleManager test_bubble_manager_;
+  std::unique_ptr<ui::ScopedUnownedUserData<BubbleManager>>
+      test_bubble_manager_registration_;
   MockBrowserWindowInterface mock_browser_window_interface_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  tabs::TabFeatures tab_features_;
   TestAutofillBubbleHandler test_autofill_bubble_handler_;
   std::unique_ptr<ui::ScopedUnownedUserData<AutofillBubbleHandler>>
       test_autofill_bubble_handler_registration_;

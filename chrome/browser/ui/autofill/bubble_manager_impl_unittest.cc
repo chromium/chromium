@@ -159,6 +159,13 @@ class BubbleManagerImplTest : public ::testing::Test {
   std::unique_ptr<BubbleManagerImpl> bubble_manager_;
 };
 
+TEST_F(BubbleManagerImplTest, GetForTab) {
+  EXPECT_EQ(BubbleManager::GetForTab(nullptr), nullptr);
+  EXPECT_EQ(BubbleManager::GetForTab(tab_interface()), &bubble_manager());
+  ResetBubbleManager();
+  EXPECT_EQ(BubbleManager::GetForTab(tab_interface()), nullptr);
+}
+
 // Test that requesting a bubble when none is active shows it immediately.
 TEST_F(BubbleManagerImplTest, RequestShow_NoActiveBubble_ShowsImmediately) {
   std::unique_ptr<MockBubbleController> address_controller =

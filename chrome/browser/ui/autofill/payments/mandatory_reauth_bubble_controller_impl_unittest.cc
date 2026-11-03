@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/mock_bubble_manager.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -20,6 +19,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace autofill {
 
@@ -55,24 +55,17 @@ class MandatoryReauthBubbleControllerImplTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     fake_tab_interface_ = std::make_unique<tabs::MockTabInterface>();
-    tab_features_ = std::make_unique<tabs::TabFeatures>();
-    auto mock_bubble_manager =
-        std::make_unique<testing::NiceMock<autofill::MockBubbleManager>>();
-    ON_CALL(*mock_bubble_manager, RequestShowController(testing::_, testing::_))
+    ON_CALL(mock_bubble_manager_, RequestShowController(testing::_, testing::_))
         .WillByDefault([](BubbleControllerBase& controller, bool force_show) {
           controller.ShowBubble();
         });
-    tab_features_->SetBubbleManagerForTesting(std::move(mock_bubble_manager));
+    scoped_bubble_manager_ =
+        std::make_unique<ui::ScopedUnownedUserData<BubbleManager>>(
+            fake_tab_interface_->GetUnownedUserDataHost(),
+            mock_bubble_manager_);
 
     ON_CALL(*fake_tab_interface_, GetContents())
         .WillByDefault(testing::Return(web_contents()));
-
-    ON_CALL(*fake_tab_interface_, GetTabFeatures())
-        .WillByDefault(testing::Return(tab_features_.get()));
-
-    ON_CALL(testing::Const(*fake_tab_interface_), GetTabFeatures())
-        .WillByDefault(testing::Return(
-            static_cast<const tabs::TabFeatures*>(tab_features_.get())));
 
     tabs::TabLookupFromWebContents::CreateForWebContents(
         web_contents(), fake_tab_interface_.get());
@@ -85,11 +78,15 @@ class MandatoryReauthBubbleControllerImplTest
       web_contents()->RemoveUserData(
           tabs::TabLookupFromWebContents::UserDataKey());
     }
+    scoped_bubble_manager_.reset();
     fake_tab_interface_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void ResetFakeTabInterface() { fake_tab_interface_.reset(); }
+  void ResetFakeTabInterface() {
+    scoped_bubble_manager_.reset();
+    fake_tab_interface_.reset();
+  }
 
   void ShowBubble() {
     controller()->SetupAndShowBubble(
@@ -131,7 +128,9 @@ class MandatoryReauthBubbleControllerImplTest
 
  private:
   std::unique_ptr<tabs::MockTabInterface> fake_tab_interface_;
-  std::unique_ptr<tabs::TabFeatures> tab_features_;
+  testing::NiceMock<autofill::MockBubbleManager> mock_bubble_manager_;
+  std::unique_ptr<ui::ScopedUnownedUserData<BubbleManager>>
+      scoped_bubble_manager_;
   base::WeakPtrFactory<MandatoryReauthBubbleControllerImplTest>
       weak_ptr_factory_{this};
 };

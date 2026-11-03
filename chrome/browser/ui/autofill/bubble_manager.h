@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class WebContents;
@@ -72,6 +73,8 @@ namespace autofill {
 //     - Otherwise, the new request is discarded.
 class BubbleManager {
  public:
+  DECLARE_USER_DATA(BubbleManager);
+
   virtual ~BubbleManager() = default;
 
   static std::unique_ptr<BubbleManager> Create(tabs::TabInterface* tab);

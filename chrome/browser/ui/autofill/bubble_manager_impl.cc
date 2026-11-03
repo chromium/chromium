@@ -152,7 +152,8 @@ bool BubbleManagerImpl::PendingRequest::operator<(
 }
 
 BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab)
-    : tab_interface_(tab) {
+    : tab_interface_(tab),
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   tab_subscriptions_.push_back(tab->RegisterWillDeactivate(base::BindRepeating(
       &BubbleManagerImpl::TabWillEnterBackground, base::Unretained(this))));
   tab_subscriptions_.push_back(tab->RegisterDidActivate(base::BindRepeating(

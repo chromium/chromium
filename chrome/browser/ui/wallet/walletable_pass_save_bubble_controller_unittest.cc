@@ -11,7 +11,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/mock_bubble_manager.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/layout/layout_provider.h"
 
 using ::testing::NiceMock;
@@ -77,8 +77,6 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
  public:
   WalletablePassSaveBubbleControllerTest() {
     tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
-    ON_CALL(*tab_interface_, GetTabFeatures())
-        .WillByDefault(Return(&tab_features_));
     controller_ = std::make_unique<TestWalletablePassSaveBubbleController>(
         tab_interface_.get());
     test_bubble_view_ = std::make_unique<WalletablePassBubbleViewBase>(
@@ -86,14 +84,12 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
         controller_.get());
     controller_->SetTestBubbleView(test_bubble_view_.get());
 
-    auto mock_manager =
-        std::make_unique<NiceMock<autofill::MockBubbleManager>>();
-    ON_CALL(*mock_manager, RequestShowController)
-        .WillByDefault([](autofill::BubbleControllerBase& controller, bool) {
-          controller.ShowBubble();
-        });
-    mock_bubble_manager_ = static_cast<autofill::MockBubbleManager*>(
-        tab_features_.SetBubbleManagerForTesting(std::move(mock_manager)));
+    ON_CALL(mock_bubble_manager_, RequestShowController)
+        .WillByDefault([](autofill::BubbleControllerBase& controller,
+                          bool /*force_show*/) { controller.ShowBubble(); });
+    scoped_bubble_manager_ =
+        std::make_unique<ui::ScopedUnownedUserData<autofill::BubbleManager>>(
+            tab_interface_->GetUnownedUserDataHost(), mock_bubble_manager_);
   }
 
  protected:
@@ -101,11 +97,7 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
     return controller_.get();
   }
 
-  tabs::TabFeatures& tab_features() { return tab_features_; }
-
-  autofill::MockBubbleManager& bubble_manager() {
-    return *mock_bubble_manager_;
-  }
+  autofill::MockBubbleManager& bubble_manager() { return mock_bubble_manager_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -113,11 +105,12 @@ class WalletablePassSaveBubbleControllerTest : public ::testing::Test {
   // constructor.
   views::LayoutProvider layout_provider_;
   TestingProfile profile_;
-  tabs::TabFeatures tab_features_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
+  NiceMock<autofill::MockBubbleManager> mock_bubble_manager_;
+  std::unique_ptr<ui::ScopedUnownedUserData<autofill::BubbleManager>>
+      scoped_bubble_manager_;
   std::unique_ptr<WalletablePassBubbleViewBase> test_bubble_view_;
   std::unique_ptr<TestWalletablePassSaveBubbleController> controller_;
-  raw_ptr<autofill::MockBubbleManager> mock_bubble_manager_;
 };
 
 // Tests that the callback is run with kAccepted when the bubble is accepted.

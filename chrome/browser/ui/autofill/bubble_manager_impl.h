@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
 class CallbackListSubscription;
@@ -101,6 +102,7 @@ class BubbleManagerImpl : public BubbleManager {
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<tabs::TabInterface> tab_interface_;
+  ui::ScopedUnownedUserData<BubbleManager> scoped_unowned_user_data_;
 };
 
 }  // namespace autofill

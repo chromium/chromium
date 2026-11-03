@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
@@ -83,15 +82,8 @@ class OfferNotificationBubbleControllerImplTest
     ON_CALL(*mock_tab, GetContents())
         .WillByDefault(testing::Return(web_contents()));
 
-    // Create TabFeatures.
-    auto tab_features = std::make_unique<tabs::TabFeatures>();
-
-    // Create MockBubbleManager.
-    auto mock_bubble_manager =
-        std::make_unique<testing::NiceMock<MockBubbleManager>>();
-
     // Configure MockBubbleManager to immediately show bubble when requested.
-    ON_CALL(*mock_bubble_manager, RequestShowController(testing::_, testing::_))
+    ON_CALL(mock_bubble_manager_, RequestShowController(testing::_, testing::_))
         .WillByDefault(
             [](BubbleControllerBase& controller_to_show, bool force_show) {
               controller_to_show.ShowBubble();
@@ -99,16 +91,12 @@ class OfferNotificationBubbleControllerImplTest
 
     // Configure MockBubbleManager to return false for
     // HasConflictingPendingBubble.
-    ON_CALL(*mock_bubble_manager, HasConflictingPendingBubble(testing::_))
+    ON_CALL(mock_bubble_manager_, HasConflictingPendingBubble(testing::_))
         .WillByDefault(testing::Return(false));
 
-    tab_features->SetBubbleManagerForTesting(std::move(mock_bubble_manager));
-
-    // Configure MockTabInterface to return our TabFeatures.
-    ON_CALL(*mock_tab, GetTabFeatures())
-        .WillByDefault(testing::Return(tab_features.get()));
-    ON_CALL(testing::Const(*mock_tab), GetTabFeatures())
-        .WillByDefault(testing::Return(tab_features.get()));
+    scoped_bubble_manager_ =
+        std::make_unique<ui::ScopedUnownedUserData<BubbleManager>>(
+            mock_tab->GetUnownedUserDataHost(), mock_bubble_manager_);
 
     // Configure MockBrowserWindowInterface to return our UnownedUserDataHost.
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())
@@ -123,9 +111,7 @@ class OfferNotificationBubbleControllerImplTest
         ui::ScopedUnownedUserData<autofill::AutofillBubbleHandler>>(
         unowned_user_data_host_, test_autofill_bubble_handler_);
 
-    // Keep TabFeatures and MockTabInterface alive by storing them in the test
-    // fixture.
-    tab_features_ = std::move(tab_features);
+    // Keep MockTabInterface alive by storing it in the test fixture.
     tab_interface_ = std::move(mock_tab);
 
     // Associate the mock TabInterface with the WebContents.
@@ -163,7 +149,9 @@ class OfferNotificationBubbleControllerImplTest
 
  private:
   std::unique_ptr<tabs::TabInterface> tab_interface_;
-  std::unique_ptr<tabs::TabFeatures> tab_features_;
+  testing::NiceMock<MockBubbleManager> mock_bubble_manager_;
+  std::unique_ptr<ui::ScopedUnownedUserData<BubbleManager>>
+      scoped_bubble_manager_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   autofill::TestAutofillBubbleHandler test_autofill_bubble_handler_;

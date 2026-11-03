@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/autofill/bubble_manager_impl.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/tabs/public/mock_tab_interface.h"
@@ -85,10 +84,8 @@ class MockOtherBubbleController : public BubbleControllerBase {
 
 class FakeTabInterface : public tabs::MockTabInterface {
  public:
-  FakeTabInterface(TestingProfile* testing_profile,
-                   tabs::TabFeatures* tab_features)
-      : tab_features_(tab_features),
-        scoped_page_action_controller_(unowned_user_data_host_,
+  explicit FakeTabInterface(TestingProfile* testing_profile)
+      : scoped_page_action_controller_(unowned_user_data_host_,
                                        page_action_controller_) {
     if (testing_profile) {
       web_contents_factory_ =
@@ -101,11 +98,6 @@ class FakeTabInterface : public tabs::MockTabInterface {
 
   page_actions::MockPageActionController& page_action_controller() {
     return page_action_controller_;
-  }
-
-  tabs::TabFeatures* GetTabFeatures() override { return tab_features_; }
-  const tabs::TabFeatures* GetTabFeatures() const override {
-    return tab_features_;
   }
 
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override {
@@ -142,7 +134,6 @@ class FakeTabInterface : public tabs::MockTabInterface {
  private:
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  raw_ptr<tabs::TabFeatures> tab_features_ = nullptr;
   ui::UnownedUserDataHost unowned_user_data_host_;
   NiceMock<page_actions::MockPageActionController> page_action_controller_;
   ui::ScopedUnownedUserData<page_actions::PageActionController>
@@ -155,11 +146,9 @@ class FakeTabInterface : public tabs::MockTabInterface {
 class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    tab_interface_ =
-        std::make_unique<FakeTabInterface>(&profile_, &tab_features_);
+    tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
 
-    tab_features_.SetBubbleManagerForTesting(
-        std::make_unique<BubbleManagerImpl>(tab_interface_.get()));
+    bubble_manager_ = std::make_unique<BubbleManagerImpl>(tab_interface_.get());
     tab_interface_->Activate();
 
     controller_ = std::make_unique<GmailOtpOptInBubbleController>(
@@ -172,7 +161,7 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
 
   void TearDown() override {
     controller_.reset();
-    tab_features_.SetBubbleManagerForTesting(nullptr);
+    bubble_manager_.reset();
     tab_interface_.reset();
   }
 
@@ -181,14 +170,12 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
   page_actions::MockPageActionController& page_action_controller() {
     return tab_interface_->page_action_controller();
   }
-  BubbleManager* bubble_manager() {
-    return tab_features_.autofill_bubble_manager();
-  }
+  BubbleManager* bubble_manager() { return bubble_manager_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  tabs::TabFeatures tab_features_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
+  std::unique_ptr<BubbleManagerImpl> bubble_manager_;
   NiceMock<MockAutofillBubble> mock_bubble_;
   std::unique_ptr<GmailOtpOptInBubbleController> controller_;
 };
