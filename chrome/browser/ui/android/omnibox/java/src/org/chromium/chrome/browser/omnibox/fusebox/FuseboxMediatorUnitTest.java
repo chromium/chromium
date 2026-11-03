@@ -651,6 +651,47 @@ public class FuseboxMediatorUnitTest {
                 mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT));
     }
 
+    private static InputTypeConfig createIconConfig(InputSource source, IconResourceIds iconId) {
+        return InputTypeConfig.newBuilder()
+                .setInputSource(source)
+                .setIcon(Icon.newBuilder().setIconId(iconId))
+                .build();
+    }
+
+    private void setCustomAttachmentIconsInputState() {
+        setInputState(
+                createDefaultInputStateBuilder()
+                        .withAllowedInputTypes(
+                                InputType.INPUT_TYPE_LENS_IMAGE_VALUE,
+                                InputType.INPUT_TYPE_LENS_FILE_VALUE,
+                                InputType.INPUT_TYPE_DRIVE_VALUE)
+                        .withInputTypeConfigs(
+                                createIconConfig(
+                                        InputSource.INPUT_SOURCE_CAMERA, IconResourceIds.BOLT),
+                                createIconConfig(
+                                        InputSource.INPUT_SOURCE_GALLERY, IconResourceIds.ACUTE),
+                                createIconConfig(
+                                        InputSource.INPUT_SOURCE_FILE_PICKER,
+                                        IconResourceIds.TIMER),
+                                createIconConfig(
+                                        InputSource.INPUT_SOURCE_DRIVE, IconResourceIds.GLOBE)));
+    }
+
+    private void assertDefaultAttachmentIcons() {
+        assertEquals(
+                R.drawable.photo_camera_24dp,
+                mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ICON));
+        assertEquals(
+                R.drawable.add_photo_alternate_24dp,
+                mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ICON));
+        assertEquals(
+                R.drawable.ic_attach_file_24dp,
+                mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ICON));
+        assertEquals(
+                R.drawable.gs_drive_vd_theme_24,
+                mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ICON));
+    }
+
     @Test
     public void testDestroy() {
         mAttachments = mFuseboxAttachmentModelList;
@@ -3624,6 +3665,120 @@ public class FuseboxMediatorUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(FuseboxMetrics.ATTACHMENT_LABEL_FALLBACK_HISTOGRAM)
+                        .build();
+
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_usesInputStateConfigs() {
+        doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
+        recreateMediator();
+        setCustomAttachmentIconsInputState();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertEquals(R.drawable.bolt_24dp, mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ICON));
+        assertEquals(
+                R.drawable.acute_24dp, mModel.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ICON));
+        assertEquals(R.drawable.ic_timer, mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ICON));
+        assertEquals(
+                R.drawable.ic_globe_24dp, mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ICON));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_fallsBackForVisibleButtons() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
+                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertDefaultAttachmentIcons();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_skipsHiddenButtonsOnDesktop() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        recreateMediator();
+        setInputState(new InputStateBuilder().build());
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
+                        InputSource.INPUT_SOURCE_GALLERY_VALUE);
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertDefaultAttachmentIcons();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_nullInputStateAfterSessionSwapResetsToDefaults() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        setCustomAttachmentIconsInputState();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        swapToFreshSessionWithNullInputState();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE)
+                        .build();
+
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE));
+        assertDefaultAttachmentIcons();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_fakeboxPlusTapRecordsFallbackOnce() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        mMediator.endInput();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
+                                InputSource.INPUT_SOURCE_CAMERA_VALUE,
+                                InputSource.INPUT_SOURCE_GALLERY_VALUE,
+                                InputSource.INPUT_SOURCE_FILE_PICKER_VALUE,
+                                InputSource.INPUT_SOURCE_DRIVE_VALUE)
+                        .build();
+
+        mMediator.beginInput(mSession);
+
+        assertNotEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
+        assertDefaultAttachmentIcons();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void attachmentIcons_requestTypeChangeWhilePopupOpenDoesNotReemitFallback() {
+        recreateMediatorWithDriveAndPdfAllowed();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM)
                         .build();
 
         mInput.setRequestType(AutocompleteRequestType.CANVAS);

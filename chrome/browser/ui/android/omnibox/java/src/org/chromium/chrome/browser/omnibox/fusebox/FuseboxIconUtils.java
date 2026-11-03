@@ -9,8 +9,11 @@ import android.content.res.Resources;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** Utility for mapping icon ids served in Fusebox config protos to local drawables. */
 @NullMarked
@@ -40,8 +43,29 @@ public final class FuseboxIconUtils {
             case IconResourceIds.BOLT_VALUE -> R.drawable.bolt_24dp;
             case IconResourceIds.TASK_SPARK_VALUE -> R.drawable.task_spark_24dp;
             case IconResourceIds.ACUTE_VALUE -> R.drawable.acute_24dp;
+            // TODO(crbug.com/568855804): Clean up after a variation is chosen. The proto has no
+            // dedicated folder icon ID.
+            case IconResourceIds.ATTACH_FILE_VALUE ->
+                    OmniboxFeatures.shouldShowBottomSheetPopup()
+                                    && OmniboxFeatures.hasFuseboxPinnedSection()
+                            ? R.drawable.ic_folder_24dp
+                            : R.drawable.ic_attach_file_24dp;
             case IconResourceIds.ADD_PHOTO_ALTERNATE_VALUE -> R.drawable.add_photo_alternate_24dp;
+            case IconResourceIds.LENS_CAMERA_VALUE -> R.drawable.photo_camera_24dp;
+            case IconResourceIds.DRIVE_VALUE -> R.drawable.gs_drive_vd_theme_24;
             default -> Resources.ID_NULL;
         };
+    }
+
+    /**
+     * Returns the client drawable mapped from {@code icon}, or {@code defaultIconRes} if {@code
+     * icon} is null, has no icon id, or has no matching client drawable.
+     */
+    static @DrawableRes int resolveIconRes(@Nullable Icon icon, @DrawableRes int defaultIconRes) {
+        if (icon == null || !icon.hasIconId()) {
+            return defaultIconRes;
+        }
+        @DrawableRes int iconRes = getResIdForIconId(icon.getIconIdValue());
+        return iconRes != Resources.ID_NULL ? iconRes : defaultIconRes;
     }
 }

@@ -270,24 +270,22 @@ class FuseboxPopup {
         initializeItem(
                 mCameraButton,
                 Resources.ID_NULL,
-                R.drawable.photo_camera_24dp,
+                Resources.ID_NULL,
                 R.string.accessibility_omnibox_add_camera_picture);
         initializeItem(
                 mGalleryButton,
                 Resources.ID_NULL,
-                R.drawable.add_photo_alternate_24dp,
+                Resources.ID_NULL,
                 R.string.accessibility_omnibox_add_images);
         initializeItem(
                 mFileButton,
                 Resources.ID_NULL,
-                isBottomSheet && currentTabPlacement != CurrentTabPlacement.WITH_ATTACHMENTS
-                        ? R.drawable.ic_folder_24dp
-                        : R.drawable.ic_attach_file_24dp,
+                Resources.ID_NULL,
                 R.string.accessibility_omnibox_add_files);
         initializeItem(
                 mDriveButton,
                 Resources.ID_NULL,
-                R.drawable.gs_drive_vd_theme_24,
+                Resources.ID_NULL,
                 R.string.accessibility_omnibox_add_from_drive);
         initializeItem(
                 mMoreOptionsButton,

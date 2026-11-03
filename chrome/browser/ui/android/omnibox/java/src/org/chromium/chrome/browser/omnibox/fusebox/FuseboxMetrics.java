@@ -95,6 +95,10 @@ public class FuseboxMetrics {
             "Omnibox.MobileFusebox.AttachmentTypeAtSubmission";
 
     @VisibleForTesting
+    static final String ATTACHMENT_ICON_FALLBACK_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentIconFallback";
+
+    @VisibleForTesting
     static final String ATTACHMENT_LABEL_FALLBACK_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentLabelFallback";
 
@@ -419,6 +423,11 @@ public class FuseboxMetrics {
     static void notifyModelButtonSelected(@ModelMode int modelMode) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Omnibox.MobileFusebox.ModelButtonSelected", modelMode, MODEL_MODE_HISTOGRAM_BOUND);
+    }
+
+    static void notifyAttachmentIconFallback(@InputSource int inputSource) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ATTACHMENT_ICON_FALLBACK_HISTOGRAM, inputSource, INPUT_SOURCE_HISTOGRAM_BOUND);
     }
 
     static void notifyAttachmentLabelFallback(@InputSource int inputSource) {

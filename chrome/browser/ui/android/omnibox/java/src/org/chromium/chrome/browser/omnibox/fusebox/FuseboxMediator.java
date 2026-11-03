@@ -669,7 +669,7 @@ class FuseboxMediator implements BackPressHandler {
         updateModelForRecentTabs();
         InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
         updateModelForPopupInputState(inputState);
-        updateAttachmentLabels(inputState);
+        updateAttachmentConfigs(inputState);
 
         @PopupState
         int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
@@ -1413,7 +1413,7 @@ class FuseboxMediator implements BackPressHandler {
         applyInputState(inputState);
 
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
-            updateAttachmentLabels(inputState);
+            updateAttachmentConfigs(inputState);
         }
     }
 
@@ -1598,6 +1598,11 @@ class FuseboxMediator implements BackPressHandler {
                 showModelPicker ? modelButtonDataList : List.of());
     }
 
+    private void updateAttachmentConfigs(@Nullable InputState inputState) {
+        updateAttachmentLabels(inputState);
+        updateAttachmentIcons(inputState);
+    }
+
     private void updateAttachmentLabels(@Nullable InputState inputState) {
         mModel.set(
                 FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT,
@@ -1639,6 +1644,41 @@ class FuseboxMediator implements BackPressHandler {
                         mIsDesktopPlatform
                                 ? R.string.ntp_compose_add_drive
                                 : R.string.omnibox_navattach_drive,
+                        /* shouldRecordFallback= */ mModel.get(
+                                FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE)));
+    }
+
+    private void updateAttachmentIcons(@Nullable InputState inputState) {
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACH_CAMERA_ICON,
+                InputStateUtils.resolveInputIconRes(
+                        inputState,
+                        InputSource.INPUT_SOURCE_CAMERA,
+                        R.drawable.photo_camera_24dp,
+                        /* shouldRecordFallback= */ mModel.get(
+                                FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE)));
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACH_GALLERY_ICON,
+                InputStateUtils.resolveInputIconRes(
+                        inputState,
+                        InputSource.INPUT_SOURCE_GALLERY,
+                        R.drawable.add_photo_alternate_24dp,
+                        /* shouldRecordFallback= */ mModel.get(
+                                FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE)));
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACH_FILE_ICON,
+                InputStateUtils.resolveInputIconRes(
+                        inputState,
+                        InputSource.INPUT_SOURCE_FILE_PICKER,
+                        FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE),
+                        /* shouldRecordFallback= */ mModel.get(
+                                FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE)));
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACH_DRIVE_ICON,
+                InputStateUtils.resolveInputIconRes(
+                        inputState,
+                        InputSource.INPUT_SOURCE_DRIVE,
+                        R.drawable.gs_drive_vd_theme_24,
                         /* shouldRecordFallback= */ mModel.get(
                                 FuseboxProperties.POPUP_ATTACH_DRIVE_VISIBLE)));
     }

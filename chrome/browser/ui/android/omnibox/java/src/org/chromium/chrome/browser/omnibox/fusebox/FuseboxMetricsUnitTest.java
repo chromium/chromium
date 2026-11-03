@@ -162,6 +162,18 @@ public class FuseboxMetricsUnitTest {
     }
 
     @Test
+    public void testNotifyAttachmentIconFallback() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        FuseboxMetrics.ATTACHMENT_ICON_FALLBACK_HISTOGRAM,
+                        InputSource.INPUT_SOURCE_CAMERA);
+
+        FuseboxMetrics.notifyAttachmentIconFallback(InputSource.INPUT_SOURCE_CAMERA);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testNotifyAttachmentLabelFallback() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

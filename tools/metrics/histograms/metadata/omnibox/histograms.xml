@@ -2891,6 +2891,28 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentIconFallback"
+    enum="OmniboxInputSource" expires_after="2027-04-28">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the attachment source (Camera, Gallery, FilePicker, or Drive) of a
+    visible button in the Fusebox attachments popup when its icon falls back to
+    a built-in client drawable because no server-provided attachment
+    configuration or mapped icon ID was available.
+
+    Not emitted when the server configuration provides a mapped icon ID for the
+    button, when the attachment button is hidden in the popup, while the Fusebox
+    popup remains closed, or for other OmniboxInputSource values (such as
+    TabPicker, Voice, or SearchLive) whose icons are not resolved through this
+    path.
+
+    Emitted once per evaluated visible attachment button using a client fallback
+    icon each time the Fusebox attachments popup is shown, and again if the
+    session input configuration updates while the popup is open.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentImageFormat"
     enum="FuseboxSniffedImageFormat" expires_after="2027-04-30">
   <owner>pnoland@google.com</owner>

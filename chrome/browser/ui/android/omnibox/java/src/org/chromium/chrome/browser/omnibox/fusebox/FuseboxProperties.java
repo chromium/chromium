@@ -20,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -113,6 +114,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CAMERA_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The drawable resource id for the Camera button in the popup. */
+    public static final WritableIntPropertyKey POPUP_ATTACH_CAMERA_ICON =
+            new WritableIntPropertyKey();
+
     /** The text label for the Camera button in the popup. */
     public static final WritableObjectPropertyKey<String> POPUP_ATTACH_CAMERA_TEXT =
             new WritableObjectPropertyKey<>();
@@ -151,6 +156,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_DRIVE_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The drawable resource id for the Drive button in the popup. */
+    public static final WritableIntPropertyKey POPUP_ATTACH_DRIVE_ICON =
+            new WritableIntPropertyKey();
+
     /** The text label for the Drive button in the popup. */
     public static final WritableObjectPropertyKey<String> POPUP_ATTACH_DRIVE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -167,6 +176,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ATTACH_FILE_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** The drawable resource id for the File button in the popup. */
+    public static final WritableIntPropertyKey POPUP_ATTACH_FILE_ICON =
+            new WritableIntPropertyKey();
+
     /** The text label for the File button in the popup. */
     public static final WritableObjectPropertyKey<String> POPUP_ATTACH_FILE_TEXT =
             new WritableObjectPropertyKey<>();
@@ -182,6 +195,10 @@ class FuseboxProperties {
     /** Whether the Gallery button in the popup is enabled. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_GALLERY_ENABLED =
             new WritableBooleanPropertyKey();
+
+    /** The drawable resource id for the Gallery button in the popup. */
+    public static final WritableIntPropertyKey POPUP_ATTACH_GALLERY_ICON =
+            new WritableIntPropertyKey();
 
     /** The text label for the Gallery button in the popup. */
     public static final WritableObjectPropertyKey<String> POPUP_ATTACH_GALLERY_TEXT =
@@ -323,6 +340,7 @@ class FuseboxProperties {
         POPUP_ATTACHMENTS_HEADER_VISIBLE,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
+        POPUP_ATTACH_CAMERA_ICON,
         POPUP_ATTACH_CAMERA_TEXT,
         POPUP_ATTACH_CAMERA_VISIBLE,
         POPUP_ATTACH_CURRENT_TAB_CLICKED,
@@ -331,14 +349,17 @@ class FuseboxProperties {
         POPUP_ATTACH_CURRENT_TAB_VISIBLE,
         POPUP_ATTACH_DRIVE_CLICKED,
         POPUP_ATTACH_DRIVE_ENABLED,
+        POPUP_ATTACH_DRIVE_ICON,
         POPUP_ATTACH_DRIVE_TEXT,
         POPUP_ATTACH_DRIVE_VISIBLE,
         POPUP_ATTACH_FILE_CLICKED,
         POPUP_ATTACH_FILE_ENABLED,
+        POPUP_ATTACH_FILE_ICON,
         POPUP_ATTACH_FILE_TEXT,
         POPUP_ATTACH_FILE_VISIBLE,
         POPUP_ATTACH_GALLERY_CLICKED,
         POPUP_ATTACH_GALLERY_ENABLED,
+        POPUP_ATTACH_GALLERY_ICON,
         POPUP_ATTACH_GALLERY_TEXT,
         POPUP_ATTACH_GALLERY_VISIBLE,
         POPUP_ATTACH_TAB_PICKER_CLICKED,

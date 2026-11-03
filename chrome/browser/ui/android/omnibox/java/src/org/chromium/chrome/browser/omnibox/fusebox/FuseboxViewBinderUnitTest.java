@@ -527,6 +527,32 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void attachmentButtonsIcon_setsImageResource() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ICON, R.drawable.photo_camera_24dp);
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACH_GALLERY_ICON, R.drawable.add_photo_alternate_24dp);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ICON, R.drawable.ic_folder_24dp);
+        mModel.set(FuseboxProperties.POPUP_ATTACH_DRIVE_ICON, R.drawable.gs_drive_vd_theme_24);
+
+        ImageView cameraIcon = mPopup.mCameraButton.findViewById(R.id.start_icon);
+        ImageView galleryIcon = mPopup.mGalleryButton.findViewById(R.id.start_icon);
+        ImageView fileIcon = mPopup.mFileButton.findViewById(R.id.start_icon);
+        ImageView driveIcon = mPopup.mDriveButton.findViewById(R.id.start_icon);
+
+        assertEquals(
+                R.drawable.photo_camera_24dp,
+                shadowOf(cameraIcon.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.add_photo_alternate_24dp,
+                shadowOf(galleryIcon.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.ic_folder_24dp, shadowOf(fileIcon.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.gs_drive_vd_theme_24,
+                shadowOf(driveIcon.getDrawable()).getCreatedFromResId());
+    }
+
+    @Test
     public void addCurrentTabButton() {
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());

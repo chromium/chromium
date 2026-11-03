@@ -114,6 +114,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED) {
             view.popup.mCameraButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_ICON) {
+            getViewHolder(view.popup.mCameraButton)
+                    .mActionIcon
+                    .setImageResource(model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ICON));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_TEXT) {
             getViewHolder(view.popup.mCameraButton)
                     .mActionText
@@ -139,6 +143,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED) {
             view.popup.mDriveButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_ICON) {
+            getViewHolder(view.popup.mDriveButton)
+                    .mActionIcon
+                    .setImageResource(model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_ICON));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_TEXT) {
             getViewHolder(view.popup.mDriveButton)
                     .mActionText
@@ -152,6 +160,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_ENABLED) {
             view.popup.mFileButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_ICON) {
+            getViewHolder(view.popup.mFileButton)
+                    .mActionIcon
+                    .setImageResource(model.get(FuseboxProperties.POPUP_ATTACH_FILE_ICON));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_TEXT) {
             getViewHolder(view.popup.mFileButton)
                     .mActionText
@@ -165,6 +177,10 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED) {
             view.popup.mGalleryButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_ICON) {
+            getViewHolder(view.popup.mGalleryButton)
+                    .mActionIcon
+                    .setImageResource(model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_ICON));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_TEXT) {
             getViewHolder(view.popup.mGalleryButton)
                     .mActionText

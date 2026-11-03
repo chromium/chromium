@@ -12,8 +12,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** Unit tests for {@link FuseboxIconUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,6 +62,67 @@ public class FuseboxIconUtilsUnitTest {
         assertEquals(
                 R.drawable.add_photo_alternate_24dp,
                 FuseboxIconUtils.getResIdForIconId(IconResourceIds.ADD_PHOTO_ALTERNATE_VALUE));
+        assertEquals(
+                R.drawable.photo_camera_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.LENS_CAMERA_VALUE));
+        assertEquals(
+                R.drawable.gs_drive_vd_theme_24,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRIVE_VALUE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getResIdForIconId_attachFile_variationsBottomSheetCarousel_isFolder() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseCarouselForTesting(true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(false);
+        assertEquals(
+                R.drawable.ic_folder_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getResIdForIconId_attachFile_variationsBottomSheetVertical_isFolder() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseCarouselForTesting(false);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(false);
+        assertEquals(
+                R.drawable.ic_folder_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getResIdForIconId_attachFile_variationsDisabledBottomSheetCarousel_isAttachFile() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseCarouselForTesting(true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(false);
+        assertEquals(
+                R.drawable.ic_attach_file_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getResIdForIconId_attachFile_bottomSheetScrollableCarousel_isAttachFile() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseCarouselForTesting(true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(true);
+        assertEquals(
+                R.drawable.ic_attach_file_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void getResIdForIconId_attachFile_contextMenu_isAttachFile() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        OmniboxFeatures.setUseCarouselForTesting(false);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(false);
+        assertEquals(
+                R.drawable.ic_attach_file_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.ATTACH_FILE_VALUE));
     }
 
     @Test
@@ -71,5 +137,26 @@ public class FuseboxIconUtilsUnitTest {
         // Values unknown to the client, e.g. newly served by the backend.
         assertEquals(Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(-1));
         assertEquals(Resources.ID_NULL, FuseboxIconUtils.getResIdForIconId(Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void resolveIconRes_mapsKnownIconOrFallsBack() {
+        assertEquals(
+                R.drawable.bolt_24dp,
+                FuseboxIconUtils.resolveIconRes(
+                        Icon.newBuilder().setIconId(IconResourceIds.BOLT).build(),
+                        R.drawable.ic_globe_24dp));
+        assertEquals(
+                R.drawable.ic_globe_24dp,
+                FuseboxIconUtils.resolveIconRes(/* icon= */ null, R.drawable.ic_globe_24dp));
+        assertEquals(
+                R.drawable.ic_globe_24dp,
+                FuseboxIconUtils.resolveIconRes(
+                        Icon.getDefaultInstance(), R.drawable.ic_globe_24dp));
+        assertEquals(
+                R.drawable.ic_globe_24dp,
+                FuseboxIconUtils.resolveIconRes(
+                        Icon.newBuilder().setIconId(IconResourceIds.SOCCER).build(),
+                        R.drawable.ic_globe_24dp));
     }
 }
