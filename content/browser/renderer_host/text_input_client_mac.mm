@@ -27,6 +27,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace content {
 
@@ -106,14 +109,17 @@ gfx::Rect TransformFirstRectResult(base::WeakPtr<RenderFrameHostImpl> rfhi,
             if (!view) {
               return gfx::Rect();
             }
+            RenderWidgetHostViewBase* root_view = view->GetRootView();
+            gfx::Transform to_root;
+            if (!root_view ||
+                !view->GetTransformToViewCoordSpace(root_view, &to_root)) {
+              return gfx::Rect();
+            }
             // `rect` is in physical pixels, but the transform works in DIPs.
             const float scale = view->GetDeviceScaleFactor();
-            const gfx::PointF root_origin_in_dips =
-                view->TransformPointToRootCoordSpaceF(
-                    gfx::ScalePoint(gfx::PointF(rect.origin()), 1.f / scale));
-            const gfx::Point root_origin = gfx::ToRoundedPoint(
-                gfx::ScalePoint(root_origin_in_dips, scale));
-            return gfx::Rect(root_origin, rect.size());
+            const gfx::RectF root_rect_in_dips =
+                to_root.MapRect(gfx::ScaleRect(gfx::RectF(rect), 1.f / scale));
+            return gfx::ToRoundedRect(gfx::ScaleRect(root_rect_in_dips, scale));
           },
       },
       result);

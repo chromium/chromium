@@ -266,6 +266,33 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
   EXPECT_NEAR(rect_left, ChildFrameContentOrigin().x() + text_left, 1);
 }
 
+// Verifies that the first rect of a range in a cross-site child frame is scaled
+// along with the child frame when the root frame is pinch-zoomed.
+IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
+                       GetFirstRectForRangeChildFramePinchZoomed) {
+  RenderFrameHostImpl* child_rfh = LoadAndFocusOffsetCrossSiteChildFrame();
+
+  base::test::TestFuture<gfx::Rect> unzoomed_future;
+  TextInputClientMac::GetInstance()->AsyncGetFirstRectForRange(
+      child_rfh->GetRenderWidgetHost(), gfx::Range(0, 4),
+      unzoomed_future.GetCallback());
+  const gfx::Rect unzoomed_rect = unzoomed_future.Get();
+  ASSERT_FALSE(unzoomed_rect.IsEmpty());
+
+  constexpr float kPageScale = 2;
+  PinchZoomRootFrame(kPageScale, child_rfh);
+
+  base::test::TestFuture<gfx::Rect> zoomed_future;
+  TextInputClientMac::GetInstance()->AsyncGetFirstRectForRange(
+      child_rfh->GetRenderWidgetHost(), gfx::Range(0, 4),
+      zoomed_future.GetCallback());
+  const gfx::Rect zoomed_rect = zoomed_future.Get();
+
+  // Each edge of the zoomed rect is rounded to a whole pixel.
+  EXPECT_NEAR(zoomed_rect.width(), unzoomed_rect.width() * kPageScale, 2);
+  EXPECT_NEAR(zoomed_rect.height(), unzoomed_rect.height() * kPageScale, 2);
+}
+
 // Verifies that the dictionary overlay for a word in a cross-site child frame
 // is shown at the word's baseline in the root view.
 IN_PROC_BROWSER_TEST_P(SitePerProcessMacHighDPIBrowserTest,
