@@ -318,6 +318,7 @@ class FeedNetworkImpl::NetworkFetch {
           "content that the user interacted with. For signed-in users "
           "the request is authenticated. "
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "discover-pa.googleapis.com"
       }
       policy {
         cookies_allowed: YES

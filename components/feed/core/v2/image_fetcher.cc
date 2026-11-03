@@ -41,6 +41,7 @@ ImageFetchId ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
           data: "Request for an image containing an ID for the image and "
           "device specs (e.g. screen size) for resizing images."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "discover-pa.googleapis.com"
         }
         policy {
           cookies_allowed: NO
