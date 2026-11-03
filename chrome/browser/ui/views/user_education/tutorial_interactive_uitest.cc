@@ -12,12 +12,14 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -65,6 +67,7 @@ using user_education::TutorialService;
 class TutorialInteractiveUitest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    WaitForInitialWebUIToolbar(browser());
     GetTutorialService()->tutorial_registry()->AddTutorial(
         kTestTutorialId, GetDefaultTutorialDescription());
   }
@@ -128,21 +131,32 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   ui::test::InteractionTestUtil test_util;
   test_util.AddSimulator(
       std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  InteractionTestUtilBrowser::PopulateSimulators(test_util);
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
   ClearEventQueue();
 
-  // Simulate click on close button.
+  views::Button* default_button = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* const bubble =
+        GetTutorialService()->currently_displayed_bubble_for_testing();
+    if (!bubble || !bubble->IsA<HelpBubbleViews>()) {
+      return false;
+    }
+    auto* const bubble_view = AsViewClass<user_education::HelpBubbleView>(
+        bubble->AsA<HelpBubbleViews>()->bubble_view_for_testing());
+    if (bubble_view && bubble_view->GetDefaultButtonForTesting() != nullptr) {
+      default_button = bubble_view->GetDefaultButtonForTesting();
+      return true;
+    }
+    return false;
+  }));
+
+  // Simulate pressing the default button to complete the tutorial.
   EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
-          AsViewClass<user_education::HelpBubbleView>(
-              GetTutorialService()
-                  ->currently_displayed_bubble_for_testing()
-                  ->AsA<HelpBubbleViews>()
-                  ->bubble_view_for_testing())
-              ->GetDefaultButtonForTesting(),
-          ui::test::InteractionTestUtil::InputType::kKeyboard));
+          default_button, ui::test::InteractionTestUtil::InputType::kKeyboard));
 
   const auto histogram_name =
       base::StringPrintf("Tutorial.%s.Completion", kTestTutorialMetricPrefix);
