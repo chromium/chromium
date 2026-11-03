@@ -2,3 +2,5 @@ twellington@chromium.org
 wenyufu@chromium.org
 
 file://chrome/android/OWNERS
+
+per-file java/res/...=haileywang@google.com
