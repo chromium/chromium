@@ -701,4 +701,112 @@ mod tests {
         let chromium = select_markers_by_args(&["chromium".to_string()]).unwrap();
         assert!(!chromium.is_empty());
     }
+
+    #[test]
+    fn test_cross_platform_deduplication_and_generated_data() {
+        let root = chromium_src_root();
+        let data_dir = root.join("third_party/rust/icu4x_data/src/data");
+
+        // 1. Verify `google3-overlay.patch` (`RSD` overridden to `digits: 0,
+        //    cash_digits: None` -> `\0\xFF` in `currency_fractions_v1.rs.data`)
+        let fractions =
+            std::fs::read_to_string(data_dir.join("common/currency_fractions_v1.rs.data")).unwrap();
+        assert!(fractions.contains("OMRPKRPYGRSDRWF"));
+        assert!(
+            fractions.contains(r"\x03\xFF\x02\0\0\xFF\0\xFF\0\xFF"),
+            "Expected patched RSD (0 digits) fraction bytes in currency_fractions_v1.rs.data"
+        );
+
+        // 2. Verify `name_5_langs.patch` non-UI autonyms (`an` -> `"aragonés"`,
+        //    `ay` -> `"Aymar"`, `dv` -> `"ދިވެހި"`, `ilo` -> `"Ilokano"`, `lus` ->
+        //    `"Mizo tawng"`, `ts` -> `"Xitsonga"`, `wa` -> `"Walon"`)
+        let lang_tiny = std::fs::read_to_string(
+            data_dir.join("common/locale_names_language_medium_tiny_v1.rs.data"),
+        )
+        .unwrap();
+        assert!(lang_tiny.contains(r"aragon\xC3\xA9s"));
+        assert!(lang_tiny.contains("Aymar"));
+        assert!(!lang_tiny.contains("Aymar aru"));
+        assert!(lang_tiny.contains(r"\xDE\x8B\xDE\xA8\xDE\x88\xDE\xAC\xDE\x80\xDE\xA8"));
+        assert!(lang_tiny.contains("Ilokano"));
+        assert!(lang_tiny.contains("Mizo tawng"));
+        assert!(lang_tiny.contains("Xitsonga"));
+        assert!(lang_tiny.contains("Walon"));
+
+        // 3. Verify `locale1.patch` Korean `yMMMd` day-interval spacing (`일 ~
+        //    ` instead of `일~` in `datetime_patterns_range_date_gregorian_v1`)
+        let date_range = std::fs::read_to_string(
+            data_dir.join("common/datetime_patterns_range_date_gregorian_v1.rs.data"),
+        )
+        .unwrap();
+        assert!(date_range.contains(r"\0\xC7|\0\0 \0\0~\0\0 \x80@\x01\0\xC7|"));
+
+        // 4. Verify `TransliteratorRulesV1` attribute filtering (only the
+        //    Chrome transliterators)
+        let translit =
+            std::fs::read_to_string(data_dir.join("common/transliterator_rules_v1.rs.data"))
+                .unwrap();
+        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_DE_T_DE_D0_ASCII"));
+        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_HIRA_T_UND_KANA"));
+        assert!(translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_KANA_T_UND_HIRA"));
+        assert!(!translit.contains("TRANSLITERATOR_RULES_V1_UND_UND_ARAB_T_UND_LATN"));
+
+        // 5. Verify cross-platform deduplication across all platforms and
+        //    `sources.gni`
+        let crate_dir = root.join("third_party/rust/icu4x_data");
+
+        let chromeos_mod = std::fs::read_to_string(data_dir.join("chromeos/mod.rs")).unwrap();
+        assert!(chromeos_mod.contains("include!(\"../common/currency_fractions_v1.rs.data\")"));
+        assert!(!data_dir.join("chromeos/currency_fractions_v1.rs.data").exists());
+
+        let sources_gni = std::fs::read_to_string(crate_dir.join("sources.gni")).unwrap();
+        assert!(sources_gni.contains("\"src/data/common/currency_fractions_v1.rs.data\""));
+        let rustc = std::env::var("RUSTC").unwrap_or_else(|_| {
+            root.join("third_party/rust-toolchain/bin/rustc")
+                .with_extension(std::env::consts::EXE_EXTENSION)
+                .to_string_lossy()
+                .to_string()
+        });
+        let tmp_dir = crate::overlay::TempDir::new("icu4x_data_test").unwrap();
+        let tmp_rmeta = tmp_dir.path().join("libicu4x_data.rmeta");
+        for plat in Icu4xPlatform::value_variants() {
+            let plat_dir = data_dir.join(plat.as_str());
+            let mod_rs = std::fs::read_to_string(plat_dir.join("mod.rs")).unwrap();
+            assert!(
+                !mod_rs.contains("include ! ("),
+                "{plat}/mod.rs was not formatted with rustfmt"
+            );
+            let mut checked_count = 0usize;
+            for part in mod_rs.split("include!(\"").skip(1) {
+                if let Some((rel_path, _)) = part.split_once('"') {
+                    if !rel_path.ends_with(".rs.data") {
+                        continue;
+                    }
+                    checked_count += 1;
+                    let resolved = plat_dir.join(rel_path);
+                    assert!(
+                        resolved.exists(),
+                        "Broken include in {plat}/mod.rs: {rel_path} ({}) does not exist",
+                        resolved.display()
+                    );
+                }
+            }
+            assert!(checked_count > 0, "Expected at least one `.rs.data` include in {plat}/mod.rs");
+            let status = std::process::Command::new(&rustc)
+                .arg("--crate-name=icu4x_data")
+                .arg("--crate-type=rlib")
+                .arg("--edition=2024")
+                .arg(format!("--cfg=icu4x_data_platform_{plat}"))
+                .arg("--emit=metadata")
+                .arg("-o")
+                .arg(&tmp_rmeta)
+                .arg(crate_dir.join("src/lib.rs"))
+                .status()
+                .expect("Failed to invoke rustc");
+            assert!(
+                status.success(),
+                "rustc failed to compile third_party/rust/icu4x_data/src/lib.rs for platform {plat}"
+            );
+        }
+    }
 }

@@ -78,6 +78,9 @@ pub(crate) enum ResolvedLocaleFilter {
     Exclude,
     /// Full locales (`DataLocaleFamily::FULL`).
     Full,
+    /// Full locales minus exact excluded locale stems (from ICU4C `file-stem`
+    /// `excludelist`, such as `featureFilters.brkitr_tree`).
+    FullExcept(BTreeSet<String>),
     /// Explicit list of `DataLocaleFamily` strings (e.g., `"en"`, `"^en-US"`,
     /// `"und"`).
     Families(BTreeSet<String>),
@@ -87,7 +90,7 @@ impl ResolvedLocaleFilter {
     pub(crate) fn to_locale_families(&self) -> Result<Vec<DataLocaleFamily>> {
         match self {
             Self::Singleton | Self::Exclude => Ok(vec![]),
-            Self::Full => Ok(vec![DataLocaleFamily::FULL]),
+            Self::Full | Self::FullExcept(_) => Ok(vec![DataLocaleFamily::FULL]),
             Self::Families(set) => {
                 let mut out = Vec::with_capacity(set.len());
                 for s in set {
@@ -473,6 +476,9 @@ impl ParsedIcu4cFilterFile {
                         ResolvedLocaleFilter::Full => {
                             return Ok(ResolvedLocaleFilter::Full);
                         }
+                        ResolvedLocaleFilter::FullExcept(_) => {
+                            bail!("`union` filter containing `file-stem` `excludelist` is not supported");
+                        }
                         ResolvedLocaleFilter::Exclude | ResolvedLocaleFilter::Singleton => {}
                     }
                 }
@@ -568,13 +574,13 @@ impl ParsedIcu4cFilterFile {
                     }
                     Ok(ResolvedLocaleFilter::Families(families))
                 } else if let Some(exc) = &node.excludelist {
-                    let real_excluded: Vec<String> =
+                    let real_excluded: BTreeSet<String> =
                         exc.iter().filter_map(|item| normalize_icu4c_locale(item)).collect();
-                    anyhow::ensure!(
-                        real_excluded.is_empty(),
-                        "Unsupported locale excludelist in file-stem filter: {real_excluded:?}"
-                    );
-                    Ok(ResolvedLocaleFilter::Full)
+                    if real_excluded.is_empty() {
+                        Ok(ResolvedLocaleFilter::Full)
+                    } else {
+                        Ok(ResolvedLocaleFilter::FullExcept(real_excluded))
+                    }
                 } else {
                     bail!("`file-stem` filter requires `includelist` or `excludelist`");
                 }
@@ -670,10 +676,12 @@ impl ParsedIcu4cFilterFile {
 
         let mut base = if let Some(tree_node) = self.raw.feature_filters.get(tree_key) {
             let parsed = Self::parse_filter_node_or_string(tree_node)?;
-            // If a tree filter (such as `brkitr_tree`) only excludes
-            // non-locale stems like `en_US_POSIX`, `parse_filter_node` returns
-            // `Full`, which in ICU4C's subtractive filter model means all
-            // locales permitted by `localeFilter`.
+            // If a tree filter is `"include"` or only excludes non-locale stems
+            // like `en_US_POSIX`, `parse_filter_node_or_string` returns `Full`,
+            // which in ICU4C's subtractive filter model inherits
+            // `localeFilter`. When `featureFilters` defines a real `file-stem`
+            // `excludelist` (such as `brkitr_tree`), ICU4C `filtration.py`
+            // applies `FileStemFilter` directly (`FullExcept`).
             if parsed == ResolvedLocaleFilter::Full {
                 resolve_locale_filter()?
             } else {
@@ -935,6 +943,24 @@ mod tests {
             flutter.resolve_category(Icu4cFilterCategory::Plurals, true, false).unwrap(),
             ResolvedLocaleFilter::Exclude
         );
+
+        // Verify `inspect_filters` resolves every category across all 8
+        // Chromium filter files cleanly (including `BrkitrTree` `file-stem`
+        // `excludelist`).
+        crate::filters::inspect_filters(&filters_dir).unwrap();
+        assert_eq!(
+            common.resolve_category(Icu4cFilterCategory::BrkitrTree, true, false).unwrap(),
+            ResolvedLocaleFilter::FullExcept(BTreeSet::from([
+                "de".to_string(),
+                "en".to_string(),
+                "en-US".to_string(),
+                "es".to_string(),
+                "fr".to_string(),
+                "it".to_string(),
+                "pt".to_string(),
+                "ru".to_string(),
+            ]))
+        );
     }
 
     #[test]
@@ -947,9 +973,25 @@ mod tests {
             serde_json::from_str(r#"{"filterType": "locale"}"#).unwrap();
         assert!(ParsedIcu4cFilterFile::parse_filter_node(&missing_list).is_err());
 
-        let unsupported_exclude: RawFilterNode =
-            serde_json::from_str(r#"{"excludelist": ["en"]}"#).unwrap();
-        assert!(ParsedIcu4cFilterFile::parse_filter_node(&unsupported_exclude).is_err());
+        let unsupported_lang_exclude: RawFilterNode =
+            serde_json::from_str(r#"{"filterType": "language", "excludelist": ["en"]}"#).unwrap();
+        assert!(ParsedIcu4cFilterFile::parse_filter_node(&unsupported_lang_exclude).is_err());
+
+        let unsupported_union_exclude: RawFilterNode = serde_json::from_str(
+            r#"{"filterType": "union", "unionOf": [{"excludelist": ["en"]}]}"#,
+        )
+        .unwrap();
+        assert!(ParsedIcu4cFilterFile::parse_filter_node(&unsupported_union_exclude).is_err());
+
+        let stem_exclude: RawFilterNode =
+            serde_json::from_str(r#"{"excludelist": ["en", "en_US", "en_US_POSIX"]}"#).unwrap();
+        assert_eq!(
+            ParsedIcu4cFilterFile::parse_filter_node(&stem_exclude).unwrap(),
+            ResolvedLocaleFilter::FullExcept(BTreeSet::from([
+                "en".to_string(),
+                "en-US".to_string(),
+            ]))
+        );
 
         let posix_exclude: RawFilterNode =
             serde_json::from_str(r#"{"excludelist": ["en_US_POSIX"]}"#).unwrap();

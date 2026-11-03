@@ -27,6 +27,7 @@ pub(crate) struct FilteredDataProvider<P> {
     pub(super) allowed_target_languages: Option<HashSet<String>>,
     pub(super) allowed_target_variants: Option<HashSet<String>>,
     pub(super) abridged_non_ui_locales: HashSet<String>,
+    pub(super) excluded_locale_stems: BTreeSet<String>,
 }
 
 impl<P> FilteredDataProvider<P> {
@@ -38,6 +39,7 @@ impl<P> FilteredDataProvider<P> {
             allowed_target_languages: None,
             allowed_target_variants: None,
             abridged_non_ui_locales: HashSet::new(),
+            excluded_locale_stems: BTreeSet::new(),
         }
     }
 }
@@ -57,6 +59,9 @@ where
 {
     fn iter_ids(&self) -> Result<BTreeSet<DataIdentifierCow<'_>>, DataError> {
         let mut ids = self.inner.iter_ids()?;
+        if !self.excluded_locale_stems.is_empty() {
+            ids.retain(|id| !self.excluded_locale_stems.contains(&id.locale.to_string()));
+        }
         let m_path = marker_path_str(M::INFO.id);
         if m_path == "transliterator/rules/v1" {
             if let Some(ref allowed) = self.allowed_transliterators {
@@ -127,5 +132,34 @@ impl DataExporter for NonClosingExporter<'_> {
 
     fn close(&mut self) -> Result<ExporterCloseMetadata, DataError> {
         Ok(ExporterCloseMetadata::default())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::SourceTags;
+    use icu::segmenter::provider::SegmenterBreakSentenceOverrideV1;
+
+    #[test]
+    fn test_excluded_locale_stems_filters_iter_ids() {
+        let base = SourceTags::default().source_data_provider();
+        let mut filtered = FilteredDataProvider::unfiltered(base);
+        let unfiltered_ids: BTreeSet<String> =
+            IterableDataProvider::<SegmenterBreakSentenceOverrideV1>::iter_ids(&filtered)
+                .unwrap()
+                .into_iter()
+                .map(|id| id.locale.to_string())
+                .collect();
+        assert!(unfiltered_ids.contains("el"), "Expected `el` in {unfiltered_ids:?}");
+
+        filtered.excluded_locale_stems = BTreeSet::from(["el".to_string()]);
+        let excluded_ids: BTreeSet<String> =
+            IterableDataProvider::<SegmenterBreakSentenceOverrideV1>::iter_ids(&filtered)
+                .unwrap()
+                .into_iter()
+                .map(|id| id.locale.to_string())
+                .collect();
+        assert!(!excluded_ids.contains("el"), "Expected `el` to be excluded in {excluded_ids:?}");
     }
 }

@@ -131,6 +131,9 @@ pub(crate) fn inspect_filters(icu_filters_dir: &Path) -> Result<()> {
                 ResolvedLocaleFilter::Singleton => "singleton".to_string(),
                 ResolvedLocaleFilter::Exclude => "exclude (0 locales)".to_string(),
                 ResolvedLocaleFilter::Full => "full".to_string(),
+                ResolvedLocaleFilter::FullExcept(stems) => {
+                    format!("full (excluding {} locale stems)", stems.len())
+                }
                 ResolvedLocaleFilter::Families(fams) => {
                     format!("{} locale families", fams.len())
                 }
@@ -159,7 +162,7 @@ where
     let filter_file = ParsedIcu4cFilterFile::load(&filter_path)?;
     let effective_abridge_non_ui = toml_cfg.resource_filters.abridge_non_ui_locales;
 
-    let exportable = FilteredDataProvider {
+    let mut exportable = FilteredDataProvider {
         inner: provider,
         allowed_transliterators: if toml_cfg.resource_filters.filter_transliterators {
             filter_file.allowed_transliterators()
@@ -186,6 +189,7 @@ where
         } else {
             HashSet::new()
         },
+        excluded_locale_stems: std::collections::BTreeSet::new(),
     };
 
     // Group selected markers by their resolved locale filter
@@ -203,6 +207,10 @@ where
     );
 
     for (res_filter, group_markers) in groups {
+        exportable.excluded_locale_stems = match &res_filter {
+            ResolvedLocaleFilter::FullExcept(stems) => stems.clone(),
+            _ => std::collections::BTreeSet::new(),
+        };
         let families = res_filter.to_locale_families()?;
         let driver =
             ExportDriver::new(families, DeduplicationStrategy::Maximal.into(), fallbacker.clone())
