@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -103,6 +104,9 @@ ExportedCanvasResource::ExportedCanvasResource(
                                                        hdr_metadata,
                                                        std::move(callback),
                                                        provider)),
+      owning_thread_ref_(base::PlatformThread::CurrentRef()),
+      owning_thread_task_runner_(
+          ThreadScheduler::Current()->CleanupTaskRunner()),
       use_legacy_external_canvas_resource_bitmap_path_(true) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
@@ -111,6 +115,9 @@ ExportedCanvasResource::ExportedCanvasResource(
 ExportedCanvasResource::ExportedCanvasResource(
     scoped_refptr<CanvasResourceSharedImage> resource)
     : resource_(std::move(resource)),
+      owning_thread_ref_(base::PlatformThread::CurrentRef()),
+      owning_thread_task_runner_(
+          ThreadScheduler::Current()->CleanupTaskRunner()),
       use_legacy_external_canvas_resource_bitmap_path_(false) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
@@ -120,7 +127,7 @@ ExportedCanvasResource::~ExportedCanvasResource() {
   // We PostTask ExportedCanvasResource to the CanvasResource owning thread, but
   // if the thread gets destroyed before, destructor will still run, but we
   // can't tell CanvasResource to recycle.
-  if (!resource_->is_cross_thread()) {
+  if (!is_cross_thread()) {
     CanvasResource::DropRefOnOwningThread(std::move(resource_));
   }
 }
@@ -132,9 +139,9 @@ void ExportedCanvasResource::OnPlaceholderReleasedResource(
     return;
   }
 
-  if (exported_resource->resource_->is_cross_thread()) {
-    auto& owning_thread_task_runner =
-        exported_resource->resource_->owning_thread_task_runner_;
+  if (exported_resource->is_cross_thread()) {
+    auto owning_thread_task_runner =
+        exported_resource->owning_thread_task_runner_;
     owning_thread_task_runner->PostTask(
         FROM_HERE, base::DoNothingWithBoundArgs(std::move(exported_resource)));
   }
@@ -160,8 +167,7 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     // of origin to access the resource. In that case we will find out
     // whether the resource was dropped later, when we attempt to access the
     // mailbox.
-    if (!resource_->is_cross_thread() &&
-        !external_resource->context_provider_wrapper_) {
+    if (!is_cross_thread() && !external_resource->context_provider_wrapper_) {
       return nullptr;
     }
 
@@ -178,9 +184,8 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
             resource_->GetSharedImage(), resource_->sync_token(),
             external_resource->alpha_type_, resource_->GetHdrMetadata(),
-            external_resource->context_provider_wrapper_,
-            resource_->owning_thread_ref_,
-            resource_->owning_thread_task_runner_, std::move(release_callback));
+            external_resource->context_provider_wrapper_, owning_thread_ref_,
+            owning_thread_task_runner_, std::move(release_callback));
     return image;
   } else {
     CanvasResourceSharedImage* resource_si =
@@ -235,8 +240,8 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
     image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
         client_shared_image, resource_->sync_token(),
         client_shared_image->alpha_type(), resource_->GetHdrMetadata(),
-        resource_si->context_provider_wrapper_, resource_->owning_thread_ref_,
-        resource_->owning_thread_task_runner_, std::move(release_callback));
+        resource_si->context_provider_wrapper_, owning_thread_ref_,
+        owning_thread_task_runner_, std::move(release_callback));
 
     DCHECK(image);
     return image;

@@ -49,7 +49,13 @@ class PLATFORM_EXPORT ExportedCanvasResource
   }
 
  private:
+  bool is_cross_thread() const {
+    return base::PlatformThread::CurrentRef() != owning_thread_ref_;
+  }
+
   scoped_refptr<CanvasResource> resource_;
+  const base::PlatformThreadRef owning_thread_ref_;
+  const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
   const bool use_legacy_external_canvas_resource_bitmap_path_;
 };
