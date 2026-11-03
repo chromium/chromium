@@ -134,6 +134,7 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-astro ] ExpectedCol
 # Slow on DCHECK builds being used on fuchsia builders.
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-sherlock ] ExpectedColor_maps [ Slow ]
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedColor_maps [ Slow ]
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-qemu-x64 ] ExpectedColor_maps [ Slow ]
 
 ###################
 # Failures/Flakes #

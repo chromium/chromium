@@ -492,7 +492,9 @@ crbug.com/425739516 [ mac arch-arm64 angle-metal graphite-enabled ] Pixel_Reflec
 # Tests either fail consistently or flakily on Android in TreesInViz mode.
 crbug.com/415830130 [ fuchsia ] Pixel_Video_MP4_TreesInViz [ Failure ]
 crbug.com/415830130 [ android android-chromium ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
-crbug.com/415830130 [ angle-swiftshader fuchsia fuchsia-board-qemu-x64 google-0xc0de ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
+crbug.com/415830130 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
+# TODO(crbug.com/575495101): External memory is not supported on Lavapipe in gfxstream.
+crbug.com/575495101 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/415830130 [ angle-vulkan arm fuchsia fuchsia-board-sherlock no-asan no-clang-coverage ] Pixel_SolidColorBackground_TreesInViz [ Failure ]
 # TODO(crbug.com/431824747): Re-add when the test is re-enabled.
 # crbug.com/415830130 [ mac ] Pixel_RenderPasses_TreesInViz [ Failure ]

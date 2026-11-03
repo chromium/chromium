@@ -212,6 +212,7 @@ crbug.com/364179193 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 # WebGL's accelerated canvas capture is currently only supported on Win, Mac, ChromeOS.
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+crbug.com/575495101 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_WebGLFloat [ Failure ]
 
 # VP9 zero copy appears to be broken on newer driver versions.
 crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]

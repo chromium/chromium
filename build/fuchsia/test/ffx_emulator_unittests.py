@@ -23,7 +23,6 @@ class FfxEmulatorTest(unittest.TestCase):
                     **{
                         'product': None,
                         'enable_graphics': False,
-                        'hardware_gpu': False,
                         'logs_dir': '.',
                         'with_network': False,
                         'everlasting': True,
@@ -43,7 +42,6 @@ class FfxEmulatorTest(unittest.TestCase):
                     **{
                         'product': None,
                         'enable_graphics': False,
-                        'hardware_gpu': False,
                         'logs_dir': '.',
                         'with_network': False,
                         'everlasting': False,
@@ -62,7 +60,6 @@ class FfxEmulatorTest(unittest.TestCase):
                 **{
                     'product': None,
                     'enable_graphics': False,
-                    'hardware_gpu': False,
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
@@ -84,7 +81,6 @@ class FfxEmulatorTest(unittest.TestCase):
                 **{
                     'product': None,
                     'enable_graphics': False,
-                    'hardware_gpu': False,
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
@@ -100,24 +96,60 @@ class FfxEmulatorTest(unittest.TestCase):
 
     @mock.patch('ffx_emulator.run_ffx_command')
     def test_use_large_device_spec(self, mock_ffx) -> None:
-        """FfxEmulator should use large device spec."""
+        """FfxEmulator should use the large device spec if specified."""
         FfxEmulator(
             argparse.Namespace(
                 **{
                     'product': None,
                     'enable_graphics': False,
-                    'hardware_gpu': False,
                     'logs_dir': '.',
                     'with_network': False,
                     'everlasting': False,
-                    'device_spec': 'large',
+                    'device_spec': 'x64-emu-large',
                 }
             )
         ).__enter__()
         self.assertIn(
-            ' '.join(['--device', 'large']),
+            ' '.join(['--device', 'x64-emu-large']),
             ' '.join(mock_ffx.call_args.kwargs['cmd']),
         )
+
+    @mock.patch('ffx_emulator.run_ffx_command')
+    def test_default_gpu_on_x64(self, mock_ffx) -> None:
+        """FfxEmulator should use lavapipe on x64."""
+        FfxEmulator(
+            argparse.Namespace(
+                **{
+                    'product': 'terminal.x64',
+                    'enable_graphics': False,
+                    'logs_dir': '.',
+                    'with_network': False,
+                    'everlasting': False,
+                    'device_spec': '',
+                }
+            )
+        ).__enter__()
+        self.assertIn(
+            ' '.join(['--gpu', 'lavapipe']),
+            ' '.join(mock_ffx.call_args.kwargs['cmd']),
+        )
+
+    @mock.patch('ffx_emulator.run_ffx_command')
+    def test_no_gpu_on_arm64(self, mock_ffx) -> None:
+        """FfxEmulator should not pass --gpu on arm64."""
+        FfxEmulator(
+            argparse.Namespace(
+                **{
+                    'product': 'terminal.qemu-arm64',
+                    'enable_graphics': False,
+                    'logs_dir': '.',
+                    'with_network': False,
+                    'everlasting': False,
+                    'device_spec': '',
+                }
+            )
+        ).__enter__()
+        self.assertNotIn('--gpu', mock_ffx.call_args.kwargs['cmd'])
 
 
 if __name__ == '__main__':

@@ -120,6 +120,13 @@
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+###############################
+# Permanent Slow Expectations #
+###############################
+
+# Slow on x64 emulators with software Vulkan (Lavapipe).
+crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-qemu-x64 ] ScreenshotSync_GPURasterWithDivs [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################

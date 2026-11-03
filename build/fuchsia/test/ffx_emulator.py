@@ -78,6 +78,11 @@ class FfxEmulator(AbstractContextManager):
             emu_command.extend(['--reuse-with-check'])
         if self._device_spec:
             emu_command.extend(['--device', self._device_spec])
+        if board == 'x64':
+            # Force host-side CPU-based Vulkan rendering (Lavapipe) on x64
+            # emulator instances to ensure stable and reliable graphics
+            # execution on headless GCE VMs running swarming tests.
+            emu_command.extend(['--gpu', 'lavapipe'])
 
         # fuchsia-sdk does not carry arm64 qemu binaries, so use overrides to
         # allow it using the qemu-arm64 being downloaded separately.

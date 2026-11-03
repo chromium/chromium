@@ -282,6 +282,7 @@ crbug.com/576731816 [ win11 amd-0x7480 ] WebCodecs_cropEncode_sw_decoder_av01.0.
 # QEMU (no hardware GPU/encoder)
 crbug.com/525137354 [ fuchsia fuchsia-board-qemu-x64 ] WebCodecs_*_prefer-hardware* [ Failure ]
 crbug.com/525137354 [ fuchsia fuchsia-board-qemu-x64 ] WebCodecs_ContentHint_* [ Failure ]
+crbug.com/575538918 [ fuchsia fuchsia-board-qemu-x64 ] WebCodecs_convertToRGB_* [ Failure ]
 
 # Sherlock (real device)
 # Fuchsia's H264EncoderSettings FIDL doesn't support setting the profile, so
