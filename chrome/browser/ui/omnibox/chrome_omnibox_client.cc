@@ -1045,6 +1045,10 @@ void ChromeOmniboxClient::OnInputInProgress(bool in_progress) {
 }
 
 void ChromeOmniboxClient::OnPopupVisibilityChanged(bool popup_is_open) {
+  if (!location_bar_) {
+    // `location_bar_` can be null in tests.
+    return;
+  }
   content::WebContents* const web_contents = location_bar_->GetWebContents();
   if (web_contents) {
     auto* const helper =

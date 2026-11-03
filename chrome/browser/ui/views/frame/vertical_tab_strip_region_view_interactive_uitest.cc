@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
@@ -19,21 +20,28 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -524,4 +532,136 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripExpandOnHoverInteractiveUiTest,
                 "VerticalTabs_ExpandOnHover_Hide");
           },
           0));
+}
+
+// Runs expand-on-hover scenarios with the Full WebUI omnibox, whose popup opens
+// whenever the omnibox has focus, with or without suggestions.
+class VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest
+    : public VerticalTabStripExpandOnHoverInteractiveUiTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto features =
+        VerticalTabStripExpandOnHoverInteractiveUiTest::GetEnabledFeatures();
+    features.push_back({omnibox::internal::kWebUIOmniboxFullPopup, {}});
+    return features;
+  }
+
+  // Waits for the omnibox to have focus with the Full popup open.
+  auto WaitForFullPopupFocus() {
+    return PollUntil(
+        [this]() {
+          const auto* controller =
+              browser_view()->GetLocationBar()->GetOmniboxController();
+          return controller->edit_model()->has_focus() &&
+                 controller->popup_state_manager()->popup_state() ==
+                     OmniboxPopupState::kFull;
+        },
+        "WaitForFullPopupFocus");
+  }
+};
+
+// Verifies that with the Full WebUI omnibox, focusing the omnibox without
+// suggestions leaves expand-on-hover expanded, showing suggestions locks it
+// collapsed while the mouse stays over VTS, and hiding them releases the lock.
+IN_PROC_BROWSER_TEST_F(
+    VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest,
+    SuggestionsLockAndUnlockExpandOnHover) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kWebUIInputFocused);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  StateChange input_focused;
+  input_focused.event = kWebUIInputFocused;
+  input_focused.where = {"omnibox-full-app", "omnibox-popup-searchbox",
+                         "cr-searchbox-input", "#input"};
+  input_focused.test_function = R"((el) => {
+    if (!el || !el.ownerDocument.hasFocus()) {
+      return false;
+    }
+    let active = el.ownerDocument.activeElement;
+    while (active?.shadowRoot?.activeElement) {
+      active = active.shadowRoot.activeElement;
+    }
+    return active === el;
+  })";
+  input_focused.continue_across_navigation = true;
+
+  RunTestSequence(
+      CollapseVerticalTabStripWithExpandOnHover(),
+      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
+      WaitForExpandOnHover(true), MoveMouseTo(kTabStripRegionElementId),
+
+      // Focusing the omnibox opens the Full popup without suggestions, which
+      // must not collapse expand-on-hover.
+      Do([this]() { chrome::FocusLocationBar(browser()); }),
+      WaitForFullPopupFocus(), WaitForOmniboxPopupOpen(false),
+      WaitForExpandOnHover(true),
+      InAnyContext(
+          WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      InAnyContext(InstrumentNonTabWebView(
+          kPopupWebView, base::BindLambdaForTesting([this]() -> views::View* {
+            return browser_view()
+                ->GetLocationBar()
+                ->GetOmniboxPopupView()
+                ->presenter()
+                ->GetWebUIContent();
+          }))),
+      InSameContext(WaitForWebContentsReady(
+          kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))),
+      InAnyContext(WaitForStateChange(kPopupWebView, input_focused)),
+
+      // Typing to show suggestions collapses expand-on-hover despite the mouse
+      // remaining over VTS.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_A, ui::EF_NONE)),
+      WaitForOmniboxPopupOpen(true), WaitForExpandOnHover(false),
+
+      // Moving the mouse inside VTS while suggestions show must not re-expand.
+      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
+      WaitForOmniboxPopupOpen(true), WaitForExpandOnHover(false),
+
+      // Deleting the text hides the suggestions and releases the lock, while
+      // the omnibox keeps focus.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_BACK, ui::EF_NONE)),
+      WaitForOmniboxPopupOpen(false), WaitForExpandOnHover(true),
+      WaitForFullPopupFocus());
+}
+
+// Verifies that with the Full WebUI omnibox, opening a new tab page, which
+// focuses the omnibox without suggestions, and switching tabs while the mouse
+// is over the expanded vertical tab strip don't collapse expand-on-hover.
+IN_PROC_BROWSER_TEST_F(
+    VerticalTabStripExpandOnHoverFullWebUIOmniboxInteractiveUiTest,
+    NewTabAndTabSwitchPreserveExpandOnHover) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+
+  base::UserActionTester user_action_tester;
+  auto get_hide_count = [&user_action_tester]() {
+    return user_action_tester.GetActionCount("VerticalTabs_ExpandOnHover_Hide");
+  };
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab), CollapseVerticalTabStripWithExpandOnHover(),
+      MoveMouseTo(kVerticalTabStripCollapseButtonElementId),
+      WaitForExpandOnHover(true),
+
+      // Position cursor inside the expanded region (past the collapsed width)
+      // so any transient collapse shrinks out from under the cursor.
+      MoveMouseTo(kTabStripRegionElementId),
+      Do([&user_action_tester]() { user_action_tester.ResetCounts(); }),
+
+      // The new tab page focuses the omnibox, which opens the Full popup
+      // without suggestions.
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUINewTabURL)),
+      WaitForFullPopupFocus(), WaitForExpandOnHover(true),
+      CheckResult(get_hide_count, 0),
+
+      // Switch to the first tab and back while hovered in VTS.
+      SelectTab(kTabStripElementId, 0), WaitForExpandOnHover(true),
+      CheckResult(get_hide_count, 0), SelectTab(kTabStripElementId, 1),
+      WaitForFullPopupFocus(), WaitForExpandOnHover(true),
+      CheckResult(get_hide_count, 0));
 }
