@@ -74,6 +74,11 @@ class GlicInstance {
   // context update is not.
   virtual void SendAdditionalContext(mojom::AdditionalContextPtr context) = 0;
 
+  // Sends a blocked data-transfer action notice to this instance's web client
+  // if one exists.
+  virtual void NotifyDataTransferActionsBlocked(
+      mojom::DataTransferActionsBlockedNoticePtr notice) = 0;
+
   // Focuses the instance if it is active.
   // More specifically, it will focus the active embedder.
   virtual void FocusIfActive() = 0;

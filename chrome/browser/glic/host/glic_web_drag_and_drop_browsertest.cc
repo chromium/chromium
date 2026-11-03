@@ -319,6 +319,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class GlicDragEligibilityBrowserTest : public GlicBrowserTest {
  public:
   explicit GlicDragEligibilityBrowserTest(bool enable_web_drag = true) {
+    SetGlicPagePath("/glic/test_client/index.html");
     if (enable_web_drag) {
       feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                       features::kGlicWebDragAndDropFileUpload},
@@ -333,6 +334,43 @@ class GlicDragEligibilityBrowserTest : public GlicBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     GlicBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::WebContents* InstallBlockedNoticesRecorder(
+      GlicInstanceImpl* glic_instance) {
+    EXPECT_OK(WaitForGlicClient());
+    content::WebContents* glic_guest =
+        glic_instance->host().web_client_contents();
+    EXPECT_TRUE(glic_guest);
+    EXPECT_TRUE(content::ExecJs(glic_guest, R"(
+      (async () => {
+        window.__capturedBlockedNotices = [];
+        await window.client.getInitialized();
+        window.client.browser.getDataTransferActionsBlockedNotices().subscribe(
+            notice => window.__capturedBlockedNotices.push(notice));
+      })()
+    )"));
+    return glic_guest;
+  }
+
+  base::ListValue GetCapturedBlockedNotices(content::WebContents* glic_guest) {
+    return content::EvalJs(glic_guest, "window.__capturedBlockedNotices")
+        .TakeValue()
+        .TakeList();
+  }
+
+  void ExpectSingleBlockedDropNotice(
+      content::WebContents* glic_guest,
+      mojom::DataTransferActionsBlockedReason expected_reason) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return GetCapturedBlockedNotices(glic_guest).size() == 1u; }));
+    base::ListValue notices = GetCapturedBlockedNotices(glic_guest);
+    ASSERT_EQ(notices.size(), 1u);
+    EXPECT_EQ(notices[0].GetDict().FindInt("action"),
+              static_cast<int>(mojom::DataTransferAction::kDrop));
+    EXPECT_EQ(notices[0].GetDict().FindInt("reason"),
+              static_cast<int>(expected_reason));
   }
 
  private:
@@ -357,6 +395,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
   content::WebContents* glic_webui = glic_instance->host().webui_contents();
   ASSERT_TRUE(glic_webui);
 
@@ -379,6 +420,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
                "Glic.InvokeResult2.WebDragDrop",
                static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
   }));
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
@@ -427,6 +469,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
 
   content::DropData drop_data;
   drop_data.file_contents = {1, 2, 3, 4};
@@ -445,6 +490,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kPageContextIneligible, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  ExpectSingleBlockedDropNotice(
+      glic_guest,
+      mojom::DataTransferActionsBlockedReason::kIneligiblePageContext);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
@@ -461,6 +509,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
 
   content::DropData drop_data;
   drop_data.file_contents = {1, 2, 3, 4};
@@ -481,6 +532,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kPageContextIneligible, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  ExpectSingleBlockedDropNotice(
+      glic_guest,
+      mojom::DataTransferActionsBlockedReason::kIneligiblePageContext);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
@@ -489,6 +543,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
   content::WebContents* glic_webui = glic_instance->host().webui_contents();
   ASSERT_TRUE(glic_webui);
 
@@ -504,6 +561,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kUnknownDragSource, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  ExpectSingleBlockedDropNotice(
+      glic_guest,
+      mojom::DataTransferActionsBlockedReason::kUnsupportedOrExpiredSource);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
@@ -513,6 +573,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
 
   BrowserWindowInterface* incognito_browser =
       InProcessBrowserTest::CreateIncognitoBrowser();
@@ -537,6 +600,8 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kCrossProfileDragBlocked, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  ExpectSingleBlockedDropNotice(
+      glic_guest, mojom::DataTransferActionsBlockedReason::kCrossProfile);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
@@ -549,6 +614,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
   content::WebContents* glic_webui = glic_instance->host().webui_contents();
   ASSERT_TRUE(glic_webui);
 
@@ -563,6 +631,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kBlockedByFeatureFlag, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
@@ -574,6 +643,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
 
   content::RenderFrameHost* main_frame =
       active_tab->GetContents()->GetPrimaryMainFrame();
@@ -599,6 +671,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
       "Glic.DragAndDrop.ValidationResult2",
       GlicDragAndDropValidationResult::kSourceFrameDestroyed, 1);
   histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
+  ExpectSingleBlockedDropNotice(
+      glic_guest,
+      mojom::DataTransferActionsBlockedReason::kUnsupportedOrExpiredSource);
 }
 
 }  // namespace
