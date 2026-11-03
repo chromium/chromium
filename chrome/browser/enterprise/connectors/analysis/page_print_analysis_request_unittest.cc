@@ -11,11 +11,13 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
@@ -29,17 +31,28 @@ static base::ReadOnlySharedMemoryRegion CreateFakePage(size_t page_size) {
 
 constexpr std::pair<ScanRequestUploadResult, size_t> kTestValues[] = {
     {ScanRequestUploadResult::kSuccess, 1024},
-    {ScanRequestUploadResult::kFileTooLarge, 50 * 1024 * 1024}};
+    {ScanRequestUploadResult::kFileTooLarge, 100 * 1024 * 1024 + 1}};
 
 class PagePrintAnalysisRequestTest
     : public testing::TestWithParam<
           std::pair<ScanRequestUploadResult, size_t>> {
  public:
+  PagePrintAnalysisRequestTest() {
+    // The default upload limit is 2048 MB, which exceeds the maximum size
+    // supported by `base::ReadOnlySharedMemoryRegion::Create` (`int::max()`).
+    // Override `max_file_size_mb` to 100 MB so we can test the `kFileTooLarge`
+    // threshold without exceeding the shared memory allocation limit.
+    // TODO(b/488083588): clean up when removing `kEnableNewUploadSizeLimit`.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kEnableNewUploadSizeLimit, {{"max_file_size_mb", "100"}});
+  }
+
   ScanRequestUploadResult expected_result() const { return GetParam().first; }
 
   size_t page_size() const { return GetParam().second; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment environment_;
 };
 
