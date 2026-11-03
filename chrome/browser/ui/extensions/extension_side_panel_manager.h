@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
 
-#include <optional>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -53,8 +51,11 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
   ~ExtensionSidePanelManager() override;
 
   // Returns the window-scoped manager for `browser`, or null if there is
-  // none. Tab-scoped instances are not registered and are not returned here.
+  // none.
   static ExtensionSidePanelManager* From(BrowserWindowInterface* browser);
+
+  // Returns the tab-scoped manager for `tab`, or null if there is none.
+  static ExtensionSidePanelManager* From(tabs::TabInterface* tab);
 
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
       const ExtensionId& extension_id);
@@ -98,9 +99,7 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  // Only set for the window-scoped instance; tab-scoped instances are reached
-  // through TabFeatures instead.
-  std::optional<ui::ScopedUnownedUserData<ExtensionSidePanelManager>>
+  ui::ScopedUnownedUserData<ExtensionSidePanelManager>
       scoped_unowned_user_data_;
 };
 

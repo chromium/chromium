@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -28,9 +29,7 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       tab_interface_(nullptr),
       registry_(registry),
       for_tab_(false),
-      scoped_unowned_user_data_(std::in_place,
-                                browser->GetUnownedUserDataHost(),
-                                *this) {
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   RegisterExtensionEntries();
 }
 
@@ -42,7 +41,9 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       browser_(nullptr),
       tab_interface_(tab_interface),
       registry_(tab_registry),
-      for_tab_(true) {
+      for_tab_(true),
+      scoped_unowned_user_data_(tab_interface->GetUnownedUserDataHost(),
+                                *this) {
   RegisterExtensionEntries();
 }
 
@@ -52,6 +53,12 @@ ExtensionSidePanelManager::~ExtensionSidePanelManager() = default;
 ExtensionSidePanelManager* ExtensionSidePanelManager::From(
     BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+ExtensionSidePanelManager* ExtensionSidePanelManager::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 ExtensionSidePanelCoordinator*

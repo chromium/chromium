@@ -9,11 +9,11 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -42,9 +42,8 @@ class ExtensionSidePanelInteractiveTest
       const ExtensionId& extension_id,
       content::WebContents* web_contents) {
     auto* manager = web_contents
-                        ? tabs::TabInterface::GetFromContents(web_contents)
-                              ->GetTabFeatures()
-                              ->extension_side_panel_manager()
+                        ? ExtensionSidePanelManager::From(
+                              tabs::TabInterface::GetFromContents(web_contents))
                         : ExtensionSidePanelManager::From(browser());
     return manager->GetExtensionCoordinatorForTesting(extension_id);
   }

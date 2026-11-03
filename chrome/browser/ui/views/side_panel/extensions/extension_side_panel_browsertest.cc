@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -62,6 +61,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -318,9 +318,8 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
       const ExtensionId& extension_id,
       content::WebContents* web_contents) {
     auto* manager = web_contents
-                        ? tabs::TabInterface::GetFromContents(web_contents)
-                              ->GetTabFeatures()
-                              ->extension_side_panel_manager()
+                        ? ExtensionSidePanelManager::From(
+                              tabs::TabInterface::GetFromContents(web_contents))
                         : ExtensionSidePanelManager::From(browser());
     return manager->GetExtensionCoordinatorForTesting(extension_id);
   }

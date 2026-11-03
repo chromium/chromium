@@ -447,10 +447,6 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
-  extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
-    return extension_side_panel_manager_.get();
-  }
-
   tab_groups::SavedTabGroupWebContentsListener*
   saved_tab_group_web_contents_listener() const {
     return saved_tab_group_web_contents_listener_.get();

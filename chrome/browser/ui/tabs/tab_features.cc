@@ -834,8 +834,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 
   extension_side_panel_manager_ =
-      std::make_unique<extensions::ExtensionSidePanelManager>(
-          profile, &tab, side_panel_registry_.get());
+      GetUserDataFactory()
+          .CreateInstance<extensions::ExtensionSidePanelManager>(
+              tab, profile, &tab, side_panel_registry_.get());
 
   tab_dialog_manager_ = std::make_unique<TabDialogManager>(&tab);
 
