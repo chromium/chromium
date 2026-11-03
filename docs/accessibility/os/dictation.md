@@ -147,7 +147,7 @@ to run pumpkin in.
 
 1. Update the Dictation [semantic_tags.txt](https://source.corp.google.com/piper///depot/google3/chrome/chromeos/accessibility/dictation/semantic_tags.txt)
 file with the tags that correspond to the new commands you’d like to add. All
-Dictation commands can be found in [macro_names.js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/macros/macro_names.js).
+Dictation commands can be found in [macro_names.ts](https://source.chromium.org/chromium/chromium/src/+/main:ash/webui/common/resources/accessibility/macro_names.ts).
 See the "creating patterns files" section of the [Dictation google3 documentation](https://source.corp.google.com/piper///depot/google3/chrome/chromeos/accessibility/dictation/README.md)
 for more information on semantic tags.
 2. Update the Pumpkin DLC according to the [documentation](https://source.corp.google.com/piper///depot/google3/chrome/chromeos/accessibility/dictation/README.md).
@@ -157,7 +157,7 @@ directory (e.g. ~/pumpkin-3.0.tar.xz) if you followed the documentation above.
 4. Add tests for the new commands to [dictation_pumpkin_parse_test.js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/parse/dictation_pumpkin_parse_test.js).
 These should fail initially.
 5. Make your tests pass by connecting the new commands to
-[pumpkin_parse_strategy.js](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin_parse_strategy.js).
+[pumpkin_parse_strategy.ts](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin_parse_strategy.ts).
 6. (Optional, but strongly recommended) Add tests to [dictation_browsertest.cc](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/accessibility/dictation_browsertest.cc)
 to get end-to-end test coverage.
 
