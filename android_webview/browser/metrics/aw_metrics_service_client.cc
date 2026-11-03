@@ -20,6 +20,7 @@
 #include "base/android/jni_string.h"
 #include "base/barrier_closure.h"
 #include "base/base_paths_android.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
@@ -326,20 +327,29 @@ void AwMetricsServiceClient::Initialize(PrefService* local_state) {
   synthetic_trial_registry_ =
       std::make_unique<variations::SyntheticTrialRegistry>();
   synthetic_trial_observation_.Observe(synthetic_trial_registry_.get());
+}
 
-  // Create the MetricsService immediately so that other code can make use of
-  // it. Chrome always creates the MetricsService as well.
+void AwMetricsServiceClient::PostFeatureListSetup() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(init_finished_);
+  CHECK(!metrics_service_);
+  // The MetricsService snapshots feature-dependent configuration on
+  // construction (e.g. the log storage limits from GetStorageLimits()), so it
+  // must not be created before the FeatureList is available.
+  CHECK(base::FeatureList::GetInstance());
+
+  // Create the MetricsService as soon as features are available so that other
+  // code can make use of it. Chrome always creates the MetricsService as well.
   metrics_service_ = std::make_unique<metrics::MetricsService>(
       metrics_state_manager_.get(), this, local_state_);
+
+  SetUpMetricsDir();
 
   // Registration of providers has to wait until consent is determined. To
   // do otherwise means the providers would always be configured with reporting
   // disabled (because when this is called in production consent hasn't been
   // determined).
-  // We also need the metrics directory to have been set up by calling
-  // SetUpMetricsDir().
-  // If consent has not been determined or the metrics directory not set, this
-  // does nothing.
+  // If consent has not been determined, this does nothing.
   MaybeStartMetrics();
 }
 
@@ -472,7 +482,7 @@ void AwMetricsServiceClient::FlushPendingSyntheticTrialsFromJava() {
 }
 
 bool AwMetricsServiceClient::IsReadyToStart() const {
-  return init_finished_ && set_consent_finished_ && !metrics_dir_.empty();
+  return metrics_service_ && set_consent_finished_;
 }
 
 bool AwMetricsServiceClient::IsConsentDetermined() const {
@@ -506,7 +516,7 @@ AwMetricsServiceClient::GetSyntheticTrialRegistry() {
 
 metrics::MetricsService* AwMetricsServiceClient::GetMetricsService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This will be null if initialization hasn't finished.
+  // This will be null until PostFeatureListSetup() has run.
   return metrics_service_.get();
 }
 
@@ -641,6 +651,9 @@ bool AwMetricsServiceClient::ShouldStartUpFast() const {
 
 metrics::MetricsLogStore::StorageLimits
 AwMetricsServiceClient::GetStorageLimits() const {
+  // The limits are read from feature params, which silently fall back to their
+  // defaults if read before the FeatureList is set up.
+  CHECK(base::FeatureList::GetInstance());
   return GetStorageLimitsImpl();
 }
 
@@ -736,8 +749,6 @@ void AwMetricsServiceClient::SetUpMetricsDir() {
     base::CreateDirectory(no_backup_files_dir);
     metrics_dir_ = std::move(no_backup_files_dir);
   }
-
-  MaybeStartMetrics();
 }
 
 base::FilePath AwMetricsServiceClient::GetMetricsDir() {

@@ -12,12 +12,16 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/metrics/metrics_log.h"
+#include "components/metrics/metrics_log_store.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -117,7 +121,7 @@ std::unique_ptr<TestingPrefServiceSimple> CreateTestPrefs() {
 std::unique_ptr<TestClient> CreateAndInitTestClient(PrefService* prefs) {
   auto client = std::make_unique<TestClient>();
   client->Initialize(prefs);
-  client->SetUpMetricsDir();
+  client->PostFeatureListSetup();
   return client;
 }
 
@@ -191,7 +195,7 @@ TEST_F(AwMetricsServiceClientTest, TestSetConsentTrueBeforeInit) {
   auto client = std::make_unique<TestClient>();
   client->SetHaveMetricsConsent(true, true);
   client->Initialize(prefs.get());
-  client->SetUpMetricsDir();
+  client->PostFeatureListSetup();
   EXPECT_TRUE(client->IsRecordingActive());
   EXPECT_TRUE(prefs->HasPrefPath(metrics::prefs::kMetricsClientID));
   EXPECT_TRUE(
@@ -203,7 +207,7 @@ TEST_F(AwMetricsServiceClientTest, TestSetConsentFalseBeforeInit) {
   auto client = std::make_unique<TestClient>();
   client->SetHaveMetricsConsent(false, false);
   client->Initialize(prefs.get());
-  client->SetUpMetricsDir();
+  client->PostFeatureListSetup();
   EXPECT_FALSE(client->IsRecordingActive());
   EXPECT_FALSE(prefs->HasPrefPath(metrics::prefs::kMetricsClientID));
   EXPECT_FALSE(
@@ -372,12 +376,48 @@ TEST_F(AwMetricsServiceClientTest,
   EXPECT_TRUE(base::PathExists(upload_dir_));
 }
 
+TEST_F(AwMetricsServiceClientTest, MetricsServiceNotCreatedBeforeFeatureList) {
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+  client->Initialize(prefs.get());
+  EXPECT_FALSE(client->GetMetricsService());
+}
+
 TEST_F(AwMetricsServiceClientTest,
-       MetricsServiceCreatedFromInitializeWithNoConsent) {
+       MetricsServiceCreatedFromPostFeatureListSetupWithNoConsent) {
   auto prefs = CreateTestPrefs();
   auto client = CreateAndInitTestClient(prefs.get());
   EXPECT_FALSE(client->IsReportingEnabled());
   EXPECT_TRUE(client->GetMetricsService());
+}
+
+// Regression test: log storage limits must come from the feature params that
+// are only available once the FeatureList is set up, i.e. after Initialize().
+TEST_F(AwMetricsServiceClientTest,
+       LogStoreHonorsFeatureParamsSetAfterInitialize) {
+  // Declared first so that it outlives |client|.
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto prefs = CreateTestPrefs();
+  auto client = std::make_unique<TestClient>();
+  client->Initialize(prefs.get());
+
+  // Raise the max ongoing log size from its 100 KiB default, mimicking field
+  // trial params that only become visible after Initialize() in production.
+  scoped_feature_list.InitFromCommandLine(
+      "AwMetricsLogTrimming:max_ongoing_log_size_bytes/512000", "");
+  client->PostFeatureListSetup();
+
+  metrics::MetricsLogStore* log_store =
+      client->GetMetricsService()->LogStoreForTest();
+  log_store->LoadPersistedUnsentLogs();
+  // Random data is incompressible, so the stored (compressed) log is larger
+  // than the default limit but within the overridden one.
+  log_store->StoreLog(base::RandBytesAsString(200 * 1024),
+                      metrics::MetricsLog::ONGOING_LOG, metrics::LogMetadata(),
+                      metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  log_store->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
+
+  EXPECT_EQ(1u, log_store->ongoing_log_count());
 }
 
 TEST_F(AwMetricsServiceClientTest, GetMetricsServiceIfStarted) {
@@ -407,7 +447,7 @@ TEST_F(AwMetricsServiceClientTest, ShouldComputeCorrectSampleBucketValues) {
     auto client = std::make_unique<SampleBucketValueTestClient>();
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());
-    client->SetUpMetricsDir();
+    client->PostFeatureListSetup();
 
     EXPECT_EQ(client->GetSampleBucketValue(),
               test.expected_sample_bucket_value);

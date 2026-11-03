@@ -65,18 +65,18 @@ extern const char kCrashpadHistogramAllocatorName[];
 //
 //   startup
 //      │
-//      ├───────────────┐
-//      │               ▼
-//      │            query GMS for consent
-//      ▼               │
-//   Initialize()       │
-//      │               │
-//      ▼               │
-//   SetUpMetricsDir()  │
-//      │               ▼
-//      │            SetHaveMetricsConsent()
-//      │               │
-//      │ ┌─────────────┘
+//      ├─────────────────────┐
+//      │                     ▼
+//      │                  query GMS for consent
+//      ▼                     │
+//   Initialize()             │
+//      │                     │
+//      ▼                     │
+//   PostFeatureListSetup()   │
+//      │                     ▼
+//      │                  SetHaveMetricsConsent()
+//      │                     │
+//      │ ┌───────────────────┘
 //      ▼ ▼
 //   MaybeStartMetrics()
 //      │
@@ -88,13 +88,19 @@ extern const char kCrashpadHistogramAllocatorName[];
 // SetHaveMetricsConsent(). Querying GMS is slow, so SetHaveMetricsConsent()
 // typically happens after Initialize(), but it may happen before.
 //
-// Initialize() is called before Finch is set up, and SetUpMetricsDir() is
-// called afterward to allow it to check base::Feature flags.
+// Initialize() is called before variations are set up, so any base::Feature
+// state it reads only reflects defaults; it creates what variations setup
+// itself needs (e.g. the MetricsStateManager and the FieldTrialList).
+// PostFeatureListSetup() is called once the base::FeatureList has been set up;
+// it creates the MetricsService, which snapshots feature-dependent
+// configuration such as GetStorageLimits(), and sets up the metrics directory,
+// which also checks base::Feature flags.
 //
-// Each path sets a flag, |init_finished_| or |set_consent_finished_|, to show
-// that path has finished, and |metrics_dir_| must also have been set. Each of
-// the steps ends by calling MaybeStartMetrics(), which does nothing unless all
-// three steps have happened.
+// Each path records its progress: |metrics_service_| is only set by
+// PostFeatureListSetup() (which also requires Initialize() to have run and sets
+// up |metrics_dir_|), and |set_consent_finished_| is set by the consent path.
+// PostFeatureListSetup() and SetHaveMetricsConsent() both end by calling
+// MaybeStartMetrics(), which does nothing unless both paths have finished.
 //
 // If consent was granted, MaybeStartMetrics() determines sampling by hashing
 // the client ID (generating a new ID if there was none). If this client is in
@@ -145,9 +151,14 @@ class AwMetricsServiceClient
 
   ~AwMetricsServiceClient() override;
 
-  // Initializes, but does not necessarily start, the MetricsService. See the
-  // documentation at the top of the file for more details.
+  // Performs the part of initialization that must happen before the
+  // base::FeatureList is set up, so it must not depend on base::Feature state.
+  // See the documentation at the top of the file for more details.
   void Initialize(PrefService* pref_service);
+  // Completes initialization once the base::FeatureList is available: creates
+  // (but does not necessarily start) the MetricsService and sets up the metrics
+  // directory. Must be called exactly once, after Initialize().
+  void PostFeatureListSetup();
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);
@@ -251,11 +262,6 @@ class AwMetricsServiceClient
   // Path where files related to metrics are stored.
   base::FilePath GetMetricsDir();
 
-  // Set up the path used to store metrics. Separate from `Initialize` to enable
-  // this to check feature flags, which aren't initialized yet when `Initialize`
-  // runs.
-  void SetUpMetricsDir();
-
   // WebViewAppStateObserver
   void OnAppStateChanged(WebViewAppStateObserver::State state) override;
 
@@ -286,6 +292,11 @@ class AwMetricsServiceClient
   bool IsReadyToStart() const;
   void MaybeStartMetrics();
   void RegisterForNotifications();
+
+  // Sets up the path used to store metrics. Called from
+  // PostFeatureListSetup() since it checks feature flags, which aren't
+  // initialized yet when `Initialize` runs.
+  void SetUpMetricsDir();
 
   void RegisterMetricsProvidersAndInitState();
 

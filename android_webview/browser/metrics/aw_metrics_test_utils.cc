@@ -43,6 +43,7 @@ void AwMetricsTestBase::SetUp() {
 
   auto client = std::make_unique<TestMetricsServiceClient>();
   client->Initialize(prefs_.get());
+  client->PostFeatureListSetup();
   AwMetricsServiceClient::SetInstance(std::move(client));
 }
 
