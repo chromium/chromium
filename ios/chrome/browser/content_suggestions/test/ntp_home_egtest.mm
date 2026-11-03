@@ -138,7 +138,7 @@ id<GREYMatcher> notPracticallyVisible() {
 
 // Returns a matcher which is true if the view is mostly not visible.
 id<GREYMatcher> mostlyNotVisible() {
-  return grey_not(grey_minimumVisiblePercent(0.33));
+  return grey_not(grey_minimumVisiblePercent(0.4));
 }
 
 // Returns true if the difference between the two numbers is less than the
@@ -178,8 +178,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   std::vector<SEL> minimalAppUITests = {
       @selector(testAccessibility),
       @selector(testOmniboxWidthRotation),
-      // TODO(crbug.com/522830813): Test is failing.
-      @selector(DISABLED_testMinimumHeight),
+      @selector(testMinimumHeight),
       @selector(testInitialPositionAndOrientationChange),
       @selector(testMagicStack),
       @selector(testMagicStackRotationWithChromeNextIA),
@@ -239,8 +238,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
     config.features_enabled.push_back(kChromeNextIa);
     config.additional_args.push_back("--test-ios-module-ranker=safety_check");
   }
-  // TODO(crbug.com/522830813): Test is failing.
-  if ([self isRunningTest:@selector(DISABLED_testMinimumHeight)]) {
+  if ([self isRunningTest:@selector(testMinimumHeight)]) {
     config.features_enabled.push_back(kChromeNextIa);
   }
 
@@ -1090,8 +1088,7 @@ TAG_SMOKE_TEST(NTPHomeTestCase, testTapFakeOmnibox);
   }
 }
 
-// TODO(crbug.com/522830813): Test is failing.
-- (void)DISABLED_testMinimumHeight {
+- (void)testMinimumHeight {
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self
