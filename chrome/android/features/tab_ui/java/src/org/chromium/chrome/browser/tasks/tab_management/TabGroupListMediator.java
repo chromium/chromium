@@ -301,6 +301,7 @@ public class TabGroupListMediator {
                             mActionConfirmationManager,
                             mFaviconResolver,
                             () -> {
+                                sortUtil.invalidate();
                                 SavedTabGroup savedGroup =
                                         mTabGroupSyncService.getGroup(groupInfo.syncId);
                                 if (savedGroup != null) {
