@@ -5,6 +5,7 @@
 #include "chrome/browser/android/tab_state_storage_service_android.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/android/callback_android.h"
@@ -13,6 +14,8 @@
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -29,6 +32,7 @@
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -42,19 +46,13 @@ namespace tabs {
 
 namespace {
 
-void RunJavaCallbackLoadAll(JNIEnv* env,
-                            const JavaRef<jobject>& j_loaded_data_callback,
+void RunJavaCallbackLoadAll(const JavaRef<jobject>& j_loaded_data_callback,
                             std::unique_ptr<StorageLoadedData> loaded_data) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   StorageLoadedDataAndroid* data_android =
       new StorageLoadedDataAndroid(env, std::move(loaded_data));
   base::android::RunObjectCallbackAndroid(j_loaded_data_callback,
                                           data_android->GetJavaObject());
-}
-
-void RunJavaCallbackCountTabsForWindow(JNIEnv* env,
-                                       const JavaRef<jobject>& j_count_callback,
-                                       int count) {
-  base::android::RunIntCallbackAndroid(j_count_callback, count);
 }
 
 // Recursively crawls the entire tree and retrieves storage ids for all nodes.
@@ -102,16 +100,15 @@ TabStateStorageServiceAndroid::TabStateStorageServiceAndroid(
 
 TabStateStorageServiceAndroid::~TabStateStorageServiceAndroid() = default;
 
-void TabStateStorageServiceAndroid::BoostPriority(JNIEnv* env) {
+void TabStateStorageServiceAndroid::BoostPriority() {
   tab_state_storage_service_->BoostPriority();
 }
 
-void TabStateStorageServiceAndroid::Save(JNIEnv* env, TabAndroid* tab) {
+void TabStateStorageServiceAndroid::Save(TabAndroid* tab) {
   tab_state_storage_service_->Save(tab);
 }
 
 void TabStateStorageServiceAndroid::SaveWithMetadata(
-    JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record,
     TabAndroid* tab) {
@@ -119,51 +116,43 @@ void TabStateStorageServiceAndroid::SaveWithMetadata(
 }
 
 void TabStateStorageServiceAndroid::LoadAllData(
-    JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record,
     const jni_zero::JavaRef<jobject>& j_loaded_data_callback) {
   auto load_data_callback = base::BindOnce(
-      &RunJavaCallbackLoadAll, env,
+      &RunJavaCallbackLoadAll,
       jni_zero::ScopedJavaGlobalRef<jobject>(j_loaded_data_callback));
   tab_state_storage_service_->LoadAllNodes(window_tag, is_off_the_record,
                                            std::move(load_data_callback));
 }
 
 void TabStateStorageServiceAndroid::CountTabsForWindow(
-    JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record,
-    const jni_zero::JavaRef<jobject>& j_callback) {
-  auto count_callback =
-      base::BindOnce(&RunJavaCallbackCountTabsForWindow, env,
-                     jni_zero::ScopedJavaGlobalRef<jobject>(j_callback));
+    base::OnceCallback<void(int)> count_callback) {
   tab_state_storage_service_->CountTabsForWindow(window_tag, is_off_the_record,
                                                  std::move(count_callback));
 }
 
-void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
+void TabStateStorageServiceAndroid::ClearState() {
   auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
   tab_state_storage_service_->ClearAllWindows();
   tab_state_storage_service_->ClearAllDivergenceWindows();
 }
 
-void TabStateStorageServiceAndroid::ClearWindow(JNIEnv* env,
-                                                const std::string& window_tag) {
+void TabStateStorageServiceAndroid::ClearWindow(const std::string& window_tag) {
   auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
   tab_state_storage_service_->ClearWindow(window_tag);
   tab_state_storage_service_->ClearDivergenceWindow(window_tag);
 }
 
 void TabStateStorageServiceAndroid::ClearAllWindowsExcept(
-    JNIEnv* env,
     const std::vector<std::string>& window_tags) {
   auto scoped_batch = tab_state_storage_service_->CreateScopedBatch();
   tab_state_storage_service_->ClearAllWindowsExcept(window_tags);
 }
 
 void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
-    JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record) {
   std::vector<StorageId> ids;
@@ -175,7 +164,6 @@ void TabStateStorageServiceAndroid::ClearWindowWithOtrStatus(
 }
 
 void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
-    JNIEnv* env,
     const std::string& window_tag,
     bool is_off_the_record,
     const TabStripCollection* collection) {
@@ -195,26 +183,24 @@ void TabStateStorageServiceAndroid::ClearUnusedNodesForWindow(
                                                         is_off_the_record, ids);
 }
 
-void TabStateStorageServiceAndroid::PrintAll(JNIEnv* env) {
+void TabStateStorageServiceAndroid::PrintAll() {
 #if defined(NDEBUG)
   tab_state_storage_service_->PrintAll();
 #endif
 }
 
 jni_zero::JniUniquePtr<ScopedBatchAndroid>
-TabStateStorageServiceAndroid::CreateBatch(JNIEnv* env) {
+TabStateStorageServiceAndroid::CreateBatch() {
   return jni_zero::MakeUnique<ScopedBatchAndroid>(
       tab_state_storage_service_->CreateScopedBatch());
 }
 
-void TabStateStorageServiceAndroid::SetKey(JNIEnv* env,
-                                           const std::string& window_tag,
+void TabStateStorageServiceAndroid::SetKey(const std::string& window_tag,
                                            std::vector<uint8_t> key) {
   tab_state_storage_service_->SetKey(window_tag, std::move(key));
 }
 
-void TabStateStorageServiceAndroid::RemoveKey(JNIEnv* env,
-                                              const std::string& window_tag) {
+void TabStateStorageServiceAndroid::RemoveKey(const std::string& window_tag) {
   tab_state_storage_service_->RemoveKey(window_tag);
 }
 

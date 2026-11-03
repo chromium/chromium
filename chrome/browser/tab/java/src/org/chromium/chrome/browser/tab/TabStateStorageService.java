@@ -228,7 +228,7 @@ public class TabStateStorageService {
                 long nativeTabStateStorageServiceAndroid,
                 @JniType("std::string") String windowTag,
                 boolean isOffTheRecord,
-                Callback<Integer> countCallback);
+                @JniType("base::OnceCallback<void(int)>") Callback<Integer> countCallback);
 
         void clearState(long nativeTabStateStorageServiceAndroid);
 

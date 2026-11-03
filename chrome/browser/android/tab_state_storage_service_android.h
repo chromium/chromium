@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TAB_STATE_STORAGE_SERVICE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
@@ -34,49 +35,41 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
       TabStateStorageService* tab_state_storage_service);
   ~TabStateStorageServiceAndroid() override;
 
-  void BoostPriority(JNIEnv* env);
+  void BoostPriority();
 
-  void Save(JNIEnv* env, TabAndroid* tab);
+  void Save(TabAndroid* tab);
 
-  void SaveWithMetadata(JNIEnv* env,
-                        const std::string& window_tag,
+  void SaveWithMetadata(const std::string& window_tag,
                         bool is_off_the_record,
                         TabAndroid* tab);
 
-  void LoadAllData(JNIEnv* env,
-                   const std::string& window_tag,
+  void LoadAllData(const std::string& window_tag,
                    bool is_off_the_record,
                    const jni_zero::JavaRef<jobject>& j_loaded_data_callback);
 
-  void CountTabsForWindow(JNIEnv* env,
-                          const std::string& window_tag,
+  void CountTabsForWindow(const std::string& window_tag,
                           bool is_off_the_record,
-                          const jni_zero::JavaRef<jobject>& j_count_callback);
+                          base::OnceCallback<void(int)> count_callback);
 
-  void ClearState(JNIEnv* env);
+  void ClearState();
 
-  void ClearWindow(JNIEnv* env, const std::string& window_tag);
+  void ClearWindow(const std::string& window_tag);
 
-  void ClearAllWindowsExcept(JNIEnv* env,
-                             const std::vector<std::string>& window_tags);
+  void ClearAllWindowsExcept(const std::vector<std::string>& window_tags);
 
-  void ClearWindowWithOtrStatus(JNIEnv* env,
-                                const std::string& window_tag,
+  void ClearWindowWithOtrStatus(const std::string& window_tag,
                                 bool is_off_the_record);
-  void ClearUnusedNodesForWindow(JNIEnv* env,
-                                 const std::string& window_tag,
+  void ClearUnusedNodesForWindow(const std::string& window_tag,
                                  bool is_off_the_record,
                                  const TabStripCollection* collection);
 
-  void PrintAll(JNIEnv* env);
+  void PrintAll();
 
-  jni_zero::JniUniquePtr<ScopedBatchAndroid> CreateBatch(JNIEnv* env);
+  jni_zero::JniUniquePtr<ScopedBatchAndroid> CreateBatch();
 
-  void SetKey(JNIEnv* env,
-              const std::string& window_tag,
-              std::vector<uint8_t> key);
+  void SetKey(const std::string& window_tag, std::vector<uint8_t> key);
 
-  void RemoveKey(JNIEnv* env, const std::string& window_tag);
+  void RemoveKey(const std::string& window_tag);
 
   base::android::ScopedJavaLocalRef<jbyteArray> GenerateKey(
       JNIEnv* env,
