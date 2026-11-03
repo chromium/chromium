@@ -101,8 +101,15 @@ environmental limitations:
   (`Could not start WebDriver: session not created: Chrome instance exited`),
   they are likely on a headless VM or missing display environment variables.
   Tell them to:
-  - Pass `--headless` (or `--browser=chrome-headless`), prepend `xvfb-run` to
-    their command, or
+  - Pass `--headless` (or `--browser=chrome-headless`) for functional smoke
+    checks. For `browser-startup` (where `--headless` bypasses normal
+    `BrowserView` and compositor presentation callbacks), run headed inside an
+    `xvfb-run` subshell with a window manager and forward `--ozone-platform=x11`
+    after `--` (or in `browser.config.hjson`):
+    ```bash
+    xvfb-run -a -s "-screen 0 1920x1080x24" sh -c \
+      "openbox & vpython3 third_party/crossbench/cb.py browser-startup ... -- --ozone-platform=x11"
+    ```
   - When running headed on CloudTop/CRD with an active session, export
     `WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/$(id -u)` (or `DISPLAY`
     for X11).
@@ -185,11 +192,39 @@ flags:
 - **Bypass Local Environment Checks**: Pass `--env-validation=warn` when running
   on local workstations or CloudTop VMs so Crossbench does not abort on running
   background processes or CPU governors.
-- **Account for Startup Bimodality**: Local startup paint metrics exhibit a
-  bimodal distribution (`~9%` relative stddev). Run `--repeat=30` to `100` and
-  compare medians, Hodges-Lehmann estimators, or paired per-repetition diffs
-  matched by `cb_run` across interleaved runs rather than relying on small-N
-  means.
+- **Prevent Hardlink (`cp -al`) Binary Aliasing**: When snapshotting a baseline
+  build directory using hardlinks (`cp -al out/Release out/Release_Base`),
+  always run `rm -f out/Release/chrome` before rebuilding the experiment arm and
+  verify distinct inodes (`ls -li out/Release_Base/chrome out/Release/chrome`)
+  so both arms do not point to the same binary.
+- **Separate Cold Run `0` from Warm Runs `1..N-1`**: Even though every
+  repetition uses a fresh `--user-data-dir` under `0_default`, repetition `0`
+  (`cb_run == 0`) is an OS page-cache, dylib, and GPU shader cold start
+  (`~20-30%` slower), whereas repetitions `1..N-1` (`cb_run >= 1`) reflect warm
+  OS-cache runs. Separate `cb_run == 0` from `cb_run >= 1` (or use paired
+  per-repetition diffs matched by `cb_run`) when computing steady-state medians
+  and comparing traces.
+- **Account for Startup Bimodality**: Local and bot startup paint metrics
+  exhibit a bimodal distribution (`~9%` relative stddev). Run `--repeat=30` to
+  `100` and compare medians (`P50`), `P90`, Hodges-Lehmann estimators, or paired
+  per-repetition diffs matched by `cb_run` across interleaved runs rather than
+  relying on small-N means.
+- **Distinguish CPU `FirstPaint` vs. Actual Screen Presentation**:
+  `Startup.BrowserWindow.FirstPaint` (`browser_window_first_paint_ms`) is
+  recorded in `BrowserView::PaintChildren` when CPU display-list recording
+  (`LayerTreeHost::DoUpdateLayers`) finishes—not when pixels appear on screen.
+  On macOS (`mac-m1-pro-perf`), an async scheduling race between
+  `VizCompositorThread` `CVDisplayLink` initialization (`WindowServer` RPC) and
+  `CrBrowserMain`'s `BrowserCrApplication::sendEvent` can shift CPU `FirstPaint`
+  by `~25-30 ms` between bimodal clusters while actual screen presentation
+  shifts by `<0.5 VSync`. Always cross-check the
+  `InitialWebUI.Startup.BrowserWindow.FirstPaint` UMA histogram / async Perfetto
+  trace slice (which records `presentation_feedback.timestamp` in
+  `BrowserView::OnFirstPresentation` when `"waap"` is enabled in the `perfetto`
+  probe's `enabled_categories` and can be queried via a custom `trace_processor`
+  SQL probe or inspected in the trace),
+  `SubmitCompositorFrameToPresentationCompositorFrame`, and
+  `Startup.FirstWebContents.NonEmptyPaint3` when triaging startup regressions.
 - **Default ChromeDriver Isolation**: Note that ChromeDriver automatically
   passes `--disable-extensions`, `--disable-sync`, and creates a fresh temporary
   `--user-data-dir` per run by default.
@@ -211,6 +246,17 @@ not reach the swarming bots automatically.
   CI-only and will return a "No props found" or "Bot invalid" error if used for
   on-demand Pinpoint jobs. Advise users to test on equivalent capacity bots like
   `mac-m1_mini_2020-perf` or standard trybots like `linux-perf-rel`.
+- **Fetching CI Bot Perfetto Traces via CAS**: To inspect traces from a CI
+  waterfall regression on a restricted bot without Pinpoint:
+  1. Query the build steps and properties to locate the Swarming task ID for the
+     benchmark shard: `bb get <build_id> -A -json` (or
+     `bb get <build_id> -steps -json`)
+  2. Fetch the task's CAS output root digest:
+     `swarming collect -server https://chrome-swarming.appspot.com -task-summary-json summary.json <task_id>`
+  3. Download the isolated artifacts:
+     `cas download -cas-instance projects/chrome-swarming/instances/default_instance -digest <hash>/<size> -dir <out_dir>`
+     (where per-repetition `perfetto.trace.pb.gz` and `trace_processor/*.csv`
+     files are preserved under `<benchmark>/output/`).
 
 ### 8. Common Trace Processor Gotchas
 

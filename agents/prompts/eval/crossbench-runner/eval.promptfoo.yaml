@@ -46,3 +46,12 @@ tests:
     assert:
       - type: contains
         value: "generate_perf_sharding.py"
+  - vars:
+      query: >-
+        browser_window_first_paint_ms regressed by 30ms on mac-m1-pro-perf in
+        browser_startup.crossbench, but first_web_contents_non_empty_paint_ms did
+        not change. How do I verify whether actual window screen presentation
+        regressed?
+    assert:
+      - type: contains
+        value: "InitialWebUI.Startup.BrowserWindow.FirstPaint"
