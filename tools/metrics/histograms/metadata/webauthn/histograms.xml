@@ -186,6 +186,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.Android.IdentityCredentialsApiCall.{Operation}"
+    enum="WebAuthenticationAndroidApiCallEvent" expires_after="2027-11-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the lifecycle (Started and terminal outcome: Succeeded, Cancelled,
+    TimedOut, or Failed) of {Operation} on Android. Comparing Started against
+    the sum of terminal outcomes surfaces silent hangs or wedged calls.
+  </summary>
+  <token key="Operation">
+    <variant name="CreateCredential"
+        summary="IdentityCredentialClient.createCredential calls"/>
+    <variant name="SignalCredentialState"
+        summary="IdentityCredentialClient.signalCredentialState calls"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
     enum="Boolean" expires_after="2027-03-21">
   <owner>derinel@google.com</owner>

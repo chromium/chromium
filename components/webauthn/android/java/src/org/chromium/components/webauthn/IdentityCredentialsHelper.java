@@ -27,6 +27,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 
 /** Handles requests dispatched to the identity_credentials GmsCore module. */
@@ -35,6 +36,10 @@ import org.chromium.components.webauthn.cred_man.CredManHelper;
 public class IdentityCredentialsHelper {
     private static final String TAG = "IdentityCredentialsHelper";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
+    private static final String CREATE_CREDENTIAL_HISTOGRAM =
+            "WebAuthentication.Android.IdentityCredentialsApiCall.CreateCredential";
+    private static final String SIGNAL_CREDENTIAL_STATE_HISTOGRAM =
+            "WebAuthentication.Android.IdentityCredentialsApiCall.SignalCredentialState";
 
     private final AuthenticationContextProvider mAuthenticationContextProvider;
 
@@ -48,6 +53,12 @@ public class IdentityCredentialsHelper {
         mAuthenticationContextProvider = authenticationContextProvider;
     }
 
+    @VisibleForTesting
+    IdentityCredentialClient getClient() {
+        return IdentityCredentialManager.Companion.getClient(
+                assertNonNull(mAuthenticationContextProvider.getContext()));
+    }
+
     // Dispatches a WebAuthn conditionalCreate request.
     public void handleConditionalCreateRequest(
             PublicKeyCredentialCreationOptions options,
@@ -57,11 +68,16 @@ public class IdentityCredentialsHelper {
         log(TAG, "handleConditionalCreateRequest");
         WebauthnRequestCallback callback =
                 assertNonNull(mAuthenticationContextProvider.getRequestCallback());
+        AndroidApiCallMetrics.@Nullable OneShotRecorder recorder = null;
         try {
-            IdentityCredentialClient client =
-                    IdentityCredentialManager.Companion.getClient(
-                            assertNonNull(mAuthenticationContextProvider.getContext()));
-            client.createCredential(buildConditionalCreateRequest(options, origin, clientDataHash))
+            IdentityCredentialClient client = getClient();
+            CreateCredentialRequest request =
+                    buildConditionalCreateRequest(options, origin, clientDataHash);
+            recorder = AndroidApiCallMetrics.startCall(CREATE_CREDENTIAL_HISTOGRAM);
+            AndroidApiCallMetrics.attachToTask(
+                            client.createCredential(request),
+                            recorder,
+                            /* nullResultIsFailure= */ true)
                     .addOnSuccessListener(
                             GmsCoreUtils.wrapSuccessCallback(
                                     (handle) ->
@@ -70,6 +86,9 @@ public class IdentityCredentialsHelper {
                     .addOnFailureListener(
                             GmsCoreUtils.wrapFailureCallback(this::onConditionalCreateFailure));
         } catch (Exception e) {
+            if (recorder != null) {
+                recorder.finish(ApiCallEvent.FAILED);
+            }
             logError(TAG, "CreateCredential failed ", e);
             callback.onComplete(
                     WebauthnRequestResponse.forFailedMakeCredential(
@@ -155,11 +174,13 @@ public class IdentityCredentialsHelper {
     public void handleReportRequest(
             PublicKeyCredentialReportOptions options, @Nullable String origin) {
         log(TAG, "handleReportRequest");
+        AndroidApiCallMetrics.@Nullable OneShotRecorder recorder = null;
         try {
-            IdentityCredentialClient client =
-                    IdentityCredentialManager.Companion.getClient(
-                            assertNonNull(mAuthenticationContextProvider.getContext()));
-            client.signalCredentialState(buildSignalCredentialStateRequest(options, origin))
+            IdentityCredentialClient client = getClient();
+            SignalCredentialStateRequest request =
+                    buildSignalCredentialStateRequest(options, origin);
+            recorder = AndroidApiCallMetrics.startCall(SIGNAL_CREDENTIAL_STATE_HISTOGRAM);
+            AndroidApiCallMetrics.attachToTask(client.signalCredentialState(request), recorder)
                     .addOnSuccessListener(
                             GmsCoreUtils.wrapSuccessCallback(
                                     (handle) ->
@@ -168,6 +189,9 @@ public class IdentityCredentialsHelper {
                             GmsCoreUtils.wrapFailureCallback(
                                     (e) -> logError(TAG, "Signal API Report request failed ", e)));
         } catch (Exception e) {
+            if (recorder != null) {
+                recorder.finish(ApiCallEvent.FAILED);
+            }
             logError(TAG, "handleReportRequest failed ", e);
             return;
         }
