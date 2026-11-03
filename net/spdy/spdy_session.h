@@ -869,9 +869,9 @@ class NET_EXPORT SpdySession
   // Inserts a newly-activated stream into |active_streams_|.
   void InsertActivatedStream(std::unique_ptr<SpdyStream> stream);
 
-  // Remove all internal references to |stream|, call OnClose() on it,
-  // and process any pending stream requests before deleting it.  Note
-  // that |stream| may hold the last reference to the session.
+  // Remove all internal references to `stream`, call OnClose() on it, and
+  // process any pending stream requests before deleting it. Note that `stream`
+  // may hold the last reference to the session.
   void DeleteStream(std::unique_ptr<SpdyStream> stream, int status);
 
   void RecordHistograms();

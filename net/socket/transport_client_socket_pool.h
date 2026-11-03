@@ -350,7 +350,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     bool IsEmpty() const {
       return active_socket_count_ == 0 && idle_sockets_.empty() &&
              jobs_.empty() && unbound_requests_.empty() &&
-             bound_requests_.empty() && jobs_being_destroyed_ == 0;
+             bound_requests_.empty();
     }
 
     bool HasAvailableSocketSlot(size_t max_sockets_per_group) const {
@@ -394,12 +394,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     // Remove `job` from this group, which must already own `job`. Returns the
     // removed ConnectJob.
     std::unique_ptr<ConnectJob> RemoveUnboundJob(ConnectJob* job);
-    // Destroys `job` while preventing this Group from being considered empty
-    // and deleted if `job`'s destructor reentrantly completes or cancels
-    // another ConnectJob in this Group. Must be called to destroy all
-    // ConnectJobs associated with this Group, even those that completed
-    // synchronously without being added to `jobs_`.
-    void DestroyConnectJob(std::unique_ptr<ConnectJob> job);
     void RemoveAllUnboundJobs();
 
     bool has_unbound_requests() const { return !unbound_requests_.empty(); }
@@ -448,8 +442,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
         ConnectJob* connect_job);
 
     // Finds the bound request, if any, corresponding to `client_socket_handle`
-    // and deletes it. Returns true if there was one.
-    bool FindAndRemoveBoundRequest(ClientSocketHandle* client_socket_handle);
+    // and returns it. Destroys the ConnectJob bound to the request, if there
+    // was one.
+    std::unique_ptr<Request> FindAndRemoveBoundRequest(
+        ClientSocketHandle* client_socket_handle);
 
     // Change the priority of the request named by |*handle|.  |*handle|
     // must refer to a request currently present in the group.  If |priority|
@@ -555,11 +551,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     std::list<raw_ptr<ConnectJob, CtnExperimental>> unassigned_jobs_;
     RequestQueue unbound_requests_;
     size_t active_socket_count_ = 0;  // number of active client sockets
-    // Number of ConnectJobs currently being destroyed on the stack. While
-    // non-zero, the Group is not considered empty so that reentrant ConnectJob
-    // completions or cancellations during ~ConnectJob() cannot delete the Group
-    // while an outer call is still operating on it.
-    size_t jobs_being_destroyed_ = 0;
     // A timer for when to start the backup job.
     base::OneShotTimer backup_job_timer_;
 
