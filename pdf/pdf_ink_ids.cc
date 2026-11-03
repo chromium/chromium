@@ -13,7 +13,8 @@ namespace chrome_pdf {
 
 static_assert(
     std::is_same_v<InkStrokeId::underlying_type, size_t> &&
-        std::is_same_v<InkTextId::underlying_type, size_t>,
+        std::is_same_v<InkTextId::underlying_type, size_t> &&
+        std::is_same_v<InkSignatureId::underlying_type, size_t>,
     "User-added Ink IDs must be size_t for unified chronological order.");
 
 size_t GetIdTypeValue(const IdType& id) {
