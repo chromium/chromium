@@ -117,9 +117,3 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
     observer.OnIdentityAccessTokenRefreshFailed(identity, error, scopes);
   }
 }
-
-bool SystemIdentityManager::IsScopeLimitedError(
-    id<RefreshAccessTokenError> error) {
-  return false;
-}
-

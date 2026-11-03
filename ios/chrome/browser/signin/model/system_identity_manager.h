@@ -330,8 +330,7 @@ class SystemIdentityManager {
 
   // Returns whether the `error` is due to restricted access to the scopes in
   // the access token request.
-  // TODO(crbug.com/425592221): Convert to pure virtual method.
-  virtual bool IsScopeLimitedError(id<RefreshAccessTokenError> error);
+  virtual bool IsScopeLimitedError(id<RefreshAccessTokenError> error) = 0;
 
   // Returns whether the `error` associated with `identity` is due to MDM
   // (Mobile Device Management) or not.
