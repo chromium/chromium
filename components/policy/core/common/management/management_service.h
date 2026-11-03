@@ -105,15 +105,25 @@ class POLICY_EXPORT ManagementStatusProvider {
  protected:
   const std::string& cache_pref_name() const { return cache_pref_name_; }
 
+  // Same as `GetAuthority()`, but if this provider requires a cache and no
+  // value is cached yet, the authority is fetched synchronously and cached.
+  // This may block.
+  EnterpriseManagementAuthority GetAuthorityOrFetchBlocking();
+
  private:
   // TODO(crbug.com/531448879): Remove this when AzureAD logic migration is
   // complete.
   friend class ManagementService;
 
+  std::optional<EnterpriseManagementAuthority> GetCachedAuthority() const;
+
   std::variant<raw_ptr<PrefService, DanglingUntriaged>,
                scoped_refptr<PersistentPrefStore>>
       cache_;
   const std::string cache_pref_name_;
+  // Authority fetched by `GetAuthorityOrFetchBlocking()` before a `PrefService`
+  // was available to cache it.
+  std::optional<EnterpriseManagementAuthority> fetched_authority_;
   base::WeakPtrFactory<ManagementStatusProvider> weak_factory_{this};
 };
 
@@ -160,6 +170,12 @@ class POLICY_EXPORT ManagementService {
   // `GetManagementAuthorityTrustworthiness()`.
   ManagementAuthorityTrustworthiness
   GetManagementAuthorityTrustworthinessForPolicyLoading();
+
+  // Same as `GetManagementAuthorityTrustworthinessForPolicyLoading()`, but
+  // values that are not cached yet (e.g. on first run) are fetched
+  // synchronously. This may block, so it asserts that blocking is allowed.
+  ManagementAuthorityTrustworthiness
+  GetOrFetchManagementAuthorityTrustworthinessForPolicyLoading();
 
   // Returns whether there is any management authority at all.
   bool IsManaged();
@@ -213,6 +229,10 @@ class POLICY_EXPORT ManagementService {
                             EnterpriseManagementAuthority>> results);
 
  private:
+  ManagementAuthorityTrustworthiness
+  GetManagementAuthorityTrustworthinessForPolicyLoadingImpl(
+      bool fetch_if_not_cached);
+
   // Returns a bitset of with the active `EnterpriseManagementAuthority` on the
   // managed entity.
   int GetManagementAuthorities();

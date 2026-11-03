@@ -5,6 +5,7 @@
 #include "components/policy/core/common/management/management_service.h"
 
 #include <algorithm>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <variant>
@@ -16,6 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -35,6 +38,39 @@ EnterpriseManagementAuthority ManagementStatusProvider::GetAuthority() {
   if (!RequiresCache())
     return FetchAuthority();
 
+  return GetCachedAuthority().value_or(EnterpriseManagementAuthority::NONE);
+}
+
+EnterpriseManagementAuthority
+ManagementStatusProvider::GetAuthorityOrFetchBlocking() {
+  if (!RequiresCache()) {
+    return FetchAuthority();
+  }
+  if (std::optional<EnterpriseManagementAuthority> cached_authority =
+          GetCachedAuthority()) {
+    return *cached_authority;
+  }
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  EnterpriseManagementAuthority authority = FetchAuthority();
+  if (auto* pref_service =
+          std::get_if<raw_ptr<PrefService, DanglingUntriaged>>(&cache_);
+      pref_service && *pref_service) {
+    UpdateCache(authority);
+  } else {
+    // Cached by `UsePrefServiceAsCache()`.
+    fetched_authority_ = authority;
+  }
+  return authority;
+}
+
+std::optional<EnterpriseManagementAuthority>
+ManagementStatusProvider::GetCachedAuthority() const {
+  if (fetched_authority_) {
+    return fetched_authority_;
+  }
+
   if (auto* pref_service =
           std::get_if<raw_ptr<PrefService, DanglingUntriaged>>(&cache_);
       pref_service && *pref_service &&
@@ -43,16 +79,15 @@ EnterpriseManagementAuthority ManagementStatusProvider::GetAuthority() {
         (*pref_service)->GetInteger(cache_pref_name_));
   }
 
-  if (std::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_) &&
-      std::holds_alternative<scoped_refptr<PersistentPrefStore>>(cache_)) {
+  if (auto* pref_store =
+          std::get_if<scoped_refptr<PersistentPrefStore>>(&cache_);
+      pref_store && *pref_store) {
     const base::Value* value = nullptr;
-    if (std::get<scoped_refptr<PersistentPrefStore>>(cache_)->GetValue(
-            cache_pref_name_, &value) &&
-        value->is_int()) {
+    if ((*pref_store)->GetValue(cache_pref_name_, &value) && value->is_int()) {
       return static_cast<EnterpriseManagementAuthority>(value->GetInt());
     }
   }
-  return EnterpriseManagementAuthority::NONE;
+  return std::nullopt;
 }
 
 bool ManagementStatusProvider::RequiresCache() const {
@@ -80,6 +115,12 @@ void ManagementStatusProvider::UsePrefServiceAsCache(PrefService* prefs) {
   DCHECK(!cache_pref_name_.empty())
       << "This management status provider does not support caching";
   cache_ = prefs;
+  if (prefs && fetched_authority_) {
+    UpdateCache(*fetched_authority_);
+    fetched_authority_.reset();
+  } else if (!prefs) {
+    fetched_authority_.reset();
+  }
 }
 
 void ManagementStatusProvider::FetchAuthorityAsync(
@@ -208,6 +249,21 @@ ManagementService::GetManagementAuthorityTrustworthiness() {
 
 ManagementAuthorityTrustworthiness
 ManagementService::GetManagementAuthorityTrustworthinessForPolicyLoading() {
+  return GetManagementAuthorityTrustworthinessForPolicyLoadingImpl(
+      /*fetch_if_not_cached=*/false);
+}
+
+ManagementAuthorityTrustworthiness ManagementService::
+    GetOrFetchManagementAuthorityTrustworthinessForPolicyLoading() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AssertBlockingAllowed();
+  return GetManagementAuthorityTrustworthinessForPolicyLoadingImpl(
+      /*fetch_if_not_cached=*/true);
+}
+
+ManagementAuthorityTrustworthiness
+ManagementService::GetManagementAuthorityTrustworthinessForPolicyLoadingImpl(
+    bool fetch_if_not_cached) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_WIN)
   if (!management_authorities_for_testing_) {
@@ -218,7 +274,8 @@ ManagementService::GetManagementAuthorityTrustworthinessForPolicyLoading() {
               policy_prefs::kAzureActiveDirectoryManagement) {
         continue;
       }
-      result |= provider->GetAuthority();
+      result |= fetch_if_not_cached ? provider->GetAuthorityOrFetchBlocking()
+                                    : provider->GetAuthority();
     }
 
     if (result & EnterpriseManagementAuthority::CLOUD_DOMAIN) {

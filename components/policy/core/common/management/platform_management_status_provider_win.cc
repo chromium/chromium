@@ -46,7 +46,10 @@ AzureActiveDirectoryDeviceStatusProvider::
 
 EnterpriseManagementAuthority
 AzureActiveDirectoryDeviceStatusProvider::FetchAuthority() {
-  if (!base::FeatureList::IsEnabled(
+  // The initial policy load happens before the `base::FeatureList` is
+  // initialized.
+  if (base::FeatureList::GetInstance() &&
+      !base::FeatureList::IsEnabled(
           features::kFilterSensitivePoliciesOnWorkplaceJoinedDevices)) {
     return base::win::IsJoinedToAzureAD() ? CLOUD_DOMAIN : NONE;
   }

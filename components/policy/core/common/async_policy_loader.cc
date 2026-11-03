@@ -139,9 +139,14 @@ PolicyBundle AsyncPolicyLoader::InitialLoad(
   schema_map_ = schema_map;
   if (management_service_) {
     DCHECK_EQ(management_service_, PlatformManagementService::GetInstance());
+    // The initial load is synchronous and occurs during early startup (e.g.
+    // before the thread pool starts and message loops spin) where blocking
+    // disk and registry access is already allowed. Values that are not cached
+    // yet (e.g. on first run) can be fetched synchronously so that sensitive
+    // policies are not filtered out on managed devices.
     platform_management_trustworthiness_ =
         management_service_
-            ->GetManagementAuthorityTrustworthinessForPolicyLoading();
+            ->GetOrFetchManagementAuthorityTrustworthinessForPolicyLoading();
   }
   PolicyBundle bundle = Load();
   platform_management_trustworthiness_.reset();

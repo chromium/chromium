@@ -14,6 +14,7 @@
 #include <cstring>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -397,7 +398,10 @@ class PolicyLoaderWinTest : public PolicyTestBase {
   // files in chrome/test/data/policy/gpo.
   static const wchar_t kTestPolicyKey[];
 
-  PolicyLoaderWinTest() : scoped_domain_(false) {}
+  PolicyLoaderWinTest()
+      : scoped_domain_(false),
+        scoped_device_registered_(false),
+        scoped_azure_ad_join_state_(std::nullopt) {}
   ~PolicyLoaderWinTest() override = default;
 
   void SetUp() override {
@@ -407,6 +411,11 @@ class PolicyLoaderWinTest : public PolicyTestBase {
     // that the test will not be executed if SetUp has a fatal failure. This is
     // important, see crbug.com/721691.
     ASSERT_NO_FATAL_FAILURE(registry_sandbox_.ActivateOverrides());
+  }
+
+  void TearDown() override {
+    PlatformManagementService::GetInstance()->UsePrefServiceAsCache(nullptr);
+    PolicyTestBase::TearDown();
   }
 
   bool Matches(const PolicyBundle& expected) {
@@ -462,6 +471,9 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
   base::win::ScopedDomainStateForTesting scoped_domain_;
+  base::win::ScopedDeviceRegisteredWithManagementForTesting
+      scoped_device_registered_;
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state_;
 };
 
 const wchar_t PolicyLoaderWinTest::kTestPolicyKey[] =
@@ -914,8 +926,8 @@ TEST_F(PolicyLoaderWinTest, SensitivePoliciesHonoredWhenDomainJoined) {
   EXPECT_TRUE(show_home_value->GetBool());
 }
 
-// The MDM status provider reads a cached pref that isn't available in unit
-// tests, so the CLOUD authority is set through the management service.
+// The MDM status also depends on the Windows edition, so the CLOUD authority is
+// set through the management service.
 TEST_F(PolicyLoaderWinTest, SensitivePoliciesHonoredWhenCloudManaged) {
   const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
   RegisterChromeSchema(chrome_ns);
@@ -1005,6 +1017,39 @@ TEST_F(PolicyLoaderWinTest, ReloadPicksUpManagementStateChanges) {
   EXPECT_EQ("", GetHomepageLocation(provider.policies().Get(chrome_ns)));
 
   provider.Shutdown();
+}
+
+// Like on first run, the management state is not cached in these tests. The
+// initial load fetches it instead of treating the device as unmanaged.
+TEST_F(PolicyLoaderWinTest, SensitivePoliciesHonoredWhenAzureADDeviceJoined) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
+      base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::kDevice);
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+
+  EXPECT_EQ("https://example.com", GetHomepageLocation(loaded.Get(chrome_ns)));
+}
+
+TEST_F(PolicyLoaderWinTest,
+       SensitivePoliciesFilteredWhenAzureADWorkplaceJoined) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+  ASSERT_NO_FATAL_FAILURE(InstallSensitiveAndNonSensitivePolicies());
+
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_join_state(
+      base::win::ScopedAzureADJoinStateForTesting::AzureADJoinType::kWorkplace);
+  PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
+                         PlatformManagementService::GetInstance(),
+                         kTestPolicyKey);
+  PolicyBundle loaded = loader.InitialLoad(schema_registry_.schema_map());
+
+  EXPECT_EQ("", GetHomepageLocation(loaded.Get(chrome_ns)));
 }
 
 }  // namespace policy

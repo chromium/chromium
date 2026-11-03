@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -19,14 +22,43 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include <utility>
+
 #include "base/test/test_reg_util_win.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #endif
 
 namespace {
 
 #if BUILDFLAG(IS_WIN)
 const char kMockPolicyName[] = "AllowFileSelectionDialogs";
+
+// Simulates a management status provider that performs a blocking operation
+// to retrieve the device's management authority during initial startup.
+class MockBlockingManagementStatusProvider
+    : public policy::ManagementStatusProvider {
+ public:
+  MockBlockingManagementStatusProvider()
+      : policy::ManagementStatusProvider(
+            policy::policy_prefs::kAzureActiveDirectoryDeviceManagement) {}
+  ~MockBlockingManagementStatusProvider() override = default;
+
+  MOCK_METHOD(policy::EnterpriseManagementAuthority,
+              FetchAuthority,
+              (),
+              (override));
+};
+
 #endif
 
 void VerifyLocalState() {
@@ -102,4 +134,96 @@ class PolicyInitializationBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PolicyInitializationBrowserTest, VerifyLocalState) {
   VerifyLocalState();
 }
+
+// Verifies that when the device is managed and obtaining management status
+// requires an actual blocking call on startup, the blocking call succeeds and
+// sensitive policies (like `HomepageLocation`) are honored rather than
+// filtered.
+class PolicyInitializationWithManagementBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  PolicyInitializationWithManagementBrowserTest() = default;
+  ~PolicyInitializationWithManagementBrowserTest() override = default;
+  PolicyInitializationWithManagementBrowserTest(
+      const PolicyInitializationWithManagementBrowserTest&) = delete;
+  PolicyInitializationWithManagementBrowserTest& operator=(
+      const PolicyInitializationWithManagementBrowserTest&) = delete;
+
+ protected:
+  void SetUp() override {
+    std::vector<std::unique_ptr<policy::ManagementStatusProvider>> providers;
+    auto provider = std::make_unique<
+        testing::StrictMock<MockBlockingManagementStatusProvider>>();
+    EXPECT_CALL(*provider, FetchAuthority())
+        .Times(testing::AtLeast(1))
+        .WillRepeatedly([]() {
+          base::AssertBlockingAllowed();
+          return policy::EnterpriseManagementAuthority::CLOUD_DOMAIN;
+        });
+    providers.push_back(std::move(provider));
+    policy::PlatformManagementService::GetInstance()
+        ->SetManagementStatusProviderForTesting(std::move(providers));
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    policy::PlatformManagementService::GetInstance()->UsePrefServiceAsCache(
+        nullptr);
+    policy::PlatformManagementService::GetInstance()
+        ->SetManagementStatusProviderForTesting({});
+    InProcessBrowserTest::TearDown();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    HKEY root = HKEY_CURRENT_USER;
+    ASSERT_NO_FATAL_FAILURE(registry_override_manager_.OverrideRegistry(root));
+
+    base::win::RegKey key;
+    ASSERT_EQ(ERROR_SUCCESS, key.Create(root, policy::kRegistryChromePolicyKey,
+                                        KEY_SET_VALUE | KEY_WOW64_32KEY));
+    // Write sensitive policy `HomepageLocation` and non-sensitive
+    // `ShowHomeButton`.
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.WriteValue(
+                  base::ASCIIToWide(policy::key::kHomepageLocation).c_str(),
+                  L"https://example.com"));
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.WriteValue(
+                  base::ASCIIToWide(policy::key::kShowHomeButton).c_str(), 1));
+  }
+
+ private:
+  registry_util::RegistryOverrideManager registry_override_manager_;
+  // Set to false/nullopt to mock unmanaged state for isolated testing and to
+  // pre-load management DLLs on the main thread to avoid UI thread blocking.
+  base::win::ScopedDomainStateForTesting scoped_domain_{false};
+  base::win::ScopedDeviceRegisteredWithManagementForTesting scoped_management_{
+      false};
+  base::win::ScopedAzureADJoinStateForTesting scoped_azure_ad_{std::nullopt};
+};
+
+IN_PROC_BROWSER_TEST_F(PolicyInitializationWithManagementBrowserTest,
+                       SensitivePolicyLoadedWithBlockingCall) {
+  // Verify that the sensitive policy was loaded and applied to preferences.
+  EXPECT_EQ("https://example.com/",
+            browser()->GetProfile()->GetPrefs()->GetString(prefs::kHomePage));
+
+  // Also verify that the sensitive policy entry in `PolicyService` is not
+  // ignored.
+  const policy::PolicyNamespace chrome_ns(policy::POLICY_DOMAIN_CHROME, "");
+  const policy::PolicyMap& policies =
+      g_browser_process->policy_service()->GetPolicies(chrome_ns);
+  const policy::PolicyMap::Entry* homepage_entry =
+      policies.Get(policy::key::kHomepageLocation);
+  ASSERT_TRUE(homepage_entry);
+  EXPECT_FALSE(homepage_entry->ignored());
+  ASSERT_NE(homepage_entry->value(base::Value::Type::STRING), nullptr);
+  EXPECT_EQ(base::Value("https://example.com"),
+            *homepage_entry->value(base::Value::Type::STRING));
+
+  // Verify non-sensitive policy is also applied.
+  EXPECT_TRUE(
+      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+}
+
 #endif

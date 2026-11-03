@@ -17,6 +17,10 @@ This should return the appropriate EnterpriseManagementAuthority.
 
 Some management status result is cached due to system API performance. It means we will return stale data during Chrome launch process.
 
+On Windows, values that are not cached yet (e.g. on first run) are fetched
+synchronously for the initial policy load, and cached once Local State is
+available.
+
 ## BrowserManagementService
 
 A specialization of ManagementService that returns management information on the
