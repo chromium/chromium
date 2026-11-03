@@ -82,7 +82,7 @@ export class SettingsAccountPageElement extends SettingsAccountPageElementBase {
   protected accessor mayShowLinkedGoogleServicesSetting_: boolean =
       loadTimeData.getBoolean('mayShowLinkedGoogleServicesSetting');
   protected accessor personalizationCollapseExpanded_: boolean = false;
-  protected accessor dataEncrypted_: boolean = false;
+  private accessor dataEncrypted_: boolean = false;
   protected accessor encryptionExpanded_: boolean = false;
   protected accessor existingPassphraseLabel_: string = '';
 

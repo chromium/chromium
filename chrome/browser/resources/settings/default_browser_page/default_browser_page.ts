@@ -55,7 +55,7 @@ export class SettingsDefaultBrowserPageElement extends
     };
   }
 
-  protected accessor canPin_: boolean = false;
+  private accessor canPin_: boolean = false;
   protected accessor isDefault_: boolean = false;
   protected accessor isSecondaryInstall_: boolean = false;
   protected accessor isUnknownError_: boolean = false;

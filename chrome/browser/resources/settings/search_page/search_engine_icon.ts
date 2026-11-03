@@ -45,7 +45,7 @@ export class SettingsSearchEngineIconElement extends CrLitElement {
   }
 
   accessor engine: SearchEngine|null = null;
-  protected accessor showDownloadedIcon_: boolean = false;
+  private accessor showDownloadedIcon_: boolean = false;
   private timeoutId_: number|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

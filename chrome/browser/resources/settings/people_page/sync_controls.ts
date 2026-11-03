@@ -117,7 +117,7 @@ export class SettingsSyncControlsElement extends
   private cachedSyncPrefs_: Partial<SyncPrefs>|null = null;
   accessor showSyncDisabledInformation: boolean = false;
   protected accessor isAccountSettingsPage_: boolean = false;
-  protected accessor showBatchUploadPromo_: boolean =
+  private accessor showBatchUploadPromo_: boolean =
       loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
   protected accessor batchUploadPromoHTML_: TrustedHTML =
       window.trustedTypes!.emptyHTML;

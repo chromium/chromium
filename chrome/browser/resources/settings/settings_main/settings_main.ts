@@ -101,7 +101,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   protected accessor pageVisibility_: PageVisibility = pageVisibility || {};
-  protected accessor lastRoute_: Route|null = null;
+  private accessor lastRoute_: Route|null = null;
   protected accessor routes_: SettingsRoutes = routes;
   protected accessor inSearchMode_: boolean = false;
   protected accessor showNoResultsFound_: boolean = false;

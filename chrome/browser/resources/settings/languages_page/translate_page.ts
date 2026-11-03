@@ -70,7 +70,7 @@ export class SettingsTranslatePageElement extends
     };
   }
 
-  protected accessor supportedLanguages_:
+  private accessor supportedLanguages_:
       chrome.languageSettingsPrivate.Language[] = [];
   protected accessor translateTarget_: string = '';
   protected accessor alwaysTranslateLanguages_:

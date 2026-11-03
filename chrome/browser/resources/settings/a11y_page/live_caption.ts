@@ -111,18 +111,18 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       false;
   protected accessor speechRecognitionSmallExpertModelState_: string =
       'kNotInstalled';
-  protected accessor speechRecognitionSmallExpertModelProgress_: number = 0;
-  protected accessor speechRecognitionSmallExpertModelSpeed_: string = '';
-  protected accessor speechRecognitionSmallExpertModelEta_: string = '';
-  protected accessor speechRecognitionSmallExpertModelSize_: string = '';
+  private accessor speechRecognitionSmallExpertModelProgress_: number = 0;
+  private accessor speechRecognitionSmallExpertModelSpeed_: string = '';
+  private accessor speechRecognitionSmallExpertModelEta_: string = '';
+  private accessor speechRecognitionSmallExpertModelSize_: string = '';
   // <if expr="not is_chromeos">
-  protected accessor liveCaptionLanguagePref_:
+  private accessor liveCaptionLanguagePref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
   protected accessor enableLiveTranslate_: boolean =
       loadTimeData.getBoolean('enableLiveTranslate');
   protected accessor installedLanguagePacks_: LiveCaptionLanguageList = [];
-  protected accessor availableLanguagePacks_: LiveCaptionLanguageList = [];
-  protected accessor detailLanguage_: LiveCaptionLanguage|undefined;
+  private accessor availableLanguagePacks_: LiveCaptionLanguageList = [];
+  private accessor detailLanguage_: LiveCaptionLanguage|undefined;
   protected accessor showAddLanguagesDialog_: boolean = false;
   // </if>
 

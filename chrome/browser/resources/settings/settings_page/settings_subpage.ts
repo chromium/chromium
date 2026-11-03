@@ -91,7 +91,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   accessor searchIcon: string = '';
   accessor searchTerm: string = '';
   accessor preserveSearchTerm: boolean = false;
-  protected accessor active_: boolean = false;
+  private accessor active_: boolean = false;
 
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;

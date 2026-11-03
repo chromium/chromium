@@ -101,7 +101,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     };
   }
 
-  protected accessor privacyGuideStep_: PrivacyGuideStep;
+  private accessor privacyGuideStep_: PrivacyGuideStep;
   protected accessor stepIndicatorModel_: StepIndicatorModel;
   private accessor syncStatus_: SyncStatus;
   protected accessor translateMultiplier_: number = 1;

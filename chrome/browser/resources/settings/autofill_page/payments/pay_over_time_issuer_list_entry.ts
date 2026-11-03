@@ -52,10 +52,10 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
   accessor payOverTimeIssuer:
       chrome.autofillPrivate.PayOverTimeIssuerEntry = {};
 
-  protected accessor autofillEnableWalletBrandingEnabled_: boolean =
+  private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
-  protected accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
 
   /**

@@ -188,16 +188,16 @@ export class SettingsCaptionsPageElement extends
   protected accessor enableLiveCaption_: boolean =
       loadTimeData.getBoolean('enableLiveCaption');
 
-  protected accessor backgroundColorPref_:
+  private accessor backgroundColorPref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  protected accessor backgroundOpacityPref_:
+  private accessor backgroundOpacityPref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
-  protected accessor textColorPref_: chrome.settingsPrivate.PrefObject<string>|
+  private accessor textColorPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  protected accessor textFontPref_: chrome.settingsPrivate.PrefObject<string>|
+  private accessor textFontPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
-  protected accessor textOpacityPref_:
-      chrome.settingsPrivate.PrefObject<number>|undefined;
+  private accessor textOpacityPref_: chrome.settingsPrivate.PrefObject<number>|
+      undefined;
   protected accessor textShadowPref_: chrome.settingsPrivate.PrefObject<string>|
       undefined;
   protected accessor textSizePref_: chrome.settingsPrivate.PrefObject<string>|

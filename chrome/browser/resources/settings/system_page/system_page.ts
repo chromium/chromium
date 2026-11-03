@@ -112,10 +112,10 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
       undefined;
   protected accessor proxyOverrideRulesPref_:
       chrome.settingsPrivate.PrefObject<ProxyOverrideRule[]>|undefined;
-  protected accessor hardwareAccelerationModeEnabledPref_:
+  private accessor hardwareAccelerationModeEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   // <if expr="is_win">
-  protected accessor isolationStateEnabledPref_:
+  private accessor isolationStateEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   // </if>
 

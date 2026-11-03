@@ -161,7 +161,9 @@ export class SettingsPaymentsPageElement extends
       /**
        * Checks if a mandatory reauth feature flag is enabled.
        */
+      // <if expr="is_win or is_macosx or is_chromeos">
       mandatoryReauthFeatureFlagEnabled_: {type: Boolean},
+      // </if>
 
       /**
        * Checks if pay over time should be shown from the settings page.
@@ -194,14 +196,14 @@ export class SettingsPaymentsPageElement extends
   // <if expr="is_win or is_macosx or is_chromeos">
   private accessor deviceAuthAvailable_: boolean =
       loadTimeData.getBoolean('deviceAuthAvailable');
+  protected accessor mandatoryReauthFeatureFlagEnabled_: boolean =
+      loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
   // </if>
   protected accessor cvcStorageAvailable_: boolean =
       loadTimeData.getBoolean('cvcStorageAvailable');
   protected accessor showBulkRemoveCvcConfirmationDialog_: boolean = false;
   protected accessor shouldShowPayOverTimeSettings_: boolean =
       loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
-  protected accessor mandatoryReauthFeatureFlagEnabled_: boolean =
-      loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
   private accessor prefsInitialized_: boolean = false;
 
   private paymentsManager_: PaymentsManagerProxy =

@@ -53,7 +53,7 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
       loadTimeData.getBoolean('isBatterySaverModeManagedByOS');
   protected accessor numericUncheckedValues_: BatterySaverModeState[] =
       [BatterySaverModeState.DISABLED];
-  protected accessor batterySaverStatePref_: chrome.settingsPrivate.PrefObject|
+  private accessor batterySaverStatePref_: chrome.settingsPrivate.PrefObject|
       undefined;
 
   private metricsProxy_: PerformanceMetricsProxy =

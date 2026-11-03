@@ -76,8 +76,8 @@ export class SettingsSecurityKeysResetDialogElement extends
     };
   }
 
-  protected accessor errorCode_: number|null = null;
-  protected accessor complete_: boolean = false;
+  private accessor errorCode_: number|null = null;
+  private accessor complete_: boolean = false;
   protected accessor shown_: ResetDialogPage = ResetDialogPage.INITIAL;
   protected accessor title_: string = '';
   private browserProxy_: SecurityKeysResetBrowserProxy =

@@ -61,7 +61,7 @@ export class MediaPickerElement extends MediaPickerElementBase {
   accessor type: string = '';
   accessor label: string = '';
   accessor devices: MediaPickerEntry[] = [];
-  protected accessor selectedDevice_: string = '';
+  private accessor selectedDevice_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();

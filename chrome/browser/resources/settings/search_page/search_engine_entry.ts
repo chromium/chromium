@@ -83,7 +83,7 @@ export class SettingsSearchEngineEntryElement extends
   accessor showShortcut: boolean = false;
   accessor showQueryUrl: boolean = false;
   accessor isDefault: boolean = false;
-  protected accessor defaultSearchProviderDataPref_:
+  private accessor defaultSearchProviderDataPref_:
       chrome.settingsPrivate.PrefObject|undefined = undefined;
   protected accessor searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');

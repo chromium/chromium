@@ -169,7 +169,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   protected accessor footerText_: TrustedHTML = window.trustedTypes!.emptyHTML;
   private accessor enableSavePrivatePassesToWallet_: boolean =
       loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses');
-  protected accessor isWalletPassBranding2026Enabled_: boolean =
+  private accessor isWalletPassBranding2026Enabled_: boolean =
       loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled');
   protected accessor saveInProgress_: boolean = false;
 

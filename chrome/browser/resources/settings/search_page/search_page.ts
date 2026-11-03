@@ -102,7 +102,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   protected accessor defaultSearchEngine_: SearchEngine|null = null;
   protected accessor searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
-  protected accessor pickerWithMoreEnginesEnabled_: boolean =
+  private accessor pickerWithMoreEnginesEnabled_: boolean =
       loadTimeData.getBoolean('pickerWithMoreEngines');
   protected accessor searchPageTitle_: string = '';
   protected accessor confirmationToastLabel_: string = '';

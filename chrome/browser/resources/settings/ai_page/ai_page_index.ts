@@ -82,7 +82,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
       loadTimeData.getBoolean('showComposeControl');
   protected accessor enableAiModeSearchSetting_: boolean =
       loadTimeData.getBoolean('enableAiModeSearchSetting');
-  protected accessor actorLoginFederatedLoginSupportEnabled_: boolean =
+  private accessor actorLoginFederatedLoginSupportEnabled_: boolean =
       loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled');
   protected accessor showAiSuggestionsControl_: boolean =
       loadTimeData.getBoolean('showAiSuggestionsControl');

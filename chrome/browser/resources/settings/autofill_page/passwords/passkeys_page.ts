@@ -85,7 +85,7 @@ export class SettingsPasskeysPageElement extends
   // </if>
 
   protected accessor filter_: string = '';
-  protected accessor passkeys_: Passkey[] = [];
+  private accessor passkeys_: Passkey[] = [];
   protected accessor showDeleteConfirmationDialog_: boolean = false;
   // Set if the current platform doesn't support passkey management.
   // (E.g. Windows prior to 2022H2.)

@@ -61,7 +61,7 @@ export class SettingsMemoryPageElement extends SettingsMemoryPageElementBase {
       [MemorySaverModeState.DISABLED];
   protected accessor numericCheckedValue_: MemorySaverModeState =
       MemorySaverModeState.ENABLED;
-  protected accessor memorySaverStatePref_: chrome.settingsPrivate.PrefObject|
+  private accessor memorySaverStatePref_: chrome.settingsPrivate.PrefObject|
       undefined;
 
   private metricsProxy_: PerformanceMetricsProxy =

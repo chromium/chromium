@@ -60,9 +60,9 @@ export class SettingsLiveTranslateElement extends
   }
 
   protected accessor isLiveTranslateEnabled_: boolean = false;
-  protected accessor enableLiveTranslateSubtitle_: string =
+  private accessor enableLiveTranslateSubtitle_: string =
       loadTimeData.getString('captionsEnableLiveTranslateSubtitle');
-  protected accessor languageOptions_: DropdownMenuOptionList = [];
+  private accessor languageOptions_: DropdownMenuOptionList = [];
   protected accessor translatableLanguages_: DropdownMenuOptionList = [];
 
   override connectedCallback() {

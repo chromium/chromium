@@ -23,7 +23,7 @@ export function getHtml(this: SettingsSignoutDialogElement) {
       $i18n{syncDisconnect}
     </cr-button>
   </div>
-<if expr="(not is_chromeos and is_posix) or is_win or is_macosx">
+<if expr="not is_chromeos">
   <div id="wideFooter" slot="footer">
     <div class="cr-row first">
       <cr-checkbox id="deleteProfile" class="flex"

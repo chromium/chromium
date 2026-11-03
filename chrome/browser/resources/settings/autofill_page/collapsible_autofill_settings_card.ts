@@ -102,19 +102,23 @@ export class CollapsibleAutofillSettingsCardElement extends
   }
 
   protected accessor expanded_: boolean = false;
+  // <if expr="is_win or is_macosx or is_chromeos">
   protected accessor enhancedAutofillEligibleUser_: boolean =
       loadTimeData.getBoolean('userEligibleForAutofillAi');
-  // <if expr="is_win or is_macosx or is_chromeos">
   protected accessor autofillAiReauthOnViewingSensitiveDataEnabled_: boolean =
       loadTimeData.getBoolean('autofillAiReauthOnViewingSensitiveDataEnabled');
   // </if>
+  // <if expr="not (is_win or is_macosx or is_chromeos)">
+  private accessor enhancedAutofillEligibleUser_: boolean =
+      loadTimeData.getBoolean('userEligibleForAutofillAi');
+  // </if>
   protected accessor isUserEligibleForWalletablePassDetection_: boolean =
       loadTimeData.getBoolean('isUserEligibleForWalletablePassDetection');
-  protected accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
   protected accessor profileEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  protected accessor autofillAiEnterprisePolicyPref_:
+  private accessor autofillAiEnterprisePolicyPref_:
       chrome.settingsPrivate.PrefObject<ModelExecutionEnterprisePolicyValue>|
       undefined;
 

@@ -44,8 +44,7 @@ export class SettingsAiSuggestionsPageElement extends
     };
   }
 
-  protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
-      undefined;
+  private accessor enterprisePref_: chrome.settingsPrivate.PrefObject|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

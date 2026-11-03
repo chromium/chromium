@@ -77,6 +77,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   static override get properties() {
     return {
+      // <if expr="not is_chromeos">
       /**
        * This flag is used to conditionally show a set of new sign-in UIs to the
        * profiles that have been migrated to be consistent with the web
@@ -95,7 +96,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
        */
       isDasherlessProfile_: {type: Boolean},
 
-      // <if expr="not is_chromeos">
       /**
        * Stored accounts to the system, supplied by SyncBrowserProxy.
        */
@@ -142,20 +142,22 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
+  // <if expr="not is_chromeos">
   protected accessor signinAllowed_: boolean =
       loadTimeData.getBoolean('signinAllowed');
   protected accessor isDasherlessProfile_: boolean =
       loadTimeData.getBoolean('isDasherlessProfile');
+  // </if>
   accessor syncStatus: SyncStatus|null = null;
-  protected accessor authToken_: string = '';
+  private accessor authToken_: string = '';
   protected accessor profileIconUrl_: string = '';
   protected accessor isProfileActionable_: boolean =
       !isChromeOS || loadTimeData.getBoolean('isAccountManagerEnabled');
   protected accessor profileName_: string = '';
-  protected accessor replaceSyncPromosWithSignInPromos_: boolean =
+  private accessor replaceSyncPromosWithSignInPromos_: boolean =
       loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
   protected accessor primaryAccountName_: string = '';
-  protected accessor primaryAccountEmail_: string = '';
+  private accessor primaryAccountEmail_: string = '';
   protected accessor primaryAccountIconUrl_: string = '';
 
   // <if expr="not is_chromeos">

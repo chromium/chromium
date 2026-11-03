@@ -88,7 +88,7 @@ export class SiteShortcutsPageElement extends SiteShortcutsPageElementBase {
   protected accessor inactiveShortcutsExpanded_: boolean = false;
 
   protected accessor dialogModel_: SearchEngine|null = null;
-  protected accessor dialogAnchorElement_: HTMLElement|null = null;
+  private accessor dialogAnchorElement_: HTMLElement|null = null;
   protected accessor showEditDialog_: boolean = false;
   protected accessor showDeleteConfirmationDialog_: boolean = false;
 

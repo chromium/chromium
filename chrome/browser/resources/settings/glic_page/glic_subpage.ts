@@ -143,7 +143,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       loadTimeData.getBoolean('headlessCaptionsEnabled');
   protected accessor glicExtensionsFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicExtensionsFeatureEnabled');
-  protected accessor glicUserStatusCheckFeatureEnabled_: boolean =
+  private accessor glicUserStatusCheckFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicUserStatusCheckFeatureEnabled');
   protected accessor glicSelectionFeatureEnabled_: boolean =
       loadTimeData.getBoolean('glicSelectionFeatureEnabled');

@@ -73,7 +73,7 @@ export class ExceptionListElement extends
     };
   }
 
-  protected accessor siteList_: ExceptionEntry[] = [];
+  private accessor siteList_: ExceptionEntry[] = [];
   protected accessor overflowSiteListExpanded_: boolean = false;
   protected accessor selectedRule_: string = '';
   protected accessor showTabbedAddDialog_: boolean = false;

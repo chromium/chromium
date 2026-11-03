@@ -82,7 +82,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    */
   private firstSyncPrefUpdate_: boolean = true;
 
-  protected accessor syncStatus_: SyncStatus|null = null;
+  private accessor syncStatus_: SyncStatus|null = null;
 
   override connectedCallback() {
     super.connectedCallback();

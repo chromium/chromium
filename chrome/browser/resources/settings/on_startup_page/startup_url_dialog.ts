@@ -66,7 +66,7 @@ export class SettingsStartupUrlDialogElement extends CrLitElement {
     };
   }
 
-  protected accessor error_: UrlInputError = UrlInputError.NONE;
+  private accessor error_: UrlInputError = UrlInputError.NONE;
   protected accessor url_: string = '';
   protected accessor urlLimit_: number = 100 * 1024;  // 100 KB.
   accessor model: StartupPageInfo|null = null;

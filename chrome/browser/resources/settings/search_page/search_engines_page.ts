@@ -99,7 +99,7 @@ export class SettingsSearchEnginesPageElement extends
   protected accessor matchingOtherEngines_: SearchEngine[] = [];
   protected accessor matchingExtensions_: SearchEngine[] = [];
   protected accessor dialogModel_: SearchEngine|null = null;
-  protected accessor dialogAnchorElement_: HTMLElement|null = null;
+  private accessor dialogAnchorElement_: HTMLElement|null = null;
   protected accessor showEditDialog_: boolean = false;
   protected accessor showDeleteConfirmationDialog_: boolean = false;
 

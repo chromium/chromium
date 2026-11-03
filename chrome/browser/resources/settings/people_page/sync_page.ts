@@ -134,16 +134,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   accessor focusConfig: FocusConfig;
-  protected accessor pageStatus_: PageStatus = PageStatus.CONFIGURE;
+  private accessor pageStatus_: PageStatus = PageStatus.CONFIGURE;
   accessor syncPrefs: SyncPrefs|null = null;
   protected accessor syncStatus_:
       SyncStatus = {statusAction: StatusAction.NO_ACTION};
-  protected accessor dataEncrypted_: boolean = false;
+  private accessor dataEncrypted_: boolean = false;
   protected accessor encryptionExpanded_: boolean = false;
   accessor forceEncryptionExpanded: boolean = false;
   protected accessor existingPassphrase_: string = '';
   protected accessor showExistingPassphraseBelowAccount_: boolean = false;
-  protected accessor signedIn_: boolean = true;
+  private accessor signedIn_: boolean = true;
   protected accessor syncDisabledByAdmin_: boolean = false;
   protected accessor syncSectionDisabled_: boolean = false;
   protected accessor mayShowLinkedGoogleServicesSetting_: boolean =

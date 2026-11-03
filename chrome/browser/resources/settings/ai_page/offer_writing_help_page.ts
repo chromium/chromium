@@ -58,8 +58,7 @@ export class SettingsOfferWritingHelpPageElement extends
   protected accessor siteList_: string[] = [];
   protected accessor enableComposeProactiveNudge_: boolean =
       loadTimeData.getBoolean('enableComposeProactiveNudge');
-  protected accessor enterprisePref_: chrome.settingsPrivate.PrefObject|
-      undefined;
+  private accessor enterprisePref_: chrome.settingsPrivate.PrefObject|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

@@ -73,11 +73,11 @@ export class SettingsSuggestionsFromGeminiPageElement extends
       loadTimeData.getBoolean('isAtMemoryEnabled');
   private accessor isAtMemoryTriggerCustomizationAllowed_: boolean =
       loadTimeData.getBoolean('isAtMemoryTriggerCustomizationAllowed');
-  protected accessor findAndFillWithGeminiPref_:
+  private accessor findAndFillWithGeminiPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   protected accessor atMemoryShortcutPref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
-  protected accessor findAndFillWithGeminiSettingsPref_:
+  private accessor findAndFillWithGeminiSettingsPref_:
       chrome.settingsPrivate.PrefObject<number>|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =

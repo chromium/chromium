@@ -60,8 +60,8 @@ export class SettingsAxAnnotationsSectionElement extends
   private browserProxy_: AxAnnotationsBrowserProxy =
       AxAnnotationsBrowserProxyImpl.getInstance();
 
-  protected accessor screenAIProgress_: number = 0;
-  protected accessor screenAIStatus_: ScreenAiInstallStatus =
+  private accessor screenAIProgress_: number = 0;
+  private accessor screenAIStatus_: ScreenAiInstallStatus =
       ScreenAiInstallStatus.NOT_DOWNLOADED;
 
   override connectedCallback() {

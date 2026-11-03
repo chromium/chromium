@@ -71,7 +71,7 @@ export class SettingsOnStartupPageElement extends
     };
   }
 
-  protected accessor restoreOnStartupPref_:
+  private accessor restoreOnStartupPref_:
       chrome.settingsPrivate.PrefObject<PrefValues>|undefined;
   // <if expr="is_win">
   protected accessor isForegroundLaunchFeatureEnabled_: boolean =

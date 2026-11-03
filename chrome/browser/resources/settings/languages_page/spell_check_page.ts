@@ -88,20 +88,24 @@ export class SettingsSpellCheckPageElement extends
       spellCheckLanguages_: {type: Array},
       // </if>
 
+      // <if expr="_google_chrome or not is_macosx">
       enableSpellcheckingPref_: {type: Object},
+      // </if>
       useSpellingServicePref_: {type: Object},
       forcedDictionariesPref_: {type: Object},
       blockedDictionariesPref_: {type: Object},
     };
   }
 
+  // <if expr="_google_chrome or not is_macosx">
   protected accessor enableSpellcheckingPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  protected accessor useSpellingServicePref_:
+  // </if>
+  private accessor useSpellingServicePref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  protected accessor forcedDictionariesPref_:
+  private accessor forcedDictionariesPref_:
       chrome.settingsPrivate.PrefObject<string[]>|undefined;
-  protected accessor blockedDictionariesPref_:
+  private accessor blockedDictionariesPref_:
       chrome.settingsPrivate.PrefObject<string[]>|undefined;
   // <if expr="not is_macosx">
   protected accessor spellCheckLanguages_:
@@ -116,7 +120,9 @@ export class SettingsSpellCheckPageElement extends
     super.connectedCallback();
 
     this.mirrorPrefs({
+      // <if expr="_google_chrome or not is_macosx">
       'browser.enable_spellchecking': 'enableSpellcheckingPref_',
+      // </if>
       'spellcheck.use_spelling_service': 'useSpellingServicePref_',
       'spellcheck.forced_dictionaries': 'forcedDictionariesPref_',
       'spellcheck.blocked_dictionaries': 'blockedDictionariesPref_',

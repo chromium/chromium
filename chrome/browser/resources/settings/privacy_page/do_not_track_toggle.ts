@@ -50,7 +50,7 @@ export class SettingsDoNotTrackToggleElement extends
   }
 
   protected accessor showDialog_: boolean = false;
-  protected accessor showUniversalOptOutSettings_: boolean =
+  private accessor showUniversalOptOutSettings_: boolean =
       loadTimeData.getBoolean('showUniversalOptOutSettings');
   protected accessor doNotTrackSublabel_: string = '';
 

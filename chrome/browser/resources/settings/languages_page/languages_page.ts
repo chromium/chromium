@@ -79,7 +79,9 @@ export class SettingsLanguagesPageElement extends
       enabledLanguages_: {type: Array},
       translateTarget_: {type: String},
       canEnableSomeSupportedLanguage_: {type: Boolean},
+      // <if expr="is_win">
       prospectiveUILanguage_: {type: String},
+      // </if>
 
       /**
        * The language to display the details for.
@@ -94,12 +96,14 @@ export class SettingsLanguagesPageElement extends
     };
   }
 
-  protected accessor supportedLanguages_:
+  private accessor supportedLanguages_:
       chrome.languageSettingsPrivate.Language[] = [];
   protected accessor enabledLanguages_: LanguageState[] = [];
   protected accessor translateTarget_: string = '';
   protected accessor canEnableSomeSupportedLanguage_: boolean = false;
+  // <if expr="is_win">
   protected accessor prospectiveUILanguage_: string = '';
+  // </if>
   protected accessor detailLanguage_: LanguageState|undefined = undefined;
   protected accessor showAddLanguagesDialog_: boolean = false;
   protected accessor addLanguagesDialogLanguages_:
@@ -421,12 +425,19 @@ export class SettingsLanguagesPageElement extends
    * @param languageCode The language code identifying a language.
    * @return The class name for the language item.
    */
+  // <if expr="is_win">
   protected getLanguageItemClass_(languageCode: string): string {
-    if (isWindows && languageCode === this.prospectiveUILanguage_) {
+    if (languageCode === this.prospectiveUILanguage_) {
       return 'selected';
     }
     return '';
   }
+  // </if>
+  // <if expr="not is_win">
+  protected getLanguageItemClass_(_languageCode: string): string {
+    return '';
+  }
+  // </if>
 
   protected onDotsClick_(e: Event) {
     const target = e.currentTarget as HTMLElement;

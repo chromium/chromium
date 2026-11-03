@@ -65,8 +65,8 @@ export class ExceptionTabbedAddDialogElement extends CrLitElement {
     loadTimeData.getString('tabDiscardingExceptionsAddDialogCurrentTabs'),
     loadTimeData.getString('tabDiscardingExceptionsAddDialogManual'),
   ];
-  protected accessor submitDisabledList_: boolean = true;
-  protected accessor submitDisabledManual_: boolean = true;
+  private accessor submitDisabledList_: boolean = true;
+  private accessor submitDisabledManual_: boolean = true;
 
   protected onTabsSelectedChanged_(
       e: CustomEvent<{value: ExceptionAddDialogTabs}>) {

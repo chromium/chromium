@@ -77,10 +77,10 @@ export class SettingsIbanListEntryElement extends
     },
   };
 
-  protected accessor autofillEnableWalletBrandingEnabled_: boolean =
+  private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
 
-  protected accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
 
   get dotsMenu(): HTMLElement|null {
