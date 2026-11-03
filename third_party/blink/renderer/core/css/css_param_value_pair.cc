@@ -9,7 +9,7 @@
 namespace blink {
 
 String CSSParamValuePair::CustomCSSText() const {
-  return StrCat({"param(", Name().CssText(), ", ", Value().CssText(), ")"});
+  return StrCat({"param(", Name().CssText(), ": ", Value().CssText(), ")"});
 }
 
 }  // namespace blink

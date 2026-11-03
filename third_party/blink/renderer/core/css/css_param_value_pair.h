@@ -12,7 +12,7 @@
 
 namespace blink {
 
-// Represents a single param(<dashed-ident>, <declaration-value>?) function
+// Represents a single param(<dashed-ident>: <declaration-value>?) function
 // value for the link-parameters property.
 //
 // Spec: https://drafts.csswg.org/css-link-params/

@@ -81,41 +81,41 @@ TEST_P(CSSLinkParametersValidParseTest, ParsesSuccessfully) {
 }
 
 const auto kValidParseCases = std::to_array<ValidParseTestCase>({
-    {"SingleParamWithValue", "param(--color, red)", {{"--color", "red"}}},
-    {"SingleParamEmptyValue", "param(--color, )", {{"--color", ""}}},
-    {"SingleParamEmptyValueNoSpace", "param(--color,)", {{"--color", ""}}},
+    {"SingleParamWithValue", "param(--color: red)", {{"--color", "red"}}},
+    {"SingleParamEmptyValue", "param(--color: )", {{"--color", ""}}},
+    {"SingleParamEmptyValueNoSpace", "param(--color:)", {{"--color", ""}}},
     {"MultipleParams",
-     "param(--color, red), param(--bg, blue)",
+     "param(--color: red), param(--bg: blue)",
      {{"--color", "red"}, {"--bg", "blue"}}},
     {"ThreeParams",
-     "param(--a, 1), param(--b, 2), param(--c, 3)",
+     "param(--a: 1), param(--b: 2), param(--c: 3)",
      {{"--a", "1"}, {"--b", "2"}, {"--c", "3"}}},
-    {"CaseInsensitiveFunction", "PARAM(--color, red)", {{"--color", "red"}}},
-    {"MixedCaseFunction", "Param(--color, red)", {{"--color", "red"}}},
+    {"CaseInsensitiveFunction", "PARAM(--color: red)", {{"--color", "red"}}},
+    {"MixedCaseFunction", "Param(--color: red)", {{"--color", "red"}}},
     {"WhitespaceAroundName",
-     "param(  --color  ,  red  )",
+     "param(  --color  :  red  )",
      {{"--color", "red"}}},
-    {"MinimalDashedIdent", "param(--, value)", {{"--", "value"}}},
+    {"MinimalDashedIdent", "param(--: value)", {{"--", "value"}}},
     {"LongDashedIdent",
-     "param(--my-custom-color, #ff0000)",
+     "param(--my-custom-color: #ff0000)",
      {{"--my-custom-color", "#ff0000"}}},
     {"ValueWithParens",
-     "param(--size, calc(100px + 2em))",
+     "param(--size: calc(100px + 2em))",
      {{"--size", "calc(100px + 2em)"}}},
     {"ValueWithMultipleTokens",
-     "param(--border, 1px solid black)",
+     "param(--border: 1px solid black)",
      {{"--border", "1px solid black"}}},
     {"ValueWithNestedBrackets",
-     "param(--grid, [header] auto [main] 1fr)",
+     "param(--grid: [header] auto [main] 1fr)",
      {{"--grid", "[header] auto [main] 1fr"}}},
     {"ValueWithUrl",
-     "param(--bg, url(image.png))",
+     "param(--bg: url(image.png))",
      {{"--bg", "url(image.png)"}}},
     {"ValueWithString",
-     "param(--label, \"hello world\")",
+     "param(--label: \"hello world\")",
      {{"--label", "\"hello world\""}}},
     {"DuplicateParamNames",
-     "param(--color, red), param(--color, blue)",
+     "param(--color: red), param(--color: blue)",
      {{"--color", "red"}, {"--color", "blue"}}},
 });
 
@@ -143,19 +143,21 @@ TEST_P(CSSLinkParametersInvalidParseTest, ReturnsNullptr) {
 
 const auto kInvalidParseCases = std::to_array<InvalidParseTestCase>({
     {"Empty", ""},
-    {"NotDashedIdent", "param(color, red)"},
-    {"SingleDash", "param(-color, red)"},
-    {"NotFunction", "param --color, red"},
-    {"WrongFunction", "env(--color, red)"},
-    {"MissingCommaBetweenParams", "param(--a, x) param(--b, y)"},
+    {"NotDashedIdent", "param(color: red)"},
+    {"SingleDash", "param(-color: red)"},
+    {"NotFunction", "param --color: red"},
+    {"WrongFunction", "env(--color: red)"},
+    {"MissingCommaBetweenParams", "param(--a: x) param(--b: y)"},
     {"NoParenthesis", "param --color"},
-    {"NumberInsteadOfIdent", "param(123, red)"},
+    {"NumberInsteadOfIdent", "param(123: red)"},
     {"EmptyParamFunction", "param()"},
-    // Comma is required per https://github.com/w3c/csswg-drafts/issues/13767.
-    {"MissingComma", "param(--color)"},
-    {"TrailingGarbage", "param(--color, red) garbage"},
-    {"TrailingComma", "param(--a, x), "},
-    {"DoubleComma", "param(--a, x), , param(--b, y)"},
+    {"ValueOmitted", "param(--color)"},
+    // A parameter name and explicit value are separated by a colon per
+    // https://github.com/w3c/csswg-drafts/issues/14275.
+    {"CommaInsteadOfColon", "param(--color, red)"},
+    {"TrailingGarbage", "param(--color: red) garbage"},
+    {"TrailingComma", "param(--a: x), "},
+    {"DoubleComma", "param(--a: x), , param(--b: y)"},
     {"NoneKeyword", "none"},
 });
 
@@ -171,15 +173,15 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(CSSLinkParametersTest, Serialization) {
   test::TaskEnvironment task_environment;
   const CSSValueList* result =
-      ParseAsList("param(--color, red), param(--bg, )");
+      ParseAsList("param(--color: red), param(--bg: )");
   ASSERT_NE(result, nullptr);
-  EXPECT_EQ(result->CssText(), "param(--color, red), param(--bg, )");
+  EXPECT_EQ(result->CssText(), "param(--color: red), param(--bg: )");
 }
 
 TEST(CSSLinkParametersTest, SerializationRoundTrip) {
   test::TaskEnvironment task_environment;
   const CSSValueList* result =
-      ParseAsList("param(--a, hello), param(--b, world)");
+      ParseAsList("param(--a: hello), param(--b: world)");
   ASSERT_NE(result, nullptr);
   String serialized = result->CssText();
 
@@ -191,8 +193,8 @@ TEST(CSSLinkParametersTest, SerializationRoundTrip) {
 
 TEST(CSSLinkParametersTest, EqualsDifferentValues) {
   test::TaskEnvironment task_environment;
-  const CSSValueList* a = ParseAsList("param(--color, red)");
-  const CSSValueList* b = ParseAsList("param(--color, blue)");
+  const CSSValueList* a = ParseAsList("param(--color: red)");
+  const CSSValueList* b = ParseAsList("param(--color: blue)");
   ASSERT_NE(a, nullptr);
   ASSERT_NE(b, nullptr);
   EXPECT_NE(*a, *b);
@@ -200,8 +202,8 @@ TEST(CSSLinkParametersTest, EqualsDifferentValues) {
 
 TEST(CSSLinkParametersTest, EqualsDifferentNames) {
   test::TaskEnvironment task_environment;
-  const CSSValueList* a = ParseAsList("param(--color, red)");
-  const CSSValueList* b = ParseAsList("param(--bg, red)");
+  const CSSValueList* a = ParseAsList("param(--color: red)");
+  const CSSValueList* b = ParseAsList("param(--bg: red)");
   ASSERT_NE(a, nullptr);
   ASSERT_NE(b, nullptr);
   EXPECT_NE(*a, *b);
@@ -209,8 +211,8 @@ TEST(CSSLinkParametersTest, EqualsDifferentNames) {
 
 TEST(CSSLinkParametersTest, EqualsDifferentCount) {
   test::TaskEnvironment task_environment;
-  const CSSValueList* a = ParseAsList("param(--color, red)");
-  const CSSValueList* b = ParseAsList("param(--color, red), param(--bg, blue)");
+  const CSSValueList* a = ParseAsList("param(--color: red)");
+  const CSSValueList* b = ParseAsList("param(--color: red), param(--bg: blue)");
   ASSERT_NE(a, nullptr);
   ASSERT_NE(b, nullptr);
   EXPECT_NE(*a, *b);

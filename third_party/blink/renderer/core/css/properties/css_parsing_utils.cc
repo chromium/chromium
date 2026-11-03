@@ -962,7 +962,7 @@ bool IsImageSet(const CSSValueID id) {
   return id == CSSValueID::kWebkitImageSet || id == CSSValueID::kImageSet;
 }
 
-// Consumes a single param(<dashed-ident>, <declaration-value>?) function
+// Consumes a single param(<dashed-ident>: <declaration-value>?) function
 // from |stream|. Returns a CSSParamValuePair on success.
 CSSParamValuePair* ConsumeParam(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
@@ -983,9 +983,9 @@ CSSParamValuePair* ConsumeParam(CSSParserTokenStream& stream,
       return nullptr;
     }
 
-    // Comma is required per
-    // https://github.com/w3c/csswg-drafts/issues/13767.
-    if (stream.Peek().GetType() != kCommaToken) {
+    // A parameter name and explicit value are separated by a colon per
+    // https://github.com/w3c/csswg-drafts/issues/14275.
+    if (stream.Peek().GetType() != kColonToken) {
       return nullptr;
     }
     stream.Consume();

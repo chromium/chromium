@@ -237,7 +237,7 @@ CORE_EXPORT CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream&,
 
 // Parses a comma-separated list of param() functions for the
 // link-parameters property.
-// Grammar: param(<dashed-ident>, <declaration-value>?)#
+// Grammar: param(<dashed-ident>: <declaration-value>?)#
 // Returns a CSSValueList of CSSParamValuePair, or nullptr on failure.
 // Spec: https://drafts.csswg.org/css-link-params/
 CORE_EXPORT CSSValue* ConsumeLinkParameters(CSSParserTokenStream&,
