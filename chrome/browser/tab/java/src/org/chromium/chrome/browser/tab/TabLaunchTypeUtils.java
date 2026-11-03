@@ -258,7 +258,6 @@ public final class TabLaunchTypeUtils {
                     originalTransitionType;
             case TabLaunchType.FROM_RESTORE,
                     TabLaunchType.FROM_LINK,
-                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                     TabLaunchType.FROM_EXTERNAL_APP,
                     TabLaunchType.FROM_BROWSER_ACTIONS ->
                     // FROM_API ensures intent handling isn't used.
@@ -277,7 +276,8 @@ public final class TabLaunchTypeUtils {
                     TabLaunchType.FROM_REPARENTING,
                     TabLaunchType.FROM_START_SURFACE ->
                     PageTransition.AUTO_TOPLEVEL;
-            case TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+            case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                     TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
                     TabLaunchType.FROM_LONGPRESS_INCOGNITO,
                     TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND ->

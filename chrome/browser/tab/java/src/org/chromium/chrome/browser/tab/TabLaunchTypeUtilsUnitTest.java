@@ -143,7 +143,6 @@ public class TabLaunchTypeUtilsUnitTest {
             Set.of(
                     TabLaunchType.FROM_RESTORE,
                     TabLaunchType.FROM_LINK,
-                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                     TabLaunchType.FROM_EXTERNAL_APP,
                     TabLaunchType.FROM_BROWSER_ACTIONS);
 
@@ -165,6 +164,7 @@ public class TabLaunchTypeUtilsUnitTest {
 
     private static final Set<Integer> FOREGROUND_LINK_TRANSITION_TYPES =
             Set.of(
+                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                     TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                     TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
                     TabLaunchType.FROM_LONGPRESS_INCOGNITO,
