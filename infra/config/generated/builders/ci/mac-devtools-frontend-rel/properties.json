@@ -49,6 +49,7 @@
           "group": "tryserver.chromium.mac"
         }
       ],
+      "retry_failed_shards": true,
       "targets_spec_directory": "infra/config/generated/builders/ci/mac-devtools-frontend-rel/targets"
     }
   },
