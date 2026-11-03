@@ -19,6 +19,7 @@
 #include "components/webxr/android/webxr_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -44,8 +45,8 @@ ArCoreInstallHelper::ArCoreInstallHelper() {
   Java_ArCoreInstallUtils_shouldRequestInstallSupportedArCore(
       AttachCurrentThread());
 
-  java_install_utils_ = Java_ArCoreInstallUtils_create(
-      AttachCurrentThread(), reinterpret_cast<int64_t>(this));
+  java_install_utils_ = Java_ArCoreInstallUtils_create(AttachCurrentThread(),
+                                                       jni_zero::MakeRaw(this));
 }
 
 ArCoreInstallHelper::~ArCoreInstallHelper() {

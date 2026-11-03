@@ -11,6 +11,10 @@ import android.os.Bundle;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -25,6 +29,9 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("webxr")
 @NullMarked
 public class ArCoreInstallUtils {
+    @JniType("::webxr::ArCoreInstallHelper")
+    interface NativeArCoreInstallHelper extends JniTypeToken {}
+
     /**
      * Helper class to store a reference to the ArCoreInstallUtils instance and activity that
      * requested an install of ArCore, and await that activity being resumed.
@@ -87,7 +94,7 @@ public class ArCoreInstallUtils {
 
     private static final String TAG = "ArCoreInstallUtils";
 
-    private long mNativeArCoreInstallUtils;
+    private @Nullable JniRawPtr<NativeArCoreInstallHelper> mNativeArCoreInstallUtils;
 
     // This tracks the relevant information of the instance that requested installation of ARCore.
     // Should be non-null only if there is a pending request to install ARCore.
@@ -117,20 +124,24 @@ public class ArCoreInstallUtils {
     }
 
     @CalledByNative
-    private static ArCoreInstallUtils create(long nativeArCoreInstallUtils) {
+    static ArCoreInstallUtils create(
+            JniRawPtr<NativeArCoreInstallHelper> nativeArCoreInstallUtils) {
         return new ArCoreInstallUtils(nativeArCoreInstallUtils);
     }
 
     @CalledByNative
     private void onNativeDestroy() {
-        mNativeArCoreInstallUtils = 0;
+        if (mNativeArCoreInstallUtils != null) {
+            mNativeArCoreInstallUtils.release();
+            mNativeArCoreInstallUtils = null;
+        }
         if (sInstallRequest != null) {
             sInstallRequest.dispose();
             sInstallRequest = null;
         }
     }
 
-    private ArCoreInstallUtils(long nativeArCoreInstallUtils) {
+    private ArCoreInstallUtils(JniRawPtr<NativeArCoreInstallHelper> nativeArCoreInstallUtils) {
         mNativeArCoreInstallUtils = nativeArCoreInstallUtils;
     }
 
@@ -197,7 +208,7 @@ public class ArCoreInstallUtils {
 
     /** Helper used to notify native code about the result of the request to install ARCore. */
     private void maybeNotifyNativeOnRequestInstallSupportedArCoreResult(boolean success) {
-        if (mNativeArCoreInstallUtils != 0) {
+        if (mNativeArCoreInstallUtils != null) {
             ArCoreInstallUtilsJni.get()
                     .onRequestInstallSupportedArCoreResult(mNativeArCoreInstallUtils, success);
         }
@@ -213,6 +224,7 @@ public class ArCoreInstallUtils {
 
     @NativeMethods
     /* package */ interface ArInstallHelperNative {
-        void onRequestInstallSupportedArCoreResult(long nativeArCoreInstallHelper, boolean success);
+        void onRequestInstallSupportedArCoreResult(
+                JniPtr<NativeArCoreInstallHelper> self, boolean success);
     }
 }
