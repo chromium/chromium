@@ -4,17 +4,22 @@
 
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -39,12 +44,18 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
+#include "media/mojo/mojom/speech_recognition_recognition_context.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,6 +172,115 @@ class TestCaptionControllerDelegate
   void RemoveCaptionStyleObserver(ui::NativeThemeObserver*) override {}
 };
 
+class StubSpeechRecognitionRecognizer
+    : public media::mojom::SpeechRecognitionRecognizer {
+ public:
+  StubSpeechRecognitionRecognizer() = default;
+  ~StubSpeechRecognitionRecognizer() override = default;
+
+  void SendAudioToSpeechRecognitionService(
+      media::mojom::AudioDataS16Ptr buffer,
+      std::optional<base::TimeDelta> media_start_pts) override {}
+  void MarkDone() override {}
+  void OnLanguageChanged(const std::string& language) override {}
+  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override {}
+};
+
+class StubSpeechRecognitionSession
+    : public media::mojom::SpeechRecognitionSession,
+      public media::mojom::SpeechRecognitionAudioForwarder {
+ public:
+  explicit StubSpeechRecognitionSession(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+          audio_forwarder)
+      : audio_forwarder_(this, std::move(audio_forwarder)) {}
+  ~StubSpeechRecognitionSession() override = default;
+
+  // media::mojom::SpeechRecognitionSession:
+  void Abort() override {}
+  void StopCapture() override {}
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override {}
+
+  // media::mojom::SpeechRecognitionAudioForwarder:
+  void AddAudioFromRenderer(media::mojom::AudioDataS16Ptr buffer) override {}
+
+ private:
+  mojo::Receiver<media::mojom::SpeechRecognitionAudioForwarder>
+      audio_forwarder_;
+};
+
+class FakeUtilitySpeechRecognitionService
+    : public media::mojom::SpeechRecognitionService,
+      public media::mojom::SpeechRecognitionContext {
+ public:
+  explicit FakeUtilitySpeechRecognitionService(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~FakeUtilitySpeechRecognitionService() override = default;
+
+  // media::mojom::SpeechRecognitionService:
+  void BindSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> context)
+      override {
+    context_bind_count_++;
+    speech_recognition_contexts_.Add(this, std::move(context));
+  }
+  void BindAudioSourceSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+          context) override {}
+  void SetSodaPaths(
+      const base::FilePath& binary_path,
+      const base::flat_map<std::string, base::FilePath>& config_paths,
+      const std::string& primary_language_name) override {}
+  void SetSodaParams(bool mask_offensive_words) override {}
+  void SetSodaConfigPaths(const base::flat_map<std::string, base::FilePath>&
+                              config_paths) override {}
+
+  // media::mojom::SpeechRecognitionContext:
+  void BindRecognizer(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+          client,
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      BindRecognizerCallback callback) override {
+    recognizers_.Add(std::make_unique<StubSpeechRecognitionRecognizer>(),
+                     std::move(receiver));
+    std::move(callback).Run(/*is_multichannel_supported=*/false);
+  }
+  void BindWebSpeechRecognizer(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          session_client,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+          audio_forwarder,
+      int channel_count,
+      int sample_rate,
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      bool continuous) override {
+    sessions_.Add(std::make_unique<StubSpeechRecognitionSession>(
+                      std::move(audio_forwarder)),
+                  std::move(session_receiver));
+  }
+
+  int context_bind_count() const { return context_bind_count_; }
+  size_t session_count() const { return sessions_.size(); }
+
+ private:
+  int context_bind_count_ = 0;
+  mojo::Receiver<media::mojom::SpeechRecognitionService> receiver_;
+  mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
+      speech_recognition_contexts_;
+  mojo::UniqueReceiverSet<media::mojom::SpeechRecognitionRecognizer>
+      recognizers_;
+  mojo::UniqueReceiverSet<media::mojom::SpeechRecognitionSession> sessions_;
+};
+
 }  // namespace
 
 class ChromeSpeechRecognitionServiceTest : public testing::Test {
@@ -201,7 +321,21 @@ class ChromeSpeechRecognitionServiceTest : public testing::Test {
     return service_->model_broker_client_ != nullptr;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  void BindFakeUtilityService(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionService> remote) {
+    service_->BindServiceRemote(std::move(remote));
+  }
+
+  bool IsSpeechRecognitionServiceBound() const {
+    return service_->speech_recognition_service_.is_bound();
+  }
+
+  bool IsSpeechRecognitionContextRemoteBound() const {
+    return service_->speech_recognition_context_remote_.is_bound();
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ChromeSpeechRecognitionService> service_;
 };
@@ -475,6 +609,240 @@ TEST_F(ChromeSpeechRecognitionServiceTest,
   task_environment_.RunUntilIdle();
   EXPECT_EQ(GetOnDeviceModelRecognizerCount(), 0u);
   EXPECT_FALSE(HasModelBrokerClient());
+}
+
+TEST_F(ChromeSpeechRecognitionServiceTest,
+       ServiceResetsAfterIdleTimeoutWhenRecognizerDisconnects) {
+  mojo::PendingRemote<media::mojom::SpeechRecognitionService> service_remote;
+  FakeUtilitySpeechRecognitionService fake_service(
+      service_remote.InitWithNewPipeAndPassReceiver());
+  BindFakeUtilityService(std::move(service_remote));
+
+  mojo::Remote<media::mojom::SpeechRecognitionContext> client_context;
+  service()->BindSpeechRecognitionContext(
+      client_context.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer;
+  FakeSpeechRecognitionRecognizerClient client;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver(&client);
+
+  auto options = media::mojom::SpeechRecognitionOptions::New();
+  options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+  options->recognizer_client_type =
+      media::mojom::RecognizerClientType::kLiveCaption;
+  options->language = "en-US";
+
+  base::test::TestFuture<bool> future;
+  client_context->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                                 client_receiver.BindNewPipeAndPassRemote(),
+                                 std::move(options), future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // While the recognizer remains connected, neither remote should time out.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // Disconnecting the recognizer should immediately reset
+  // `speech_recognition_context_remote_` (even while `client_context` remains
+  // bound to the browser service) and start the 5-second idle timeout on
+  // `speech_recognition_service_`.
+  recognizer.reset();
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(IsSpeechRecognitionServiceBound());
+}
+
+TEST_F(ChromeSpeechRecognitionServiceTest,
+       ServiceStaysAliveAndRebindsContextIfNewRecognizerStartsBeforeTimeout) {
+  mojo::PendingRemote<media::mojom::SpeechRecognitionService> service_remote;
+  FakeUtilitySpeechRecognitionService fake_service(
+      service_remote.InitWithNewPipeAndPassReceiver());
+  BindFakeUtilityService(std::move(service_remote));
+
+  auto bind_recognizer =
+      [&](mojo::Remote<media::mojom::SpeechRecognitionRecognizer>& recognizer,
+          mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>&
+              client_receiver) {
+        auto options = media::mojom::SpeechRecognitionOptions::New();
+        options->recognition_mode =
+            media::mojom::SpeechRecognitionMode::kCaption;
+        options->recognizer_client_type =
+            media::mojom::RecognizerClientType::kLiveCaption;
+        options->language = "en-US";
+
+        base::test::TestFuture<bool> future;
+        service()->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                                  client_receiver.BindNewPipeAndPassRemote(),
+                                  std::move(options), future.GetCallback());
+        EXPECT_FALSE(future.Get());
+      };
+
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer1;
+  FakeSpeechRecognitionRecognizerClient client1;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver1(&client1);
+  bind_recognizer(recognizer1, client_receiver1);
+  EXPECT_EQ(fake_service.context_bind_count(), 1);
+
+  recognizer1.reset();
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  // Start a second recognizer 3 seconds into the 5-second idle window.
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer2;
+  FakeSpeechRecognitionRecognizerClient client2;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver2(&client2);
+  bind_recognizer(recognizer2, client_receiver2);
+  EXPECT_EQ(fake_service.context_bind_count(), 2);
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // The pending 5-second process idle timer must be canceled while
+  // `recognizer2` is active.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  recognizer2.reset();
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_FALSE(IsSpeechRecognitionServiceBound());
+}
+
+TEST_F(ChromeSpeechRecognitionServiceTest,
+       ContextStaysBoundUntilLastConcurrentRecognizerDisconnects) {
+  mojo::PendingRemote<media::mojom::SpeechRecognitionService> service_remote;
+  FakeUtilitySpeechRecognitionService fake_service(
+      service_remote.InitWithNewPipeAndPassReceiver());
+  BindFakeUtilityService(std::move(service_remote));
+
+  auto bind_recognizer =
+      [&](mojo::Remote<media::mojom::SpeechRecognitionRecognizer>& recognizer,
+          mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>&
+              client_receiver) {
+        auto options = media::mojom::SpeechRecognitionOptions::New();
+        options->recognition_mode =
+            media::mojom::SpeechRecognitionMode::kCaption;
+        options->recognizer_client_type =
+            media::mojom::RecognizerClientType::kLiveCaption;
+        options->language = "en-US";
+
+        base::test::TestFuture<bool> future;
+        service()->BindRecognizer(recognizer.BindNewPipeAndPassReceiver(),
+                                  client_receiver.BindNewPipeAndPassRemote(),
+                                  std::move(options), future.GetCallback());
+        EXPECT_FALSE(future.Get());
+      };
+
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer1;
+  FakeSpeechRecognitionRecognizerClient client1;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver1(&client1);
+  bind_recognizer(recognizer1, client_receiver1);
+
+  mojo::Remote<media::mojom::SpeechRecognitionRecognizer> recognizer2;
+  FakeSpeechRecognitionRecognizerClient client2;
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
+      client_receiver2(&client2);
+  bind_recognizer(recognizer2, client_receiver2);
+
+  // Both recognizers multiplex over the same
+  // `speech_recognition_context_remote_`.
+  EXPECT_EQ(fake_service.context_bind_count(), 1);
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // Disconnecting one recognizer while another remains active must not trigger
+  // the zero-duration context idle timeout or the 5-second service timeout.
+  recognizer1.reset();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  // Disconnecting the last recognizer resets the context remote immediately and
+  // the service remote after 5 seconds.
+  recognizer2.reset();
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_FALSE(IsSpeechRecognitionServiceBound());
+}
+
+TEST_F(ChromeSpeechRecognitionServiceTest,
+       ServiceResetsAfterIdleTimeoutWhenWebSpeechSessionDisconnects) {
+  mojo::PendingRemote<media::mojom::SpeechRecognitionService> service_remote;
+  FakeUtilitySpeechRecognitionService fake_service(
+      service_remote.InitWithNewPipeAndPassReceiver());
+  BindFakeUtilityService(std::move(service_remote));
+
+  mojo::Remote<media::mojom::SpeechRecognitionSession> session;
+  mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+      session_client;
+  mojo::PendingReceiver<media::mojom::SpeechRecognitionSessionClient>
+      session_client_receiver = session_client.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<media::mojom::SpeechRecognitionAudioForwarder> audio_forwarder;
+
+  // Match `SpeechRecognitionManagerImpl`, which binds a temporary context
+  // remote and drops it immediately after calling `BindWebSpeechRecognizer()`.
+  {
+    mojo::Remote<media::mojom::SpeechRecognitionContext> temp_context;
+    service()->BindSpeechRecognitionContext(
+        temp_context.BindNewPipeAndPassReceiver());
+
+    auto options = media::mojom::SpeechRecognitionOptions::New();
+    options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+    options->recognizer_client_type =
+        media::mojom::RecognizerClientType::kLiveCaption;
+    options->language = "en-US";
+
+    temp_context->BindWebSpeechRecognizer(
+        session.BindNewPipeAndPassReceiver(), std::move(session_client),
+        audio_forwarder.BindNewPipeAndPassReceiver(), /*channel_count=*/1,
+        /*sample_rate=*/16000, std::move(options), /*continuous=*/true);
+    temp_context.FlushForTesting();
+  }
+
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(fake_service.session_count(), 1u);
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // Even though `temp_context` was dropped, active Web Speech pipes keep the
+  // utility service alive.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+  EXPECT_TRUE(IsSpeechRecognitionContextRemoteBound());
+
+  // Resetting `session` destroys the utility-side `SodaSpeechRecognizerImpl`
+  // (including its owned `audio_forwarder_` receiver, even while the renderer's
+  // `audio_forwarder` remote awaits GC), allowing the context remote to reset
+  // immediately and the service remote to reset after 5 seconds.
+  session.reset();
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_FALSE(IsSpeechRecognitionContextRemoteBound());
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  EXPECT_TRUE(IsSpeechRecognitionServiceBound());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(IsSpeechRecognitionServiceBound());
 }
 
 class SpeechRecognitionClientBrowserInterfaceTest : public testing::Test {

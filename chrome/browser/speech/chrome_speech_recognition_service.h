@@ -18,6 +18,7 @@
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -115,6 +116,17 @@ class ChromeSpeechRecognitionService
 
   // Launches the speech recognition service in a sandboxed utility process.
   void LaunchIfNotRunning();
+
+  // Binds `speech_recognition_service_` and configures disconnect and idle
+  // handlers.
+  void BindServiceRemote(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionService> remote);
+
+  // Ensures `speech_recognition_context_remote_` is bound and connected to
+  // `speech_recognition_service_`. Callers must synchronously send a message on
+  // `speech_recognition_context_remote_` immediately after calling this method
+  // so Mojo's zero-duration idle tracking tracks the active call/sub-pipes.
+  void EnsureSpeechRecognitionContextBound();
 
   // Gets the path of the SODA configuration file for the selected language.
   base::flat_map<std::string, base::FilePath> GetSodaConfigPaths();

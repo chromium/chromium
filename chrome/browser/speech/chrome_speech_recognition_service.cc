@@ -6,11 +6,14 @@
 
 #include <string>
 #include <unordered_set>
+#include <utility>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -32,6 +35,7 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -152,13 +156,7 @@ void ChromeSpeechRecognitionService::BindWebSpeechRecognizer(
     bool continuous) {
   LaunchIfNotRunning();
   if (speech_recognition_service_.is_bound()) {
-    if (!speech_recognition_context_remote_.is_bound() ||
-        !speech_recognition_context_remote_.is_connected()) {
-      speech_recognition_context_remote_.reset();
-      speech_recognition_service_->BindSpeechRecognitionContext(
-          speech_recognition_context_remote_.BindNewPipeAndPassReceiver());
-      speech_recognition_context_remote_.reset_on_disconnect();
-    }
+    EnsureSpeechRecognitionContextBound();
     speech_recognition_context_remote_->BindWebSpeechRecognizer(
         std::move(session_receiver), std::move(session_client),
         std::move(audio_forwarder), channel_count, sample_rate,
@@ -222,14 +220,7 @@ void ChromeSpeechRecognitionService::BindSodaRecognizer(
     BindRecognizerCallback callback) {
   LaunchIfNotRunning();
   if (speech_recognition_service_.is_bound()) {
-    if (!speech_recognition_context_remote_.is_bound() ||
-        !speech_recognition_context_remote_.is_connected()) {
-      speech_recognition_context_remote_.reset();
-      speech_recognition_service_->BindSpeechRecognitionContext(
-          speech_recognition_context_remote_.BindNewPipeAndPassReceiver());
-      speech_recognition_context_remote_.reset_on_disconnect();
-    }
-
+    EnsureSpeechRecognitionContextBound();
     speech_recognition_context_remote_->BindRecognizer(
         std::move(receiver), std::move(client), std::move(options),
         std::move(callback));
@@ -310,16 +301,10 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
       {{speech::kSodaBinaryPathSwitch, binary_path.value()}});
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+  mojo::PendingRemote<media::mojom::SpeechRecognitionService> pending_remote;
   content::ServiceProcessHost::Launch(
-      speech_recognition_service_.BindNewPipeAndPassReceiver(), options.Pass());
-
-  // Ensure that if the interface is ever disconnected (e.g. the service
-  // process crashes) or goes idle for a short period of time -- meaning there
-  // are no in-flight messages and no other interfaces bound through this
-  // one -- then we will reset |remote|, causing the service process to be
-  // terminated if it isn't already.
-  speech_recognition_service_.reset_on_disconnect();
-  speech_recognition_service_.reset_on_idle_timeout(kIdleProcessTimeout);
+      pending_remote.InitWithNewPipeAndPassReceiver(), options.Pass());
+  BindServiceRemote(std::move(pending_remote));
   if (speech_recognition_service_.is_bound()) {
     speech_recognition_service_->SetSodaPaths(binary_path, config_paths,
                                               language_name);
@@ -327,6 +312,35 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
     bool mask_offensive_words =
         profile_prefs->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords);
     speech_recognition_service_->SetSodaParams(mask_offensive_words);
+  }
+}
+
+void ChromeSpeechRecognitionService::BindServiceRemote(
+    mojo::PendingRemote<media::mojom::SpeechRecognitionService> remote) {
+  speech_recognition_context_remote_.reset();
+  speech_recognition_service_.Bind(std::move(remote));
+
+  // Ensure that if the interface is ever disconnected (e.g. the service
+  // process crashes) or goes idle for a short period of time -- meaning there
+  // are no in-flight messages and no other interfaces bound through this
+  // one -- then we will reset `speech_recognition_service_`, causing the
+  // service process to be terminated if it isn't already.
+  speech_recognition_service_.reset_on_disconnect();
+  speech_recognition_service_.reset_on_idle_timeout(kIdleProcessTimeout);
+}
+
+void ChromeSpeechRecognitionService::EnsureSpeechRecognitionContextBound() {
+  CHECK(speech_recognition_service_.is_bound());
+  if (!speech_recognition_context_remote_.is_bound() ||
+      !speech_recognition_context_remote_.is_connected()) {
+    speech_recognition_context_remote_.reset();
+    speech_recognition_service_->BindSpeechRecognitionContext(
+        speech_recognition_context_remote_.BindNewPipeAndPassReceiver());
+    speech_recognition_context_remote_.reset_on_disconnect();
+    // Reset immediately once all recognizers and sessions bound through this
+    // context have closed so `speech_recognition_service_` can begin its
+    // `kIdleProcessTimeout` countdown and shut down the utility process.
+    speech_recognition_context_remote_.reset_on_idle_timeout(base::TimeDelta());
   }
 }
 
