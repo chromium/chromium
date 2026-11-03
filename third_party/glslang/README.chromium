@@ -2,7 +2,7 @@ Name: Khronos reference front-end for GLSL and ESSL
 Short Name: glslang
 URL: https://github.com/KhronosGroup/glslang
 Version: N/A
-Revision: e7917c4ff6c660aba47b2df0c84f123d5bb1c3ce
+Revision: 1309390fdbc3aaa96abad02190772bf7cdf25331
 Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: no
