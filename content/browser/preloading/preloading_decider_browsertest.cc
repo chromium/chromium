@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
             blink::mojom::SpeculationEagerness::kModerate);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> attempts =
         ukm_recorder.GetEntries(ukm::builders::Preloading_Attempt::kEntryName,
-                                test::kPreloadingAttemptUkmMetrics);
+                                test::GetPreloadingAttemptUkmMetrics());
     std::erase_if(attempts, [&](const auto& entry) {
       return entry.metrics.at(
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> predictions =
         ukm_recorder.GetEntries(
             ukm::builders::Preloading_Prediction::kEntryName,
-            test::kPreloadingPredictionUkmMetrics);
+            test::GetPreloadingPredictionUkmMetrics());
     std::erase_if(predictions, [&](const auto& entry) {
       return entry.metrics.at(ukm::builders::Preloading_Prediction::
                                   kPreloadingPredictorName) !=
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
             blink::mojom::SpeculationEagerness::kModerate);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> attempts =
         ukm_recorder.GetEntries(ukm::builders::Preloading_Attempt::kEntryName,
-                                test::kPreloadingAttemptUkmMetrics);
+                                test::GetPreloadingAttemptUkmMetrics());
     std::erase_if(attempts, [&](const auto& entry) {
       return entry.metrics.at(
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> predictions =
         ukm_recorder.GetEntries(
             ukm::builders::Preloading_Prediction::kEntryName,
-            test::kPreloadingPredictionUkmMetrics);
+            test::GetPreloadingPredictionUkmMetrics());
     std::erase_if(predictions, [&](const auto& entry) {
       return entry.metrics.at(ukm::builders::Preloading_Prediction::
                                   kPreloadingPredictorName) !=

@@ -659,7 +659,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   auto actual = test_ukm_recorder()->GetEntries(
       ukm::builders::Preloading_Attempt::kEntryName,
-      test::kPreloadingAttemptUkmMetrics);
+      test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(actual.size(), 0u);
 }
 

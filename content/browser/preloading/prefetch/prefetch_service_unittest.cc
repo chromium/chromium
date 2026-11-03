@@ -5482,7 +5482,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionForEligibleButNotStartedPrefetch) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     ASSERT_EQ(actual_attempts.size(), 2u);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         {attempt_entry_builder()->BuildEntry(
@@ -5558,7 +5558,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringEligiblityCheck) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     ASSERT_EQ(actual_attempts.size(), 1u);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         {attempt_entry_builder()->BuildEntry(
@@ -5635,7 +5635,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionDuringProxyLookup) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     ASSERT_EQ(actual_attempts.size(), 1u);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         {attempt_entry_builder()->BuildEntry(
@@ -5708,7 +5708,7 @@ TEST_P(PrefetchServiceTest, PrefetchEvictionWhenHoldback) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     ASSERT_EQ(actual_attempts.size(), 1u);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         {attempt_entry_builder()->BuildEntry(
@@ -5872,7 +5872,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(actual_attempts.size(), 4u);
 
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
@@ -6153,7 +6153,7 @@ TEST_P(PrefetchServiceLimitsTest, PrefetchReset) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(actual_attempts.size(), 2u);
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> expected_attempts =
         {attempt_entry_builder()->BuildEntry(
@@ -6460,7 +6460,7 @@ TEST_P(PrefetchServiceLimitsTest, ImmediatePrefetchLimitIsDynamic) {
     const auto source_id = ForceLogsUploadAndGetUkmId();
     auto actual_attempts = test_ukm_recorder()->GetEntries(
         ukm::builders::Preloading_Attempt::kEntryName,
-        test::kPreloadingAttemptUkmMetrics);
+        test::GetPreloadingAttemptUkmMetrics());
     EXPECT_EQ(actual_attempts.size(),
               kMaxNumberOfImmediatePrefetchesPerPage + 2);
 

@@ -4,6 +4,9 @@
 
 #include "content/public/test/preloading_test_util.h"
 
+#include <string>
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
@@ -39,6 +42,40 @@ constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
 
 }  // namespace
 
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using Preloading_Attempt = ukm::builders::Preloading_Attempt;
+using Preloading_Prediction = ukm::builders::Preloading_Prediction;
+
+std::vector<std::string> GetPreloadingAttemptUkmMetrics() {
+  return {
+      Preloading_Attempt::kPreloadingTypeName,
+      Preloading_Attempt::kPreloadingPredictorName,
+      Preloading_Attempt::kEligibilityName,
+      Preloading_Attempt::kHoldbackStatusName,
+      Preloading_Attempt::kTriggeringOutcomeName,
+      Preloading_Attempt::kFailureReasonName,
+      Preloading_Attempt::kAccurateTriggeringName,
+      Preloading_Attempt::kReadyTimeName,
+      Preloading_Attempt::kTimeToNextNavigationName,
+      Preloading_Attempt::kSpeculationEagernessName,
+  };
+}
+
+std::vector<std::string> GetPreloadingPredictionUkmMetrics() {
+  return {
+      Preloading_Prediction::kPreloadingPredictorName,
+      Preloading_Prediction::kConfidenceName,
+      Preloading_Prediction::kAccuratePredictionName,
+      Preloading_Prediction::kTimeToNextNavigationName,
+  };
+}
+
+const std::vector<std::string> kPreloadingAttemptUkmMetrics =
+    GetPreloadingAttemptUkmMetrics();
+
+const std::vector<std::string> kPreloadingPredictionUkmMetrics =
+    GetPreloadingPredictionUkmMetrics();
+
 std::string ConvertEagernessToString(
     blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {
@@ -52,30 +89,6 @@ std::string ConvertEagernessToString(
       return "conservative";
   }
 }
-
-using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
-using Preloading_Attempt = ukm::builders::Preloading_Attempt;
-using Preloading_Prediction = ukm::builders::Preloading_Prediction;
-
-const std::vector<std::string> kPreloadingAttemptUkmMetrics{
-    Preloading_Attempt::kPreloadingTypeName,
-    Preloading_Attempt::kPreloadingPredictorName,
-    Preloading_Attempt::kEligibilityName,
-    Preloading_Attempt::kHoldbackStatusName,
-    Preloading_Attempt::kTriggeringOutcomeName,
-    Preloading_Attempt::kFailureReasonName,
-    Preloading_Attempt::kAccurateTriggeringName,
-    Preloading_Attempt::kReadyTimeName,
-    Preloading_Attempt::kTimeToNextNavigationName,
-    Preloading_Attempt::kSpeculationEagernessName,
-};
-
-const std::vector<std::string> kPreloadingPredictionUkmMetrics{
-    Preloading_Prediction::kPreloadingPredictorName,
-    Preloading_Prediction::kConfidenceName,
-    Preloading_Prediction::kAccuratePredictionName,
-    Preloading_Prediction::kTimeToNextNavigationName,
-};
 
 PreloadingAttemptUkmEntryBuilder::PreloadingAttemptUkmEntryBuilder(
     PreloadingPredictor predictor)
@@ -144,7 +157,7 @@ void ExpectPreloadingAttemptUkm(
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
         expected_attempt_entries) {
   auto attempt_entries = ukm_recorder.GetEntries(
-      Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+      Preloading_Attempt::kEntryName, GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(attempt_entries.size(), expected_attempt_entries.size());
   EXPECT_THAT(attempt_entries,
               testing::UnorderedElementsAreArray(expected_attempt_entries))
@@ -157,7 +170,7 @@ void ExpectPreloadingPredictionUkm(
     const std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>&
         expected_prediction_entries) {
   auto prediction_entries = ukm_recorder.GetEntries(
-      Preloading_Prediction::kEntryName, test::kPreloadingPredictionUkmMetrics);
+      Preloading_Prediction::kEntryName, GetPreloadingPredictionUkmMetrics());
   EXPECT_EQ(prediction_entries.size(), expected_prediction_entries.size());
   EXPECT_THAT(prediction_entries,
               testing::UnorderedElementsAreArray(expected_prediction_entries))

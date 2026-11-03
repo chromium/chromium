@@ -744,7 +744,7 @@ void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
   const auto source_id = ForceLogsUploadAndGetUkmId(std::move(navigate_url));
   auto actual_attempts = test_ukm_recorder()->GetEntries(
       ukm::builders::Preloading_Attempt::kEntryName,
-      test::kPreloadingAttemptUkmMetrics);
+      test::GetPreloadingAttemptUkmMetrics());
   EXPECT_EQ(actual_attempts.size(), 1u);
 
   std::optional<base::TimeDelta> ready_time = std::nullopt;
