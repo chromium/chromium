@@ -50,6 +50,7 @@ source_set("component_updater") {
     "//components/update_client",
     "//mojo/public/cpp/base:protobuf_support",
     "//net",
+    "//services/network/public/cpp:buildflags",
     "//third_party/abseil-cpp:absl",
     "//third_party/protobuf:protobuf_lite",
   ]

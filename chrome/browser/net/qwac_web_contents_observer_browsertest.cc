@@ -263,10 +263,13 @@ class QwacWebContentsObserverBrowserTest
     additional_cert->set_der(base::as_string_view(eutl_cert->cert_span()));
     additional_cert->set_eutl(true);
 
+    auto update = cert_verifier::mojom::PKIMetadataUpdate::New();
+    update->chrome_root_store =
+        cert_verifier::mojom::ChromeRootStoreUpdate::New(
+            mojo_base::ProtoWrapper(root_store_proto), std::nullopt);
     base::RunLoop update_run_loop;
-    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
-        update_run_loop.QuitClosure());
+    content::GetCertVerifierServiceFactory()->UpdatePKIMetadata(
+        std::move(update), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

@@ -54,6 +54,12 @@
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "net/cert/key_pinning_state.h"
+#include "net/cert/key_pinning_state_chrome_test_util.h"
+#include "services/network/public/mojom/key_pinning.mojom.h"
+#endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "base/version_info/version_info.h"  // nogncheck
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -202,6 +208,18 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void UpdateChromeRootStore(
+    CertVerifierServiceFactoryImpl& factory,
+    mojo_base::ProtoWrapper new_root_store,
+    std::optional<mojo_base::ProtoWrapper> new_mtc_config = std::nullopt) {
+  auto update = mojom::PKIMetadataUpdate::New();
+  update->chrome_root_store = mojom::ChromeRootStoreUpdate::New(
+      std::move(new_root_store), std::move(new_mtc_config));
+  base::RunLoop update_run_loop;
+  factory.UpdatePKIMetadata(std::move(update), update_run_loop.QuitClosure());
+  update_run_loop.Run();
+}
+
 // Test that a new Cert verifier will use an updated Chrome Root Store if
 // one was already passed into CertVerifierServiceFactory.
 TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
@@ -225,13 +243,8 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
   EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -296,13 +309,8 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
   anchor->set_der(root->GetDER());
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   // Try request, it should succeed.
   {
@@ -337,13 +345,8 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
   EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -386,13 +389,8 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -423,13 +421,8 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   invalid_anchor->set_der("gibberishcert");
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(invalid_root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(invalid_root_store));
 
   {
     auto [net_error, result] = Verify(
@@ -442,13 +435,8 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   root_store.clear_trust_anchors();
 
   // Feed factory the new empty Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   {
     auto [net_error, result] = Verify(
@@ -486,13 +474,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store));
 
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;
@@ -554,11 +537,9 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithMerkleTreeCertAnchors) {
                             "op3", std::nullopt);
 
     // Feed factory the new Chrome Root Store.
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store),
-        mojo_base::ProtoWrapper(mtc_config), update_run_loop.QuitClosure());
-    update_run_loop.Run();
+    UpdateChromeRootStore(cv_service_factory_impl,
+                          mojo_base::ProtoWrapper(root_store),
+                          mojo_base::ProtoWrapper(mtc_config));
   }
 
   {
@@ -660,13 +641,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithVersionConstraintUnmet) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto));
 
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;
@@ -704,13 +680,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithVersionConstraintMet) {
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto));
 
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;
@@ -1599,13 +1570,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   signer_set_proto_old->mutable_timestamp()->set_seconds(compiled_seconds - 10);
   signer_set_proto_old->set_version("0.9.0");
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_old), update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_old));
 
   chrome_root_store::MtcConfig mtc_config_equal;
   chrome_root_store::SignerSet* signer_set_proto_equal =
@@ -1613,14 +1580,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   signer_set_proto_equal->mutable_timestamp()->set_seconds(compiled_seconds);
   signer_set_proto_equal->set_version("0.9.0");
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_equal),
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_equal));
 
   // Verify they were ignored (should not be "0.9.0").
   const net::CertVerifyProc::ImplParams& params1 =
@@ -1636,13 +1598,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   signer_set_proto_new->mutable_timestamp()->set_seconds(compiled_seconds + 20);
   signer_set_proto_new->set_version(GetNonCompiledSignerSetVersion());
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_new), update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_new));
 
   // Verify it was applied.
   const net::CertVerifyProc::ImplParams& params2 =
@@ -1660,13 +1618,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetChecksVersion) {
   signer_set_proto_mid->mutable_timestamp()->set_seconds(compiled_seconds + 10);
   signer_set_proto_mid->set_version("1.5.0");
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_mid), update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_mid));
 
   // Verify it was applied (downgraded to 1.5.0).
   const net::CertVerifyProc::ImplParams& params3 =
@@ -1772,14 +1726,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateSignerSetWithOldRootStore) {
       compiled_signer_seconds + 10);
   signer_set_proto_new->set_version(GetNonCompiledSignerSetVersion());
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto_old),
-        mojo_base::ProtoWrapper(mtc_config_proto_new),
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto_old),
+                        mojo_base::ProtoWrapper(mtc_config_proto_new));
 
   // Verify that the update succeeded and we have root_store_data.
   const net::CertVerifyProc::ImplParams& params =
@@ -1821,14 +1770,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateRootStoreWithOldSignerSet) {
       compiled_signer_seconds - 10);
   signer_set_proto_old->set_version(GetNonCompiledSignerSetVersion());
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto_new),
-        mojo_base::ProtoWrapper(mtc_config_proto_old),
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto_new),
+                        mojo_base::ProtoWrapper(mtc_config_proto_old));
 
   const net::CertVerifyProc::ImplParams& params =
       cv_service_factory_impl.get_impl_params();
@@ -1862,13 +1806,8 @@ TEST(CertVerifierServiceFactoryTest, UpdateMtcConfigDisableFlag) {
 
   // Initial update without any MtcConfig, to initialize the root store and
   // verify the initial state of the disable flag.
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto), std::nullopt,
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto));
 
   const net::CertVerifyProc::ImplParams& initial_params =
       cv_service_factory_impl.get_impl_params();
@@ -1881,14 +1820,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateMtcConfigDisableFlag) {
   chrome_root_store::MtcConfig mtc_config_no_signer_set;
   mtc_config_no_signer_set.set_disable_mtc_mirroring_requirements(true);
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_no_signer_set),
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_no_signer_set));
 
   const net::CertVerifyProc::ImplParams& params1 =
       cv_service_factory_impl.get_impl_params();
@@ -1905,14 +1839,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateMtcConfigDisableFlag) {
   chrome_root_store::MtcConfig mtc_config_disable_off;
   mtc_config_disable_off.set_disable_mtc_mirroring_requirements(false);
 
-  {
-    base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store_proto),
-        mojo_base::ProtoWrapper(mtc_config_disable_off),
-        update_run_loop.QuitClosure());
-    update_run_loop.Run();
-  }
+  UpdateChromeRootStore(cv_service_factory_impl,
+                        mojo_base::ProtoWrapper(root_store_proto),
+                        mojo_base::ProtoWrapper(mtc_config_disable_off));
 
   const net::CertVerifyProc::ImplParams& params2 =
       cv_service_factory_impl.get_impl_params();
@@ -2004,5 +1933,101 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest,
   EXPECT_THAT(net_error, IsError(net::ERR_CERT_DATE_INVALID));
   EXPECT_TRUE(net::IsCertStatusError(result.cert_status));
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED) || BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED) || \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST(CertVerifierServiceFactoryTest, UpdatePKIMetadata) {
+  base::test::TaskEnvironment task_environment;
+  mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
+  CertVerifierServiceFactoryImpl cv_service_factory_impl(
+      cv_service_factory_remote.BindNewPipeAndPassReceiver());
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
+
+  mojo::Remote<mojom::CertVerifierService> cv_service_remote;
+  DummyCVServiceClient cv_service_client;
+  cv_service_factory_remote->GetNewCertVerifier(
+      cv_service_remote.BindNewPipeAndPassReceiver(),
+      /*updater=*/mojo::NullReceiver(),
+      cv_service_client.client_.BindNewPipeAndPassRemote(),
+      mojom::CertVerifierCreationParams::New());
+  cv_service_remote.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 0u);
+
+  auto update = mojom::PKIMetadataUpdate::New();
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  auto log_spki =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToSubjectPublicKeyInfo();
+  const auto log_id = Sha256AsByteString(log_spki);
+  auto log_info = network::mojom::CTLogInfo::New();
+  log_info->public_key = std::string(base::as_string_view(log_spki));
+  log_info->id = log_id;
+  log_info->name = "log name";
+  log_info->current_operator = "log operator";
+  std::vector<network::mojom::CTLogInfoPtr> log_list;
+  log_list.push_back(std::move(log_info));
+  update->ct_config = mojom::CtUpdate::New(
+      /*disable_ct_enforcement=*/false, std::move(log_list), base::Time::Now());
+#endif
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+  net::ScopedKeyPinningStateChromeDefaults scoped_test_key_pinning_enable;
+  auto pin_list = network::mojom::PinList::New();
+  auto pinset = network::mojom::PinSet::New();
+  pinset->name = "test_pinset";
+  pinset->static_spki_hashes.push_back(net::SHA256HashValue{{1}});
+  pin_list->pinsets.push_back(std::move(pinset));
+  auto host_pin = network::mojom::PinSetInfo::New();
+  host_pin->hostname = "pinned.example.com";
+  host_pin->pinset_name = "test_pinset";
+  host_pin->include_subdomains = true;
+  pin_list->host_pins.push_back(std::move(host_pin));
+  update->key_pins =
+      mojom::KeyPinsUpdate::New(std::move(pin_list), base::Time::Now());
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  auto [leaf, root] = net::CertBuilder::CreateSimpleChain2();
+  chrome_root_store::RootStore root_store;
+  root_store.set_version_major(net::CompiledChromeRootStoreVersion() + 1);
+  root_store.add_trust_anchors()->set_der(root->GetDER());
+  update->chrome_root_store = mojom::ChromeRootStoreUpdate::New(
+      mojo_base::ProtoWrapper(root_store), std::nullopt);
+#endif
+
+  {
+    base::RunLoop run_loop;
+    cv_service_factory_remote->UpdatePKIMetadata(std::move(update),
+                                                 run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // All populated updates should have been applied in a single verifier update
+  // notification.
+  EXPECT_NO_FATAL_FAILURE(cv_service_client.WaitForCertVerifierChange(1u));
+  cv_service_remote.FlushForTesting();
+  EXPECT_EQ(cv_service_client.changed_count_, 1u);
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 1u);
+  EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
+            log_id);
+  EXPECT_TRUE(cv_service_factory_impl.get_impl_params().ct_policy_enforcer);
+#endif
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+  ASSERT_TRUE(cv_service_factory_impl.get_impl_params().key_pinning_state);
+  EXPECT_TRUE(cv_service_factory_impl.get_impl_params()
+                  .key_pinning_state->HasPublicKeyPins("pinned.example.com"));
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  ASSERT_TRUE(cv_service_factory_impl.get_impl_params().root_store_data);
+  EXPECT_EQ(
+      cv_service_factory_impl.get_impl_params().root_store_data->version(),
+      net::CompiledChromeRootStoreVersion() + 1);
+#endif
+}
+#endif
 
 }  // namespace cert_verifier

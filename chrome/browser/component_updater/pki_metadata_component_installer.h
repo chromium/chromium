@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -20,37 +21,30 @@
 #include "net/base/hash_value.h"
 #include "net/cert/root_store_proto_lite/mtc_config.pb.h"
 #include "net/net_buildflags.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 struct SSLConfigServiceMtcLandmarkInfo;
 
+namespace cert_verifier::mojom {
+class PKIMetadataUpdate;
+}
+
 namespace component_updater {
 
-// The service that does the heavy lifting to install the PKI metadata
-// component.
+// The service that does the heavy lifting to install the PKI Metadata and PKI
+// Metadata Fastpush components.
 class PKIMetadataComponentInstallerService final {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called after the CT Log list data was processed. This may be called after
-    // the update was successfully configured or if the update was ignored due
-    // to an error.
-    virtual void OnCTLogListProcessed() {}
-
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-    // Called after the Key Pins list data is processed. This may be called
-    // after the update was successfully configured or if the update was ignored
-    // due to an error.
-    virtual void OnKeyPinsListProcessed() {}
-#endif
+    // Called after the PKI Metadata component data was processed. This may be
+    // called after the update was successfully configured or if the update was
+    // ignored due to an error.
+    virtual void OnPKIMetadataProcessed() {}
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    // Called after the Chrome Root Store data was processed. This may be
-    // called after the update was successfully configured or if the update
-    // was ignored due to an error.
-    virtual void OnChromeRootStoreProcessed() {}
-
     // Called after the MTC Metadata was processed. This may be called after
     // the update was successfully configured or if the update was ignored due
     // to an error.
@@ -78,10 +72,10 @@ class PKIMetadataComponentInstallerService final {
   // Reconfiguring happens on an asynchronous task.
   void ReconfigureAfterNetworkRestart();
 
-  // Configure Chrome Root Store data. This is separate from
-  // ReconfigureAfterNetworkRestart because Chrome Root Store updates don't
-  // go through the network service.
-  void ConfigureChromeRootStore();
+  // Loads PKI metadata from `install_dir_` on a background task and updates
+  // the network service and (unless `network_service_only` is true) the cert
+  // verifier service factory. This is a no-op if `install_dir_` is empty.
+  void ConfigurePKIMetadata(bool network_service_only = false);
 
   // Configure signatureless Merkle Tree Certificate metadata. This is
   // distributed separately from the Chrome Root Store data, in the Fastpush
@@ -115,23 +109,54 @@ class PKIMetadataComponentInstallerService final {
   void RemoveObserver(Observer* observer);
 
  private:
-  // Updates the network service and cert verifier service CT list with the
-  // component delivered data. `ct_config_bytes` should be a serialized
-  // CTConfig proto message.
+  struct LoadedPKIMetadata {
+    LoadedPKIMetadata();
+    ~LoadedPKIMetadata();
+    LoadedPKIMetadata(LoadedPKIMetadata&&);
+    LoadedPKIMetadata& operator=(LoadedPKIMetadata&&);
+
+    bool network_service_only = false;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+    std::string ct_config_bytes;
+#endif
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+    std::string kp_config_bytes;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    std::optional<mojo_base::ProtoWrapper> chrome_root_store;
+    std::optional<mojo_base::ProtoWrapper> mtc_config;
+#endif
+  };
+
+  // Processes all loaded PKIMetadata on the UI thread, sending updates to the
+  // network service and (unless `data.network_service_only` is true) to
+  // `CertVerifierServiceFactory::UpdatePKIMetadata`.
+  void UpdatePKIMetadataOnUI(LoadedPKIMetadata data);
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  // Updates the network service and (if `!network_service_only`) populates
+  // `cert_verifier_update.ct_config` with the component delivered CT data.
+  // `ct_config_bytes` should be a serialized CTConfig proto message.
   // TODO(crbug.com/41392053): remove network service from comment once it is
   // only sent to the cert verifier service.
-  void UpdateCTLogListOnUI(const std::string& ct_config_bytes);
+  void ProcessCTLogListOnUI(
+      const std::string& ct_config_bytes,
+      bool network_service_only,
+      cert_verifier::mojom::PKIMetadataUpdate& cert_verifier_update,
+      base::OnceClosure done_callback);
+#endif
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-  // Updates the network service and cert verifier service pins list with the
-  // component delivered data. `kp_config_bytes` should be a serialized
-  // PinList proto message.
+  // Updates the network service and (if `!network_service_only`) populates
+  // `cert_verifier_update.key_pins` with the component delivered pins list
+  // data. `kp_config_bytes` should be a serialized PinList proto message.
   // TODO(crbug.com/497882860): remove network service from comment once it is
   // only sent to the cert verifier service.
-  void UpdateKeyPinsListOnUI(const std::string& kp_config_bytes);
-
-  // Notifies all observers that the key pinning list data has been processed.
-  void NotifyKeyPinsListProcessed();
+  void ProcessKeyPinsListOnUI(
+      const std::string& kp_config_bytes,
+      bool network_service_only,
+      cert_verifier::mojom::PKIMetadataUpdate& cert_verifier_update,
+      base::OnceClosure done_callback);
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -140,15 +165,13 @@ class PKIMetadataComponentInstallerService final {
   static std::optional<chrome_root_store::MtcConfig> ParseMtcConfig(
       const base::FilePath& mtc_config_pb_path);
 
-  struct ChromeRootStoreAndMtcConfig {
-    std::optional<mojo_base::ProtoWrapper> chrome_root_store;
-    std::optional<mojo_base::ProtoWrapper> mtc_config;
-  };
-
-  // Updates SystemNetworkContextManager and cert verifiers with the component
-  // delivered Chrome Root Store data and optional Mtc Config data.
-  void UpdateChromeRootStoreOnUI(
-      ChromeRootStoreAndMtcConfig root_store_and_mtc_config);
+  // Updates SystemNetworkContextManager Trust Anchor IDs and populates
+  // `cert_verifier_update.chrome_root_store` with the component delivered
+  // Chrome Root Store data and optional Mtc Config data.
+  void ProcessChromeRootStoreOnUI(
+      std::optional<mojo_base::ProtoWrapper> chrome_root_store,
+      std::optional<mojo_base::ProtoWrapper> mtc_config,
+      cert_verifier::mojom::PKIMetadataUpdate& cert_verifier_update);
 
   // Updates SystemNetworkContextManager and cert verifiers with the component
   // delivered MTC Metadata. `mtc_metadata` should be a wrapped
@@ -180,16 +203,13 @@ class PKIMetadataComponentInstallerService final {
   bool UpdateMtcMetadataTrustAnchorIDs(
       const mojo_base::ProtoWrapper& mtc_metadata);
 
-  // Notifies all observers that the Chrome Root Store data has been
-  // processed.
-  void NotifyChromeRootStoreProcessed();
-
   // Notifies all observers that the MTC Metadata has been processed.
   void NotifyMtcMetadataProcessed();
 #endif
 
-  // Notifies all observers that the CT Log list data has been processed.
-  void NotifyCTLogListProcessed();
+  // Notifies all observers that the PKI metadata component data has been
+  // processed.
+  void NotifyPKIMetadataProcessed();
 
   // The install folder path. An empty path if the component is not ready.
   base::FilePath install_dir_;

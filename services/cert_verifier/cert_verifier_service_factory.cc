@@ -319,6 +319,14 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
     std::vector<network::mojom::CTLogInfoPtr> log_list,
     base::Time update_time,
     UpdateCtLogListCallback callback) {
+  UpdateCtLogListImpl(std::move(log_list), update_time);
+  UpdateVerifierServices();
+  std::move(callback).Run();
+}
+
+void CertVerifierServiceFactoryImpl::UpdateCtLogListImpl(
+    std::vector<network::mojom::CTLogInfoPtr> log_list,
+    base::Time update_time) {
   std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
   for (auto& log : log_list) {
     scoped_refptr<const net::CTLogVerifier> log_verifier =
@@ -341,30 +349,13 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
           update_time, std::move(disqualified_logs), std::move(log_info),
           base::FeatureList::IsEnabled(
               net::features::kEnforceOneRfc6962CtPolicy));
-
-  UpdateVerifierServices();
-
-  std::move(callback).Run();
-}
-
-void CertVerifierServiceFactoryImpl::DisableCtEnforcement(
-    DisableCtEnforcementCallback callback) {
-  // Clear the ct_policy_enforcer, which will cause a DefaultCTPolicyEnforcer
-  // to be used, which disables CT enforcement. If UpdateCtLogList is called
-  // later, CT enforcement will be re-enabled.
-  proc_params_.ct_policy_enforcer.reset();
-
-  UpdateVerifierServices();
-
-  std::move(callback).Run();
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-void CertVerifierServiceFactoryImpl::UpdateKeyPinsList(
+void CertVerifierServiceFactoryImpl::UpdateKeyPinsListImpl(
     network::mojom::PinListPtr pin_list,
-    base::Time update_time,
-    UpdateKeyPinsListCallback callback) {
+    base::Time update_time) {
   std::vector<net::KeyPinningStateChrome::PinSet> pinsets;
   std::vector<net::KeyPinningStateChrome::PinSetInfo> host_pins;
 
@@ -387,10 +378,6 @@ void CertVerifierServiceFactoryImpl::UpdateKeyPinsList(
 
   proc_params_.key_pinning_state = net::KeyPinningStateChrome::CreateForUpdated(
       std::move(pinsets), host_pins, update_time);
-
-  UpdateVerifierServices();
-
-  std::move(callback).Run();
 }
 #endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
@@ -412,20 +399,16 @@ void CertVerifierServiceFactoryImpl::OnCRLSetParsed(
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
-    mojo_base::ProtoWrapper new_root_store,
-    std::optional<mojo_base::ProtoWrapper> new_mtc_config,
-    UpdateChromeRootStoreCallback callback) {
-  // Ensure the callback is run regardless which return path is used.
-  base::ScopedClosureRunner scoped_callback_runner(std::move(callback));
-
+bool CertVerifierServiceFactoryImpl::UpdateChromeRootStoreImpl(
+    const mojo_base::ProtoWrapper& new_root_store,
+    const std::optional<mojo_base::ProtoWrapper>& new_mtc_config) {
   std::optional<net::ChromeRootStoreData> new_crs_data =
       ParseChromeRootStoreProto(new_root_store);
   std::optional<chrome_root_store::MtcConfig> mtc_config_data =
       ParseMtcConfigProto(new_mtc_config);
 
   if (!new_crs_data && !mtc_config_data) {
-    return;
+    return false;
   }
 
   InitializeRootStoreDataIfNecessary();
@@ -460,7 +443,7 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
   root_store_data.SetDisableMtcMirroringRequirements(disable_mtc);
 
   proc_params_.root_store_data = std::move(root_store_data);
-  UpdateVerifierServices();
+  return true;
 }
 
 // static
@@ -593,6 +576,48 @@ void CertVerifierServiceFactoryImpl::GetPlatformRootStoreInfo(
 }
 #endif
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+#if BUILDFLAG(IS_CT_SUPPORTED) || BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED) || \
+    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+void CertVerifierServiceFactoryImpl::UpdatePKIMetadata(
+    mojom::PKIMetadataUpdatePtr update,
+    UpdatePKIMetadataCallback callback) {
+  bool updated = false;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  if (update->ct_config) {
+    if (update->ct_config->disable_ct_enforcement) {
+      // Clear the ct_policy_enforcer, which will cause a
+      // DefaultCTPolicyEnforcer to be used, which disables CT enforcement. If
+      // UpdateCtLogListImpl is called later, CT enforcement will be re-enabled.
+      proc_params_.ct_policy_enforcer.reset();
+    } else {
+      UpdateCtLogListImpl(std::move(update->ct_config->log_list),
+                          update->ct_config->update_time);
+    }
+    updated = true;
+  }
+#endif
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+  if (update->key_pins) {
+    UpdateKeyPinsListImpl(std::move(update->key_pins->pin_list),
+                          update->key_pins->update_time);
+    updated = true;
+  }
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (update->chrome_root_store) {
+    if (UpdateChromeRootStoreImpl(update->chrome_root_store->new_root_store,
+                                  update->chrome_root_store->new_mtc_config)) {
+      updated = true;
+    }
+  }
+#endif
+  if (updated) {
+    UpdateVerifierServices();
+  }
+  std::move(callback).Run();
+}
+#endif
 
 void CertVerifierServiceFactoryImpl::UpdateNetworkTime(
     base::Time system_time,

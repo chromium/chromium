@@ -143,10 +143,13 @@ IN_PROC_BROWSER_TEST_P(CertVerifierServiceChromeRootStoreOptionalTest, Test) {
     anchor->set_der(std::string(
         net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
 
+    auto update = cert_verifier::mojom::PKIMetadataUpdate::New();
+    update->chrome_root_store =
+        cert_verifier::mojom::ChromeRootStoreUpdate::New(
+            mojo_base::ProtoWrapper(root_store), std::nullopt);
     base::RunLoop update_run_loop;
-    content::GetCertVerifierServiceFactory()->UpdateChromeRootStore(
-        mojo_base::ProtoWrapper(root_store), std::nullopt,
-        update_run_loop.QuitClosure());
+    content::GetCertVerifierServiceFactory()->UpdatePKIMetadata(
+        std::move(update), update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

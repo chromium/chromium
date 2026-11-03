@@ -78,6 +78,54 @@ struct PlatformRootStoreInfo {
   array<PlatformCertInfo> user_added_certs;
 };
 
+[EnableIf=is_ct_supported]
+struct CtUpdate {
+  // If true, disables CT enforcement (`log_list` and `update_time` are
+  // ignored).
+  bool disable_ct_enforcement = false;
+
+  // Updates the log list used for CT verification.
+  array<network.mojom.CTLogInfo> log_list;
+
+  // The log list timestamp.
+  mojo_base.mojom.Time update_time;
+};
+
+[EnableIf=chrome_key_pinning_supported]
+struct KeyPinsUpdate {
+  network.mojom.PinList pin_list;
+
+  // Timestamp that the pins list was considered fresh/current, in order to
+  // ensure that key pinning is not enforced if the list is too out of date.
+  mojo_base.mojom.Time update_time;
+};
+
+[EnableIf=is_chrome_root_store_supported]
+struct ChromeRootStoreUpdate {
+  mojo_base.mojom.ProtoWrapper new_root_store;
+
+  // The MTC Config is optional and only populated when VerifyMTCs feature is
+  // enabled and the MTC config was present in the component update data and
+  // successfully loaded.
+  // TODO(crbug.com/548727801): make this non-optional once MTCs are fully
+  // launched and the feature flag is removed.
+  mojo_base.mojom.ProtoWrapper? new_mtc_config;
+};
+
+// Data that is part of a PKIMetadata component update. Each optional field is
+// only updated if populated.
+[EnableIf=is_ct_supported|chrome_key_pinning_supported|is_chrome_root_store_supported]
+struct PKIMetadataUpdate {
+  [EnableIf=is_ct_supported]
+  CtUpdate? ct_config;
+
+  [EnableIf=chrome_key_pinning_supported]
+  KeyPinsUpdate? key_pins;
+
+  [EnableIf=is_chrome_root_store_supported]
+  ChromeRootStoreUpdate? chrome_root_store;
+};
+
 // Parent interface for the CertVerifierProcess. Hands out new
 // CertVerifierService's, which have their own underlying CertVerifier's
 // underneath.
@@ -104,26 +152,12 @@ interface CertVerifierServiceFactory {
   UpdateCtLogList(array<network.mojom.CTLogInfo> log_list,
                   mojo_base.mojom.Time update_time) => ();
 
-  // Disables CT Enforcement until the next UpdateCtLogList call.
-  [EnableIf=is_ct_supported]
-  DisableCtEnforcement() => ();
-
-  // Updates the key pins list. `update_time` should contain the timestamp that
-  // the pins list was considered fresh/current, in order to ensure that key
-  // pinning is not enforced if the list is too out of date.  The callback will
-  // be run once the update has been processed (regardless if it was updated
-  // successfully or the update was ignored.)
-  [EnableIf=chrome_key_pinning_supported]
-  UpdateKeyPinsList(network.mojom.PinList pin_list,
-                    mojo_base.mojom.Time update_time) => ();
-
-  // Updates the ChromeRootStore and optional MtcConfig used by the
-  // CertVerifierServiceFactory with a new version. The callback will be run
-  // once the update has been processed (regardless if it was updated
-  // successfully or the update was ignored.)
-  [EnableIf=is_chrome_root_store_supported]
-  UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store,
-                        mojo_base.mojom.ProtoWrapper? new_mtc_config) => ();
+  // Updates PKI metadata (CT config, Key Pins list, and/or Chrome Root Store +
+  // MtcConfig) from the PKIMetadata component in a single call. The callback
+  // will be run once the update has been processed (regardless if it was
+  // updated successfully or the update was ignored).
+  [EnableIf=is_ct_supported|chrome_key_pinning_supported|is_chrome_root_store_supported]
+  UpdatePKIMetadata(PKIMetadataUpdate update) => ();
 
   // Updates the Merkle Tree Certificate metadata used by the
   // CertVerifierServiceFactory with a new version. The callback will be run

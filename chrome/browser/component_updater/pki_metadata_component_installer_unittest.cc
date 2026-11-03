@@ -84,42 +84,23 @@ constexpr char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
 constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 4;
 
-class CTLogListWaiter : public PKIMetadataComponentInstallerService::Observer {
- public:
-  CTLogListWaiter() {
-    PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
-  }
-  ~CTLogListWaiter() override {
-    PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  void OnCTLogListProcessed() override { run_loop_.Quit(); }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-class KeyPinsListWaiter
+class PKIMetadataWaiter
     : public PKIMetadataComponentInstallerService::Observer {
  public:
-  KeyPinsListWaiter() {
+  PKIMetadataWaiter() {
     PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
   }
-  ~KeyPinsListWaiter() override {
+  ~PKIMetadataWaiter() override {
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
   }
 
   void Wait() { run_loop_.Run(); }
 
-  void OnKeyPinsListProcessed() override { run_loop_.Quit(); }
+  void OnPKIMetadataProcessed() override { run_loop_.Quit(); }
 
  private:
   base::RunLoop run_loop_;
 };
-#endif
 
 }  // namespace
 
@@ -296,7 +277,7 @@ class PKIMetadataComponentInstallerKeyPinningTest
   void WriteKPConfigAndUpdate() {
     WriteKPConfigToFile();
 
-    KeyPinsListWaiter waiter;
+    PKIMetadataWaiter waiter;
     policy_->ComponentReady(base::Version("1.2.3.4"),
                             component_install_dir_.GetPath(),
                             base::DictValue());
@@ -375,7 +356,7 @@ TEST_F(PKIMetadataComponentInstallerTest, CTEnforcementKillSwitch) {
 
   ct_config_.set_disable_ct_enforcement(true);
   WriteCTConfigToFile();
-  CTLogListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -480,7 +461,7 @@ TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
       FILE_PATH_LITERAL("kp_pinslist.pb"));
   ASSERT_TRUE(base::WriteFile(file_path, "mismatch"));
 
-  KeyPinsListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -571,7 +552,7 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentUpdatesCTConfig) {
   task_environment_.RunUntilIdle();
 
   WriteCTConfigToFile();
-  CTLogListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -644,7 +625,7 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidCTProto) {
       FILE_PATH_LITERAL("ct_config.pb"));
   ASSERT_TRUE(base::WriteFile(file_path, "mismatch"));
 
-  CTLogListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -681,7 +662,7 @@ TEST_F(PKIMetadataComponentInstallerTest,
       kMaxSupportedCTCompatibilityVersion + 1);
   WriteCTConfigToFile();
 
-  CTLogListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -721,7 +702,7 @@ TEST_F(PKIMetadataComponentInstallerTest,
       1);
   WriteCTConfigToFile();
 
-  CTLogListWaiter waiter;
+  PKIMetadataWaiter waiter;
   policy_->ComponentReady(base::Version("1.2.3.4"),
                           component_install_dir_.GetPath(), base::DictValue());
   waiter.Wait();
@@ -766,6 +747,39 @@ TEST_F(PKIMetadataComponentInstallerTest, ReconfigureWhenNotInstalled) {
   const net::CertVerifyProc::ImplParams& impl_params =
       cert_verifier_service_factory->get_impl_params();
   EXPECT_EQ(impl_params.ct_logs.size(), 0u);
+}
+
+// Tests that calling `ReconfigureAfterNetworkRestart` updates the network
+// service without re-sending updates to the cert verifier service factory.
+TEST_F(PKIMetadataComponentInstallerTest,
+       ReconfigureAfterNetworkRestartUpdatesNetworkServiceOnly) {
+  // Initialize the network service and cert verifier service factory.
+  content::GetNetworkService();
+  content::GetCertVerifierServiceFactory();
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
+  std::string ct_data;
+  ASSERT_TRUE(ct_config_.SerializeToString(&ct_data));
+  ASSERT_TRUE(
+      PKIMetadataComponentInstallerService::GetInstance()
+          ->WriteCTDataForTesting(component_install_dir_.GetPath(), ct_data));
+
+  PKIMetadataWaiter waiter;
+  PKIMetadataComponentInstallerService::GetInstance()
+      ->ReconfigureAfterNetworkRestart();
+  waiter.Wait();
+
+  network::NetworkService* network_service =
+      network::NetworkService::GetNetworkServiceForTesting();
+  ASSERT_TRUE(network_service);
+  EXPECT_EQ(network_service->log_list().size(), 2u);
+
+  cert_verifier::CertVerifierServiceFactoryImpl* cert_verifier_service_factory =
+      content::GetCertVerifierServiceFactoryForTesting();
+  ASSERT_TRUE(cert_verifier_service_factory);
+  EXPECT_EQ(cert_verifier_service_factory->get_impl_params().ct_logs.size(),
+            0u);
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
