@@ -47,7 +47,6 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
   void OnWebContentsChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents);
-  void Destroy(JNIEnv* env);
 
  private:
   void AttachToWebContents(content::WebContents* web_contennts);

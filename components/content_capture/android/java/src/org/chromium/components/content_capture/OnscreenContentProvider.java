@@ -16,6 +16,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -34,8 +38,13 @@ import java.util.List;
 @JNINamespace("content_capture")
 @NullMarked
 public class OnscreenContentProvider {
+    @JniType("::content_capture::OnscreenContentProviderAndroid")
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface NativeOnscreenContentProviderAndroid extends JniTypeToken {}
+
     private static final String TAG = "ContentCapture";
-    private long mNativeOnscreenContentProviderAndroid;
+    private @Nullable JniUniquePtr<NativeOnscreenContentProviderAndroid>
+            mNativeOnscreenContentProviderAndroid;
 
     private final ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
 
@@ -71,9 +80,9 @@ public class OnscreenContentProvider {
     }
 
     private void destroyNativeObject() {
-        if (mNativeOnscreenContentProviderAndroid == 0) return;
-        OnscreenContentProviderJni.get().destroy(mNativeOnscreenContentProviderAndroid);
-        mNativeOnscreenContentProviderAndroid = 0;
+        if (mNativeOnscreenContentProviderAndroid == null) return;
+        mNativeOnscreenContentProviderAndroid.destroy();
+        mNativeOnscreenContentProviderAndroid = null;
     }
 
     private void createNativeObject() {
@@ -86,7 +95,7 @@ public class OnscreenContentProvider {
 
     public void addConsumer(ContentCaptureConsumer consumer) {
         mContentCaptureConsumers.add(consumer);
-        if (mNativeOnscreenContentProviderAndroid == 0) createNativeObject();
+        if (mNativeOnscreenContentProviderAndroid == null) createNativeObject();
     }
 
     public void removeConsumer(ContentCaptureConsumer consumer) {
@@ -96,9 +105,10 @@ public class OnscreenContentProvider {
 
     public void onWebContentsChanged(WebContents current) {
         mWebContents = new WeakReference<>(current);
-        if (mNativeOnscreenContentProviderAndroid != 0) {
+        if (mNativeOnscreenContentProviderAndroid != null) {
             OnscreenContentProviderJni.get()
-                    .onWebContentsChanged(mNativeOnscreenContentProviderAndroid, current);
+                    .onWebContentsChanged(
+                            assumeNonNull(mNativeOnscreenContentProviderAndroid), current);
         }
     }
 
@@ -293,11 +303,11 @@ public class OnscreenContentProvider {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(OnscreenContentProvider self, @Nullable WebContents webContents);
+        JniUniquePtr<NativeOnscreenContentProviderAndroid> init(
+                OnscreenContentProvider self, @Nullable WebContents webContents);
 
         void onWebContentsChanged(
-                long nativeOnscreenContentProviderAndroid, @Nullable WebContents webContents);
-
-        void destroy(long nativeOnscreenContentProviderAndroid);
+                JniPtr<NativeOnscreenContentProviderAndroid> self,
+                @Nullable WebContents webContents);
     }
 }

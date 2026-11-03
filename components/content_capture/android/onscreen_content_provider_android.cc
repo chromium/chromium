@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/content_capture/android/jni_headers/ContentCaptureData_jni.h"
@@ -91,15 +92,15 @@ ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfContentCaptureFrame(
 
 }  // namespace
 
-static int64_t JNI_OnscreenContentProvider_Init(
+static jni_zero::JniUniquePtr<OnscreenContentProviderAndroid>
+JNI_OnscreenContentProvider_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
-  auto* provider = new content_capture::OnscreenContentProviderAndroid(
+  return jni_zero::MakeUnique<content_capture::OnscreenContentProviderAndroid>(
       env, obj, web_contents);
-  return reinterpret_cast<intptr_t>(provider);
 }
 
 OnscreenContentProviderAndroid::OnscreenContentProviderAndroid(
@@ -110,7 +111,9 @@ OnscreenContentProviderAndroid::OnscreenContentProviderAndroid(
   AttachToWebContents(web_contents);
 }
 
-OnscreenContentProviderAndroid::~OnscreenContentProviderAndroid() = default;
+OnscreenContentProviderAndroid::~OnscreenContentProviderAndroid() {
+  DetachFromWebContents();
+}
 
 void OnscreenContentProviderAndroid::FlushCaptureContent(
     const ContentCaptureSession& parent_session,
@@ -300,11 +303,6 @@ void OnscreenContentProviderAndroid::DetachFromWebContents() {
   if (auto* provider = onscreen_content_provider_.get())
     provider->RemoveConsumer(*this);
   onscreen_content_provider_.reset();
-}
-
-void OnscreenContentProviderAndroid::Destroy(JNIEnv* env) {
-  DetachFromWebContents();
-  delete this;
 }
 
 content::WebContents* OnscreenContentProviderAndroid::GetWebContents() {
