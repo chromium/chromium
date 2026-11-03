@@ -493,63 +493,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                 @"Failed to release histogram tester.");
 }
 
-// Tests that scrolling to the bottom of the page twice triggers kBottomReached.
-- (void)testExitFullscreenOnBottomReached {
-  _responses["/tallpage"] =
-      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
-
-  GURL URL = self.testServer->GetURL("/tallpage");
-  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
-  [ChromeEarlGreyUI waitForToolbarVisible:YES];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-
-  // Wait for WebKit to commit the tall page's content size to the scroll view.
-  // Before the content size is updated, `contentSize.height` can be 0, causing
-  // `isScrolledToBottom` to spuriously return YES before any scroll occurs.
-  GREYAssertTrue(WaitUntilConditionOrTimeout(
-                     kWaitForPageLoadTimeout,
-                     ^bool {
-                       return ![FullscreenAppInterface isScrolledToBottom];
-                     }),
-                 @"Page content height was not initialized.");
-
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
-
-  // 1. Scroll to the bottom of the page for the first time. Keep swiping up
-  // until FullscreenModel reports the bottom is reached.
-  bool scrolledToBottom = WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^bool {
-        if ([FullscreenAppInterface isScrolledToBottom]) {
-          return true;
-        }
-        [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-            performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-        return [FullscreenAppInterface isScrolledToBottom];
-      });
-  GREYAssertTrue(scrolledToBottom,
-                 @"Failed to scroll to the bottom of the page.");
-  [ChromeEarlGreyUI waitForToolbarVisible:NO];
-
-  // 2. Perform a second swipe up against the bottom edge. Reaching the bottom
-  // a second time while in fullscreen triggers kBottomReached, automatically
-  // expanding the toolbar (Exit fullscreen).
-  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-  [ChromeEarlGreyUI waitForToolbarVisible:YES];
-
-  // 3. Verify kBottomReached was recorded on Exit.
-  NSError* exitError = [MetricsAppInterface
-       expectCount:1
-         forBucket:static_cast<int>(
-                       FullscreenModeTransitionTrigger::kBottomReached)
-      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
-  GREYAssertNil(exitError, @"Histogram error: %@", exitError);
-
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
-}
-
 // Tests that reloading of a page shows the header even if it was not shown
 // previously.
 - (void)testShowHeaderOnReload {
@@ -1274,14 +1217,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
       @"Smooth scrolling is not supported for halfway scroll test.");
 }
 
-// `kBottomReached` is not recorded when smooth scrolling is enabled because
-// `LegacyFullscreenMediator::FullscreenModelScrollEventEnded` returns early
-// before checking `is_scrolled_to_bottom()`.
-- (void)testExitFullscreenOnBottomReached {
-  EARL_GREY_TEST_SKIPPED(
-      @"kBottomReached is only supported when smooth scrolling is disabled.");
-}
-
 @end
 
 #pragma mark - Bottom omnibox Tests
@@ -1358,14 +1293,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (void)testHalfwayScrollFinishedByCode {
   EARL_GREY_TEST_SKIPPED(
       @"Smooth scrolling is not supported for halfway scroll test.");
-}
-
-// `kBottomReached` is not recorded when smooth scrolling is enabled because
-// `LegacyFullscreenMediator::FullscreenModelScrollEventEnded` returns early
-// before checking `is_scrolled_to_bottom()`.
-- (void)testExitFullscreenOnBottomReached {
-  EARL_GREY_TEST_SKIPPED(
-      @"kBottomReached is only supported when smooth scrolling is disabled.");
 }
 
 @end

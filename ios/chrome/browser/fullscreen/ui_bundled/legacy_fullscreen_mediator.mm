@@ -243,7 +243,7 @@ void LegacyFullscreenMediator::FullscreenModelScrollEventStarted(
   if (model_->enabled() && model_->is_scrolled_to_bottom() &&
       AreCGFloatsEqual(model_->progress(), 0.0) &&
       model_->can_collapse_toolbar()) {
-    ExitFullscreen(FullscreenModeTransitionTrigger::kBottomReached);
+    ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
   }
 }
 
