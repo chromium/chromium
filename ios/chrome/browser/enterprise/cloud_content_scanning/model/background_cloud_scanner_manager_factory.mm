@@ -27,7 +27,7 @@ BackgroundCloudScannerManagerFactory::BackgroundCloudScannerManagerFactory(
 
 std::unique_ptr<KeyedService>
 BackgroundCloudScannerManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<BackgroundCloudScannerManager>(
       ConnectorsServiceFactory::GetForProfile(profile),
       IOSReportingEventRouterFactory::GetForProfile(profile),

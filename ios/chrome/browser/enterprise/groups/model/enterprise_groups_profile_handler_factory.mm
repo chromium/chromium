@@ -24,16 +24,16 @@ EnterpriseGroupsProfileHandlerFactory::EnterpriseGroupsProfileHandlerFactory(
 
 std::unique_ptr<KeyedService>
 EnterpriseGroupsProfileHandlerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(kEnterpriseGroupsExperiments)) {
     return nullptr;
   }
-  if (!profile->GetUserCloudPolicyManager()) {
+  if (!profile.GetUserCloudPolicyManager()) {
     return nullptr;
   }
   return std::make_unique<policy::EnterpriseGroupsProfileHandler>(
-      profile->GetUserCloudPolicyManager()->core(),
-      GetApplicationContext()->GetLocalState(), profile->GetProfileName());
+      profile.GetUserCloudPolicyManager()->core(),
+      GetApplicationContext()->GetLocalState(), profile.GetProfileName());
 }
 
 }  // namespace enterprise_groups

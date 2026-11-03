@@ -18,8 +18,8 @@ IOSRulesServiceFactory::IOSRulesServiceFactory(PassKey key)
           ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService> IOSRulesServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<IOSRulesService>(profile);
+    ProfileIOS& profile) const {
+  return std::make_unique<IOSRulesService>(&profile);
 }
 
 }  // namespace data_controls

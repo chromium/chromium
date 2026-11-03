@@ -27,7 +27,7 @@ ClientCertificatesServiceIOSFactory::ClientCertificatesServiceIOSFactory(
 
 std::unique_ptr<KeyedService>
 ClientCertificatesServiceIOSFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   CertificateProvisioningServiceIOS* profile_service =
       CertificateProvisioningServiceFactoryIOS::GetForProfile(profile);
 
@@ -38,7 +38,7 @@ ClientCertificatesServiceIOSFactory::BuildServiceInstanceFor(
               ->chrome_browser_cloud_management_controller()
               ->GetCertificateProvisioningService());
 
-  return ClientCertificatesServiceIOS::Create(profile, profile_service,
+  return ClientCertificatesServiceIOS::Create(&profile, profile_service,
                                               browser_service);
 }
 

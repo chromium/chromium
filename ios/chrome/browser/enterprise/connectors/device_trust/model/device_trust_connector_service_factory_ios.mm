@@ -25,7 +25,7 @@ void DeviceTrustConnectorServiceFactoryIOS::RegisterProfilePrefs(
 
 std::unique_ptr<KeyedService>
 DeviceTrustConnectorServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<enterprise_connectors::DeviceTrustConnectorService>(
-      profile->GetPrefs());
+      profile.GetPrefs());
 }

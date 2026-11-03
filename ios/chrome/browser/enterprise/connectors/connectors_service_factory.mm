@@ -21,11 +21,11 @@ ConnectorsServiceFactory::ConnectorsServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ConnectorsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ConnectorsService>(
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      profile->GetUserCloudPolicyManager(), profile->GetProfileName(),
-      profile->GetStatePath(), profile->IsOffTheRecord());
+      profile.GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      profile.GetUserCloudPolicyManager(), profile.GetProfileName(),
+      profile.GetStatePath(), profile.IsOffTheRecord());
 }
 
 }  // namespace enterprise_connectors

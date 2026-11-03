@@ -16,7 +16,7 @@ DataProtectionUrlLookupServiceFactory::DataProtectionUrlLookupServiceFactory(
 
 std::unique_ptr<KeyedService>
 DataProtectionUrlLookupServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<
       enterprise_data_protection::DataProtectionUrlLookupService>();
 }

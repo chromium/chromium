@@ -23,10 +23,10 @@ IOSCloudBinaryUploadServiceFactory::IOSCloudBinaryUploadServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSCloudBinaryUploadServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<CloudBinaryUploadServiceBase>(
-      profile->GetSharedURLLoaderFactory(),
-      std::make_unique<IOSCloudBinaryUploadService>(profile));
+      profile.GetSharedURLLoaderFactory(),
+      std::make_unique<IOSCloudBinaryUploadService>(&profile));
 }
 
 }  // namespace enterprise_connectors

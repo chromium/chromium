@@ -16,8 +16,8 @@ IdleServiceFactory::IdleServiceFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key), "IdleService") {}
 
 std::unique_ptr<KeyedService> IdleServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<IdleService>(profile);
+    ProfileIOS& profile) const {
+  return std::make_unique<IdleService>(&profile);
 }
 
 void IdleServiceFactory::RegisterProfilePrefs(
