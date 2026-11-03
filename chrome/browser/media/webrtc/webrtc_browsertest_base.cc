@@ -10,7 +10,6 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -71,8 +70,7 @@ const char WebRtcTestBase::kUndefined[] = "undefined";
 
 namespace {
 
-base::LazyInstance<bool>::DestructorAtExit hit_javascript_errors_ =
-    LAZY_INSTANCE_INITIALIZER;
+bool g_hit_javascript_errors = false;
 
 // Intercepts all log messages. We always attach this handler but only look at
 // the results if the test requests so. Note that this will only work if the
@@ -94,7 +92,7 @@ bool JavascriptErrorDetectingLogHandler(int severity,
   bool contains_uncaught = str.contains("\"Uncaught ");
   if (severity == logging::LOGGING_ERROR ||
       (severity == logging::LOGGING_INFO && contains_uncaught)) {
-    hit_javascript_errors_.Get() = true;
+    g_hit_javascript_errors = true;
   }
 
   return false;
@@ -106,14 +104,14 @@ WebRtcTestBase::WebRtcTestBase(): detect_errors_in_javascript_(false) {
   // The handler gets set for each test method, but that's fine since this
   // set operation is idempotent.
   logging::SetLogMessageHandler(&JavascriptErrorDetectingLogHandler);
-  hit_javascript_errors_.Get() = false;
+  g_hit_javascript_errors = false;
 
   EnablePixelOutput();
 }
 
 WebRtcTestBase::~WebRtcTestBase() {
   if (detect_errors_in_javascript_) {
-    EXPECT_FALSE(hit_javascript_errors_.Get())
+    EXPECT_FALSE(g_hit_javascript_errors)
         << "Encountered javascript errors during test execution (Search "
         << "for Uncaught or ERROR:CONSOLE in the test output).";
   }
