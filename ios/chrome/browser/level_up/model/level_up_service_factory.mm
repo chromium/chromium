@@ -21,13 +21,13 @@ LevelUpServiceFactory::LevelUpServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> LevelUpServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   SessionRestorationService* session_restoration_service =
       SessionRestorationServiceFactory::GetForProfile(profile);
   scoped_refptr<IOSChromePasswordCheckManager> password_check_manager =
       IOSChromePasswordCheckManagerFactory::GetForProfile(profile);
-  return std::make_unique<LevelUpService>(profile->GetPrefs(), browser_list,
+  return std::make_unique<LevelUpService>(profile.GetPrefs(), browser_list,
                                           session_restoration_service,
                                           password_check_manager.get());
 }

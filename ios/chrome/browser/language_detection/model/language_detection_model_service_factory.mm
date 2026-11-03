@@ -29,7 +29,7 @@ LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory(
 
 std::unique_ptr<KeyedService>
 LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled() ||
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;

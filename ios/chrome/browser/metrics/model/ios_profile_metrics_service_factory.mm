@@ -22,7 +22,7 @@ IOSProfileMetricsServiceFactory::IOSProfileMetricsServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSProfileMetricsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // Per-profile metrics are not supported on iOS: create a service with an
   // empty profile context.
   return std::make_unique<metrics::ProfileMetricsService>(

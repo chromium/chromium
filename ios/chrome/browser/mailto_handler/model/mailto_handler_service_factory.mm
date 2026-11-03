@@ -25,7 +25,7 @@ MailtoHandlerServiceFactory::MailtoHandlerServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 MailtoHandlerServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   MailtoHandlerConfiguration* config =
       [[MailtoHandlerConfiguration alloc] init];
 

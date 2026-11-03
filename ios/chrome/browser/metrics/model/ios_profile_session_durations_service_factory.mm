@@ -32,7 +32,7 @@ IOSProfileSessionDurationsServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
@@ -40,6 +40,6 @@ IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
   metrics::ProfileMetricsService* profile_metrics_service =
       IOSProfileMetricsServiceFactory::GetForProfile(profile);
   return std::make_unique<IOSProfileSessionDurationsService>(
-      sync_service, profile->GetPrefs(), identity_manager,
+      sync_service, profile.GetPrefs(), identity_manager,
       profile_metrics_service);
 }

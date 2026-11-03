@@ -23,7 +23,7 @@ LanguageDetectionModelLoaderServiceIOSFactory::
 
 std::unique_ptr<KeyedService>
 LanguageDetectionModelLoaderServiceIOSFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled()) {
     return nullptr;
   }

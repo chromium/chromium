@@ -17,10 +17,10 @@ GoogleGroupsManagerFactory::GoogleGroupsManagerFactory(PassKey key)
                                          TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService>
-GoogleGroupsManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+GoogleGroupsManagerFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return std::make_unique<GoogleGroupsManager>(
-      *GetApplicationContext()->GetLocalState(), profile->GetProfileName(),
-      *profile->GetPrefs());
+      *GetApplicationContext()->GetLocalState(), profile.GetProfileName(),
+      *profile.GetPrefs());
 }
 
 void GoogleGroupsManagerFactory::RegisterProfilePrefs(

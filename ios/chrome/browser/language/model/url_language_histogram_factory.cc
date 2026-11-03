@@ -16,8 +16,8 @@ UrlLanguageHistogramFactory::UrlLanguageHistogramFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UrlLanguageHistogramFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<language::UrlLanguageHistogram>(profile->GetPrefs());
+    ProfileIOS& profile) const {
+  return std::make_unique<language::UrlLanguageHistogram>(profile.GetPrefs());
 }
 
 void UrlLanguageHistogramFactory::RegisterProfilePrefs(

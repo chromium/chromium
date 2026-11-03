@@ -21,7 +21,7 @@ BookmarkModelMetricsServiceFactory::BookmarkModelMetricsServiceFactory(
 
 std::unique_ptr<KeyedService>
 BookmarkModelMetricsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<BookmarkModelMetricsService>(
-      ios::BookmarkModelFactory::GetForProfile(profile), profile);
+      ios::BookmarkModelFactory::GetForProfile(profile), &profile);
 }
