@@ -3341,24 +3341,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
-    {flag_descriptions::kCastMirroringTargetPlayoutDelayDefault, "", ""},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay100ms,
-     switches::kCastMirroringTargetPlayoutDelay, "100"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay150ms,
-     switches::kCastMirroringTargetPlayoutDelay, "150"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay250ms,
-     switches::kCastMirroringTargetPlayoutDelay, "250"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay300ms,
-     switches::kCastMirroringTargetPlayoutDelay, "300"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay350ms,
-     switches::kCastMirroringTargetPlayoutDelay, "350"},
-    {flag_descriptions::kCastMirroringTargetPlayoutDelay400ms,
-     switches::kCastMirroringTargetPlayoutDelay, "400"}};
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam sAndroidThemeModuleParams[] = {
     {"force_theme_module_dependencies", "true"}};
@@ -9965,10 +9947,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastMirroringNativeNV12Name,
      flag_descriptions::kCastMirroringNativeNV12Description, kOsDesktop,
      FEATURE_VALUE_TYPE(mirroring::features::kCastMirroringNativeNV12)},
-    {"cast-mirroring-target-playout-delay",
-     flag_descriptions::kCastMirroringTargetPlayoutDelayName,
-     flag_descriptions::kCastMirroringTargetPlayoutDelayDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kCastMirroringTargetPlayoutDelayChoices)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

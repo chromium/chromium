@@ -6903,20 +6903,6 @@ inline constexpr char kCastMirroringNativeNV12Description[] =
     "If enabled, NV12 video frames will be sent to the encoder without being "
     "converted to I420 during Cast Mirroring.";
 
-inline constexpr char kCastMirroringTargetPlayoutDelayName[] =
-    "Changes the target playout delay for Cast mirroring.";
-inline constexpr char kCastMirroringTargetPlayoutDelayDescription[] =
-    "Choose a target playout delay for Cast mirroring. A lower delay will "
-    "decrease latency, but may impact other quality indicators.";
-inline constexpr char kCastMirroringTargetPlayoutDelayDefault[] =
-    "Default (200ms)";
-inline constexpr char kCastMirroringTargetPlayoutDelay100ms[] = "100ms.";
-inline constexpr char kCastMirroringTargetPlayoutDelay150ms[] = "150ms.";
-inline constexpr char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
-inline constexpr char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
-inline constexpr char kCastMirroringTargetPlayoutDelay350ms[] = "350ms.";
-inline constexpr char kCastMirroringTargetPlayoutDelay400ms[] = "400ms.";
-
 inline constexpr char
     kClientSideDetectionServerModelForScamDetectionDesktopName[] =
         "Client Side Detection Server Model for Scam Detection on Desktop";
