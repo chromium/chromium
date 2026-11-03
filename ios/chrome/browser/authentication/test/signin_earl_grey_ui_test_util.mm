@@ -381,6 +381,8 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
                  grey_descendant(grey_accessibilityLabel(title)), nil);
 
   if (assertVisible) {
+    [ChromeEarlGrey
+        waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
     [[EarlGrey selectElementWithMatcher:snackbarMatcher]
         assertWithMatcher:grey_interactable()];
     [[EarlGrey selectElementWithMatcher:snackbarMatcher]
