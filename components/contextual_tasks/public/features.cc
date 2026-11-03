@@ -378,6 +378,9 @@ BASE_FEATURE(kContextualTasksRearchitecture, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksSidePanelRearchitecture,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksSidePanelRearchitectureExpandToFullTab,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksEnableStickyConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1155,6 +1158,12 @@ bool IsContextualTasksRearchitectureEnabled() {
 
 bool IsContextualTasksSidePanelRearchitectureEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture);
+}
+
+bool IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled() {
+  return IsContextualTasksSidePanelRearchitectureEnabled() &&
+         base::FeatureList::IsEnabled(
+             kContextualTasksSidePanelRearchitectureExpandToFullTab);
 }
 
 bool IsContextualTasksClobberActiveTabEnabled() {

@@ -216,6 +216,12 @@ class ContextualTasksUIBase
   bool IsAiPage() const { return is_ai_page_; }
   virtual void SetIsAiPage(bool is_ai_page);
 
+  bool IsContextualTasksEligibleOnInit() const {
+    return is_contextual_tasks_eligible_on_init_;
+  }
+  virtual bool CanExpandToFullTab() const;
+  virtual void UpdateExpandButtonEnabled(bool enabled);
+
   // The title of the active conversation thread, or nullopt if no thread is
   // active (e.g. on AI zero-state landing pages or non-AI URLs).
   //
@@ -275,6 +281,7 @@ class ContextualTasksUIBase
   toolbar_ui_api::mojom::PermissionDashboardStatePtr
       last_pushed_permission_dashboard_state_;
   bool is_ai_page_ = false;
+  bool is_contextual_tasks_eligible_on_init_ = false;
   std::optional<std::string> thread_title_;
 
 #if !BUILDFLAG(IS_ANDROID)

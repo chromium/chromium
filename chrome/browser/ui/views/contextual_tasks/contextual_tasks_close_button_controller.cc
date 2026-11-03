@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -180,6 +181,19 @@ void ContextualTasksCloseButtonController::MaybeNotifyVisibilityShouldChange() {
       browser_window_interface_);
 
   if (controller) {
+    if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
+      if (contextual_tasks::ContextualTasksUIBase* toolbar_ui =
+              contextual_tasks::ContextualTasksUIBase::FromWebContents(
+                  controller->GetToolbarWebContents())) {
+        bool enabled =
+            (IsVerticalTabOrIsImmersiveMode() ||
+             (contextual_tasks::GetExpandButtonOption() ==
+              contextual_tasks::ExpandButtonOption::kSidePanelExpandButton)) &&
+            controller->CanExpandToFullTab();
+        toolbar_ui->UpdateExpandButtonEnabled(enabled);
+      }
+      return;
+    }
     content::WebContents* contents = controller->GetActiveWebContents();
     if (contents) {
       auto* ui = contextual_tasks::GetWebUiInterface(contents);

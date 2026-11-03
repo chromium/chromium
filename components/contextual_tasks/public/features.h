@@ -148,6 +148,11 @@ BASE_DECLARE_FEATURE(kContextualTasksRearchitecture);
 // Enables the side panel changes as part of the rearchitecture.
 BASE_DECLARE_FEATURE(kContextualTasksSidePanelRearchitecture);
 
+// Allows the rearchitected side panel to offer expanding the active task into
+// a full tab ("Open in new tab"). Has no effect unless
+// `kContextualTasksSidePanelRearchitecture` is enabled.
+BASE_DECLARE_FEATURE(kContextualTasksSidePanelRearchitectureExpandToFullTab);
+
 // Enables sticky conversation UI that follows the user around.
 BASE_DECLARE_FEATURE(kContextualTasksEnableStickyConversation);
 
@@ -663,6 +668,8 @@ extern bool GetIsWebpageApcComparisonEnabled();
 
 extern bool IsContextualTasksRearchitectureEnabled();
 extern bool IsContextualTasksSidePanelRearchitectureEnabled();
+// Returns whether the rearchitected side panel may expand to a full tab.
+extern bool IsContextualTasksSidePanelRearchitectureExpandToFullTabEnabled();
 extern bool IsContextualTasksClobberActiveTabEnabled();
 extern bool IsContextualTasksTabBasedSuggestionsEnabled();
 extern bool IsContextualTasksUnboundedMenuEnabled();
