@@ -20,6 +20,7 @@
  * dialog contents).
  */
 import '../cr_icon_button/cr_icon_button.js';
+import '../icons.html.js';
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';

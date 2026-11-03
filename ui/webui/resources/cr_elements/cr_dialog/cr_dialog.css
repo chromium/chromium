@@ -6,10 +6,9 @@
  * #type=style-lit
  * #import=../cr_shared_vars.css.js
  * #import=../cr_hidden_style_lit.css.js
- * #import=../cr_icons_lit.css.js
  * #import=../cr_scrollable_lit.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-icons-lit cr-scrollable-lit
+ * #include=cr-hidden-style-lit cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 dialog {
@@ -94,7 +93,7 @@ dialog::backdrop {
   padding-bottom: var(--cr-dialog-title-slot-padding-bottom, 16px);
   padding-inline-end:  var(--cr-dialog-title-slot-padding-end, 20px);
   padding-inline-start: var(--cr-dialog-title-slot-padding-start, 20px);
-  padding-top: var(--cr-dialog-title-slot-padding-top, 20px);
+  padding-top: var(--title-slot-padding-top);
 }
 
 /* Note that if the padding is non-uniform and the button-container
@@ -135,6 +134,7 @@ dialog::backdrop {
 }
 
 .top-container {
+  --title-slot-padding-top: var(--cr-dialog-title-slot-padding-top, 20px);
   align-items: flex-start;
   display: flex;
   min-height: var(--cr-dialog-top-container-min-height, 31px);
@@ -151,8 +151,11 @@ dialog::backdrop {
 
 #close {
   align-self: flex-start;
-  margin-inline-end: 4px;
-  margin-top: 4px;
+  margin-inline-end: 14px;
+  /* Align close icon with top of text. */
+  /* The "X" in the SVG is only about 16px tall. */
+  --ripple-size: calc(var(--cr-icon-button-size) - 16px);
+  margin-top: calc(var(--title-slot-padding-top) - var(--ripple-size) / 2);
 }
 
 /* If --cr-dialog-body-border-top is defined, force show the scrollable top
