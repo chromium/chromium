@@ -4,13 +4,18 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -23,34 +28,43 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("web_contents_delegate_android")
 @NullMarked
 public class EyeDropperBridge implements WindowAndroid.IntentCallback {
+    @JniType("::web_contents_delegate_android::EyeDropperBridge")
+    interface NativeEyeDropperBridge extends JniTypeToken {}
+
     private static final String TAG = "EyeDropperBridge";
 
-    private long mNativeEyeDropperBridge;
+    private @Nullable JniRawPtr<NativeEyeDropperBridge> mNativeEyeDropperBridge;
     private final WindowAndroid mWindowAndroid;
     private int mRequestCode = WindowAndroid.START_INTENT_FAILURE;
 
     @CalledByNative
-    private static @Nullable EyeDropperBridge create(
-            long nativeEyeDropperBridge,
+    static @Nullable EyeDropperBridge create(
+            JniRawPtr<NativeEyeDropperBridge> nativeEyeDropperBridge,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         assert windowAndroid != null;
         Context context = windowAndroid.getContext().get();
-        if (ContextUtils.activityFromContext(context) == null) return null;
+        if (ContextUtils.activityFromContext(context) == null) {
+            nativeEyeDropperBridge.release();
+            return null;
+        }
 
         Intent intent = new Intent(Intent.ACTION_OPEN_EYE_DROPPER);
         if (!windowAndroid.canResolveActivity(intent)) {
             Log.w(TAG, "No activity found to handle ACTION_OPEN_EYE_DROPPER");
+            nativeEyeDropperBridge.release();
             return null;
         }
 
         EyeDropperBridge bridge = new EyeDropperBridge(nativeEyeDropperBridge, windowAndroid);
         if (!bridge.start(intent)) {
+            nativeEyeDropperBridge.release();
             return null;
         }
         return bridge;
     }
 
-    private EyeDropperBridge(long nativeEyeDropperBridge, WindowAndroid windowAndroid) {
+    private EyeDropperBridge(
+            JniRawPtr<NativeEyeDropperBridge> nativeEyeDropperBridge, WindowAndroid windowAndroid) {
         mNativeEyeDropperBridge = nativeEyeDropperBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -66,27 +80,31 @@ public class EyeDropperBridge implements WindowAndroid.IntentCallback {
             mWindowAndroid.cancelIntent(mRequestCode);
             mRequestCode = WindowAndroid.START_INTENT_FAILURE;
         }
-        mNativeEyeDropperBridge = 0;
+        if (mNativeEyeDropperBridge != null) {
+            mNativeEyeDropperBridge.release();
+            mNativeEyeDropperBridge = null;
+        }
     }
 
     @Override
     public void onIntentCompleted(int resultCode, @Nullable Intent data) {
         mRequestCode = WindowAndroid.START_INTENT_FAILURE;
-        if (mNativeEyeDropperBridge == 0) return;
+        if (mNativeEyeDropperBridge == null) return;
 
         if (resultCode == Activity.RESULT_OK && data != null && data.hasExtra(Intent.EXTRA_COLOR)) {
             int color = data.getIntExtra(Intent.EXTRA_COLOR, 0);
-            EyeDropperBridgeJni.get().onColorChosen(mNativeEyeDropperBridge, color);
+            EyeDropperBridgeJni.get().onColorChosen(assumeNonNull(mNativeEyeDropperBridge), color);
         } else {
-            EyeDropperBridgeJni.get().onColorSelectionCanceled(mNativeEyeDropperBridge);
+            EyeDropperBridgeJni.get()
+                    .onColorSelectionCanceled(assumeNonNull(mNativeEyeDropperBridge));
         }
         // Native might be destroyed and `destroy()` might be called by this point.
     }
 
     @NativeMethods
     interface Natives {
-        void onColorChosen(long nativeEyeDropperBridge, int color);
+        void onColorChosen(JniPtr<NativeEyeDropperBridge> self, int color);
 
-        void onColorSelectionCanceled(long nativeEyeDropperBridge);
+        void onColorSelectionCanceled(JniPtr<NativeEyeDropperBridge> self);
     }
 }

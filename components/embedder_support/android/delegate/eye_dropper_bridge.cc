@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_features.h"
@@ -47,7 +48,8 @@ std::unique_ptr<EyeDropperBridge> EyeDropperBridge::Create(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> j_eye_dropper =
       Java_EyeDropperBridge_create(
-          env, reinterpret_cast<intptr_t>(bridge.get()), window_android);
+          env, jni_zero::MakeRaw(bridge.get()),
+          window_android);
   if (j_eye_dropper.is_null()) {
     return nullptr;
   }
