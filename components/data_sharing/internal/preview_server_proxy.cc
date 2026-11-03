@@ -112,6 +112,7 @@ constexpr net::NetworkTrafficAnnotationTag
               "Group ID and access token obtained from the invitation that "
               "the user has received."
             destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "chromesyncsharedentities-pa.googleapis.com"
             internal {
               contacts { email: "chrome-data-sharing-eng@google.com" }
             }
