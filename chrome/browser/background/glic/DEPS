@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "glic_background_mode_manager_browsertest\\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
+}
