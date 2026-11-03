@@ -15,6 +15,9 @@
     min-width: -ie-max-content;
     min-width: max-content;
 }
+img {
+  box-sizing: border-box;
+}
 </style>
 <p>Test the effect of percentages widths on the preferred widths of replaced elements.</p>
 
@@ -36,24 +39,24 @@
     <img class="max-content" src="resources/square-blue-100x100.png" style="width: 100%; border: 5px solid black; padding: 5px;" data-expected-width=120 data-expected-height=120>
 </div>
 
-<div class="container" data-expected-width=55 data-expected-height=75>
-    <img src="resources/square-blue-100x100.png" style="min-width: 25px; width: 100%; border: 5px solid black; padding: 5px;" data-expected-width=65 data-expected-height=65>
+<div class="container" data-expected-width=55 data-expected-height=55>
+    <img src="resources/square-blue-100x100.png" style="min-width: 45px; width: 100%; border: 5px solid black; padding: 5px;" data-expected-width=45 data-expected-height=45>
 </div>
 
-<div class="container" data-expected-width=55 data-expected-height=75>
-    <img src="resources/square-blue-100x100.png" style="min-width: 25px; width: 100%; border: 5px solid black; padding: 5px;" data-expected-width=65 data-expected-height=65>
+<div class="container" data-expected-width=55 data-expected-height=55>
+    <img src="resources/square-blue-100x100.png" style="min-width: 45px; width: 100%; border: 5px solid black; padding: 5px;" data-expected-width=45 data-expected-height=45>
 </div>
 
-<div class="container" data-expected-width=30 data-expected-height=50>
-    <img src="resources/square-blue-100x100.png" style="width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=40 data-expected-height=40>
+<div class="container" data-expected-width=30 data-expected-height=30>
+    <img src="resources/square-blue-100x100.png" style="width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=20 data-expected-height=20>
 </div>
 
-<div class="container" data-expected-width=30 data-expected-height=50>
-    <img src="resources/square-blue-100x100.png" style="max-width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=40 data-expected-height=40>
+<div class="container" data-expected-width=30 data-expected-height=30>
+    <img src="resources/square-blue-100x100.png" style="max-width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=20 data-expected-height=20>
 </div>
 
-<div class="container" data-expected-width=130 data-expected-height=150>
-    <img src="resources/square-blue-100x100.png" style="min-width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=140 data-expected-height=140>
+<div class="container" data-expected-width=130 data-expected-height=130>
+    <img src="resources/square-blue-100x100.png" style="min-width: 100%; border: 5px solid grey; padding: 5px;" data-expected-width=120 data-expected-height=120>
 </div>
 
 </div>

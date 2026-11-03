@@ -317,9 +317,11 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
   const auto& child_style = child.Style();
   const BoxStrut border_padding =
       ComputeBorders(space, child) + ComputePadding(space, child_style);
+  const LayoutUnit inline_size =
+      ComputeReplacedSize(child, space, border_padding).inline_size;
 
   MinMaxSizes result;
-  result = ComputeReplacedSize(child, space, border_padding).inline_size;
+  result = inline_size;
 
   if (child_style.LogicalWidth().HasPercent() ||
       child_style.LogicalMaxWidth().HasPercent()) {
@@ -329,9 +331,9 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
     result.min_size = ResolveMinInlineLength(
         space, child_style, border_padding,
         [&](SizeType) -> MinMaxSizesResult {
-          // Behave the same as if we couldn't resolve the min-inline size.
+          // Use the inline-size if we need to resolve min-content/max-content.
           MinMaxSizes sizes;
-          sizes = border_padding.InlineSum();
+          sizes = inline_size;
           return {sizes, /* depends_on_block_constraints */ false};
         },
         child_style.LogicalMinWidth());
