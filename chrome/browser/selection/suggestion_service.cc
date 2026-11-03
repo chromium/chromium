@@ -457,7 +457,9 @@ void SuggestionService::UnregisterTool(SuggestionTool* tool) {
 
 void SuggestionService::UpdateScreenContent(
     const SkBitmap& screenshot,
-    const optimization_guide::proto::AnnotatedPageContent& apc) {}
+    const optimization_guide::proto::AnnotatedPageContent& apc) {
+  MaybePrewarmServerRequest();
+}
 
 void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
                                            SuggestionsCallback callback) {
@@ -470,6 +472,8 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
                                   FeedbackZipBuilder()));
     return;
   }
+
+  MaybePrewarmServerRequest();
 
   auto [request, screenshot] =
       BuildServerSuggestionsRequest(processed_area, tools_);
@@ -566,6 +570,24 @@ void SuggestionService::OnServerSuggestions(
                     response->latency_metrics(), suggestions.size());
   std::move(callback).Run(std::move(suggestions),
                           std::move(feedback_zip_builder));
+}
+
+void SuggestionService::MaybePrewarmServerRequest() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta cooldown =
+      kSmartSelectionServerPrewarmAuthTokenCooldown.Get();
+  if (!last_auth_prewarm_time_.is_null() &&
+      (now - last_auth_prewarm_time_ < cooldown)) {
+    return;
+  }
+  if (tools_.empty() || !remote_model_executor_ ||
+      !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions) ||
+      !kSmartSelectionServerPrewarmAuthToken.Get()) {
+    return;
+  }
+  last_auth_prewarm_time_ = now;
+  remote_model_executor_->PrewarmModelExecution(
+      optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions);
 }
 
 }  // namespace selection

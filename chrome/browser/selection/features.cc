@@ -34,4 +34,14 @@ BASE_FEATURE_PARAM(bool,
                    &kSmartSelectionServerSuggestions,
                    true);
 
+BASE_FEATURE_PARAM(bool,
+                   kSmartSelectionServerPrewarmAuthToken,
+                   &kSmartSelectionServerSuggestions,
+                   true);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSmartSelectionServerPrewarmAuthTokenCooldown,
+                   &kSmartSelectionServerSuggestions,
+                   base::Seconds(30));
+
 }  // namespace selection

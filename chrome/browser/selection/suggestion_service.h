@@ -91,6 +91,10 @@ class SuggestionService {
   virtual void RequestSuggestions(AreaOfInterest processed_area,
                                   SuggestionsCallback callback);
 
+  // Prewarms the remote model executor (e.g. OAuth token) if server suggestions
+  // and prewarming are enabled and the cooldown has passed.
+  void MaybePrewarmServerRequest();
+
  private:
   // Returns whether `feature` is enabled for the profile, falling back to
   // `base::FeatureList::IsEnabled` if `google_groups_manager_` is null.
@@ -121,6 +125,10 @@ class SuggestionService {
   const raw_ptr<optimization_guide::RemoteModelExecutor> remote_model_executor_;
   const raw_ptr<const GoogleGroupsManager> google_groups_manager_;
   base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>> tools_;
+
+  // The timestamp of the last attempt to prewarm the auth token, used to
+  // throttle prewarm requests.
+  base::TimeTicks last_auth_prewarm_time_;
 
   ui::ScopedUnownedUserData<SuggestionService> scoped_unowned_user_data_;
 

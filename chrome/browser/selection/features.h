@@ -36,6 +36,14 @@ BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerJpegQuality);
 // Execution Service.
 BASE_DECLARE_FEATURE_PARAM(bool, kSmartSelectionServerAppendApc);
 
+// Whether to prewarm the OAuth access token for the Model Execution Service
+// when screen content is updated and before encoding screenshots.
+BASE_DECLARE_FEATURE_PARAM(bool, kSmartSelectionServerPrewarmAuthToken);
+
+// The minimum interval between consecutive auth token prewarm requests.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSmartSelectionServerPrewarmAuthTokenCooldown);
+
 }  // namespace selection
 
 #endif  // CHROME_BROWSER_SELECTION_FEATURES_H_

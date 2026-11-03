@@ -74,7 +74,9 @@ using ::testing::AllOf;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::MockFunction;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
@@ -170,9 +172,13 @@ class SuggestionServiceUnitTest : public testing::Test {
     return mock_model_executor_;
   }
   SuggestionService& service() { return *service_; }
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple target_prefs_;
   sync_preferences::TestingPrefServiceSyncable source_prefs_;
   std::optional<GoogleGroupsManager> google_groups_manager_;
@@ -1453,6 +1459,199 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipBeforeAnyRequest) {
       base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
   EXPECT_FALSE(
       base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
+}
+
+TEST_F(SuggestionServiceUnitTest, UpdateScreenContentPrewarmsAuthToken) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions));
+
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest, UpdateScreenContentThrottledByCooldown) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  MockFunction<void(int check_point_id)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        mock_model_executor(),
+        PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                  kSmartSelectionSuggestions));
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(check, Call(2));
+    EXPECT_CALL(
+        mock_model_executor(),
+        PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                  kSmartSelectionSuggestions));
+  }
+
+  // First call should prewarm.
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+  check.Call(1);
+
+  // Second call immediately within cooldown should be dropped.
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  // Fast forward past cooldown (default 30 seconds).
+  FastForwardBy(base::Seconds(35));
+  check.Call(2);
+
+  // Third call after cooldown should prewarm again.
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest,
+       UpdateScreenContentDoesNotPrewarmWhenDisabled) {
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions))
+      .Times(0);
+
+  // Server suggestions feature is disabled by default.
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest,
+       UpdateScreenContentDoesNotPrewarmWhenParamDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerPrewarmAuthToken.name, "false"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions))
+      .Times(0);
+
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest,
+       UpdateScreenContentDoesNotPrewarmWithoutTools) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions))
+      .Times(0);
+
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+}
+
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsPrewarmsWhenNotPrewarmed) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions));
+
+  AreaOfInterest aoi;
+  SuggestionsFuture future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest,
+       RequestSuggestionsDoesNotPrewarmIfRecentlyPrewarmed) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  // Prewarm once via UpdateScreenContent.
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions));
+  service().UpdateScreenContent(
+      SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
+
+  // Calling RequestSuggestions right after should not trigger a second prewarm.
+  AreaOfInterest aoi;
+  SuggestionsFuture future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest, MaybePrewarmServerRequestPrewarmsAuthToken) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions));
+
+  service().MaybePrewarmServerRequest();
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+TEST_F(SuggestionServiceUnitTest,
+       MaybePrewarmServerRequestDoesNotPrewarmWhenNotInGoogleGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{variations::internal::kGoogleGroupFeatureParamName, "1234"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(
+      mock_model_executor(),
+      PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
+                                kSmartSelectionSuggestions))
+      .Times(0);
+
+  service().MaybePrewarmServerRequest();
+
+  service().UnregisterTool(&gemini_tool);
 }
 
 }  // namespace

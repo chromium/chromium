@@ -634,6 +634,10 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
       service && !service->GetInstanceForTab(tab_)) {
     service->TryPreload(GlicWarmingTrigger::kSelectionOverlay);
   }
+  if (::selection::SuggestionService* const suggestion_service =
+          ::selection::SuggestionService::From(tab_)) {
+    suggestion_service->MaybePrewarmServerRequest();
+  }
   ObserveActiveTabChanges();
   ObserveSidePanelState();
   if (GlicSidePanelCoordinator::IsShowing(tab_)) {
