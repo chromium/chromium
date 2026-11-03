@@ -5873,7 +5873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SideUi.ResizeHandle.TouchState"
-    enum="AndroidSideUiResizeHandleTouchState" expires_after="2026-12-16">
+    enum="AndroidSideUiResizeHandleTouchState" expires_after="2027-12-16">
   <owner>spdonghao@google.com</owner>
   <owner>linyuh@google.com</owner>
   <summary>
