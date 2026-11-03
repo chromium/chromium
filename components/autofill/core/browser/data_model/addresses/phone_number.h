@@ -97,7 +97,8 @@ class PhoneNumber : public FormGroup {
     // Parses the number built up from pieces stored via `SetInfo()` according
     // to the given two-letter region code and returns it as a string in
     // international format if it is a valid phone number. The region code
-    // should be one of the values returned by `autofill::GetCountryCodes()`.
+    // should be one of the values returned by
+    // `CountryDataMap::GetInstance()->country_codes()`.
     std::optional<std::u16string> ParseNumber(const std::string& region) const;
 
     // Parses the combined phone number and returns the region to which it

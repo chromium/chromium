@@ -6,15 +6,17 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_COUNTRY_DATA_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <array>
+#include <compare>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/fixed_flat_set.h"
-#include "base/containers/flat_map.h"
 
 namespace base {
 template <typename T>
@@ -23,9 +25,39 @@ struct DefaultSingletonTraits;
 
 namespace autofill {
 
+// Fixed 2-letter ISO 3166-1 alpha-2 country code stored inline (no pointers or
+// dynamic relocations).
+struct FixedCountryCode {
+  std::array<char, 2> chars{};
+
+  constexpr FixedCountryCode() = default;
+  constexpr FixedCountryCode(char c0, char c1) : chars{c0, c1} {}
+  consteval explicit FixedCountryCode(std::string_view sv) {
+    CHECK_EQ(sv.size(), 2u);
+    chars[0] = sv[0];
+    chars[1] = sv[1];
+  }
+  // Needed for brace-init with literals.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  consteval FixedCountryCode(const char* sv)
+      : FixedCountryCode(std::string_view(sv)) {}
+
+  constexpr explicit operator std::string_view() const LIFETIME_BOUND {
+    return std::string_view(chars);
+  }
+  constexpr explicit operator std::string() const {
+    return std::string(std::string_view(chars));
+  }
+
+  friend constexpr bool operator==(FixedCountryCode,
+                                   FixedCountryCode) = default;
+  friend constexpr auto operator<=>(FixedCountryCode,
+                                    FixedCountryCode) = default;
+};
+
 // The minimal required fields for an address to be complete for a given
 // country.
-enum RequiredFieldsForAddressImport {
+enum RequiredFieldsForAddressImport : uint8_t {
   ADDRESS_REQUIRES_CITY = 1 << 0,
   ADDRESS_REQUIRES_STATE = 1 << 1,
   ADDRESS_REQUIRES_ZIP = 1 << 2,
@@ -66,7 +98,7 @@ enum RequiredFieldsForAddressImport {
 // //third_party/icu/source/data/region/en.txt and
 // //third_party/libaddressinput/src/cpp/src/region_metadata_constants.cc.
 inline constexpr auto kCountryAddressImportRequirementsData =
-    base::MakeFixedFlatMap<std::string_view, RequiredFieldsForAddressImport>(
+    base::MakeFixedFlatMap<FixedCountryCode, RequiredFieldsForAddressImport>(
         {{"AC", ADDRESS_REQUIRES_LINE1_CITY},
          {"AD", ADDRESS_REQUIRES_LINE1},
          {"AE", ADDRESS_REQUIRES_LINE1_STATE},
@@ -322,23 +354,15 @@ inline constexpr auto kCountryAddressImportRequirementsData =
 
 namespace internal {
 
+// A constexpr array of all country codes appearing in
+// `kCountryAddressImportRequirementsData`.
 inline constexpr auto kCountryCodes =
-    []<size_t... I>(std::index_sequence<I...>) consteval {
-      return base::MakeFixedFlatSet<std::string_view>(
-          {kCountryAddressImportRequirementsData.begin()[I].first...});
+    []<size_t... I>(std::index_sequence<I...>) {
+      return std::array<FixedCountryCode, sizeof...(I)>{
+          kCountryAddressImportRequirementsData.begin()[I].first...};
     }(std::make_index_sequence<kCountryAddressImportRequirementsData.size()>());
 
 }  // namespace internal
-
-// Returns a compile-time `base::fixed_flat_set<std::string_view>` containing
-// all the country codes used as keys in
-// `kCountryAddressImportRequirementsData`.
-constexpr const base::fixed_flat_set<
-    std::string_view,
-    kCountryAddressImportRequirementsData.size()>&
-GetCountryCodes() {
-  return internal::kCountryCodes;
-}
 
 // A singleton class that encapsulates a map from country codes to country data.
 class CountryDataMap {
@@ -350,7 +374,7 @@ class CountryDataMap {
 
   // Returns true if a `CountryData` entry for the supplied `country_code`
   // exists.
-  bool HasRequiredFieldsForAddressImport(std::string_view country_code) const;
+  bool HasCountryCode(std::string_view country_code) const;
 
   // Returns true if there is a country code alias for `country_code`.
   bool HasCountryCodeAlias(std::string_view country_code_alias) const;
@@ -361,24 +385,21 @@ class CountryDataMap {
       std::string_view country_code_alias) const;
 
   // Looks up the `RequiredFieldForAddressImport` for the supplied
-  // `country_code`. Returns requirements for the US as a best guess if no entry
-  // exists.
+  // `country_code`. Returns `ADDRESS_REQUIREMENTS_UNKNOWN` if no entry exists.
   RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
       std::string_view country_code) const;
 
-  // Return a constant reference to a vector of all country codes.
-  const std::vector<std::string>& country_codes() const {
-    return country_codes_;
+  // Returns a constant reference to an array of all country codes.
+  constexpr const std::array<FixedCountryCode,
+                             kCountryAddressImportRequirementsData.size()>&
+  country_codes() const {
+    return internal::kCountryCodes;
   }
 
  private:
   CountryDataMap();
   ~CountryDataMap();
   friend struct base::DefaultSingletonTraits<CountryDataMap>;
-
-  const base::flat_map<std::string, RequiredFieldsForAddressImport>
-      required_fields_for_address_import_map_;
-  const std::vector<std::string> country_codes_;
 };
 
 }  // namespace autofill

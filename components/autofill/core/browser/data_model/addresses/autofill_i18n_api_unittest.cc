@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/strings/utf_string_conversions.h"
@@ -54,11 +55,11 @@ class AutofillI18nApiTest : public testing::Test {
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
     // Make sure that the process of building the model finishes and returns a
     // non empty hierarchy.
-    AddressComponentsStore model =
-        CreateAddressComponentModel(AddressCountryCode(country_code));
+    AddressComponentsStore model = CreateAddressComponentModel(
+        AddressCountryCode(std::string(country_code)));
 
     FieldTypeSet field_type_set = model.Root()->GetSupportedTypes();
     EXPECT_FALSE(field_type_set.empty());
@@ -72,11 +73,11 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
     // Currently, the model for kAddressModel should comprise all the nodes in
     // the rules.
-    AddressComponentsStore model =
-        CreateAddressComponentModel(AddressCountryCode(country_code));
+    AddressComponentsStore model = CreateAddressComponentModel(
+        AddressCountryCode(std::string(country_code)));
     AddressComponent* root = model.Root();
 
     FieldTypeSet supported_types;
@@ -86,12 +87,12 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_CountryNodeHasValue) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
-    AddressComponentsStore model =
-        CreateAddressComponentModel(AddressCountryCode(country_code));
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
+    AddressComponentsStore model = CreateAddressComponentModel(
+        AddressCountryCode(std::string(country_code)));
     std::u16string expected_country =
-        country_code != kLegacyHierarchyCountryCodeString
-            ? base::UTF8ToUTF16(country_code)
+        std::string_view(country_code) != kLegacyHierarchyCountryCodeString
+            ? base::UTF8ToUTF16(std::string_view(country_code))
             : u"";
     EXPECT_EQ(model.Root()->GetValueForType(ADDRESS_HOME_COUNTRY),
               expected_country);
@@ -166,8 +167,8 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
 
 TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
-    AddressCountryCode address_country_code{country_code};
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
+    AddressCountryCode address_country_code{std::string(country_code)};
     AddressComponentsStore store =
         CreateAddressComponentModel(address_country_code);
 

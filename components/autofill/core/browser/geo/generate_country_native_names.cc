@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -27,9 +26,6 @@
 std::map<std::u16string, std::string> GenerateCountryNativeNamesMap() {
   const autofill::CountryDataMap* country_data_map =
       autofill::CountryDataMap::GetInstance();
-  const std::set<std::string> autofill_country_codes(
-      country_data_map->country_codes().begin(),
-      country_data_map->country_codes().end());
 
   // Map from native name (e.g. "Deutschland") to country code (e.g. "DE").
   std::map<std::u16string, std::string> country_native_names;
@@ -44,7 +40,7 @@ std::map<std::u16string, std::string> GenerateCountryNativeNamesMap() {
     const icu::Locale& locale = available_locales[i];
     std::string country_of_locale = locale.getCountry();
     if (country_of_locale.empty() ||
-        !autofill_country_codes.count(country_of_locale)) {
+        !country_data_map->HasCountryCode(country_of_locale)) {
       continue;
     }
     icu::UnicodeString country_name_unicode;

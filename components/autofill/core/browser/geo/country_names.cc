@@ -37,16 +37,18 @@ constexpr base::i18n::LanguageTag kDefaultLocale =
 std::map<std::string, std::string> GetCommonNames() {
   std::map<std::string, std::string> common_names;
   // Add 2- and 3-letter ISO country codes.
-  for (const std::string& country_code :
+  for (const FixedCountryCode& country_code :
        CountryDataMap::GetInstance()->country_codes()) {
-    common_names.insert(std::make_pair(country_code, country_code));
+    common_names.emplace(std::string_view(country_code),
+                         std::string_view(country_code));
 
     std::string iso3_country_code =
-        icu::Locale(nullptr, country_code.c_str()).getISO3Country();
+        icu::Locale(nullptr, std::string(country_code).c_str())
+            .getISO3Country();
 
     // ICU list of countries can be out-of-date with CLDR.
     if (!iso3_country_code.empty())
-      common_names.insert(std::make_pair(iso3_country_code, country_code));
+      common_names.emplace(std::move(iso3_country_code), country_code);
   }
 
   // Add a few other common synonyms.

@@ -80,12 +80,12 @@ std::map<std::string, std::string> GetLocalizedNames(
   std::map<std::string, std::string> localized_names;
   auto buffer = base::HeapArray<uint8_t>::WithSize(1000);
 
-  for (const std::string& country_code :
+  for (const FixedCountryCode& country_code :
        CountryDataMap::GetInstance()->country_codes()) {
-    std::u16string country_name =
-        l10n_util::GetDisplayNameForCountry(country_code, locale);
-    localized_names.insert(std::make_pair(
-        GetSortKey(*collator, country_name, buffer), country_code));
+    std::u16string country_name = l10n_util::GetDisplayNameForCountry(
+        std::string_view(country_code), locale);
+    localized_names.emplace(GetSortKey(*collator, country_name, buffer),
+                            std::string_view(country_code));
   }
   return localized_names;
 }

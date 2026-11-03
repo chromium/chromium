@@ -46,26 +46,16 @@ void CountryComboboxModel::SetCountries(
   countries_.push_back(nullptr);
 #endif
 
-  // The sorted list of country codes.
-  const std::vector<std::string>* available_countries =
-      &CountryDataMap::GetInstance()->country_codes();
-
   // Filter out the countries that do not have rules for address input and
   // validation.
-  const std::vector<std::string>& addressinput_countries =
-      ::i18n::addressinput::GetRegionCodes();
-  std::vector<std::string> filtered_countries;
-  filtered_countries.reserve(available_countries->size());
-  std::set_intersection(
-      available_countries->begin(), available_countries->end(),
-      addressinput_countries.begin(), addressinput_countries.end(),
-      std::back_inserter(filtered_countries));
-  available_countries = &filtered_countries;
-
+  const CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   CountryVector sorted_countries;
-  for (const auto& country_code : *available_countries) {
-    sorted_countries.push_back(
-        std::make_unique<AutofillCountry>(country_code, app_locale));
+  for (const std::string& country_code :
+       ::i18n::addressinput::GetRegionCodes()) {
+    if (country_data_map->HasCountryCode(country_code)) {
+      sorted_countries.push_back(
+          std::make_unique<AutofillCountry>(country_code, app_locale));
+    }
   }
 
   l10n_util::SortStringsUsingMethod(app_locale, &sorted_countries,

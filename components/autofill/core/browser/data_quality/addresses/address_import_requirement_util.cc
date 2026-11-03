@@ -226,10 +226,7 @@ bool ValidateNonEmptyValuesForImportedProfile(const AutofillProfile& profile,
 }
 
 bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
-  const std::vector<std::string>& country_codes =
-      CountryDataMap::GetInstance()->country_codes();
-  if (!std::ranges::contains(
-          country_codes,
+  if (!CountryDataMap::GetInstance()->HasCountryCode(
           base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     return false;
   }

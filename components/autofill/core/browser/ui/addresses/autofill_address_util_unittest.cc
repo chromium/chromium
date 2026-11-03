@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 
+#include <string_view>
+
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
@@ -359,10 +361,10 @@ TEST_F(AddressFormattingTest, GetEnvelopeStyleAddressWithPartialAddress) {
 // show in an update prompt.
 TEST_F(AddressFormattingTest,
        GetProfileDifferenceForUiCoversAllUserVisibleTypes) {
-  for (const std::string& country_code :
+  for (FixedCountryCode country_code :
        CountryDataMap::GetInstance()->country_codes()) {
-    SCOPED_TRACE(country_code);
-    const AddressCountryCode address_country_code(country_code);
+    SCOPED_TRACE(std::string_view(country_code));
+    const AddressCountryCode address_country_code{std::string(country_code)};
     const AutofillProfile profile1(address_country_code);
     for (FieldType type : profile1.GetUserVisibleTypes()) {
       SCOPED_TRACE(FieldTypeToStringView(type));
@@ -375,7 +377,8 @@ TEST_F(AddressFormattingTest,
           profile2.SetRawInfo(type, u"やまもと あおい");
           break;
         case ADDRESS_HOME_COUNTRY:
-          profile2.SetRawInfo(type, country_code == "US" ? u"DE" : u"US");
+          profile2.SetRawInfo(
+              type, std::string_view(country_code) == "US" ? u"DE" : u"US");
           break;
         default:
           profile2.SetRawInfo(type, u"Test Value");

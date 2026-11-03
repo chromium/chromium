@@ -512,7 +512,7 @@ const char* GetIssuerNetworkForBasicCardIssuerNetwork(
 }
 
 bool IsValidCountryCode(std::string_view country_code) {
-  return GetCountryCodes().contains(country_code);
+  return CountryDataMap::GetInstance()->HasCountryCode(country_code);
 }
 
 bool IsValidCountryCode(std::u16string_view country_code) {

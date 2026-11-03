@@ -6,7 +6,9 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -175,15 +177,16 @@ TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
     expected_failures.insert("XK");
   }
 #endif
-  const std::vector<std::string>& country_codes =
-      CountryDataMap::GetInstance()->country_codes();
-  for (const std::string& country_code : country_codes) {
-    if (expected_failures.contains(country_code)) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
+    std::string_view country_code_sv(country_code);
+    if (expected_failures.contains(std::string(country_code))) {
       continue;
     }
-    SCOPED_TRACE("Country code '" + country_code + "' should have a name.");
-    EXPECT_NE(AutofillCountry(country_code, "en").name(),
-              ASCIIToUTF16(country_code));
+    SCOPED_TRACE(base::StrCat(
+        {"Country code '", country_code_sv, "' should have a name."}));
+    EXPECT_NE(AutofillCountry(country_code_sv, "en").name(),
+              ASCIIToUTF16(country_code_sv));
   }
 }
 
@@ -192,7 +195,7 @@ TEST(AutofillCountryTest, AliasMappingsForCountryData) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // There should be country data for the "GB".
-  EXPECT_TRUE(country_data_map->HasRequiredFieldsForAddressImport("GB"));
+  EXPECT_TRUE(country_data_map->HasCountryCode("GB"));
 
   // Check the correctness of the alias definitions.
   EXPECT_TRUE(country_data_map->HasCountryCodeAlias("UK"));
@@ -215,8 +218,8 @@ TEST(AutofillCountryTest, AliasMappingsForCountryData) {
 // after a field that is present in libaddressinput.
 TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
-  for (const std::string& country_code : country_data_map->country_codes()) {
-    AutofillCountry country(country_code);
+  for (FixedCountryCode country_code : country_data_map->country_codes()) {
+    AutofillCountry country{std::string_view(country_code)};
     for (const AutofillCountry::AddressFormatExtension& rule :
          country.address_format_extensions()) {
       // The separator should not be empty.
@@ -226,14 +229,15 @@ TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
       ::i18n::addressinput::AddressField libaddressinput_field;
       bool is_valid_field =
           i18n::FieldForType(rule.type, &libaddressinput_field);
-      EXPECT_TRUE(!is_valid_field || !::i18n::addressinput::IsFieldUsed(
-                                         libaddressinput_field, country_code));
+      EXPECT_TRUE(!is_valid_field ||
+                  !::i18n::addressinput::IsFieldUsed(libaddressinput_field,
+                                                     country.country_code()));
 
       ::i18n::addressinput::AddressField libaddressinput_place_after;
       ASSERT_TRUE(
           i18n::FieldForType(rule.placed_after, &libaddressinput_place_after));
       EXPECT_TRUE(::i18n::addressinput::IsFieldUsed(libaddressinput_place_after,
-                                                    country_code));
+                                                    country.country_code()));
       // `IsAddressFieldSettingAccessible` considers `rule.type`
       // setting-accessible.
       EXPECT_TRUE(country.IsAddressFieldSettingAccessible(rule.type));
