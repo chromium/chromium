@@ -11641,6 +11641,21 @@
             ]
         }
     ],
+    "MediaFoundationD3D11VideoCaptureUseSharedImage": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaFoundationD3D11VideoCaptureUseSharedImage"
+                    ]
+                }
+            ]
+        }
+    ],
     "MeetDevicesMojoServices": [
         {
             "platforms": [
