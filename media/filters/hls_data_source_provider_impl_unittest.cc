@@ -345,4 +345,81 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadSegmentWithDifferentDataOrigin) {
             url::Origin::Create(GURL("http://innocent.com")));
 }
 
+TEST_F(HlsDataSourceProviderImplUnittest, ReadFromDataUrl) {
+  EXPECT_CALL(*factory_, Setup).Times(0);
+
+  const GURL data_url("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==");
+  bool read_complete = false;
+  impl_->ReadFromUrl(
+      {data_url, std::nullopt},
+      base::BindOnce(
+          [](const GURL& expected_url, bool* complete_canary,
+             HlsDataSourceProvider::ReadResult result) {
+            ASSERT_TRUE(result.has_value());
+            auto stream = std::move(result).value();
+            EXPECT_EQ(stream->AsString(), "Hello, World!");
+            EXPECT_EQ(stream->buffer_size(), 13u);
+            EXPECT_EQ(stream->read_position(), 13u);
+            EXPECT_FALSE(stream->CanReadMore());
+            EXPECT_FALSE(stream->RequiresInit());
+            EXPECT_EQ(stream->uri(), expected_url);
+            EXPECT_TRUE(stream->SecurityInfo().response_origins.empty());
+            *complete_canary = true;
+          },
+          data_url, &read_complete));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(read_complete);
+
+  // Ranged read on a data: URL.
+  bool ranged_complete = false;
+  impl_->ReadFromUrl(
+      {data_url, hls::types::ByteRange::Validate(5, 7)},
+      base::BindOnce(
+          [](bool* complete_canary, HlsDataSourceProvider::ReadResult result) {
+            ASSERT_TRUE(result.has_value());
+            auto stream = std::move(result).value();
+            EXPECT_EQ(stream->AsString(), "World");
+            EXPECT_EQ(stream->buffer_size(), 5u);
+            EXPECT_EQ(stream->read_position(), 12u);
+            EXPECT_FALSE(stream->CanReadMore());
+            EXPECT_FALSE(stream->RequiresInit());
+            EXPECT_TRUE(stream->SecurityInfo().has_range_request);
+            *complete_canary = true;
+          },
+          &ranged_complete));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(ranged_complete);
+
+  // Out-of-bounds ranged read on a data: URL should fail with
+  // kNetworkReadError.
+  bool oob_ranged_error = false;
+  impl_->ReadFromUrl(
+      {data_url, hls::types::ByteRange::Validate(10, 7)},
+      base::BindOnce(
+          [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
+            *error_canary = true;
+          },
+          &oob_ranged_error));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(oob_ranged_error);
+
+  // Empty or invalid data: URL should fail with kNetworkReadError.
+  bool error_complete = false;
+  impl_->ReadFromUrl(
+      {GURL("data:text/plain;base64,"), std::nullopt},
+      base::BindOnce(
+          [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
+            *error_canary = true;
+          },
+          &error_complete));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(error_complete);
+}
+
 }  // namespace media
