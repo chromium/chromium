@@ -12,9 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
@@ -23,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_updater.h"
@@ -616,6 +619,78 @@ TEST_F(ExtensionActionRunnerUnitTest, DeclarativeScriptsUseHostPermissions) {
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
             runner()->RequiresUserConsentForScriptInjectionForTesting(
                 extension, mojom::InjectionType::kProgrammaticScript));
+}
+
+// Tests that `GrantTabPermissions` with a blocked `kDocumentStart` action
+// (which requires a page reload) does not grant permissions or trigger the
+// reload page dialog while a newly committed page is still loading before its
+// first visually non-empty paint, and does both once first paint completes.
+TEST_F(ExtensionActionRunnerUnitTest,
+       GrantTabPermissionsRejectedWhileLoadingBeforeFirstPaint) {
+  // Auto-accepting the reload page dialog causes `ShowReloadPageBubble()` to
+  // immediately call `NavigationController::Reload()`, creating a pending
+  // navigation entry.
+  auto accept_reload_dialog =
+      ReloadPageDialogController::AcceptDialogForTesting(true);
+
+  ActiveTabPermissionGranter* active_tab_permission_granter =
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
+  ASSERT_TRUE(active_tab_permission_granter);
+
+  const Extension* extension = AddExtension();
+  ASSERT_TRUE(extension);
+
+  NavigateAndCommit(GURL("https://www.google.com"));
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.foo.com"), web_contents()->GetPrimaryMainFrame());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+
+  ASSERT_TRUE(web_contents()->IsLoading());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  ASSERT_FALSE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  // Request a `kDocumentStart` injection, which requires a page reload when
+  // permissions are granted.
+  RequestInjection(extension, mojom::RunLocation::kDocumentStart);
+  EXPECT_EQ(BLOCKED_ACTION_SCRIPT_AT_START,
+            runner()->GetBlockedActions(extension->id()));
+  EXPECT_TRUE(RequiresUserConsent(extension));
+  EXPECT_TRUE(runner()->WantsToRun(extension));
+
+  // While the page is still loading before first paint, `GrantTabPermissions`
+  // should not grant access (`IsGranted` remains false) or show the reload
+  // dialog (`GetPendingEntry()` remains null).
+  {
+    base::test::TestFuture<void> granted;
+    runner()->GrantTabPermissions({extension}, granted.GetCallback());
+    EXPECT_TRUE(granted.Wait());
+
+    EXPECT_FALSE(active_tab_permission_granter->IsGranted(extension));
+    EXPECT_EQ(nullptr, web_contents()->GetController().GetPendingEntry());
+    EXPECT_TRUE(RequiresUserConsent(extension));
+    EXPECT_TRUE(runner()->WantsToRun(extension));
+  }
+
+  // Once the page completes its first visually non-empty paint,
+  // `GrantTabPermissions` should grant access (`IsGranted` becomes true) and
+  // show the reload dialog, which starts a reload (`GetPendingEntry()` becomes
+  // non-null).
+  {
+    content::WebContentsTester::For(web_contents())
+        ->TestDidFirstVisuallyNonEmptyPaint();
+    ASSERT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+    base::test::TestFuture<void> granted;
+    runner()->GrantTabPermissions({extension}, granted.GetCallback());
+    EXPECT_TRUE(granted.Wait());
+
+    EXPECT_TRUE(active_tab_permission_granter->IsGranted(extension));
+    EXPECT_NE(nullptr, web_contents()->GetController().GetPendingEntry());
+    EXPECT_FALSE(RequiresUserConsent(extension));
+    EXPECT_TRUE(runner()->WantsToRun(extension));
+  }
 }
 
 }  // namespace extensions

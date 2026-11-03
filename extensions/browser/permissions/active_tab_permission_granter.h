@@ -44,7 +44,8 @@ class ActiveTabPermissionGranter
   ~ActiveTabPermissionGranter() override;
 
   // If `extension` has the activeTab or tabCapture permission, grants
-  // tab-specific permissions to it until the next page navigation or refresh.
+  // tab-specific permissions to it until the next page navigation or refresh,
+  // provided the committed page has either painted or finished loading.
   //
   // `on_granted` is called (asynchronously) after the grant has taken effect
   // everywhere, including in the network service (where CORS and ORB depend
@@ -55,6 +56,14 @@ class ActiveTabPermissionGranter
   // grant, or if the grant is revoked before it takes effect.
   void GrantIfRequested(const Extension* extension,
                         base::OnceClosure on_granted);
+
+  // Returns true if tab-specific permissions can be granted for
+  // `web_contents`. Else, returns false and rejects a grant request if
+  // a newly committed page is still loading and has not yet completed
+  // its first visually non-empty paint (e.g. during paint holding). This
+  // ensures that tabs permissions are only granted when the page
+  // contents accurately represent the committed URL.
+  static bool ShouldGrantPermissions(content::WebContents* web_contents);
 
   // Returns true if `extension` has been granted tab-specific permissions.
   bool IsGranted(const Extension* extension) const;

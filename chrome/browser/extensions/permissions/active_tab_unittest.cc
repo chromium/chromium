@@ -984,5 +984,77 @@ TEST_F(ActiveTabTest, NoEarlyNotificationAfterClearAndReGrant) {
   EXPECT_EQ(1, observer.active_tab_granted_count());
 }
 
+// Tests that activeTab permission is not granted while a newly committed page
+// is still loading and has not completed its first visually non-empty paint,
+// and that granting succeeds once the page either completes its first visually
+// non-empty paint or finishes loading.
+TEST_F(ActiveTabTest, GrantRejectedWhileLoadingBeforeFirstPaint) {
+  GURL google("http://www.google.com");
+  NavigateAndCommit(google);
+
+  // Commit a cross-origin navigation to chromium.org that remains in the
+  // loading state before its first visually non-empty paint.
+  GURL chromium("http://www.chromium.org");
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      chromium, web_contents()->GetPrimaryMainFrame());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+
+  ASSERT_EQ(chromium, web_contents()->GetLastCommittedURL());
+  ASSERT_TRUE(web_contents()->IsLoading());
+  ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+  ASSERT_FALSE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  // Attempting to grant while the committed page is still loading before first
+  // paint should be rejected.
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_TRUE(IsBlocked(extension, chromium));
+  EXPECT_FALSE(HasTabsPermission(extension));
+
+  // Once the page completes its first visually non-empty paint (even while
+  // subresources are still loading), granting activeTab should succeed.
+  content::WebContentsTester::For(web_contents())
+      ->TestDidFirstVisuallyNonEmptyPaint();
+  ASSERT_TRUE(web_contents()->IsLoading());
+  ASSERT_TRUE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_TRUE(IsAllowed(extension, chromium));
+  EXPECT_TRUE(HasTabsPermission(extension));
+
+  // Commit another cross-origin navigation that remains loading, then finishes
+  // loading without a visually non-empty paint (e.g. a visually empty page).
+  GURL example("http://www.example.com");
+  auto second_navigation =
+      content::NavigationSimulator::CreateRendererInitiated(
+          example, web_contents()->GetPrimaryMainFrame());
+  second_navigation->SetKeepLoading(true);
+  second_navigation->Commit();
+
+  ASSERT_EQ(example, web_contents()->GetLastCommittedURL());
+  ASSERT_TRUE(web_contents()->IsLoading());
+  ASSERT_FALSE(web_contents()->CompletedFirstVisuallyNonEmptyPaint());
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  EXPECT_FALSE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_TRUE(IsBlocked(extension, example));
+
+  // Once loading completes, granting activeTab should succeed.
+  second_navigation->StopLoading();
+  ASSERT_FALSE(web_contents()->IsLoading());
+  ASSERT_TRUE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
+
+  active_tab_permission_granter()->GrantIfRequested(extension.get(),
+                                                    base::DoNothing());
+  EXPECT_TRUE(active_tab_permission_granter()->IsGranted(extension.get()));
+  EXPECT_TRUE(IsAllowed(extension, example));
+  EXPECT_TRUE(HasTabsPermission(extension));
+}
+
 }  // namespace
 }  // namespace extensions

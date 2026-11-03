@@ -81,10 +81,12 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   void RunBlockedActions(const Extension* extension);
 
   // Grants activeTab to `extensions` (this should only be done if this is
-  // through a direct user action). The permission will be applied immediately
-  // in the browser process and in renderers, and `on_granted` will be called
-  // after the permission also takes effect in the network service (see
-  // `ActiveTabPermissionGranter::GrantIfRequested`).
+  // through a direct user action). If the committed page is still loading and
+  // has not yet painted, the grant is skipped while `on_granted` is still
+  // called asynchronously. Otherwise, the permission will be applied
+  // immediately in the browser process and in renderers, and `on_granted` will
+  // be called after the permission also takes effect in the network service
+  // (see `ActiveTabPermissionGranter::GrantIfRequested`).
   // If any extension needs a page refresh to run, this will show a dialog as
   // well.
   void GrantTabPermissions(const std::vector<const Extension*>& extensions,

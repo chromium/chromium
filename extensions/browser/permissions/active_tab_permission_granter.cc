@@ -140,6 +140,15 @@ ActiveTabPermissionGranter::PendingGrant&
 ActiveTabPermissionGranter::PendingGrant::operator=(PendingGrant&&) = default;
 ActiveTabPermissionGranter::PendingGrant::~PendingGrant() = default;
 
+// static
+bool ActiveTabPermissionGranter::ShouldGrantPermissions(
+    content::WebContents* web_contents) {
+  return web_contents &&
+         (web_contents->CompletedFirstVisuallyNonEmptyPaint() ||
+          web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
+          !web_contents->IsLoading());
+}
+
 void ActiveTabPermissionGranter::GrantIfRequested(
     const Extension* extension,
     base::OnceClosure on_granted) {
@@ -155,6 +164,14 @@ void ActiveTabPermissionGranter::GrantIfRequested(
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, std::move(on_granted));
     }
+    return;
+  }
+
+  // Avoid granting access to a newly committed origin while the previous
+  // page's content may still be displayed (e.g. during paint holding).
+  if (!ShouldGrantPermissions(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_granted));
     return;
   }
 

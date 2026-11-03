@@ -15,7 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -178,6 +178,14 @@ void ExtensionActionRunner::DispatchExtensionActionClicked(
 void ExtensionActionRunner::GrantTabPermissions(
     const std::vector<const Extension*>& extensions,
     base::OnceClosure on_granted) {
+  // Avoid granting access to a newly committed origin while the previous
+  // page's content may still be displayed (e.g. during paint holding).
+  if (!ActiveTabPermissionGranter::ShouldGrantPermissions(web_contents())) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_granted));
+    return;
+  }
+
   SitePermissionsHelper permissions_helper(browser_context_);
   bool refresh_required = std::ranges::any_of(
       extensions, [this, &permissions_helper](const Extension* extension) {
