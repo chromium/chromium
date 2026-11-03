@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -178,18 +179,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Loads a URL which redirect to a data URL and check that the navigation is
 // blocked on the first URL.
 - (void)testRedirectToData {
-  // Disable the test on iOS 16.4 as WKWebView handles this internally now as of
-  // https://bugs.webkit.org/show_bug.cgi?id=230158
-  // TODO(crbug.com/40267045): Remove redirect logic completely when dropping
-  // iOS 16.
-  if (@available(iOS 16.4, *)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 16.4.");
-  }
   self.serverRespondsWithContent = YES;
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kRedirectPage)];
-  [ChromeEarlGrey waitForWebStateContainingText:net::ErrorToShortString(
-                                                    net::ERR_UNSAFE_REDIRECT)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:net::ErrorToShortString(net::ERR_FAILED)];
   [ChromeEarlGrey waitForWebStateContainingText:kRedirectPage];
+  [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(kRedirectPage)];
 }
