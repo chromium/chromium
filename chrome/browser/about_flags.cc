@@ -13608,12 +13608,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsPlusButtonDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPlusButton)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"split-view-horizontal", flag_descriptions::kSplitViewHorizontalName,
-     flag_descriptions::kSplitViewHorizontalDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(tabs::kSplitViewHorizontal)},
-#endif
-
     {"prefetch-activation-beacon",
      flag_descriptions::kPrefetchActivationBeaconName,
      flag_descriptions::kPrefetchActivationBeaconDescription, kOsAll,

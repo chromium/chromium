@@ -16,8 +16,6 @@ BASE_FEATURE(kTabGroupHome, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSplitViewHorizontal, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabSearchPerformanceImprovements,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kVerticalTabsNewBadge, base::FEATURE_ENABLED_BY_DEFAULT);

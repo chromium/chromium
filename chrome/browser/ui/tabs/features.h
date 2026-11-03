@@ -19,9 +19,6 @@ BASE_DECLARE_FEATURE(kTabGroupHome);
 // to be broken crbug.com/413080225#comment8).
 BASE_DECLARE_FEATURE(kSessionRestoreShowThrobberOnVisible);
 
-// Allows split tabs to be arranged top/bottom.
-BASE_DECLARE_FEATURE(kSplitViewHorizontal);
-
 // Enables performance optimizations for Tab Search when large numbers of tabs
 // are open, including asynchronous favicon loading and de-duplicated profile
 // data push on bubble show.

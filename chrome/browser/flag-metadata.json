@@ -9253,11 +9253,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "split-view-horizontal",
-    "owners": [ "charlesmeng@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "start-surface-user-setting",
     "owners": [
       "pabouchard@google.com",
