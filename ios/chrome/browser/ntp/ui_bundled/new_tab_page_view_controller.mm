@@ -963,9 +963,25 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _aimTitle = [title copy];
   _aimIcon = icon;
   _aimAccessibilityLabel = [accessibilityLabel copy];
-  [_quickActionsViewController setAIMTitle:_aimTitle
-                                      icon:_aimIcon
-                        accessibilityLabel:_aimAccessibilityLabel];
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kDisabled:
+      [_quickActionsViewController setAIMTitle:_aimTitle
+                                          icon:_aimIcon
+                            accessibilityLabel:_aimAccessibilityLabel];
+      break;
+    case AimButtonRefactorArm::kAimAsModule:
+      [self.contentSuggestionsViewController
+                 setAIMTitle:_aimTitle
+                        icon:_aimIcon
+          accessibilityLabel:_aimAccessibilityLabel];
+      break;
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+      break;
+  }
 }
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
   if (_isBottomOmnibox == isBottomOmnibox) {
@@ -1336,6 +1352,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _contentSuggestionsViewController = contentSuggestionsViewController;
   if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     [_contentSuggestionsViewController setAIMAllowed:_isAIMAllowed];
+    [_contentSuggestionsViewController setAIMTitle:_aimTitle
+                                              icon:_aimIcon
+                                accessibilityLabel:_aimAccessibilityLabel];
     _contentSuggestionsViewController.NTPShortcutsHandler =
         self.NTPShortcutsHandler;
   }

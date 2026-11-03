@@ -111,39 +111,14 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
 
 #pragma mark - Public
 
-- (void)configureAsAIMTile {
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAimAsMvt ||
-        arm == AimButtonRefactorArm::kAimAsModule);
+- (void)configureAsAIMTileWithTitle:(NSString*)title
+                               icon:(UIImage*)icon
+                 accessibilityLabel:(NSString*)accessibilityLabel {
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
   _faviconView.hidden = YES;
-  if (!_aimIconView) {
-    _aimIconView = [[UIImageView alloc] init];
-    _aimIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _aimIconView.contentMode = UIViewContentModeScaleAspectFit;
-    AddSquareConstraints(_aimIconView, kMostVisitedAimIconSize);
-    [self addSubview:_aimIconView];
-    AddSameCenterConstraints(_aimIconView, self.imageContainerView);
-  }
-  _aimIconView.hidden = NO;
-  if (self.configuration) {
-    MostVisitedItem* item = [self mostVisitedItem];
-    UIImage* icon = item.attributes.faviconImage;
-    _aimIconView.image = icon;
-  } else {
-    // TODO(crbug.com/574153738): Update the kAimAsModule arm to use the
-    // AIModeButtonServiceIOS to configure its AIM tile.
-    _aimIconView.image = MakeSymbolMonochrome(SymbolWithPointSize(
-        SymbolMagnifyingglassSpark, kMostVisitedAimIconSize));
-  }
-
-  _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
-    if (!self.titleLabel.text) {
-      self.titleLabel.text =
-          l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM);
-    }
-    self.accessibilityLabel = self.titleLabel.text;
-  }
+  [self configureAIMIconViewWithImage:icon];
+  self.titleLabel.text = title;
+  self.accessibilityLabel = accessibilityLabel;
 }
 
 #pragma mark - ContentSuggestionsTileView
@@ -187,7 +162,7 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
            : @[];
   if (item) {
     if (item.source == ntp_tiles::TileSource::AI_MODE) {
-      [self configureAsAIMTile];
+      [self configureAIMIconViewWithImage:item.attributes.faviconImage];
     } else {
       _faviconView.hidden = NO;
       _aimIconView.hidden = YES;
@@ -311,6 +286,24 @@ constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
 }
 
 #pragma mark - Private
+
+// Configures `_aimIconView` with `image` and hides `_faviconView`.
+- (void)configureAIMIconViewWithImage:(UIImage*)image {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kAimAsMvt ||
+        arm == AimButtonRefactorArm::kAimAsModule);
+  if (!_aimIconView) {
+    _aimIconView = [[UIImageView alloc] init];
+    _aimIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _aimIconView.contentMode = UIViewContentModeScaleAspectFit;
+    AddSquareConstraints(_aimIconView, kMostVisitedAimIconSize);
+    [self addSubview:_aimIconView];
+    AddSameCenterConstraints(_aimIconView, self.imageContainerView);
+  }
+  _aimIconView.hidden = NO;
+  _aimIconView.image = image;
+  _aimIconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+}
 
 // Returns the `MostVisitedItem` casted `self.configuration`.
 - (MostVisitedItem*)mostVisitedItem {

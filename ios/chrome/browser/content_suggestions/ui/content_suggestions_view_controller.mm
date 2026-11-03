@@ -56,8 +56,18 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   UIView* _aimModuleView;
   // Constraint setting `_aimModuleView`'s width equal to its height.
   NSLayoutConstraint* _aimModuleWidthConstraint;
+
+  // Tile view inside `_aimModuleView`.
+  MostVisitedTileView* _aimTileView;
   // Whether AI Mode is allowed.
   BOOL _isAIMAllowed;
+  // The custom title for the AIM module.
+  NSString* _aimTitle;
+  // The custom icon for the AIM module.
+  UIImage* _aimIcon;
+  // The custom accessibility label for the AIM module.
+  NSString* _aimAccessibilityLabel;
+
   // Most Visited tiles collection view.
   MostVisitedTilesCollectionView* _mostVisitedCollectionView;
   // Most Visited tiles collection displayed as a module in the
@@ -83,6 +93,18 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   _aimModuleWidthConstraint.active = isAIMAllowed;
   _mostVisitedCollectionView.maxVisibleItems =
       MostVisitedMaximumVisibleItemsOnScreen(/*aim_available=*/isAIMAllowed);
+}
+
+- (void)setAIMTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel {
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
+  _aimTitle = [title copy];
+  _aimIcon = icon;
+  _aimAccessibilityLabel = [accessibilityLabel copy];
+  [_aimTileView configureAsAIMTileWithTitle:_aimTitle
+                                       icon:_aimIcon
+                         accessibilityLabel:_aimAccessibilityLabel];
 }
 
 #pragma mark - UIViewController
@@ -263,17 +285,19 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 
   MostVisitedTileView* aimTile =
       [[MostVisitedTileView alloc] initWithFrame:CGRectZero];
-  [aimTile configureAsAIMTile];
+  [aimTile configureAsAIMTileWithTitle:_aimTitle
+                                  icon:_aimIcon
+                    accessibilityLabel:_aimAccessibilityLabel];
 
   aimTile.translatesAutoresizingMaskIntoConstraints = NO;
   aimTile.isAccessibilityElement = YES;
   aimTile.accessibilityTraits = UIAccessibilityTraitButton;
-  aimTile.accessibilityLabel = aimTile.titleLabel.text;
   aimTile.accessibilityIdentifier =
       kContentSuggestionsAIMModuleAccessibilityIdentifier;
   [aimTile addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                     initWithTarget:self
                                             action:@selector(aimModuleTapped)]];
+  _aimTileView = aimTile;
   NSDirectionalEdgeInsets insets = {kMostVisitedContainerInsets.top, 0.0,
                                     kMostVisitedContainerInsets.bottom, 0.0};
 

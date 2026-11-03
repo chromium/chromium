@@ -35,6 +35,12 @@ class UrlLoadingBrowserAgent;
 // Sets whether AI Mode is allowed.
 - (void)setAIMAllowed:(BOOL)isAIMAllowed;
 
+// Sets the title, icon, and accessibility label for the standalone AI Mode
+// module.
+- (void)setAIMTitle:(NSString*)title
+                  icon:(UIImage*)icon
+    accessibilityLabel:(NSString*)accessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

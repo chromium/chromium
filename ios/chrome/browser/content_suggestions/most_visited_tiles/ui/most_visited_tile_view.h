@@ -32,8 +32,11 @@
 // Initializes and configures the view with `config`.
 - (instancetype)initWithConfiguration:(MostVisitedItem*)config;
 
-// Configures this tile as a virtual AI Mode tile.
-- (void)configureAsAIMTile;
+// Configures this tile as a standalone AI Mode tile with `title`, `icon`, and
+// `accessibilityLabel`.
+- (void)configureAsAIMTileWithTitle:(NSString*)title
+                               icon:(UIImage*)icon
+                 accessibilityLabel:(NSString*)accessibilityLabel;
 
 @end
 

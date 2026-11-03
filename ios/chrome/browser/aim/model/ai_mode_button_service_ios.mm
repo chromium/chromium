@@ -56,10 +56,24 @@ void RecordIconSource(AIModeButtonServiceIOS::IconSource source) {
   base::UmaHistogramEnumeration(kIconSourceHistogram, source);
 }
 
-// Returns the point size for the AIM quick action button icon.
+// Returns the point size for the AIM button icon.
+// TODO(crbug.com/581353733) Migrate this helper to a public, shared, UI-layer
+// header in `ios/chrome/browser/ntp/`.
 CGFloat GetAimButtonIconPointSize() {
-  return IsNewTabPageUICleanupEnabled() ? kQuickActionsSymbolPointSizeUICleanup
-                                        : kQuickActionsSymbolPointSize;
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kNoChips:
+      // No AIM Button should be surfaced in this arm.
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kDisabled:
+      return IsNewTabPageUICleanupEnabled()
+                 ? kQuickActionsSymbolPointSizeUICleanup
+                 : kQuickActionsSymbolPointSize;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+      return kMostVisitedAimIconSize;
+  }
 }
 
 }  // namespace
@@ -315,7 +329,9 @@ UIImage* AIModeButtonServiceIOS::GetIcon() const {
   }
   Symbol symbol = is_google ? SymbolMagnifyingglassSpark : SymbolSearch;
 
-  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsMvt) {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  if (arm == AimButtonRefactorArm::kAimAsMvt ||
+      arm == AimButtonRefactorArm::kAimAsModule) {
     return MakeSymbolMonochrome(
         SymbolWithPointSize(symbol, kMostVisitedAimIconSize));
   }
