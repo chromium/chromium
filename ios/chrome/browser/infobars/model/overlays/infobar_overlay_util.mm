@@ -13,18 +13,29 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
 
 InfoBarIOS* GetOverlayRequestInfobar(OverlayRequest* request) {
+  if (!request) {
+    return nullptr;
+  }
   InfobarOverlayRequestConfig* config =
       request->GetConfig<InfobarOverlayRequestConfig>();
   return config ? config->infobar() : nullptr;
 }
 
 InfobarType GetOverlayRequestInfobarType(OverlayRequest* request) {
-  return request->GetConfig<InfobarOverlayRequestConfig>()->infobar_type();
+  CHECK(request);
+  InfobarOverlayRequestConfig* config =
+      request->GetConfig<InfobarOverlayRequestConfig>();
+  CHECK(config);
+  return config->infobar_type();
 }
 
 InfobarOverlayType GetOverlayRequestInfobarOverlayType(
     OverlayRequest* request) {
-  return request->GetConfig<InfobarOverlayRequestConfig>()->overlay_type();
+  CHECK(request);
+  InfobarOverlayRequestConfig* config =
+      request->GetConfig<InfobarOverlayRequestConfig>();
+  CHECK(config);
+  return config->overlay_type();
 }
 
 bool GetInfobarOverlayRequestIndex(OverlayRequestQueue* queue,

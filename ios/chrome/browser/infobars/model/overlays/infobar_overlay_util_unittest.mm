@@ -30,6 +30,7 @@ TEST_F(InfobarOverlayUtilTest, GetOverlayRequestInfobar) {
   auto non_infobar_request =
       OverlayRequest::CreateWithConfig<NonInfobarConfig>();
   EXPECT_FALSE(GetOverlayRequestInfobar(non_infobar_request.get()));
+  EXPECT_FALSE(GetOverlayRequestInfobar(nullptr));
 }
 
 // Tests that GetOverlayRequestInfobarType() returns the InfoBar's type.
