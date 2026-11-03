@@ -251,11 +251,15 @@ bool UseGoogleLogo26() {
 
 // Returns whether the left-hand side (LHS) threads rail is shown on the NTP.
 // The rail embeds Google Search AI Mode content, so it is only available on
-// Google Chrome branded builds.
-bool IsThreadsRailEnabled(bool aim_eligible) {
+// Google Chrome branded builds. In hybrid mode, the local rail renders items
+// from `LhsRailConfig`, so a non-null config is required.
+bool IsThreadsRailEnabled(bool aim_eligible, bool has_lhs_rail_config) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return aim_eligible &&
-         base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail);
+  if (!aim_eligible ||
+      !base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail)) {
+    return false;
+  }
+  return !ntp_features::kNtpThreadsRailHybridParam.Get() || has_lhs_rail_config;
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -811,45 +815,44 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
 
   // The left-hand side (LHS) threads rail embeds AI Mode content, so it is only
   // shown to AIM eligible users.
-  const bool enable_threads_rail = IsThreadsRailEnabled(aim_eligible);
+  const omnibox::LhsRailConfig* lhs_rail_config =
+      service ? service->GetLhsRailConfig() : nullptr;
+  const bool enable_threads_rail =
+      IsThreadsRailEnabled(aim_eligible, lhs_rail_config != nullptr);
   dict.Set("enableThreadsRail", enable_threads_rail);
   dict.Set("enableThreadsRailHybrid",
            ntp_features::kNtpThreadsRailHybridParam.Get());
-  if (enable_threads_rail && service) {
-    if (const omnibox::LhsRailConfig* lhs_rail_config =
-            service->GetLhsRailConfig()) {
-      base::DictValue lhs_rail_config_dict;
-      base::ListValue items_list;
-      const url::Origin google_base_origin =
-          url::Origin::Create(google_base_url);
-      for (const auto& item : lhs_rail_config->lhs_items()) {
-        base::DictValue item_dict;
-        // `icon_svg` is untrusted server-supplied markup; WebUI consumers must
-        // render it in a non-script-executing context (e.g., CSS `mask-image`
-        // `data:image/svg+xml` URI) rather than injecting raw markup into the
-        // DOM.
-        item_dict.Set("iconSvg", item.icon_svg());
-        item_dict.Set("name", item.name());
-        item_dict.Set("clientAction",
-                      static_cast<int>(item.click_action().client_action()));
-        const std::string& relative_url =
-            item.click_action().link().relative_url();
-        // Ensure `relative_url` is a root-relative path (not an absolute URL or
-        // a scheme-relative `"//"` / `"/\\"` authority override) and resolves
-        // to the same origin as `google_base_url`.
-        if (relative_url.starts_with("/") && !relative_url.starts_with("//") &&
-            !relative_url.starts_with("/\\")) {
-          GURL target_url = google_base_url.Resolve(relative_url);
-          if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS() &&
-              google_base_origin.IsSameOriginWith(target_url)) {
-            item_dict.Set("targetUrl", target_url.spec());
-          }
+  if (enable_threads_rail && lhs_rail_config) {
+    base::DictValue lhs_rail_config_dict;
+    base::ListValue items_list;
+    const url::Origin google_base_origin = url::Origin::Create(google_base_url);
+    for (const auto& item : lhs_rail_config->lhs_items()) {
+      base::DictValue item_dict;
+      // `icon_svg` is untrusted server-supplied markup; WebUI consumers must
+      // render it in a non-script-executing context (e.g., CSS `mask-image`
+      // `data:image/svg+xml` URI) rather than injecting raw markup into the
+      // DOM.
+      item_dict.Set("iconSvg", item.icon_svg());
+      item_dict.Set("name", item.name());
+      item_dict.Set("clientAction",
+                    static_cast<int>(item.click_action().client_action()));
+      const std::string& relative_url =
+          item.click_action().link().relative_url();
+      // Ensure `relative_url` is a root-relative path (not an absolute URL or
+      // a scheme-relative `"//"` / `"/\\"` authority override) and resolves
+      // to the same origin as `google_base_url`.
+      if (relative_url.starts_with("/") && !relative_url.starts_with("//") &&
+          !relative_url.starts_with("/\\")) {
+        GURL target_url = google_base_url.Resolve(relative_url);
+        if (target_url.is_valid() && target_url.SchemeIsHTTPOrHTTPS() &&
+            google_base_origin.IsSameOriginWith(target_url)) {
+          item_dict.Set("targetUrl", target_url.spec());
         }
-        items_list.Append(std::move(item_dict));
       }
-      lhs_rail_config_dict.Set("items", std::move(items_list));
-      dict.Set("lhsRailConfig", std::move(lhs_rail_config_dict));
+      items_list.Append(std::move(item_dict));
     }
+    lhs_rail_config_dict.Set("items", std::move(items_list));
+    dict.Set("lhsRailConfig", std::move(lhs_rail_config_dict));
   }
 
   // Action Chips LoadTimeData
