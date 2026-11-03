@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.view.KeyEvent;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.DeviceInfo;
@@ -170,6 +171,7 @@ public class BrowserUiUtils {
      * Returns true if the AndroidAutoProjected feature flag is enabled and the given {@link
      * Context} is currently projected onto an Android Auto car display (AAP).
      */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     public static boolean isAndroidAutoProjected(@Nullable Context context) {
         // TODO(crbug.com/475611332): Update to the dedicated AndroidX projection API once
         // available (see comment #29).
