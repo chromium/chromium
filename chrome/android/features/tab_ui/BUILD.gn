@@ -16,6 +16,16 @@ java_strings_grd("java_strings_grd") {
           [ "java/strings/translations/android_chrome_tab_ui_strings_{{source_name_part}}.xtb" ])
 }
 
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/tasks/tab_management/TabComponentId.java" ]
+  deps = [
+    ":java_resources",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  resources_package = "org.chromium.chrome.tab_ui"
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/anim/iph_hovered_card_animation.xml",

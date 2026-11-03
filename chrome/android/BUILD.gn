@@ -932,6 +932,10 @@ if (_is_default_toolchain) {
     }
 
     public_deps = [
+      # TODO(b/565320394): Temporary until tab_ui Java sources are decoupled
+      # from chrome_java.
+      "//chrome/android/features/tab_ui:java",
+
       # TODO(crbug.com/40167648): This is temporary to not break downstream
       # targets.
       "//chrome/browser/notifications:java",
