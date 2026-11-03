@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.download;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -21,19 +24,25 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
  */
 @NullMarked
 public class DuplicateDownloadDialogBridge {
-    private long mNativeDuplicateDownloadDialogBridge;
+    @JniType("::DuplicateDownloadDialogBridge")
+    interface NativeDuplicateDownloadDialogBridge extends JniTypeToken {}
+
+    private final JniRawPtr<NativeDuplicateDownloadDialogBridge>
+            mNativeDuplicateDownloadDialogBridge;
 
     /**
      * Constructor, taking a pointer to the native instance.
      *
      * @param nativeDuplicateDownloadDialogBridge Pointer to the native object.
      */
-    public DuplicateDownloadDialogBridge(long nativeDuplicateDownloadDialogBridge) {
+    public DuplicateDownloadDialogBridge(
+            JniRawPtr<NativeDuplicateDownloadDialogBridge> nativeDuplicateDownloadDialogBridge) {
         mNativeDuplicateDownloadDialogBridge = nativeDuplicateDownloadDialogBridge;
     }
 
     @CalledByNative
-    public static DuplicateDownloadDialogBridge create(long nativeDialog) {
+    public static DuplicateDownloadDialogBridge create(
+            JniRawPtr<NativeDuplicateDownloadDialogBridge> nativeDialog) {
         return new DuplicateDownloadDialogBridge(nativeDialog);
     }
 
@@ -76,7 +85,7 @@ public class DuplicateDownloadDialogBridge {
 
     @CalledByNative
     private void destroy() {
-        mNativeDuplicateDownloadDialogBridge = 0;
+        mNativeDuplicateDownloadDialogBridge.release();
     }
 
     /**
@@ -92,6 +101,8 @@ public class DuplicateDownloadDialogBridge {
     @NativeMethods
     interface Natives {
         void onConfirmed(
-                long nativeDuplicateDownloadDialogBridge, long callbackId, boolean accepted);
+                JniPtr<NativeDuplicateDownloadDialogBridge> self,
+                long callbackId,
+                boolean accepted);
     }
 }
