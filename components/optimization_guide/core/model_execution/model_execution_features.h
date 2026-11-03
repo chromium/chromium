@@ -41,6 +41,10 @@ BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 // Feature flag to populate PrivateExecuteRequest instead of ExecuteRequest.
 BASE_DECLARE_FEATURE(kPrivateExecuteRequest);
 
+// Feature to preconnect sockets to the Model Execution Service during
+// `ExecuteModel()`.
+BASE_DECLARE_FEATURE(kPreconnectSocketsOnExecuteModel);
+
 // Checks if the provided `feature` is graduated from experimental AI settings.
 bool IsGraduatedFeature(UserVisibleFeatureKey feature);
 

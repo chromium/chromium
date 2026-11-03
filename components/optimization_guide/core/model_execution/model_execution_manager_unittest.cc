@@ -21,6 +21,7 @@
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
@@ -32,10 +33,14 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +52,46 @@ namespace {
 
 using ::base::test::EqualsProto;
 using ::base::test::TestMessage;
+using ::testing::ByMove;
 using ::testing::HasSubstr;
+using ::testing::Return;
+using ::testing::StrictMock;
+
+class TestPreconnectNetworkContext : public network::TestNetworkContext {
+ public:
+  struct PreconnectArgs {
+    uint32_t num_streams;
+    GURL url;
+    network::mojom::CredentialsMode credentials_mode;
+    net::NetworkAnonymizationKey network_anonymization_key;
+    base::UnguessableToken network_restrictions_id;
+    net::MutableNetworkTrafficAnnotationTag traffic_annotation;
+  };
+
+  void PreconnectSockets(
+      uint32_t num_streams,
+      const GURL& url,
+      network::mojom::CredentialsMode credentials_mode,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const base::UnguessableToken& network_restrictions_id,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          observer_client) override {
+    preconnect_calls_.push_back(PreconnectArgs{
+        num_streams, url, credentials_mode, network_anonymization_key,
+        network_restrictions_id, traffic_annotation});
+  }
+
+  const std::vector<PreconnectArgs>& preconnect_calls() const {
+    return preconnect_calls_;
+  }
+
+  void ClearPreconnectCalls() { preconnect_calls_.clear(); }
+
+ private:
+  std::vector<PreconnectArgs> preconnect_calls_;
+};
 
 class MockModelExecutionFetcher : public ModelExecutionFetcher {
  public:
@@ -137,7 +181,12 @@ class ModelExecutionManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
-        url_loader_factory_, identity_test_env_.identity_manager(),
+        url_loader_factory_,
+        base::BindRepeating(
+            [](TestPreconnectNetworkContext* ctx)
+                -> network::mojom::NetworkContext* { return ctx; },
+            &test_network_context_),
+        identity_test_env_.identity_manager(),
         /*delegate=*/nullptr, &optimization_guide_logger_, nullptr);
   }
 
@@ -193,6 +242,7 @@ class ModelExecutionManagerTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   OptimizationGuideLogger optimization_guide_logger_;
+  TestPreconnectNetworkContext test_network_context_;
   std::unique_ptr<ModelExecutionManager> model_execution_manager_;
 };
 
@@ -263,6 +313,73 @@ TEST_F(ModelExecutionManagerTest, PrewarmModelExecutionWithUserSignIn) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.AccessTokenPrewarmLatency.Compose", 1);
+}
+
+// Tests that prewarming model execution initiates socket preconnection.
+TEST_F(ModelExecutionManagerTest, PrewarmModelExecutionPreconnectsSockets) {
+  model_execution_manager()->PrewarmModelExecution(
+      ModelBasedCapabilityKey::kSmartSelectionSuggestions);
+
+  ASSERT_EQ(test_network_context_.preconnect_calls().size(), 1u);
+  const TestPreconnectNetworkContext::PreconnectArgs& call =
+      test_network_context_.preconnect_calls()[0];
+  EXPECT_EQ(call.num_streams, 1u);
+  EXPECT_EQ(call.url, GetModelExecutionServiceBaseURL());
+  EXPECT_EQ(call.credentials_mode, network::mojom::CredentialsMode::kOmit);
+  EXPECT_EQ(call.network_anonymization_key,
+            net::NetworkAnonymizationKey::CreateSameSite(
+                net::SchemefulSite(GetModelExecutionServiceBaseURL())));
+  EXPECT_EQ(call.network_restrictions_id,
+            network::GetNoOpNetworkRestrictionsId());
+  EXPECT_EQ(call.traffic_annotation,
+            net::MutableNetworkTrafficAnnotationTag(GetNetworkTrafficAnnotation(
+                ModelBasedCapabilityKey::kSmartSelectionSuggestions)));
+}
+
+// Tests that executing a model does not preconnect sockets when the feature is
+// disabled.
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelDoesNotPreconnectSocketsWhenFeatureDisabled) {
+  SetAutomaticIssueOfAccessTokens();
+  RemoteResponseHolder response_holder;
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder.GetCallback());
+
+  EXPECT_TRUE(test_network_context_.preconnect_calls().empty());
+}
+
+// Tests that executing a model preconnects sockets when the feature is enabled.
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelPreconnectsSocketsWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::internal::kPreconnectSocketsOnExecuteModel);
+
+  SetAutomaticIssueOfAccessTokens();
+  RemoteResponseHolder response_holder;
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kCompose, UserInputRequest("a user typed this"),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kDefault,
+      response_holder.GetCallback());
+
+  ASSERT_EQ(test_network_context_.preconnect_calls().size(), 1u);
+  const TestPreconnectNetworkContext::PreconnectArgs& call =
+      test_network_context_.preconnect_calls()[0];
+  EXPECT_EQ(call.num_streams, 1u);
+  EXPECT_EQ(call.url, GetModelExecutionServiceBaseURL());
+  EXPECT_EQ(call.credentials_mode, network::mojom::CredentialsMode::kOmit);
+  EXPECT_EQ(call.network_anonymization_key,
+            net::NetworkAnonymizationKey::CreateSameSite(
+                net::SchemefulSite(GetModelExecutionServiceBaseURL())));
+  EXPECT_EQ(call.network_restrictions_id,
+            network::GetNoOpNetworkRestrictionsId());
+  EXPECT_EQ(call.traffic_annotation,
+            net::MutableNetworkTrafficAnnotationTag(GetNetworkTrafficAnnotation(
+                ModelBasedCapabilityKey::kCompose)));
 }
 
 // Tests that when a new request is issued and the total number of active
@@ -360,11 +477,16 @@ class ModelExecutionManagerDelegateTest : public ModelExecutionManagerTest {
  public:
   void SetUp() override {
     ModelExecutionManagerTest::SetUp();
-    auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+    auto delegate = std::make_unique<StrictMock<MockDelegate>>();
     delegate_ = delegate.get();
     model_execution_manager_ = std::make_unique<ModelExecutionManager>(
-        url_loader_factory_, identity_test_env_.identity_manager(),
-        std::move(delegate), &optimization_guide_logger_, nullptr);
+        url_loader_factory_,
+        base::BindRepeating(
+            [](TestPreconnectNetworkContext* ctx)
+                -> network::mojom::NetworkContext* { return ctx; },
+            &test_network_context_),
+        identity_test_env_.identity_manager(), std::move(delegate),
+        &optimization_guide_logger_, nullptr);
   }
 
   MockDelegate* delegate() { return delegate_; }
@@ -379,7 +501,7 @@ TEST_F(ModelExecutionManagerDelegateTest, UsesDelegateToCreateFetcher) {
   auto fetcher = std::make_unique<MockModelExecutionFetcher>();
   EXPECT_CALL(*fetcher, ExecuteModel);
   EXPECT_CALL(*delegate(), CreatePrivateAiFetcher)
-      .WillOnce(testing::Return(testing::ByMove(std::move(fetcher))));
+      .WillOnce(Return(ByMove(std::move(fetcher))));
 
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kZeroStateSuggestions, TestMessage(),
@@ -404,7 +526,7 @@ TEST_F(ModelExecutionManagerDelegateTest, HandlesNullFetcher) {
   RemoteResponseHolder response_holder;
   SetAutomaticIssueOfAccessTokens();
   EXPECT_CALL(*delegate(), CreatePrivateAiFetcher)
-      .WillOnce(testing::Return(testing::ByMove(nullptr)));
+      .WillOnce(Return(ByMove(nullptr)));
 
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kZeroStateSuggestions, TestMessage(),
@@ -416,6 +538,40 @@ TEST_F(ModelExecutionManagerDelegateTest, HandlesNullFetcher) {
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kGenericFailure,
             response_holder.error());
+}
+
+// Tests that socket preconnection is skipped for Private AI features during
+// ExecuteModel.
+TEST_F(ModelExecutionManagerDelegateTest,
+       DoesNotPreconnectSocketsForPrivateAIFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::internal::kPreconnectSocketsOnExecuteModel);
+
+  SetAutomaticIssueOfAccessTokens();
+  auto fetcher = std::make_unique<MockModelExecutionFetcher>();
+  EXPECT_CALL(*fetcher, ExecuteModel);
+  EXPECT_CALL(*delegate(), CreatePrivateAiFetcher)
+      .WillOnce(Return(ByMove(std::move(fetcher))));
+
+  RemoteResponseHolder response_holder;
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kFormsClassifications, TestMessage(),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kPrivateAi,
+      response_holder.GetCallback());
+
+  EXPECT_TRUE(test_network_context_.preconnect_calls().empty());
+}
+
+// Tests that socket preconnection is skipped for Private AI features during
+// PrewarmModelExecution.
+TEST_F(ModelExecutionManagerDelegateTest,
+       DoesNotPreconnectSocketsForPrivateAIFeatureOnPrewarm) {
+  model_execution_manager()->PrewarmModelExecution(
+      ModelBasedCapabilityKey::kFormsClassifications);
+
+  EXPECT_TRUE(test_network_context_.preconnect_calls().empty());
 }
 
 }  // namespace

@@ -27,6 +27,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "optimization_guide_model_execution_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -91,6 +92,9 @@ class ModelExecutionFetcherImplTest : public testing::Test {
     EXPECT_GE(test_url_loader_factory_.NumPending(), 1);
     auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     EXPECT_EQ(pending_request->request.method, "POST");
+    EXPECT_TRUE(pending_request->request.enable_load_timing);
+    EXPECT_EQ(pending_request->request.credentials_mode,
+              network::mojom::CredentialsMode::kOmit);
     std::string key_value;
     EXPECT_EQ(expect_key, net::GetValueForKeyInQuery(
                               pending_request->request.url, "key", &key_value));
@@ -211,6 +215,9 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseNoTimeout) {
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OptimizationGuide.ModelExecution.ConnectLatency.WallpaperSearch",
+      base::TimeDelta(), 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
@@ -251,6 +258,9 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OptimizationGuide.ModelExecution.ConnectLatency.WallpaperSearch",
+      base::TimeDelta(), 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestNetErrorResponse) {
@@ -388,6 +398,9 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithLogin) {
       ModelExecutionFetcherRequestStatus::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.AccessTokenLatency.WallpaperSearch", 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OptimizationGuide.ModelExecution.ConnectLatency.WallpaperSearch",
+      base::TimeDelta(), 1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestAccessTokenFailureWithLogin) {
@@ -461,6 +474,39 @@ TEST_F(ModelExecutionFetcherImplTest, DevHttpUrlAllowedWithSwitch) {
   auto fetcher = std::make_unique<ModelExecutionFetcherImpl>(
       shared_url_loader_factory_, /*optimization_guide_logger=*/nullptr);
   EXPECT_TRUE(fetcher);
+}
+
+// Tests that connect latency is recorded to histograms when a cold connection
+// is established.
+TEST_F(ModelExecutionFetcherImplTest, ConnectLatencyRecordedForColdConnection) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  ExecuteModel(ModelBasedCapabilityKey::kWallpaperSearch,
+               BuildTestMessage("foo request"));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  VerifyHasPendingFetchRequest();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\r\n\r\n");
+  const base::TimeTicks now = base::TimeTicks::Now();
+  response_head->load_timing.connect_timing.domain_lookup_start = now;
+  response_head->load_timing.connect_timing.connect_end =
+      now + base::Milliseconds(120);
+
+  std::string serialized_response;
+  BuildTestExecuteResponse(BuildTestMessage("foo response"))
+      .SerializeToString(&serialized_response);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(GetModelExecutionServiceBaseURL().spec()),
+      network::URLLoaderCompletionStatus(net::OK), std::move(response_head),
+      serialized_response, network::TestURLLoaderFactory::kUrlMatchPrefix);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "OptimizationGuide.ModelExecution.ConnectLatency.WallpaperSearch",
+      base::Milliseconds(120), 1);
 }
 
 }  // namespace optimization_guide

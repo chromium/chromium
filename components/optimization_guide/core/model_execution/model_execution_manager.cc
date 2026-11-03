@@ -27,7 +27,13 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/schemeful_site.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace optimization_guide {
 
@@ -148,6 +154,7 @@ using ModelExecutionError =
 
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    network::NetworkContextGetter network_context_getter,
     signin::IdentityManager* identity_manager,
     std::unique_ptr<Delegate> delegate,
     OptimizationGuideLogger* optimization_guide_logger,
@@ -157,6 +164,7 @@ ModelExecutionManager::ModelExecutionManager(
       optimization_guide_logger_(optimization_guide_logger),
       delegate_(std::move(delegate)),
       url_loader_factory_(url_loader_factory),
+      network_context_getter_(std::move(network_context_getter)),
       identity_manager_(identity_manager) {}
 
 ModelExecutionManager::~ModelExecutionManager() = default;
@@ -170,9 +178,38 @@ void ModelExecutionManager::Shutdown() {
   active_model_execution_fetchers_.clear();
 }
 
+void ModelExecutionManager::MaybePreconnectSockets(
+    ModelBasedCapabilityKey feature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!network_context_getter_) {
+    return;
+  }
+  if (delegate_ && IsEligibleForPrivateAI(feature)) {
+    return;
+  }
+  network::mojom::NetworkContext* const network_context =
+      network_context_getter_.Run();
+  if (!network_context) {
+    return;
+  }
+  const GURL service_url = GetModelExecutionServiceBaseURL();
+  if (!service_url.is_valid()) {
+    return;
+  }
+  network_context->PreconnectSockets(
+      /*num_streams=*/1, service_url, network::mojom::CredentialsMode::kOmit,
+      net::NetworkAnonymizationKey::CreateSameSite(
+          net::SchemefulSite(service_url)),
+      network::GetNoOpNetworkRestrictionsId(),
+      net::MutableNetworkTrafficAnnotationTag(
+          GetNetworkTrafficAnnotation(feature)),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
 void ModelExecutionManager::PrewarmModelExecution(
     ModelBasedCapabilityKey feature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybePreconnectSockets(feature);
   if (!IsAccessTokenRequiredForFeature(feature) || !identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
@@ -218,6 +255,12 @@ void ModelExecutionManager::ExecuteModel(
                        std::move(test_execution_results_[feature]), nullptr));
     test_execution_results_.erase(feature);
     return;
+  }
+
+  if (service_type == ModelExecutionServiceType::kDefault &&
+      base::FeatureList::IsEnabled(
+          features::internal::kPreconnectSocketsOnExecuteModel)) {
+    MaybePreconnectSockets(feature);
   }
 
   if (optimization_guide_logger_->ShouldEnableDebugLogs()) {

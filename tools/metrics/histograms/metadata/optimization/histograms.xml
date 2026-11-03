@@ -1214,6 +1214,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.ConnectLatency.{ModelExecutionFeature}"
+    units="ms" expires_after="2027-04-30">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time spent establishing a network connection (DNS lookup +
+    TCP/TLS or QUIC handshake) during a model execution HTTP request for
+    {ModelExecutionFeature}. Recorded when the URL load completes. Emits 0 ms
+    when an existing or preconnected HTTP/2 or HTTP/3 session is reused.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.ContextStartToExecutionTime.{ModelExecutionFeature}"
     units="ms" expires_after="2027-04-14">
   <owner>cduvall@chromium.org</owner>
