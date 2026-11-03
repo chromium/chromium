@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/signals/model/ios_system_signals_collector.h"
 
+#import <optional>
 #import <string>
 #import <utility>
 
@@ -73,8 +74,7 @@ void IOSSystemSignalsCollector::GetOsSignals(
   // `diskEncryption` mirrors `screenLockSecured` on iOS.
   signal_response->disk_encryption = screen_lock;
   // iOS has no OS firewall whose state Chrome can evaluate.
-  // TODO(crbug.com/578001589): Leave `os_firewall` unset, as on Android.
-  signal_response->os_firewall = device_signals::SettingValue::UNKNOWN;
+  signal_response->os_firewall = std::nullopt;
 
   // Fetch hardware info asynchronously to be safe.
   base::SysInfo::GetHardwareInfo(

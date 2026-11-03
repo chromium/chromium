@@ -131,7 +131,7 @@ TEST_F(IOSSystemSignalsCollectorTest, GetOsSignals_Success) {
             device_signals::SettingValue::ENABLED);
   EXPECT_EQ(os_signals.disk_encryption,
             device_signals::SettingValue::ENABLED);  // Mirrors screen lock
-  EXPECT_EQ(os_signals.os_firewall, device_signals::SettingValue::UNKNOWN);
+  EXPECT_FALSE(os_signals.os_firewall.has_value());
 
   // The collection outcome is recorded as a success, along with the latency
   // measured from the start of the collection to its outcome.
