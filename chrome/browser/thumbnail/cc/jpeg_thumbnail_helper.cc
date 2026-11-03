@@ -118,7 +118,7 @@ void JpegThumbnailHelper::Compress(
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::TaskPriority::BEST_EFFORT,
+      {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&CompressTask, bitmap,
                      base::BindPostTask(default_task_runner_,
@@ -133,7 +133,7 @@ void JpegThumbnailHelper::Write(
   base::FilePath file_path = GetJpegFilePath(tab_id);
   file_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&WriteTask, file_path, compressed_data,
+      base::BindOnce(&WriteTask, file_path, std::move(compressed_data),
                      base::BindPostTask(default_task_runner_,
                                         std::move(post_write_task))));
 }

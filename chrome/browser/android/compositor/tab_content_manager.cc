@@ -493,9 +493,13 @@ void TabContentManager::SendThumbnailToJava(JavaBitmapCallback callback,
 
     SkIRect dest_subset = {0, 0, width, height};
 
-    j_bitmap = gfx::ConvertToJavaBitmap(skia::ImageOperations::Resize(
-        bitmap, skia::ImageOperations::RESIZE_BETTER, width, height,
-        dest_subset));
+    const SkBitmap result_bitmap =
+        (width == bitmap.width() && height == bitmap.height())
+            ? bitmap
+            : skia::ImageOperations::Resize(bitmap,
+                                            skia::ImageOperations::RESIZE_GOOD,
+                                            width, height, dest_subset);
+    j_bitmap = gfx::ConvertToJavaBitmap(result_bitmap);
   }
   std::move(callback).Run(j_bitmap);
 }

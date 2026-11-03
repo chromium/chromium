@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "cc/resources/ui_resource_client.h"
@@ -13,6 +14,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/ui_android_export.h"
+#include "ui/display/screen.h"
+#include "ui/display/screen_base.h"
 
 namespace thumbnail {
 namespace {
@@ -45,6 +48,12 @@ class MockUIResourceProvider : public ui::UIResourceProvider {
 class ThumbnailCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
+    if (!display::Screen::Get()) {
+      screen_.display_list().AddDisplay({1, gfx::Rect(16 * kKiB, 16 * kKiB)},
+                                        display::DisplayList::Type::PRIMARY);
+      display::Screen::SetScreenInstance(&screen_);
+      installed_screen_ = true;
+    }
     thumbnail_cache_ = std::make_unique<ThumbnailCache>(
         kDefaultCacheSize, kCompressionQueueMaxSize, kWriteQueueMaxSize,
         /*save_jpeg_thumbnails=*/true);
@@ -54,7 +63,11 @@ class ThumbnailCacheTest : public ::testing::Test {
         .WillRepeatedly(::testing::Return(1));
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    if (installed_screen_) {
+      display::Screen::SetScreenInstance(nullptr);
+    }
+  }
 
   ThumbnailCache& thumbnail_cache() { return *thumbnail_cache_; }
   void RecordCacheMetrics() { thumbnail_cache_->RecordCacheMetrics(); }
@@ -62,6 +75,8 @@ class ThumbnailCacheTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
+  display::ScreenBase screen_;
+  bool installed_screen_ = false;
   MockUIResourceProvider ui_resource_provider_;
   std::unique_ptr<ThumbnailCache> thumbnail_cache_;
 };
@@ -224,6 +239,53 @@ TEST_F(ThumbnailCacheTest, InvalidateIfChanged) {
   thumbnail_cache().InvalidateThumbnailIfChanged(kTabId1,
                                                  GURL("https://www.bar.com/"));
   EXPECT_FALSE(thumbnail_cache().Get(kTabId1, false));
+}
+
+TEST_F(ThumbnailCacheTest, DecompressEtc1ThumbnailFromFile) {
+  static constexpr int kTabId = 42;
+  static constexpr int kMissingTabId = 404;
+  static constexpr int kDimension = 16;
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocN32Pixels(kDimension, kDimension));
+  bitmap.eraseColor(SK_ColorRED);
+  bitmap.setImmutable();
+
+  thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId}), -1);
+  EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
+      kTabId, GURL("https://www.foo.com/"), /*force_update=*/false));
+  std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter> tracker(
+      new ThumbnailCaptureTracker(base::DoNothing()),
+      base::OnTaskRunnerDeleter(
+          base::SequencedTaskRunner::GetCurrentDefault()));
+  thumbnail_cache().Put(kTabId, std::move(tracker), bitmap,
+                        /*thumbnail_scale=*/1.0f);
+  task_environment_.RunUntilIdle();
+
+  {
+    base::RunLoop loop;
+    thumbnail_cache().DecompressEtc1ThumbnailFromFile(
+        kTabId, base::BindOnce([](bool success, const SkBitmap& decompressed) {
+                  EXPECT_TRUE(success);
+                  EXPECT_FALSE(decompressed.empty());
+                  EXPECT_EQ(decompressed.width(), kDimension);
+                  EXPECT_EQ(decompressed.height(), kDimension);
+                }).Then(loop.QuitClosure()));
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    thumbnail_cache().DecompressEtc1ThumbnailFromFile(
+        kMissingTabId,
+        base::BindOnce([](bool success, const SkBitmap& decompressed) {
+          EXPECT_FALSE(success);
+          EXPECT_TRUE(decompressed.empty());
+        }).Then(loop.QuitClosure()));
+    loop.Run();
+  }
+
+  thumbnail_cache().Remove(kTabId);
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace thumbnail

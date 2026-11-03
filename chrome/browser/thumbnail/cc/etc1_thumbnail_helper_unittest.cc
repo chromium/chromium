@@ -29,8 +29,10 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/effects/SkGradient.h"
+#include "ui/android/resources/etc1_utils.h"
 #include "ui/display/screen.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/skia_util.h"
 
 namespace thumbnail {
 namespace {
@@ -78,7 +80,7 @@ class Etc1ThumbnailHelperTest : public ::testing::Test {
   display::ScreenBase screen_;
 };
 
-TEST_F(Etc1ThumbnailHelperTest, CompressAndDecompressThumbnail) {
+TEST_F(Etc1ThumbnailHelperTest, CompressThumbnail) {
   // Create a bitmap
   SkBitmap image;
   ASSERT_TRUE(image.tryAllocN32Pixels(kWidth, kHeight));
@@ -86,63 +88,35 @@ TEST_F(Etc1ThumbnailHelperTest, CompressAndDecompressThumbnail) {
   canvas.drawPaint(SetupPaint());
   image.setImmutable();
 
-  sk_sp<SkPixelRef> compressed_data_copy;
-  gfx::Size data_size_copy;
-
   // Compress the bitmap
   base::RunLoop loop1;
   base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)> compress_once =
-      base::BindOnce(
-          [](sk_sp<SkPixelRef>* compressed_data_copy, gfx::Size* data_size_copy,
-             sk_sp<SkPixelRef> compressed_data, const gfx::Size& data_size) {
-            EXPECT_GT(compressed_data->width(), 0);
-            EXPECT_GT(compressed_data->height(), 0);
+      base::BindOnce([](sk_sp<SkPixelRef> compressed_data,
+                        const gfx::Size& data_size) {
+        EXPECT_GT(compressed_data->width(), 0);
+        EXPECT_GT(compressed_data->height(), 0);
 
-            EXPECT_GT(data_size.width(), 0);
-            EXPECT_GT(data_size.height(), 0);
+        EXPECT_GT(data_size.width(), 0);
+        EXPECT_GT(data_size.height(), 0);
 
-            gfx::Size buffer_size =
-                gfx::Size(compressed_data->width(), compressed_data->height());
+        gfx::Size buffer_size =
+            gfx::Size(compressed_data->width(), compressed_data->height());
 
-            EXPECT_EQ(data_size, buffer_size);
+        EXPECT_EQ(data_size, buffer_size);
 
-            SkBitmap raw_data;
-            raw_data.allocPixels(SkImageInfo::MakeN32(buffer_size.width(),
-                                                      buffer_size.height(),
-                                                      kOpaque_SkAlphaType));
-            bool success = etc1_decode_image(
-                reinterpret_cast<unsigned char*>(compressed_data->pixels()),
-                reinterpret_cast<unsigned char*>(raw_data.getPixels()),
-                buffer_size.width(), buffer_size.height(),
-                raw_data.bytesPerPixel(), raw_data.rowBytes());
-            EXPECT_TRUE(success);
-
-            *compressed_data_copy = compressed_data;
-            *data_size_copy = data_size;
-          },
-          &compressed_data_copy, &data_size_copy)
-          .Then(loop1.QuitClosure());
+        SkBitmap raw_data;
+        raw_data.allocPixels(SkImageInfo::MakeN32(
+            buffer_size.width(), buffer_size.height(), kOpaque_SkAlphaType));
+        bool success = etc1_decode_image(
+            reinterpret_cast<unsigned char*>(compressed_data->pixels()),
+            reinterpret_cast<unsigned char*>(raw_data.getPixels()),
+            buffer_size.width(), buffer_size.height(), raw_data.bytesPerPixel(),
+            raw_data.rowBytes());
+        EXPECT_TRUE(success);
+      }).Then(loop1.QuitClosure());
 
   GetInterface().Compress(image, true, std::move(compress_once));
   loop1.Run();
-
-  // Decompress the image
-  base::RunLoop loop2;
-  base::OnceCallback<void(bool, const SkBitmap&)> decompress_once =
-      base::BindOnce(
-          [](SkBitmap* image, bool success, const SkBitmap& decompressed_data) {
-            EXPECT_TRUE(success);
-            EXPECT_FALSE(decompressed_data.empty());
-
-            EXPECT_EQ(decompressed_data.width(), image->width());
-            EXPECT_EQ(decompressed_data.height(), image->height());
-          },
-          &image)
-          .Then(loop2.QuitClosure());
-
-  GetInterface().Decompress(std::move(decompress_once), compressed_data_copy,
-                            1.f, data_size_copy);
-  loop2.Run();
 }
 
 TEST_F(Etc1ThumbnailHelperTest, WriteReadAndDeleteThumbnail) {
@@ -289,6 +263,91 @@ TEST_F(Etc1ThumbnailHelperTest, DeleteAllExceptForIds) {
   EXPECT_FALSE(base::PathExists(GetFile(5)));
 
   EXPECT_TRUE(base::PathExists(jpeg_file));
+}
+
+TEST_F(Etc1ThumbnailHelperTest, ReadAndDecompressThumbnail) {
+  constexpr int kTabId = 7;
+
+  SkBitmap image;
+  ASSERT_TRUE(image.tryAllocN32Pixels(kWidth, kHeight));
+  SkCanvas canvas(image);
+  canvas.drawPaint(SetupPaint());
+  image.setImmutable();
+
+  sk_sp<SkPixelRef> compressed_data;
+  gfx::Size data_size;
+  {
+    base::RunLoop loop;
+    GetInterface().Compress(
+        image, true,
+        base::BindOnce(
+            [](sk_sp<SkPixelRef>* out_data, gfx::Size* out_size,
+               sk_sp<SkPixelRef> data, const gfx::Size& size) {
+              *out_data = std::move(data);
+              *out_size = size;
+            },
+            &compressed_data, &data_size)
+            .Then(loop.QuitClosure()));
+    loop.Run();
+  }
+  ASSERT_TRUE(compressed_data);
+
+  SkBitmap expected_decompressed =
+      ui::Etc1::DecompressBitmap(data_size, compressed_data);
+  ASSERT_FALSE(expected_decompressed.empty());
+
+  {
+    base::RunLoop loop;
+    GetInterface().Write(kTabId, compressed_data, 1.f, data_size,
+                         loop.QuitClosure());
+    loop.Run();
+  }
+  EXPECT_TRUE(base::PathExists(GetFile(kTabId)));
+
+  {
+    base::RunLoop loop;
+    GetInterface().ReadAndDecompress(
+        kTabId,
+        base::BindOnce(
+            [](const SkBitmap& expected, bool success, const SkBitmap& bitmap) {
+              EXPECT_TRUE(success);
+              ASSERT_FALSE(bitmap.empty());
+              EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, expected));
+            },
+            expected_decompressed)
+            .Then(loop.QuitClosure()));
+    loop.Run();
+  }
+}
+
+TEST_F(Etc1ThumbnailHelperTest, ReadAndDecompressMissingFile) {
+  constexpr int kMissingTabId = 999;
+  ASSERT_FALSE(base::PathExists(GetFile(kMissingTabId)));
+
+  base::RunLoop loop;
+  GetInterface().ReadAndDecompress(
+      kMissingTabId, base::BindOnce([](bool success, const SkBitmap& bitmap) {
+                       EXPECT_FALSE(success);
+                       EXPECT_TRUE(bitmap.empty());
+                     }).Then(loop.QuitClosure()));
+  loop.Run();
+}
+
+TEST_F(Etc1ThumbnailHelperTest, ReadAndDecompressCorruptFile) {
+  constexpr int kCorruptTabId = 888;
+  base::FilePath corrupt_path = GetFile(kCorruptTabId);
+  ASSERT_TRUE(base::WriteFile(corrupt_path, "corrupt_etc1_data"));
+  ASSERT_TRUE(base::PathExists(corrupt_path));
+
+  base::RunLoop loop;
+  GetInterface().ReadAndDecompress(
+      kCorruptTabId, base::BindOnce([](bool success, const SkBitmap& bitmap) {
+                       EXPECT_FALSE(success);
+                       EXPECT_TRUE(bitmap.empty());
+                     }).Then(loop.QuitClosure()));
+  loop.Run();
+
+  EXPECT_FALSE(base::PathExists(corrupt_path));
 }
 
 }  // namespace thumbnail

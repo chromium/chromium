@@ -107,6 +107,8 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void OnFinishedThumbnailRead(thumbnail::TabId tab_id) override;
 
  private:
+  friend class TabContentManagerTest;
+
   class TabReadbackRequest;
   using ThumbnailLayerMap = base::flat_map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =

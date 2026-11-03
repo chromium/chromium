@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 
 namespace thumbnail {
@@ -49,15 +48,9 @@ class Etc1ThumbnailHelper {
   void DeleteAllExceptForIds(std::vector<thumbnail::TabId> tab_ids);
   // `post_decompress_callback` will run on the thread that created this
   // Etc1ThumbnailHelper.
-  void Decompress(
-      base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback,
-      sk_sp<SkPixelRef> compressed_data,
-      float scale,
-      const gfx::Size& encoded_size);
-
-  base::WeakPtr<Etc1ThumbnailHelper> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
+  void ReadAndDecompress(
+      thumbnail::TabId tab_id,
+      base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
  private:
   friend class Etc1ThumbnailHelperTest;
@@ -71,7 +64,6 @@ class Etc1ThumbnailHelper {
 
   scoped_refptr<base::SequencedTaskRunner> default_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
-  base::WeakPtrFactory<Etc1ThumbnailHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace thumbnail

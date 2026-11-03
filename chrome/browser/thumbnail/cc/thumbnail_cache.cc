@@ -304,11 +304,7 @@ void ThumbnailCache::PruneCache() {
 void ThumbnailCache::DecompressEtc1ThumbnailFromFile(
     TabId tab_id,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
-  auto decompress_task = base::BindOnce(
-      &thumbnail::Etc1ThumbnailHelper::Decompress, etc1_helper_.GetWeakPtr(),
-      std::move(post_decompress_callback));
-  etc1_helper_.Read(
-      tab_id, base::BindPostTaskToCurrentDefault(std::move(decompress_task)));
+  etc1_helper_.ReadAndDecompress(tab_id, std::move(post_decompress_callback));
 }
 
 void ThumbnailCache::ScheduleRecordCacheMetrics(base::TimeDelta mean_delay) {

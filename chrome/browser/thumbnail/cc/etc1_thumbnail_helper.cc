@@ -61,9 +61,8 @@ void ReadTask(
   float scale = 0.f;
   sk_sp<SkPixelRef> compressed_data;
 
-  if (base::PathExists(file_path)) {
-    base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (file.IsValid()) {
     bool valid_contents =
         ui::Etc1::ReadFromFile(&file, &content_size, &scale, &compressed_data);
     file.Close();
@@ -112,6 +111,19 @@ void DecompressTask(
   const bool success = !raw_data_small.empty();
   std::move(post_decompression_callback)
       .Run(success, std::move(raw_data_small));
+}
+
+void PostDecompressTask(
+    base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
+    sk_sp<SkPixelRef> compressed_data,
+    float /*scale*/,
+    const gfx::Size& content_size) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DecompressTask, std::move(post_decompression_callback),
+                     std::move(compressed_data), content_size));
 }
 
 }  // anonymous namespace
@@ -188,20 +200,14 @@ void Etc1ThumbnailHelper::DeleteAllExceptForIds(std::vector<int> tab_ids) {
                                 std::move(file_names)));
 }
 
-void Etc1ThumbnailHelper::Decompress(
-    base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
-    sk_sp<SkPixelRef> compressed_data,
-    float /*scale*/,
-    const gfx::Size& content_size) {
+void Etc1ThumbnailHelper::ReadAndDecompress(
+    TabId tab_id,
+    base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&DecompressTask,
-                     base::BindPostTask(default_task_runner_,
-                                        std::move(post_decompression_callback)),
-                     compressed_data, content_size));
+  Read(tab_id,
+       base::BindOnce(&PostDecompressTask,
+                      base::BindPostTask(default_task_runner_,
+                                         std::move(post_decompress_callback))));
 }
 
 base::FilePath Etc1ThumbnailHelper::GetFilePath(TabId tab_id) {
