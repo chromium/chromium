@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
@@ -3086,6 +3087,53 @@ TEST_F(BrowserAccessibilityAndroidTest,
   EXPECT_CALL(wcax, HandlePaneClosed(dialog_uid)).Times(1);
 
   wcax.MoveAccessibilityFocus(nullptr, inside_uid, outside_uid);
+}
+
+// Regression test for crbug.com/576311150. TalkBack clears accessibility focus
+// and then focuses the same node again when syncing to input focus, which
+// should not close and re-open the dialog pane.
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestMoveAccessibilityFocusDialogClearAndRefocus) {
+  ui::AXNodeData button_inside;
+  button_inside.id = 3;
+  button_inside.role = ax::mojom::Role::kButton;
+  button_inside.SetName("Inside Button");
+
+  ui::AXNodeData dialog_container;
+  dialog_container.id = 2;
+  dialog_container.role = ax::mojom::Role::kDialog;
+  dialog_container.SetName("Dialog Title");
+  dialog_container.child_ids = {button_inside.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {dialog_container.id};
+
+  auto* update = new ui::AXTreeUpdate(
+      MakeAXTreeUpdateForTesting(root, dialog_container, button_inside));
+  MockWebContentsAccessibilityBase wcax(reinterpret_cast<intptr_t>(update));
+
+  BrowserAccessibilityAndroid* root_node =
+      wcax.GetAXFromUniqueIDForTesting(wcax.GetRootId(nullptr));
+  ASSERT_NE(nullptr, root_node);
+  auto* dialog_node =
+      static_cast<BrowserAccessibilityAndroid*>(root_node->PlatformGetChild(0));
+  ASSERT_NE(nullptr, dialog_node);
+  auto* inside_node = static_cast<BrowserAccessibilityAndroid*>(
+      dialog_node->PlatformGetChild(0));
+  ASSERT_NE(nullptr, inside_node);
+
+  int32_t inside_uid = inside_node->GetUniqueId();
+  int32_t dialog_uid = dialog_node->GetUniqueId();
+
+  EXPECT_CALL(wcax, HandlePaneOpened(dialog_uid)).Times(1);
+  EXPECT_CALL(wcax, HandlePaneClosed(testing::_)).Times(0);
+
+  // Focus the button, clear focus, then focus the button again.
+  wcax.MoveAccessibilityFocus(nullptr, ui::kAXAndroidInvalidViewId, inside_uid);
+  wcax.MoveAccessibilityFocus(nullptr, inside_uid, ui::kAXAndroidInvalidViewId);
+  wcax.MoveAccessibilityFocus(nullptr, ui::kAXAndroidInvalidViewId, inside_uid);
 }
 
 // Regression test for crbug.com/433149078. A multiselectable listbox

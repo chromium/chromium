@@ -2837,13 +2837,14 @@ void WebContentsAccessibilityBase::MoveAccessibilityFocus(
   }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(new_unique_id);
+  if (!node) {
+    return;
+  }
 
   int32_t new_dialog_id = ui::kAXAndroidInvalidViewId;
-  if (node) {
-    BrowserAccessibilityAndroid* dialog_ancestor = GetDialogAncestor(node);
-    if (dialog_ancestor) {
-      new_dialog_id = dialog_ancestor->GetUniqueId();
-    }
+  BrowserAccessibilityAndroid* dialog_ancestor = GetDialogAncestor(node);
+  if (dialog_ancestor) {
+    new_dialog_id = dialog_ancestor->GetUniqueId();
   }
   // TODO: Follow up with TalkBack to verify if TalkBack should announce
   // pane closed when transitioning directly from one dialog to another.
@@ -2857,9 +2858,6 @@ void WebContentsAccessibilityBase::MoveAccessibilityFocus(
     active_dialog_unique_id_ = new_dialog_id;
   }
 
-  if (!node) {
-    return;
-  }
   node->manager()->SetAccessibilityFocus(*node);
 
   // When Android sets accessibility focus to a node, we load inline text
