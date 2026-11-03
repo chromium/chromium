@@ -17,7 +17,6 @@
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
@@ -30,7 +29,6 @@
 #include "device/fido/public/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
 
@@ -197,18 +195,9 @@ class PasskeyUnlockManagerTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  void EnableUiExperimentArm(std::string arm_name) {
-    feature_params_[device::kPasskeyUnlockErrorUiExperimentArm.name] = arm_name;
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeatureWithParameters(
-        device::kPasskeyUnlockErrorUi, feature_params_);
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
-  std::map<std::string, std::string> feature_params_;
   std::unique_ptr<EnclaveManagerInterface> test_enclave_manager_;
   std::unique_ptr<PasskeyModel> test_passkey_model_;
   std::unique_ptr<syncer::SyncService> test_sync_service_;
@@ -475,41 +464,6 @@ TEST_F(PasskeyUnlockManagerTest, NotifyOnPasskeysChangedWhenPasskeyAdded) {
   EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged());
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey();
   passkey_model()->AddNewPasskeyForTesting(passkey);
-}
-
-TEST_F(PasskeyUnlockManagerTest, TextLablesForDifferentUiExperimentArms) {
-  ConfigureProfileAndSyncService(kEnclaveNotReady, kPasskeyModelReady,
-                                 GpmPinStatus::kGpmPinUnset);
-
-  EnableUiExperimentArm("text_with_verify_wording");
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY));
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
-            l10n_util::GetStringUTF16(
-                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY));
-  EXPECT_EQ(
-      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
-      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY));
-
-  EnableUiExperimentArm("text_with_get_wording");
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET));
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
-            l10n_util::GetStringUTF16(
-                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET));
-  EXPECT_EQ(
-      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
-      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET));
-
-  EnableUiExperimentArm("text_with_unlock_wording");
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfilePillTitle(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK));
-  EXPECT_EQ(passkey_unlock_manager()->GetPasskeyErrorProfileMenuDetails(),
-            l10n_util::GetStringUTF16(
-                IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK));
-  EXPECT_EQ(
-      passkey_unlock_manager()->GetPasskeyErrorProfileMenuButtonLabel(),
-      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK));
 }
 
 TEST_F(PasskeyUnlockManagerTest,

@@ -80,12 +80,6 @@ class PasskeyUnlockManager : public KeyedService,
       BrowserWindowInterface* browser,
       trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
-  // Methods providing the UI strings. Results depend on the experiment arms
-  // configured by the feature parameter `kPasskeyUnlockErrorUiExperimentArm`.
-  std::u16string GetPasskeyErrorProfilePillTitle() const;
-  std::u16string GetPasskeyErrorProfileMenuDetails() const;
-  std::u16string GetPasskeyErrorProfileMenuButtonLabel() const;
-
   // Returns true if the passkey unlock error UI is enabled, depending on the
   // feature flags.
   static bool IsPasskeyUnlockErrorUiEnabled();

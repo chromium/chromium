@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/webauthn/passkey_unlock_error_strings.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
@@ -1417,8 +1418,7 @@ class PasskeyStateProvider : public StateProvider,
   }
 
   std::u16string GetAvatarTooltipText() const final {
-    return passkey_manager_observation_.GetSource()
-        ->GetPasskeyErrorProfileMenuDetails();
+    return webauthn::GetPasskeyErrorProfileMenuDetails();
   }
 
   std::pair<ChromeColorIds, ChromeColorIds> GetInkdropColors() const override {
@@ -1426,8 +1426,7 @@ class PasskeyStateProvider : public StateProvider,
   }
 
   std::u16string GetText() const override {
-    return passkey_manager_observation_.GetSource()
-        ->GetPasskeyErrorProfilePillTitle();
+    return webauthn::GetPasskeyErrorProfilePillTitle();
   }
 
  private:

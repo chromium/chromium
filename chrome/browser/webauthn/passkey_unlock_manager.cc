@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -29,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
 
@@ -156,46 +154,6 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
     if (encryption_keys_tab_helper) {
       encryption_keys_tab_helper->SetUserActionTrigger(trigger);
     }
-  }
-}
-
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle() const {
-  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
-    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK);
-    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET);
-    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY);
-  }
-}
-
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuDetails() const {
-  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
-    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK);
-    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET);
-    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY);
-  }
-}
-
-std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel()
-    const {
-  switch (device::kPasskeyUnlockErrorUiExperimentArm.Get()) {
-    case device::PasskeyUnlockErrorUiExperimentArm::kUnlock:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK);
-    case device::PasskeyUnlockErrorUiExperimentArm::kGet:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET);
-    case device::PasskeyUnlockErrorUiExperimentArm::kVerify:
-      return l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY);
   }
 }
 

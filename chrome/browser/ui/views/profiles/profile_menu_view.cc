@@ -66,6 +66,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/browser/webauthn/passkey_unlock_error_strings.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -719,10 +720,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     webauthn::PasskeyUnlockManager* passkey_unlock_manager =
         webauthn::PasskeyUnlockManagerFactory::GetForProfile(&profile());
     if (passkey_unlock_manager->ShouldDisplayErrorUi()) {
-      params.subtitle =
-          passkey_unlock_manager->GetPasskeyErrorProfileMenuDetails();
-      params.button_text =
-          passkey_unlock_manager->GetPasskeyErrorProfileMenuButtonLabel();
+      params.subtitle = webauthn::GetPasskeyErrorProfileMenuDetails();
+      params.button_text = webauthn::GetPasskeyErrorProfileMenuButtonLabel();
       params.button_action =
           base::BindRepeating(&ProfileMenuView::OnPasskeyUnlockButtonClicked,
                               base::Unretained(this));
