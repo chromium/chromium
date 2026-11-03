@@ -13,4 +13,36 @@
   <message name="IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Google Password Manager') that users might type in the Chrome menu search bar to find the 'Google Password Manager' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     credentials, sign-in, passkey, lock, vault, keys
   </message>
+  <!-- kActionShowPaymentMethods: "Payments". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_PAYMENT_METHODS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Payments') that users might type in the Chrome menu search bar to find the 'Payments' action, which manages saved payment methods. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    credit cards, debit, purchase, billing, money, visa, mastercard, wallet, security, pay
+  </message>
+  <!-- kActionShowContactInfo: "Contact Info". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_CONTACT_INFO" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Contact Info') that users might type in the Chrome menu search bar to find the 'Contact Info' action, which manages saved addresses and contact details. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    autofill, shipping, home, work, checkout, forms, post code, zip, personal, info, phone, number
+  </message>
+  <!-- kActionCustomizeChrome: "Customize your Chrome". -->
+  <message name="IDS_ACTION_SYNONYMS_CUSTOMIZE_CHROME" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Customize your Chrome') that users might type in the Chrome menu search bar to find the 'Customize your Chrome' action in the profile menu. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    theme, color, avatar, name, background, account
+  </message>
+  <!-- kActionCloseProfile: "Close this profile". -->
+  <message name="IDS_ACTION_SYNONYMS_CLOSE_PROFILE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Close this profile') that users might type in the Chrome menu search bar to find the 'Close this profile' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    exit, quit, logout, windows, workspace, end
+  </message>
+  <!-- kActionManageGoogleAccount: "Manage your Google Account". -->
+  <message name="IDS_ACTION_SYNONYMS_MANAGE_GOOGLE_ACCOUNT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage your Google Account') that users might type in the Chrome menu search bar to find the 'Manage your Google Account' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    security, privacy, personal info, data, password, subscription, profile
+  </message>
+  <!-- kActionOpenGuestProfile: "Open Guest profile". -->
+  <message name="IDS_ACTION_SYNONYMS_OPEN_GUEST_PROFILE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Open Guest profile') that users might type in the Chrome menu search bar to find the 'Open Guest profile' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    incognito, anonymous, temporary, share, computer, friend
+  </message>
+  <!-- kActionAddNewProfile: "Add new profile". -->
+  <message name="IDS_ACTION_SYNONYMS_ADD_NEW_PROFILE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Add new profile') that users might type in the Chrome menu search bar to find the 'Add new profile' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    switch, multiple, accounts, family, work, profile, person, separate, history
+  </message>
+  <!-- kActionManageChromeProfiles: "Manage Chrome profiles". -->
+  <message name="IDS_ACTION_SYNONYMS_MANAGE_CHROME_PROFILES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage Chrome profiles') that users might type in the Chrome menu search bar to find the 'Manage Chrome profiles' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    switch, multiple, accounts, users, account, settings, profile
+  </message>
 </grit-part>

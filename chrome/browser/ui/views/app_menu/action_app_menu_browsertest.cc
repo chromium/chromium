@@ -19,6 +19,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -372,9 +373,20 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
+// A search query that appears only in an action's synonyms (never in a menu
+// item title) and the action it is expected to surface.
+struct SynonymSearchCase {
+  std::u16string query;
+  actions::ActionId action_id;
+};
+
+class ActionAppMenuSynonymSearchBrowserTest
+    : public ActionAppMenuWithSearchBrowserTest,
+      public testing::WithParamInterface<SynonymSearchCase> {};
+
 // Searching for a synonym that does not appear in any menu item's title
 // surfaces the action the synonym was registered for.
-IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActionAppMenuSynonymSearchBrowserTest,
                        SearchMatchesActionSynonym) {
   AppMenuControl* menu_control = GetMenuControl();
   ASSERT_TRUE(menu_control);
@@ -390,14 +402,29 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   ASSERT_TRUE(root);
   ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
-  search_bar->SetText(u"vault");
+  search_bar->SetText(GetParam().query);
 
-  EXPECT_NE(root->GetMenuItemByID(kActionShowPasswordManager), nullptr);
+  EXPECT_NE(root->GetMenuItemByID(GetParam().action_id), nullptr);
   EXPECT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
 
   menu_control->CloseMenu();
   EXPECT_FALSE(menu_control->IsMenuShowing());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ActionAppMenuSynonymSearchBrowserTest,
+    testing::Values(SynonymSearchCase{u"vault", kActionShowPasswordManager},
+                    SynonymSearchCase{u"wallet", kActionShowPaymentMethods},
+                    SynonymSearchCase{u"zip", kActionShowContactInfo}));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Profile-management actions are not shown in the app menu on ChromeOS.
+INSTANTIATE_TEST_SUITE_P(NonChromeOS,
+                         ActionAppMenuSynonymSearchBrowserTest,
+                         testing::Values(SynonymSearchCase{
+                             u"friend", kActionOpenGuestProfile}));
+#endif
 
 class ActionAppMenuWithSearchQueryBrowserTest
     : public ActionAppMenuBrowserTest {

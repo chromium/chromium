@@ -452,6 +452,16 @@ void BrowserActions::PopulateSynonyms() {
       std::to_array<std::pair<actions::ActionId, int>>({
           {kActionShowPasswordManager,
            IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER},
+          {kActionShowPaymentMethods, IDS_ACTION_SYNONYMS_SHOW_PAYMENT_METHODS},
+          {kActionShowContactInfo, IDS_ACTION_SYNONYMS_SHOW_CONTACT_INFO},
+          {kActionCustomizeChrome, IDS_ACTION_SYNONYMS_CUSTOMIZE_CHROME},
+          {kActionCloseProfile, IDS_ACTION_SYNONYMS_CLOSE_PROFILE},
+          {kActionManageGoogleAccount,
+           IDS_ACTION_SYNONYMS_MANAGE_GOOGLE_ACCOUNT},
+          {kActionOpenGuestProfile, IDS_ACTION_SYNONYMS_OPEN_GUEST_PROFILE},
+          {kActionAddNewProfile, IDS_ACTION_SYNONYMS_ADD_NEW_PROFILE},
+          {kActionManageChromeProfiles,
+           IDS_ACTION_SYNONYMS_MANAGE_CHROME_PROFILES},
       });
 
   // TODO(crbug.com/581423314): Each entry costs a FindAction tree walk during
