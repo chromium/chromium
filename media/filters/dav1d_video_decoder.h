@@ -6,17 +6,16 @@
 #define MEDIA_FILTERS_DAV1D_VIDEO_DECODER_H_
 
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/sequence_checker.h"
-#include "media/base/frame_buffer_pool.h"
-#include "media/base/hdr_metadata_reordering_map.h"
+#include "base/memory/scoped_refptr.h"
+#include "media/base/decoder_status.h"
+#include "media/base/media_export.h"
 #include "media/base/media_log.h"
-#include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
-#include "media/base/video_decoder_config.h"
-#include "media/base/video_frame.h"
+#include "media/filters/davxd_video_decoder_base.h"
 #include "media/filters/offloading_video_decoder.h"
 
 struct Dav1dContext;
@@ -24,7 +23,9 @@ struct Dav1dPicture;
 
 namespace media {
 
-class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
+class DecoderBuffer;
+
+class MEDIA_EXPORT Dav1dVideoDecoder : public DavXdVideoDecoderBase {
  public:
   explicit Dav1dVideoDecoder(
       std::unique_ptr<MediaLog> media_log,
@@ -37,71 +38,20 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
 
   // VideoDecoder implementation.
   VideoDecoderType GetDecoderType() const override;
-  void Initialize(const VideoDecoderConfig& config,
-                  bool low_delay,
-                  CdmContext* cdm_context,
-                  InitCB init_cb,
-                  const OutputCB& output_cb,
-                  const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
-  void Reset(base::OnceClosure reset_cb) override;
 
-  // OffloadableVideoDecoder implementation.
-  void Detach() override;
+ protected:
+  // DavXdVideoDecoderBase implementation.
+  VideoCodec GetSupportedCodec() const override;
+  DecoderStatus OpenDecoder(bool low_delay, int n_threads) override;
+  void CloseCodec() override;
+  void FlushCodec() override;
+  bool DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) override;
 
  private:
-  enum class DecoderState {
-    kUninitialized,
-    kNormal,
-    kFlushCodec,
-    kDecodeFinished,
-    kError
-  };
-
-  // Releases any configured decoder and clears |dav1d_decoder_|.
-  void CloseDecoder();
-
-  // Invokes the decoder and calls |output_cb_| for any returned frames.
-  bool DecodeBuffer(scoped_refptr<DecoderBuffer> buffer);
-
-  scoped_refptr<VideoFrame> BindImageToVideoFrame(const Dav1dPicture* img);
-
-  // Used to report error messages to the client.
-  std::unique_ptr<MediaLog> media_log_;
-
-  // Indicates if the decoder is being wrapped by OffloadVideoDecoder; controls
-  // whether callbacks are bound to the current loop on calls.
-  const bool bind_callbacks_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // "Zero" filled UV data for monochrome images to use since Chromium doesn't
-  // have support for I400P(8|10|12) images.
-  scoped_refptr<base::RefCountedMemory> fake_uv_data_;
-
-  // Current decoder state. Used to ensure methods are called as expected.
-  DecoderState state_ = DecoderState::kUninitialized;
-
-  // Callback given during Initialize() used for delivering decoded frames.
-  OutputCB output_cb_;
-
-  // The configuration passed to Initialize(), saved since some fields are
-  // needed to annotate video frames after decoding.
-  VideoDecoderConfig config_;
-
-  // Picture allocation pool. Used instead of the default allocator so that OOM
-  // failures can return an error instead of crashing the tab.
-  scoped_refptr<FrameBufferPool> frame_pool_;
-
-  // More specific error code to surface after an error occurs during decoding.
-  DecoderStatus::Codes error_status_ = DecoderStatus::Codes::kFailed;
-
-  // Since dav1d can reorder frames, we need to store HDR metadata from the
-  // DecoderBuffer and associate it with the frame's timestamp.
-  HdrMetadataReorderingMap hdr_metadata_reordering_map_;
+  static int AllocPicture(Dav1dPicture* p, void* frame_pool_opaque);
 
   // The allocated decoder; null before Initialize() and anytime after
-  // CloseDecoder().
+  // CloseCodec().
   struct Dav1dContextDeleter {
     void operator()(Dav1dContext* ptr);
   };
