@@ -320,11 +320,25 @@ class CreditCardSaveManager {
           user_provided_card_details);
 
   // Called once the user makes a decision with respect to the cardholder name
-  // update offer prompt.
+  // update offer prompt for `card`.
   void OnUserDidDecideOnCardholderNameUpdate(
+      const CreditCard& card,
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
+
+  // Called when the risk data for the UpdateCard request is received.
+  void OnDidGetUpdateCardRiskData(const std::string& risk_data);
+
+  // Finalizes the update request and calls
+  // MultipleRequestPaymentsNetworkInterface::UpdateCard().
+  void SendUpdateCardRequest();
+
+  // Called when the UpdateCard request for the card with `instrument_id`
+  // completes.
+  void OnDidUpdateCard(
+      int64_t instrument_id,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Upload the card details with the user provided cardholder_name.
@@ -440,6 +454,10 @@ class CreditCardSaveManager {
 
   // |true| if the user has opted to upload save their credit card to Google.
   bool user_did_accept_upload_prompt_ = false;
+
+  // `true` if the user has accepted the cardholder name update offer prompt.
+  // Reset back to false when the UpdateCard request is sent.
+  bool user_did_accept_cardholder_name_update_ = false;
 
   // |should_request_expiration_date_from_user_| is |true| if the upload save
   // dialog should request expiration date from the user.

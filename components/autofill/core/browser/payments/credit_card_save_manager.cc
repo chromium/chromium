@@ -1010,6 +1010,7 @@ void CreditCardSaveManager::OnDidGetDetailsForUpdateCard(
   card_save_candidate_ = card;
   update_card_request_details_ = payments::UpdateCardRequestDetails();
   update_card_request_details_.context_token = context_token;
+  user_did_accept_cardholder_name_update_ = false;
 
   payments::PaymentsAutofillClient::SaveCreditCardOptions options =
       payments::PaymentsAutofillClient::SaveCreditCardOptions()
@@ -1020,7 +1021,12 @@ void CreditCardSaveManager::OnDidGetDetailsForUpdateCard(
       card_save_candidate_, LegalMessageLines(), options,
       base::BindOnce(
           &CreditCardSaveManager::OnUserDidDecideOnCardholderNameUpdate,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), card));
+  // Load risk data while the prompt is shown, so that the UpdateCard request
+  // can be sent as soon as the user accepts.
+  payments_autofill_client().LoadRiskData(
+      base::BindOnce(&CreditCardSaveManager::OnDidGetUpdateCardRiskData,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardSaveManager::OfferCardLocalSave() {
@@ -1592,11 +1598,97 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
 }
 
 void CreditCardSaveManager::OnUserDidDecideOnCardholderNameUpdate(
+    const CreditCard& card,
     SaveCardOfferUserDecision user_decision,
     const payments::PaymentsAutofillClient::UserProvidedCardDetails&
         user_provided_card_details) {
-  // TODO(crbug.com/564567690): Handle user decision and send UpdateCard
-  // request.
+  auto* cardholder_name_fix_flow_strike_db =
+      GetCardholderNameFixFlowStrikeDatabase();
+  const std::string strike_id = base::NumberToString(card.instrument_id());
+  switch (user_decision) {
+    case SaveCardOfferUserDecision::kAccepted:
+      if (cardholder_name_fix_flow_strike_db) {
+        cardholder_name_fix_flow_strike_db->ClearStrikes(strike_id);
+      }
+      update_card_request_details_.instrument_id = card.instrument_id();
+      update_card_request_details_.cardholder_name =
+          user_provided_card_details.cardholder_name;
+      update_card_request_details_.cvc = card.cvc();
+      user_did_accept_cardholder_name_update_ = true;
+      // Populating risk data and showing the prompt occur asynchronously. If
+      // the risk data has already been loaded, send the update request.
+      // Otherwise, let OnDidGetUpdateCardRiskData() send it.
+      if (!update_card_request_details_.risk_data.empty()) {
+        SendUpdateCardRequest();
+      }
+      break;
+    case SaveCardOfferUserDecision::kDeclined:
+      // If the user explicitly declined the prompt, add the max number of
+      // strikes so that the prompt is not offered again for this card.
+      if (cardholder_name_fix_flow_strike_db) {
+        int strike_difference =
+            cardholder_name_fix_flow_strike_db->GetMaxStrikesLimit() -
+            cardholder_name_fix_flow_strike_db->GetStrikes(strike_id);
+        if (strike_difference > 0) {
+          cardholder_name_fix_flow_strike_db->AddStrikes(
+              /*strikes_increase=*/strike_difference, /*id=*/strike_id);
+        }
+      }
+      break;
+    case SaveCardOfferUserDecision::kIgnored:
+      // The prompt was closed without accepting or declining.
+      if (cardholder_name_fix_flow_strike_db) {
+        cardholder_name_fix_flow_strike_db->AddStrike(strike_id);
+      }
+      break;
+  }
+}
+
+void CreditCardSaveManager::OnDidGetUpdateCardRiskData(
+    const std::string& risk_data) {
+  update_card_request_details_.risk_data = risk_data;
+  // Populating risk data and showing the prompt occur asynchronously. If the
+  // user has already accepted the prompt, send the update request.
+  if (user_did_accept_cardholder_name_update_) {
+    SendUpdateCardRequest();
+  }
+}
+
+void CreditCardSaveManager::SendUpdateCardRequest() {
+  user_did_accept_cardholder_name_update_ = false;
+  payments::MultipleRequestPaymentsNetworkInterface*
+      multiple_request_payments_network_interface =
+          payments_autofill_client()
+              .GetMultipleRequestPaymentsNetworkInterface();
+  if (!multiple_request_payments_network_interface) {
+    return;
+  }
+
+  update_card_request_details_.app_locale = client_->GetAppLocale();
+  update_card_request_details_.billing_customer_number =
+      payments::GetBillingCustomerId(payments_data_manager());
+  multiple_request_payments_network_interface->UpdateCard(
+      update_card_request_details_,
+      base::BindOnce(&CreditCardSaveManager::OnDidUpdateCard,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     update_card_request_details_.instrument_id));
+}
+
+void CreditCardSaveManager::OnDidUpdateCard(int64_t instrument_id,
+                                            PaymentsRpcResult result) {
+  if (result != PaymentsRpcResult::kSuccess) {
+    if (auto* cardholder_name_fix_flow_strike_db =
+            GetCardholderNameFixFlowStrikeDatabase()) {
+      cardholder_name_fix_flow_strike_db->AddStrike(
+          base::NumberToString(instrument_id));
+    }
+  }
+
+  // Show the success or failure confirmation. On success, the updated
+  // cardholder name is synced down to the masked server card data, so no local
+  // update is needed here.
+  payments_autofill_client().CreditCardUploadCompleted(
+      result, /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
