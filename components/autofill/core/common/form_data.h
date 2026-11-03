@@ -134,8 +134,6 @@ struct FrameTokenWithPredecessor {
 // clang-format on
 class FormData {
  public:
-  struct FillData;
-
   // Returns true if `a` and `b` represent DOM elements that are
   // - identical: they were computed from the same DOM element; and
   // - equivalent: they have the same attributes.
