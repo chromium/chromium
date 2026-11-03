@@ -14,6 +14,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -29,14 +30,7 @@ OverlayPanelContent::OverlayPanelContent(
   java_manager_.Reset(env, obj);
 }
 
-OverlayPanelContent::~OverlayPanelContent() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_OverlayPanelContent_clearNativePanelContentPtr(env, java_manager_);
-}
-
-void OverlayPanelContent::Destroy(JNIEnv* env) {
-  delete this;
-}
+OverlayPanelContent::~OverlayPanelContent() = default;
 
 void OverlayPanelContent::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
@@ -103,10 +97,10 @@ void OverlayPanelContent::UpdateBrowserControlsState(JNIEnv* env,
       state, cc::BrowserControlsState::kBoth, false, std::nullopt);
 }
 
-static int64_t JNI_OverlayPanelContent_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& obj) {
-  OverlayPanelContent* content = new OverlayPanelContent(env, obj);
-  return reinterpret_cast<intptr_t>(content);
+static jni_zero::JniUniquePtr<OverlayPanelContent> JNI_OverlayPanelContent_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  return jni_zero::MakeUnique<OverlayPanelContent>(env, obj);
 }
 
 DEFINE_JNI(OverlayPanelContent)

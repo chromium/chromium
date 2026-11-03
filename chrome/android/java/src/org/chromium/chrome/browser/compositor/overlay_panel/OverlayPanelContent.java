@@ -16,8 +16,10 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.RequiredCallback;
@@ -56,6 +58,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class OverlayPanelContent {
+    @JniType("::OverlayPanelContent")
+    interface NativeOverlayPanelContent extends JniTypeToken {}
+
     /** The {@link CompositorViewHolder} for the current activity, used to add/remove views. */
     private final ViewGroup mCompositorViewHolder;
 
@@ -78,7 +83,7 @@ public class OverlayPanelContent {
     private @Nullable ViewGroup mContainerView;
 
     /** The pointer to the native version of this class. */
-    private long mNativeOverlayPanelContentPtr;
+    private @Nullable JniUniquePtr<NativeOverlayPanelContent> mNativeOverlayPanelContentPtr;
 
     /** The activity that this content is contained in. */
     private final @Nullable Activity mActivity;
@@ -439,7 +444,10 @@ public class OverlayPanelContent {
 
         // Transfers the ownership of the WebContents to the native OverlayPanelContent.
         OverlayPanelContentJni.get()
-                .setWebContents(mNativeOverlayPanelContentPtr, mWebContents, mWebContentsDelegate);
+                .setWebContents(
+                        assumeNonNull(mNativeOverlayPanelContentPtr),
+                        mWebContents,
+                        mWebContentsDelegate);
 
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
@@ -494,7 +502,9 @@ public class OverlayPanelContent {
         mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
         OverlayPanelContentJni.get()
                 .setInterceptNavigationDelegate(
-                        mNativeOverlayPanelContentPtr, mInterceptNavigationDelegate, mWebContents);
+                        assumeNonNull(mNativeOverlayPanelContentPtr),
+                        mInterceptNavigationDelegate,
+                        mWebContents);
 
         mContentDelegate.onContentViewCreated();
         resizePanelContentView();
@@ -507,7 +517,8 @@ public class OverlayPanelContent {
             mCompositorViewHolder.removeView(mContainerView);
 
             // Native destroy will call up to destroy the Java WebContents.
-            OverlayPanelContentJni.get().destroyWebContents(mNativeOverlayPanelContentPtr);
+            OverlayPanelContentJni.get()
+                    .destroyWebContents(assumeNonNull(mNativeOverlayPanelContentPtr));
             mWebContents = null;
             if (mWebContentsObserver != null) {
                 mWebContentsObserver.observe(null);
@@ -533,7 +544,8 @@ public class OverlayPanelContent {
      */
     public void updateBrowserControlsState(boolean areControlsHidden) {
         OverlayPanelContentJni.get()
-                .updateBrowserControlsState(mNativeOverlayPanelContentPtr, areControlsHidden);
+                .updateBrowserControlsState(
+                        assumeNonNull(mNativeOverlayPanelContentPtr), areControlsHidden);
     }
 
     /**
@@ -610,13 +622,6 @@ public class OverlayPanelContent {
     // Methods for managing this panel's WebContents.
     // ============================================================================================
 
-    /** Reset this object's native pointer to 0; */
-    @CalledByNative
-    private void clearNativePanelContentPtr() {
-        assert mNativeOverlayPanelContentPtr != 0;
-        mNativeOverlayPanelContentPtr = 0;
-    }
-
     /**
      * @return The associated {@link WebContents}.
      */
@@ -637,7 +642,10 @@ public class OverlayPanelContent {
         int viewHeight = mContentViewHeight - (mSubtractBarHeight ? mBarHeightPx : 0);
         OverlayPanelContentJni.get()
                 .onPhysicalBackingSizeChanged(
-                        mNativeOverlayPanelContentPtr, webContents, mContentViewWidth, viewHeight);
+                        assumeNonNull(mNativeOverlayPanelContentPtr),
+                        webContents,
+                        mContentViewWidth,
+                        viewHeight);
         assumeNonNull(mWebContents).setSize(mContentViewWidth, viewHeight);
     }
 
@@ -646,10 +654,10 @@ public class OverlayPanelContent {
     public void destroy() {
         if (mWebContents != null) destroyWebContents();
 
-        // Tests will not create the native pointer, so we need to check if it's not zero
-        // otherwise calling OverlayPanelContentJni.get().destroy with zero will make Chrome crash.
-        if (mNativeOverlayPanelContentPtr != 0L) {
-            OverlayPanelContentJni.get().destroy(mNativeOverlayPanelContentPtr);
+        // Tests will not create the native pointer.
+        if (mNativeOverlayPanelContentPtr != null) {
+            mNativeOverlayPanelContentPtr.destroy();
+            mNativeOverlayPanelContentPtr = null;
         }
     }
 
@@ -660,28 +668,27 @@ public class OverlayPanelContent {
     @NativeMethods
     interface Natives {
         // Native calls.
-        long init(OverlayPanelContent self);
-
-        void destroy(long nativeOverlayPanelContent);
+        JniUniquePtr<NativeOverlayPanelContent> init(OverlayPanelContent self);
 
         void onPhysicalBackingSizeChanged(
-                long nativeOverlayPanelContent,
+                JniPtr<NativeOverlayPanelContent> self,
                 @JniType("content::WebContents*") WebContents webContents,
                 int width,
                 int height);
 
         void setWebContents(
-                long nativeOverlayPanelContent,
+                JniPtr<NativeOverlayPanelContent> self,
                 @JniType("content::WebContents*") WebContents webContents,
                 WebContentsDelegateAndroid delegate);
 
-        void destroyWebContents(long nativeOverlayPanelContent);
+        void destroyWebContents(JniPtr<NativeOverlayPanelContent> self);
 
         void setInterceptNavigationDelegate(
-                long nativeOverlayPanelContent,
+                JniPtr<NativeOverlayPanelContent> self,
                 InterceptNavigationDelegate delegate,
                 @JniType("content::WebContents*") WebContents webContents);
 
-        void updateBrowserControlsState(long nativeOverlayPanelContent, boolean areControlsHidden);
+        void updateBrowserControlsState(
+                JniPtr<NativeOverlayPanelContent> self, boolean areControlsHidden);
     }
 }

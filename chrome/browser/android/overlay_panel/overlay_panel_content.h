@@ -30,9 +30,6 @@ class OverlayPanelContent {
 
   virtual ~OverlayPanelContent();
 
-  // Called by the Java OverlayPanelContent when it is being destroyed.
-  void Destroy(JNIEnv* env);
-
   void OnPhysicalBackingSizeChanged(JNIEnv* env,
                                     content::WebContents* web_contents,
                                     int32_t width,
