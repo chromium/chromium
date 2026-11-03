@@ -37,3 +37,16 @@ android_library("content_filters_observer_bridge_java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
+
+robolectric_library("junit") {
+  sources = [ "junit/src/org/chromium/components/supervised_user/ContentFiltersObserverBridgeUnitTest.java" ]
+  deps = [
+    ":content_filters_observer_bridge_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

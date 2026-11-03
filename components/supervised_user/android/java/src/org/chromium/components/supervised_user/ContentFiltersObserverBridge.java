@@ -16,6 +16,10 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -32,10 +36,14 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 @JNINamespace("supervised_user")
-class ContentFiltersObserverBridge {
+public class ContentFiltersObserverBridge {
 
     // Supervised User Content Filters Observer.
     private static final String TAG = "SUCFiltersObserver";
+
+    // Task runner for off-UI-thread ContentObserver registration and Settings.Secure pre-warming.
+    private static final SequencedTaskRunner sBackgroundTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
 
     // Notified asynchronously from secure settings.
     private final ContentObserver mObserver;
@@ -43,14 +51,27 @@ class ContentFiltersObserverBridge {
     private final ApplicationStatus.ApplicationStateListener mStateListener;
     // Caches the logical value of the setting to avoid calling the native code with the same value.
     private @Nullable Boolean mIsEnabled;
+    private boolean mDestroyed;
+
+    /**
+     * Pre-warms Android's {@link Settings.Secure} in-process cache for the supervised user content
+     * filter settings on a background thread so the initial synchronous read in the constructor
+     * does not block the UI thread on Binder IPC.
+     */
+    public static void warmUp() {
+        sBackgroundTaskRunner.execute(
+                () -> {
+                    getValue(SupervisedUserConstants.BROWSER_CONTENT_FILTERS_SETTING_NAME);
+                    getValue(SupervisedUserConstants.SEARCH_CONTENT_FILTERS_SETTING_NAME);
+                });
+    }
 
     /**
      * @param nativeContentFiltersObserverBridge The native bridge.
      * @param settingName The name of the setting to observe.
      */
     @CalledByNative
-    private ContentFiltersObserverBridge(
-            long nativeContentFiltersObserverBridge, String settingName) {
+    ContentFiltersObserverBridge(long nativeContentFiltersObserverBridge, String settingName) {
         mObserver =
                 new ContentObserver(
                         new Handler(ContextUtils.getApplicationContext().getMainLooper())) {
@@ -70,14 +91,20 @@ class ContentFiltersObserverBridge {
                     }
                 };
 
-        ContextUtils.getApplicationContext()
-                .getContentResolver()
-                .registerContentObserver(
-                        Settings.Secure.getUriFor(settingName),
-                        /* notifyForDescendants= */ false,
-                        mObserver);
+        sBackgroundTaskRunner.execute(
+                () -> {
+                    ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .registerContentObserver(
+                                    Settings.Secure.getUriFor(settingName),
+                                    /* notifyForDescendants= */ false,
+                                    mObserver);
+                    ThreadUtils.postOnUiThread(
+                            () ->
+                                    updateFromSecureSettings(
+                                            nativeContentFiltersObserverBridge, settingName));
+                });
         ApplicationStatus.registerApplicationStateListener(mStateListener);
-
         updateFromSecureSettings(nativeContentFiltersObserverBridge, settingName);
     }
 
@@ -87,8 +114,10 @@ class ContentFiltersObserverBridge {
      */
     private void updateFromSecureSettings(
             long nativeContentFiltersObserverBridge, String settingName) {
+        if (mDestroyed) {
+            return;
+        }
         boolean newEnabled = getValue(settingName);
-
         if (mIsEnabled != null && mIsEnabled == newEnabled) {
             Log.i(TAG, "setting=%s discarding %s", settingName, newEnabled);
             return;
@@ -102,10 +131,13 @@ class ContentFiltersObserverBridge {
     }
 
     @CalledByNative
-    private void destroy() {
-        ContextUtils.getApplicationContext()
-                .getContentResolver()
-                .unregisterContentObserver(mObserver);
+    void destroy() {
+        mDestroyed = true;
+        sBackgroundTaskRunner.execute(
+                () ->
+                        ContextUtils.getApplicationContext()
+                                .getContentResolver()
+                                .unregisterContentObserver(mObserver));
         ApplicationStatus.unregisterApplicationStateListener(mStateListener);
     }
 

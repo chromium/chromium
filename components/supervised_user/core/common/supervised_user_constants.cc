@@ -151,9 +151,4 @@ const char kLocalWebApprovalDurationMillisecondsHistogramName[] =
 const char kLocalWebApprovalErrorTypeHistogramName[] =
     "FamilyLinkUser.LocalWebApprovalErrorType";
 
-const char kBrowserContentFiltersSettingName[] =
-    "browser_content_filters_enabled";
-const char kSearchContentFiltersSettingName[] =
-    "search_content_filters_enabled";
-
 }  // namespace supervised_user

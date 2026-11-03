@@ -6,6 +6,10 @@
 
 // Defines constants that are exported to Java.
 namespace supervised_user {
+const char kBrowserContentFiltersSettingName[] =
+    "browser_content_filters_enabled";
+const char kSearchContentFiltersSettingName[] =
+    "search_content_filters_enabled";
 const char kDeviceFiltersHelpCenterUrl[] =
     "https://support.google.com/android?p=device_supervision_web_filters";
 }  // namespace supervised_user

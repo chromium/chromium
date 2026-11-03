@@ -129,6 +129,7 @@ import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationT
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.EnterpriseInfo;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
+import org.chromium.components.supervised_user.ContentFiltersObserverBridge;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -278,6 +279,7 @@ public class ProcessInitializationHandler {
         // - Pixel 2: ~10 ms
         // - Nokia 1 (Android Go): 20-200 ms
         warmUpSharedPrefs();
+        ContentFiltersObserverBridge.warmUp();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 && ChromeFeatureList.sClankStartupTabOptimizations.isEnabled()) {
             PostTask.postTask(TaskTraits.USER_VISIBLE, WindowApiCheck::isAvailable);
