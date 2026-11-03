@@ -15,7 +15,7 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeForeignSessionPageHandler} from './fake_foreign_session_page_handler.js';
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
-import {createSession, createWindow} from './test_util.js';
+import {assertPx, createSession, createWindow} from './test_util.js';
 
 function getCards(manager: HistorySyncedDeviceManagerElement):
     NodeListOf<HistorySyncedDeviceCardElement> {
@@ -478,6 +478,44 @@ suite('<history-synced-device-manager>', function() {
     const cards = getCards(element);
     assertEquals(0, cards.length);
   });
+
+  test('WindowHeaderAlignsWithRows', async () => {
+    setForeignSessions([createSession('Nexus 6', [
+      createWindow(['http://test.com']),
+      createWindow(['http://www.gmail.com']),
+    ])]);
+    await microtasksFinished();
+    const card = getCards(element)[0]!;
+    const title = getWindowHeaders(card)[0]!.querySelector('.window-title');
+    const icon = card.shadowRoot.querySelector('.website-icon');
+    assertTrue(!!title);
+    assertTrue(!!icon);
+    assertPx(
+        icon.getBoundingClientRect().left, title.getBoundingClientRect().left);
+  });
+
+  // <if expr="is_android">
+  test('EmptyStateIllustrationAndroid', async () => {
+    assertNoSyncedTabsMessageShown(element, 'loading');
+    assertEquals(null, element.$.noSyncedTabs.querySelector('svg'));
+
+    setForeignSessions([]);
+    element.clearSyncedDevicesForTest();
+    await microtasksFinished();
+    assertNoSyncedTabsMessageShown(element, 'noSyncedResults');
+    assertTrue(!!element.$.noSyncedTabs.querySelector('svg'));
+  });
+  // </if>
+
+  // <if expr="not is_android">
+  test('EmptyStateNonAndroid', async () => {
+    setForeignSessions([]);
+    element.clearSyncedDevicesForTest();
+    await microtasksFinished();
+    assertNoSyncedTabsMessageShown(element, 'noSyncedResults');
+    assertEquals(null, element.$.noSyncedTabs.querySelector('svg'));
+  });
+  // </if>
 });
 
 // <if expr="not is_chromeos">

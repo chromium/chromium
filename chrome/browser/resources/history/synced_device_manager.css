@@ -20,6 +20,9 @@
   height: 222px;
   margin-top: 100px;
   width: 594.5px;
+<if expr="is_android">
+  max-width: 100%;
+</if>
 }
 
 .sync-history-illustration {
@@ -48,7 +51,13 @@
 }
 
 #noSyncedTabs {
+<if expr="not is_android">
   height: 100%;
+</if>
+<if expr="is_android">
+  height: auto;
+  padding-block: 80px;
+</if>
 }
 
 #signInGuide {

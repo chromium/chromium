@@ -8,6 +8,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {HistorySignInState} from './constants.js';
 // </if>
 
+// <if expr="is_android">
+import {getHtml as getIllustrationHtml} from './empty_state_illustration.html.js';
+// </if>
 import type {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
 
 export function getHtml(this: HistorySyncedDeviceManagerElement) {
@@ -26,6 +29,9 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
 </div>
 <div id="noSyncedTabs" class="centered-message"
     ?hidden="${!this.showNoSyncedMessage_()}">
+<if expr="is_android">
+  ${this.fetchingSyncedTabs_ ? '' : getIllustrationHtml()}
+</if>
   ${this.noSyncedTabsMessage_()}
 </div>
 

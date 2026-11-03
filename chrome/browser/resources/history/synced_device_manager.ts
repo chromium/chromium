@@ -102,7 +102,7 @@ export class HistorySyncedDeviceManagerElement extends
   private focusGridUpdateTimeout_: number|null = null;
   protected accessor syncedDevices_: ForeignDeviceInternal[] = [];
   private accessor hasSeenForeignData_: boolean = false;
-  private accessor fetchingSyncedTabs_: boolean = false;
+  protected accessor fetchingSyncedTabs_: boolean = false;
   private accessor actionMenuModel_: string|null = null;
   private accessor guestSession_: boolean =
       loadTimeData.getBoolean('isGuestSession');

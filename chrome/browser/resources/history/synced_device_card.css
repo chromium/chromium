@@ -21,7 +21,17 @@
 }
 
 #tab-item-list {
+<if expr="not is_android">
   padding: 8px 0;
+</if>
+<if expr="is_android">
+  /* Holds the card surface so the device header sits on the page. */
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  /* Leave room for row focus rings outside rounded corners. */
+  overflow: clip;
+  overflow-clip-margin: 2px;
+</if>
 }
 
 #last-update-time {
@@ -41,7 +51,12 @@
 
 #right-buttons {
   color: var(--cr-secondary-text-color);
+<if expr="not is_android">
   margin-inline-end: 24px;
+</if>
+<if expr="is_android">
+  margin-inline-end: 12px;
+</if>
 }
 
 #collapse {
@@ -49,7 +64,9 @@
 }
 
 #history-item-container {
+<if expr="not is_android">
   background-color: var(--cr-card-background-color);
+</if>
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
 }
@@ -57,8 +74,14 @@
 .item-container {
   align-items: center;
   display: flex;
+<if expr="not is_android">
   margin: 0 20px;
   min-height: var(--item-height);
+</if>
+<if expr="is_android">
+  min-height: 48px;
+  padding: 0 16px;
+</if>
 }
 
 .window-header {
@@ -67,9 +90,17 @@
   color: var(--cr-secondary-text-color);
   display: flex;
   justify-content: space-between;
-  margin: 4px 20px 0;
   min-height: var(--item-height);
   padding-top: 4px;
+<if expr="not is_android">
+  margin: 4px 20px 0;
+</if>
+<if expr="is_android">
+  --card-border-color: var(--color-history-page-separator,
+      var(--cr-separator-color));
+  margin: 4px 0 0;
+  padding-inline: 16px 12px;
+</if>
 }
 
 .window-header:first-child {
@@ -102,3 +133,18 @@
   --cr-icon-button-margin-start: 0;
   --cr-icon-button-size: 28px;
 }
+
+<if expr="is_android">
+#collapseButton {
+  --cr-icon-button-margin-end: 0;
+}
+
+.item-container + .item-container {
+  border-top: 1px solid var(--color-history-page-separator,
+      var(--cr-separator-color));
+}
+
+.website-title {
+  margin-inline-start: 16px;
+}
+</if>
