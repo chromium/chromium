@@ -1263,6 +1263,7 @@ export class AppElement extends AppElementBase {
 
   protected onVoicePermissionChanged_(
       e: CustomEvent<VoicePermissionPromptState>) {
+    e.preventDefault();
     if (e.detail.isOpened) {
       this.voiceSearchListening_ = false;
     } else {

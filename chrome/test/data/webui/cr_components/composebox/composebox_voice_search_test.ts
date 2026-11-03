@@ -14,7 +14,7 @@ import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_pr
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {FakeMediaQueryList} from 'chrome://webui-test/fake_media_query_list.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -1454,6 +1454,20 @@ suite('ComposeboxVoiceSearch', () => {
         // Verify state is reset.
         assertFalse(voiceSearchElement.isPermissionPromptOpen);
       });
+
+  test('asserts if host surface does not handle voice-permission-changed', () => {
+    const standaloneVoiceSearch =
+        document.createElement('cr-composebox-voice-search');
+    document.body.appendChild(standaloneVoiceSearch);
+    const mockVoiceSearch =
+        standaloneVoiceSearch as unknown as MockComposeboxVoiceSearch;
+
+    assertThrows(() => {
+      mockVoiceSearch.onVoicePermissionPromptChanged(
+          true, {width: 100, height: 200});
+    }, 'Host surface must handle voice-permission-changed to resize for PEPC');
+    standaloneVoiceSearch.remove();
+  });
 
   test(
       'pointerdown inside the voice search component does not stop recording',

@@ -79,6 +79,7 @@ export class OmniboxFullAppElement extends CrLitElement {
   }
 
   onVoicePermissionChanged(e: CustomEvent<VoicePermissionPromptState>) {
+    e.preventDefault();
     const searchbox =
         this.shadowRoot.querySelector<OmniboxPopupSearchboxElement>(
             'omnibox-popup-searchbox');
