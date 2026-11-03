@@ -301,8 +301,12 @@ bool ClipPathClipper::HasCompositeClipPathAnimation(
       CompositeClipPathStatus(layout_object.GetNode());
   switch (status) {
     case CompositedPaintStatus::kComposited:
-      CHECK(GetClipPathAnimation(layout_object));
-      return true;
+      if (GetClipPathAnimation(layout_object)) {
+        return true;
+      }
+      SetCompositeClipPathStatus(layout_object.GetNode(),
+                                 CompositedPaintStatus::kNotComposited);
+      return false;
     case CompositedPaintStatus::kNoAnimation:
     case CompositedPaintStatus::kNotComposited:
       return false;
