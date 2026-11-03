@@ -106,7 +106,7 @@ source_set("browser_tests") {
 
   deps = [
     ":tab",
-    "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+    "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab",
     "//chrome/test:test_support",
