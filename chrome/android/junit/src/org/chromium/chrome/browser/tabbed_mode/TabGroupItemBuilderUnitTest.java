@@ -77,6 +77,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGroupItemBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -605,6 +606,57 @@ public class TabGroupItemBuilderUnitTest {
     }
 
     @Test
+    public void testBuildSubmenuForTabGroupsParent_sharesGroupWindowChecker() {
+        Token token1 = Token.createRandom();
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.localId = new LocalTabGroupId(token1);
+        group1.title = "Group 1";
+        group1.updateTimeMs = 100L;
+        group1.color = TabGroupColorId.BLUE;
+        group1.savedTabs.add(new SavedTabGroupTab());
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"id1"});
+        when(mTabGroupSyncService.getGroup("id1")).thenReturn(group1);
+
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+
+        TabList tabList = Mockito.mock(TabList.class);
+        List<Tab> tabs = List.of(tab1);
+        when(tabList.iterator()).thenAnswer(invocation -> tabs.iterator());
+        when(mTabModel.getComprehensiveModel()).thenReturn(tabList);
+
+        TabGroupItemBuilder builder = createBuilder();
+
+        ListItem tabGroupsParent = builder.buildTabGroupsParentItem(mTab);
+        assertNotNull(tabGroupsParent);
+
+        // Before accessing the submenu provider, verify getGroup hasn't been called yet.
+        Mockito.verify(mTabGroupSyncService, Mockito.never()).getGroup(Mockito.anyString());
+
+        Supplier<List<ListItem>> tabGroupsSubmenuProvider =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER);
+        List<ListItem> tabGroupsSubmenuItems = tabGroupsSubmenuProvider.get();
+        assertNotNull(tabGroupsSubmenuItems);
+
+        // With shared GroupWindowChecker across hasOtherGroups and getDefaultSortedGroupList,
+        // getGroup("id1") is called at most once during buildSubmenuForTabGroupsParent.
+        Mockito.verify(mTabGroupSyncService, Mockito.times(1)).getGroup("id1");
+
+        // Find "Add to group" submenu item and evaluate its deferred submenu provider.
+        ListItem addToGroupItem = findItemById(tabGroupsSubmenuItems, R.id.add_to_group_menu_id);
+        assertNotNull(addToGroupItem);
+        Supplier<List<ListItem>> addToGroupSubmenuProvider =
+                addToGroupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER);
+        List<ListItem> addToGroupSubmenu = addToGroupSubmenuProvider.get();
+        assertNotNull(addToGroupSubmenu);
+
+        // Opening the deferred "Add to group" submenu creates a fresh GroupWindowChecker and
+        // queries getGroup("id1") a second time.
+        Mockito.verify(mTabGroupSyncService, Mockito.times(2)).getGroup("id1");
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testBuildTabGroupsParentItem_withGroupWindowChecker_crossWindow() {
         Token token1 = Token.createRandom();
@@ -817,6 +869,7 @@ public class TabGroupItemBuilderUnitTest {
         List<ListItem> tabsSubmenuItems =
                 groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         assertEquals(1, tabsSubmenuItems.size());
+        assertNotNull(findItemById(tabGroupsSubmenuItems, R.id.add_to_group_menu_id));
         assertEquals("Remote Tab", tabsSubmenuItems.get(0).model.get(AppMenuItemProperties.TITLE));
         assertEquals(
                 Tab.INVALID_TAB_ID,
@@ -1054,6 +1107,7 @@ public class TabGroupItemBuilderUnitTest {
         List<ListItem> tabsSubmenuItems =
                 groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         assertEquals(1, tabsSubmenuItems.size());
+        assertNotNull(findItemById(tabGroupsSubmenuItems, R.id.add_to_group_menu_id));
         assertEquals("Closing Tab", tabsSubmenuItems.get(0).model.get(AppMenuItemProperties.TITLE));
         assertEquals(101, tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_ID));
         assertEquals(
@@ -1133,6 +1187,7 @@ public class TabGroupItemBuilderUnitTest {
         List<ListItem> tabsSubmenuItems =
                 groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         assertEquals(1, tabsSubmenuItems.size());
+        assertNotNull(findItemById(tabGroupsSubmenuItems, R.id.add_to_group_menu_id));
         assertEquals(
                 "Cross Window Closing Tab",
                 tabsSubmenuItems.get(0).model.get(AppMenuItemProperties.TITLE));
