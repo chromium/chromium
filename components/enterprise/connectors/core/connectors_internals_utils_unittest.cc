@@ -247,6 +247,54 @@ TEST_F(ConnectorsInternalsUtilsTest, GetProvisioningDomainState_Success) {
   EXPECT_EQ(state->pvd_configs[0]->expiration_time.value(), expected_time);
 }
 
+TEST_F(ConnectorsInternalsUtilsTest,
+       GetProvisioningDomainState_IncludesLastFailure) {
+  NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
+
+  const char kDebugInfo[] = R"({
+    "domains": [
+      {
+        "policy": {
+          "pvd_id": "domain1.example.com"
+        },
+        "fetched_config": {
+          "identifier": "domain1.example.com",
+          "state": "FailedTransient"
+        },
+        "last_failure": {
+          "failure_reason": "HttpError",
+          "http_response_code": 503
+        }
+      }
+    ]
+  })";
+
+  std::optional<base::DictValue> debug_info =
+      base::JSONReader::ReadDict(kDebugInfo, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(debug_info.has_value());
+
+  EXPECT_CALL(mock_service, GetDebugInfo())
+      .WillOnce(Return(std::move(debug_info).value()));
+
+  auto state = GetProvisioningDomainState(&mock_service);
+
+  ASSERT_EQ(state->pvd_configs.size(), 1u);
+  EXPECT_EQ(state->pvd_configs[0]->pvd_id, "domain1.example.com");
+
+  std::optional<base::DictValue> routes_dict = base::JSONReader::ReadDict(
+      state->pvd_configs[0]->routes_json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(routes_dict.has_value());
+  const std::string* state_str = routes_dict->FindString("state");
+  ASSERT_NE(nullptr, state_str);
+  EXPECT_EQ(*state_str, "FailedTransient");
+  const std::string* reason_str =
+      routes_dict->FindStringByDottedPath("last_failure.failure_reason");
+  ASSERT_NE(nullptr, reason_str);
+  EXPECT_EQ(*reason_str, "HttpError");
+  EXPECT_EQ(routes_dict->FindIntByDottedPath("last_failure.http_response_code"),
+            503);
+}
+
 TEST_F(ConnectorsInternalsUtilsTest, GetProvisioningDomainState_EdgeCases) {
   NiceMock<enterprise_net::MockEnterpriseProxyService> mock_service;
   base::DictValue debug_info;

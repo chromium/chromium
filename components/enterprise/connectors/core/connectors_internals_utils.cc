@@ -408,10 +408,20 @@ GetProvisioningDomainState(
 
     const base::DictValue* fetched_dict =
         domain_dict.FindDict("fetched_config");
+    const base::DictValue* last_failure_dict =
+        domain_dict.FindDict("last_failure");
     std::string routes_json;
     if (fetched_dict) {
-      base::JSONWriter::WriteWithOptions(
-          *fetched_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &routes_json);
+      if (last_failure_dict) {
+        base::DictValue routes_dict = fetched_dict->Clone();
+        routes_dict.Set("last_failure", last_failure_dict->Clone());
+        base::JSONWriter::WriteWithOptions(
+            routes_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &routes_json);
+      } else {
+        base::JSONWriter::WriteWithOptions(
+            *fetched_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+            &routes_json);
+      }
     }
 
     pvd_configs.push_back(
