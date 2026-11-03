@@ -53,6 +53,8 @@ class UnifiedVolumeSliderControllerTest : public AshTestBase {
   void TearDown() override {
     slider_view_.reset();
     widget_.reset();
+    unified_volume_slider_controller_.reset();
+    delegate_.reset();
     AshTestBase::TearDown();
   }
 
