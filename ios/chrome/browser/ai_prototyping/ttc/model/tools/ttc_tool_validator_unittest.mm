@@ -96,23 +96,20 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
     EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidUrl);
   }
 
-  // Disallow opening in new tab with boolean values.
+  // Opening in a new tab with boolean or string-boolean values succeeds.
   base::DictValue new_tab_bool_args;
   new_tab_bool_args.Set("url", "https://example.com");
   new_tab_bool_args.Set("new_tab", true);
   result = TtcToolValidator::ValidateToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, std::move(new_tab_bool_args)});
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
+  EXPECT_TRUE(result.has_value());
 
-  // String "true" or "1" should also be rejected for new_tab.
   base::DictValue new_tab_str_args;
   new_tab_str_args.Set("url", "https://example.com");
   new_tab_str_args.Set("new_tab", "true");
   result = TtcToolValidator::ValidateToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, std::move(new_tab_str_args)});
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
+  EXPECT_TRUE(result.has_value());
 
   // Arbitrary non-boolean string like "today" is invalid and rejected.
   base::DictValue new_tab_invalid_args;
@@ -121,7 +118,7 @@ TEST_F(TtcToolValidatorTest, TestUrlValidation) {
   result = TtcToolValidator::ValidateToolCall(
       ttc::ToolRequest{ttc::kToolOpenUrl, std::move(new_tab_invalid_args)});
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ttc::kErrorMessageNewTabUnsupported);
+  EXPECT_EQ(result.error(), ttc::kErrorMessageInvalidArguments);
 
   // False boolean values should succeed.
   base::DictValue new_tab_false_args;
@@ -173,6 +170,49 @@ TEST_F(TtcToolValidatorTest, TestCreateActuationRequestSingle) {
   optimization_guide::proto::Action forward_action;
   ASSERT_TRUE(forward_action.ParseFromString(forward_request.action_protos[0]));
   EXPECT_TRUE(forward_action.has_forward());
+}
+
+// Tests that `IsOpenUrlInNewTab` returns true only for `open_url` requests
+// where `new_tab` parses to `true`, and `CreateActuationRequest` rejects
+// `open_url(new_tab=true)` because it is executed directly by
+// `TtcActuationHandler`.
+TEST_F(TtcToolValidatorTest,
+       OpenUrlInNewTabIsDetectedAndNotMappedToActorProto) {
+  base::DictValue args;
+  args.Set("url", "https://example.com");
+  args.Set("new_tab", true);
+  ttc::ToolRequest new_tab_request{ttc::kToolOpenUrl, std::move(args)};
+
+  EXPECT_TRUE(TtcToolValidator::IsOpenUrlInNewTab(new_tab_request));
+
+  base::expected<TtcActuationRequest, std::string> request_result =
+      TtcToolValidator::CreateActuationRequest(new_tab_request);
+  ASSERT_FALSE(request_result.has_value());
+  EXPECT_EQ(request_result.error(), ttc::kErrorMessageInvalidToolCall);
+}
+
+// Tests that `CreateActuationRequest` for `open_url` with `new_tab: false`
+// emits a single `NavigateAction` without creating a tab.
+TEST_F(TtcToolValidatorTest,
+       CreateActuationRequestOpenUrlInCurrentTabEmitsSingleNavigateAction) {
+  base::DictValue args;
+  args.Set("url", "https://example.com");
+  args.Set("new_tab", false);
+  ttc::ToolRequest current_tab_request{ttc::kToolOpenUrl, std::move(args)};
+
+  EXPECT_FALSE(TtcToolValidator::IsOpenUrlInNewTab(current_tab_request));
+
+  base::expected<TtcActuationRequest, std::string> request_result =
+      TtcToolValidator::CreateActuationRequest(current_tab_request);
+
+  ASSERT_TRUE(request_result.has_value());
+  const TtcActuationRequest& request = request_result.value();
+  ASSERT_EQ(request.action_protos.size(), 1u);
+
+  optimization_guide::proto::Action action;
+  ASSERT_TRUE(action.ParseFromString(request.action_protos[0]));
+  ASSERT_TRUE(action.has_navigate());
+  EXPECT_EQ(action.navigate().url(), "https://example.com/");
 }
 
 }  // namespace

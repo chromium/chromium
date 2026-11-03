@@ -9,8 +9,10 @@ include_rules = [
   "+ios/chrome/browser/intelligence/actor/tools/public",
   "+ios/chrome/browser/intelligence/actor/tools/utils",
   "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/shared/model/web_state_list",
+  "+ios/chrome/browser/tab_insertion/model",
   "+ios/web/public",
   # keep-sorted end
 ]
@@ -18,7 +20,6 @@ include_rules = [
 specific_include_rules = {
   # Unit tests
   ".*_unittest\\.mm": [
-    "+ios/chrome/browser/shared/model/browser",
     "+ios/chrome/browser/shared/model/browser/test",
     "+ios/chrome/browser/shared/model/profile/test",
     "+ios/chrome/browser/url_loading/model",

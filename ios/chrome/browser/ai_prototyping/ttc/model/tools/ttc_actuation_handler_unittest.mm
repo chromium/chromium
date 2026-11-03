@@ -7,9 +7,9 @@
 #import <memory>
 #import <string>
 
+#import "base/strings/string_number_conversions.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
 #import "components/actor/core/task_source_info.h"
@@ -30,9 +30,13 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -55,6 +59,7 @@ class TtcActuationHandlerTest : public PlatformTest {
         BrowserListFactory::GetForProfile(profile_.get());
     browser_list->AddBrowser(browser_.get());
     ActorBrowserAgent::CreateForBrowser(browser_.get());
+    TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
 
@@ -65,6 +70,8 @@ class TtcActuationHandlerTest : public PlatformTest {
 
   ~TtcActuationHandlerTest() override {
     if (browser_ && profile_) {
+      CloseAllWebStates(*browser_->GetWebStateList(),
+                        WebStateList::ClosingReason::kDefault);
       BrowserListFactory::GetForProfile(profile_.get())
           ->RemoveBrowser(browser_.get());
     }
@@ -98,7 +105,7 @@ class TtcActuationHandlerTest : public PlatformTest {
     return std::make_unique<TtcActuationHandler>(GetActorService());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
@@ -541,6 +548,131 @@ TEST_F(TtcActuationHandlerTest,
   EXPECT_EQ(response.error().code,
             actor::mojom::ActionResultCode::kExecutorDestroyed);
   EXPECT_FALSE(close_session_called);
+}
+
+// Tests that `ProcessToolCall` for `open_url` with `new_tab: true` inserts and
+// activates a new foreground `WebState` in the browser, registers it as a
+// controlled `WebState` in `ActorService`, and logs `ActuationExecute` to
+// `TTCJournal`.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallOpenUrlInNewTabInsertsAndActivatesForegroundTab) {
+  actor::ActorService* actor_service = GetActorService();
+  ASSERT_TRUE(actor_service);
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  TTCJournal journal;
+  handler->set_journal(&journal);
+  ASSERT_EQ(browser_->GetWebStateList()->count(), 1);
+  ASSERT_EQ(browser_->GetWebStateList()->active_index(), 0);
+
+  base::DictValue args = CreateUrlArgs("https://example.com/new");
+  args.Set("new_tab", true);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
+                           GetActiveWebState(), future.GetCallback());
+
+  EXPECT_TRUE(future.Get().Ok());
+  EXPECT_EQ(browser_->GetWebStateList()->count(), 2);
+  EXPECT_EQ(browser_->GetWebStateList()->active_index(), 1);
+  web::NavigationItem* pending_item =
+      GetActiveWebState()->GetNavigationManager()->GetPendingItem();
+  ASSERT_NE(pending_item, nullptr);
+  EXPECT_EQ(pending_item->GetURL(), GURL("https://example.com/new"));
+  EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
+  EXPECT_TRUE(actor::HasJournalEntryWithDetail(
+      *actor_service->GetJournal(), "ActorTask::AddControlledWebState",
+      "web_state_id",
+      base::NumberToString(
+          GetActiveWebState()->GetUniqueIdentifier().identifier())));
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[0].type, TTCJournalEntryType::kBegin);
+  EXPECT_EQ(journal.entries()[0].summary, "Tool started: open_url");
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_EQ(journal.entries()[1].summary, "Tool finished: ok");
+  handler->Disconnect();
+}
+
+// Tests that `ProcessToolCall` for `open_url` with `new_tab: true` fails with
+// `kTabWentAway` when `active_web_state` is null.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallOpenUrlInNewTabWithNullWebStateFailsWithTabWentAway) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  base::DictValue args = CreateUrlArgs("https://example.com/new");
+  args.Set("new_tab", true);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
+                           /*active_web_state=*/nullptr, future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kTabWentAway);
+  handler->Disconnect();
+}
+
+// Tests that `ProcessToolCall` for `open_url` with `new_tab: true` fails with
+// `kTabWentAway` when `active_web_state` is off-the-record.
+TEST_F(
+    TtcActuationHandlerTest,
+    ProcessToolCallOpenUrlInNewTabWithIncognitoWebStateFailsWithTabWentAway) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  std::unique_ptr<web::FakeWebState> incognito_web_state =
+      CreateFakeWebState(456, profile_->GetOffTheRecordProfile());
+  base::DictValue args = CreateUrlArgs("https://example.com/new");
+  args.Set("new_tab", true);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
+                           incognito_web_state.get(), future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kTabWentAway);
+  handler->Disconnect();
+}
+
+// Tests that `ProcessToolCall` for `open_url` with `new_tab: true` fails with
+// `kWindowWentAway` when `active_web_state` is not attached to a `Browser`.
+TEST_F(
+    TtcActuationHandlerTest,
+    ProcessToolCallOpenUrlInNewTabWithUnattachedWebStateFailsWithWindowWentAway) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  std::unique_ptr<web::FakeWebState> unattached_web_state =
+      CreateFakeWebState(789, profile_.get());
+  base::DictValue args = CreateUrlArgs("https://example.com/new");
+  args.Set("new_tab", true);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(ttc::ToolRequest{ttc::kToolOpenUrl, std::move(args)},
+                           unattached_web_state.get(), future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kWindowWentAway);
+  handler->Disconnect();
+}
+
+// Tests that `ProcessToolCall` for `open_url` with `new_tab: true` and an
+// invalid URL fails with `kArgumentsInvalid`.
+TEST_F(TtcActuationHandlerTest,
+       ProcessToolCallOpenUrlInNewTabWithInvalidUrlFailsWithArgumentsInvalid) {
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  base::DictValue invalid_args = CreateUrlArgs("ftp://example.com");
+  invalid_args.Set("new_tab", true);
+  base::test::TestFuture<ttc::ToolResponse> future;
+
+  handler->ProcessToolCall(
+      ttc::ToolRequest{ttc::kToolOpenUrl, std::move(invalid_args)},
+      GetActiveWebState(), future.GetCallback());
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  handler->Disconnect();
 }
 
 }  // namespace

@@ -39,11 +39,15 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/web/public/browser_state.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -54,24 +58,33 @@ constexpr char kActuationExecuteEventName[] = "ActuationExecute";
 // user-facing UI.
 constexpr char kTtcTaskTitle[] = "TTC Session";
 
-// Returns the `SessionID` of the regular `Browser` owning `web_state`, or an
-// invalid `SessionID` if `web_state` is not attached to a regular browser.
-SessionID GetBrowserIdForWebState(web::WebState* web_state) {
+// Argument key for the target URL in `open_url`.
+constexpr char kUrlKey[] = "url";
+
+// Returns the regular `Browser` owning `web_state`, or `nullptr` if
+// `web_state` is null or not attached to a regular browser.
+Browser* GetBrowserForWebState(web::WebState* web_state) {
   if (!web_state) {
-    return SessionID::InvalidValue();
+    return nullptr;
   }
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   if (!profile) {
-    return SessionID::InvalidValue();
+    return nullptr;
   }
   BrowserAndIndex browser_and_index = actor::FindBrowserAndIndexFromProfile(
       profile, web_state->GetUniqueIdentifier(), /*include_incognito=*/false);
-  if (!browser_and_index.browser) {
+  return browser_and_index.browser;
+}
+
+// Returns the `SessionID` of the regular `Browser` owning `web_state`, or an
+// invalid `SessionID` if `web_state` is not attached to a regular browser.
+SessionID GetBrowserIdForWebState(web::WebState* web_state) {
+  Browser* browser = GetBrowserForWebState(web_state);
+  if (!browser) {
     return SessionID::InvalidValue();
   }
-  ActorBrowserAgent* agent =
-      ActorBrowserAgent::FromBrowser(browser_and_index.browser);
+  ActorBrowserAgent* agent = ActorBrowserAgent::FromBrowser(browser);
   return agent ? agent->browser_id() : SessionID::InvalidValue();
 }
 
@@ -271,6 +284,11 @@ void TtcActuationHandler::ProcessToolCall(const ttc::ToolRequest& tool_request,
     return;
   }
 
+  if (TtcToolValidator::IsOpenUrlInNewTab(tool_request)) {
+    OpenUrlInNewTab(tool_request, active_web_state, std::move(callback));
+    return;
+  }
+
   auto request = TtcToolValidator::CreateActuationRequest(tool_request);
   if (!request.has_value()) {
     actor::mojom::ActionResultCode code =
@@ -334,19 +352,10 @@ void TtcActuationHandler::DispatchActuationRequest(
     actions.push_back(std::move(action));
   }
 
-  if (task_id_.is_null()) {
-    task_id_ = actor_service_->CreateTask(
-        kTtcTaskTitle,
-        actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
-                              /*id=*/std::nullopt),
-        /*allow_incognito_web_states=*/false);
-    if (task_id_.is_null()) {
-      FailWithError(std::move(callback),
-                    actor::mojom::ActionResultCode::kTaskWentAway);
-      return;
-    }
-    actor_service_->SetTaskInterventionDelegate(task_id_,
-                                                intervention_delegate_);
+  if (!EnsureTaskCreated()) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kTaskWentAway);
+    return;
   }
 
   active_callback_ = std::move(callback);
@@ -377,6 +386,26 @@ void TtcActuationHandler::StopTask(actor::ActorTaskStoppedReason reason) {
 
 #pragma mark - Private
 
+bool TtcActuationHandler::EnsureTaskCreated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!actor_service_) {
+    return false;
+  }
+  if (task_id_.is_null()) {
+    task_id_ = actor_service_->CreateTask(
+        kTtcTaskTitle,
+        actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
+                              /*id=*/std::nullopt),
+        /*allow_incognito_web_states=*/false);
+    if (task_id_.is_null()) {
+      return false;
+    }
+    actor_service_->SetTaskInterventionDelegate(task_id_,
+                                                intervention_delegate_);
+  }
+  return true;
+}
+
 void TtcActuationHandler::CloseSession(ActuationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!close_session_callback_) {
@@ -403,6 +432,90 @@ void TtcActuationHandler::CloseSession(ActuationCallback callback) {
   if (weak_this && weak_this->close_session_callback_) {
     weak_this->close_session_callback_.Run();
   }
+}
+
+void TtcActuationHandler::OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
+                                          web::WebState* active_web_state,
+                                          ActuationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::expected<void, std::string> validation =
+      TtcToolValidator::ValidateToolCall(tool_request);
+  if (!validation.has_value()) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kArgumentsInvalid,
+                  validation.error());
+    return;
+  }
+
+  if (!actor_service_) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kTaskWentAway);
+    return;
+  }
+
+  web::BrowserState* browser_state =
+      active_web_state ? active_web_state->GetBrowserState() : nullptr;
+  if (!browser_state || browser_state->IsOffTheRecord()) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kTabWentAway);
+    return;
+  }
+
+  if (active_callback_) {
+    FailWithError(
+        std::move(callback),
+        actor::mojom::ActionResultCode::kExecutionEngineExistingAction);
+    return;
+  }
+
+  Browser* browser = GetBrowserForWebState(active_web_state);
+  TabInsertionBrowserAgent* insertion_agent =
+      browser ? TabInsertionBrowserAgent::FromBrowser(browser) : nullptr;
+  if (!insertion_agent) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kWindowWentAway);
+    return;
+  }
+
+  if (!EnsureTaskCreated()) {
+    FailWithError(std::move(callback),
+                  actor::mojom::ActionResultCode::kTaskWentAway);
+    return;
+  }
+
+  std::unique_ptr<TTCJournal::PendingAsyncEntry> async_entry;
+  if (journal_) {
+    async_entry = journal_->BeginAsyncEvent(
+        TTCJournalComponent::kActuation, kActuationExecuteEventName,
+        TTCJournalDetailsBuilder()
+            .SetSummary(base::StrCat({"Tool started: ", ttc::kToolOpenUrl}))
+            .Add("task_id", task_id_.value())
+            .Build());
+  }
+
+  const std::string* url_string = tool_request.arguments.FindString(kUrlKey);
+  web::NavigationManager::WebLoadParams load_params(
+      GURL(url_string ? *url_string : std::string()));
+  TabInsertion::Params insertion_params;
+  insertion_params.in_background = false;
+  insertion_params.parent = active_web_state;
+  web::WebState* new_web_state =
+      insertion_agent->InsertWebState(load_params, insertion_params);
+  if (!new_web_state) {
+    EndActuationAsyncEntry(
+        std::move(async_entry),
+        actor::mojom::ActionResultCode::kNewTabCreationFailed,
+        /*error_message=*/{});
+    std::move(callback).Run(ttc::ToolResponse::Error(
+        actor::mojom::ActionResultCode::kNewTabCreationFailed));
+    return;
+  }
+
+  actor_service_->AddControlledWebState(task_id_, new_web_state);
+  EndActuationAsyncEntry(std::move(async_entry),
+                         actor::mojom::ActionResultCode::kOk,
+                         /*error_message=*/{});
+  std::move(callback).Run(ttc::ToolResponse::Success());
 }
 
 void TtcActuationHandler::OnPerformActionsFinished(

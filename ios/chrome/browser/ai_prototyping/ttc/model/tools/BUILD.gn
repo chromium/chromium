@@ -24,8 +24,10 @@ source_set("tools") {
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_insertion/model",
     "//ios/web/public",
     "//url",
   ]
@@ -61,6 +63,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

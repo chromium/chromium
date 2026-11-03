@@ -78,6 +78,15 @@ std::string SerializeActionProto(
 }  // namespace
 
 // static
+bool TtcToolValidator::IsOpenUrlInNewTab(const ttc::ToolRequest& tool_request) {
+  if (tool_request.name != ttc::kToolOpenUrl) {
+    return false;
+  }
+  const base::Value* new_tab_value = tool_request.arguments.Find(kNewTabKey);
+  return new_tab_value && ParseBooleanValue(*new_tab_value).value_or(false);
+}
+
+// static
 base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
     const ttc::ToolRequest& tool_request) {
   const std::string& name = tool_request.name;
@@ -103,11 +112,8 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
     }
 
     const base::Value* new_tab_value = arguments.Find(kNewTabKey);
-    if (new_tab_value) {
-      std::optional<bool> parsed_bool = ParseBooleanValue(*new_tab_value);
-      if (!parsed_bool.has_value() || *parsed_bool) {
-        return base::unexpected(ttc::kErrorMessageNewTabUnsupported);
-      }
+    if (new_tab_value && !ParseBooleanValue(*new_tab_value).has_value()) {
+      return base::unexpected(ttc::kErrorMessageInvalidArguments);
     }
 
     return base::ok();
@@ -119,9 +125,10 @@ base::expected<void, std::string> TtcToolValidator::ValidateToolCall(
 // static
 base::expected<TtcActuationRequest, std::string>
 TtcToolValidator::CreateActuationRequest(const ttc::ToolRequest& tool_request) {
-  // `close_session` is handled directly by `TtcActuationHandler` via its
-  // manual task hook rather than mapped to an Actor protobuf action.
-  if (tool_request.name == ttc::kToolCloseSession) {
+  // `close_session` and `open_url` with `new_tab=true` are executed directly by
+  // `TtcActuationHandler` rather than mapped to an Actor protobuf action.
+  if (tool_request.name == ttc::kToolCloseSession ||
+      IsOpenUrlInNewTab(tool_request)) {
     return base::unexpected(ttc::kErrorMessageInvalidToolCall);
   }
 

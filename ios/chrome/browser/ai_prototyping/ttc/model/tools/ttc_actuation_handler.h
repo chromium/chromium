@@ -83,8 +83,21 @@ class TtcActuationHandler {
                     actor::ActorTaskStoppedReason::kTaskComplete);
 
  private:
+  // Lazily creates `task_id_` in `actor_service_` and attaches
+  // `intervention_delegate_` if no task is currently active. Returns `true` if
+  // `task_id_` is valid.
+  bool EnsureTaskCreated();
+
   // Executes the `close_session` tool and invokes `callback`.
   void CloseSession(ActuationCallback callback);
+
+  // Validates and executes an `open_url` tool call with `new_tab == true` by
+  // inserting and activating a new foreground `WebState` in the regular
+  // `Browser` owning `active_web_state`, registering it as controlled in
+  // `actor_service_`, and invoking `callback`.
+  void OpenUrlInNewTab(const ttc::ToolRequest& tool_request,
+                       web::WebState* active_web_state,
+                       ActuationCallback callback);
 
   // Handles completion of `ActorService::PerformActions`.
   void OnPerformActionsFinished(actor::ActorTaskId task_id,

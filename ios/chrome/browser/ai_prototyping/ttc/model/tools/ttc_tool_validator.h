@@ -20,8 +20,6 @@ inline constexpr char kErrorMessageInvalidArguments[] =
 inline constexpr char kErrorMessageInvalidToolCall[] = "Invalid tool call.";
 inline constexpr char kErrorMessageInvalidUrl[] =
     "Invalid URL provided in arguments.";
-inline constexpr char kErrorMessageNewTabUnsupported[] =
-    "Opening in a new tab is not supported.";
 inline constexpr char kErrorMessageUnknownTool[] = "Unknown tool name.";
 
 }  // namespace ttc
@@ -34,6 +32,10 @@ inline constexpr char kErrorMessageUnknownTool[] = "Unknown tool name.";
 class TtcToolValidator {
  public:
   TtcToolValidator() = delete;
+
+  // Returns `true` if `tool_request` is an `open_url` call requesting a new
+  // tab (`new_tab == true`).
+  static bool IsOpenUrlInNewTab(const ttc::ToolRequest& tool_request);
 
   // Validates `tool_request` syntactically. Returns `base::ok()` on success, or
   // an error message describing the violation.
