@@ -160,7 +160,6 @@ source_set("signin_impl") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/profiles:profile_util",
     "//chrome/browser/regional_capabilities",
-    "//chrome/browser/resources/signin:resources",
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/profiles",
@@ -207,6 +206,7 @@ source_set("signin_impl") {
     ]
 
     deps += [
+      "//chrome/browser/resources/signin:resources",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/sync",
