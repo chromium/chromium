@@ -15,6 +15,7 @@
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -156,7 +157,8 @@ class InfobarSaveAddressProfileViewControllerTest : public PlatformTest {
   void CheckButton(int message_id, UIStackView* stack, int button_index) {
     UIView* buttonContainer = stack.arrangedSubviews[button_index];
     ChromeButton* button =
-        base::apple::ObjCCastStrict<ChromeButton>(buttonContainer.subviews[0]);
+        chrome_test_util::FindViewByClass<ChromeButton>(buttonContainer);
+    ASSERT_NE(nil, button);
     EXPECT_NSEQ(l10n_util::GetNSString(message_id), button.title);
   }
 
@@ -177,8 +179,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
       save_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(save_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(7u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"Test Envelope Address",
               stack.arrangedSubviews[0].accessibilityLabel);
@@ -201,8 +204,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
       update_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(update_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(8u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"For John Doe, 345 Spear Street",
               stack.arrangedSubviews[0].accessibilityLabel);
@@ -231,8 +235,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
       save_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(save_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(8u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"Test Envelope Address",
               stack.arrangedSubviews[0].accessibilityLabel);
@@ -261,8 +266,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
               save_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(save_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(5u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(l10n_util::GetNSStringF(
                   IDS_IOS_AUTOFILL_ADDRESS_MIGRATE_IN_ACCOUNT_FOOTER,
@@ -291,8 +297,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
       update_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(update_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(9u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"For John Doe, 345 Spear Street",
               stack.arrangedSubviews[0].accessibilityLabel);
@@ -326,8 +333,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
               update_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(update_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(5u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"For John Doe, 345 Spear Street",
               stack.arrangedSubviews[0].accessibilityLabel);
@@ -355,8 +363,9 @@ TEST_F(InfobarSaveAddressProfileViewControllerTest,
       update_view_controller.title);
   UIScrollView* scrollView =
       base::apple::ObjCCastStrict<UIScrollView>(update_view_controller.view);
-  UIStackView* stack =
-      base::apple::ObjCCastStrict<UIStackView>(scrollView.subviews[0]);
+  UIStackView* stack = chrome_test_util::FindViewByClass<UIStackView>(
+      scrollView, /*expect_uniqueness=*/false);
+  ASSERT_NE(nil, stack);
   ASSERT_EQ(9u, stack.arrangedSubviews.count);
   EXPECT_NSEQ(@"For John Doe, 345 Spear Street",
               stack.arrangedSubviews[0].accessibilityLabel);
