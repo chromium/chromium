@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -210,6 +211,32 @@ public class NtpSyncedThemeManagerUnitTest {
         // The bridge outlives the manager's attachment and stops delivering to it.
         mBridge.onDefaultThemeSynced();
         verify(mConfigManagerSpy, never()).onSyncedDefaultThemeReset(any());
+    }
+
+    @Test
+    public void testOnProfileDestroyed_releasesProfileState() {
+        mNtpSyncedThemeManager = createInitializedManager();
+
+        // Attaching registered the manager, so the notification reaches it via ProfileManager.
+        ProfileManager.onProfileDestroyed(mProfile);
+
+        verify(mImageFetcher).destroy();
+        mBridge.onDefaultThemeSynced();
+        verify(mConfigManagerSpy, never()).onSyncedDefaultThemeReset(any());
+        clearInvocations(mNatives);
+        mNtpSyncedThemeManager.onThemeCommitted(/* data= */ null);
+        verify(mNatives, never()).resetCustomBackgroundInfo(any());
+    }
+
+    @Test
+    public void testOnProfileDestroyed_otherProfile_keepsProfileState() {
+        mNtpSyncedThemeManager = createInitializedManager();
+
+        ProfileManager.onProfileDestroyed(mOtherProfile);
+
+        verify(mImageFetcher, never()).destroy();
+        mNtpSyncedThemeManager.onThemeCommitted(/* data= */ null);
+        verify(mNatives).resetCustomBackgroundInfo(mProfile);
     }
 
     @Test
