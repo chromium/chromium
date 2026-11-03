@@ -215,8 +215,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.saveToPhotosSettingsMutator
       setAskWhichAccountToUseEveryTime:askWhichAccountToUseEveryTime];
   if (!askWhichAccountToUseEveryTime) {
-    GaiaId gaiaID = self.saveToPhotosDefaultIdentityItem.identityGaiaID;
-    [self.saveToPhotosSettingsMutator setSelectedIdentityGaiaID:&gaiaID];
+    [self.saveToPhotosSettingsMutator
+        setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
+                                      .identityGaiaID];
   }
 }
 

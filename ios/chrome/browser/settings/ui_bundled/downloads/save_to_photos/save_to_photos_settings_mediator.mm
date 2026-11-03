@@ -111,10 +111,10 @@
 
 #pragma mark - SaveToPhotosSettingsMutator
 
-- (void)setSelectedIdentityGaiaID:(const GaiaId*)gaiaID {
-  CHECK(!gaiaID->empty());
+- (void)setSelectedIdentityGaiaID:(const GaiaId&)gaiaID {
+  CHECK(!gaiaID.empty());
   _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                          gaiaID->ToString());
+                          gaiaID.ToString());
 }
 
 - (void)setAskWhichAccountToUseEveryTime:(BOOL)askEveryTime {

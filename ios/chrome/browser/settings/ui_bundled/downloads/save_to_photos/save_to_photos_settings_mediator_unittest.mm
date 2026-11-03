@@ -254,8 +254,7 @@ TEST_F(SaveToPhotosSettingsMediatorTest, DISABLED_CanMutateSelectedIdentity) {
   mediator.accountConfirmationConsumer = fake_consumer;
   mediator.accountSelectionConsumer = fake_consumer;
 
-  GaiaId gaiaID = fake_identity_b_.gaiaId;
-  [mediator setSelectedIdentityGaiaID:&gaiaID];
+  [mediator setSelectedIdentityGaiaID:fake_identity_b_.gaiaId];
   EXPECT_EQ(
       fake_identity_b_.gaiaId.ToString(),
       profile_->GetPrefs()->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));

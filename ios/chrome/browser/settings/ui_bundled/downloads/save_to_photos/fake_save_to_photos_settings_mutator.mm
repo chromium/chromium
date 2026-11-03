@@ -6,6 +6,16 @@
 
 #import "google_apis/gaia/gaia_id.h"
 
-@implementation FakeSaveToPhotosSettingsMutator
+@implementation FakeSaveToPhotosSettingsMutator {
+  GaiaId _selectedIdentityGaiaID;
+}
+
+- (GaiaId)selectedIdentityGaiaID {
+  return _selectedIdentityGaiaID;
+}
+
+- (void)setSelectedIdentityGaiaID:(const GaiaId&)gaiaID {
+  _selectedIdentityGaiaID = gaiaID;
+}
 
 @end

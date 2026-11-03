@@ -13,7 +13,7 @@ class GaiaId;
 @interface FakeSaveToPhotosSettingsMutator
     : NSObject <SaveToPhotosSettingsMutator>
 
-@property(nonatomic, assign) GaiaId selectedIdentityGaiaID;
+@property(nonatomic, readonly) GaiaId selectedIdentityGaiaID;
 
 @property(nonatomic, assign) BOOL askWhichAccountToUseEveryTime;
 

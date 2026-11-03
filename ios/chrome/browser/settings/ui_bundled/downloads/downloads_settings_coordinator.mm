@@ -210,8 +210,8 @@
   CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
   if (signinIdentity) {
-    GaiaId gaiaID = signinIdentity.gaiaId;
-    [_saveToPhotosSettingsMediator setSelectedIdentityGaiaID:&gaiaID];
+    [_saveToPhotosSettingsMediator
+        setSelectedIdentityGaiaID:signinIdentity.gaiaId];
   }
 }
 

@@ -90,8 +90,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeIdentity: {
       TableViewIdentityItem* identityItem =
           base::apple::ObjCCastStrict<TableViewIdentityItem>(item);
-      GaiaId gaiaID = identityItem.gaiaID;
-      [self.mutator setSelectedIdentityGaiaID:&gaiaID];
+      [self.mutator setSelectedIdentityGaiaID:identityItem.gaiaID];
       break;
     }
     case ItemTypeAddAccount: {
