@@ -1810,6 +1810,7 @@ if (!is_android) {
       ":browser_window_header",
       ":confirm_bubble",
       ":managed_ui",
+      ":sad_tab",
       ":screen_capture_notification_ui",
       ":tab_dialogs",
       ":tab_ui_helper",

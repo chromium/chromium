@@ -14,7 +14,9 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_browser_test_mixin.h"
+#include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -242,6 +245,39 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest,
   EXPECT_CALL(*tab_ui_change_waiter, OnTabUIChange()).Times(1);
   tab_ui_helper->ClearPendingNavigationState();
   EXPECT_EQ(tab_ui_helper->GetTitle(), u"Title Of Awesomeness");
+}
+
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest,
+                       ClosingCrashedTabWithNeedsReload) {
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
+  ASSERT_NE(ui_test_utils::NavigateToURL(
+                browser(), embedded_test_server()->GetURL("/title1.html")),
+            nullptr);
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/title2.html"),
+                            ui::PAGE_TRANSITION_TYPED));
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->active_index(), 1);
+  tabs::TabInterface* const crashed_tab = tab_strip_model->GetTabAtIndex(1);
+  content::WebContents* const crashed_contents = crashed_tab->GetContents();
+
+  // Crash the active tab so that SadTabHelper installs the SadTab overlay view,
+  // hiding the underlying WebView NativeViewHost (and making the WebContents
+  // occluded/hidden).
+  content::CrashTab(crashed_contents);
+  ASSERT_TRUE(TabUIHelper::From(crashed_tab)->IsCrashed());
+  ASSERT_NE(SadTabHelper::From(crashed_tab)->sad_tab(), nullptr);
+
+  // Mark the crashed tab's NavigationController as needing reload so that when
+  // ~SadTabController detaches the crashed overlay view and restores the
+  // NativeViewHost's visibility during DestroyTabFeatures(),
+  // NavigationControllerImpl::SetActive(true) triggers LoadIfNecessary()
+  // synchronously while TabFeatures is mid-destruction and
+  // tab->GetTabFeatures() is nullptr.
+  crashed_contents->GetController().SetNeedsReload();
+
+  tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 class TabUIHelperWithPrerenderingTest : public InProcessBrowserTest {
