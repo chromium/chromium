@@ -259,8 +259,6 @@ void LegacyFullscreenMediator::FullscreenModelScrollEventEnded(
           FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode;
       AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
     } else {
-      fullscreen_enter_trigger_ =
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode;
       AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
     }
     return;
@@ -354,9 +352,9 @@ void LegacyFullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
 
     // Histogram for entering or exiting Fullscreen mode based on
     // FullscreenModeTransitionTrigger value.
-    if (AreCGFloatsEqual(mediator->model_->progress(), 0.0)) {
+    if (mediator->model_->progress() == 0) {
       mediator->RecordFullscreenEnterMode();
-    } else if (AreCGFloatsEqual(mediator->model_->progress(), 1.0)) {
+    } else if (mediator->model_->progress() == 1) {
       mediator->RecordFullscreenExitMode();
     }
     for (auto& observer : mediator->observers_) {
@@ -426,8 +424,6 @@ LegacyFullscreenMediator::AnimatorStyleFromScrollDirection(
                  ? FullscreenAnimatorStyle::ENTER_FULLSCREEN
                  : FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kDown:
-      fullscreen_enter_trigger_ =
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode;
       return FullscreenAnimatorStyle::ENTER_FULLSCREEN;
   }
 }
