@@ -8,6 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -21,10 +25,14 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("content")
 @NullMarked
 class DateTimeChooserAndroid {
-    private long mNativeDateTimeChooserAndroid;
+    @JniType("::content::DateTimeChooserAndroid")
+    interface NativeDateTimeChooserAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeDateTimeChooserAndroid> mNativeDateTimeChooserAndroid;
     private final InputDialogContainer mInputDialogContainer;
 
-    private DateTimeChooserAndroid(Context context, long nativeDateTimeChooserAndroid) {
+    private DateTimeChooserAndroid(
+            Context context, JniRawPtr<NativeDateTimeChooserAndroid> nativeDateTimeChooserAndroid) {
         mNativeDateTimeChooserAndroid = nativeDateTimeChooserAndroid;
         mInputDialogContainer =
                 new InputDialogContainer(
@@ -32,7 +40,7 @@ class DateTimeChooserAndroid {
                         new InputDialogContainer.InputActionDelegate() {
                             @Override
                             public void replaceDateTime(double value) {
-                                if (mNativeDateTimeChooserAndroid == 0) {
+                                if (mNativeDateTimeChooserAndroid == null) {
                                     return;
                                 }
                                 DateTimeChooserAndroidJni.get()
@@ -41,7 +49,7 @@ class DateTimeChooserAndroid {
 
                             @Override
                             public void cancelDateTimeDialog() {
-                                if (mNativeDateTimeChooserAndroid == 0) {
+                                if (mNativeDateTimeChooserAndroid == null) {
                                     return;
                                 }
                                 DateTimeChooserAndroidJni.get()
@@ -62,14 +70,17 @@ class DateTimeChooserAndroid {
 
     @CalledByNative
     private void dismissAndDestroy() {
-        mNativeDateTimeChooserAndroid = 0;
+        if (mNativeDateTimeChooserAndroid != null) {
+            mNativeDateTimeChooserAndroid.release();
+            mNativeDateTimeChooserAndroid = null;
+        }
         mInputDialogContainer.dismissDialog();
     }
 
     @CalledByNative
-    private static @Nullable DateTimeChooserAndroid createDateTimeChooser(
+    static @Nullable DateTimeChooserAndroid createDateTimeChooser(
             WindowAndroid windowAndroid,
-            long nativeDateTimeChooserAndroid,
+            JniRawPtr<NativeDateTimeChooserAndroid> nativeDateTimeChooserAndroid,
             int dialogType,
             double dialogValue,
             double min,
@@ -79,6 +90,7 @@ class DateTimeChooserAndroid {
         Context windowAndroidContext = windowAndroid.getContext().get();
         if (windowAndroidContext == null
                 || ContextUtils.activityFromContext(windowAndroidContext) == null) {
+            nativeDateTimeChooserAndroid.release();
             return null;
         }
         DateTimeChooserAndroid chooser =
@@ -111,8 +123,8 @@ class DateTimeChooserAndroid {
 
     @NativeMethods
     interface Natives {
-        void replaceDateTime(long nativeDateTimeChooserAndroid, double dialogValue);
+        void replaceDateTime(JniPtr<NativeDateTimeChooserAndroid> self, double dialogValue);
 
-        void cancelDialog(long nativeDateTimeChooserAndroid);
+        void cancelDialog(JniPtr<NativeDateTimeChooserAndroid> self);
     }
 }

@@ -16,6 +16,7 @@
 #include "content/public/common/content_client.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -91,13 +92,13 @@ void DateTimeChooserAndroid::OpenPlatformDialog(
 
   gfx::NativeWindow native_window = GetWebContents().GetTopLevelNativeWindow();
 
+  DismissAndDestroyJavaObject();
   if (native_window && !(native_window->GetJavaObject()).is_null()) {
     j_date_time_chooser_.Reset(
         Java_DateTimeChooserAndroid_createDateTimeChooser(
-            env, native_window->GetJavaObject(),
-            reinterpret_cast<intptr_t>(this), value->dialog_type,
-            value->dialog_value, value->minimum, value->maximum, value->step,
-            suggestions_array));
+            env, native_window->GetJavaObject(), jni_zero::MakeRaw(this),
+            value->dialog_type, value->dialog_value, value->minimum,
+            value->maximum, value->step, suggestions_array));
   }
   if (j_date_time_chooser_.is_null()) {
     std::move(open_date_time_response_callback_).Run(true, value->dialog_value);
