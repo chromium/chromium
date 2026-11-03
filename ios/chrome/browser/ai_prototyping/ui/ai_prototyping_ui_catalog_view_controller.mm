@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_ui_catalog_view_controller.h"
 
 #import "ios/chrome/browser/ai_prototyping/ui/actuation_worklog_debug_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_input_plate_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_tool_chip_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_header_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_intervention_view_controller.h"
@@ -95,9 +96,15 @@ NSString* const kUICatalogCellIdentifier = @"UICatalogCell";
   interventionItem.viewControllerClass =
       [AIPrototypingActuationInterventionViewController class];
 
+  AIPrototypingUICatalogItem* inputPlateItem =
+      [[AIPrototypingUICatalogItem alloc] init];
+  inputPlateItem.title = @"Actor Input Plate";
+  inputPlateItem.viewControllerClass =
+      [AIPrototypingActorInputPlateViewController class];
+
   _items = @[
     chipsItem, worklogItem, compactWorklogItem, actuationSandboxItem,
-    taskButtonItem, taskCardItem, headerItem, interventionItem
+    taskButtonItem, taskCardItem, headerItem, interventionItem, inputPlateItem
   ];
 }
 
