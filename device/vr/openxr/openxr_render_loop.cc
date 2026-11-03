@@ -765,6 +765,14 @@ void OpenXrRenderLoop::SendFrameData(
       empty_frame_data->render_info->frame_id =
           frame_data->render_info->frame_id;
     }
+    // Blink expects the shared images with every frame it could draw into,
+    // even one it then skips because the session is hidden. They don't expose
+    // anything about the user, so pass them along.
+    empty_frame_data->buffer_shared_image =
+        std::move(frame_data->buffer_shared_image);
+    empty_frame_data->buffer_sync_token = frame_data->buffer_sync_token;
+    empty_frame_data->composition_layers_data =
+        std::move(frame_data->composition_layers_data);
     std::move(callback).Run(std::move(empty_frame_data));
   }
 
@@ -904,6 +912,9 @@ void OpenXrRenderLoop::StartRuntime(
   VisibilityChangedCallback on_visibility_state_changed_callback =
       base::BindRepeating(&OpenXrRenderLoop::SetVisibilityState,
                           weak_ptr_factory_.GetWeakPtr());
+  openxr_->SetOnSessionResumedCallback(
+      base::BindRepeating(&OpenXrRenderLoop::OnOpenXrSessionResumed,
+                          weak_ptr_factory_.GetWeakPtr()));
   if (XR_FAILED(openxr_->InitSession(
           std::move(options), *extension_helper_,
           std::move(on_session_started_callback),
@@ -915,6 +926,24 @@ void OpenXrRenderLoop::StartRuntime(
     // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
     StopRuntime();
+  }
+}
+
+void OpenXrRenderLoop::OnOpenXrSessionResumed() {
+  // This runs while processing OpenXR events, which can happen inside
+  // GetFrameData(), so serve a deferred frame request in a new task.
+  task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OpenXrRenderLoop::MaybeServeDelayedGetFrameData,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OpenXrRenderLoop::MaybeServeDelayedGetFrameData() {
+  // Serve a frame request that ShouldDelayGetFrameData() deferred while the
+  // session was stopped.
+  if (delayed_get_frame_data_callback_ &&
+      (webxr_visible_ || on_webxr_submitted_)) {
+    std::move(delayed_get_frame_data_callback_).Run();
   }
 }
 
@@ -1454,6 +1483,12 @@ void OpenXrRenderLoop::OnContextProviderCreated(
 bool OpenXrRenderLoop::ShouldDelayGetFrameData() const {
   // If we've already given out a pose for the current frame, delay.
   if (webxr_has_pose_) {
+    return true;
+  }
+
+  // There are no frames to give out while the runtime has stopped the session.
+  // OnOpenXrSessionResumed() serves the request once it runs again.
+  if (!openxr_->IsSessionRunning()) {
     return true;
   }
 

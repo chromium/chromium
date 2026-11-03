@@ -207,6 +207,20 @@ void MockXRDeviceHookBase::SimulateSessionLost() {
   PopulateEvent(event);
 }
 
+void MockXRDeviceHookBase::SimulateSessionStopped() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  device_test::mojom::EventData event;
+  event.type = device_test::mojom::EventType::kSessionStopped;
+  PopulateEvent(event);
+}
+
+void MockXRDeviceHookBase::SimulateSessionReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  device_test::mojom::EventData event;
+  event.type = device_test::mojom::EventType::kSessionReady;
+  PopulateEvent(event);
+}
+
 void MockXRDeviceHookBase::SimulateVisibilityBlurred() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   device_test::mojom::EventData event;

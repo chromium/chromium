@@ -51,7 +51,14 @@ struct XRTestFrameData {
 
 // Event type is used by test to simulate runtime events.
 enum EventType {
+  // The runtime stops the session and then exits it.
   kSessionLost,
+  // The runtime stops the session, e.g. when the app is paused. After the app
+  // ends it, it stays IDLE until kSessionReady.
+  kSessionStopped,
+  // The runtime makes the stopped session ready to run again, e.g. when the
+  // app is resumed.
+  kSessionReady,
   kVisibilityVisibleBlurred,
   kInstanceLost,
   kInteractionProfileChanged,

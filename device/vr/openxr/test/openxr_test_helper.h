@@ -52,6 +52,15 @@ class OpenXrTestHelper {
   // TestHookRegistration
   void SetTestHook(mojo::PendingRemote<device_test::mojom::XRTestHook> hook);
 
+  // Moves the session to STOPPING, as a runtime does when it stops a session.
+  // After the app calls xrEndSession(), the session becomes IDLE and then
+  // `state_after_end`: READY to run again, or EXITING. With nullopt, it stays
+  // IDLE until MakeSessionReady().
+  void StopSession(std::optional<XrSessionState> state_after_end);
+  // Moves an IDLE session to READY. A session that is still STOPPING becomes
+  // READY once the app calls xrEndSession().
+  void MakeSessionReady();
+
   // Helper methods called by the mock OpenXR runtime. These methods will
   // call back into the test hook, thus communicating with the test object
   // on the browser process side.
@@ -288,6 +297,8 @@ class OpenXrTestHelper {
   // Properties that changes depending on the state of the runtime.
   uint32_t frame_count_ = 0;
   XrSessionState session_state_ = XR_SESSION_STATE_UNKNOWN;
+  // The state after IDLE when the app calls xrEndSession(). See StopSession().
+  std::optional<XrSessionState> state_after_end_;
   bool frame_begin_ = false;
   uint32_t next_handle_ = 0;
   XrTime next_predicted_display_time_ = 0;

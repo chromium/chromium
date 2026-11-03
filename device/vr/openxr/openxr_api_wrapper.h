@@ -71,7 +71,7 @@ class OpenXrApiWrapper {
   OpenXrApiWrapper& operator=(const OpenXrApiWrapper&) = delete;
 
   DEVICE_VR_EXPORT ~OpenXrApiWrapper();
-  bool IsInitialized() const;
+  DEVICE_VR_EXPORT bool IsInitialized() const;
 
   DEVICE_VR_EXPORT static std::unique_ptr<OpenXrApiWrapper> Create(
       XrInstance instance,
@@ -87,11 +87,12 @@ class OpenXrApiWrapper {
 
   // The supplied graphics_binding is guaranteed by the caller to exist until
   // this object is destroyed.
-  XrResult InitSession(mojom::XRRuntimeSessionOptionsPtr options,
-                       const OpenXrExtensionHelper& extension_helper,
-                       SessionStartedCallback on_session_started_callback,
-                       SessionEndedCallback on_session_ended_callback,
-                       VisibilityChangedCallback visibility_changed_callback);
+  DEVICE_VR_EXPORT XrResult
+  InitSession(mojom::XRRuntimeSessionOptionsPtr options,
+              const OpenXrExtensionHelper& extension_helper,
+              SessionStartedCallback on_session_started_callback,
+              SessionEndedCallback on_session_ended_callback,
+              VisibilityChangedCallback visibility_changed_callback);
 
   XrSpace GetReferenceSpace(mojom::XRReferenceSpaceType type) const;
   std::optional<XrLocation> GetXrLocationFromNativeOriginInformation(
@@ -102,10 +103,16 @@ class OpenXrApiWrapper {
   XrSession session() const { return session_; }
   XrSystemId system() const { return system_; }
 
-  XrResult BeginFrame();
+  DEVICE_VR_EXPORT XrResult BeginFrame();
   XrResult EndFrame();
   bool HasPendingFrame() const;
   bool HasFrameState() const;
+  // False before the session begins and while the runtime has stopped it.
+  bool IsSessionRunning() const { return session_running_; }
+  // Called when the session runs again after the runtime stopped it.
+  void SetOnSessionResumedCallback(base::RepeatingClosure callback) {
+    on_session_resumed_callback_ = std::move(callback);
+  }
   bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
 
   const std::unordered_set<mojom::XRSessionFeature>& GetEnabledFeatures() const;
@@ -174,6 +181,12 @@ class OpenXrApiWrapper {
   XrResult CreateSpace(XrReferenceSpaceType type, XrSpace* space);
 
   XrResult BeginSession();
+  // Ends the running OpenXR session with xrEndSession() after the runtime
+  // moved it to STOPPING, e.g. because the app was paused. Unlike EXITING,
+  // STOPPING doesn't end the WebXR session: the runtime may make the session
+  // READY again, e.g. when the app is resumed, and BeginSession() then runs it
+  // again.
+  XrResult StopSession();
   XrResult UpdateSecondaryViewConfigStates(
       const std::vector<XrSecondaryViewConfigurationStateMSFT>& states);
   XrResult UpdateViewConfigurations();
@@ -211,6 +224,9 @@ class OpenXrApiWrapper {
   // It is not considered running after creation but before xrBeginSession.
   bool session_running_;
   bool pending_frame_;
+  // Whether the runtime asked to stop the session while a frame was pending.
+  bool stop_pending_ = false;
+  base::RepeatingClosure on_session_resumed_callback_;
 
   SessionStartedCallback on_session_started_callback_;
   SessionEndedCallback on_session_ended_callback_;

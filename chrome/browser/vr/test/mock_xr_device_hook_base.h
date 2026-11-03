@@ -81,6 +81,11 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
 
   // Event simulation:
   void SimulateSessionLost();
+  // The runtime stops the session. After the browser ends it, it stays IDLE
+  // until SimulateSessionReady().
+  void SimulateSessionStopped();
+  // The runtime makes the stopped session READY to run again.
+  void SimulateSessionReady();
   void SimulateVisibilityBlurred();
   void SimulateInteractionProfileChanged(
       device::mojom::OpenXrInteractionProfileType profile);

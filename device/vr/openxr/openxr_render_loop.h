@@ -292,6 +292,8 @@ class OpenXrRenderLoop : public XRThread,
   void MaybeRejectSessionCallback();
 
   bool ShouldDelayGetFrameData() const;
+  void OnOpenXrSessionResumed();
+  void MaybeServeDelayedGetFrameData();
 
   gfx::Transform mojo_from_local() {
     // mojo_from_local is currently identity.

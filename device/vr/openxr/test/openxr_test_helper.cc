@@ -171,6 +171,7 @@ void OpenXrTestHelper::Reset() {
   session_ = XR_NULL_HANDLE;
   swapchains_.clear();
   session_state_ = XR_SESSION_STATE_UNKNOWN;
+  state_after_end_.reset();
 
   system_id_ = 0;
   frame_begin_ = false;
@@ -883,6 +884,9 @@ XrResult OpenXrTestHelper::BeginSession(
     return XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED;
   }
 
+  // Each xrBeginSession() specifies the view configurations anew, e.g. when the
+  // session begins again after the runtime stopped it.
+  view_configs_enabled_.clear();
   // Add the primary view configuration first - this assumption is made in other
   // areas of the code.
   view_configs_enabled_.push_back(view_configs[0]);
@@ -910,6 +914,21 @@ XrResult OpenXrTestHelper::BeginSession(
   return XR_SUCCESS;
 }
 
+void OpenXrTestHelper::StopSession(
+    std::optional<XrSessionState> state_after_end) {
+  state_after_end_ = state_after_end;
+  SetSessionState(XR_SESSION_STATE_STOPPING);
+}
+
+void OpenXrTestHelper::MakeSessionReady() {
+  if (session_state_ == XR_SESSION_STATE_STOPPING) {
+    state_after_end_ = XR_SESSION_STATE_READY;
+    return;
+  }
+  CHECK_EQ(session_state_, XR_SESSION_STATE_IDLE);
+  SetSessionState(XR_SESSION_STATE_READY);
+}
+
 XrResult OpenXrTestHelper::EndSession() {
   // Per OpenXR 1.0 spec: "An application can only call xrEndSession when the
   // session is in the XR_SESSION_STATE_STOPPING state"
@@ -917,6 +936,9 @@ XrResult OpenXrTestHelper::EndSession() {
             XR_ERROR_SESSION_NOT_STOPPING,
             "Session state is not XR_ERROR_SESSION_NOT_STOPPING");
   SetSessionState(XR_SESSION_STATE_IDLE);
+  if (state_after_end_) {
+    SetSessionState(*state_after_end_);
+  }
   return XR_SUCCESS;
 }
 
@@ -1634,7 +1656,11 @@ void OpenXrTestHelper::UpdateEventQueue() {
         break;
       }
       if (data->type == device_test::mojom::EventType::kSessionLost) {
-        SetSessionState(XR_SESSION_STATE_STOPPING);
+        StopSession(XR_SESSION_STATE_EXITING);
+      } else if (data->type == device_test::mojom::EventType::kSessionStopped) {
+        StopSession(/*state_after_end=*/std::nullopt);
+      } else if (data->type == device_test::mojom::EventType::kSessionReady) {
+        MakeSessionReady();
       } else if (data->type ==
                  device_test::mojom::EventType::kVisibilityVisibleBlurred) {
         // WebXR Visible-Blurred map to OpenXR Visible
@@ -1716,9 +1742,12 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
 }
 
 bool OpenXrTestHelper::IsSessionRunning() const {
+  // Per the OpenXR spec, a session runs from xrBeginSession() until
+  // xrEndSession(), so the app can still finish a frame while STOPPING.
   return session_state_ == XR_SESSION_STATE_SYNCHRONIZED ||
          session_state_ == XR_SESSION_STATE_VISIBLE ||
-         session_state_ == XR_SESSION_STATE_FOCUSED;
+         session_state_ == XR_SESSION_STATE_FOCUSED ||
+         session_state_ == XR_SESSION_STATE_STOPPING;
 }
 
 void OpenXrTestHelper::UpdateInteractionProfile(

@@ -437,6 +437,7 @@ if (enable_openxr) {
       sources = [
         "openxr/linux/openxr_graphics_binding_vulkan_unittest.cc",
         "openxr/linux/openxr_platform_helper_linux_unittest.cc",
+        "openxr/openxr_api_wrapper_unittest.cc",
         "openxr/openxr_hand_tracker_unittest.cc",
       ]
 
@@ -445,6 +446,7 @@ if (enable_openxr) {
         ":vr",
         "//base",
         "//base/test:test_support",
+        "//device/vr/public/mojom:isolated_xr_service",
         "//gpu/command_buffer/common",
         "//testing/gtest",
         "//third_party/openxr",

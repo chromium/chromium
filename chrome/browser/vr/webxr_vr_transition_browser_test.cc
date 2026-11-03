@@ -167,6 +167,29 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionExited) {
   this->EndTest();
 }
 
+// Tests that a session survives the runtime stopping the OpenXR session and
+// making it ready to run again, e.g. when the app is paused and resumed.
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestSessionStoppedAndResumed) {
+  MockXRDeviceHookBase mock;
+  LoadFileAndAwaitInitialization("generic_webxr_page");
+  EnterSessionWithUserGestureOrFail();
+  mock.WaitNumFrames(5);
+
+  // The runtime stops the session, e.g. because the app was paused, and the
+  // browser calls xrEndSession(). Then the runtime makes the session READY
+  // again, e.g. because the app was resumed, and the browser calls
+  // xrBeginSession().
+  mock.SimulateSessionStopped();
+  mock.SimulateSessionReady();
+
+  // Frames resume once the session runs again.
+  mock.WaitNumFrames(5);
+  ASSERT_TRUE(RunJavaScriptAndExtractBoolOrFail(
+      "sessionInfos[sessionTypes.IMMERSIVE].currentSession != null"));
+
+  EndSessionOrFail();
+}
+
 // Tests that sessions can be repeatedly entered/exited.
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
                        TestMultipleEntryFromDeviceEnd) {
