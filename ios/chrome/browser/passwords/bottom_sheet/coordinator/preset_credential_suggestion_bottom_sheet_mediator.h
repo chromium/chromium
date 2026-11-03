@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_FORM_SUGGESTIONS_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_FORM_SUGGESTIONS_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_PRESET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_PRESET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
@@ -15,10 +15,9 @@ class FaviconLoader;
 class WebStateList;
 @class FormSuggestion;
 
-// TODO(crbug.com/571139088): Use a better class name.
 // Mediator responsible for displaying a preset list of credential form
 // suggestions in the Credential Suggestion Bottom Sheet.
-@interface FormSuggestionsCredentialSuggestionBottomSheetMediator
+@interface PresetCredentialSuggestionBottomSheetMediator
     : CredentialSuggestionBottomSheetMediatorBase
 
 // Designated initializer for this mediator. `webStateList` is the list of web
@@ -38,4 +37,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_FORM_SUGGESTIONS_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_PRESET_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_

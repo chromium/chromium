@@ -22,9 +22,9 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/form_suggestions_credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/preset_credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -182,7 +182,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     _requestInfo.reset();
   } else {
     CHECK(_suggestions);
-    _mediator = [[FormSuggestionsCredentialSuggestionBottomSheetMediator alloc]
+    _mediator = [[PresetCredentialSuggestionBottomSheetMediator alloc]
         initWithWebStateList:webStateList
                faviconLoader:faviconLoader
                  suggestions:_suggestions];

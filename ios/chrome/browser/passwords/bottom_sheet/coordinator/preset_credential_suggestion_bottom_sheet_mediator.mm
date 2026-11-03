@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/form_suggestions_credential_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/preset_credential_suggestion_bottom_sheet_mediator.h"
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -15,7 +15,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
-@implementation FormSuggestionsCredentialSuggestionBottomSheetMediator {
+@implementation PresetCredentialSuggestionBottomSheetMediator {
   // Favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
 }

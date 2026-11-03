@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/form_suggestions_credential_suggestion_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/coordinator/preset_credential_suggestion_bottom_sheet_mediator.h"
 
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -38,11 +38,10 @@ FormSuggestion* CreateSuggestion(NSString* username, NSString* description) {
 
 }  // namespace
 
-// Tests for FormSuggestionsCredentialSuggestionBottomSheetMediator.
-class FormSuggestionsCredentialSuggestionBottomSheetMediatorTest
-    : public PlatformTest {
+// Tests for PresetCredentialSuggestionBottomSheetMediator.
+class PresetCredentialSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
-  FormSuggestionsCredentialSuggestionBottomSheetMediatorTest()
+  PresetCredentialSuggestionBottomSheetMediatorTest()
       : web_state_list_(&web_state_list_delegate_) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetCurrentURL(GURL(kTestUrl));
@@ -57,12 +56,11 @@ class FormSuggestionsCredentialSuggestionBottomSheetMediatorTest
 };
 
 // Tests that setting the consumer configures it with suggestions and actions.
-TEST_F(FormSuggestionsCredentialSuggestionBottomSheetMediatorTest,
-       SetsUpConsumer) {
+TEST_F(PresetCredentialSuggestionBottomSheetMediatorTest, SetsUpConsumer) {
   FormSuggestion* suggestion =
       CreateSuggestion(@"user@example.com", @"example.com");
-  FormSuggestionsCredentialSuggestionBottomSheetMediator* mediator =
-      [[FormSuggestionsCredentialSuggestionBottomSheetMediator alloc]
+  PresetCredentialSuggestionBottomSheetMediator* mediator =
+      [[PresetCredentialSuggestionBottomSheetMediator alloc]
           initWithWebStateList:&web_state_list_
                  faviconLoader:nullptr
                    suggestions:@[ suggestion ]];
@@ -83,14 +81,14 @@ TEST_F(FormSuggestionsCredentialSuggestionBottomSheetMediatorTest,
 }
 
 // Tests that selecting a suggestion calls the completion handler.
-TEST_F(FormSuggestionsCredentialSuggestionBottomSheetMediatorTest,
+TEST_F(PresetCredentialSuggestionBottomSheetMediatorTest,
        SelectsSuggestionAndCallsCompletion) {
   FormSuggestion* suggestion =
       CreateSuggestion(@"user@example.com", @"example.com");
   __block BOOL completion_called = NO;
 
-  FormSuggestionsCredentialSuggestionBottomSheetMediator* mediator =
-      [[FormSuggestionsCredentialSuggestionBottomSheetMediator alloc]
+  PresetCredentialSuggestionBottomSheetMediator* mediator =
+      [[PresetCredentialSuggestionBottomSheetMediator alloc]
           initWithWebStateList:&web_state_list_
                  faviconLoader:nullptr
                    suggestions:@[ suggestion ]];
