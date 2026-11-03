@@ -16,8 +16,12 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
@@ -228,6 +232,12 @@ gfx::Insets GetAutofillAiBubbleInnerMargins() {
 
 ui::ImageModel CreateWalletIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableGradientGoogleLogos)) {
+    return ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT));
+  }
   return ui::ImageModel::FromVectorIcon(vector_icons::kGoogleWalletIcon,
                                         ui::kColorIcon, kWalletIconSize);
 
