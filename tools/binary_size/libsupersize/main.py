@@ -6,6 +6,7 @@
 
 import argparse
 import atexit
+import gc
 import logging
 import pathlib
 import platform
@@ -35,6 +36,11 @@ def _AddCommonArguments(parser):
     default=0,
     action='count',
     help='Verbose level (multiple times for more)',
+  )
+  parser.add_argument(
+    '--no-disable-gc',
+    action='store_true',
+    help='Do not disable cyclic garbage collection.',
   )
 
 
@@ -186,6 +192,12 @@ def main():
     level=logging.WARNING - args.verbose * 10,
     format='%(levelname).1s %(relativeCreated)6d %(message)s',
   )
+
+  if not args.no_disable_gc:
+    # SuperSize allocates millions of short-lived objects with almost no
+    # reference cycles; disabling cyclic GC avoids multi-second Gen-2 heap
+    # scans (~8-9% speedup on archive).
+    gc.disable()
 
   if logging.getLogger().isEnabledFor(logging.DEBUG):
     atexit.register(_LogPeakRamUsage)

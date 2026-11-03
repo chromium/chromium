@@ -171,6 +171,9 @@ def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
       symbol.aliases = None
       num_shared_symbols += 1
       src_cursor += len(aliases)
+      # Break Symbol <-> aliases reference cycle on discarded symbols so
+      # refcounting frees them immediately when GC is disabled.
+      aliases.clear()
     else:
       src_cursor += 1
   raw_symbols[dst_cursor:] = []

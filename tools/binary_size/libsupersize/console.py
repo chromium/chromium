@@ -616,7 +616,8 @@ def Run(args, on_config_error):
 
   # Loading creates millions of long-lived objects, which makes cyclic GC
   # passes slow.
-  gc.disable()
+  if not args.no_disable_gc:
+    gc.disable()
 
   size_infos = []
   for path in args.inputs:
@@ -636,8 +637,9 @@ def Run(args, on_config_error):
   else:
     # Re-enable GC for interactive sessions, but exclude already-loaded objects
     # from future collections.
-    gc.freeze()
-    gc.enable()
+    if not args.no_disable_gc:
+      gc.freeze()
+      gc.enable()
     logging.info('Entering interactive console.')
     session.GoInteractive()
 
