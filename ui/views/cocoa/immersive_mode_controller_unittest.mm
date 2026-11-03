@@ -369,6 +369,39 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   [popup close];
 }
 
+// Regression test for https://crbug.com/576362377. When restoring a window into
+// a fullscreen Split View space, AppKit can send
+// -[NSWindowDelegate windowDidEnterFullScreen:] twice. Child windows that
+// already hold a reveal lock must not be locked again.
+TEST_F(CocoaImmersiveModeControllerTest,
+       FullscreenTransitionCompletedTwiceWithChildWindow) {
+  auto immersive_mode_controller =
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
+  immersive_mode_controller->Init();
+
+  // A child window that exists before the fullscreen transition completes.
+  NSWindow* popup1 = CreateNativeWidgetMacNSWindow(kPopupWidth, kPopupHeight);
+  [overlay() addChildWindow:popup1 ordered:NSWindowAbove];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
+
+  immersive_mode_controller->FullscreenTransitionCompleted();
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 1);
+
+  // A child window added after the first completion notification.
+  NSWindow* popup2 = CreateNativeWidgetMacNSWindow(kPopupWidth, kPopupHeight);
+  [overlay() addChildWindow:popup2 ordered:NSWindowAbove];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 2);
+
+  // A second completion notification must not re-lock existing child windows.
+  immersive_mode_controller->FullscreenTransitionCompleted();
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 2);
+
+  [popup2 close];
+  [popup1 close];
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
+}
+
 class MockImmersiveModeTabbedControllerCocoa
     : public ImmersiveModeTabbedControllerCocoa {
  public:

@@ -297,21 +297,29 @@ void ImmersiveModeControllerCocoa::Init() {
 }
 
 void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
+  // When restoring a window into a fullscreen Split View space (e.g. after a
+  // Chrome update), AppKit sends -[NSWindowDelegate windowDidEnterFullScreen:]
+  // twice. Only establish the initial reveal locks and child window observation
+  // once. See https://crbug.com/576362377.
+  const bool is_first_complete_notification = !fullscreen_transition_complete_;
   fullscreen_transition_complete_ = true;
   ForceToolbarVisibilityUpdate();
-  //  Establish reveal locks for windows that exist before entering fullscreen,
-  //  such as permission popups and the find bar. Do this after the fullscreen
-  //  transition has ended to avoid graphical flashes during the animation.
-  for (NSWindow* child in overlay_window_.childWindows) {
-    if (!ShouldObserveChildWindow(child)) {
-      continue;
+  if (is_first_complete_notification) {
+    // Establish reveal locks for windows that exist before entering
+    // fullscreen, such as permission popups and the find bar. Do this after
+    // the fullscreen transition has ended to avoid graphical flashes during
+    // the animation.
+    for (NSWindow* child in overlay_window_.childWindows) {
+      if (!ShouldObserveChildWindow(child)) {
+        continue;
+      }
+      OnChildWindowAdded(child);
     }
-    OnChildWindowAdded(child);
-  }
 
-  // Watch for child windows. When they are added the overlay view will be
-  // revealed as appropriate.
-  ObserveChildWindows(overlay_window_);
+    // Watch for child windows. When they are added the overlay view will be
+    // revealed as appropriate.
+    ObserveChildWindows(overlay_window_);
+  }
 
   NotifyBrowserWindowAboutToolbarRevealChanged();
   if (NativeWidgetNSWindowBridge* bridge =
