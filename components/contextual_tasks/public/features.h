@@ -29,6 +29,7 @@ BASE_DECLARE_FEATURE(kContextualTasksPinningV2);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralPinButtonRefactor);
 BASE_DECLARE_FEATURE(kContextualTasksPinnedButtonActiveIndicator);
 BASE_DECLARE_FEATURE(kContextualTasksUnifyPinButtonLogos);
+BASE_DECLARE_FEATURE(kContextualTasksPinningStringVariants);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonContextMenu);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss);
@@ -424,6 +425,29 @@ bool ShouldUseSuperGIconForPinButtons();
 // unified to use the gray (monochrome) Super G logo.
 bool ShouldUseGraySuperGIconForPinButtons();
 
+// User-facing string variant replacing "Google Search AI Mode" across
+// Contextual Tasks pinning, tooltips, IPH, and tutorial strings.
+// LINT.IfChange(PinningStringVariant)
+enum class PinningStringVariant {
+  // Uses "Google Search AI Mode" (default).
+  kAiMode,
+  // Uses "Google Search side panel".
+  kSidePanel,
+  // Uses "Google Search in side panel".
+  kInSidePanel,
+  // Uses "Google Search in Chrome".
+  kInChrome,
+  // Uses "Google Search panel".
+  kPanel,
+};
+// LINT.ThenChange(
+//   //chrome/browser/about_flags.cc:PinningStringVariant,
+//   //components/contextual_tasks/public/features.cc:PinningStringVariant,
+//   //components/contextual_tasks/public/features.cc:PinningStringVariantDescription
+// )
+
+PinningStringVariant GetContextualTasksPinningStringVariant();
+
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
@@ -758,6 +782,8 @@ extern const char kContextualTasksEphemeralButtonAutoDismissName[];
 extern const char kContextualTasksEphemeralButtonAutoDismissDescription[];
 extern const char kContextualTasksUnifyPinButtonLogosName[];
 extern const char kContextualTasksUnifyPinButtonLogosDescription[];
+extern const char kContextualTasksPinningStringVariantsName[];
+extern const char kContextualTasksPinningStringVariantsDescription[];
 extern const char kABASearchJourneysName[];
 extern const char kABASearchJourneysDescription[];
 extern const char kAllowSignedOutUserInDesktopAndroidName[];

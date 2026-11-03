@@ -228,6 +228,10 @@ bool GetEffectivePinState(Profile* profile);
 #if !BUILDFLAG(IS_ANDROID)
 // Updates the visibility of the contextual tasks pinned toolbar ActionItem.
 void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window);
+
+// Returns the localized string resource ID corresponding to
+// `default_resource_id` for the active Contextual Tasks pinning string variant.
+int GetContextualTasksPinningStringId(int default_resource_id);
 #endif
 
 // Returns whether dark mode should be used for the given profile and URL.

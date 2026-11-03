@@ -4715,6 +4715,39 @@ const FeatureEntry::FeatureVariation
         {"with Gray Super G logo",
          kContextualTasksUnifyPinButtonLogosGraySuperG, nullptr}};
 
+// LINT.IfChange(PinningStringVariant)
+const FeatureEntry::FeatureParam kContextualTasksPinningStringVariantsAiMode[] =
+    {{"ContextualTasksPinningStringVariant", "ai-mode"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinningStringVariantsSidePanel[] = {
+        {"ContextualTasksPinningStringVariant", "side-panel"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinningStringVariantsInSidePanel[] = {
+        {"ContextualTasksPinningStringVariant", "in-side-panel"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksPinningStringVariantsInChrome[] = {
+        {"ContextualTasksPinningStringVariant", "in-chrome"}};
+const FeatureEntry::FeatureParam kContextualTasksPinningStringVariantsPanel[] =
+    {{"ContextualTasksPinningStringVariant", "panel"}};
+
+const FeatureEntry::FeatureVariation
+    kContextualTasksPinningStringVariantsVariations[] = {
+        {"with 'Google Search AI Mode'",
+         kContextualTasksPinningStringVariantsAiMode, nullptr},
+        {"with 'Google Search side panel'",
+         kContextualTasksPinningStringVariantsSidePanel, nullptr},
+        {"with 'Google Search in side panel'",
+         kContextualTasksPinningStringVariantsInSidePanel, nullptr},
+        {"with 'Google Search in Chrome'",
+         kContextualTasksPinningStringVariantsInChrome, nullptr},
+        {"with 'Google Search panel'",
+         kContextualTasksPinningStringVariantsPanel, nullptr}};
+// LINT.ThenChange(
+//   //components/contextual_tasks/public/features.cc:PinningStringVariant,
+//   //components/contextual_tasks/public/features.cc:PinningStringVariantDescription,
+//   //components/contextual_tasks/public/features.h:PinningStringVariant
+// )
+
 const FeatureEntry::FeatureParam
     kContextualTasksUpdatedEntryPointsSidePanelRouting[] = {
         {"ContextualTasksContextMenuShowAskGoogle", "true"},
@@ -12289,6 +12322,17 @@ const FeatureEntry kFeatureEntries[] = {
          contextual_tasks::kContextualTasksUnifyPinButtonLogos,
          kContextualTasksUnifyPinButtonLogosVariations,
          "ContextualTasksUnifyPinButtonLogos")},
+
+    {"contextual-tasks-pinning-string-variants",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPinningStringVariantsName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksPinningStringVariantsDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksPinningStringVariants,
+         kContextualTasksPinningStringVariantsVariations,
+         "ContextualTasksPinningStringVariants")},
 
     {"contextual-tasks-private-api-no-animation",
      contextual_tasks::flag_descriptions::

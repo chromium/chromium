@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -2212,7 +2213,8 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
           contextual_tasks_ephemeral_element_id,
-          IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH,
+          contextual_tasks::GetContextualTasksPinningStringId(
+              IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH),
           IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT,
           base::BindRepeating(
               [](ContextPtr ctx,
@@ -2257,8 +2259,10 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
           contextual_tasks_ephemeral_element_id,
-          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH,
-          IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER,
+          contextual_tasks::GetContextualTasksPinningStringId(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH),
+          contextual_tasks::GetContextualTasksPinningStringId(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER),
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(is_ephemeral_button_on_right
                               ? HelpBubbleArrow::kTopRight
@@ -2272,8 +2276,10 @@ void MaybeRegisterChromeFeaturePromos(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHContextualTasksPinnedIconChangedFeature,
           kPinnedToolbarActionShowSidePanelContextualTasksElementId,
-          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH,
-          IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER,
+          contextual_tasks::GetContextualTasksPinningStringId(
+              IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH),
+          contextual_tasks::GetContextualTasksPinningStringId(
+              IDS_CONTEXTUAL_TASKS_PINNED_ICON_CHANGED_IPH_SCREENREADER),
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(148, "dianaou@google.com",
@@ -2773,7 +2779,9 @@ void MaybeRegisterChromeTutorials(
             // Completion of the tutorial after the shortcut is pinned.
             BubbleStep(
                 kPinnedToolbarActionShowSidePanelContextualTasksElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3)
+                .SetBubbleBodyText(
+                    contextual_tasks::GetContextualTasksPinningStringId(
+                        IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3))
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight)
                 .InAnyContext());
 

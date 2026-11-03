@@ -940,7 +940,8 @@ void ContextualTasksEphemeralButtonController::UpdatePinButtonTooltip() {
                      ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP
                      : IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP;
   }
-  const std::u16string tooltip_text = l10n_util::GetStringUTF16(tooltip_id);
+  const std::u16string tooltip_text = l10n_util::GetStringUTF16(
+      contextual_tasks::GetContextualTasksPinningStringId(tooltip_id));
   action_item->SetTooltipText(tooltip_text);
   action_item->SetAccessibleName(tooltip_text);
 }

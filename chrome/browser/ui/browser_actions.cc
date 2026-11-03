@@ -700,6 +700,9 @@ void BrowserActions::InitializeSidePanelActions() {
           vector_icons::kGoogleColorIcon, ui::kColorIcon);
 #endif
     }
+    const std::u16string contextual_tasks_label = l10n_util::GetStringUTF16(
+        contextual_tasks::GetContextualTasksPinningStringId(
+            IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL));
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(
@@ -808,10 +811,8 @@ void BrowserActions::InitializeSidePanelActions() {
                 },
                 bwi))
             .SetActionId(kActionSidePanelShowContextualTasks)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
-            .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
+            .SetText(contextual_tasks_label)
+            .SetTooltipText(contextual_tasks_label)
             .SetImage(contextual_tasks_image)
             .SetProperty(
                 actions::kActionItemPinnableKey,

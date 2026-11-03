@@ -246,6 +246,7 @@ source_set("impl") {
   } else {
     public_deps = [ "//ui/webui/resources/js/tracked_element:mojo_bindings" ]
     deps += [
+      "//chrome/app:branded_strings",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
@@ -255,6 +256,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",
       "//components/policy/core/browser",
+      "//components/strings:components_strings",
       "//ui/webui/tracked_element",
     ]
   }
@@ -889,6 +891,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/app:branded_strings",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/hats:test_support",
@@ -903,6 +906,7 @@ source_set("unit_tests") {
       "//components/feature_engagement/test:test_support",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
+      "//components/strings:components_strings",
       "//services/network/public/cpp",
       "//ui/shell_dialogs",
       "//ui/shell_dialogs:test_support",
