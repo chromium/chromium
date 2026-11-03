@@ -589,6 +589,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/core/browser/dice_header_helper.h:DiceLinkedAccountsMetaHeaderStatus) -->
 
+<!-- LINT.IfChange(DiceLinkedAccountsNewProfileOAuthMultiLoginResult) -->
+
+<enum name="DiceLinkedAccountsNewProfileOAuthMultiLoginResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="TransientError"/>
+  <int value="2" label="PersistentError"/>
+  <int value="3" label="TimedOut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_intercepted_session_startup_helper.h:DiceLinkedAccountsNewProfileOAuthMultiLoginResult) -->
+
 <!-- LINT.IfChange(DiceTokenBindingOutcome) -->
 
 <enum name="DiceTokenBindingOutcome">

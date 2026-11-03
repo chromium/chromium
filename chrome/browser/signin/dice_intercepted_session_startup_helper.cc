@@ -9,10 +9,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -39,6 +41,9 @@
 
 namespace {
 
+using NewProfileOAuthMultiLoginResult =
+    DiceInterceptedSessionStartupHelper::NewProfileOAuthMultiLoginResult;
+
 // Returns true for an HTTPS google.<TLD> or youtube.<TLD> URL without
 // credentials that isn't on the Gaia origin.
 bool IsAllowedContinueURL(const GURL& continue_url) {
@@ -59,6 +64,60 @@ bool CookieInfoContains(const signin::AccountsInCookieJarInfo& cookie_info,
   const std::vector<gaia::ListedAccount>& accounts =
       cookie_info.GetPotentiallyInvalidSignedInAccounts();
   return std::ranges::contains(accounts, account_id, &gaia::ListedAccount::id);
+}
+
+// Returns the accounts to add to the cookies with multilogin: `account_id`
+// first, followed by all other accounts in the profile.
+std::vector<CoreAccountId> GetAccountsToSend(
+    signin::IdentityManager* identity_manager,
+    const CoreAccountId& account_id) {
+  std::vector<CoreAccountId> accounts_to_send = {account_id};
+  for (const auto& account_info :
+       identity_manager->GetAccountsWithRefreshTokens()) {
+    if (account_info.account_id != account_id) {
+      accounts_to_send.push_back(account_info.account_id);
+    }
+  }
+  return accounts_to_send;
+}
+
+// Returns the histogram suffix for the number of accounts sent to multilogin.
+// Must only be called with more than one account.
+// LINT.IfChange(GetAccountCountSuffix)
+std::string_view GetAccountCountSuffix(size_t num_accounts) {
+  CHECK_GT(num_accounts, 1u);
+  if (num_accounts == 2) {
+    return ".2Accounts";
+  }
+  if (num_accounts == 3) {
+    return ".3Accounts";
+  }
+  return ".4PlusAccounts";
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:NewProfileOAuthMultiLoginAccountCount)
+
+NewProfileOAuthMultiLoginResult ToNewProfileOAuthMultiLoginResult(
+    signin::SetAccountsInCookieResult result) {
+  switch (result) {
+    case signin::SetAccountsInCookieResult::kSuccess:
+      return NewProfileOAuthMultiLoginResult::kSuccess;
+    case signin::SetAccountsInCookieResult::kTransientError:
+      return NewProfileOAuthMultiLoginResult::kTransientError;
+    case signin::SetAccountsInCookieResult::kPersistentError:
+      return NewProfileOAuthMultiLoginResult::kPersistentError;
+  }
+  NOTREACHED();
+}
+
+void RecordNewProfileOAuthMultiLoginResult(
+    NewProfileOAuthMultiLoginResult result,
+    size_t num_accounts) {
+  base::UmaHistogramEnumeration(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+                    GetAccountCountSuffix(num_accounts)}),
+      result);
 }
 
 }  // namespace
@@ -92,22 +151,30 @@ void DiceInterceptedSessionStartupHelper::Startup(base::OnceClosure callback) {
   if (cookie_info.AreAccountsFresh() &&
       CookieInfoContains(cookie_info, account_id_)) {
     MoveTab();
-  } else {
-    // Set the timeout.
-    on_cookie_update_timeout_.Reset(base::BindOnce(
-        &DiceInterceptedSessionStartupHelper::MoveTab, base::Unretained(this)));
-    // Adding accounts to the cookies can be an expensive operation. In
-    // particular the ExternalCCResult fetch may time out after multiple seconds
-    // (see kExternalCCResultTimeoutSeconds and
-    // https://crbug.com/40532442#comment38).
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, on_cookie_update_timeout_.callback(), base::Seconds(12));
+    return;
+  }
 
-    accounts_in_cookie_observer_.Observe(identity_manager);
-    if (use_multilogin_)
-      StartupMultilogin(identity_manager);
-    else
-      StartupReconcilor(identity_manager);
+  std::vector<CoreAccountId> accounts_to_send;
+  if (use_multilogin_) {
+    accounts_to_send = GetAccountsToSend(identity_manager, account_id_);
+  }
+
+  // Set the timeout.
+  on_cookie_update_timeout_.Reset(base::BindOnce(
+      &DiceInterceptedSessionStartupHelper::OnCookieUpdateTimeout,
+      base::Unretained(this), accounts_to_send.size()));
+  // Adding accounts to the cookies can be an expensive operation. In
+  // particular the ExternalCCResult fetch may time out after multiple seconds
+  // (see kExternalCCResultTimeoutSeconds and
+  // https://crbug.com/40532442#comment38).
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, on_cookie_update_timeout_.callback(), base::Seconds(12));
+
+  accounts_in_cookie_observer_.Observe(identity_manager);
+  if (use_multilogin_) {
+    StartupMultilogin(identity_manager, std::move(accounts_to_send));
+  } else {
+    StartupReconcilor(identity_manager);
   }
 }
 
@@ -178,18 +245,11 @@ void DiceInterceptedSessionStartupHelper::OnStateChanged(
 }
 
 void DiceInterceptedSessionStartupHelper::StartupMultilogin(
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    std::vector<CoreAccountId> accounts_to_send) {
   // Lock the reconcilor to avoid making multiple multilogin calls.
   reconcilor_lock_ = std::make_unique<AccountReconcilor::Lock>(
       AccountReconcilorFactory::GetForProfile(profile_));
-
-  std::vector<CoreAccountId> accounts_to_send = {account_id_};
-  for (const auto& account_info :
-       identity_manager->GetAccountsWithRefreshTokens()) {
-    if (account_info.account_id != account_id_) {
-      accounts_to_send.push_back(account_info.account_id);
-    }
-  }
 
   const size_t num_accounts = accounts_to_send.size();
 
@@ -223,16 +283,21 @@ void DiceInterceptedSessionStartupHelper::OnSetAccountInCookieCompleted(
     const base::TimeDelta duration = timer.Elapsed();
     base::UmaHistogramTimes(kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin,
                             duration);
-    std::string_view suffix = ".4PlusAccounts";
-    if (num_accounts == 2) {
-      suffix = ".2Accounts";
-    } else if (num_accounts == 3) {
-      suffix = ".3Accounts";
-    }
     base::UmaHistogramTimes(
-        base::StrCat(
-            {kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, suffix}),
+        base::StrCat({kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin,
+                      GetAccountCountSuffix(num_accounts)}),
         duration);
+    RecordNewProfileOAuthMultiLoginResult(
+        ToNewProfileOAuthMultiLoginResult(result), num_accounts);
+  }
+  MoveTab();
+}
+
+void DiceInterceptedSessionStartupHelper::OnCookieUpdateTimeout(
+    size_t num_accounts) {
+  if (use_multilogin_ && num_accounts > 1) {
+    RecordNewProfileOAuthMultiLoginResult(
+        NewProfileOAuthMultiLoginResult::kTimedOut, num_accounts);
   }
   MoveTab();
 }

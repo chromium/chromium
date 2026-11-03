@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_INTERCEPTED_SESSION_STARTUP_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_INTERCEPTED_SESSION_STARTUP_HELPER_H_
 
+#include <vector>
+
 #include "base/cancelable_callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +20,8 @@
 
 inline constexpr char kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin[] =
     "Signin.Dice.LinkedAccounts.Latency.NewProfileOAuthMultiLogin";
+inline constexpr char kDiceLinkedAccountsNewProfileOAuthMultiLoginResult[] =
+    "Signin.Dice.LinkedAccounts.NewProfileOAuthMultiLoginResult";
 
 class GURL;
 
@@ -43,6 +47,23 @@ class DiceInterceptedSessionStartupHelper
     : public signin::IdentityManager::Observer,
       public AccountReconcilor::Observer {
  public:
+  // Outcome of the OAuthMultiLogin call that adds the accounts to the cookies
+  // of the new profile.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DiceLinkedAccountsNewProfileOAuthMultiLoginResult)
+  enum class NewProfileOAuthMultiLoginResult {
+    kSuccess = 0,
+    kTransientError = 1,
+    kPersistentError = 2,
+    // OAuthMultiLogin did not complete before the timeout. The tab is moved to
+    // the new profile without waiting for the cookies.
+    kTimedOut = 3,
+    kMaxValue = kTimedOut,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceLinkedAccountsNewProfileOAuthMultiLoginResult)
+
   // |profile| is the new profile that was created after signin interception.
   // |account_id| is the main account for the profile, it's already in the
   // profile.
@@ -87,7 +108,9 @@ class DiceInterceptedSessionStartupHelper
 
  private:
   // For new profiles, the account is added directly using multilogin.
-  void StartupMultilogin(signin::IdentityManager* identity_manager);
+  // `accounts_to_send` starts with the primary account of the profile.
+  void StartupMultilogin(signin::IdentityManager* identity_manager,
+                         std::vector<CoreAccountId> accounts_to_send);
 
   // For existing profiles, simply wait for the reconcilor to update the
   // accounts.
@@ -98,6 +121,11 @@ class DiceInterceptedSessionStartupHelper
   void OnSetAccountInCookieCompleted(base::ElapsedTimer timer,
                                      size_t num_accounts,
                                      signin::SetAccountsInCookieResult result);
+
+  // Called when the account is still not in the cookies after the timeout.
+  // `num_accounts` is the number of accounts sent to multilogin, or 0 if
+  // multilogin is not used.
+  void OnCookieUpdateTimeout(size_t num_accounts);
 
   // Entry point to move the intercepted tab to the new/target profile.
   // This method synchronously disconnects all observers to avoid receiving

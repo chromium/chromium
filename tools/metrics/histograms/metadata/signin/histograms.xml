@@ -131,6 +131,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_deep_link_payload.h:ExternalEntryPoint) -->
 
+<!-- LINT.IfChange(NewProfileOAuthMultiLoginAccountCount) -->
+
+<variants name="NewProfileOAuthMultiLoginAccountCount">
+  <variant name="" summary="all multi-account sessions"/>
+  <variant name=".2Accounts" summary="sessions with 2 accounts"/>
+  <variant name=".3Accounts" summary="sessions with 3 accounts"/>
+  <variant name=".4PlusAccounts" summary="sessions with 4 or more accounts"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/dice_intercepted_session_startup_helper.cc:GetAccountCountSuffix) -->
+
 <!-- LINT.IfChange(PartitionSuffix) -->
 
 <variants name="PartitionSuffix">
@@ -2099,14 +2110,11 @@ prefs when the profile is loaded.  -->
     Records the time taken by OAuthMultiLogin in the new profile to populate web
     cookies for all moved accounts in multi-account DICE Linked Accounts
     sessions ({AccountCount}). Recorded when OAuthMultiLogin completes in
-    DiceInterceptedSessionStartupHelper.
+    DiceInterceptedSessionStartupHelper. Not recorded if OAuthMultiLogin does
+    not complete before the timeout, see
+    Signin.Dice.LinkedAccounts.NewProfileOAuthMultiLoginResult.
   </summary>
-  <token key="AccountCount">
-    <variant name="" summary="all multi-account sessions"/>
-    <variant name=".2Accounts" summary="sessions with 2 accounts"/>
-    <variant name=".3Accounts" summary="sessions with 3 accounts"/>
-    <variant name=".4PlusAccounts" summary="sessions with 4 or more accounts"/>
-  </token>
+  <token key="AccountCount" variants="NewProfileOAuthMultiLoginAccountCount"/>
 </histogram>
 
 <histogram name="Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration"
@@ -2118,6 +2126,24 @@ prefs when the profile is loaded.  -->
     Accounts sign-in session, measured from header processing start until all
     token fetches have completed or the session is terminated.
   </summary>
+</histogram>
+
+<histogram
+    name="Signin.Dice.LinkedAccounts.NewProfileOAuthMultiLoginResult{AccountCount}"
+    enum="DiceLinkedAccountsNewProfileOAuthMultiLoginResult"
+    expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the outcome of OAuthMultiLogin in the new profile, which populates
+    web cookies for all moved accounts in multi-account DICE Linked Accounts
+    sessions ({AccountCount}). Recorded once per new profile startup in
+    DiceInterceptedSessionStartupHelper, either when OAuthMultiLogin completes
+    or when it does not complete before the timeout. On timeout, the tab is
+    moved to the new profile without waiting for the cookies and the late result
+    is dropped.
+  </summary>
+  <token key="AccountCount" variants="NewProfileOAuthMultiLoginAccountCount"/>
 </histogram>
 
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"

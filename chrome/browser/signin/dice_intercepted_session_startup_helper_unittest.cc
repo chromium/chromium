@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -62,6 +63,25 @@ constexpr char kMultiloginSuccessResponse[] =
        }
 )";
 
+// Transient error, retried by OAuthMultiloginHelper before giving up.
+constexpr char kMultiloginRetryResponse[] =
+    R"()]}'
+       {
+         "status": "RETRY"
+       }
+)";
+
+// Persistent error.
+constexpr char kMultiloginInvalidInputResponse[] =
+    R"()]}'
+       {
+         "status": "INVALID_INPUT"
+       }
+)";
+
+using NewProfileOAuthMultiLoginResult =
+    DiceInterceptedSessionStartupHelper::NewProfileOAuthMultiLoginResult;
+
 }  // namespace
 
 class DiceInterceptedSessionStartupHelperTest : public testing::Test {
@@ -97,20 +117,15 @@ class DiceInterceptedSessionStartupHelperTest : public testing::Test {
             ->GetCheckConnectionInfoURLWithSource("ChromiumBrowser")
             .spec(),
         "[]");
-    test_url_loader_factory_.AddResponse(
-        GaiaUrls::GetInstance()->oauth_multilogin_url().spec(),
-        kMultiloginSuccessResponse);
-    test_url_loader_factory_.AddResponse(
-        base::StrCat({GaiaUrls::GetInstance()->oauth_multilogin_url().spec(),
-                      "?source=ChromiumBrowser"}),
-        kMultiloginSuccessResponse);
 
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
           if (request.url.path() == "/oauth/multilogin") {
             last_multilogin_request_ = request;
-            test_url_loader_factory_.AddResponse(request.url.spec(),
-                                                 kMultiloginSuccessResponse);
+            if (multilogin_response_) {
+              test_url_loader_factory_.AddResponse(request.url.spec(),
+                                                   *multilogin_response_);
+            }
           } else if (request.url.path() == "/GetCheckConnectionInfo") {
             test_url_loader_factory_.AddResponse(request.url.spec(), "[]");
           }
@@ -134,7 +149,14 @@ class DiceInterceptedSessionStartupHelperTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
+  }
+
  protected:
+  // Response to multilogin requests. If unset, multilogin requests are left
+  // pending.
+  std::optional<std::string> multilogin_response_ = kMultiloginSuccessResponse;
   std::optional<network::ResourceRequest> last_multilogin_request_;
 
  private:
@@ -147,7 +169,7 @@ class DiceInterceptedSessionStartupHelperTest : public testing::Test {
 };
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
-       NewProfile_SingleAccount_MultiloginSuccess_NoLatencyRecorded) {
+       NewProfile_SingleAccount_MultiloginSuccess_NoMetricsRecorded) {
   base::HistogramTester histogram_tester;
 
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -174,6 +196,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
@@ -237,7 +261,158 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
-       ExistingProfile_StartupReconcilor_NoLatencyRecorded) {
+       NewProfile_MultiAccount_MultiloginSuccess_ResultRecorded) {
+  base::HistogramTester histogram_tester;
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->MakeAccountAvailable("bob@example.com");
+
+  base::test::TestFuture<void> future;
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  helper->Startup(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+      NewProfileOAuthMultiLoginResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, ".2Accounts"}),
+      NewProfileOAuthMultiLoginResult::kSuccess, 1);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       NewProfile_MultiAccount_MultiloginTransientError_ResultRecorded) {
+  base::HistogramTester histogram_tester;
+  multilogin_response_ = kMultiloginRetryResponse;
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->MakeAccountAvailable("bob@example.com");
+
+  base::test::TestFuture<void> future;
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  helper->Startup(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+      NewProfileOAuthMultiLoginResult::kTransientError, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, ".2Accounts"}),
+      NewProfileOAuthMultiLoginResult::kTransientError, 1);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       NewProfile_MultiAccount_MultiloginPersistentError_ResultRecorded) {
+  base::HistogramTester histogram_tester;
+  multilogin_response_ = kMultiloginInvalidInputResponse;
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->MakeAccountAvailable("bob@example.com");
+
+  base::test::TestFuture<void> future;
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  helper->Startup(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+      NewProfileOAuthMultiLoginResult::kPersistentError, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, ".2Accounts"}),
+      NewProfileOAuthMultiLoginResult::kPersistentError, 1);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       NewProfile_MultiAccount_MultiloginTimeout_TimedOutRecorded) {
+  base::HistogramTester histogram_tester;
+  // Leave the multilogin request pending.
+  multilogin_response_.reset();
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->MakeAccountAvailable("bob@example.com");
+  identity_test_env()->MakeAccountAvailable("charlie@example.com");
+  identity_test_env()->MakeAccountAvailable("dave@example.com");
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  // Like `DiceWebSigninInterceptor`, delete the helper once the tab has moved.
+  helper->Startup(base::BindLambdaForTesting([&helper]() { helper.reset(); }));
+
+  // Let the multilogin request start, without reaching the timeout.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(last_multilogin_request_.has_value());
+  ASSERT_TRUE(helper);
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
+
+  // The timeout moves the tab without waiting for multilogin.
+  task_environment()->FastForwardBy(base::Seconds(12));
+  EXPECT_FALSE(helper);
+  histogram_tester.ExpectUniqueSample(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+      NewProfileOAuthMultiLoginResult::kTimedOut, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+                    ".4PlusAccounts"}),
+      NewProfileOAuthMultiLoginResult::kTimedOut, 1);
+
+  // A late multilogin completion is not recorded.
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
+      last_multilogin_request_->url.spec(), kMultiloginSuccessResponse));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  histogram_tester.ExpectUniqueSample(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult,
+      NewProfileOAuthMultiLoginResult::kTimedOut, 1);
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       NewProfile_SingleAccount_MultiloginTimeout_NoMetricsRecorded) {
+  base::HistogramTester histogram_tester;
+  // Leave the multilogin request pending.
+  multilogin_response_.reset();
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+
+  base::test::TestFuture<void> future;
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  helper->Startup(future.GetCallback());
+  task_environment()->FastForwardBy(base::Seconds(12));
+  EXPECT_TRUE(future.IsReady());
+
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       ExistingProfile_StartupReconcilor_NoMetricsRecorded) {
   base::HistogramTester histogram_tester;
 
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -264,6 +439,32 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 
   histogram_tester.ExpectTotalCount(
       kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
+}
+
+TEST_F(DiceInterceptedSessionStartupHelperTest,
+       ExistingProfile_StartupReconcilor_Timeout_NoMetricsRecorded) {
+  base::HistogramTester histogram_tester;
+
+  AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  identity_test_env()->MakeAccountAvailable("bob@example.com");
+
+  base::test::TestFuture<void> future;
+
+  auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
+      profile(), /*is_new_profile=*/false, initiator_info.GetAccountId(),
+      /*tab_to_move=*/nullptr);
+
+  // The account never shows up in the cookies, so the tab is moved when the
+  // timeout fires.
+  helper->Startup(future.GetCallback());
+  task_environment()->FastForwardBy(base::Seconds(12));
+  EXPECT_TRUE(future.IsReady());
+
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsNewProfileOAuthMultiLoginResult, 0);
 }
 
 struct DestinationURLTestCase {
