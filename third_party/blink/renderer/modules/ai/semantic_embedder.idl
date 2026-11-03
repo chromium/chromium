@@ -20,6 +20,21 @@ dictionary SemanticEmbedderEmbedOptions {
   SemanticEmbedderTaskType taskType;
 };
 
+enum SemanticEmbedderInputType {
+  "text"
+};
+
+dictionary SemanticEmbedderInput {
+  required SemanticEmbedderInputType type;
+  required DOMString value;
+};
+
+// A bare string is shorthand for { type: "text", value: providedValue }.
+typedef (DOMString or SemanticEmbedderInput) SemanticEmbedderInputItem;
+typedef (
+  SemanticEmbedderInputItem or sequence<SemanticEmbedderInputItem>
+) SemanticEmbedderInputs;
+
 dictionary SemanticEmbedderResult {
   sequence<ContentEmbedding> embeddings;
 };
@@ -58,7 +73,7 @@ interface SemanticEmbedder {
     RaisesException
   ]
   Promise<SemanticEmbedderResult> embed(
-    (DOMString or sequence<DOMString>) input,
+    SemanticEmbedderInputs input,
     optional SemanticEmbedderEmbedOptions options = {}
   );
 

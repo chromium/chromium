@@ -12,11 +12,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_semanticembedderinputorstringsequence_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_string.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -86,6 +90,29 @@ class EmbedderTest : public testing::Test {
         std::move(pending_remote), SemanticEmbedderCreateOptions::Create());
   }
 
+  // embed() input for one bare string.
+  static V8SemanticEmbedderInputs* MakeInput(const String& text) {
+    return MakeGarbageCollected<V8SemanticEmbedderInputs>(text);
+  }
+
+  // embed() input for a sequence of bare strings.
+  static V8SemanticEmbedderInputs* MakeInput(const Vector<String>& texts) {
+    HeapVector<Member<V8SemanticEmbedderInputItem>> items;
+    for (const String& text : texts) {
+      items.push_back(MakeGarbageCollected<V8SemanticEmbedderInputItem>(text));
+    }
+    return MakeGarbageCollected<V8SemanticEmbedderInputs>(std::move(items));
+  }
+
+  // A {type: "text", value} item.
+  static SemanticEmbedderInput* MakeTextItem(const String& text) {
+    auto* item = SemanticEmbedderInput::Create();
+    item->setType(
+        V8SemanticEmbedderInputType(V8SemanticEmbedderInputType::Enum::kText));
+    item->setValue(text);
+    return item;
+  }
+
  protected:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAISemanticEmbedder> mock_remote_;
@@ -100,7 +127,7 @@ TEST_F(EmbedderTest, EmbedSucceeds) {
       SemanticEmbedderEmbedOptions::Create();
   options->setTaskType(V8SemanticEmbedderTaskType(
       V8SemanticEmbedderTaskType::Enum::kClassification));
-  auto* input = MakeGarbageCollected<V8UnionStringOrStringSequence>("hello");
+  auto* input = MakeInput("hello");
   auto promise =
       embedder->embed(scope.GetScriptState(), input, options, exception_state);
   EXPECT_FALSE(exception_state.HadException());
@@ -123,7 +150,7 @@ TEST_F(EmbedderTest, EmbedBatchSucceeds) {
 
   Vector<String> inputs = {"hello", "world"};
   DummyExceptionStateForTesting exception_state;
-  auto* input = MakeGarbageCollected<V8UnionStringOrStringSequence>(inputs);
+  auto* input = MakeInput(inputs);
   auto promise =
       embedder->embed(scope.GetScriptState(), input,
                       SemanticEmbedderEmbedOptions::Create(), exception_state);
@@ -139,6 +166,46 @@ TEST_F(EmbedderTest, EmbedBatchSucceeds) {
   EXPECT_EQ(mock_remote_->last_inputs()[1], "world");
 }
 
+TEST_F(EmbedderTest, EmbedAcceptsTypedTextItems) {
+  V8TestingScope scope;
+  SemanticEmbedder* embedder = CreateSemanticEmbedder(scope.GetScriptState());
+
+  // One {type: "text", value} item.
+  {
+    DummyExceptionStateForTesting exception_state;
+    auto promise = embedder->embed(
+        scope.GetScriptState(),
+        MakeGarbageCollected<V8SemanticEmbedderInputs>(MakeTextItem("hello")),
+        SemanticEmbedderEmbedOptions::Create(), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(mock_remote_->last_inputs(), Vector<String>{"hello"});
+  }
+
+  // A mixed sequence: a bare string and a typed item reach the browser as
+  // their text, in order.
+  {
+    HeapVector<Member<V8SemanticEmbedderInputItem>> items;
+    items.push_back(
+        MakeGarbageCollected<V8SemanticEmbedderInputItem>(String("hello")));
+    items.push_back(MakeGarbageCollected<V8SemanticEmbedderInputItem>(
+        MakeTextItem("world")));
+    DummyExceptionStateForTesting exception_state;
+    auto promise = embedder->embed(
+        scope.GetScriptState(),
+        MakeGarbageCollected<V8SemanticEmbedderInputs>(std::move(items)),
+        SemanticEmbedderEmbedOptions::Create(), exception_state);
+    EXPECT_FALSE(exception_state.HadException());
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_EQ(mock_remote_->last_inputs(), (Vector<String>{"hello", "world"}));
+  }
+  EXPECT_EQ(mock_remote_->call_count(), 2);
+}
+
 TEST_F(EmbedderTest, DisconnectRejectsPromise) {
   V8TestingScope scope;
   SemanticEmbedder* embedder = CreateSemanticEmbedder(scope.GetScriptState());
@@ -146,7 +213,7 @@ TEST_F(EmbedderTest, DisconnectRejectsPromise) {
   mock_remote_->set_hold_callback(true);
 
   DummyExceptionStateForTesting exception_state;
-  auto* input = MakeGarbageCollected<V8UnionStringOrStringSequence>("hello");
+  auto* input = MakeInput("hello");
   auto promise =
       embedder->embed(scope.GetScriptState(), input,
                       SemanticEmbedderEmbedOptions::Create(), exception_state);

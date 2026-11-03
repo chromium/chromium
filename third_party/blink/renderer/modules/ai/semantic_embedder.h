@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,7 +22,6 @@
 
 namespace blink {
 
-class V8UnionStringOrStringSequence;
 class SemanticEmbedderResult;
 
 class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
@@ -51,7 +51,7 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
 
   ScriptPromise<SemanticEmbedderResult> embed(
       ScriptState* script_state,
-      const V8UnionStringOrStringSequence* input,
+      const V8SemanticEmbedderInputs* input,
       const SemanticEmbedderEmbedOptions* options,
       ExceptionState& exception_state);
 

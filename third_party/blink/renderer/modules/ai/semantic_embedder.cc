@@ -11,12 +11,15 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_embedding.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_embed_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_input_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_semanticembedderinputorstringsequence_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_string.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -60,6 +63,16 @@ mojom::blink::AISemanticEmbedderEmbedOptionsPtr EmbedOptionsToMojo(
     mojo_options->task_type = ToMojoTaskType(options->taskType());
   }
   return mojo_options;
+}
+
+// Returns the text of a typed input item; "text" is the only type so far. The
+// switch has no default, so a new type does not compile until it is handled.
+String InputText(const SemanticEmbedderInput& item) {
+  switch (item.type().AsEnum()) {
+    case V8SemanticEmbedderInputType::Enum::kText:
+      return item.value();
+  }
+  NOTREACHED();
 }
 
 class CreateSemanticEmbedderClient
@@ -279,7 +292,7 @@ ScriptPromise<SemanticEmbedder> SemanticEmbedder::create(
 
 ScriptPromise<SemanticEmbedderResult> SemanticEmbedder::embed(
     ScriptState* script_state,
-    const V8UnionStringOrStringSequence* input,
+    const V8SemanticEmbedderInputs* input,
     const SemanticEmbedderEmbedOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
@@ -296,13 +309,24 @@ ScriptPromise<SemanticEmbedderResult> SemanticEmbedder::embed(
     return promise;
   }
 
+  // Normalize structured and shorthand inputs to a flattened vector of strings.
   Vector<String> inputs;
   switch (input->GetContentType()) {
-    case V8UnionStringOrStringSequence::ContentType::kString:
+    case V8SemanticEmbedderInputs::ContentType::kString:
       inputs.push_back(input->GetAsString());
       break;
-    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
-      inputs = input->GetAsStringSequence();
+    case V8SemanticEmbedderInputs::ContentType::kSemanticEmbedderInput:
+      inputs.push_back(InputText(*input->GetAsSemanticEmbedderInput()));
+      break;
+    case V8SemanticEmbedderInputs::ContentType::
+        kSemanticEmbedderInputOrStringSequence:
+      inputs.assign(
+          input->GetAsSemanticEmbedderInputOrStringSequence(),
+          [](const Member<V8SemanticEmbedderInputItem>& item) {
+            return item->IsString()
+                       ? item->GetAsString()
+                       : InputText(*item->GetAsSemanticEmbedderInput());
+          });
       break;
   }
 
