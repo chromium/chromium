@@ -198,8 +198,7 @@ IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
-                       // TODO(crbug.com/365077551): Re-enable this test
-                       DISABLED_InvokeUi_microphone) {
+                       InvokeUi_microphone) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_F(LegacyPromptEmbeddedPermissionPromptUiTest,
