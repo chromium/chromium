@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -405,6 +406,10 @@ class TestColorProviderSource : public ui::ColorProviderSource {
 
   // Swaps the light and dark maps.
   void SwapMaps();
+
+  void SetColorMode(ui::ColorProviderKey::ColorMode color_mode) {
+    key_.color_mode = color_mode;
+  }
 
  private:
   ui::ColorProvider provider_;
@@ -3980,6 +3985,128 @@ TEST_F(WebContentsImplTest, ColorRelatedStateChangesCoalesced) {
   run_loop.Run();
   mock_page_broadcast.FlushForTesting();
   ::testing::Mock::VerifyAndClearExpectations(&mock_page_broadcast);
+}
+
+namespace {
+
+class ColorSchemeTestContentBrowserClient : public TestContentBrowserClient {
+ public:
+  static blink::mojom::PreferredColorScheme GetPreferredColorScheme(
+      WebContents* web_contents) {
+    if (WebContents* outer = web_contents->GetOuterWebContents()) {
+      return outer->GetOrCreateWebPreferences().preferred_color_scheme;
+    }
+    return web_contents->GetColorMode() ==
+                   ui::ColorProviderKey::ColorMode::kDark
+               ? blink::mojom::PreferredColorScheme::kDark
+               : blink::mojom::PreferredColorScheme::kLight;
+  }
+
+  void OverrideWebPreferences(
+      WebContents* web_contents,
+      SiteInstance& main_frame_site,
+      blink::web_pref::WebPreferences* web_prefs) override {
+    web_prefs->preferred_color_scheme = GetPreferredColorScheme(web_contents);
+  }
+
+  bool WebPreferencesNeedUpdateForColorRelatedStateChanges(
+      WebContents& web_contents,
+      const SiteInstance& main_frame_site) const override {
+    return GetPreferredColorScheme(&web_contents) !=
+           web_contents.GetOrCreateWebPreferences().preferred_color_scheme;
+  }
+};
+
+}  // namespace
+
+TEST_F(WebContentsImplTest,
+       InitialColorProviderChangeUpdatesSynchronouslyThenDefers) {
+  ui::NativeTheme::SetPreferredColorSchemeOverride(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  base::ScopedClosureRunner reset_color_scheme(base::BindOnce(
+      &ui::NativeTheme::SetPreferredColorSchemeOverride, std::nullopt));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kThemeChangeOptimization);
+
+  ColorSchemeTestContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      contents(), GURL("https://example.com/outer"));
+  TestRenderFrameHost* child_frame = main_test_rfh()->AppendChild("child");
+  EXPECT_EQ(contents()->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+
+  std::unique_ptr<WebContents> inner_contents =
+      WebContentsTester::CreateTestWebContents(browser_context(), nullptr);
+  WebContents* inner_contents_ptr = inner_contents.get();
+  contents()->AttachInnerWebContents(std::move(inner_contents), child_frame,
+                                     /*is_full_page=*/false);
+  EXPECT_EQ(
+      inner_contents_ptr->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kLight);
+
+  // A `NativeTheme` update while `contents()` is still observing
+  // `DefaultColorProviderSource` must be deferred and must not prevent the
+  // subsequent initial `SetColorProviderSource()` attachment from updating
+  // `WebPreferences` synchronously.
+  ui::NativeTheme::SetPreferredColorSchemeOverride(
+      ui::NativeTheme::PreferredColorScheme::kDark);
+  EXPECT_EQ(contents()->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kLight);
+  EXPECT_EQ(
+      inner_contents_ptr->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kLight);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return contents()->GetOrCreateWebPreferences().preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kDark &&
+           inner_contents_ptr->GetOrCreateWebPreferences()
+                   .preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kDark;
+  }));
+
+  // Restore the default `NativeTheme` color scheme.
+  ui::NativeTheme::SetPreferredColorSchemeOverride(
+      ui::NativeTheme::PreferredColorScheme::kLight);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return contents()->GetOrCreateWebPreferences().preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kLight &&
+           inner_contents_ptr->GetOrCreateWebPreferences()
+                   .preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kLight;
+  }));
+
+  // Initial attachment to a `ColorProviderSource` must synchronously update
+  // `WebPreferences` on both the outer and attached inner `WebContents` without
+  // waiting for a posted task.
+  TestColorProviderSource color_provider_source;
+  color_provider_source.SetColorMode(ui::ColorProviderKey::ColorMode::kDark);
+  contents()->SetColorProviderSource(&color_provider_source);
+  EXPECT_EQ(contents()->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(
+      inner_contents_ptr->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kDark);
+
+  // Subsequent color provider notifications are deferred until the scheduled
+  // task runs.
+  color_provider_source.SetColorMode(ui::ColorProviderKey::ColorMode::kLight);
+  color_provider_source.NotifyColorProviderChanged();
+  EXPECT_EQ(contents()->GetOrCreateWebPreferences().preferred_color_scheme,
+            blink::mojom::PreferredColorScheme::kDark);
+  EXPECT_EQ(
+      inner_contents_ptr->GetOrCreateWebPreferences().preferred_color_scheme,
+      blink::mojom::PreferredColorScheme::kDark);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return contents()->GetOrCreateWebPreferences().preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kLight &&
+           inner_contents_ptr->GetOrCreateWebPreferences()
+                   .preferred_color_scheme ==
+               blink::mojom::PreferredColorScheme::kLight;
+  }));
 }
 
 // Regression test: a re-entrant OnColorProviderChanged() during teardown must

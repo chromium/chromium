@@ -2286,6 +2286,8 @@ void WebContentsImpl::SetPageBaseBackgroundColor(std::optional<SkColor> color) {
 }
 
 void WebContentsImpl::SetColorProviderSource(ui::ColorProviderSource* source) {
+  base::AutoReset<bool> setting_source(&is_setting_color_provider_source_,
+                                       true);
   ColorProviderSourceObserver::Observe(source);
 }
 
@@ -12857,18 +12859,18 @@ void WebContentsImpl::SetVisibilityForChildViews(bool visible) {
 }
 
 void WebContentsImpl::ScheduleColorRelatedStateChanges() {
-  if (color_related_state_change_scheduled_) {
+  if (!scheduled_color_related_state_change_.IsCancelled()) {
     return;
   }
-  color_related_state_change_scheduled_ = true;
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
+  scheduled_color_related_state_change_.Reset(
       base::BindOnce(&WebContentsImpl::HandleColorRelatedStateChanges,
                      weak_factory_.GetWeakPtr()));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, scheduled_color_related_state_change_.callback());
 }
 
 void WebContentsImpl::HandleColorRelatedStateChanges() {
-  color_related_state_change_scheduled_ = false;
+  scheduled_color_related_state_change_.Cancel();
 
   // This can be reached re-entrantly during ~WebContentsImpl, after the
   // primary main frame has begun being destroyed. Bail out before
@@ -12961,7 +12963,8 @@ void WebContentsImpl::OnColorProviderChanged() {
 
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 
-  if (base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
+  if (!is_setting_color_provider_source_ &&
+      base::FeatureList::IsEnabled(features::kThemeChangeOptimization)) {
     ScheduleColorRelatedStateChanges();
   } else {
     HandleColorRelatedStateChanges();
