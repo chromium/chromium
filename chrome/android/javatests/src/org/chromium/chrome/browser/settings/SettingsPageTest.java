@@ -69,7 +69,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureOverrides;
@@ -97,7 +96,8 @@ import org.chromium.chrome.browser.settings.search.SearchResultsPreferenceFragme
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -128,14 +128,9 @@ public class SettingsPageTest {
     /** The activity the test started with, to detect tests that recreate it. */
     private ChromeTabbedActivity mInitialActivity;
 
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mActivityTestRule, false);
-
     @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mBlankCTATabInitialStateRule);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Before
     public void setUp() {
@@ -387,7 +382,7 @@ public class SettingsPageTest {
                         ChromeTabbedActivity.class,
                         Stage.RESUMED,
                         activity::onNightModeStateChanged);
-        mActivityTestRule.setActivity(newActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
     }
 
     /** Regression test for crbug.com/566898692. */
@@ -432,7 +427,7 @@ public class SettingsPageTest {
                         /* uiThreadTrigger= */ null,
                         /* backgroundThreadTrigger= */ () ->
                                 onView(allOf(withId(viewId), isDisplayed())).perform(click()));
-        mActivityTestRule.setActivity(newActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
         waitForSettingsPageInTab("Settings page should reattach after the theme change.");
     }
 
@@ -477,13 +472,15 @@ public class SettingsPageTest {
             // Leave the batch in light mode even if the test failed while dark.
             if (ThreadUtils.runOnUiThreadBlocking(
                     () -> GlobalNightModeStateProviderHolder.getInstance().isInNightMode())) {
-                mActivityTestRule.setActivity(
-                        ApplicationTestUtils.waitForActivityWithClass(
-                                ChromeTabbedActivity.class,
-                                Stage.RESUMED,
-                                () ->
-                                        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
-                                                false)));
+                mActivityTestRule
+                        .getActivityTestRule()
+                        .setActivity(
+                                ApplicationTestUtils.waitForActivityWithClass(
+                                        ChromeTabbedActivity.class,
+                                        Stage.RESUMED,
+                                        () ->
+                                                ChromeNightModeTestUtils
+                                                        .setUpNightModeForChromeActivity(false)));
             }
             ThreadUtils.runOnUiThreadBlocking(
                     ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
