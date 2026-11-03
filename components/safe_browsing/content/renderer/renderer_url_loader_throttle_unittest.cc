@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -20,6 +21,10 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
+#endif
 
 namespace safe_browsing {
 
@@ -60,14 +65,21 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
 class MockExtensionWebRequestReporter
     : public mojom::ExtensionWebRequestReporter {
  public:
+  using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
+      RemoteHostContactedInfo::RemoteHostInfo;
+
   MockExtensionWebRequestReporter() = default;
   ~MockExtensionWebRequestReporter() override = default;
 
   void SendWebRequestData(
       const std::string& extension_id,
       const GURL& url,
-      mojom::WebRequestProtocolType protocol_type,
-      mojom::WebRequestContactInitiatorType initiator_type) override {}
+      RemoteHostInfo::ProtocolType protocol_type,
+      RemoteHostInfo::ContactInitiator initiator_type) override {
+    url_ = url;
+    protocol_type_ = protocol_type;
+    initiator_type_ = initiator_type;
+  }
 
   void Clone(mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver)
       override {
@@ -75,6 +87,10 @@ class MockExtensionWebRequestReporter
   }
 
   mojo::Receiver<mojom::ExtensionWebRequestReporter> receiver_{this};
+  GURL url_;
+  RemoteHostInfo::ProtocolType protocol_type_ = RemoteHostInfo::UNSPECIFIED;
+  RemoteHostInfo::ContactInitiator initiator_type_ =
+      RemoteHostInfo::CONTACT_INITIATOR_UNSPECIFIED;
 
  private:
   mojo::Receiver<mojom::ExtensionWebRequestReporter> clone_receiver_{this};
@@ -109,6 +125,12 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
   network::HttpRequestHeadersUpdateParams headers_update_params;
   throttle_->WillRedirectRequest(&redirect_info, *response_head, &defer,
                                  &headers_update_params);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return reporter->url_ == redirect_info.new_url; }));
+  EXPECT_EQ(reporter->protocol_type_,
+            MockExtensionWebRequestReporter::RemoteHostInfo::HTTP_HTTPS);
+  EXPECT_EQ(reporter->initiator_type_,
+            MockExtensionWebRequestReporter::RemoteHostInfo::EXTENSION);
 
   // Destroy the reporter, simulating the URLLoaderThrottleProviderImpl being
   // destroyed. This should cause the pipe in the throttle to be closed.

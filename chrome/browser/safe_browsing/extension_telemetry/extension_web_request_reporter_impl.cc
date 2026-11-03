@@ -7,37 +7,9 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
-
-namespace {
-
-// TODO(crbug.com/40937112): Use EnumTraits for these methods.
-safe_browsing::RemoteHostInfo::ProtocolType
-WebRequestProtocolTypeToRemoteHostInfoProtocolType(
-    mojom::WebRequestProtocolType protocol_type) {
-  switch (protocol_type) {
-    case mojom::WebRequestProtocolType::kHttpHttps:
-      return safe_browsing::RemoteHostInfo::HTTP_HTTPS;
-    case mojom::WebRequestProtocolType::kWebSocket:
-      return safe_browsing::RemoteHostInfo::WEBSOCKET;
-  }
-}
-
-safe_browsing::RemoteHostInfo::ContactInitiator
-WebRequestContactInitatorToRemoteHostInfoContactInitiator(
-    mojom::WebRequestContactInitiatorType contact_initiator_type) {
-  switch (contact_initiator_type) {
-    case mojom::WebRequestContactInitiatorType::kExtension:
-      return safe_browsing::RemoteHostInfo::EXTENSION;
-    case mojom::WebRequestContactInitiatorType::kContentScript:
-      return safe_browsing::RemoteHostInfo::CONTENT_SCRIPT;
-  }
-}
-
-}  // namespace
 
 const int ExtensionWebRequestReporterImpl::kUserDataKey;
 
@@ -76,8 +48,8 @@ ExtensionWebRequestReporterImpl::~ExtensionWebRequestReporterImpl() = default;
 void ExtensionWebRequestReporterImpl::SendWebRequestData(
     const std::string& origin_extension_id,
     const GURL& telemetry_url,
-    mojom::WebRequestProtocolType protocol_type,
-    mojom::WebRequestContactInitiatorType contact_initiator_type) {
+    RemoteHostInfo::ProtocolType protocol_type,
+    RemoteHostInfo::ContactInitiator contact_initiator_type) {
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(profile_);
   if (!telemetry_service || !telemetry_service->enabled()) {
@@ -85,10 +57,8 @@ void ExtensionWebRequestReporterImpl::SendWebRequestData(
   }
 
   auto remote_host_signal = std::make_unique<RemoteHostContactedSignal>(
-      origin_extension_id, telemetry_url,
-      WebRequestProtocolTypeToRemoteHostInfoProtocolType(protocol_type),
-      WebRequestContactInitatorToRemoteHostInfoContactInitiator(
-          contact_initiator_type));
+      origin_extension_id, telemetry_url, protocol_type,
+      contact_initiator_type);
   telemetry_service->AddSignal(std::move(remote_host_signal));
 }
 

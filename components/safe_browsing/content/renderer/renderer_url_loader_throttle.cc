@@ -8,10 +8,20 @@
 #include "services/network/public/cpp/resource_request.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "extensions/common/constants.h"  // nogncheck
 #endif
 
 namespace safe_browsing {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace {
+
+using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
+    RemoteHostContactedInfo::RemoteHostInfo;
+
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle() = default;
 
@@ -57,10 +67,9 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
       redirect_info->new_url.SchemeIsHTTPOrHTTPS()) {
     extension_web_request_reporter_->SendWebRequestData(
         origin_extension_id_, redirect_info->new_url,
-        mojom::WebRequestProtocolType::kHttpHttps,
-        initiated_from_content_script_
-            ? mojom::WebRequestContactInitiatorType::kContentScript
-            : mojom::WebRequestContactInitiatorType::kExtension);
+        RemoteHostInfo::HTTP_HTTPS,
+        initiated_from_content_script_ ? RemoteHostInfo::CONTENT_SCRIPT
+                                       : RemoteHostInfo::EXTENSION);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
@@ -98,11 +107,9 @@ void RendererURLLoaderThrottle::MaybeSendExtensionWebRequestData(
   // request originated from an extension.
   if (!origin_extension_id_.empty()) {
     extension_web_request_reporter_->SendWebRequestData(
-        origin_extension_id_, request->url,
-        mojom::WebRequestProtocolType::kHttpHttps,
-        initiated_from_content_script_
-            ? mojom::WebRequestContactInitiatorType::kContentScript
-            : mojom::WebRequestContactInitiatorType::kExtension);
+        origin_extension_id_, request->url, RemoteHostInfo::HTTP_HTTPS,
+        initiated_from_content_script_ ? RemoteHostInfo::CONTENT_SCRIPT
+                                       : RemoteHostInfo::EXTENSION);
   }
 }
 #endif

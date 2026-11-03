@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,6 +24,9 @@
 namespace safe_browsing {
 
 namespace {
+
+using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
+    RemoteHostContactedInfo::RemoteHostInfo;
 
 constexpr char kTestUrl[] = "wss://test/";
 constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
@@ -37,8 +41,8 @@ class FakeExtensionWebRequestReporter
   void SendWebRequestData(
       const std::string& origin_extension_id,
       const GURL& telemetry_url,
-      mojom::WebRequestProtocolType protocol_type,
-      mojom::WebRequestContactInitiatorType contact_initiator_type) override {
+      RemoteHostInfo::ProtocolType protocol_type,
+      RemoteHostInfo::ContactInitiator contact_initiator_type) override {
     origin_extension_id_ = origin_extension_id;
     telemetry_url_ = telemetry_url;
     protocol_type_ = protocol_type;
@@ -55,8 +59,8 @@ class FakeExtensionWebRequestReporter
 
   std::string origin_extension_id_;
   GURL telemetry_url_;
-  mojom::WebRequestProtocolType protocol_type_;
-  mojom::WebRequestContactInitiatorType contact_initiator_type_;
+  RemoteHostInfo::ProtocolType protocol_type_;
+  RemoteHostInfo::ContactInitiator contact_initiator_type_;
   base::RunLoop run_loop_;
 };
 
@@ -125,9 +129,9 @@ TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
             kTestExtensionId);
   EXPECT_EQ(extension_web_request_reporter_.telemetry_url_, GURL(kTestUrl));
   EXPECT_EQ(extension_web_request_reporter_.protocol_type_,
-            mojom::WebRequestProtocolType::kWebSocket);
+            RemoteHostInfo::WEBSOCKET);
   EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
-            mojom::WebRequestContactInitiatorType::kExtension);
+            RemoteHostInfo::EXTENSION);
 }
 
 TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
@@ -144,9 +148,9 @@ TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
             kTestExtensionId);
   EXPECT_EQ(extension_web_request_reporter_.telemetry_url_, GURL(kTestUrl));
   EXPECT_EQ(extension_web_request_reporter_.protocol_type_,
-            mojom::WebRequestProtocolType::kWebSocket);
+            RemoteHostInfo::WEBSOCKET);
   EXPECT_EQ(extension_web_request_reporter_.contact_initiator_type_,
-            mojom::WebRequestContactInitiatorType::kContentScript);
+            RemoteHostInfo::CONTENT_SCRIPT);
 }
 
 }  // namespace

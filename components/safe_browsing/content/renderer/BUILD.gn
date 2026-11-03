@@ -52,7 +52,10 @@ source_set("throttles") {
     ]
 
     if (enable_extensions) {
-      deps += [ "//extensions/common:common_constants" ]
+      deps += [
+        "//components/safe_browsing/core/common/proto:csd_proto",
+        "//extensions/common:common_constants",
+      ]
     }
   }
 }
@@ -79,7 +82,10 @@ source_set("throttles_unittest") {
     ]
 
     if (enable_extensions) {
-      deps += [ "//third_party/blink/public:blink" ]
+      deps += [
+        "//components/safe_browsing/core/common/proto:csd_proto",
+        "//third_party/blink/public:blink",
+      ]
     }
   }
 }

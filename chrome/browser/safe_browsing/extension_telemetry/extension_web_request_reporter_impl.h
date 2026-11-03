@@ -9,6 +9,7 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -23,6 +24,9 @@ class ExtensionWebRequestReporterImpl
     : public mojom::ExtensionWebRequestReporter,
       public base::SupportsUserData::Data {
  public:
+  using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
+      RemoteHostContactedInfo::RemoteHostInfo;
+
   explicit ExtensionWebRequestReporterImpl(Profile* profile);
 
   ExtensionWebRequestReporterImpl(const ExtensionWebRequestReporterImpl&) =
@@ -46,8 +50,8 @@ class ExtensionWebRequestReporterImpl
   void SendWebRequestData(
       const std::string& origin_extension_id,
       const GURL& telemetry_url,
-      mojom::WebRequestProtocolType protocol_type,
-      mojom::WebRequestContactInitiatorType contact_initiator_type) override;
+      RemoteHostInfo::ProtocolType protocol_type,
+      RemoteHostInfo::ContactInitiator contact_initiator_type) override;
   void Clone(mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver)
       override;
 
