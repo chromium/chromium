@@ -1920,12 +1920,12 @@ TEST_F(FeatureListTest, RuntimeMutability_EarlyAccess) {
   scoped_feature_list.InitWithNullFeatureAndFieldTrialLists();
 
   ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
-  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
+  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
 
   // Accessing the feature before a FeatureList is initialized returns its
   // default state and records early access without crashing.
   EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
-  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
   EXPECT_EQ(&kRuntimeMutableFeature,
             FeatureList::GetEarlyAccessedFeatureForTesting());
 }
@@ -1935,7 +1935,7 @@ TEST_F(FeatureListTest, RuntimeMutability_DisallowedByEarlyAccessInstance) {
   clear_feature_list.InitWithNullFeatureAndFieldTrialLists();
 
   ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
-  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
+  ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
 
   auto early_access_feature_list = std::make_unique<FeatureList>();
   early_access_feature_list->InitFromCommandLine("OnByDefault",
@@ -1947,7 +1947,7 @@ TEST_F(FeatureListTest, RuntimeMutability_DisallowedByEarlyAccessInstance) {
   // returns its default state and default param value, and records early access
   // without crashing.
   EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
-  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+  EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
   EXPECT_EQ(&kRuntimeMutableFeature,
             FeatureList::GetEarlyAccessedFeatureForTesting());
   EXPECT_EQ(12345, kRuntimeMutableFeatureParam.Get());
@@ -1964,11 +1964,11 @@ TEST_F(FeatureListTest,
     null_feature_list.InitWithNullFeatureAndFieldTrialLists();
 
     ASSERT_TRUE(kRuntimeMutableFeature.IsRuntimeMutable());
-    ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarly());
+    ASSERT_FALSE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
 
     // Query the feature early before a FeatureList is registered.
     EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
-    EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarly());
+    EXPECT_TRUE(kRuntimeMutableFeature.WasAccessedEarlyForTesting());
   }
 
   auto feature_list = std::make_unique<FeatureList>();

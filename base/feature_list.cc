@@ -137,12 +137,6 @@ bool FeatureIsRuntimeMutable(FeatureStateCache feature_cached_value) {
   return HasFlags(feature_cached_value, internal::kRuntimeMutabilityMask);
 }
 
-// Returns true if the feature was accessed before the FeatureList was
-// initialized.
-bool FeatureWasAccessedEarly(FeatureStateCache feature_cached_value) {
-  return HasFlags(feature_cached_value, internal::kCachedLogEarlyMask);
-}
-
 // Tracks access to Feature state before FeatureList registration.
 class EarlyFeatureAccessTracker {
  public:
@@ -396,8 +390,9 @@ bool Feature::IsRuntimeMutable() const {
   return FeatureIsRuntimeMutable(state->load(std::memory_order_relaxed));
 }
 
-bool Feature::WasAccessedEarly() const {
-  return FeatureWasAccessedEarly(state->load(std::memory_order_relaxed));
+bool Feature::WasAccessedEarlyForTesting() const {
+  return HasFlags(state->load(std::memory_order_relaxed),
+                  internal::kCachedLogEarlyMask);
 }
 
 FeatureState Feature::GetDefaultState() const {

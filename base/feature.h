@@ -244,7 +244,7 @@ struct BASE_EXPORT Feature {
 
   // Returns true if this feature was accessed before the FeatureList was
   // initialized.
-  bool WasAccessedEarly() const;
+  bool WasAccessedEarlyForTesting() const;
 
   // The name of the feature. This should be unique to each feature and is used
   // for enabling/disabling features via command line flags and experiments.
