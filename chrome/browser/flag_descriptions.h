@@ -8270,12 +8270,6 @@ inline constexpr char kTetheringExperimentalFunctionalityDescription[] =
 
 // Prefer keeping this section sorted to adding new definitions down here.
 
-inline constexpr char kCrOSEnforceMonoAudioCaptureName[] =
-    "Enforce mono audio capture for Chrome";
-inline constexpr char kCrOSEnforceMonoAudioCaptureDescription[] =
-    "Enforce mono audio capture instead of stereo capture for Chrome on "
-    "ChromeOS";
-
 inline constexpr char kCrOSEnforceSystemAecName[] =
     "Enforce using the system AEC in CrAS";
 inline constexpr char kCrOSEnforceSystemAecDescription[] =

@@ -1448,8 +1448,6 @@ BASE_FEATURE(kCrOSDspBasedAgcDeactivatedGroups,
 BASE_FEATURE(kCrOSDspBasedNsDeactivatedGroups,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCrOSEnforceMonoAudioCapture, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCrOSEnforceSystemAec, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCrOSEnforceSystemAecAgc, base::FEATURE_DISABLED_BY_DEFAULT);

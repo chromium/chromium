@@ -195,10 +195,7 @@ void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
 AudioParameters AudioManagerCras::GetInputStreamParametersForSystem(
     int user_buffer_size) {
   AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      base::FeatureList::IsEnabled(media::kCrOSEnforceMonoAudioCapture)
-          ? ChannelLayoutConfig::Mono()
-          : ChannelLayoutConfig::Stereo(),
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
       kDefaultSampleRate, user_buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));

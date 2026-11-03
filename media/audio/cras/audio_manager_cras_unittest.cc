@@ -441,6 +441,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AudioManagerCrasTestAEC, DefaultBehavior) {
   AudioParameters params = audio_manager_->GetInputStreamParameters("");
   EXPECT_TRUE(AecActive(params));
+  EXPECT_EQ(params.channel_layout(), ChannelLayout::CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(params.channels(), 2);
   auto aec_supported = std::get<0>(GetParam());
   auto ns_supported = std::get<2>(GetParam());
   auto agc_supported = std::get<3>(GetParam());

@@ -8276,10 +8276,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enforce-mono-audio-capture",
-     flag_descriptions::kCrOSEnforceMonoAudioCaptureName,
-     flag_descriptions::kCrOSEnforceMonoAudioCaptureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kCrOSEnforceMonoAudioCapture)},
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
      flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAec)},
