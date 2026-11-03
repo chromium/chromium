@@ -10,12 +10,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_playback_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -43,10 +46,9 @@ class MockMediaSessionService : public mojom::blink::MediaSessionService {
   MOCK_METHOD1(SetPositionState,
                void(media_session::mojom::blink::MediaPositionPtr));
   void SetMetadata(mojom::blink::SpecMediaMetadataPtr metadata) override {}
-  void SetMicrophoneState(
-      media_session::mojom::MicrophoneState microphone_state) override {}
-  void SetCameraState(media_session::mojom::CameraState camera_state) override {
-  }
+  MOCK_METHOD1(SetMicrophoneState,
+               void(media_session::mojom::blink::MicrophoneState));
+  MOCK_METHOD1(SetCameraState, void(media_session::mojom::blink::CameraState));
   void EnableAction(
       media_session::mojom::blink::MediaSessionAction action) override {}
   void DisableAction(
@@ -129,6 +131,8 @@ class MediaSessionTest : public PageTestBase {
       mojom::blink::MediaSessionActionDetailsPtr details = nullptr) {
     media_session_->DidReceiveAction(action, std::move(details));
   }
+
+  MediaSession* media_session() { return media_session_.Get(); }
 
  private:
   base::SimpleTestTickClock test_clock_;
@@ -463,6 +467,108 @@ TEST_F(
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
   EXPECT_TRUE(PictureInPictureController::From(GetDocument())
                   .IsPictureInPictureRequestTokenActive());
+}
+
+TEST_F(MediaSessionTest, SetMicrophoneActive_ResolvesAndNotifiesService) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  {
+    base::RunLoop loop;
+    EXPECT_CALL(service(),
+                SetMicrophoneState(
+                    media_session::mojom::blink::MicrophoneState::kUnmuted))
+        .WillOnce([&] { loop.Quit(); });
+
+    NonThrowableExceptionState exception_state;
+    ScriptPromise<IDLUndefined> promise = media_session()->setMicrophoneActive(
+        script_state, true, exception_state);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_TRUE(tester.Value().IsUndefined());
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    EXPECT_CALL(service(),
+                SetMicrophoneState(
+                    media_session::mojom::blink::MicrophoneState::kMuted))
+        .WillOnce([&] { loop.Quit(); });
+
+    NonThrowableExceptionState exception_state;
+    ScriptPromise<IDLUndefined> promise = media_session()->setMicrophoneActive(
+        script_state, false, exception_state);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_TRUE(tester.Value().IsUndefined());
+    loop.Run();
+  }
+}
+
+TEST_F(MediaSessionTest, SetCameraActive_ResolvesAndNotifiesService) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  {
+    base::RunLoop loop;
+    EXPECT_CALL(
+        service(),
+        SetCameraState(media_session::mojom::blink::CameraState::kTurnedOn))
+        .WillOnce([&] { loop.Quit(); });
+
+    NonThrowableExceptionState exception_state;
+    ScriptPromise<IDLUndefined> promise =
+        media_session()->setCameraActive(script_state, true, exception_state);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_TRUE(tester.Value().IsUndefined());
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    EXPECT_CALL(
+        service(),
+        SetCameraState(media_session::mojom::blink::CameraState::kTurnedOff))
+        .WillOnce([&] { loop.Quit(); });
+
+    NonThrowableExceptionState exception_state;
+    ScriptPromise<IDLUndefined> promise =
+        media_session()->setCameraActive(script_state, false, exception_state);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_TRUE(tester.Value().IsUndefined());
+    loop.Run();
+  }
+}
+
+TEST_F(MediaSessionTest,
+       SetMicrophoneAndCameraActive_DetachedDocumentThrowsInvalidStateError) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+
+  GetDocument().Shutdown();
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    media_session()->setMicrophoneActive(script_state, true, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+              exception_state.CodeAs<DOMExceptionCode>());
+  }
+
+  {
+    DummyExceptionStateForTesting exception_state;
+    media_session()->setCameraActive(script_state, true, exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+              exception_state.CodeAs<DOMExceptionCode>());
+  }
 }
 
 }  // namespace blink

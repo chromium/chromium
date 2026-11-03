@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -29,6 +30,7 @@ class ExceptionState;
 class MediaMetadata;
 class MediaPositionState;
 class Navigator;
+class ScriptState;
 class V8MediaSessionActionHandler;
 class V8MediaSessionPlaybackState;
 
@@ -55,9 +57,13 @@ class MODULES_EXPORT MediaSession final
 
   void setPositionState(MediaPositionState*, ExceptionState&);
 
-  void setMicrophoneActive(bool active);
+  ScriptPromise<IDLUndefined> setMicrophoneActive(ScriptState*,
+                                                  bool active,
+                                                  ExceptionState&);
 
-  void setCameraActive(bool active);
+  ScriptPromise<IDLUndefined> setCameraActive(ScriptState*,
+                                              bool active,
+                                              ExceptionState&);
 
   // Called by the MediaMetadata owned by |this| when it has updates. Also used
   // internally when a new MediaMetadata object is set.

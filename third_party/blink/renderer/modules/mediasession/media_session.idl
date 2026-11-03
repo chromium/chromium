@@ -45,9 +45,9 @@ callback MediaSessionActionHandler = void (MediaSessionActionDetails details);
     [Measure, RaisesException]
     void setPositionState(optional MediaPositionState state = {});
 
-    [Measure]
-    void setMicrophoneActive(boolean active);
+    [Measure, CallWith=ScriptState, RaisesException]
+    Promise<undefined> setMicrophoneActive(boolean active);
 
-    [Measure]
-    void setCameraActive(boolean active);
+    [Measure, CallWith=ScriptState, RaisesException]
+    Promise<undefined> setCameraActive(boolean active);
 };

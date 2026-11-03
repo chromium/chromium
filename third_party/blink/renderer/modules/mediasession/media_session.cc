@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_handler.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_playback_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -25,7 +26,9 @@
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata_sanitizer.h"
 #include "third_party/blink/renderer/modules/mediasession/media_session_type_converters.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -312,29 +315,54 @@ void MediaSession::setPositionState(MediaPositionState* position_state,
   RecalculatePositionState(/*was_set=*/true);
 }
 
-void MediaSession::setMicrophoneActive(bool active) {
-  auto* service = GetService();
-  if (!service)
-    return;
-
-  if (active) {
-    service->SetMicrophoneState(
-        media_session::mojom::MicrophoneState::kUnmuted);
-  } else {
-    service->SetMicrophoneState(media_session::mojom::MicrophoneState::kMuted);
+ScriptPromise<IDLUndefined> MediaSession::setMicrophoneActive(
+    ScriptState* script_state,
+    bool active,
+    ExceptionState& exception_state) {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window || !window->document()->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The document is not fully active.");
+    return EmptyPromise();
   }
+
+  auto* service = GetService();
+  if (service) {
+    if (active) {
+      service->SetMicrophoneState(
+          media_session::mojom::blink::MicrophoneState::kUnmuted);
+    } else {
+      service->SetMicrophoneState(
+          media_session::mojom::blink::MicrophoneState::kMuted);
+    }
+  }
+
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-void MediaSession::setCameraActive(bool active) {
-  auto* service = GetService();
-  if (!service)
-    return;
-
-  if (active) {
-    service->SetCameraState(media_session::mojom::CameraState::kTurnedOn);
-  } else {
-    service->SetCameraState(media_session::mojom::CameraState::kTurnedOff);
+ScriptPromise<IDLUndefined> MediaSession::setCameraActive(
+    ScriptState* script_state,
+    bool active,
+    ExceptionState& exception_state) {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  if (!window || !window->document()->IsActive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The document is not fully active.");
+    return EmptyPromise();
   }
+
+  auto* service = GetService();
+  if (service) {
+    if (active) {
+      service->SetCameraState(
+          media_session::mojom::blink::CameraState::kTurnedOn);
+    } else {
+      service->SetCameraState(
+          media_session::mojom::blink::CameraState::kTurnedOff);
+    }
+  }
+
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void MediaSession::NotifyActionChange(V8MediaSessionAction::Enum action,
