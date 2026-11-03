@@ -42,7 +42,6 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -104,7 +103,7 @@ void IndicatorUsageHistogramHelper(content::WebContents* web_contents,
     return;
   }
   permissions::PermissionIndicatorsTabData* permission_indicators_tab_data =
-      tab_model->GetTabFeatures()->permission_indicators_tab_data();
+      permissions::PermissionIndicatorsTabData::From(tab_model);
   if (permission_indicators_tab_data) {
     permission_indicators_tab_data->OnMediaCaptureChanged(request_type,
                                                           is_capturing);

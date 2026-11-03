@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_INDICATORS_TAB_DATA_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_INDICATORS_TAB_DATA_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace permissions {
 
@@ -16,6 +23,8 @@ enum class RequestTypeForUma;
 
 class PermissionIndicatorsTabData : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(PermissionIndicatorsTabData);
+
   // LHS indicators type. Currently camera, mic and sensors are supported.
   enum class IndicatorsType {
     kMediaStream,
@@ -24,9 +33,17 @@ class PermissionIndicatorsTabData : public content::WebContentsObserver {
     kSensorsBlocked
   };
 
+  // Used for non-tab `WebContents` (such as side panels or payment handlers).
   explicit PermissionIndicatorsTabData(content::WebContents* web_contents);
 
+  // `web_contents` is passed explicitly because during a tab discard this is
+  // recreated for the incoming `WebContents` before `tab` swaps its contents.
+  PermissionIndicatorsTabData(tabs::TabInterface& tab,
+                              content::WebContents* web_contents);
+
   ~PermissionIndicatorsTabData() override;
+
+  static PermissionIndicatorsTabData* From(tabs::TabInterface* tab);
 
   // Returns `true` if the LHS verbose indicator is allowed in a tab.
   bool IsVerboseIndicatorAllowed(IndicatorsType type) const;
@@ -54,6 +71,11 @@ class PermissionIndicatorsTabData : public content::WebContentsObserver {
   std::optional<url::Origin> origin_;
 
   std::set<IndicatorsType> displayed_indicators_;
+
+  // Only set when constructed for a tab (`std::nullopt` for non-tab
+  // `WebContents` such as side panels or payment handlers).
+  std::optional<ui::ScopedUnownedUserData<PermissionIndicatorsTabData>>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace permissions

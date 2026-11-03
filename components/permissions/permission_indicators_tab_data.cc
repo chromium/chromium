@@ -5,11 +5,15 @@
 #include "components/permissions/permission_indicators_tab_data.h"
 
 #include "components/permissions/permission_uma_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace permissions {
 constexpr int kMinElapsedTimeSinceLastUsage = 4;
+
+DEFINE_USER_DATA(PermissionIndicatorsTabData);
 
 PermissionIndicatorsTabData::PermissionIndicatorsTabData(
     content::WebContents* web_contents)
@@ -18,7 +22,20 @@ PermissionIndicatorsTabData::PermissionIndicatorsTabData(
   origin_ = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 }
 
+PermissionIndicatorsTabData::PermissionIndicatorsTabData(
+    tabs::TabInterface& tab,
+    content::WebContents* web_contents)
+    : PermissionIndicatorsTabData(web_contents) {
+  scoped_unowned_user_data_.emplace(tab.GetUnownedUserDataHost(), *this);
+}
+
 PermissionIndicatorsTabData::~PermissionIndicatorsTabData() = default;
+
+// static
+PermissionIndicatorsTabData* PermissionIndicatorsTabData::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 bool PermissionIndicatorsTabData::IsVerboseIndicatorAllowed(
     IndicatorsType type) const {

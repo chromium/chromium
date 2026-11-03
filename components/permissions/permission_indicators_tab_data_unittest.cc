@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -363,6 +364,26 @@ TEST_F(PermissionIndicatorsTabDataTest,
   EXPECT_TRUE(tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensors));
   EXPECT_TRUE(
       tab_data().IsVerboseIndicatorAllowed(IndicatorsType::kSensorsBlocked));
+}
+
+TEST_F(PermissionIndicatorsTabDataTest, FromTabInterface) {
+  EXPECT_EQ(PermissionIndicatorsTabData::From(nullptr), nullptr);
+
+  tabs::MockTabInterface mock_tab;
+  EXPECT_EQ(PermissionIndicatorsTabData::From(&mock_tab), nullptr);
+
+  auto scoped_tab_data =
+      std::make_unique<PermissionIndicatorsTabData>(mock_tab, web_contents());
+  EXPECT_EQ(PermissionIndicatorsTabData::From(&mock_tab),
+            scoped_tab_data.get());
+
+  scoped_tab_data.reset();
+  EXPECT_EQ(PermissionIndicatorsTabData::From(&mock_tab), nullptr);
+
+  scoped_tab_data =
+      std::make_unique<PermissionIndicatorsTabData>(mock_tab, web_contents());
+  EXPECT_EQ(PermissionIndicatorsTabData::From(&mock_tab),
+            scoped_tab_data.get());
 }
 
 }  // namespace permissions

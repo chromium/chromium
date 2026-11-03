@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -711,7 +710,7 @@ PermissionDashboardController::GetPermissionIndicatorsTabData() {
   // owned by `TabFeatures`.
   if (tabs::TabInterface* tab =
           tabs::TabInterface::MaybeGetFromContents(web_contents)) {
-    return tab->GetTabFeatures()->permission_indicators_tab_data();
+    return permissions::PermissionIndicatorsTabData::From(tab);
   }
   // Non-tab `WebContents` (e.g. side panels) do not have a `TabInterface`.
   // Attach `PermissionIndicatorsTabData` to the `WebContents` so indicator

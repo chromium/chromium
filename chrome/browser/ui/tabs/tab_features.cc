@@ -648,8 +648,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         ThemeServiceFactory::GetForProfile(profile));
 
     permission_indicators_tab_data_ =
-        std::make_unique<permissions::PermissionIndicatorsTabData>(
-            tab.GetContents());
+        GetUserDataFactory()
+            .CreateInstance<permissions::PermissionIndicatorsTabData>(
+                tab, tab, tab.GetContents());
 
     pinned_translate_action_listener_ =
         std::make_unique<PinnedTranslateActionListener>(&tab);
@@ -1719,9 +1720,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
 
   if (permission_indicators_tab_data_) {
+    // Reset first so the old instance unregisters from `UnownedUserDataHost`
+    // before the replacement registers under the same key.
+    permission_indicators_tab_data_.reset();
     permission_indicators_tab_data_ =
-        std::make_unique<permissions::PermissionIndicatorsTabData>(
-            new_contents);
+        GetUserDataFactory()
+            .CreateInstance<permissions::PermissionIndicatorsTabData>(
+                *tab, *tab, new_contents);
   }
 
   if (bookmarkbar_preload_pipeline_manager_) {

@@ -432,10 +432,6 @@ class TabFeatures {
     return data_protection_tab_controller_.get();
   }
 
-  permissions::PermissionIndicatorsTabData* permission_indicators_tab_data() {
-    return permission_indicators_tab_data_.get();
-  }
-
   // Note: Temporary until there is a more uniform way to swap out features for
   // testing.
   customize_chrome::SidePanelController*
