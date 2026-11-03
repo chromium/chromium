@@ -137,7 +137,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram
-    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchAcceptedMatchType.{Source}"
+    name="OneTimeTokens.Gmail.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
@@ -148,8 +148,7 @@ found in the LICENSE file.
   <token key="Source" variants="GmailOtpTokenSource"/>
 </histogram>
 
-<histogram
-    name="OneTimeTokens.GmailOtpRetriever.SenderDomainMatchRejectionReason.{Source}"
+<histogram name="OneTimeTokens.Gmail.SenderDomainMatchRejectionReason.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
