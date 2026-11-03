@@ -63,16 +63,6 @@ void FakeGCMAppHandler::OnSendError(
   }
 }
 
-void FakeGCMAppHandler::OnSendAcknowledged(const std::string& app_id,
-                                           const std::string& message_id) {
-  ClearResults();
-  app_id_ = app_id;
-  acked_message_id_ = message_id;
-  if (run_loop_) {
-    run_loop_->Quit();
-  }
-}
-
 void FakeGCMAppHandler::OnMessageDecryptionFailed(
     const std::string& app_id,
     const std::string& message_id,
@@ -88,7 +78,6 @@ void FakeGCMAppHandler::OnMessageDecryptionFailed(
 void FakeGCMAppHandler::ClearResults() {
   received_event_ = NO_EVENT;
   app_id_.clear();
-  acked_message_id_.clear();
   send_error_details_ = GCMClient::SendErrorDetails();
 }
 

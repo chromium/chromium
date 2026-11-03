@@ -73,8 +73,6 @@ class InvalidationListenerImpl : public InvalidationListener,
   void OnMessagesDeleted(const std::string& app_id) override;
   void OnSendError(const std::string& app_id,
                    const gcm::GCMClient::SendErrorDetails& details) override;
-  void OnSendAcknowledged(const std::string& app_id,
-                          const std::string& message_id) override;
 
  private:
   // Requests the current or new registration token.

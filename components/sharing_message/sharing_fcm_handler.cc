@@ -134,11 +134,6 @@ void SharingFCMHandler::OnMessage(const std::string& app_id,
                   SharingMessageTypeToString(message_type));
 }
 
-void SharingFCMHandler::OnSendAcknowledged(const std::string& app_id,
-                                           const std::string& message_id) {
-  NOTIMPLEMENTED();
-}
-
 void SharingFCMHandler::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& details) {

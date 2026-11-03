@@ -233,12 +233,6 @@ void PushMessagingServiceImpl::OnSendError(
   NOTREACHED() << "The Push API shouldn't have sent messages upstream";
 }
 
-void PushMessagingServiceImpl::OnSendAcknowledged(
-    const std::string& app_id,
-    const std::string& message_id) {
-  NOTREACHED() << "The Push API shouldn't have sent messages upstream";
-}
-
 bool PushMessagingServiceImpl::CanHandle(const std::string& app_id) const {
   return base::StartsWith(app_id, push_messaging::kAppIdentifierPrefix,
                           base::CompareCase::INSENSITIVE_ASCII);

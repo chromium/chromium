@@ -175,9 +175,8 @@ class GCMClientImpl : public GCMClient,
   // Callbacks for the MCSClient.
   // Receives messages and dispatches them to relevant user delegates.
   void OnMessageReceivedFromMCS(const gcm::MCSMessage& message);
-  // Receives confirmation of sent messages or information about errors.
-  void OnMessageSentToMCS(int64_t user_serial_number,
-                          const std::string& app_id,
+  // Receives status updates and errors for sent messages.
+  void OnMessageSentToMCS(const std::string& app_id,
                           const std::string& message_id,
                           MCSClient::MessageSendStatus status);
   // Receives information about mcs_client_ errors.

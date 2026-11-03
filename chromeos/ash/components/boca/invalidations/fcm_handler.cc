@@ -169,13 +169,6 @@ void FCMHandlerImpl::OnSendError(
   NOTREACHED() << "FCMHandlerImpl doesn't send GCM messages.";
 }
 
-void FCMHandlerImpl::OnSendAcknowledged(const std::string& app_id,
-                                        const std::string& message_id) {
-  // Should never be called because the invalidation service doesn't send GCM
-  // messages to the server.
-  NOTREACHED() << "FCMHandlerImpl doesn't send GCM messages.";
-}
-
 std::string FCMHandlerImpl::GetAppIdForTesting() {
   return std::string(kApplicationId);
 }

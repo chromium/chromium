@@ -164,12 +164,6 @@ class GCMClient {
         const std::string& app_id,
         const SendErrorDetails& send_error_details) = 0;
 
-    // Called when a message was acknowledged by the GCM server.
-    // |app_id|: application ID.
-    // |message_id|: ID of the acknowledged message.
-    virtual void OnSendAcknowledged(const std::string& app_id,
-                                    const std::string& message_id) = 0;
-
     // Called when the GCM becomes ready. To get to this state, GCMClient
     // finished loading from the GCM store and retrieved the device check-in
     // from the server if it hadn't yet.

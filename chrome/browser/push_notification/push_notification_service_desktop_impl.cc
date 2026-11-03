@@ -98,12 +98,6 @@ void PushNotificationServiceDesktopImpl::OnSendError(
   NOTREACHED()
       << "The Push Notification Service shouldn't have sent messages upstream";
 }
-void PushNotificationServiceDesktopImpl::OnSendAcknowledged(
-    const std::string& app_id,
-    const std::string& message_id) {
-  NOTREACHED()
-      << "The Push Notification Service shouldn't have sent messages upstream";
-}
 
 // Intentional no-op. We don't support encryption/decryption of messages.
 void PushNotificationServiceDesktopImpl::OnMessageDecryptionFailed(

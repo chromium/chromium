@@ -748,17 +748,13 @@ TEST_F(GCMDriverFunctionalTest, RegisterAfterUnfinishedUnregister) {
 
 TEST_F(GCMDriverFunctionalTest, Send) {
   OutgoingMessage message;
-  message.id = "1@ack";
+  message.id = "1";
   message.data["key1"] = "value1";
   message.data["key2"] = "value2";
   Send(kTestAppID1, kUserID1, message, GCMDriverTest::WAIT);
 
   EXPECT_EQ(message.id, send_message_id());
   EXPECT_EQ(GCMClient::SUCCESS, send_result());
-
-  gcm_app_handler()->WaitForNotification();
-  EXPECT_EQ(message.id, gcm_app_handler()->acked_message_id());
-  EXPECT_EQ(kTestAppID1, gcm_app_handler()->app_id());
 }
 
 TEST_F(GCMDriverFunctionalTest, SendError) {

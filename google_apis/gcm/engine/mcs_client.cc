@@ -879,8 +879,7 @@ void MCSClient::NotifyMessageSendStatus(
       data_message_stanza->category(), data_message_stanza->to(),
       data_message_stanza->id(), status, protobuf.ByteSizeLong(),
       data_message_stanza->ttl());
-  message_sent_callback_.Run(data_message_stanza->device_user_id(),
-                             data_message_stanza->category(),
+  message_sent_callback_.Run(data_message_stanza->category(),
                              data_message_stanza->id(), status);
 }
 

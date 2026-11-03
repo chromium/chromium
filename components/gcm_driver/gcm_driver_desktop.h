@@ -174,8 +174,6 @@ class GCMDriverDesktop : public GCMDriver, protected InstanceIDHandler {
   void MessagesDeleted(const std::string& app_id);
   void MessageSendError(const std::string& app_id,
                         const GCMClient::SendErrorDetails& send_error_details);
-  void SendAcknowledged(const std::string& app_id,
-                        const std::string& message_id);
   void GCMClientReady();
   void OnConnected(const net::IPEndPoint& ip_endpoint);
   void OnDisconnected();

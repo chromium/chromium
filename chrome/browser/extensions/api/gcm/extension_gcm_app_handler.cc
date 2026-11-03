@@ -92,11 +92,6 @@ void ExtensionGCMAppHandler::OnSendError(
   js_event_router_->OnSendError(app_id, send_error_details);
 }
 
-void ExtensionGCMAppHandler::OnSendAcknowledged(const std::string& app_id,
-                                                const std::string& message_id) {
-  // This event is not exposed to JS API. It terminates here.
-}
-
 void ExtensionGCMAppHandler::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {

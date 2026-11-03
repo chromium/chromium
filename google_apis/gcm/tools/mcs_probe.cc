@@ -138,12 +138,10 @@ void MessageReceivedCallback(const MCSMessage& message) {
   }
 }
 
-void MessageSentCallback(int64_t user_serial_number,
-                         const std::string& app_id,
+void MessageSentCallback(const std::string& app_id,
                          const std::string& message_id,
                          MCSClient::MessageSendStatus status) {
-  LOG(INFO) << "Message sent. Serial number: " << user_serial_number
-            << " Application ID: " << app_id
+  LOG(INFO) << "Message sent. Application ID: " << app_id
             << " Message ID: " << message_id
             << " Message send status: " << status;
 }

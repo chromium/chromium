@@ -116,8 +116,6 @@ class FakeGCMClient : public GCMClient {
   void MessagesDeleted(const std::string& app_id);
   void MessageSendError(const std::string& app_id,
                         const SendErrorDetails& send_error_details);
-  void SendAcknowledgement(const std::string& app_id,
-                           const std::string& message_id);
 
   raw_ptr<Delegate> delegate_;
   std::string product_category_for_subtypes_;

@@ -89,8 +89,6 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   void OnMessagesDeleted(const std::string& app_id) override;
   void OnSendError(const std::string& app_id,
                    const gcm::GCMClient::SendErrorDetails& details) override;
-  void OnSendAcknowledged(const std::string& app_id,
-                          const std::string& message_id) override;
 
   // Called when GCM registration completes.
   void OnRegistrationCompleted(const std::string& registration_id,

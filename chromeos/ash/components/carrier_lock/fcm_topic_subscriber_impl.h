@@ -64,8 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   void OnSendError(
       const std::string& app_id,
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
-  void OnSendAcknowledged(const std::string& app_id,
-                          const std::string& message_id) override;
   bool CanHandle(const std::string& app_id) const override;
 
   raw_ptr<gcm::GCMDriver> gcm_driver_;

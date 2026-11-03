@@ -225,13 +225,6 @@ void InvalidationListenerImpl::OnSendError(
                   "service doesn't send GCM messages to the server.";
 }
 
-void InvalidationListenerImpl::OnSendAcknowledged(
-    const std::string& app_id,
-    const std::string& message_id) {
-  NOTREACHED() << "Should never be called because the invalidation "
-                  "service doesn't send GCM messages to the server.";
-}
-
 void InvalidationListenerImpl::FetchRegistrationToken() {
   instance_id_driver_->GetInstanceID(gcm_app_id_)
       ->GetToken(

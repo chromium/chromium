@@ -57,7 +57,6 @@ enum LastEvent {
   REGISTRATION_COMPLETED,
   UNREGISTRATION_COMPLETED,
   MESSAGE_SEND_ERROR,
-  MESSAGE_SEND_ACK,
   MESSAGE_RECEIVED,
   MESSAGES_DELETED,
 };
@@ -316,8 +315,6 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
   void OnMessageSendError(
       const std::string& app_id,
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
-  void OnSendAcknowledged(const std::string& app_id,
-                          const std::string& message_id) override;
   void OnGCMReady() override;
   void OnActivityRecorded() override {}
   void OnConnected(const net::IPEndPoint& ip_endpoint) override {}
@@ -585,7 +582,7 @@ void GCMClientImplTest::ReceiveOnMessageSentToMCS(
     const std::string& app_id,
     const std::string& message_id,
     const MCSClient::MessageSendStatus status) {
-  gcm_client_->OnMessageSentToMCS(0LL, app_id, message_id, status);
+  gcm_client_->OnMessageSentToMCS(app_id, message_id, status);
 }
 
 void GCMClientImplTest::OnGCMReady() {
@@ -628,13 +625,6 @@ void GCMClientImplTest::OnMessageSendError(
   last_event_ = MESSAGE_SEND_ERROR;
   last_app_id_ = app_id;
   last_error_details_ = send_error_details;
-}
-
-void GCMClientImplTest::OnSendAcknowledged(const std::string& app_id,
-                                           const std::string& message_id) {
-  last_event_ = MESSAGE_SEND_ACK;
-  last_app_id_ = app_id;
-  last_message_id_ = message_id;
 }
 
 int64_t GCMClientImplTest::CurrentTime() {
@@ -1119,11 +1109,12 @@ TEST_F(GCMClientImplTest, SendMessage) {
             mcs_client()->last_data_message_stanza().app_data(0).value());
 }
 
-TEST_F(GCMClientImplTest, SendMessageAcknowledged) {
+TEST_F(GCMClientImplTest, SendMessageSentIgnored) {
+  reset_last_event();
+  // `MCSClient::SENT` acknowledgments are ignored and should not trigger any
+  // delegate events.
   ReceiveOnMessageSentToMCS(kExtensionAppId, "007", MCSClient::SENT);
-  EXPECT_EQ(MESSAGE_SEND_ACK, last_event());
-  EXPECT_EQ(kExtensionAppId, last_app_id());
-  EXPECT_EQ("007", last_message_id());
+  EXPECT_EQ(NONE, last_event());
 }
 
 class GCMClientImplCheckinTest : public GCMClientImplTest {

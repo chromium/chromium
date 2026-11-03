@@ -96,8 +96,7 @@ class GCM_EXPORT MCSClient {
   // Callback when a message is sent (and receipt has been acknowledged by
   // the MCS endpoint).
   using OnMessageSentCallback =
-      base::RepeatingCallback<void(int64_t user_serial_number,
-                                   const std::string& app_id,
+      base::RepeatingCallback<void(const std::string& app_id,
                                    const std::string& message_id,
                                    MessageSendStatus status)>;
 

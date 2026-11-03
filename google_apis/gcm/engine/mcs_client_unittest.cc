@@ -147,8 +147,7 @@ class MCSClientTest : public testing::Test {
  private:
   void ErrorCallback();
   void MessageReceivedCallback(const MCSMessage& message);
-  void MessageSentCallback(int64_t user_serial_number,
-                           const std::string& app_id,
+  void MessageSentCallback(const std::string& app_id,
                            const std::string& message_id,
                            MCSClient::MessageSendStatus status);
 
@@ -270,8 +269,7 @@ void MCSClientTest::MessageReceivedCallback(const MCSMessage& message) {
   run_loop_->Quit();
 }
 
-void MCSClientTest::MessageSentCallback(int64_t user_serial_number,
-                                        const std::string& app_id,
+void MCSClientTest::MessageSentCallback(const std::string& app_id,
                                         const std::string& message_id,
                                         MCSClient::MessageSendStatus status) {
   DVLOG(1) << "Message sent callback invoked, killing loop.";

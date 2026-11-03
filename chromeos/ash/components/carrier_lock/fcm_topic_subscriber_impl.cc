@@ -197,10 +197,6 @@ void FcmTopicSubscriberImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {}
 
-void FcmTopicSubscriberImpl::OnSendAcknowledged(const std::string& app_id,
-                                                const std::string& message_id) {
-}
-
 bool FcmTopicSubscriberImpl::CanHandle(const std::string& app_id) const {
   return app_id == app_id_;
 }

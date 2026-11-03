@@ -340,12 +340,6 @@ void CryptAuthGCMManagerImpl::OnSendError(
   NOTREACHED();
 }
 
-void CryptAuthGCMManagerImpl::OnSendAcknowledged(
-    const std::string& app_id,
-    const std::string& message_id) {
-  NOTREACHED();
-}
-
 void CryptAuthGCMManagerImpl::OnRegistrationCompleted(
     const std::string& registration_id,
     instance_id::InstanceID::Result result) {
