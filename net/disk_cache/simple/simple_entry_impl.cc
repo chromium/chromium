@@ -1411,7 +1411,8 @@ void SimpleEntryImpl::DoomEntryInternal(net::CompletionOnceCallback callback) {
     prioritized_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&SimpleSynchronousEntry::Doom,
-                       base::Unretained(synchronous_entry_)),
+                       base::Unretained(synchronous_entry_),
+                       /*sparse_file_may_be_unchecked=*/false),
         base::BindOnce(&SimpleEntryImpl::DoomOperationComplete, this,
                        std::move(callback), state_),
         entry_priority_);
