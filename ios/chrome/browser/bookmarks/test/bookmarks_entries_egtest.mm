@@ -1179,8 +1179,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
 }
 
-// TODO(crbug.com/40210654).
-- (void)DISABLED_testBookmarksSyncInMultiwindow {
+- (void)testBookmarksSyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

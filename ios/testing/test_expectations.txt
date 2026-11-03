@@ -54,6 +54,18 @@ crbug.com/523267238 SmokeTestCase/testFlakyCrashMethod [ Pass Crash ]
 crbug.com/523267238 SmokeTestCase/testFlakyPassingMethod [ Pass Failure ]
 crbug.com/523267238 SmokeTestCase/testFlakyCrashPassingMethod [ Pass Crash ]
 
+# Migrated from in-source test disable annotations: bookmarks, browser_view,
+# dialogs, history.
+crbug.com/40210654 BookmarksEntriesTestCase/testBookmarksSyncInMultiwindow [ Pass Failure ]
+crbug.com/40210654 [ iPad Simulator ] BookmarksEntriesTestCase/testBookmarksSyncInMultiwindow [ Failure ]
+crbug.com/362621166 BrowserViewControllerTestCase/testJavaScriptInOmnibox [ Pass Failure ]
+crbug.com/362621166 [ Simulator ] BrowserViewControllerTestCase/testJavaScriptInOmnibox [ Failure ]
+crbug.com/40182086 JavaScriptDialogTestCase/testShowJavaScriptBehindSettings [ Pass Failure ]
+crbug.com/40182086 [ Simulator ] JavaScriptDialogTestCase/testShowJavaScriptBehindSettings [ Failure ]
+crbug.com/493894843 HistorySystemTestCase/testEmptyState [ Pass Failure ]
+crbug.com/446382453 HistorySystemTestCase/testHistorySyncInMultiwindow [ Pass Failure ]
+crbug.com/446382453 [ iPad Simulator ] HistorySystemTestCase/testHistorySyncInMultiwindow [ Failure ]
+
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
 crbug.com/533075931 [ iOS18 iOS26 iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]

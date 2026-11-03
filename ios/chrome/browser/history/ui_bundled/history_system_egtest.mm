@@ -364,8 +364,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that if all history entries are deleted from Delete Browsing Data, that
 // then the history view is updated to show the empty state.
-// TODO(crbug.com/493894843): Deflake the test.
-- (void)DISABLED_testEmptyState {
+- (void)testEmptyState {
   // Disable closing tabs as it's on by default in delete browsing data, so the
   // tab closure animation is not run in iPads. This is needed so the history UI
   // is not closed due to the animation.
@@ -395,8 +394,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 #pragma mark Multiwindow
 
-// TODO(crbug.com/446382453): Deflake the test.
-- (void)FLAKY_testHistorySyncInMultiwindow {
+- (void)testHistorySyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }

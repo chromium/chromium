@@ -110,14 +110,7 @@ const char kSecondURLText[] = "You've arrived";
 }
 
 // Tests that evaluating JavaScript in the omnibox (e.g, a bookmarklet) works.
-// TODO(crbug.com/362621166): Test is flaky.
-- (void)DIABLED_testJavaScriptInOmnibox {
-  // TODO(crbug.com/40511873): Keyboard entry inside the omnibox fails only on
-  // iPad running iOS 10.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    return;
-  }
-
+- (void)testJavaScriptInOmnibox {
   // Preps the http server with two URLs serving content.
   std::map<GURL, std::string> responses;
   const GURL firstURL = self.testServer->GetURL(kFirstURL);
