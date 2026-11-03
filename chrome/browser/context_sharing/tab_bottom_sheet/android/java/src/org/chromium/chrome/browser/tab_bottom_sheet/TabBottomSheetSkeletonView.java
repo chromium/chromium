@@ -90,6 +90,7 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
     private @Nullable View mBar3;
     private @Nullable View mPill;
     private boolean mIsResizing;
+    private final @Px int mBasePaddingBottomPx;
 
     /**
      * Constructor for inflating via XML with attributes.
@@ -99,6 +100,9 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
      */
     public TabBottomSheetSkeletonView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mBasePaddingBottomPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_padding_bottom);
     }
 
     @Override
@@ -170,6 +174,26 @@ public class TabBottomSheetSkeletonView extends FrameLayout {
             mIsResizing = isResizing;
             updateAnimationState();
         }
+    }
+
+    /**
+     * Updates the bottom inset of the bottom group to avoid overlapping system bars.
+     *
+     * @param bottomInset The bottom inset in pixels.
+     * @return True if the bottom padding changed, false otherwise.
+     */
+    public boolean updateBottomInset(@Px int bottomInset) {
+        if (mBottomGroup == null) return false;
+        @Px int targetPadding = mBasePaddingBottomPx + Math.max(0, bottomInset);
+        if (mBottomGroup.getPaddingBottom() == targetPadding) {
+            return false;
+        }
+        mBottomGroup.setPaddingRelative(
+                mBottomGroup.getPaddingStart(),
+                mBottomGroup.getPaddingTop(),
+                mBottomGroup.getPaddingEnd(),
+                targetPadding);
+        return true;
     }
 
     /**

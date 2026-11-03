@@ -226,4 +226,38 @@ public class TabBottomSheetSkeletonCoordinatorUnitTest {
         mCoordinator.updateVisibleHeight(-50);
         assertEquals(0, skeletonView.getLayoutParams().height);
     }
+
+    @Test
+    public void testUpdateBottomInset() {
+        TabBottomSheetSkeletonView skeletonView = mCoordinator.getSkeletonViewForTesting();
+        ViewGroup bottomGroup = skeletonView.getBottomGroupForTesting();
+        assertNotNull(bottomGroup);
+        int basePadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_padding_bottom);
+        int bufferPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_skeleton_buffer);
+
+        // While mLastVisibleHeight is 0, updateBottomInset updates padding without updating alpha.
+        mCoordinator.updateBottomInset(48 + bufferPx);
+        assertEquals(basePadding + 48 + bufferPx, bottomGroup.getPaddingBottom());
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+
+        mCoordinator.updateBottomInset(48);
+        assertEquals(basePadding + 48, bottomGroup.getPaddingBottom());
+
+        mCoordinator.updateBottomInset(-10);
+        assertEquals(basePadding, bottomGroup.getPaddingBottom());
+
+        int baseHeight = skeletonView.getHeaderHeight() + skeletonView.getBottomGroupHeight();
+        mCoordinator.updateVisibleHeight(baseHeight + bufferPx);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+
+        mCoordinator.updateBottomInset(48 + bufferPx);
+        assertEquals(0.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+
+        mCoordinator.updateBottomInset(0);
+        assertEquals(1.0f, bottomGroup.getChildAt(0).getAlpha(), EPSILON);
+    }
 }

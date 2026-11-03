@@ -135,6 +135,7 @@ public class WebViewResizingHelper {
     private @Nullable View mResizingPlaceholder;
     private @Nullable ResizingPlaceholderCoordinator mPlaceholderCoordinator;
     private boolean mPlaceholderInitialized;
+    private @Px int mLastPlaceholderBottomInsetPx = -1;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
     private boolean mIsViewportSizeFixed;
@@ -231,6 +232,8 @@ public class WebViewResizingHelper {
         if (mPlaceholderCoordinator != null) {
             mPlaceholderCoordinator.destroy();
         }
+        mLastPlaceholderBottomInsetPx = -1;
+        mLastSafeAreaInsets.set(0, 0, 0, -1);
         resetInternal(/* reattachPlaceholder= */ false);
         mWebContents = null;
         if (mInsetObserver != null) {
@@ -248,6 +251,7 @@ public class WebViewResizingHelper {
     public void reset() {
         ensurePlaceholderCoordinator();
         resetInternal(/* reattachPlaceholder= */ true);
+        updateSafeAreaInsets(/* ignoreCache= */ false);
     }
 
     private void resetInternal(boolean reattachPlaceholder) {
@@ -267,7 +271,6 @@ public class WebViewResizingHelper {
                 mResizingContainer.addView(mResizingPlaceholder);
             }
         }
-        mLastSafeAreaInsets.set(0, 0, 0, -1);
         mThinWebView = null;
         mIsViewportSizeFixed = false;
         mPauseInsetUpdates = false;
@@ -289,6 +292,7 @@ public class WebViewResizingHelper {
             mResizingContainer.addView(thinWebView.getView(), layoutParams);
         }
 
+        mLastSafeAreaInsets.set(0, 0, 0, -1);
         mWebContents = webContents;
         mThinWebView = thinWebView;
 
@@ -296,12 +300,23 @@ public class WebViewResizingHelper {
     }
 
     private void updateSafeAreaInsets(boolean ignoreCache) {
-        if (!isEdgeToEdgeEnabled() || mIsSidePanel || mWebContents == null) {
+        if (!isEdgeToEdgeEnabled() || mIsSidePanel) {
+            return;
+        }
+
+        @Px int bottomInsetPx = getBottomSafeAreaInsetPx();
+        if (mPlaceholderCoordinator != null
+                && (ignoreCache || mLastPlaceholderBottomInsetPx != bottomInsetPx)) {
+            mLastPlaceholderBottomInsetPx = bottomInsetPx;
+            mPlaceholderCoordinator.updateBottomInset(bottomInsetPx);
+        }
+
+        if (mWebContents == null || mWebContents.isDestroyed()) {
             return;
         }
 
         float dipScale = mWindowAndroid.getDisplay().getDipScale();
-        int bottomInsetDip = (int) Math.ceil(getBottomSafeAreaInsetPx() / dipScale);
+        int bottomInsetDip = (int) Math.ceil(bottomInsetPx / dipScale);
         if (!ignoreCache && mLastSafeAreaInsets.bottom == bottomInsetDip) {
             return;
         }
@@ -483,11 +498,11 @@ public class WebViewResizingHelper {
             }
         }
 
+        updateSafeAreaInsets(ignoreCache);
+
         if (mWebContents == null || mWebContents.isDestroyed()) {
             return false;
         }
-
-        updateSafeAreaInsets(ignoreCache);
 
         @Px int resizingContainerWidth = mResizingContainer.getMeasuredWidth();
         @Px int resizingContainerHeight = mResizingContainer.getMeasuredHeight();

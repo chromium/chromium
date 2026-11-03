@@ -79,6 +79,13 @@ public class TabBottomSheetSkeletonCoordinator implements ResizingPlaceholderCoo
         updateAlpha();
     }
 
+    @Override
+    public void updateBottomInset(@Px int bottomInset) {
+        if (mSkeletonView.updateBottomInset(bottomInset) && mLastVisibleHeight > 0) {
+            updateAlpha();
+        }
+    }
+
     private void updateAlpha() {
         mSkeletonView.updateChildAlphas(mLastVisibleHeight, mBufferPx);
     }

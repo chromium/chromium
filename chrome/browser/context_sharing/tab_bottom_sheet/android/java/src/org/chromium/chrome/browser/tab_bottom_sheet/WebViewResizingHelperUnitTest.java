@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -1097,5 +1098,68 @@ public class WebViewResizingHelperUnitTest {
         verify(mMockWebContents, never()).setDisplayCutoutSafeArea(any());
         verify(mMockInsetObserver, never()).addObserver(any());
         verify(mMockBottomSheetController, never()).addObserver(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE,
+        ChromeFeatureList.GLIC_NO_WEBVIEW
+    })
+    public void testPlaceholderCoordinator_UpdatesBottomInset() {
+        ResizingPlaceholderCoordinator coordinator = mock(ResizingPlaceholderCoordinator.class);
+        doReturn(coordinator)
+                .when(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+
+        mHelper.reset();
+        verify(coordinator).updateBottomInset(48);
+
+        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
+                ArgumentCaptor.forClass(WindowInsetObserver.class);
+        verify(mMockInsetObserver).addObserver(insetObserverCaptor.capture());
+
+        ArgumentCaptor<BottomSheetObserver> sheetObserverCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mMockBottomSheetController).addObserver(sheetObserverCaptor.capture());
+
+        // Unchanged bottom inset does not invoke updateBottomInset.
+        clearInvocations(coordinator);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(coordinator, never()).updateBottomInset(anyInt());
+
+        // Changed bottom inset invokes updateBottomInset.
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(72);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(coordinator).updateBottomInset(72);
+
+        // Non-zero bottom margin with inset 0 updates bottom inset.
+        clearInvocations(coordinator);
+        when(mMockBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
+        sheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
+        verify(coordinator).updateBottomInset(0);
+
+        mHelper.destroy();
+
+        // Side panel helper never propagates bottom inset.
+        clearInvocations(mMockBottomSheetController);
+        ResizingPlaceholderCoordinator sidePanelCoordinator =
+                mock(ResizingPlaceholderCoordinator.class);
+        doReturn(sidePanelCoordinator)
+                .when(mMockComponentProvider)
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        WebViewResizingHelper sidePanelHelper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        /* isSidePanel= */ true,
+                        mMockComponentProvider);
+        sidePanelHelper.reset();
+        verify(sidePanelCoordinator, never()).updateBottomInset(anyInt());
+        sidePanelHelper.destroy();
     }
 }
