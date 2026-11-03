@@ -1053,6 +1053,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContextualCueing.Decision" enum="ContextualCueingDecision"
+    expires_after="2027-05-01">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the eligibility decision for showing a Gemini contextual cue. Logged
+    once per page navigation when contextual cueing is evaluated.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ContextualPanel.DismissedReason"
     enum="IOSContextualPanelDismissedReason" expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
