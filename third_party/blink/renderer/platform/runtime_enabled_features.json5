@@ -5893,6 +5893,12 @@
       base_feature: "none",
     },
     {
+      // Scopes SelectAll to the active editing host if it has focus but lacks
+      // an active text selection range. Shipped in M158, safe to remove in M162.
+      name: "SelectAllInFocusedEditingHost",
+      status: "stable",
+    },
+    {
       // Make select popup anchor stay within web contents to prevent
       // overlapping browser UI.
       // TODO(https://issues.chromium.org/issues/511869411): Remove this flag

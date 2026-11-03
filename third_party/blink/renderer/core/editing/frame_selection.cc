@@ -1078,13 +1078,29 @@ void FrameSelection::SelectAll(SetSelectionBy set_selection_by,
 
   Node* root = nullptr;
   Node* select_start_target = nullptr;
-  if (set_selection_by == SetSelectionBy::kUser && IsHidden()) {
-    // Hidden selection appears as no selection to user, in which case user-
-    // triggered SelectAll should act as if there is no selection.
-    root = GetDocument().documentElement();
-    select_start_target = GetDocument().body();
+
+  auto visible_selection = ComputeVisibleSelectionInDomTree();
+  bool is_empty = visible_selection.IsNone() ||
+                  (set_selection_by == SetSelectionBy::kUser && IsHidden());
+
+  if (is_empty) {
+    // Empty or hidden selection appears as no selection to user, in which
+    // case user-triggered SelectAll should act as if there is no selection.
+    Element* focused = GetDocument().FocusedElement();
+    if (RuntimeEnabledFeatures::SelectAllInFocusedEditingHostEnabled() &&
+        focused && IsEditable(*focused)) {
+      Position focused_pos = Position::FirstPositionInNode(*focused);
+      root = HighestEditableRoot(focused_pos);
+      if (Node* shadow_root = NonBoundaryShadowTreeRootNode(focused_pos)) {
+        select_start_target = shadow_root->OwnerShadowHost();
+      } else {
+        select_start_target = root;
+      }
+    } else {
+      root = GetDocument().documentElement();
+      select_start_target = GetDocument().body();
+    }
   } else {
-    auto visible_selection = ComputeVisibleSelectionInDomTree();
     if (visible_selection.IsContentEditable()) {
       root = HighestEditableRoot(visible_selection.Start());
       if (Node* shadow_root =
