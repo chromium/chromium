@@ -27,6 +27,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class ActionAppMenuManager;
+class AppMenuFocusController;
 class AppMenuSearchBarView;
 class BrowserWindowInterface;
 
@@ -211,6 +212,10 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // Runs the searches for search_bar_. Created along with the search bar.
   std::unique_ptr<AppMenuSearchController> search_controller_;
+
+  // Manages owner browser focus/IME state and search bar focus retention while
+  // the menu is open.
+  std::unique_ptr<AppMenuFocusController> focus_controller_;
 
   // The states associated with the populated app menu.
   bool has_notification_header_ = false;

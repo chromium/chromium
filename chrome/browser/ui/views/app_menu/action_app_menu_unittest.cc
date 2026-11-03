@@ -1918,6 +1918,11 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
   }
   ~ActionAppMenuWithSearchTest() override = default;
 
+  void SetUp() override {
+    ActionAppMenuTest::SetUp();
+    widget_->Show();
+  }
+
  protected:
   // Finds the search bar's child views by their element identifiers.
   views::Textfield* GetSearchField(AppMenuSearchBarView* search_bar) {
@@ -2195,14 +2200,19 @@ TEST_F(ActionAppMenuWithSearchTest, SearchQueryShowsOnlyResults) {
   // The search row is pinned in the header container, outside the SubmenuView.
   views::View* const search_row = search_bar->parent();
   views::View* const search_row_parent = search_row->parent();
+  views::Textfield* search_field = GetSearchField(search_bar);
+  ASSERT_NE(search_field, nullptr);
   const std::optional<size_t> search_row_index =
       search_row_parent->GetIndexOf(search_row);
   ASSERT_TRUE(search_row_index.has_value());
   ASSERT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
+  search_field->RequestFocus();
+  ASSERT_TRUE(search_field->HasFocus());
   search_bar->SetText(u"Downloads");
 
   EXPECT_EQ(menu.search_bar_for_testing(), search_bar);
+  EXPECT_TRUE(search_field->HasFocus());
   EXPECT_EQ(search_row->parent(), search_row_parent);
   EXPECT_EQ(search_row_parent->GetIndexOf(search_row), search_row_index);
   EXPECT_NE(root->GetMenuItemByID(kActionShowDownloadsPage), nullptr);
@@ -2397,16 +2407,22 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   views::SubmenuView* submenu = root->GetSubmenu();
   AppMenuSearchBarView* search_bar = menu.search_bar_for_testing();
   ASSERT_NE(search_bar, nullptr);
+  views::Textfield* search_field = GetSearchField(search_bar);
+  ASSERT_NE(search_field, nullptr);
   const size_t row_count_at_open = submenu->children().size();
 
+  search_field->RequestFocus();
+  ASSERT_TRUE(search_field->HasFocus());
   search_bar->SetText(u"Downloads");
   ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   ASSERT_FALSE(search_bar->GetText().empty());
   ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
+  EXPECT_TRUE(search_field->HasFocus());
 
   views::test::ButtonTestApi(GetBackButton(search_bar))
       .NotifyDefaultMouseClick();
 
+  EXPECT_TRUE(search_field->HasFocus());
   EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());

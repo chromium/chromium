@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_focus_controller.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_item_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
@@ -55,6 +56,8 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -207,6 +210,11 @@ ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
 }
 
 ActionAppMenu::~ActionAppMenu() {
+  if (focus_controller_) {
+    focus_controller_->RestoreOwnerFocus(
+        /*should_restore=*/!action_to_execute_on_close_.has_value());
+    focus_controller_.reset();
+  }
   search_bar_ = nullptr;
   command_to_action_map_.clear();
   search_controller_.reset();
@@ -254,6 +262,12 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
   menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 
   metrics_.OnMenuOpened();
+
+  views::Widget* const owner_widget =
+      parent ? parent : (host ? host->button()->GetWidget() : nullptr);
+  focus_controller_ = search_bar_ ? std::make_unique<AppMenuFocusController>(
+                                        owner_widget, search_bar_)
+                                  : nullptr;
 
   menu_runner_->RunMenuAt(parent, host, anchor_screen_bounds,
                           views::MenuAnchorPosition::kTopRight, source_type,
@@ -429,6 +443,12 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
     CHECK(action_iterator != command_to_action_map_.end());
     action_to_execute = action_iterator->second->GetActionItem();
     action_context = std::move(action_to_execute_on_close_->context);
+  }
+
+  if (focus_controller_) {
+    focus_controller_->RestoreOwnerFocus(
+        /*should_restore=*/!action_to_execute_on_close_.has_value());
+    focus_controller_.reset();
   }
 
   search_bar_ = nullptr;
@@ -617,12 +637,18 @@ void ActionAppMenu::ShowSearchResults(actions::ActionItem* results) {
   if (!menu_width_lock_) {
     menu_width_lock_ = LockMenuWidth();
   }
+  base::ScopedClosureRunner preserve_focus =
+      focus_controller_ ? focus_controller_->PreserveSearchBarFocus()
+                        : base::ScopedClosureRunner();
   ClearItemsBelowSearchBar();
   PopulateMenu(root_, results);
   root_->ChildrenChanged();
 }
 
 void ActionAppMenu::RestoreMenu() {
+  base::ScopedClosureRunner preserve_focus =
+      focus_controller_ ? focus_controller_->PreserveSearchBarFocus()
+                        : base::ScopedClosureRunner();
   ClearItemsBelowSearchBar();
   PopulateItemsBelowSearchBar();
   menu_width_lock_.RunAndReset();
