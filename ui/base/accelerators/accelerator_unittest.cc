@@ -36,13 +36,9 @@ TEST(AcceleratorTest, TimeStamp) {
   EXPECT_EQ(event_time, accelerator_b.time_stamp());
 }
 
-// Crash on Android builders. https://crbug.com/980267
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_GetShortcutText DISABLED_GetShortcutText
-#else
-#define MAYBE_GetShortcutText GetShortcutText
-#endif
-TEST(AcceleratorTest, MAYBE_GetShortcutText) {
+// Verifies that `Accelerator::GetShortcutText()` formats key codes and
+// modifiers into the expected platform-specific shortcut strings.
+TEST(AcceleratorTest, GetShortcutText) {
   struct {
     KeyboardCode code;
     int modifiers;
