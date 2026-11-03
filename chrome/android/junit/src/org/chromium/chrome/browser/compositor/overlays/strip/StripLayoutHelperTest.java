@@ -4259,6 +4259,19 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testPendingMouseTabClosure_SetOnClose_TertiaryButton() {
+        // Initialize.
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake a closure from middle-click / 3-finger click.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseButtonClick(tabs[0], MotionEvent.BUTTON_TERTIARY);
+
+        // Verify state is set.
+        verifyPendingMouseTabClosure(/* expectedPendingMouseTabClosure= */ true);
+    }
+
+    @Test
     public void testPendingMouseTabClosure_ClearOnTabClosure() {
         // Initialize and mark a pending a mouse tab closure.
         setupForAnimations();

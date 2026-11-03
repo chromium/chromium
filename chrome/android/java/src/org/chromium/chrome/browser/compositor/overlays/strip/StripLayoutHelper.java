@@ -3620,7 +3620,8 @@ public class StripLayoutHelper
         Token tabGroupId = realTab.getTabGroupId();
 
         // Set mouse tab closure state.
-        if (MotionEventUtils.isPrimaryButton(motionEventButtonState)) {
+        if (MotionEventUtils.isPrimaryButton(motionEventButtonState)
+                || MotionEventUtils.isTertiaryButton(motionEventButtonState)) {
             mPendingMouseTabClosure = true;
             boolean pendingClosureIsEndMostTab = isEndMostTab(tabId);
             if (pendingClosureIsEndMostTab) {
