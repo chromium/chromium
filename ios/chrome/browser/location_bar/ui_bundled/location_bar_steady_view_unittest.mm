@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 
+#import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -15,6 +18,19 @@ namespace {
 const CGFloat kCustomLeadingViewSpacing = 4.0;
 // Target width of the custom leading view once visible.
 const CGFloat kCustomLeadingViewTargetWidth = 20.0;
+
+// Returns a connected `UIWindowScene` for attaching test windows.
+UIWindowScene* GetWindowScene() {
+  for (UIScene* connected_scene in UIApplication.sharedApplication
+           .connectedScenes) {
+    UIWindowScene* scene =
+        base::apple::ObjCCast<UIWindowScene>(connected_scene);
+    if (scene) {
+      return scene;
+    }
+  }
+  return nil;
+}
 
 // Returns the set of constraints currently installed on the container holding
 // `locationLabel`. The container is private, but Auto Layout installs the
@@ -139,4 +155,89 @@ TEST_F(LocationBarSteadyViewTest,
   // Text updates keep reusing the constraints once the leading view is shown.
   [view_ setLocationLabelText:@"chromium.org" clipTail:NO];
   EXPECT_NSEQ(visible_constraints, ContainerConstraints(view_));
+}
+
+// Tests that `trailingButton` is a direct sibling of `locationButton` (not
+// nested inside it) and that `locationButton.accessibilityFrame` excludes
+// `trailingButton` when it is visible and enabled in LTR, while spanning the
+// full `LocationBarSteadyView` bounds when `trailingButton` is hidden,
+// disabled, or transparent.
+TEST_F(LocationBarSteadyViewTest,
+       TrailingButtonIsSiblingAndExcludesLocationButtonAccessibilityFrame) {
+  UIWindow* window = [[UIWindow alloc] initWithWindowScene:GetWindowScene()];
+  view_.translatesAutoresizingMaskIntoConstraints = YES;
+  view_.frame = CGRectMake(20, 40, 300, 44);
+  [window addSubview:view_];
+  [view_ setTrailingButtonHidden:NO];
+  [view_ enableTrailingButton:YES];
+  [window layoutIfNeeded];
+
+  EXPECT_EQ(view_.trailingButton.superview, view_);
+  EXPECT_NE(view_.trailingButton.superview, view_.locationButton);
+  ASSERT_GT(CGRectGetMidX(view_.trailingButton.frame),
+            CGRectGetMidX(view_.bounds));
+
+  CGRect trailing_button_frame = UIAccessibilityConvertFrameToScreenCoordinates(
+      view_.trailingButton.frame, view_);
+  EXPECT_FALSE(CGRectIntersectsRect(view_.locationButton.accessibilityFrame,
+                                    trailing_button_frame))
+      << "locationButton="
+      << base::SysNSStringToUTF8(
+             NSStringFromCGRect(view_.locationButton.accessibilityFrame))
+      << " trailingButton="
+      << base::SysNSStringToUTF8(NSStringFromCGRect(trailing_button_frame));
+  CGRect expected_ltr_frame = UIAccessibilityConvertFrameToScreenCoordinates(
+      CGRectMake(0, 0, CGRectGetMinX(view_.trailingButton.frame), 44), view_);
+  EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
+              NSStringFromCGRect(expected_ltr_frame));
+
+  CGRect full_frame =
+      UIAccessibilityConvertFrameToScreenCoordinates(view_.bounds, view_);
+
+  [view_ setTrailingButtonHidden:YES];
+  EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
+              NSStringFromCGRect(full_frame));
+
+  [view_ setTrailingButtonHidden:NO];
+  [view_ enableTrailingButton:NO];
+  EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
+              NSStringFromCGRect(full_frame));
+
+  [view_ enableTrailingButton:YES];
+  view_.trailingButton.alpha = 0;
+  EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
+              NSStringFromCGRect(full_frame));
+}
+
+// Tests that `locationButton.accessibilityFrame` excludes `trailingButton` on
+// the leading (left) edge when laid out in right-to-left (RTL) direction.
+TEST_F(LocationBarSteadyViewTest,
+       LocationButtonAccessibilityFrameExcludesTrailingButtonInRTL) {
+  UIWindow* window = [[UIWindow alloc] initWithWindowScene:GetWindowScene()];
+  view_.translatesAutoresizingMaskIntoConstraints = YES;
+  view_.frame = CGRectMake(20, 40, 300, 44);
+  view_.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
+  [window addSubview:view_];
+  [view_ setTrailingButtonHidden:NO];
+  [view_ enableTrailingButton:YES];
+  [window layoutIfNeeded];
+
+  ASSERT_LT(CGRectGetMidX(view_.trailingButton.frame),
+            CGRectGetMidX(view_.bounds));
+  CGRect trailing_button_frame = UIAccessibilityConvertFrameToScreenCoordinates(
+      view_.trailingButton.frame, view_);
+  EXPECT_FALSE(CGRectIntersectsRect(view_.locationButton.accessibilityFrame,
+                                    trailing_button_frame))
+      << "locationButton="
+      << base::SysNSStringToUTF8(
+             NSStringFromCGRect(view_.locationButton.accessibilityFrame))
+      << " trailingButton="
+      << base::SysNSStringToUTF8(NSStringFromCGRect(trailing_button_frame));
+  CGFloat trailing_button_max_x = CGRectGetMaxX(view_.trailingButton.frame);
+  CGRect expected_rtl_frame = UIAccessibilityConvertFrameToScreenCoordinates(
+      CGRectMake(trailing_button_max_x, 0,
+                 CGRectGetWidth(view_.bounds) - trailing_button_max_x, 44),
+      view_);
+  EXPECT_NSEQ(NSStringFromCGRect(view_.locationButton.accessibilityFrame),
+              NSStringFromCGRect(expected_rtl_frame));
 }

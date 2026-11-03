@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
@@ -144,6 +145,36 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
                                                               alpha:alpha];
                    }
                    completion:nil];
+}
+
+- (CGRect)accessibilityFrame {
+  LocationBarSteadyView* steadyView =
+      base::apple::ObjCCast<LocationBarSteadyView>(self.superview);
+  if (!steadyView) {
+    // superview is nil before this button is added to the view hierarchy.
+    return [super accessibilityFrame];
+  }
+
+  CGRect selfFrame = self.frame;
+  UIButton* trailingButton = steadyView.trailingButton;
+  if (trailingButton && !trailingButton.hidden && trailingButton.enabled &&
+      trailingButton.alpha > 0) {
+    CGRect trailingButtonFrame = trailingButton.frame;
+    if (CGRectIntersectsRect(selfFrame, trailingButtonFrame)) {
+      // Adjust `selfFrame` so it does not overlap with `trailingButtonFrame`.
+      if (CGRectGetMidX(trailingButtonFrame) >= CGRectGetMidX(selfFrame)) {
+        // LTR: Trailing button is on the right.
+        selfFrame.size.width =
+            CGRectGetMinX(trailingButtonFrame) - CGRectGetMinX(selfFrame);
+      } else {
+        // RTL: Trailing button is on the left.
+        CGFloat trailingButtonMaxX = CGRectGetMaxX(trailingButtonFrame);
+        selfFrame.size.width = CGRectGetMaxX(selfFrame) - trailingButtonMaxX;
+        selfFrame.origin.x = trailingButtonMaxX;
+      }
+    }
+  }
+  return UIAccessibilityConvertFrameToScreenCoordinates(selfFrame, steadyView);
 }
 
 @end
@@ -334,13 +365,12 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
   _locationButton = [[LocationBarSteadyButton alloc] init];
   _locationButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [_locationButton addSubview:_trailingButton];
-  [_locationButton insertSubview:_trailingButtonSpotlightView
-                    belowSubview:_trailingButton];
   [_locationButton addSubview:_locationContainerView];
-  AddSameCenterConstraints(_trailingButton, _trailingButtonSpotlightView);
 
   [self addSubview:_locationButton];
+  [self addSubview:_trailingButtonSpotlightView];
+  [self addSubview:_trailingButton];
+  AddSameCenterConstraints(_trailingButton, _trailingButtonSpotlightView);
 
   AddSameConstraints(self, _locationButton);
 
