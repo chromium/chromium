@@ -9,6 +9,8 @@ source_set("xdg") {
     "background_portal.h",
     "file_transfer_portal.cc",
     "file_transfer_portal.h",
+    "inhibit_session_monitor.cc",
+    "inhibit_session_monitor.h",
     "portal.cc",
     "portal.h",
     "portal_constants.h",
@@ -42,6 +44,7 @@ source_set("unit_tests") {
   sources = [
     "background_portal_unittest.cc",
     "file_transfer_portal_unittest.cc",
+    "inhibit_session_monitor_unittest.cc",
     "portal_unittest.cc",
     "request_unittest.cc",
     "session_unittest.cc",

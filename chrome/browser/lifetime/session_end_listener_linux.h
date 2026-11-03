@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,16 @@
 #include "components/dbus/utils/connect_to_signal.h"
 #include "dbus/bus.h"
 
+namespace dbus_xdg {
+class InhibitSessionMonitor;
+}  // namespace dbus_xdg
+
+// Controls whether SessionEndListenerLinux also listens for desktop session end
+// through a session state monitor of the org.freedesktop.portal.Inhibit portal.
+// TODO(crbug.com/580443832): Remove this kill switch once the session monitor
+// has been enabled by default on Stable for a milestone without issues.
+BASE_DECLARE_FEATURE(kLinuxInhibitPortalSessionMonitor);
+
 // Listens for OS shutdown and desktop session end events on Linux via D-Bus.
 //
 // 1. On systemd-logind (system bus), requests a "delay" shutdown inhibitor and
@@ -26,6 +37,9 @@
 //    reboots.
 // 2. On GNOME SessionManager (session bus), listens for the SessionOver signal
 //    as a passive notification for desktop session end.
+// 3. On the org.freedesktop.portal.Inhibit portal (session bus), creates a
+//    session state monitor, which reports desktop session end in Flatpak and
+//    Snap sandboxes and on desktops other than GNOME (e.g. KDE Plasma).
 class SessionEndListenerLinux {
  public:
   // Creates and initializes the listener using shared system and session buses.
@@ -42,6 +56,9 @@ class SessionEndListenerLinux {
   ~SessionEndListenerLinux();
 
   bool has_inhibitor_for_testing() const { return inhibitor_fd_.is_valid(); }
+  bool has_inhibit_session_monitor_for_testing() const {
+    return inhibit_session_monitor_ != nullptr;
+  }
   void reset_inhibitor_for_testing() { inhibitor_fd_.reset(); }
 
  private:
@@ -80,6 +97,7 @@ class SessionEndListenerLinux {
 
   base::ScopedFD inhibitor_fd_;
   base::OnceClosure session_ending_cb_;
+  std::unique_ptr<dbus_xdg::InhibitSessionMonitor> inhibit_session_monitor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SessionEndListenerLinux> weak_ptr_factory_{this};

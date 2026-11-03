@@ -11,13 +11,24 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/nix/xdg_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/dbus/utils/read_value.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/utils/write_value.h"
+#include "components/dbus/xdg/inhibit_session_monitor.h"
+#include "components/dbus/xdg/portal.h"
+#include "components/dbus/xdg/portal_constants.h"
+#include "components/dbus/xdg/request.h"
 #include "components/version_info/version_info.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -49,6 +60,10 @@ constexpr const char kGnomeSessionManagerInterface[] =
     "org.gnome.SessionManager";
 constexpr const char kSessionOverSignal[] = "SessionOver";
 
+constexpr const char kInhibitPortalInterface[] =
+    "org.freedesktop.portal.Inhibit";
+constexpr const char kStateChangedSignal[] = "StateChanged";
+
 MATCHER_P(IsMethodCall, method, "") {
   return arg->GetMember() == method;
 }
@@ -58,6 +73,8 @@ MATCHER_P(IsMethodCall, method, "") {
 class SessionEndListenerLinuxTest : public testing::Test {
  public:
   void SetUp() override {
+    // Most tests don't exercise the Inhibit portal; make it unavailable.
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kFailed);
     mock_system_bus_ =
         base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
     mock_session_bus_ =
@@ -83,6 +100,9 @@ class SessionEndListenerLinuxTest : public testing::Test {
   }
 
   void TearDown() override {
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+    mock_request_proxy_.reset();
+    mock_portal_proxy_.reset();
     mock_logind_proxy_.reset();
     mock_gnome_session_proxy_.reset();
     mock_system_bus_.reset();
@@ -173,18 +193,102 @@ class SessionEndListenerLinuxTest : public testing::Test {
     gnome_signal_callback_.Run(&signal);
   }
 
+  // Makes the Inhibit portal available on the session bus. Records the
+  // StateChanged signal callback and the monitor session path from
+  // CreateMonitor, and the paths passed to QueryEndResponse.
+  void SetUpInhibitPortal() {
+    dbus_xdg::SetPortalStateForTesting(
+        dbus_xdg::PortalRegistrarState::kSuccess);
+    mock_portal_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+        mock_session_bus_.get(), dbus_xdg::kPortalServiceName,
+        dbus::ObjectPath(dbus_xdg::kPortalObjectPath));
+    EXPECT_CALL(*mock_session_bus_, GetConnectionName())
+        .WillRepeatedly(Return("test"));
+    EXPECT_CALL(*mock_session_bus_,
+                GetObjectProxy(StrEq(dbus_xdg::kPortalServiceName),
+                               dbus::ObjectPath(dbus_xdg::kPortalObjectPath)))
+        .WillRepeatedly(Return(mock_portal_proxy_.get()));
+    // Request objects of the CreateMonitor call.
+    mock_request_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
+        mock_session_bus_.get(), dbus_xdg::kPortalServiceName,
+        dbus::ObjectPath("/org/freedesktop/portal/desktop/request/1"));
+    EXPECT_CALL(
+        *mock_session_bus_,
+        GetObjectProxy(StrEq(dbus_xdg::kPortalServiceName),
+                       testing::Property(&dbus::ObjectPath::value,
+                                         testing::HasSubstr("/request/"))))
+        .WillRepeatedly(Return(mock_request_proxy_.get()));
+    EXPECT_CALL(*mock_request_proxy_, ConnectToSignal(_, _, _, _))
+        .WillRepeatedly(
+            [](const std::string& interface_name,
+               const std::string& signal_name,
+               dbus::ObjectProxy::SignalCallback signal_callback,
+               dbus::ObjectProxy::OnConnectedCallback on_connected) {
+              std::move(on_connected).Run(interface_name, signal_name, true);
+            });
+    EXPECT_CALL(*mock_portal_proxy_,
+                ConnectToSignal(StrEq(kInhibitPortalInterface),
+                                StrEq(kStateChangedSignal), _, _))
+        .WillOnce([this](const std::string& interface_name,
+                         const std::string& signal_name,
+                         dbus::ObjectProxy::SignalCallback signal_callback,
+                         dbus::ObjectProxy::OnConnectedCallback on_connected) {
+          state_changed_callback_ = std::move(signal_callback);
+          std::move(on_connected).Run(interface_name, signal_name, true);
+        });
+    EXPECT_CALL(*mock_portal_proxy_, CallMethodWithErrorResponse(_, _, _))
+        .WillRepeatedly([this](dbus::MethodCall* call, int timeout_ms,
+                               dbus::ObjectProxy::ResponseOrErrorCallback cb) {
+          dbus::MessageReader reader(call);
+          if (call->GetMember() == "CreateMonitor") {
+            std::string window;
+            ASSERT_TRUE(reader.PopString(&window));
+            auto options = dbus_utils::ReadValue<dbus_xdg::Dictionary>(reader);
+            ASSERT_TRUE(options);
+            auto it = options->find("session_handle_token");
+            ASSERT_NE(it, options->end());
+            auto token = std::move(it->second).Take<std::string>();
+            ASSERT_TRUE(token);
+            monitor_session_path_ = dbus::ObjectPath(
+                base::nix::XdgDesktopPortalSessionPath("test", *token));
+            // The Request::Response signal is not needed for these tests.
+          } else if (call->GetMember() == "QueryEndResponse") {
+            dbus::ObjectPath path;
+            ASSERT_TRUE(reader.PopObjectPath(&path));
+            query_end_responses_.push_back(path);
+          }
+        });
+  }
+
+  void EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState state) {
+    dbus::Signal signal(kInhibitPortalInterface, kStateChangedSignal);
+    dbus::MessageWriter writer(&signal);
+    writer.AppendObjectPath(monitor_session_path_);
+    dbus_xdg::Dictionary dict;
+    dict["session-state"] =
+        dbus_utils::Variant::Wrap<"u">(static_cast<uint32_t>(state));
+    dbus_utils::WriteValue(writer, dict);
+    state_changed_callback_.Run(&signal);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<dbus::MockBus> mock_system_bus_;
   scoped_refptr<dbus::MockBus> mock_session_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_logind_proxy_;
   scoped_refptr<dbus::MockObjectProxy> mock_gnome_session_proxy_;
+  scoped_refptr<dbus::MockObjectProxy> mock_portal_proxy_;
+  scoped_refptr<dbus::MockObjectProxy> mock_request_proxy_;
 
   std::unique_ptr<dbus::Response> response_;
   std::unique_ptr<dbus::ErrorResponse> error_response_;
 
   dbus::ObjectProxy::SignalCallback logind_signal_callback_;
   dbus::ObjectProxy::SignalCallback gnome_signal_callback_;
+  dbus::ObjectProxy::SignalCallback state_changed_callback_;
+  dbus::ObjectPath monitor_session_path_;
+  std::vector<dbus::ObjectPath> query_end_responses_;
 };
 
 TEST_F(SessionEndListenerLinuxTest, LogindShutdownFlow) {
@@ -274,4 +378,64 @@ TEST_F(SessionEndListenerLinuxTest, ShutdownCancelledReacquiresInhibitor) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(listener->has_inhibitor_for_testing());
   EXPECT_FALSE(session_ended.IsReady());
+}
+
+TEST_F(SessionEndListenerLinuxTest, InhibitPortalSessionEnding) {
+  SetUpLogindSignal(true);
+  SetUpGnomeSignal(true);
+  SetUpInhibitCallSuccess();
+  SetUpInhibitPortal();
+
+  base::test::TestFuture<void> session_ended;
+  auto listener = std::make_unique<SessionEndListenerLinux>(
+      mock_system_bus_, mock_session_bus_, session_ended.GetCallback());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(listener->has_inhibit_session_monitor_for_testing());
+  ASSERT_TRUE(monitor_session_path_.IsValid());
+
+  // "Query End" is acknowledged, but logout may still be cancelled.
+  EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState::kQueryEnd);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(query_end_responses_.size(), 1u);
+  EXPECT_EQ(query_end_responses_[0], monitor_session_path_);
+  EXPECT_FALSE(session_ended.IsReady());
+
+  EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState::kEnding);
+  EXPECT_TRUE(session_ended.Wait());
+}
+
+TEST_F(SessionEndListenerLinuxTest, InhibitPortalLogoutCancelled) {
+  SetUpLogindSignal(true);
+  SetUpGnomeSignal(true);
+  SetUpInhibitCallSuccess();
+  SetUpInhibitPortal();
+
+  base::test::TestFuture<void> session_ended;
+  auto listener = std::make_unique<SessionEndListenerLinux>(
+      mock_system_bus_, mock_session_bus_, session_ended.GetCallback());
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(monitor_session_path_.IsValid());
+
+  EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState::kQueryEnd);
+  EmitInhibitSessionState(
+      dbus_xdg::InhibitSessionMonitor::SessionState::kRunning);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(query_end_responses_.size(), 1u);
+  EXPECT_FALSE(session_ended.IsReady());
+}
+
+TEST_F(SessionEndListenerLinuxTest, InhibitPortalFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLinuxInhibitPortalSessionMonitor);
+  SetUpLogindSignal(true);
+  SetUpGnomeSignal(true);
+  SetUpInhibitCallSuccess();
+
+  auto listener = std::make_unique<SessionEndListenerLinux>(
+      mock_system_bus_, mock_session_bus_, base::DoNothing());
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(listener->has_inhibit_session_monitor_for_testing());
 }

@@ -49,6 +49,19 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Session {
       Dictionary options,
       CreateCallback create_callback);
 
+  // Like CreateWithRequest(), but for portals whose session creation method is
+  // named `method_name` instead of `CreateSession` and takes a `parent_window`
+  // string before `options` (e.g.
+  // org.freedesktop.portal.Inhibit.CreateMonitor).
+  static std::unique_ptr<Session> CreateWithRequestForMethod(
+      scoped_refptr<dbus::Bus> bus,
+      dbus::ObjectProxy* portal_proxy,
+      const std::string& interface_name,
+      const std::string& method_name,
+      const std::string& parent_window,
+      Dictionary options,
+      CreateCallback create_callback);
+
   // Asynchronously creates an XDG Desktop Portal Session for portals where
   // `CreateSession` directly returns the session handle object path in the
   // D-Bus method reply (e.g. org.freedesktop.portal.Location).
@@ -83,6 +96,16 @@ class COMPONENT_EXPORT(COMPONENTS_DBUS) Session {
   Session(scoped_refptr<dbus::Bus> bus,
           const dbus::ObjectPath& session_path,
           const std::string& portal_service_name);
+
+  template <typename... Args>
+  static std::unique_ptr<Session> CreateWithRequestImpl(
+      scoped_refptr<dbus::Bus> bus,
+      dbus::ObjectProxy* portal_proxy,
+      const std::string& interface_name,
+      const std::string& method_name,
+      Dictionary options,
+      CreateCallback create_callback,
+      const Args&... arguments);
 
   static void HandleCreatedSession(base::WeakPtr<Session> session,
                                    scoped_refptr<dbus::Bus> bus,

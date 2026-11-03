@@ -8,13 +8,18 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/xdg/inhibit_session_monitor.h"
 #include "components/version_info/version_info.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+
+BASE_FEATURE(kLinuxInhibitPortalSessionMonitor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char SessionEndListenerLinux::kLogindServiceName[] =
     "org.freedesktop.login1";
@@ -65,6 +70,14 @@ SessionEndListenerLinux::SessionEndListenerLinux(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ConnectToLogind();
   ConnectToGnomeSessionManager();
+  if (session_bus_ &&
+      base::FeatureList::IsEnabled(kLinuxInhibitPortalSessionMonitor)) {
+    inhibit_session_monitor_ =
+        std::make_unique<dbus_xdg::InhibitSessionMonitor>(
+            session_bus_,
+            base::BindOnce(&SessionEndListenerLinux::OnSessionEnding,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 SessionEndListenerLinux::~SessionEndListenerLinux() = default;

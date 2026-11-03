@@ -78,16 +78,45 @@ std::unique_ptr<Session> Session::CreateWithRequest(
     const std::string& interface_name,
     Dictionary options,
     CreateCallback create_callback) {
+  return CreateWithRequestImpl(std::move(bus), portal_proxy, interface_name,
+                               kMethodCreateSession, std::move(options),
+                               std::move(create_callback));
+}
+
+// static
+std::unique_ptr<Session> Session::CreateWithRequestForMethod(
+    scoped_refptr<dbus::Bus> bus,
+    dbus::ObjectProxy* portal_proxy,
+    const std::string& interface_name,
+    const std::string& method_name,
+    const std::string& parent_window,
+    Dictionary options,
+    CreateCallback create_callback) {
+  return CreateWithRequestImpl(std::move(bus), portal_proxy, interface_name,
+                               method_name, std::move(options),
+                               std::move(create_callback), parent_window);
+}
+
+// static
+template <typename... Args>
+std::unique_ptr<Session> Session::CreateWithRequestImpl(
+    scoped_refptr<dbus::Bus> bus,
+    dbus::ObjectProxy* portal_proxy,
+    const std::string& interface_name,
+    const std::string& method_name,
+    Dictionary options,
+    CreateCallback create_callback,
+    const Args&... arguments) {
   EnsureSessionHandleToken(options);
   auto session =
       base::WrapUnique(new Session(std::move(bus), kPortalServiceName));
   session->create_request_ = Request::CreateWithPortalServiceName(
-      session->bus_, portal_proxy, interface_name, kMethodCreateSession,
+      session->bus_, portal_proxy, interface_name, method_name,
       std::move(options),
       base::BindOnce(&Session::OnCreateSessionRequestResponse,
                      session->weak_ptr_factory_.GetWeakPtr(), session->bus_,
                      session->portal_service_name_, std::move(create_callback)),
-      session->portal_service_name_);
+      session->portal_service_name_, arguments...);
   return session;
 }
 
