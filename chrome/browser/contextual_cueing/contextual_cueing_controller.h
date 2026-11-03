@@ -40,6 +40,11 @@ namespace favicon {
 class FaviconService;
 }  // namespace favicon
 
+namespace history {
+class HistoryService;
+class QueryResults;
+}  // namespace history
+
 namespace optimization_guide {
 class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
@@ -142,6 +147,13 @@ class ContextualCueingController
   // Initiates a model execution request to MES for the current window state,
   // requesting only surfaces for the winning target.
   void InitiateModelExecutionRequest(CueTargetType winning_target_type);
+
+  // Callback for when the history query completes. Populates `historical_tabs`
+  // on `request` and initiates model execution.
+  void OnHistoryQueryComplete(
+      optimization_guide::proto::Tab active_tab,
+      optimization_guide::proto::ContextualCueingRequest request,
+      history::QueryResults results);
 
   // The V1 single-source evaluation path, triggered by page content
   // annotations. Performs URL eligibility checks, category classification
@@ -305,6 +317,7 @@ class ContextualCueingController
   bool is_observing_category_classifier_ = false;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+  raw_ptr<history::HistoryService> history_service_;
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
   base::CallbackListSubscription side_panel_shown_subscription_;
   base::TimeTicks cue_shown_time_;

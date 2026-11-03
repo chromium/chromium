@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/contextual_search/contextual_search_cue_tab_state.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -57,6 +59,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
@@ -599,7 +605,8 @@ IN_PROC_BROWSER_TEST_F(
   browser()->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
 
-  // The contextual cue anchored message should not be shown on the active tab.
+  // The contextual cue anchored message should not be shown on the active
+  // tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
@@ -665,7 +672,8 @@ IN_PROC_BROWSER_TEST_F(
   // Activate the original foreground tab.
   browser()->GetTabStripModel()->ActivateTabAt(1);
 
-  // The contextual cue anchored message should not be shown on the active tab.
+  // The contextual cue anchored message should not be shown on the active
+  // tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
@@ -685,7 +693,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.other.com")));
 
-  // URL won't match whatever navigated since it does not match the active tab.
+  // URL won't match whatever navigated since it does not match the active
+  // tab.
   contextual_cueing_controller()->OnPageContentAnnotated(
       page_content_annotations::HistoryVisit(
           base::Time::Now(), GURL("https://www.example.com/abc")),
@@ -787,8 +796,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("https://www.someurl.com/abc")));
 
-  // Create a new tab that is specifically a URL that would normally be skipped
-  // (will be in the background in final state).
+  // Create a new tab that is specifically a URL that would normally be
+  // skipped (will be in the background in final state).
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://settings"),
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
@@ -1090,8 +1099,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // Make kGlic ineligible for the page and register a kContextualSearch target
-  // that is eligible for the page.
+  // Make kGlic ineligible for the page and register a kContextualSearch
+  // target that is eligible for the page.
   cue_target()->page_eligible = false;
   class TestContextualSearchCueTarget : public TestCueTarget {
    public:
@@ -1140,10 +1149,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   action->InvokeAction();
 
   ASSERT_TRUE(contextual_search_target_ptr->HasClickData());
-  EXPECT_EQ("Search query",
-            std::get<ContextualSearchCueActionData>(
-                contextual_search_target_ptr->click_data)
-                .query);
+  EXPECT_EQ("Search query", std::get<ContextualSearchCueActionData>(
+                                contextual_search_target_ptr->click_data)
+                                .query);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
@@ -1516,7 +1524,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SimulateFilterPassed();
-  ASSERT_TRUE(saved_callback);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !saved_callback.is_null(); }));
 
   // Open new tab in foreground right away.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -1545,8 +1554,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
   browser()->GetTabStripModel()->ActivateTabAt(
       browser()->GetTabStripModel()->GetIndexOfTab(tab_1));
 
-  // Once Tab 1 is active, the suggestion chip should be visible quietly without
-  // showing the anchored message bubble.
+  // Once Tab 1 is active, the suggestion chip should be visible quietly
+  // without showing the anchored message bubble.
   EXPECT_TRUE(observer.visible_);
   EXPECT_FALSE(observer.anchored_message_showing_);
 
@@ -1587,7 +1596,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   SimulateFilterPassed();
-  ASSERT_TRUE(saved_callback);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !saved_callback.is_null(); }));
 
   // Navigate the tab away to a different URL before model execution response
   // arrives.
@@ -2931,19 +2941,20 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
       "ContextualCueing.V2.Decision",
       ContextualCueingDecision::kTargetFeatureNotEligible, 1);
 
-  // 2. Set up observer to register quiet-capable target on newly inserted tabs.
+  // 2. Set up observer to register quiet-capable target on newly inserted
+  // tabs.
   TargetRegisteringObserver target_observer(browser()->tab_strip_model());
 
   // 3. Open a background tab with quiet-capable target.
-  // Even though service allowed tier is loud, it is downgraded to quiet because
-  // tab is inactive. The quiet-capable target evaluates successfully.
+  // Even though service allowed tier is loud, it is downgraded to quiet
+  // because tab is inactive. The quiet-capable target evaluates successfully.
   GURL url2 = embedded_test_server()->GetURL("/title2.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  // The background tab navigated to url2 and triggered quiet cue evaluation on
-  // load.
+  // The background tab navigated to url2 and triggered quiet cue evaluation
+  // on load.
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 2);
   histogram_tester.ExpectBucketCount("ContextualCueing.V2.Decision",
@@ -3013,8 +3024,8 @@ IN_PROC_BROWSER_TEST_F(
           },
           MakeCompleteResponse().contextual_cues(0)));
 
-  // Quiet target should be selected and succeed on tab 0 despite tab 0 becoming
-  // inactive.
+  // Quiet target should be selected and succeed on tab 0 despite tab 0
+  // becoming inactive.
   optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester, "ContextualCueing.V2.Decision", 3);
   histogram_tester.ExpectBucketCount("ContextualCueing.V2.Decision",
@@ -3628,8 +3639,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   ASSERT_TRUE(cs_tab_state);
   EXPECT_FALSE(GetTestSyncService()->HasObserver(cs_tab_state));
 
-  // Open a second tab and verify closing it keeps demand active while the first
-  // tab remains open with History Sync enabled.
+  // Open a second tab and verify closing it keeps demand active while the
+  // first tab remains open with History Sync enabled.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.example.com/tab2"),
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
@@ -3676,8 +3687,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetTestSyncService()->HasObserver(tab_state));
   EXPECT_TRUE(GetTestSyncService()->HasObserver(cs_tab_state));
 
-  // Open a second tab and verify closing it keeps demand active while the first
-  // tab remains open with History Sync enabled.
+  // Open a second tab and verify closing it keeps demand active while the
+  // first tab remains open with History Sync enabled.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.example.com/tab2"),
       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
@@ -3695,14 +3706,256 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(bridge->demand_active());
 
   // Detach GlicCueTabState and ContextualSearchCueTabState to isolate
-  // ContextualCueingController and verify that ContextualCueingController does
-  // not register for kCategoryClassifier when kContextualCueingV2MultiSource is
-  // enabled, even with History Sync on.
+  // ContextualCueingController and verify that ContextualCueingController
+  // does not register for kCategoryClassifier when
+  // kContextualCueingV2MultiSource is enabled, even with History Sync on.
   tab_state->SetAnnotationServiceForTesting(nullptr);
   cs_tab_state->SetAnnotationServiceForTesting(nullptr);
 
   EnableHistorySync(true);
   EXPECT_FALSE(bridge->demand_active());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
+                       HistoricalTabsDisabledByDefault) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(history_service);
+  history_service->AddPageWithDetails(
+      GURL("https://www.history1.com/article"), u"History 1",
+      /*visit_count=*/1, /*typed_count=*/0,
+      base::Time::Now() - base::Minutes(5),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+
+  std::optional<optimization_guide::proto::ContextualCueingRequest>
+      captured_request;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            captured_request = static_cast<
+                const optimization_guide::proto::ContextualCueingRequest&>(
+                request_metadata);
+          });
+
+  base::HistogramTester histogram_tester;
+  SimulateFilterPassed();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return captured_request.has_value(); }));
+
+  EXPECT_EQ(0, captured_request->historical_tabs_size());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.NumRequestedHistoricalTabs", 0, 1);
+}
+
+class ContextualCueingControllerHistoricalTabsBrowserTest
+    : public ContextualCueingControllerMockOptGuideBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualCueingV2,
+          {{"ContextualCueingV2DiscardShoppingPdfs", "true"},
+           {"ContextualCueingV2TabListVisibility", "always"},
+           {"ContextualCueingV2EnablePrivateInsightsLogging", "true"},
+           {"ContextualCueingV2MaxNumHistoricalTabs", "5"}}}},
+        /*disabled_features=*/{kContextualCueingV2EnforceAgeRestriction});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerHistoricalTabsBrowserTest,
+                       HistoricalTabsPopulatedAndDeduplicated) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.backgroundtab.com/page"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(history_service);
+
+  const base::Time now = base::Time::Now();
+  // Active and background tab URLs (including with #ref) should be
+  // deduplicated.
+  history_service->AddPageWithDetails(
+      GURL("https://www.activetab.com/abc#section"), u"Active Tab With Ref",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(1),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://www.backgroundtab.com/page#top"),
+      u"Background Tab With Ref",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(2),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Non-HTTP(S) URLs should be excluded.
+  history_service->AddPageWithDetails(
+      GURL("file:///tmp/local.html"), u"Local File",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(3),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Visits older than kHistoricalTabsTimeWindow (24h) should be excluded.
+  history_service->AddPageWithDetails(
+      GURL("https://www.oldvisit.com/page"), u"Old Visit",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Hours(25),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  // Visits from a foreign device (non-empty `originator_cache_guid`) should
+  // be excluded.
+  class AddForeignVisitTask : public history::HistoryDBTask {
+   public:
+    explicit AddForeignVisitTask(base::Time visit_time)
+        : visit_time_(visit_time) {}
+    bool RunOnDBThread(history::HistoryBackend* backend,
+                       history::HistoryDatabase* db) override {
+      history::VisitRow foreign_visit;
+      foreign_visit.visit_time = visit_time_;
+      foreign_visit.transition = ui::PageTransitionFromInt(
+          ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+          ui::PAGE_TRANSITION_CHAIN_END);
+      foreign_visit.originator_cache_guid = "foreign_device_guid";
+      foreign_visit.is_known_to_sync = true;
+      backend->AddSyncedVisit(GURL("https://www.foreignvisit.com/page"),
+                              u"Foreign Visit", /*hidden=*/false, foreign_visit,
+                              std::nullopt, std::nullopt);
+      return true;
+    }
+    void DoneRunOnMainThread() override {}
+
+   private:
+    base::Time visit_time_;
+  };
+  base::CancelableTaskTracker foreign_visit_tracker;
+  history_service->ScheduleDBTask(
+      FROM_HERE, std::make_unique<AddForeignVisitTask>(now - base::Minutes(4)),
+      &foreign_visit_tracker);
+
+  // Eligible visits (including search URLs and #ref deduplication within
+  // history).
+  history_service->AddPageWithDetails(
+      GURL("https://www.history1.com/article"), u"History 1",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(30),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://www.google.com/search?q=test+query"), u"Google Search",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(20),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://www.history2.com/doc#part1"), u"History 2 Old",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(15),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+  history_service->AddPageWithDetails(
+      GURL("https://www.history2.com/doc#part2"), u"History 2 New",
+      /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(10),
+      /*hidden=*/false, history::SOURCE_BROWSED);
+
+  std::optional<optimization_guide::proto::ContextualCueingRequest>
+      captured_request;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            captured_request = static_cast<
+                const optimization_guide::proto::ContextualCueingRequest&>(
+                request_metadata);
+          });
+
+  base::HistogramTester histogram_tester;
+  SimulateFilterPassed();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return captured_request.has_value(); }));
+
+  ASSERT_EQ(3, captured_request->historical_tabs_size());
+  EXPECT_EQ("https://www.history2.com/doc#part2",
+            captured_request->historical_tabs(0).url());
+  EXPECT_EQ("History 2 New", captured_request->historical_tabs(0).title());
+  EXPECT_FALSE(captured_request->historical_tabs(0).has_tab_id());
+
+  EXPECT_EQ("https://www.google.com/search?q=test+query",
+            captured_request->historical_tabs(1).url());
+  EXPECT_EQ("Google Search", captured_request->historical_tabs(1).title());
+  EXPECT_FALSE(captured_request->historical_tabs(1).has_tab_id());
+
+  EXPECT_EQ("https://www.history1.com/article",
+            captured_request->historical_tabs(2).url());
+  EXPECT_EQ("History 1", captured_request->historical_tabs(2).title());
+  EXPECT_FALSE(captured_request->historical_tabs(2).has_tab_id());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.NumRequestedHistoricalTabs", 3, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerHistoricalTabsBrowserTest,
+                       MaxHistoricalTabsRespected) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  ASSERT_TRUE(history_service);
+
+  const base::Time now = base::Time::Now();
+  const int total_visits = kMaxNumHistoricalTabs.Get() + 5;
+  for (int i = 0; i < total_visits; ++i) {
+    history_service->AddPageWithDetails(
+        GURL(base::StringPrintf("https://www.history.com/%d", i)),
+        base::UTF8ToUTF16(base::StringPrintf("History %d", i)),
+        /*visit_count=*/1, /*typed_count=*/0, now - base::Minutes(i + 1),
+        /*hidden=*/false, history::SOURCE_BROWSED);
+  }
+
+  std::optional<optimization_guide::proto::ContextualCueingRequest>
+      captured_request;
+  EXPECT_CALL(
+      *mock_opt_guide(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContextualCueing,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            captured_request = static_cast<
+                const optimization_guide::proto::ContextualCueingRequest&>(
+                request_metadata);
+          });
+
+  base::HistogramTester histogram_tester;
+  SimulateFilterPassed();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return captured_request.has_value(); }));
+
+  EXPECT_EQ(kMaxNumHistoricalTabs.Get(),
+            captured_request->historical_tabs_size());
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.NumRequestedHistoricalTabs",
+      kMaxNumHistoricalTabs.Get(), 1);
 }
 
 }  // namespace

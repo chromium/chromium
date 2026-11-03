@@ -29,6 +29,7 @@
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
@@ -49,6 +50,8 @@
 #include "components/contextual_cueing/contextual_cueing_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/google/core/common/google_util.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -188,6 +191,9 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
       identity_manager_(
           IdentityManagerFactory::GetForProfile(tab_->GetProfile())),
       favicon_service_(FaviconServiceFactory::GetForProfile(
+          tab_->GetProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      history_service_(HistoryServiceFactory::GetForProfile(
           tab_->GetProfile(),
           ServiceAccessType::EXPLICIT_ACCESS)),
       scoped_unowned_user_data_(tab_->GetUnownedUserDataHost(), *this) {
@@ -735,6 +741,61 @@ void ContextualCueingController::InitiateModelExecutionRequest(
   request.mutable_active_tab_page_context()->set_title(
       base::UTF16ToUTF8(active_web_contents->GetTitle()));
 
+  // Restrict the MES request to only the winning target's surface.
+  CueTarget* winner = GetTarget(winning_target_type);
+  if (winner &&
+      winner->GetSurface() !=
+          optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
+    request.add_supported_surfaces(winner->GetSurface());
+  } else if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
+    auto eligible_cue_surfaces = GetEligibleCueSurfaces();
+    *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
+                                             eligible_cue_surfaces.end()};
+  }
+
+  optimization_guide::proto::Tab active_tab =
+      GetTabProtoFromWebContents(active_web_contents);
+  const int max_historical_tabs = kMaxNumHistoricalTabs.Get();
+  if (history_service_ && max_historical_tabs > 0) {
+    history::QueryOptions options;
+    options.begin_time = base::Time::Now() - kHistoricalTabsTimeWindow.Get();
+    options.duplicate_policy = history::QueryOptions::REMOVE_ALL_DUPLICATES;
+    options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
+    // Only include visits originating from the local device (stored with an
+    // empty `originator_cache_guid`).
+    options.client_ids = {""};
+    // Buffer the query limit to account for deduplication against the active
+    // tab, background tabs, and duplicate URL visits.
+    options.max_count =
+        max_historical_tabs * 2 + kMaxNumBackgroundTabs.Get() + 1;
+    history_service_->QueryHistory(
+        std::u16string(), options,
+        base::BindOnce(&ContextualCueingController::OnHistoryQueryComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(active_tab),
+                       std::move(request)),
+        &cancelable_task_tracker_);
+    return;
+  }
+
+  OnHistoryQueryComplete(std::move(active_tab), std::move(request),
+                         history::QueryResults());
+}
+
+void ContextualCueingController::OnHistoryQueryComplete(
+    optimization_guide::proto::Tab active_tab,
+    optimization_guide::proto::ContextualCueingRequest request,
+    history::QueryResults results) {
+  if (!tab_->GetContents() ||
+      !AreTabsEqual(active_tab,
+                    GetTabProtoFromWebContents(tab_->GetContents()))) {
+    CUEING_LOG(
+        "History query returned but tab for generated cue is no longer on the "
+        "requested page.");
+    OnShowCueFailed(
+        ContextualCueingDecision::kNoLongerActiveTabAfterModelExecution);
+    return;
+  }
+
   struct BackgroundTabInfo {
     base::Time last_active_time;
     raw_ptr<tabs::TabInterface> tab;
@@ -777,21 +838,40 @@ void ContextualCueingController::InitiateModelExecutionRequest(
   }
   CUEING_LOG(base::StringPrintf("Requesting %d background tabs.",
                                 request.background_tabs_size()));
-
-  // Restrict the MES request to only the winning target's surface.
-  CueTarget* winner = GetTarget(winning_target_type);
-  if (winner &&
-      winner->GetSurface() !=
-          optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
-    request.add_supported_surfaces(winner->GetSurface());
-  } else if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    auto eligible_cue_surfaces = GetEligibleCueSurfaces();
-    *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
-                                             eligible_cue_surfaces.end()};
-  }
-
   LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedBackgroundTabs",
                              request.background_tabs_size());
+
+  const int max_historical_tabs = kMaxNumHistoricalTabs.Get();
+  if (!results.empty() && max_historical_tabs > 0) {
+    absl::flat_hash_set<std::string> seen_urls;
+    seen_urls.insert(
+        GURL(request.active_tab_page_context().url()).GetWithoutRef().spec());
+    for (const auto& bg_tab : request.background_tabs()) {
+      seen_urls.insert(GURL(bg_tab.url()).GetWithoutRef().spec());
+    }
+
+    for (const auto& visit : results) {
+      if (request.historical_tabs_size() >= max_historical_tabs) {
+        break;
+      }
+      if (!visit.url().is_valid() || !visit.url().SchemeIsHTTPOrHTTPS()) {
+        continue;
+      }
+      if (!seen_urls.insert(visit.url().GetWithoutRef().spec()).second) {
+        continue;
+      }
+      auto* historical_tab = request.add_historical_tabs();
+      historical_tab->set_url(visit.url().spec());
+      historical_tab->set_title(base::UTF16ToUTF8(visit.title()));
+    }
+  }
+  CUEING_LOG(base::StringPrintf("Requesting %d historical tabs.",
+                                request.historical_tabs_size()));
+  LOCAL_HISTOGRAM_COUNTS_100("ContextualCueing.V2.NumRequestedHistoricalTabs",
+                             request.historical_tabs_size());
+
+  std::vector<optimization_guide::proto::Tab> requested_background_tabs(
+      request.background_tabs().begin(), request.background_tabs().end());
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextualCueing, request,
       {.service_type =
@@ -800,11 +880,8 @@ void ContextualCueingController::InitiateModelExecutionRequest(
                : optimization_guide::ModelExecutionServiceType::kDefault},
       base::BindOnce(
           &ContextualCueingController::OnModelExecutionResponseReceived,
-          weak_ptr_factory_.GetWeakPtr(),
-          GetTabProtoFromWebContents(active_web_contents),
-          std::vector<optimization_guide::proto::Tab>(
-              request.background_tabs().begin(),
-              request.background_tabs().end())));
+          weak_ptr_factory_.GetWeakPtr(), std::move(active_tab),
+          std::move(requested_background_tabs)));
 }
 
 void ContextualCueingController::FetchFavicon(
