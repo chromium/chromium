@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check_deref.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -801,9 +802,17 @@ void TabStripCollectionController::ShiftTabRelative(
   }
 
   model_->MoveWebContentsAt(start_index, target_index, false);
+  int message_id;
+  if (root_node_->orientation() == TabStripOrientation::kHorizontal) {
+    message_id = ((offset > 0) ^ base::i18n::IsRTL())
+                     ? IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT
+                     : IDS_TAB_AX_ANNOUNCE_MOVED_LEFT;
+  } else {
+    message_id = (offset > 0) ? IDS_TAB_AX_ANNOUNCE_MOVED_DOWN
+                              : IDS_TAB_AX_ANNOUNCE_MOVED_UP;
+  }
   browser_view_->GetViewAccessibility().AnnounceText(
-      l10n_util::GetStringUTF16((offset > 0) ? IDS_TAB_AX_ANNOUNCE_MOVED_DOWN
-                                             : IDS_TAB_AX_ANNOUNCE_MOVED_UP));
+      l10n_util::GetStringUTF16(message_id));
 }
 
 void TabStripCollectionController::ExtendSelectionRelative(

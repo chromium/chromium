@@ -663,6 +663,65 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   EXPECT_TRUE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
 }
 
+// On macOS, accessibility announcements are dispatched directly through native
+// Cocoa VoiceOver APIs (NSAccessibilityAnnouncementRequestedNotification)
+// rather than Views' AnnounceTextView.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
+                       ShiftTabRelativeAnnouncesDirection) {
+  AppendTab();
+  TabStripModel* model = browser()->GetTabStripModel();
+  ASSERT_EQ(2, model->count());
+
+  tabs::TabInterface* tab0 = model->GetTabAtIndex(0);
+  tabs::TabInterface* tab1 = model->GetTabAtIndex(1);
+
+  auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
+  ASSERT_TRUE(base_region);
+  TabStripCollectionController* controller =
+      base_region->GetTabStripCollectionController();
+  ASSERT_TRUE(controller);
+
+  auto* root_view = static_cast<views::internal::RootView*>(
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetWidget()
+          ->GetRootView());
+
+  controller->ShiftTabNext(tab0);
+  EXPECT_EQ(model->GetTabAtIndex(0), tab1);
+  EXPECT_EQ(model->GetTabAtIndex(1), tab0);
+  {
+    ui::AXNodeData node_data;
+    root_view->GetAnnounceViewForTesting()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(orientation() ==
+                                          TabStripOrientation::kHorizontal
+                                      ? IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT
+                                      : IDS_TAB_AX_ANNOUNCE_MOVED_DOWN),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
+
+  controller->ShiftTabPrevious(tab0);
+  EXPECT_EQ(model->GetTabAtIndex(0), tab0);
+  EXPECT_EQ(model->GetTabAtIndex(1), tab1);
+  {
+    ui::AXNodeData node_data;
+    root_view->GetAnnounceViewForTesting()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(orientation() ==
+                                          TabStripOrientation::kHorizontal
+                                      ? IDS_TAB_AX_ANNOUNCE_MOVED_LEFT
+                                      : IDS_TAB_AX_ANNOUNCE_MOVED_UP),
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  }
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 class TabStripControllerFocusingVisibilityBrowserTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest>,
       public testing::WithParamInterface<TabStripOrientation> {
