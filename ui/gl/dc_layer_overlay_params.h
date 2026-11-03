@@ -71,6 +71,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   // See |OverlayCandidate::layer_id|.
   gfx::OverlayLayerId layer_id;
 
+  // For future use. For now, expected to be unset.
+  gfx::OverlayLayerId parent_layer_id;
+
   // Parameters for video overlays, only used by |SwapChainPresenter|.
   struct VideoParams {
     VideoParams();

@@ -374,6 +374,24 @@ BASE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox,
 BASE_FEATURE(kDirectCompositionUnlimitedOverlays,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Killswitch to use the new incremental updating tree algorithm
+// (i.e. `OsCompositorTreeBase`) to modify the DComp visual tree.
+BASE_FEATURE(kDCLayerTree2, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<DCLayerTree2Mode>::Option
+    kDCLayerTree2ModeOption[] = {
+        {DCLayerTree2Mode::kIncremental, "incremental"},
+        {DCLayerTree2Mode::kFromScratch, "from_scratch"},
+};
+const base::FeatureParam<DCLayerTree2Mode> kDCLayerTree2ModeParam = {
+    &kDCLayerTree2,
+    "mode",
+    DCLayerTree2Mode::kIncremental,
+    &kDCLayerTree2ModeOption,
+};
+#endif
+
 // Allow dual GPU rendering through EGL where supported, i.e., allow a WebGL
 // or WebGPU context to be on the high performance GPU if preferred and Chrome
 // internal rendering to be on the low power GPU.

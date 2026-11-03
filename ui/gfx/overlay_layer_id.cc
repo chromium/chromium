@@ -84,7 +84,10 @@ std::string OverlayLayerId::ToString() const {
               out << "DelegatedInkTrail";
               break;
             case VizInternalId::kBackgroundColorLayer:
-              out << "kBackgroundColorLayer";
+              out << "BackgroundColorLayer";
+              break;
+            case VizInternalId::kDebugLayer:
+              out << "DebugLayer";
               break;
           }
         }

@@ -18,6 +18,9 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -281,14 +284,13 @@ DCLayerOverlayParams CreateParamsFromImage(
 // Test parameters that affect all DCompPresenter tests.
 struct GlobalParam {
   bool use_gpu_vsync = false;
+  bool use_dc_layer_tree2 = false;
 };
 
 void PrintTo(const GlobalParam& param, std::ostream* os) {
-  if (param.use_gpu_vsync) {
-    *os << "GpuVsyncOn";
-  } else {
-    *os << "GpuVsyncOff";
-  }
+  *os << base::StringPrintf(
+      "%s_%s", param.use_gpu_vsync ? "GpuVsyncOn" : "GpuVsyncOff",
+      param.use_dc_layer_tree2 ? "DCLayerTree2" : "DCLayerTree");
 }
 
 // Base class that provides test parameterization intended for all
@@ -312,16 +314,23 @@ class DCompPresenterTestBase
   // for the global parameters.
   template <typename... Generator>
   static auto GetValues(const Generator&... g) {
+    const auto global_param_values = testing::ValuesIn({
+        GlobalParam{.use_gpu_vsync = false, .use_dc_layer_tree2 = false},
+        GlobalParam{.use_gpu_vsync = true, .use_dc_layer_tree2 = false},
+        // Skip `!use_gpu_vsync && use_dc_layer_tree2` since it doesn't add
+        // meaningful additional coverage.
+        GlobalParam{.use_gpu_vsync = true, .use_dc_layer_tree2 = true},
+    });
     if constexpr (std::is_same_v<Param, std::monostate>) {
       static_assert(sizeof...(g) == 0,
                     "GetValues should take no parameters because the test "
                     "suite is not parameterized.");
-      return testing::Combine(testing::ConvertGenerator(testing::Bool()),
+      return testing::Combine(global_param_values,
                               testing::Values(std::monostate()));
     } else {
       static_assert(sizeof...(g) == 1,
                     "`GetValues` requires a values generator for `Param`.");
-      return testing::Combine(testing::ConvertGenerator(testing::Bool()), g...);
+      return testing::Combine(global_param_values, g...);
     }
   }
 
@@ -352,10 +361,17 @@ class DCompPresenterTestBase
 
  protected:
   void SetUp() override {
-    if (std::get<0>(this->GetParam()).use_gpu_vsync) {
+    const auto& param = std::get<0>(this->GetParam());
+    if (param.use_gpu_vsync) {
       EnableFeature(features::kGpuVsync);
     } else {
       DisableFeature(features::kGpuVsync);
+    }
+
+    if (param.use_dc_layer_tree2) {
+      EnableFeature(features::kDCLayerTree2);
+    } else {
+      DisableFeature(features::kDCLayerTree2);
     }
 
     enabled_features_.InitWithFeatures(enabled_features_list_,
@@ -995,6 +1011,15 @@ TEST_P(DCompPresenterTest, VisualsReused) {
 #endif  // DCHECK_IS_ON()
 }
 
+// Create a layer ID that is derived from a pointer.
+gfx::OverlayLayerId LayerIdFromPointer(void* ptr) {
+  const uint64_t swap_chain_ptr =
+      base::checked_cast<uint64_t>(reinterpret_cast<uintptr_t>(ptr));
+  const uint32_t swap_chain_ptr_high = swap_chain_ptr >> 32;
+  const uint32_t swap_chain_ptr_low = swap_chain_ptr;
+  return gfx::OverlayLayerId({swap_chain_ptr_high, swap_chain_ptr_low}, 0);
+}
+
 DCLayerOverlayParams CreateOverlayWithSwapChain(
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     const gfx::Size& swap_chain_size,
@@ -1005,7 +1030,7 @@ DCLayerOverlayParams CreateOverlayWithSwapChain(
   params.quad_rect = gfx::Rect(100, 100);
   params.video_params.color_space = gfx::ColorSpace::CreateSRGB();
   params.z_order = z_order;
-  params.layer_id = gfx::OverlayLayerId::MakeForTesting(z_order);
+  params.layer_id = LayerIdFromPointer(swap_chain.Get());
   return params;
 }
 
@@ -1088,11 +1113,19 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   DCLayerTree* dc_layer_tree = presenter_->GetLayerTreeForTesting();
 
 #if DCHECK_IS_ON()
-  for (int i = 1; i <= 6; i++) {
+  for (const auto& swap_chain : {
+           swap_chainA,
+           swap_chainB,
+           swap_chainC,
+           swap_chainD,
+           swap_chainE,
+           swap_chainF,
+       }) {
     EXPECT_TRUE(
         dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-            gfx::OverlayLayerId::MakeForTesting(i)));
+            LayerIdFromPointer(swap_chain.Get())));
   }
+
 #endif  // DCHECK_IS_ON()
 
   EXPECT_EQ(7u, dc_layer_tree->GetDcompLayerCountForTesting());
@@ -1101,27 +1134,27 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   EXPECT_NE(visualRS, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualA =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(1));
+          LayerIdFromPointer(swap_chainA.Get()));
   EXPECT_NE(visualA, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualB =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(2));
+          LayerIdFromPointer(swap_chainB.Get()));
   EXPECT_NE(visualB, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualC =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(3));
+          LayerIdFromPointer(swap_chainC.Get()));
   EXPECT_NE(visualC, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualD =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(4));
+          LayerIdFromPointer(swap_chainD.Get()));
   EXPECT_NE(visualD, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualE =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(5));
+          LayerIdFromPointer(swap_chainE.Get()));
   EXPECT_NE(visualE, nullptr);
   Microsoft::WRL::ComPtr<IDCompositionVisual2> visualF =
       dc_layer_tree->GetContentVisualForTesting(
-          gfx::OverlayLayerId::MakeForTesting(6));
+          LayerIdFromPointer(swap_chainF.Get()));
   EXPECT_NE(visualF, nullptr);
 
   // Frame 2: RootSurface, A L D C M
@@ -1143,34 +1176,39 @@ TEST_P(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
   // D is matched to D and kept attached to the root.
   // C is matched to C and reattached to the root.
   // M is reused from E and kept attached to the root.
-  EXPECT_EQ(visualRS.Get(), dc_layer_tree->GetContentVisualForTesting(
-                                GetRootSurfaceId()) /*RS*/);
+  EXPECT_EQ(visualRS.Get(),
+            dc_layer_tree->GetContentVisualForTesting(GetRootSurfaceId()));
   EXPECT_EQ(visualA.Get(), dc_layer_tree->GetContentVisualForTesting(
-                               gfx::OverlayLayerId::MakeForTesting(1)) /*A*/);
-  EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(
-                               gfx::OverlayLayerId::MakeForTesting(2)) /*L*/);
+                               LayerIdFromPointer(swap_chainA.Get())));
   EXPECT_EQ(visualD.Get(), dc_layer_tree->GetContentVisualForTesting(
-                               gfx::OverlayLayerId::MakeForTesting(3)) /*D*/);
+                               LayerIdFromPointer(swap_chainD.Get())));
   EXPECT_EQ(visualC.Get(), dc_layer_tree->GetContentVisualForTesting(
-                               gfx::OverlayLayerId::MakeForTesting(4)) /*C*/);
-  EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(
-                               gfx::OverlayLayerId::MakeForTesting(5)) /*M*/);
+                               LayerIdFromPointer(swap_chainC.Get())));
+  if (!base::FeatureList::IsEnabled(features::kDCLayerTree2)) {
+    // `DCLayerTree2` does not guarantee that the same visual is reused if the
+    // content changes since it is not required to avoid crbug.com/40259141.
+    EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(
+                                 LayerIdFromPointer(swap_chainL.Get())));
+    EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(
+                                 LayerIdFromPointer(swap_chainM.Get())));
+  }
+
 #if DCHECK_IS_ON()
   EXPECT_FALSE(
       dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-          gfx::OverlayLayerId::MakeForTesting(1)));
+          LayerIdFromPointer(swap_chainA.Get())));
   EXPECT_TRUE(
       dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-          gfx::OverlayLayerId::MakeForTesting(2)));
+          LayerIdFromPointer(swap_chainL.Get())));
   EXPECT_FALSE(
       dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-          gfx::OverlayLayerId::MakeForTesting(3)));
+          LayerIdFromPointer(swap_chainD.Get())));
   EXPECT_FALSE(
       dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-          gfx::OverlayLayerId::MakeForTesting(4)));
+          LayerIdFromPointer(swap_chainC.Get())));
   EXPECT_TRUE(
       dc_layer_tree->DcompVisualContentChangedFromPreviousFrameForTesting(
-          gfx::OverlayLayerId::MakeForTesting(5)));
+          LayerIdFromPointer(swap_chainM.Get())));
 #endif  // DCHECK_IS_ON()
 }
 
@@ -1193,6 +1231,7 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
         CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params.quad_rect = gfx::Rect(1, 1);
     params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
+    params.z_order = 1;
 
     // This transform will make us have an onscreen size with a dimension larger
     // than the D3D11 max texture size.
@@ -1214,6 +1253,7 @@ TEST_P(DCompPresenterTest, VeryLargeOnscreenSize) {
         gfx::Transform::MakeScale(10, D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION + 1);
 
     params.layer_id = gfx::OverlayLayerId::MakeForTesting(1);
+    params.z_order = 2;
     params.video_params.color_space = gfx::ColorSpace::CreateREC709();
     ScheduleOverlay(std::move(params));
   }
@@ -3177,7 +3217,7 @@ TEST_P(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
 }
 
 std::vector<DCLayerOverlayParams> GetOverlaysForSeamsWithComplexTransformTest(
-    base::RepeatingCallback<void(int x, int y, DCLayerOverlayParams&)>
+    base::FunctionRef<void(int x, int y, DCLayerOverlayParams&)>
         update_overlay) {
   gfx::Transform non_integral_transform;
   non_integral_transform.Scale(0.7301, 0.773);
@@ -3198,7 +3238,7 @@ std::vector<DCLayerOverlayParams> GetOverlaysForSeamsWithComplexTransformTest(
       overlay.transform = non_integral_transform;
       overlay.z_order = x + y * 4 + 1;
 
-      update_overlay.Run(x, y, overlay);
+      update_overlay(x, y, overlay);
     }
   }
 
@@ -3207,14 +3247,36 @@ std::vector<DCLayerOverlayParams> GetOverlaysForSeamsWithComplexTransformTest(
 
 // Check that DCLayerTree does not introduce seams from edge AA on adjacent
 // overlays that are transformed. The result should be a solid quadrilateral.
+//
+// If `DCLayerTree2` is enabled it will add a container node which will apply
+// the complex transform instead of individually on each child.
 TEST_P(DCompPresenterSkiaGoldTest, EdgeAANoSeamsOnSameLayerComplexTransform) {
   InitializeTest(gfx::Size(100, 100));
 
-  ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
-      base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
+  auto overlays = GetOverlaysForSeamsWithComplexTransformTest(
+      [](int x, int y, DCLayerOverlayParams& overlay) {
         // All on the same layer.
         overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-      })));
+      });
+
+  if (base::FeatureList::IsEnabled(features::kDCLayerTree2)) {
+    DCLayerOverlayParams container_layer;
+    // Assume all overlays have the same `layer_id` and `transform`.
+    container_layer.layer_id = overlays.at(0).layer_id;
+    container_layer.transform = overlays.at(0).transform;
+
+    for (auto& overlay : overlays) {
+      overlay.transform = gfx::Transform();
+      overlay.parent_layer_id = container_layer.layer_id;
+      overlay.layer_id =
+          container_layer.layer_id.MakeForChildOfSharedQuadStateLayer(
+              overlay.z_order);
+    }
+
+    overlays.insert(overlays.begin(), std::move(container_layer));
+  }
+
+  ScheduleOverlays(std::move(overlays));
 
   PresentAndCheckScreenshot();
 }
@@ -3227,10 +3289,10 @@ TEST_P(DCompPresenterSkiaGoldTest, EdgeAASeamsOnNotSameLayerComplexTransform) {
   InitializeTest(gfx::Size(100, 100));
 
   ScheduleOverlays(GetOverlaysForSeamsWithComplexTransformTest(
-      base::BindRepeating([](int x, int y, DCLayerOverlayParams& overlay) {
-        // Reuse layer IDs but have no two adjacent overlays have the same ID.
-        overlay.layer_id = gfx::OverlayLayerId::MakeForTesting((x + y * 4) % 2);
-      })));
+      [](int x, int y, DCLayerOverlayParams& overlay) {
+        // Have no two adjacent overlays have the same ID.
+        overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(overlay.z_order);
+      }));
 
   PresentAndCheckScreenshot();
 }
@@ -3714,7 +3776,7 @@ class DCompPresenterLetterboxingTest
     // unoccluded and covering the whole screen. Retrieve the front-most overlay
     // in the visual tree, ensure it is a decode swap chain or dcomp surface,
     // and make sure it is unoccluded.
-    gl::DCLayerTree::VisualTree::VisualSubtree* front_sub_tree =
+    const gl::DCLayerTree::VisualTree::VisualSubtree* front_sub_tree =
         presenter_->GetLayerTreeForTesting()
             ->GetFrontMostVideoVisualSubtreeForTesting();
     EXPECT_NE(front_sub_tree, nullptr);
@@ -3790,7 +3852,7 @@ class DCompPresenterLetterboxingTest
   // TODO(crbug.com/416206298): Add full DWM optimization validations such as
   // DMRRS enablement checks.
   bool CheckVideoIsLetterboxedCorrectly(const gfx::Size& monitor_size) {
-    gl::DCLayerTree::VisualTree::VisualSubtree* front_sub_tree =
+    const gl::DCLayerTree::VisualTree::VisualSubtree* front_sub_tree =
         presenter_->GetLayerTreeForTesting()
             ->GetFrontMostVideoVisualSubtreeForTesting();
     EXPECT_NE(front_sub_tree, nullptr);

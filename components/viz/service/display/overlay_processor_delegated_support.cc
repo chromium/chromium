@@ -143,4 +143,23 @@ bool ForceDisableDelegation() {
   return disable_delegation();
 }
 
+SharedQuadStateToOverlayLayerId::SharedQuadStateToOverlayLayerId() = default;
+SharedQuadStateToOverlayLayerId::~SharedQuadStateToOverlayLayerId() = default;
+
+gfx::OverlayLayerId SharedQuadStateToOverlayLayerId::GetOrCreateUniqueOverlayId(
+    const SharedQuadState* sqs) {
+  auto& sqs_list =
+      layer_id_to_sqs_list[{sqs->layer_namespace_id, sqs->layer_id}];
+
+  auto it = std::ranges::find(sqs_list, sqs);
+  const uint32_t sqs_z_order =
+      base::checked_cast<uint32_t>(std::distance(sqs_list.begin(), it));
+  if (it == sqs_list.end()) {
+    sqs_list.push_back(sqs);
+  }
+
+  return gfx::OverlayLayerId(sqs->layer_namespace_id, sqs->layer_id,
+                             sqs_z_order);
+}
+
 }  // namespace viz

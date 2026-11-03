@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_DELEGATED_SUPPORT_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_PROCESSOR_DELEGATED_SUPPORT_H_
 
+#include <utility>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/types/expected.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -69,6 +73,32 @@ void DebugLogAfterDelegation(DelegationStatus status,
 // Returns true if delegated compositing should be forcibly disabled, e.g. from
 // the Visual Debugger.
 bool ForceDisableDelegation();
+
+// Helper to disambiguate between two `SharedQuadState`s that have the same
+// namespace and layer ID. This can happen when a `cc::Layer` produces more
+// than one `SharedQuadState` in the same layer.
+class SharedQuadStateToOverlayLayerId {
+ public:
+  SharedQuadStateToOverlayLayerId();
+  ~SharedQuadStateToOverlayLayerId();
+
+  // Get an `OverlayLayerId` derived from the layer ID and namespace from
+  // `sqs`, but unique to this `SharedQuadStateToOverlayLayerId`.
+  //
+  // The layer ID is generated based on the order of `SharedQuadState` seen.
+  // This is stable across frames since we do not expect `cc::Layer`s to
+  // produce multiple `SharedQuadState` dynamically.
+  gfx::OverlayLayerId GetOrCreateUniqueOverlayId(const SharedQuadState* sqs);
+
+ private:
+  // Map of aggregated layer ID to vector (inserted in order seen) of
+  // `SharedQuadState` that have that aggregated layer ID. The index into the
+  // vector is used to disambiguate in the case when a `cc::Layer` produces
+  // more than one `SharedQuadState` with the same layer ID.
+  base::flat_map<std::pair<gfx::OverlayLayerId::NamespaceId, uint32_t>,
+                 std::vector<raw_ptr<const SharedQuadState>>>
+      layer_id_to_sqs_list;
+};
 
 }  // namespace viz
 

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -513,6 +514,11 @@ OverlayProcessorWin::TryDelegatedCompositing(
 
   int draw_quad_rounded_corner_count = 0;
 
+  SharedQuadStateToOverlayLayerId sqs_to_overlay_layer_id;
+  base::flat_map<gfx::OverlayLayerId::SharedQuadStateLayerId,
+                 base::CheckedNumeric<uint32_t>>
+      sqs_child_z_order;
+
   // The quad that renders underneath the current quad in the following loop.
   const DrawQuad* quad_below = nullptr;
 
@@ -542,9 +548,12 @@ OverlayProcessorWin::TryDelegatedCompositing(
       }
     }
 
-    dc_layer->layer_id =
-        gfx::OverlayLayerId(quad->shared_quad_state->layer_namespace_id,
-                            quad->shared_quad_state->layer_id);
+    const gfx::OverlayLayerId sqs_layer_id =
+        sqs_to_overlay_layer_id.GetOrCreateUniqueOverlayId(
+            quad->shared_quad_state);
+    dc_layer->layer_id = sqs_layer_id.MakeForChildOfSharedQuadStateLayer(
+        (++sqs_child_z_order[sqs_layer_id.shared_quad_state_layer_id().value()])
+            .ValueOrDie());
 
     // Store metadata on RPDQ overlays for post-processing in
     // |UpdatePromotedRenderPassProperties| to support partially delegated

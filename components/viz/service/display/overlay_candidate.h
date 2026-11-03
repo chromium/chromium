@@ -263,7 +263,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   TrackingId tracking_id = kDefaultTrackingId;
 
 #if BUILDFLAG(IS_WIN)
-  // Used to identify overlays that originate from the same cc layer.
+  // If set, must be unique within a frame.
   gfx::OverlayLayerId layer_id;
 #endif
 

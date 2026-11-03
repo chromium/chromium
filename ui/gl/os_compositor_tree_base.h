@@ -100,6 +100,12 @@ class OsCompositorTreeBase {
     return num_layers_modified_last_frame_;
   }
 
+  const Layer& GetLayerForTesting(const gfx::OverlayLayerId& layer_id) const {
+    return *layers_.at(layer_id);
+  }
+
+  size_t num_layers_for_testing() const { return layers_.size(); }
+
  protected:
   // Resolve the parameters into platform-specific types and update `layer`
   // incrementally.

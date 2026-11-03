@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(GFX) OverlayLayerId {
     kOsCompositorRoot,
     kDelegatedInkTrail,
     kBackgroundColorLayer,
+    kDebugLayer,
   };
 
   // Create a named `OverlayLayerId` that is namespaced for internal viz use.

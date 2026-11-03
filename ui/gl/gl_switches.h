@@ -140,6 +140,19 @@ GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionSoftwareOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLetterboxVideoOptimization);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionUnlimitedOverlays);
 GL_EXPORT BASE_DECLARE_FEATURE(kDesktopPlaneRemovalForMFFullScreenLetterbox);
+#if BUILDFLAG(IS_WIN)
+GL_EXPORT BASE_DECLARE_FEATURE(kDCLayerTree2);
+enum class DCLayerTree2Mode {
+  // Enable the `DCLayerTree2` to update incrementally.
+  kIncremental,
+  // Force the `DCLayerTree2` to not update incrementally and instead build each
+  // frame from scratch. This can help diagnose issues in the incremental update
+  // algorithm.
+  kFromScratch,
+};
+extern const GL_EXPORT base::FeatureParam<DCLayerTree2Mode>
+    kDCLayerTree2ModeParam;
+#endif
 GL_EXPORT BASE_DECLARE_FEATURE(kEGLDualGPURendering);
 GL_EXPORT BASE_DECLARE_FEATURE(kIntelVpSuperResolution);
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultANGLEVulkan);
