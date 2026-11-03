@@ -5461,6 +5461,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "fullscreen-signin-mediator-state-machine",
+    "owners": [
+      "crowleso@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "fullscreen-transition-speed",
     "owners": [ "prasanaa@google.com", "alionadangla@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 155

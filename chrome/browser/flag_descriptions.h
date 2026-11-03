@@ -6333,6 +6333,11 @@ inline constexpr char kFullscreenInsetsApiMigrationOnAutomotiveDescription[] =
     "Migration from View#setSystemUiVisibility to WindowInsetsController on "
     "automotive.";
 
+inline constexpr char kFullscreenSigninMediatorStateMachineName[] =
+    "Fullscreen Signin Mediator State Machine";
+inline constexpr char kFullscreenSigninMediatorStateMachineDescription[] =
+    "Enables the state-machine implementation of FullscreenSigninMediator.";
+
 inline constexpr char kFullscreenVideoPictureInPictureName[] =
     "Fullscreen Video Picture-in-Picture";
 inline constexpr char kFullscreenVideoPictureInPictureDescription[] =

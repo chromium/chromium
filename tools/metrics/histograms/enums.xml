@@ -8934,6 +8934,8 @@ from previous Chrome versions.
       label="AutofillEnableOffersAndLoyaltyCardsSettings:enabled"/>
   <int value="-1816215700" label="FocusModeYTM:disabled"/>
   <int value="-1816066138" label="CastAllowAllIPs:enabled"/>
+  <int value="-1814923765"
+      label="FullscreenSigninMediatorStateMachine:disabled"/>
   <int value="-1814879125"
       label="LocalNetworkAccessChecksSplitPermissions:disabled"/>
   <int value="-1814266088" label="ContextualPageActionShareModel:enabled"/>
@@ -9915,6 +9917,8 @@ from previous Chrome versions.
       label="AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna:enabled"/>
   <int value="-1519536015" label="enable-hls-playback:disabled"/>
   <int value="-1519532532" label="TabGroupRibbon:enabled"/>
+  <int value="-1518060308"
+      label="FullscreenSigninMediatorStateMachine:enabled"/>
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
   <int value="-1517658713" label="TabFreezingUsesDiscard:disabled"/>
   <int value="-1517518406" label="force-update-menu-type"/>

@@ -22,6 +22,12 @@ public final class SigninFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private SigninFeatureMap() {}
 
+    public static final CachedFlag sFullscreenSigninMediatorStateMachine =
+            new CachedFlag(
+                    sInstance,
+                    SigninFeatures.FULLSCREEN_SIGNIN_MEDIATOR_STATE_MACHINE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sMigrateAccountManagerDelegate =
             new CachedFlag(
                     sInstance,
@@ -48,6 +54,7 @@ public final class SigninFeatureMap extends FeatureMap {
                     /* defaultValueInTests= */ true);
     public static final List<CachedFlag> sCachedFlags =
             List.of(
+                    sFullscreenSigninMediatorStateMachine,
                     sMigrateAccountManagerDelegate,
                     sProfileDiscOnAllPages,
                     sSigninLevelUpButton,

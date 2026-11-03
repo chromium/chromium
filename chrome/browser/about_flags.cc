@@ -13355,6 +13355,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"fullscreen-signin-mediator-state-machine",
+     flag_descriptions::kFullscreenSigninMediatorStateMachineName,
+     flag_descriptions::kFullscreenSigninMediatorStateMachineDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kFullscreenSigninMediatorStateMachine)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"bookmarks-bar-ntp", flag_descriptions::kBookmarksBarNTPName,
      flag_descriptions::kBookmarksBarNTPDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksBarNTP)},
