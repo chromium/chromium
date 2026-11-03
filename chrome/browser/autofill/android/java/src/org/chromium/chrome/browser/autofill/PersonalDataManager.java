@@ -573,44 +573,22 @@ public class PersonalDataManager implements Destroyable {
                 .setProfileToLocal(mPersonalDataManagerAndroid, profile, profile.getGUID());
     }
 
-    /** Gets the number of credit cards for the settings page. */
-    public int getCreditCardCountForSettings() {
-        ThreadUtils.assertOnUiThread();
-        return PersonalDataManagerJni.get()
-                .getCreditCardGUIDsForSettings(mPersonalDataManagerAndroid)
-                .length;
-    }
-
     /**
      * Gets the credit cards to show in the settings page. Returns all the cards without any
      * processing.
      */
     public List<CreditCard> getCreditCardsForSettings() {
         ThreadUtils.assertOnUiThread();
-        return getCreditCards(
-                PersonalDataManagerJni.get()
-                        .getCreditCardGUIDsForSettings(mPersonalDataManagerAndroid));
+        return PersonalDataManagerJni.get().getCreditCardsForSettings(mPersonalDataManagerAndroid);
     }
 
     /**
      * Gets the credit cards to suggest when filling a form or completing a transaction. The cards
      * will have been processed to be more relevant to the user.
      */
-    public ArrayList<CreditCard> getCreditCardsToSuggest() {
+    public List<CreditCard> getCreditCardsToSuggest() {
         ThreadUtils.assertOnUiThread();
-        return getCreditCards(
-                PersonalDataManagerJni.get()
-                        .getCreditCardGUIDsToSuggest(mPersonalDataManagerAndroid));
-    }
-
-    private ArrayList<CreditCard> getCreditCards(String[] creditCardGUIDs) {
-        ArrayList<CreditCard> cards = new ArrayList<>(creditCardGUIDs.length);
-        for (int i = 0; i < creditCardGUIDs.length; i++) {
-            cards.add(
-                    PersonalDataManagerJni.get()
-                            .getCreditCardByGUID(mPersonalDataManagerAndroid, creditCardGUIDs[i]));
-        }
-        return cards;
+        return PersonalDataManagerJni.get().getCreditCardsToSuggest(mPersonalDataManagerAndroid);
     }
 
     public CreditCard getCreditCard(String guid) {
@@ -1066,11 +1044,13 @@ public class PersonalDataManager implements Destroyable {
                 @JniType("std::string") String guid,
                 boolean includeCountry);
 
-        @JniType("std::vector<std::string>")
-        String[] getCreditCardGUIDsForSettings(long nativePersonalDataManagerAndroid);
+        // TODO(crbug.com/41256488): Create JNI converters for the CreditCard class.
+        @JniType("std::vector")
+        List<CreditCard> getCreditCardsForSettings(long nativePersonalDataManagerAndroid);
 
-        @JniType("std::vector<std::string>")
-        String[] getCreditCardGUIDsToSuggest(long nativePersonalDataManagerAndroid);
+        // TODO(crbug.com/41256488): Create JNI converters for the CreditCard class.
+        @JniType("std::vector")
+        List<CreditCard> getCreditCardsToSuggest(long nativePersonalDataManagerAndroid);
 
         CreditCard getCreditCardByGUID(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);

@@ -302,14 +302,15 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
       g_browser_process->GetApplicationLocale());
 }
 
-std::vector<std::string>
-PersonalDataManagerAndroid::GetCreditCardGUIDsForSettings() {
-  return GetCreditCardGUIDs(payments_data_manager().GetCreditCards());
+std::vector<ScopedJavaLocalRef<jobject>>
+PersonalDataManagerAndroid::GetCreditCardsForSettings(JNIEnv* env) {
+  return GetCreditCards(env, payments_data_manager().GetCreditCards());
 }
 
-std::vector<std::string>
-PersonalDataManagerAndroid::GetCreditCardGUIDsToSuggest() {
-  return GetCreditCardGUIDs(GetCreditCardsToSuggest(payments_data_manager()));
+std::vector<ScopedJavaLocalRef<jobject>>
+PersonalDataManagerAndroid::GetCreditCardsToSuggest(JNIEnv* env) {
+  return GetCreditCards(
+      env, autofill::GetCreditCardsToSuggest(payments_data_manager()));
 }
 
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetCreditCardByGUID(
@@ -464,9 +465,13 @@ PersonalDataManagerAndroid::GetProfiles(
   return jprofiles;
 }
 
-std::vector<std::string> PersonalDataManagerAndroid::GetCreditCardGUIDs(
-    const std::vector<const CreditCard*>& credit_cards) {
-  return base::ToVector(credit_cards, &CreditCard::guid);
+std::vector<ScopedJavaLocalRef<jobject>>
+PersonalDataManagerAndroid::GetCreditCards(
+    JNIEnv* env,
+    base::span<const CreditCard* const> credit_cards) {
+  return base::ToVector(credit_cards, [env](const CreditCard* card) {
+    return CreateJavaCreditCardFromNative(env, *card);
+  });
 }
 
 std::vector<std::u16string> PersonalDataManagerAndroid::GetProfileLabels(

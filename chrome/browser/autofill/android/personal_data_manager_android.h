@@ -105,13 +105,16 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // These functions act on local credit cards.
   // --------------------
 
-  // Returns the GUIDs of all the credit cards.
-  std::vector<std::string> GetCreditCardGUIDsForSettings();
+  // Returns all credit cards. See PaymentsDataManager::GetCreditCards for
+  // ordering details.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>>
+  GetCreditCardsForSettings(JNIEnv* env);
 
-  // Returns the GUIDs of the credit cards to suggest to the user. See
-  // GetCreditCardsToSuggest in payments_suggestion_generator.h for more
-  // details.
-  std::vector<std::string> GetCreditCardGUIDsToSuggest();
+  // Returns the credit cards to suggest to the user. See
+  // GetCreditCardsToSuggest in payments_suggestion_generator_util.h for
+  // ordering and filtering details.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>>
+  GetCreditCardsToSuggest(JNIEnv* env);
 
   // Returns the credit card with the specified `guid`, or NULL if there is
   // no credit card with the specified `guid`.
@@ -261,9 +264,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       bool address_only,
       base::span<const AutofillProfile* const> profiles);
 
-  // Returns the GUIDs of the `credit_cards` passed as parameter.
-  std::vector<std::string> GetCreditCardGUIDs(
-      const std::vector<const CreditCard*>& credit_cards);
+  // Returns the Java CreditCards for the `credit_cards` passed as parameter.
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> GetCreditCards(
+      JNIEnv* env,
+      base::span<const CreditCard* const> credit_cards);
 
   // Gets the labels for the `profiles` passed as parameters. These labels are
   // useful for distinguishing the profiles from one another.
