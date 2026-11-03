@@ -150,6 +150,7 @@ void UserDataProcessingConsentFetcher::StartNetworkRequest(
             "An OAuth2 access token used to authenticate the request. No other "
             "user data is sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "onetimetoken.pa.googleapis.com"
           last_reviewed: "2026-08-04"
           internal {
             contacts {

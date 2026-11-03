@@ -175,6 +175,7 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
             "An opaque (encrypted) reference to the message which contains the "
             "OTP. No user data is sent."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "onetimetoken.pa.googleapis.com"
           last_reviewed: "2026-03-20"
           internal {
             contacts {
