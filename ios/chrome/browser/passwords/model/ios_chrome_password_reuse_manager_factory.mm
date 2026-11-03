@@ -28,13 +28,13 @@ IOSChromePasswordReuseManagerFactory::IOSChromePasswordReuseManagerFactory(
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::unique_ptr<password_manager::PasswordReuseManagerImpl> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>(
           GetApplicationContext()->GetOSCryptAsync());
 
   reuse_manager->Init(
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      profile.GetPrefs(), GetApplicationContext()->GetLocalState(),
       IOSChromeProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),

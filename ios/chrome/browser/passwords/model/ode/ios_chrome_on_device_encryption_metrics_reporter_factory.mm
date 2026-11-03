@@ -37,7 +37,7 @@ void IOSChromeOnDeviceEncryptionMetricsReporterFactory::RegisterProfilePrefs(
 
 std::unique_ptr<KeyedService>
 IOSChromeOnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
               kPasswordManagerOnDeviceEncryptionMetricsReporter)) {
@@ -56,5 +56,5 @@ IOSChromeOnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceFor(
 
   return std::make_unique<password_manager::OnDeviceEncryptionMetricsReporter>(
       std::move(passkey_tracker), std::move(password_tracker),
-      CHECK_DEREF(profile->GetPrefs()));
+      CHECK_DEREF(profile.GetPrefs()));
 }

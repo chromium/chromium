@@ -18,7 +18,7 @@ IOSPasswordRequirementsServiceFactory::IOSPasswordRequirementsServiceFactory(
 
 std::unique_ptr<KeyedService>
 IOSPasswordRequirementsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return password_manager::CreatePasswordRequirementsService(
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }

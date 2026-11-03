@@ -16,7 +16,7 @@ IOSPasswordManagerSettingsServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSPasswordManagerSettingsServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<password_manager::PasswordManagerSettingsServiceImpl>(
-      profile->GetPrefs());
+      profile.GetPrefs());
 }

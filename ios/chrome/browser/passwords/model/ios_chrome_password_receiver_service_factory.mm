@@ -35,10 +35,10 @@ IOSChromePasswordReceiverServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   // Since Password Manager doesn't work for non-standard profiles, the
   // PasswordReceiverService also shouldn't be created for such profiles.
-  CHECK(!profile->IsOffTheRecord());
+  CHECK(!profile.IsOffTheRecord());
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
