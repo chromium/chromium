@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -714,7 +715,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private void buildMenuActionItemsForSingleTab(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
         itemList.add(createNewTabDirectionalItem(isIncognito));
-        itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
+        itemList.add(createMoveToTabGroupItem(anchorInfo, tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
@@ -756,7 +757,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private void buildMenuActionItemsForMultipleTabs(
             ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
         itemList.add(createNewTabDirectionalItem(isIncognito));
-        itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
+        itemList.add(createMoveToTabGroupItem(anchorInfo, tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
@@ -930,18 +931,37 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 .build();
     }
 
-    private ListItem createMoveToTabGroupItem(List<Tab> tabs, boolean isIncognito) {
-        assumeNonNull(mMultiInstanceManager);
-        // Available tab groups.
-        @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
-        List<ListItem> potentialGroups = getTabGroups(tabs, groupToNotBeIncluded, isIncognito);
+    private static @Nullable Token getSharedTabGroupId(List<Tab> tabs) {
+        if (tabs.isEmpty()) {
+            return null;
+        }
+        Token firstGroupId = tabs.get(0).getTabGroupId();
+        if (firstGroupId == null) {
+            return null;
+        }
+        for (int i = 1; i < tabs.size(); i++) {
+            Token tabGroupId = tabs.get(i).getTabGroupId();
+            if (!Objects.equals(firstGroupId, tabGroupId)) {
+                return null;
+            }
+        }
+        return firstGroupId;
+    }
 
-        if (potentialGroups.isEmpty()) {
+    private ListItem createMoveToTabGroupItem(
+            AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
+        // Available tab groups.
+        @Nullable Token groupToNotBeIncluded = getSharedTabGroupId(tabs);
+        TabModel tabModel = getTabModel();
+        GroupWindowChecker windowChecker =
+                new GroupWindowChecker(mActivity, mTabGroupSyncService, tabModel);
+        boolean hasOtherGroups = windowChecker.hasOtherGroups(groupToNotBeIncluded);
+        if (!hasOtherGroups) {
+            int tabCount = tabs.size();
             String title =
                     mActivity
                             .getResources()
-                            .getQuantityString(
-                                    R.plurals.add_tab_to_new_group_menu_item, tabs.size());
+                            .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, tabCount);
             return new ListItemBuilder()
                     .withTitle(title)
                     .withMenuId(R.id.add_to_new_tab_group)
@@ -949,37 +969,39 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     .build();
         }
 
-        List<ListItem> submenuItems = new ArrayList<>();
-        // "Add to new group" item
-        submenuItems.add(
-                new ListItemBuilder()
-                        .withTitleRes(R.string.create_new_group_row_title)
-                        .withIsIncognito(isIncognito)
-                        .withClickListener(
-                                (v) -> {
-                                    recordMenuAction(
-                                            R.id.add_to_new_group_sub_menu_id,
-                                            tabs.size() > 1,
-                                            isIncognito,
-                                            mTabStripLayout);
-                                    createNewGroupForTabs(
-                                            tabs,
-                                            getTabModel(),
-                                            /* tabMovedCallback= */ null,
-                                            mTabGroupCreationCallback);
-                                })
-                        .build());
-        // Add all the potential groups to the list afterwards.
-        submenuItems.addAll(potentialGroups);
-
+        int tabCount = tabs.size();
         String title =
                 TabGroupUiUtils.getAddToGroupMenuItemTitle(
-                        mActivity, groupToNotBeIncluded, tabs.size());
+                        mActivity, groupToNotBeIncluded, tabCount);
+        Supplier<List<ListItem>> submenuProvider =
+                () -> buildMoveToTabGroupSubmenu(anchorInfo, isIncognito);
         return new ListItemBuilder()
                 .withTitle(title)
                 .withIsIncognito(isIncognito)
-                .withSubmenuItems(submenuItems)
+                .withSubmenuProvider(submenuProvider)
                 .build();
+    }
+
+    private List<ListItem> buildMoveToTabGroupSubmenu(AnchorInfo anchorInfo, boolean isIncognito) {
+        List<ListItem> submenuItems = new ArrayList<>();
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
+        TabModel tabModel = getTabModel();
+        List<Tab> liveTabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
+        @Nullable Token groupToNotBeIncluded = getSharedTabGroupId(liveTabs);
+
+        // "Add to new group" item
+        OnClickListener newGroupClickListener = (v) -> onAddToNewGroupClicked(tabIds, isIncognito);
+        ListItem newGroupItem =
+                new ListItemBuilder()
+                        .withTitleRes(R.string.create_new_group_row_title)
+                        .withIsIncognito(isIncognito)
+                        .withClickListener(newGroupClickListener)
+                        .build();
+        submenuItems.add(newGroupItem);
+
+        List<ListItem> existingGroupItems = getTabGroups(tabIds, groupToNotBeIncluded, isIncognito);
+        submenuItems.addAll(existingGroupItems);
+        return submenuItems;
     }
 
     private ListItem createRemoveFromTabGroupItem(List<Tab> tabs, boolean isIncognito) {
@@ -1291,22 +1313,26 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
-    @RequiresNonNull("mMultiInstanceManager")
     private List<ListItem> getTabGroups(
-            List<Tab> tabs, @Nullable Token groupToNotBeIncluded, boolean isIncognito) {
+            List<Integer> tabIds, @Nullable Token groupToNotBeIncluded, boolean isIncognito) {
+        TabModel tabModel = getTabModel();
         GroupWindowChecker windowChecker =
-                new GroupWindowChecker(mActivity, mTabGroupSyncService, getTabModel());
+                new GroupWindowChecker(mActivity, mTabGroupSyncService, tabModel);
         List<GroupWindowInfo> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
 
         List<ListItem> result = new ArrayList<>();
 
         for (GroupWindowInfo tabGroup : sortedTabGroups) {
-            if (groupToNotBeIncluded != null
-                    && Objects.equals(groupToNotBeIncluded, tabGroup.localId)) {
+            boolean isExcludedGroup =
+                    groupToNotBeIncluded != null
+                            && Objects.equals(groupToNotBeIncluded, tabGroup.localId);
+            if (isExcludedGroup) {
                 continue;
             }
-            if (!TabGroupUiUtils.isValidDestination(
-                    tabGroup, mTabGroupSyncService, mTabGroupUiActionHandler)) {
+            boolean isValidDestination =
+                    TabGroupUiUtils.isValidDestination(
+                            tabGroup, mTabGroupSyncService, mTabGroupUiActionHandler);
+            if (!isValidDestination) {
                 continue;
             }
             @IdRes
@@ -1315,37 +1341,84 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             ? R.id.add_to_group_incognito_sub_menu_id
                             : R.id.add_to_group_sub_menu_id;
             OnClickListener clickListener =
-                    (v) -> {
-                        recordMenuAction(menuId, tabs.size() > 1, isIncognito, mTabStripLayout);
-                        if (!TabGroupUiUtils.isValidDestination(
-                                tabGroup, mTabGroupSyncService, mTabGroupUiActionHandler)) {
-                            return;
-                        }
-                        moveAndCleanupSource(
-                                mMultiInstanceManager,
-                                () ->
-                                        TabGroupUiUtils.addTabsToGroup(
-                                                getTabModel(),
-                                                tabs,
-                                                tabGroup,
-                                                mTabGroupSyncService,
-                                                mTabGroupUiActionHandler,
-                                                /* tabMovedCallback= */ null,
-                                                /* bringToFront= */ true));
-                    };
-            result.add(
+                    (v) -> onMoveTabsToGroupClicked(tabIds, tabGroup, menuId, isIncognito);
+            Drawable startIconDrawable =
+                    TabGroupUtils.createColorDrawableForMenu(
+                            mActivity, tabGroup.color, isIncognito, mCircleSize);
+            ListItem item =
                     new ListItemBuilder()
                             .withTitle(tabGroup.title)
                             .withClickListener(clickListener)
                             .withIsIncognito(isIncognito)
-                            .withStartIconDrawable(
-                                    TabGroupUtils.createColorDrawableForMenu(
-                                            mActivity, tabGroup.color, isIncognito, mCircleSize))
+                            .withStartIconDrawable(startIconDrawable)
                             .withStartIconWidth(mCircleSize)
                             .withShouldTintIcon(false)
-                            .build());
+                            .build();
+            result.add(item);
         }
         return result;
+    }
+
+    private @Nullable List<Tab> getLiveTabsIfAllOpen(List<Integer> tabIds) {
+        TabModel tabModel = getTabModel();
+        List<Tab> liveTabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
+        boolean areAllTabsOpen = liveTabs.size() == tabIds.size();
+        return areAllTabsOpen ? liveTabs : null;
+    }
+
+    private void onAddToNewGroupClicked(List<Integer> tabIds, boolean isIncognito) {
+        List<Tab> liveTabs = getLiveTabsIfAllOpen(tabIds);
+        if (liveTabs == null) {
+            return;
+        }
+        boolean isMultipleTabs = tabIds.size() > 1;
+        recordMenuAction(
+                R.id.add_to_new_group_sub_menu_id, isMultipleTabs, isIncognito, mTabStripLayout);
+        TabModel tabModel = getTabModel();
+        createNewGroupForTabs(
+                liveTabs, tabModel, /* tabMovedCallback= */ null, mTabGroupCreationCallback);
+    }
+
+    private void onMoveTabsToGroupClicked(
+            List<Integer> tabIds,
+            GroupWindowInfo tabGroup,
+            @IdRes int menuId,
+            boolean isIncognito) {
+        List<Tab> liveTabs = getLiveTabsIfAllOpen(tabIds);
+        if (liveTabs == null) {
+            return;
+        }
+        TabModel tabModel = getTabModel();
+        @Nullable GroupWindowInfo liveTabGroup =
+                TabGroupUiUtils.getGroupWindowInfo(
+                        mActivity,
+                        tabModel,
+                        mTabGroupSyncService,
+                        tabGroup.localId,
+                        tabGroup.syncId);
+        if (liveTabGroup == null) {
+            return;
+        }
+        boolean isValidDestination =
+                TabGroupUiUtils.isValidDestination(
+                        liveTabGroup, mTabGroupSyncService, mTabGroupUiActionHandler);
+        if (!isValidDestination) {
+            return;
+        }
+        assumeNonNull(mMultiInstanceManager);
+        boolean isMultipleTabs = tabIds.size() > 1;
+        recordMenuAction(menuId, isMultipleTabs, isIncognito, mTabStripLayout);
+        Runnable moveAction =
+                () ->
+                        TabGroupUiUtils.addTabsToGroup(
+                                tabModel,
+                                liveTabs,
+                                liveTabGroup,
+                                mTabGroupSyncService,
+                                mTabGroupUiActionHandler,
+                                /* tabMovedCallback= */ null,
+                                /* bringToFront= */ true);
+        moveAndCleanupSource(mMultiInstanceManager, moveAction);
     }
 
     @Override

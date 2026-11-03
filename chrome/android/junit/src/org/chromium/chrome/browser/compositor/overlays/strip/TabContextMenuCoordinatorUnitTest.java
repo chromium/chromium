@@ -50,6 +50,7 @@ import android.os.SystemClock;
 import android.text.Spannable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.PluralsRes;
@@ -149,6 +150,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -175,6 +177,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
 
@@ -341,6 +344,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    private @Mock TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
@@ -651,6 +655,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Context Menu")
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabInGroup_multipleTabs() {
+        when(mNonUrlTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         mTabModel.addTab(
                 mTab1,
                 TabModel.INVALID_TAB_INDEX,
@@ -1273,6 +1278,326 @@ public class TabContextMenuCoordinatorUnitTest {
                         .getResources()
                         .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 1),
                 addToGroupItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAddToGroup_lazySubmenuProviderDefersGroupBuilding() {
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        group1.savedTabs = List.of(new SavedTabGroupTab());
+        group1.title = "Group 1";
+
+        Token groupToken2 = Token.createRandom();
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.localId = new LocalTabGroupId(groupToken2);
+        group2.savedTabs = List.of(new SavedTabGroupTab());
+        group2.title = "Group 2";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1", "sync2"});
+        when(mTabGroupSyncService.getGroup("sync1")).thenReturn(group1);
+        when(mTabGroupSyncService.getGroup("sync2")).thenReturn(group2);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull("Add to group item should be present", addToGroupItem);
+        assertEquals(MENU_ITEM_WITH_SUBMENU, addToGroupItem.type);
+
+        // Before accessing the submenu provider, only short-circuiting check has run.
+        // It found sync1 and stopped immediately without querying sync2.
+        verify(mTabGroupSyncService, times(1)).getGroup("sync1");
+        verify(mTabGroupSyncService, never()).getGroup("sync2");
+
+        // Now evaluate the lazy submenu provider.
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(3, subMenu.size());
+        // Evaluating the submenu queries the remaining groups.
+        verify(mTabGroupSyncService, times(1)).getGroup("sync2");
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void
+            testAddToGroup_onlyRemoteGroups_withoutUiActionHandler_filtersOutRemoteGroupInSubmenu() {
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        List<Tab> tabList = List.of(mTabOutsideOfGroup);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote1";
+        remoteGroup.localId = null;
+        remoteGroup.savedTabs = List.of(new SavedTabGroupTab());
+        remoteGroup.title = "Remote Group";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"remote1"});
+        when(mTabGroupSyncService.getGroup("remote1")).thenReturn(remoteGroup);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull(addToGroupItem);
+        assertEquals(MENU_ITEM_WITH_SUBMENU, addToGroupItem.type);
+
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        assertNotNull(submenuProvider);
+        List<ListItem> submenuItems = submenuProvider.get();
+        assertEquals(1, submenuItems.size());
+        assertEquals(
+                R.string.create_new_group_row_title,
+                submenuItems.get(0).model.get(ListMenuItemProperties.TITLE_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testAddToGroup_remoteGroups_withUiActionHandler_showsSubmenuWithRemoteGroup() {
+        TabContextMenuCoordinator coordinator = createCoordinatorWithUiActionHandler();
+
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        List<Tab> tabList = List.of(mTabOutsideOfGroup);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        SavedTabGroup remoteGroup = new SavedTabGroup();
+        remoteGroup.syncId = "remote1";
+        remoteGroup.localId = null;
+        remoteGroup.savedTabs = List.of(new SavedTabGroupTab());
+        remoteGroup.title = "Remote Group";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"remote1"});
+        when(mTabGroupSyncService.getGroup("remote1")).thenReturn(remoteGroup);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        coordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull("Add to group item should be present", addToGroupItem);
+        assertEquals(MENU_ITEM_WITH_SUBMENU, addToGroupItem.type);
+
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(2, subMenu.size());
+        CharSequence remoteGroupTitle = subMenu.get(1).model.get(TITLE);
+        assertEquals("Remote Group", remoteGroupTitle);
+
+        ListItem remoteGroupRow = subMenu.get(1);
+        OnClickListener remoteClickListener =
+                remoteGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        remoteClickListener.onClick(mView);
+        verify(mTabGroupUiActionHandler).openTabGroup(eq("remote1"));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testAddToGroup_syncedClosingGroupInCurrentWindow_showsSubmenuWithClosingGroup() {
+        TabContextMenuCoordinator coordinator = createCoordinatorWithUiActionHandler();
+
+        when(mTab1.isClosing()).thenReturn(true);
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
+        List<Tab> tabList = List.of(mTab1, mTabOutsideOfGroup);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        SavedTabGroup syncedGroup = new SavedTabGroup();
+        syncedGroup.syncId = "sync1";
+        syncedGroup.localId = new LocalTabGroupId(TAB_GROUP_ID);
+        syncedGroup.savedTabs = List.of(new SavedTabGroupTab());
+        syncedGroup.title = TAB_GROUP_TITLE;
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
+        when(mTabGroupSyncService.getGroup("sync1")).thenReturn(syncedGroup);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        coordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull("Add to group item should be present", addToGroupItem);
+        assertEquals(MENU_ITEM_WITH_SUBMENU, addToGroupItem.type);
+
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(2, subMenu.size());
+        CharSequence syncedGroupTitle = subMenu.get(1).model.get(TITLE);
+        assertEquals(TAB_GROUP_TITLE, syncedGroupTitle);
+
+        ListItem existingGroupRow = subMenu.get(1);
+        OnClickListener existingGroupClickListener =
+                existingGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        existingGroupClickListener.onClick(mView);
+        verify(mTabGroupSyncService).removeLocalTabGroupMapping(any(), anyInt());
+        verify(mTabGroupUiActionHandler).openTabGroup(eq("sync1"));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(
+            ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true")
+    public void testAddToGroup_stateChangesBetweenMenuOpenAndSubmenuExpansion_reflectedInSubmenu() {
+        TabContextMenuCoordinator coordinator = createCoordinatorWithUiActionHandler();
+
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        List<Tab> tabList = List.of(mTabOutsideOfGroup);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
+
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.syncId = "sync1";
+        group1.localId = null;
+        group1.savedTabs = List.of(new SavedTabGroupTab());
+        group1.title = "Group 1";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1"});
+        when(mTabGroupSyncService.getGroup("sync1")).thenReturn(group1);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        coordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull(addToGroupItem);
+
+        // State changes after menu open: a new group "sync2" is added to sync service
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.syncId = "sync2";
+        group2.localId = null;
+        group2.savedTabs = List.of(new SavedTabGroupTab());
+        group2.title = "Group 2";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1", "sync2"});
+        when(mTabGroupSyncService.getGroup("sync2")).thenReturn(group2);
+
+        // Submenu expansion should query a fresh checker and reflect the new group
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(3, subMenu.size());
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAddToGroup_tabClosedBeforeSubmenuClick_noOps() {
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo =
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull(addToGroupItem);
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(2, subMenu.size());
+
+        // Now simulate tab being closed before clicking the submenu item
+        when(mTabOutsideOfGroup.isClosing()).thenReturn(true);
+
+        ListItem newGroupRow = subMenu.get(0);
+        OnClickListener newGroupClickListener =
+                newGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        newGroupClickListener.onClick(mView);
+        verify(mTabModel, never()).createSingleTabGroup(any());
+        verify(mTabGroupCreationCallback, never()).onTabGroupCreated(any());
+
+        ListItem existingGroupRow = subMenu.get(1);
+        OnClickListener existingGroupClickListener =
+                existingGroupRow.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        existingGroupClickListener.onClick(mView);
+        verify(mTabModel, never())
+                .mergeListOfTabsToExistingGroup(anyList(), any(), any(), anyInt());
+        verify(mMultiInstanceManager, never()).closeChromeWindowIfEmpty(anyInt());
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    public void testAddToGroup_multipleTabsDifferentGroups_doesNotExcludeGroup() {
+        Token token1 = Token.createRandom();
+        Token token2 = Token.createRandom();
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getTabGroupId()).thenReturn(token1);
+        when(tab1.getUrl()).thenReturn(EXAMPLE_URL);
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getTabGroupId()).thenReturn(token2);
+        when(tab2.getUrl()).thenReturn(EXAMPLE_URL);
+
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.getTabById(101)).thenReturn(tab1);
+        when(mTabModel.getTabById(102)).thenReturn(tab2);
+        when(mTabModel.getCount()).thenReturn(2);
+        when(mTabModel.getTabAt(0)).thenReturn(tab1);
+        when(mTabModel.getTabAt(1)).thenReturn(tab2);
+
+        SavedTabGroup group1 = new SavedTabGroup();
+        group1.localId = new LocalTabGroupId(token1);
+        group1.savedTabs = List.of(new SavedTabGroupTab());
+        group1.title = "Group 1";
+
+        SavedTabGroup group2 = new SavedTabGroup();
+        group2.localId = new LocalTabGroupId(token2);
+        group2.savedTabs = List.of(new SavedTabGroupTab());
+        group2.title = "Group 2";
+
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync1", "sync2"});
+        when(mTabGroupSyncService.getGroup("sync1")).thenReturn(group1);
+        when(mTabGroupSyncService.getGroup("sync2")).thenReturn(group2);
+
+        var modelList = new ModelList();
+        AnchorInfo anchorInfo = new AnchorInfo(101, List.of(101, 102));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, anchorInfo);
+
+        String expectedTitle =
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2);
+        ListItem addToGroupItem = findItemByTitle(modelList, expectedTitle);
+        assertNotNull(addToGroupItem);
+
+        Supplier<List<ListItem>> submenuProvider = addToGroupItem.model.get(SUBMENU_PROVIDER);
+        List<ListItem> subMenu = submenuProvider.get();
+        assertNotNull(subMenu);
+        assertEquals(3, subMenu.size());
     }
 
     @Test
@@ -4036,5 +4361,26 @@ public class TabContextMenuCoordinatorUnitTest {
             if (i < items.size() - 1) modelListContents.append(", ");
         }
         return modelListContents.toString();
+    }
+
+    private TabContextMenuCoordinator createCoordinatorWithUiActionHandler() {
+        return TabContextMenuCoordinator.createContextMenuCoordinator(
+                () -> mTabModel,
+                mBottomSheetCoordinator,
+                mTabGroupCreationCallback,
+                mMultiInstanceManager,
+                ObservableSuppliers.createMonotonic(mShareDelegate),
+                mWindowAndroid,
+                mActivity,
+                () -> mTabBookmarker,
+                mReorderFunction,
+                mSnackbarManager,
+                mActivityResultTracker,
+                mModalDialogManager,
+                TabClosingSource.TABLET_TAB_STRIP,
+                /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                TabStripLayoutType.HORIZONTAL,
+                mTabGroupUiActionHandler,
+                /* onMenuDismissedCallback= */ null);
     }
 }
