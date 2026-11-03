@@ -53,12 +53,14 @@ class ChromeAppDeprecationTest : public extensions::ExtensionServiceTestBase {
   }
 
   void TearDown() override {
-    app_.release()->Release();
+    app_.reset();
 
     ExtensionServiceTestBase::TearDown();
   }
 
-  scoped_refptr<const Extension> InstallTestApp(Profile* profile) {
+  scoped_refptr<const Extension> InstallTestApp(
+      Profile* profile,
+      ManifestLocation location = ManifestLocation::kUnpacked) {
     // Build a simple Chrome App.
     base::DictValue manifest =
         base::DictValue()
@@ -74,7 +76,12 @@ class ChromeAppDeprecationTest : public extensions::ExtensionServiceTestBase {
     good_extension_dir.WriteManifest(manifest);
 
     ChromeTestExtensionLoader loader(profile);
-    loader.set_pack_extension(false);
+    if (location == ManifestLocation::kUnpacked) {
+      loader.set_pack_extension(false);
+    } else {
+      loader.set_pack_extension(true);
+      loader.set_location(location);
+    }
     return loader.LoadExtension(good_extension_dir.UnpackedPath());
   }
 
@@ -177,6 +184,107 @@ TEST_F(ChromeAppDeprecationTest, EnabledFeatureFlagNotChromeApp) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
               BucketsAre(base::Bucket(
                   /*DeprecationCheckOutcome::kAllowedNotChromeApp*/ 11, 1)));
+}
+
+class ChromeAppDeprecationAdminInstalledTest : public ChromeAppDeprecationTest {
+ protected:
+  void SetUp() override {
+    ChromeAppDeprecationTest::SetUp();
+
+    app_ = InstallTestApp(profile(), ManifestLocation::kExternalPolicy);
+    ASSERT_TRUE(app_);
+    ASSERT_TRUE(registrar()->IsExtensionEnabled(app_->id()));
+  }
+};
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest, DefaultFeatureFlag) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kManagedAllowedByFlag*/ 7, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest, DisabledFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  ScopedSkipSystemDialogForTesting skip_system_dialog;
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest, EnabledFeatureFlag) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kManagedAllowedByFlag*/ 7, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest,
+       DisabledFeatureFlagDefaultPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kAdminInstalledChromeAppsForceAllowed));
+
+  ScopedSkipSystemDialogForTesting skip_system_dialog;
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchBlocked);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kHistogram),
+              BucketsAre(base::Bucket(
+                  /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest,
+       DisabledFeatureFlagEnabledPolicy) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kAdminInstalledChromeAppsForceAllowed, true);
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kAdminInstalledChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kManagedAllowedByAdminPolicy*/ 9, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledTest, EnabledFeatureFlagAndPolicy) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kAdminInstalledChromeAppsForceAllowed, true);
+  ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kAdminInstalledChromeAppsForceAllowed));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kManagedAllowedByAdminPolicy*/ 9, 1)));
 }
 
 class ChromeAppDeprecationKioskTest : public ChromeAppDeprecationTest {
@@ -394,30 +502,99 @@ TEST_F(ChromeAppDeprecationKioskAllowlistTest, EnabledFeatureFlag) {
           /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
 }
 
+class ChromeAppDeprecationAdminInstalledAllowlistTest
+    : public ChromeAppDeprecationAdminInstalledTest {
+ protected:
+  void SetUp() override {
+    ChromeAppDeprecationAdminInstalledTest::SetUp();
+
+    allowlist_ =
+        std::make_unique<ScopedAddAppToAllowlistForTesting>(app_->id());
+  }
+
+  void TearDown() override {
+    allowlist_.reset();
+
+    ChromeAppDeprecationAdminInstalledTest::TearDown();
+  }
+
+ private:
+  std::unique_ptr<ScopedAddAppToAllowlistForTesting> allowlist_;
+};
+
+TEST_F(ChromeAppDeprecationAdminInstalledAllowlistTest, DefaultFeatureFlag) {
+  scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kManagedAllowedByAllowlist*/ 8, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledAllowlistTest, DisabledFeatureFlag) {
+  scoped_feature_list_.InitAndDisableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_FALSE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kManagedAllowedByAllowlist*/ 8, 1)));
+}
+
+TEST_F(ChromeAppDeprecationAdminInstalledAllowlistTest, EnabledFeatureFlag) {
+  scoped_feature_list_.InitAndEnableFeature(kAllowAdminInstalledChromeApps);
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kAllowAdminInstalledChromeApps));
+
+  EXPECT_EQ(HandleDeprecation(app_->id(), profile()),
+            DeprecationStatus::kLaunchAllowed);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+          /*DeprecationCheckOutcome::kManagedAllowedByAllowlist*/ 8, 1)));
+}
+
 class ChromeAppDeprecationComponentUpdaterAllowlistTest
     : public ChromeAppDeprecationTest {
  protected:
   void SetUp() override {
     ChromeAppDeprecationTest::SetUp();
 
+    admin_app_ = InstallTestApp(profile(), ManifestLocation::kExternalPolicy);
+    ASSERT_TRUE(admin_app_);
+    ASSERT_TRUE(registrar()->IsExtensionEnabled(admin_app_->id()));
+
     // Disable all deprecation feature flags.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{kAllowUserInstalledChromeApps,
-                               kAllowChromeAppsInKioskSessions});
+                               kAllowChromeAppsInKioskSessions,
+                               kAllowAdminInstalledChromeApps});
   }
 
   void TearDown() override {
+    admin_app_.reset();
+
     // This remains set across multiple tests.
     SetKioskSessionForTesting(false);
 
     ChromeAppDeprecationTest::TearDown();
   }
+
+  scoped_refptr<const Extension> admin_app_;
 };
 
 TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadCommonAllowlist) {
   ChromeAppDeprecation::DynamicAllowlists allowlists;
   allowlists.mutable_common_allowlist()->Add(std::string(app_->id()));
+  allowlists.mutable_common_allowlist()->Add(std::string(admin_app_->id()));
 
   AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
                                              allowlists);
@@ -428,6 +605,17 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadCommonAllowlist) {
       histogram_tester_.GetAllSamples(kHistogram),
       BucketsAre(base::Bucket(
           /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
+
+  EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
+            HandleDeprecation(admin_app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(
+          base::Bucket(
+              /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
+              1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kManagedAllowedByAllowlist*/ 8, 1)));
 
   SetKioskSessionForTesting(true);
   EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
@@ -439,16 +627,21 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadCommonAllowlist) {
               /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
               1),
           base::Bucket(
-              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kManagedAllowedByAllowlist*/ 8, 1)));
 }
 
 TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest,
        LoadUserInstalledAllowlist) {
   ChromeAppDeprecation::DynamicAllowlists allowlists;
   allowlists.mutable_user_installed_allowlist()->Add(std::string(app_->id()));
+  allowlists.mutable_user_installed_allowlist()->Add(
+      std::string(admin_app_->id()));
 
   AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
                                              allowlists);
+  ScopedSkipSystemDialogForTesting skip_system_dialog;
 
   EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
             HandleDeprecation(app_->id(), profile()));
@@ -456,6 +649,17 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest,
       histogram_tester_.GetAllSamples(kHistogram),
       BucketsAre(base::Bucket(
           /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1, 1)));
+
+  EXPECT_EQ(DeprecationStatus::kLaunchBlocked,
+            HandleDeprecation(admin_app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(
+          base::Bucket(
+              /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
+              1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
 
   SetKioskSessionForTesting(true);
   EXPECT_EQ(DeprecationStatus::kLaunchBlocked,
@@ -467,12 +671,16 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest,
               /*DeprecationCheckOutcome::kUserInstalledAllowedByAllowlist*/ 1,
               1),
           base::Bucket(
-              /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1)));
+              /*DeprecationCheckOutcome::kKioskModeBlocked*/ 6, 1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
 }
 
 TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadKioskAllowlist) {
   ChromeAppDeprecation::DynamicAllowlists allowlists;
   allowlists.mutable_kiosk_session_allowlist()->Add(std::string(app_->id()));
+  allowlists.mutable_kiosk_session_allowlist()->Add(
+      std::string(admin_app_->id()));
 
   AssignComponentUpdaterAllowlistsForTesting(base::Version("1.0.0"),
                                              allowlists);
@@ -483,6 +691,15 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadKioskAllowlist) {
               BucketsAre(base::Bucket(
                   /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1)));
 
+  EXPECT_EQ(DeprecationStatus::kLaunchBlocked,
+            HandleDeprecation(admin_app_->id(), profile()));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kHistogram),
+      BucketsAre(base::Bucket(
+                     /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1),
+                 base::Bucket(
+                     /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
+
   SetKioskSessionForTesting(true);
   EXPECT_EQ(DeprecationStatus::kLaunchAllowed,
             HandleDeprecation(app_->id(), profile()));
@@ -492,7 +709,9 @@ TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest, LoadKioskAllowlist) {
           base::Bucket(
               /*DeprecationCheckOutcome::kUserInstalledBlocked*/ 2, 1),
           base::Bucket(
-              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1)));
+              /*DeprecationCheckOutcome::kKioskModeAllowedByAllowlist*/ 4, 1),
+          base::Bucket(
+              /*DeprecationCheckOutcome::kManagedBlocked*/ 10, 1)));
 }
 
 TEST_F(ChromeAppDeprecationComponentUpdaterAllowlistTest,

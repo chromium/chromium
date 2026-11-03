@@ -36,6 +36,7 @@ void RegisterAllowlistComponentUpdater(
 
 BASE_DECLARE_FEATURE(kAllowUserInstalledChromeApps);
 BASE_DECLARE_FEATURE(kAllowChromeAppsInKioskSessions);
+BASE_DECLARE_FEATURE(kAllowAdminInstalledChromeApps);
 
 // ---------- Testing entry points -----------------
 void SetKioskSessionForTesting(bool value);
