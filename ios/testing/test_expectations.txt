@@ -262,3 +262,8 @@ crbug.com/572662973 [ Device ] GeminiAppSwitchingTestCase/testAppSwitchingAISumm
 # Gardening suppression 2026-11-02
 crbug.com/578500873 GeminiCopresenceTestCase/testFloatyHiddenWhenOmniboxFocused [ Pass Failure ]
 crbug.com/579456339 [ Simulator ] BrowserEditMenuHandlerTestCase/testEmailMenu [ Pass Failure ]
+
+# Gardening suppression 2026-11-03
+crbug.com/581352992 [ Device ] KeyboardCommandsTestCase/testKeyboardCommandsRegistered_MultiWindow [ Pass Failure ]
+crbug.com/581352992 [ Device ] KeyboardCommandsTestCase/testWebViewIsFirstResponderUponKeyPress [ Pass Failure ]
+crbug.com/581349540 [ Device ] PageInfoTestCase/testShowTwoAccessiblePermissionsInPageInfo [ Pass Failure ]
