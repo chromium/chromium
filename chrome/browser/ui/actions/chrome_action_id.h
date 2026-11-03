@@ -219,6 +219,7 @@
   E(kActionRecentTabsSeeDeviceTabs, \
     IDC_RECENT_TABS_SEE_DEVICE_TABS) \
   E(kActionOpenRecentTab, IDC_OPEN_RECENT_TAB) \
+  E(kActionOpenOtherDeviceTab, IDC_OPEN_OTHER_DEVICE_TAB) \
   E(kActionIndigo) \
   E(kActionAnchoredContextualCue) \
   E(kActionMultistepFilter) \

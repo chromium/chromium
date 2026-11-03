@@ -15,6 +15,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -25,7 +27,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
@@ -46,6 +50,7 @@
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
@@ -420,6 +425,32 @@ class ActionAppMenuWithOtherDeviceTabsBrowserTest
     feature_list_.InitAndEnableFeature(syncer::kCrossDeviceTabsInAppMenu);
   }
 
+  std::unique_ptr<syncer::DataTypeProcessor> StartSessionSync() {
+    sync_sessions::SessionSyncService* session_sync_service =
+        SessionSyncServiceFactory::GetForProfile(browser()->GetProfile());
+    syncer::DataTypeActivationRequest activation_request;
+    activation_request.cache_guid = "test_cache_guid";
+    activation_request.error_handler = base::DoNothing();
+
+    std::unique_ptr<syncer::DataTypeActivationResponse> activation_response;
+    base::RunLoop loop;
+    session_sync_service->GetControllerDelegate()->OnSyncStarting(
+        activation_request,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
+              activation_response = std::move(response);
+              loop.Quit();
+            }));
+    loop.Run();
+    CHECK(activation_response);
+    CHECK(activation_response->type_processor);
+    std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+        std::move(activation_response->type_processor);
+    sync_processor->ConnectSync(
+        std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
+    return sync_processor;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -437,28 +468,8 @@ class ActionAppMenuWithoutOtherDeviceTabsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        BuildOtherDeviceTabsActions) {
-  sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetForProfile(browser()->GetProfile());
-  syncer::DataTypeActivationRequest activation_request;
-  activation_request.cache_guid = "test_cache_guid";
-  activation_request.error_handler = base::DoNothing();
-
-  std::unique_ptr<syncer::DataTypeActivationResponse> activation_response;
-  base::RunLoop loop;
-  session_sync_service->GetControllerDelegate()->OnSyncStarting(
-      activation_request,
-      base::BindLambdaForTesting(
-          [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
-            activation_response = std::move(response);
-            loop.Quit();
-          }));
-  loop.Run();
-  ASSERT_NE(nullptr, activation_response);
-  ASSERT_NE(nullptr, activation_response->type_processor);
   std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
-      std::move(activation_response->type_processor);
-  sync_processor->ConnectSync(
-      std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
+      StartSessionSync();
 
   const base::Time now = base::Time::Now();
   RecentTabsBuilderTestHelper helper;
@@ -480,10 +491,42 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
       GetItemsDepthFirst(root.get()),
       testing::ElementsAre(GetSessionName(helper, 0), u"Newest", u"Older", u"",
                            GetSessionName(helper, 1), u"Oldest"));
+
+  const std::vector<RecentTabItem> items =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
+  ASSERT_FALSE(items.empty());
+  const GURL expected_url = items.back().url();
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  base::UserActionTester user_action_tester;
+  // Invoke the "Oldest" tab on the second device.
+  ASSERT_EQ(6u, root->GetChildren().children().size());
+  root->GetChildren().children()[5]->GetActionItem()->InvokeAction();
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      expected_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenu) {
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor =
+      StartSessionSync();
+
+  const base::Time now = base::Time::Now();
+  RecentTabsBuilderTestHelper helper;
+  helper.AddSession();
+  helper.AddWindow(0);
+  helper.AddTabWithInfo(0, 0, now - base::Minutes(5), u"Remote Tab");
+  helper.ExportToSessionSync(sync_processor.get());
+
+  const std::vector<RecentTabItem> items =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
+  ASSERT_EQ(2u, items.size());
+  const GURL expected_url = items[1].url();
+
   AppMenuControl* menu_control = GetMenuControl();
   ASSERT_TRUE(menu_control);
 
@@ -532,6 +575,27 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
 
   EXPECT_EQ(recent_tabs_index.value() + 1, other_device_tabs_index.value());
   EXPECT_EQ(other_device_tabs_index.value() + 1, downloads_index.value());
+
+  views::MenuItemView* tab_item =
+      FindMenuItemByTitle(other_device_tabs_item, u"Remote Tab");
+  ASSERT_TRUE(tab_item);
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  action_menu->ExecuteCommand(tab_item->GetCommand(), 0);
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      expected_url,
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL());
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_OTHER_DEVICE_TAB, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.OpenOtherDeviceTab", 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
 
   menu_control->CloseMenu();
 }

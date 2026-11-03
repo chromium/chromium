@@ -1500,6 +1500,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_RECENT_TABS_SEE_DEVICE_TABS);
       break;
+    case IDC_OPEN_OTHER_DEVICE_TAB:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.OpenOtherDeviceTab", delta);
+      }
+      LogMenuAction(MENU_ACTION_OTHER_DEVICE_TAB);
+      break;
     case IDC_FIND:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.Find", delta);
@@ -2240,8 +2247,9 @@ void AppMenuModel::Build() {
         kHistoryMenuItem);
 
     if (base::FeatureList::IsEnabled(syncer::kCrossDeviceTabsInAppMenu)) {
-      sub_menus_.push_back(
-          std::make_unique<OtherDeviceTabsSubMenuModel>(browser_));
+      sub_menus_.push_back(std::make_unique<OtherDeviceTabsSubMenuModel>(
+          browser_, base::BindRepeating(&AppMenuModel::LogMenuMetrics,
+                                        base::Unretained(this))));
       AddSubMenuWithStringIdAndVectorIcon(
           this, kOtherDeviceTabsMenuPlaceholder, IDS_OTHER_DEVICE_TABS_MENU,
           sub_menus_.back().get(),

@@ -148,6 +148,8 @@ constexpr int kRecentTabsCommandIdOffset =
     AppMenuModel::kMinRecentTabsCommandId - IDC_FIRST_UNBOUNDED_MENU;
 constexpr int kTabGroupsCommandIdOffset =
     AppMenuModel::kMinTabGroupsCommandId - IDC_FIRST_UNBOUNDED_MENU;
+constexpr int kOtherDeviceTabsCommandIdOffset =
+    AppMenuModel::kMinOtherDeviceTabsCommandId - IDC_FIRST_UNBOUNDED_MENU;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Extra horizontal space to reserve for the fullscreen button.
@@ -181,6 +183,14 @@ bool IsTabGroupsCommand(int command_id) {
          ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
               AppMenuModel::kNumUnboundedMenuTypes ==
           kTabGroupsCommandIdOffset);
+}
+
+// Returns true if `command_id` identifies an other device tabs menu item.
+bool IsOtherDeviceTabsCommand(int command_id) {
+  return command_id >= IDC_FIRST_UNBOUNDED_MENU &&
+         ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
+              AppMenuModel::kNumUnboundedMenuTypes ==
+          kOtherDeviceTabsCommandIdOffset);
 }
 
 // Computes the target row height for the "Other profiles" section based on
@@ -1492,7 +1502,9 @@ void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
 
 bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                                      const ui::Event& event) {
-  return (IsRecentTabsCommand(command_id) && event.IsMouseEvent() &&
+  return ((IsRecentTabsCommand(command_id) ||
+           IsOtherDeviceTabsCommand(command_id)) &&
+          event.IsMouseEvent() &&
           (ui::DispositionFromEventFlags(event.flags()) ==
            ui::mojom::WindowOpenDisposition::kNewBackgroundTab)) ||
          (IsBookmarkCommand(command_id) &&

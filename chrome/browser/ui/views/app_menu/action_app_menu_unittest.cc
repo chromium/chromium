@@ -4664,13 +4664,26 @@ TEST_F(ActionAppMenuTest, CreateOtherDeviceTabsActionsWithDevices) {
   dynamic_menu.CreateRecentTabsActionForTesting(
       other_device_tabs_submenu.get(),
       {std::move(header_item), std::move(tab_item)});
-
   const auto& children = other_device_tabs_submenu->GetChildren().children();
   ASSERT_EQ(children.size(), 2u);
   EXPECT_EQ(children[0]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kHeader);
   EXPECT_EQ(children[0]->GetActionItem()->GetText(), u"Pixel 9");
   EXPECT_EQ(children[1]->GetActionItem()->GetText(), u"Remote Tab");
+
+  // Verify invoking tab action does not crash when session sync is not
+  // available.
+  children[1]->GetActionItem()->InvokeAction();
+
+  // Verify metric logging via ActionAppMenuMetrics.
+  base::HistogramTester histogram_tester;
+  ActionAppMenuMetrics metrics;
+  metrics.OnMenuOpened();
+  metrics.LogMenuAction(children[1].get());
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_OTHER_DEVICE_TAB, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.OpenOtherDeviceTab", 1);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)

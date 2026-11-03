@@ -75,6 +75,10 @@ void ActionAppMenuMetrics::LogMenuAction(actions::BaseAction* base_action) {
       LogMenuActionWithId(kActionOpenRecentTab);
       return;
     }
+    if (parent_id == kActionOtherDeviceTabsSubmenu) {
+      LogMenuActionWithId(kActionOpenOtherDeviceTab);
+      return;
+    }
     if (parent_id == kActionProfileSubmenu) {
       RecordAction(MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE,
                    "SwitchToAnotherProfile");
@@ -182,6 +186,9 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       break;
     case kActionOpenRecentTab:
       RecordAction(MENU_ACTION_RECENT_TAB, "OpenRecentTab");
+      break;
+    case kActionOpenOtherDeviceTab:
+      RecordAction(MENU_ACTION_OTHER_DEVICE_TAB, "OpenOtherDeviceTab");
       break;
     case kActionRecentTabsLoginForDeviceTabs:
       RecordAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,

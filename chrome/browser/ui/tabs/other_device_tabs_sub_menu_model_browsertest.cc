@@ -14,6 +14,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder.h"
 #include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -40,10 +43,12 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/menus/simple_menu_model.h"
 
 using ::testing::ElementsAre;
@@ -180,7 +185,8 @@ class OtherDeviceTabsSubMenuModelTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<OtherDeviceTabsSubMenuModel> CreateModel() {
-    return std::make_unique<OtherDeviceTabsSubMenuModel>(browser());
+    return std::make_unique<OtherDeviceTabsSubMenuModel>(browser(),
+                                                         base::DoNothing());
   }
 
  protected:
@@ -306,7 +312,85 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
   }
 }
 
+// --- Active: interaction ---------------------------------------------------
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, OpenTab) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({1});
+
+  std::unique_ptr<OtherDeviceTabsSubMenuModel> model = CreateModel();
+  ASSERT_EQ(2u, model->GetItemCount());
+  const std::vector<RecentTabItem> items =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
+  ASSERT_EQ(2u, items.size());
+  const GURL expected_url = items[1].url();
+
+  TabStripModel* const tab_strip = browser()->tab_strip_model();
+  const int tab_count = tab_strip->count();
+  content::WebContents* const initial_active_contents =
+      tab_strip->GetActiveWebContents();
+  base::UserActionTester user_action_tester;
+
+  // Activating a device title header should not open a tab.
+  model->ActivatedAt(0);
+  EXPECT_EQ(tab_count, tab_strip->count());
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
+
+  // Middle-click opens the tab in the background without activating it.
+  model->ActivatedAt(1, ui::EF_MIDDLE_MOUSE_BUTTON);
+  EXPECT_EQ(tab_count + 1, tab_strip->count());
+  EXPECT_EQ(initial_active_contents, tab_strip->GetActiveWebContents());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
+
+  // Activating with default flags opens the tab in the foreground.
+  model->ActivatedAt(1);
+  EXPECT_EQ(tab_count + 2, tab_strip->count());
+  EXPECT_NE(initial_active_contents, tab_strip->GetActiveWebContents());
+  EXPECT_EQ(expected_url, tab_strip->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
+}
+
 // --- App menu integration --------------------------------------------------
+
+IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, AppMenuOpenTab) {
+  SetUpSignedInWithTabSync();
+  RegisterDevices({1});
+
+  const std::vector<RecentTabItem> items =
+      RecentTabsBuilder::BuildOtherDeviceTabs(browser()->GetProfile());
+  ASSERT_EQ(2u, items.size());
+  const GURL expected_url = items[1].url();
+
+  std::unique_ptr<AppMenuModel> app_menu_model = CreateAppMenuModel(browser());
+  const std::optional<size_t> other_device_tabs_index =
+      app_menu_model->GetIndexOfCommandId(
+          AppMenuModel::kOtherDeviceTabsMenuPlaceholder);
+  ASSERT_TRUE(other_device_tabs_index.has_value());
+  ui::MenuModel* submenu =
+      app_menu_model->GetSubmenuModelAt(other_device_tabs_index.value());
+  ASSERT_NE(nullptr, submenu);
+  ASSERT_EQ(2u, submenu->GetItemCount());
+
+  const int tab_count = browser()->tab_strip_model()->count();
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  submenu->ActivatedAt(1);
+
+  EXPECT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(
+      expected_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_OTHER_DEVICE_TAB, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.OpenOtherDeviceTab", 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "WrenchMenu_OpenRecentTabFromDevice"));
+}
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, AppMenuPlacement) {
   SetUpSignedInWithTabSync();

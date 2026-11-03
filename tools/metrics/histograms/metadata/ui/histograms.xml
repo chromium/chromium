@@ -1600,6 +1600,7 @@ features through Chrome Labs. -->
     <variant name=".OpenGuestProfile"/>
     <variant name=".OpenInChrome"/>
     <variant name=".OpenInPwaWindow"/>
+    <variant name=".OpenOtherDeviceTab"/>
     <variant name=".OpenRecentTab"/>
     <variant name=".PasswordManager"/>
     <variant name=".Paste"/>
