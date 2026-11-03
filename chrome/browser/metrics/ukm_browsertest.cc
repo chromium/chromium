@@ -1628,6 +1628,60 @@ IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest,
   ClosePlatformBrowser(browser);
 }
 
+// Verifies that the UrlKeyedMetricsAllowed policy disables UKM when set to
+// false, and leaves UKM under user control when set to true.
+IN_PROC_BROWSER_TEST_F(UkmPolicyBrowserTest, UrlKeyedMetricsAllowedPolicy) {
+  ukm::UkmTestHelper ukm_test_helper(GetUkmService());
+  test::MetricsConsentOverride metrics_consent(true);
+
+  Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+  std::unique_ptr<SyncServiceImplHarness> harness =
+      EnableSyncForProfile(profile);
+  PlatformBrowser browser = CreatePlatformBrowser(profile);
+  ASSERT_TRUE(ukm_test_helper.IsRecordingEnabled());
+  ASSERT_TRUE(GetUkmService()->recording_enabled(ukm::MSBB));
+
+  PrefService* profile_prefs = profile->GetPrefs();
+  unified_consent::UnifiedConsentService* consent_service =
+      UnifiedConsentServiceFactory::GetForProfile(profile);
+
+  // Disallowing URL-keyed metrics via policy forces the pref to false and
+  // disables MSBB UKM recording.
+  SetBooleanPolicy(policy::key::kUrlKeyedMetricsAllowed, false);
+  EXPECT_TRUE(profile_prefs->IsManagedPreference(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(profile_prefs->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
+  // On ChromeOS, App-sync consent keeps UKM (AppKM) recording enabled even when
+  // MSBB consent is disabled. See AllowedStateChanged.
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // The user cannot re-enable it while the policy is set to false.
+  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+  EXPECT_FALSE(profile_prefs->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
+
+  // Allowing URL-keyed metrics via policy does not force-enable the pref;
+  // instead, it leaves the pref unmanaged under user control.
+  SetBooleanPolicy(policy::key::kUrlKeyedMetricsAllowed, true);
+  EXPECT_FALSE(profile_prefs->IsManagedPreference(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_TRUE(profile_prefs->GetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
+  EXPECT_TRUE(GetUkmService()->recording_enabled(ukm::MSBB));
+  EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
+
+  // The user can still disable UKM while UrlKeyedMetricsAllowed is true.
+  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(false);
+  EXPECT_FALSE(GetUkmService()->recording_enabled(ukm::MSBB));
+
+  ClosePlatformBrowser(browser);
+}
+
 // The MetricsReportingEnabled policy is not supported on ChromeOS, which uses
 // DeviceMetricsReportingEnabled instead.
 #if !BUILDFLAG(IS_CHROMEOS)
