@@ -9,6 +9,7 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"

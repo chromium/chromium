@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check_op.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

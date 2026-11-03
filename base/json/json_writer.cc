@@ -11,6 +11,8 @@
 #include <string_view>
 #include <variant>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -45,7 +47,8 @@ bool JSONWriter::WriteWithOptions(ValueView node,
 
   JSONWriter writer(options, json, max_depth);
   bool result = node.Visit([&writer](const auto& member) {
-    return writer.BuildJSONString(member, 0);
+    return writer.BuildJSONString(member, /*indent_depth=*/0,
+                                  /*stack_depth=*/0);
   });
 
   if (options & OPTIONS_PRETTY_PRINT) {
@@ -61,28 +64,35 @@ JSONWriter::JSONWriter(int options, std::string* json, size_t max_depth)
           (options & OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION) != 0),
       pretty_print_((options & OPTIONS_PRETTY_PRINT) != 0),
       json_string_(json),
-      max_depth_(max_depth),
-      stack_depth_(0) {
+      max_depth_(max_depth) {
   DCHECK(json);
   CHECK_LE(max_depth, internal::kAbsoluteMaxDepth);
 }
 
-bool JSONWriter::BuildJSONString(std::monostate node, size_t depth) {
+bool JSONWriter::BuildJSONString(std::monostate node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   json_string_->append("null");
   return true;
 }
 
-bool JSONWriter::BuildJSONString(bool node, size_t depth) {
+bool JSONWriter::BuildJSONString(bool node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   json_string_->append(base::ToString(node));
   return true;
 }
 
-bool JSONWriter::BuildJSONString(int node, size_t depth) {
+bool JSONWriter::BuildJSONString(int node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   json_string_->append(NumberToString(node));
   return true;
 }
 
-bool JSONWriter::BuildJSONString(double node, size_t depth) {
+bool JSONWriter::BuildJSONString(double node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   if (omit_double_type_preservation_ &&
       IsValueInRangeForNumericType<int64_t>(node) && std::floor(node) == node) {
     json_string_->append(NumberToString(static_cast<int64_t>(node)));
@@ -109,21 +119,26 @@ bool JSONWriter::BuildJSONString(double node, size_t depth) {
   return true;
 }
 
-bool JSONWriter::BuildJSONString(std::string_view node, size_t depth) {
+bool JSONWriter::BuildJSONString(std::string_view node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   EscapeJSONString(node, true, json_string_);
   return true;
 }
 
-bool JSONWriter::BuildJSONString(const Value::BlobStorage& node, size_t depth) {
+bool JSONWriter::BuildJSONString(const Value::BlobStorage& node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
   // Successful only if we're allowed to omit it.
   DLOG_IF(ERROR, !omit_binary_values_) << "Cannot serialize binary value.";
   return omit_binary_values_;
 }
 
-bool JSONWriter::BuildJSONString(const DictValue& node, size_t depth) {
-  internal::StackMarker depth_check(max_depth_, &stack_depth_);
-
-  if (depth_check.IsTooDeep()) {
+bool JSONWriter::BuildJSONString(const DictValue& node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
+  ++stack_depth;
+  if (stack_depth >= max_depth_) {
     return false;
   }
 
@@ -147,7 +162,7 @@ bool JSONWriter::BuildJSONString(const DictValue& node, size_t depth) {
     }
 
     if (pretty_print_) {
-      IndentLine(depth + 1U);
+      IndentLine(indent_depth + 1U);
     }
 
     EscapeJSONString(key, true, json_string_);
@@ -156,8 +171,9 @@ bool JSONWriter::BuildJSONString(const DictValue& node, size_t depth) {
       json_string_->push_back(' ');
     }
 
-    result &= value.Visit([this, depth = depth + 1](const auto& member) {
-      return BuildJSONString(member, depth);
+    result &= value.Visit([this, indent_depth = indent_depth + 1,
+                           stack_depth](const auto& member) {
+      return BuildJSONString(member, indent_depth, stack_depth);
     });
 
     first_value_has_been_output = true;
@@ -167,17 +183,18 @@ bool JSONWriter::BuildJSONString(const DictValue& node, size_t depth) {
     if (first_value_has_been_output) {
       json_string_->append(kPrettyPrintLineEnding);
     }
-    IndentLine(depth);
+    IndentLine(indent_depth);
   }
 
   json_string_->push_back('}');
   return result;
 }
 
-bool JSONWriter::BuildJSONString(const ListValue& node, size_t depth) {
-  internal::StackMarker depth_check(max_depth_, &stack_depth_);
-
-  if (depth_check.IsTooDeep()) {
+bool JSONWriter::BuildJSONString(const ListValue& node,
+                                 size_t indent_depth,
+                                 size_t stack_depth) {
+  ++stack_depth;
+  if (stack_depth >= max_depth_) {
     return false;
   }
 
@@ -200,9 +217,10 @@ bool JSONWriter::BuildJSONString(const ListValue& node, size_t depth) {
       }
     }
 
-    result &= value.Visit([this, depth](const auto& member) {
-      return BuildJSONString(member, depth);
-    });
+    result &=
+        value.Visit([this, indent_depth, stack_depth](const auto& member) {
+          return BuildJSONString(member, indent_depth, stack_depth);
+        });
 
     first_value_has_been_output = true;
   }

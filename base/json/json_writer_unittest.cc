@@ -165,7 +165,7 @@ TEST(JsonWriterTest, StackOverflow) {
   // down the deep list manually.
   deep_list = std::move(deep_list_value).TakeList();
   while (!deep_list.empty()) {
-    DCHECK_EQ(deep_list.size(), 1u);
+    ASSERT_EQ(deep_list.size(), 1u);
     ListValue inner_list = std::move(deep_list[0]).TakeList();
     deep_list = std::move(inner_list);
   }
