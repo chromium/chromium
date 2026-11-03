@@ -2986,6 +2986,14 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 // memset() many GiB of data (see crbug.com/1168168).
 // TODO(lizeb): make these tests faster.
 TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedAllocReturnNullDirect) {
+#if defined(UNDEFINED_SANITIZER)
+  // TODO(crbug.com/581064697): Re-enable once PartitionDirectMap() honors
+  // AllocFlags::kReturnNull when committing metadata/BRP pages.
+  if (GetBucketDistribution() == BucketDistribution::kNeutral &&
+      !UseThreadIsolatedPool()) {
+    GTEST_SKIP() << "crbug.com/581064697";
+  }
+#endif
   // A direct-mapped allocation size.
   size_t direct_map_size = 32 * 1024 * 1024;
   ASSERT_GT(direct_map_size, BucketIndexLookup::kMaxBucketSize);
