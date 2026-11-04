@@ -2074,6 +2074,24 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
   _inNavigation = YES;
 
+  // Only record `kOmnibox` when Composebox was opened from the Fakebox
+  // (`kNTPFakebox`) or the omnibox (`kOther`). Other NTP entrypoints (such as
+  // `kNTPAIMButton` and `kNTPPlusButton`) already record their own
+  // `IOSHomeActionType` when tapped, so recording `kOmnibox` on submission
+  // would double-count the NTP interaction.
+  if (_entrypoint == ComposeboxEntrypoint::kNTPFakebox ||
+      _entrypoint == ComposeboxEntrypoint::kOther) {
+    if (web::WebState* webState =
+            _webStateList ? _webStateList->GetActiveWebState() : nullptr) {
+      if (IsVisibleURLNewTabPage(webState)) {
+        NewTabPageTabHelper* NTPHelper =
+            NewTabPageTabHelper::FromWebState(webState);
+        RecordHomeAction(IOSHomeActionType::kOmnibox,
+                         NTPHelper && NTPHelper->ShouldShowStartSurface());
+      }
+    }
+  }
+
   [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
                             [self currentAutocompleteRequestType]];
   [self.metricsRecorder
@@ -2463,14 +2481,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
       [self recordNavigationInitiated];
-      if (web::WebState* web_state = _webStateList->GetActiveWebState()) {
-        if (IsVisibleURLNewTabPage(web_state)) {
-          NewTabPageTabHelper* NTPHelper =
-              NewTabPageTabHelper::FromWebState(web_state);
-          RecordHomeAction(IOSHomeActionType::kOmnibox,
-                           NTPHelper && NTPHelper->ShouldShowStartSurface());
-        }
-      }
       [self.URLLoader loadURLParams:URLLoadParams];
       break;
     case ComposeboxMode::kAIM:

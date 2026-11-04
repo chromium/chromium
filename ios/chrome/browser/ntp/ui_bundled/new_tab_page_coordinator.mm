@@ -2266,7 +2266,7 @@
   _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                      entrypoint:ComposeboxEntrypoint::kNTPFakebox];
+                      entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
   [_composeboxMenuCoordinator start];
 }
 
@@ -2799,6 +2799,8 @@
 }
 
 - (void)didOpenContextualMultimodalActionsMenu {
+  RecordHomeAction(IOSHomeActionType::kPlusButton, [self isStartSurface]);
+  [self.NTPMetricsRecorder recordPlusButtonTapped];
   [_composeboxMenuCoordinator recordAttachmentsMenuOpen];
 }
 

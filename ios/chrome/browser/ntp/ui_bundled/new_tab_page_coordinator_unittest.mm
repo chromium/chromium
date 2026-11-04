@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -850,11 +851,23 @@ TEST_F(NewTabPageCoordinatorTest, NTPShortcutsMetricLogging) {
                                        IOSHomeActionType::kQuickActionAIM, 1);
 
   // Test Plus Button Tap
+  base::UserActionTester user_action_tester;
   [shortcutsHandler openMultimodalActionsMenu];
   histogram_tester_->ExpectBucketCount("IOS.NTP.Click",
                                        IOSHomeActionType::kPlusButton, 1);
   histogram_tester_->ExpectBucketCount("IOS.Home.Click",
                                        IOSHomeActionType::kPlusButton, 1);
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(kNTPAIMPlusButtonTappedAction));
+
+  // Test Plus Button Contextual Menu Open
+  [shortcutsHandler didOpenContextualMultimodalActionsMenu];
+  histogram_tester_->ExpectBucketCount("IOS.NTP.Click",
+                                       IOSHomeActionType::kPlusButton, 2);
+  histogram_tester_->ExpectBucketCount("IOS.Home.Click",
+                                       IOSHomeActionType::kPlusButton, 2);
+  EXPECT_EQ(2,
+            user_action_tester.GetActionCount(kNTPAIMPlusButtonTappedAction));
 
   [coordinator_ stop];
 }

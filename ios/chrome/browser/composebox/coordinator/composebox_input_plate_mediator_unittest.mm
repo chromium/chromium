@@ -1142,6 +1142,79 @@ TEST_F(ComposeboxInputPlateMediatorTest, LogsOmniboxMetricOnStartSurface) {
   histogram_tester.ExpectTotalCount(kActionOnNTPHistogram, 0);
 }
 
+// Tests that `kOmnibox` is logged when an AIM query is submitted while on the
+// NTP from the Fakebox entrypoint.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       LogsOmniboxMetricOnNTPForAIMFromFakebox) {
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  active_web_state->SetVisibleURL(GURL("chrome://newtab"));
+  NewTabPageTabHelper::CreateForWebState(active_web_state);
+  NewTabPageTabHelper::FromWebState(active_web_state)
+      ->SetShowStartSurface(false);
+
+  ComposeboxInputPlateMediator* test_mediator =
+      CreateMediator(ComposeboxEntrypoint::kNTPFakebox, ComposeboxMode::kAIM);
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  test_mediator.URLLoader = fake_loader;
+
+  UrlLoadParams load_params =
+      UrlLoadParams::InCurrentTab(GURL("https://google.com"));
+
+  [test_mediator omniboxDidAcceptText:u"query"
+                       destinationURL:GURL("https://google.com")
+                        URLLoadParams:load_params
+                         isSearchType:YES];
+
+  histogram_tester.ExpectUniqueSample(
+      kActionOnHomeHistogram, static_cast<int>(IOSHomeActionType::kOmnibox), 1);
+  histogram_tester.ExpectUniqueSample(
+      kActionOnNTPHistogram, static_cast<int>(IOSHomeActionType::kOmnibox), 1);
+  histogram_tester.ExpectTotalCount(kActionOnStartHistogram, 0);
+
+  [test_mediator disconnect];
+}
+
+// Tests that `kOmnibox` is not logged when a search is submitted on the NTP
+// from a dedicated entrypoint that already logs its own home action on tap.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DoesNotLogOmniboxMetricOnNTPForDedicatedEntrypoints) {
+  base::HistogramTester histogram_tester;
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  active_web_state->SetVisibleURL(GURL("chrome://newtab"));
+  NewTabPageTabHelper::CreateForWebState(active_web_state);
+  NewTabPageTabHelper::FromWebState(active_web_state)
+      ->SetShowStartSurface(false);
+
+  UrlLoadParams load_params =
+      UrlLoadParams::InCurrentTab(GURL("https://google.com"));
+
+  for (ComposeboxEntrypoint entrypoint :
+       {ComposeboxEntrypoint::kNTPAIMButton,
+        ComposeboxEntrypoint::kNTPPlusButton}) {
+    ComposeboxInputPlateMediator* test_mediator =
+        CreateMediator(entrypoint, ComposeboxMode::kRegularSearch);
+    FakeComposeboxURLLoader* fake_loader =
+        [[FakeComposeboxURLLoader alloc] init];
+    test_mediator.URLLoader = fake_loader;
+
+    [test_mediator omniboxDidAcceptText:u"query"
+                         destinationURL:GURL("https://google.com")
+                          URLLoadParams:load_params
+                           isSearchType:YES];
+
+    [test_mediator disconnect];
+  }
+
+  histogram_tester.ExpectTotalCount(kActionOnHomeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kActionOnNTPHistogram, 0);
+  histogram_tester.ExpectTotalCount(kActionOnStartHistogram, 0);
+}
+
 // Tests that sending text in regular search mode with no attachments bypasses
 // the session and loads a standard search URL.
 TEST_F(ComposeboxInputPlateMediatorTest,
