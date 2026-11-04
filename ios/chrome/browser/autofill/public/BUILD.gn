@@ -10,7 +10,6 @@ source_set("public") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/shared/public/features",
   ]
 }
 
@@ -19,9 +18,7 @@ source_set("unit_tests") {
   sources = [ "autofill_settings_navigator_unittest.mm" ]
   deps = [
     ":public",
-    "//base/test:test_support",
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/shared/public/features",
     "//testing/gtest",
   ]
 }

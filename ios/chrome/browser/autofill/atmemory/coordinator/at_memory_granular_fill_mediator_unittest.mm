@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_granular_fill_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/fake_at_memory_fill_handler.h"
@@ -14,7 +13,6 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
 #import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -162,8 +160,6 @@ TEST_F(AtMemoryGranularFillMediatorTest,
 // page matching the suggestion's memory data type.
 TEST_F(AtMemoryGranularFillMediatorTest,
        SelectManageEnhancedAutofillItemOpensSettings) {
-  base::test::ScopedFeatureList feature_list(kYourSavedInfoSettingsPageIos);
-
   CreateMediator(
       CreateTestSuggestionWithChildren(/*is_personal_context_sourced=*/false));
 

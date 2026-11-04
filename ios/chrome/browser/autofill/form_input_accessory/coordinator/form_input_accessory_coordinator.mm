@@ -93,7 +93,6 @@
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -157,10 +156,6 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
     case autofill::SuggestionType::kAddressEntry:
       return AutofillSettingsPage::kAddresses;
     case autofill::SuggestionType::kFillAutofillAi: {
-      if (!IsYourSavedInfoSettingsPageIosEnabled()) {
-        // If "Your Saved Info" is not enabled, go to "Addresses and More"
-        return AutofillSettingsPage::kAddresses;
-      }
       CHECK(profile);
       base::optional_ref<const autofill::EntityInstance> entity =
           autofill::GetEntityInstance(profile, suggestion.payload);

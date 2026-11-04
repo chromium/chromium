@@ -11,7 +11,6 @@
 
 namespace autofill {
 enum class EntityTypeName;
-enum class MemoryDataType;
 struct Suggestion;
 }  // namespace autofill
 
@@ -31,13 +30,6 @@ enum class AutofillSettingsPage {
 // Returns the `AutofillSettingsPage` corresponding to `entity_type_name`.
 AutofillSettingsPage AutofillSettingsPageForEntityTypeName(
     autofill::EntityTypeName entity_type_name);
-
-// Returns the `AutofillSettingsPage` corresponding to `memory_data_type`, or
-// `std::nullopt` if no settings page hosts that type. If the `YourSavedInfo`
-// feature flag is disabled, entity types map to
-// `AutofillSettingsPage::kAddresses`.
-std::optional<AutofillSettingsPage> AutofillSettingsPageForMemoryDataType(
-    autofill::MemoryDataType memory_data_type);
 
 // Returns the `AutofillSettingsPage` corresponding to the AtMemory
 // `suggestion`, or `std::nullopt` if no settings page hosts it. Suggestions

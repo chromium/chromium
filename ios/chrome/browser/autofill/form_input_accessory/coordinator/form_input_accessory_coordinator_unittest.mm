@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -90,40 +89,36 @@ FormSuggestion* CreateAutofillAiSuggestion(std::string_view guid) {
 struct OpenSettingsTestCase {
   SuggestionType suggestion_type;
   std::string_view entity_guid;
-  AutofillSettingsPage expected_page_when_your_saved_info_disabled;
-  AutofillSettingsPage expected_page_when_your_saved_info_enabled;
+  AutofillSettingsPage expected_page;
 };
 
 constexpr OpenSettingsTestCase kOpenSettingsTestCases[] = {
-    {SuggestionType::kPasswordEntry, "", AutofillSettingsPage::kPasswordManager,
+    {SuggestionType::kPasswordEntry, "",
      AutofillSettingsPage::kPasswordManager},
     {SuggestionType::kBackupPasswordEntry, "",
-     AutofillSettingsPage::kPasswordManager,
      AutofillSettingsPage::kPasswordManager},
-    {SuggestionType::kCreditCardEntry, "", AutofillSettingsPage::kCreditCards,
-     AutofillSettingsPage::kCreditCards},
+    {SuggestionType::kCreditCardEntry, "", AutofillSettingsPage::kCreditCards},
     {SuggestionType::kVirtualCreditCardEntry, "",
-     AutofillSettingsPage::kCreditCards, AutofillSettingsPage::kCreditCards},
-    {SuggestionType::kAddressEntry, "", AutofillSettingsPage::kAddresses,
-     AutofillSettingsPage::kAddresses},
+     AutofillSettingsPage::kCreditCards},
+    {SuggestionType::kAddressEntry, "", AutofillSettingsPage::kAddresses},
     {SuggestionType::kFillAutofillAi, kPassportGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kIdentityDocs},
+     AutofillSettingsPage::kIdentityDocs},
     {SuggestionType::kFillAutofillAi, kDriversLicenseGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kIdentityDocs},
+     AutofillSettingsPage::kIdentityDocs},
     {SuggestionType::kFillAutofillAi, kNationalIdCardGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kIdentityDocs},
+     AutofillSettingsPage::kIdentityDocs},
     {SuggestionType::kFillAutofillAi, kVehicleGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kTravel},
+     AutofillSettingsPage::kTravel},
     {SuggestionType::kFillAutofillAi, kKnownTravelerGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kTravel},
+     AutofillSettingsPage::kTravel},
     {SuggestionType::kFillAutofillAi, kRedressNumberGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kTravel},
+     AutofillSettingsPage::kTravel},
     {SuggestionType::kFillAutofillAi, kFlightReservationGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kTravel},
+     AutofillSettingsPage::kTravel},
     {SuggestionType::kFillAutofillAi, kOrderGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kShopping},
+     AutofillSettingsPage::kShopping},
     {SuggestionType::kFillAutofillAi, kShipmentGuid,
-     AutofillSettingsPage::kAddresses, AutofillSettingsPage::kShopping},
+     AutofillSettingsPage::kShopping},
 };
 
 }  // namespace
@@ -252,37 +247,27 @@ class FormInputAccessoryCoordinatorTest : public PlatformTest {
 // because `TEST_F` and `TEST_P` cannot share the same test suite name.
 class FormInputAccessoryCoordinatorParamTest
     : public FormInputAccessoryCoordinatorTest,
-      public testing::WithParamInterface<
-          std::tuple<OpenSettingsTestCase, bool>> {};
+      public testing::WithParamInterface<OpenSettingsTestCase> {};
 
 // Tests that `openSettingsForSuggestion:` redirects to the expected settings
-// page when `kYourSavedInfoSettingsPageIos` is enabled or disabled.
+// page.
 TEST_P(FormInputAccessoryCoordinatorParamTest, OpenSettingsForSuggestion) {
-  const auto& [test_case, your_saved_info_enabled] = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kYourSavedInfoSettingsPageIos,
-                                    your_saved_info_enabled);
+  const OpenSettingsTestCase& test_case = GetParam();
   PopulateAllEntityTypes();
 
   FormSuggestion* suggestion =
       test_case.suggestion_type == SuggestionType::kFillAutofillAi
           ? CreateAutofillAiSuggestion(test_case.entity_guid)
           : CreateSuggestion(test_case.suggestion_type);
-  AutofillSettingsPage expected_page =
-      your_saved_info_enabled
-          ? test_case.expected_page_when_your_saved_info_enabled
-          : test_case.expected_page_when_your_saved_info_disabled;
 
-  OCMExpect([mock_navigator_ openSettingsForPage:expected_page]);
+  OCMExpect([mock_navigator_ openSettingsForPage:test_case.expected_page]);
   [coordinator_ openSettingsForSuggestion:suggestion];
   EXPECT_OCMOCK_VERIFY(mock_navigator_);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    FormInputAccessoryCoordinatorParamTest,
-    testing::Combine(testing::ValuesIn(kOpenSettingsTestCases),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         FormInputAccessoryCoordinatorParamTest,
+                         testing::ValuesIn(kOpenSettingsTestCases));
 
 // Tests that `isPersonalContextSuggestion:` returns YES only for a suggestion
 // matching a stored personal context entity.
