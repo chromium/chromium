@@ -171,6 +171,15 @@ source_set("fuzztest_init_support") {
   ]
 }
 
+source_set("disable_flaky_fuzztests_listener") {
+  testonly = true
+  sources = [
+    "disable_flaky_fuzztests_listener.cc",
+    "disable_flaky_fuzztests_listener.h",
+  ]
+  deps = [ "//testing/gtest" ]
+}
+
 # Contains a static initializer which will arrange for fuzztests to be
 # registered. Usually invoked from testing/test.gni
 source_set("confirm_fuzztest_init") {
@@ -178,7 +187,9 @@ source_set("confirm_fuzztest_init") {
   testonly = true
   deps = [
     ":buildflags",
+    ":disable_flaky_fuzztests_listener",
     ":fuzztest_init_support",
+    "//testing/gtest",
     "//third_party/fuzztest:init_fuzztest",
   ]
 

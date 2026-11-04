@@ -17,13 +17,18 @@ group("tests") {
 
 # Basic smoke tests for fuzzing
 test("fuzzing_unittests") {
-  sources = [ "fuzztest_cq_smoke_test.cc" ]
+  sources = [
+    "disable_flaky_fuzztests_listener_unittest.cc",
+    "fuzztest_cq_smoke_test.cc",
+  ]
   fuzztests = [ "FuzzTestCqSmokeTest.StringsAlwaysOccupyPositiveSpace" ]
 
   deps = [
+    "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gtest",
+    "//testing/libfuzzer:disable_flaky_fuzztests_listener",
     "//third_party/fuzztest",
   ]
   data_deps = []
@@ -39,7 +44,6 @@ test("fuzzing_unittests") {
     ]
 
     deps += [
-      "//base",
       "//testing/gmock",
       "//testing/libfuzzer:buildflags",
     ]
