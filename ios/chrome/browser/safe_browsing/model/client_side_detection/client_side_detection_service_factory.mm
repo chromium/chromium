@@ -24,7 +24,7 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory(
 
 std::unique_ptr<KeyedService>
 ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionEnabledIos)) {
     return nullptr;
@@ -32,9 +32,9 @@ ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
 
   OptimizationGuideService* opt_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
-  PrefService* prefs = profile->GetPrefs();
+  PrefService* prefs = profile.GetPrefs();
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile->GetSharedURLLoaderFactory();
+      profile.GetSharedURLLoaderFactory();
 
   if (!opt_guide || !prefs || !url_loader_factory) {
     return nullptr;

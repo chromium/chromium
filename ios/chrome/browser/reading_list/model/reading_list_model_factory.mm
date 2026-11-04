@@ -49,7 +49,7 @@ ReadingListModelFactory::ReadingListModelFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto local_storage =

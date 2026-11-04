@@ -12,6 +12,6 @@ ReaderModeModelFactory::ReaderModeModelFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key), "ReaderModeModel") {}
 
 std::unique_ptr<KeyedService> ReaderModeModelFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<ReaderModeModel>(profile);
+    ProfileIOS& profile) const {
+  return std::make_unique<ReaderModeModel>(&profile);
 }

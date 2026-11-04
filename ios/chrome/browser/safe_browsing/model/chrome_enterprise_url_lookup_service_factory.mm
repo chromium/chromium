@@ -68,7 +68,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
 
 std::unique_ptr<KeyedService>
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
@@ -85,15 +85,16 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForProfile(profile),
-      base::BindRepeating(&GetUserPopulationForProfile, profile),
+      base::BindRepeating(&GetUserPopulationForProfile,
+                          base::Unretained(&profile)),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           identity_manager),
       enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile),
       // Referrer chain provider is not currently supported in iOS.
-      /*referrer_chain_provider=*/nullptr, profile->GetPrefs(),
+      /*referrer_chain_provider=*/nullptr, profile.GetPrefs(),
       /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance(),
       IdentityManagerFactory::GetForProfile(profile), management_service,
-      profile->IsOffTheRecord(),
+      profile.IsOffTheRecord(),
       /*is_guest_session=*/false,
       // Enterprise Isolated mode is not currently supported in iOS.
       /*is_isolated_profile=*/false,
@@ -102,7 +103,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       base::BindRepeating(
           &enterprise_connectors::GetNavigationActiveContentAreaUser,
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&IsProfileAffiliated, profile),
+      base::BindRepeating(&IsProfileAffiliated, base::Unretained(&profile)),
       IsCommandLineSwitchEnabled(),
       /*intelligent_scan_delegate=*/nullptr,
       // iOS doesn't support referrer chains yet.

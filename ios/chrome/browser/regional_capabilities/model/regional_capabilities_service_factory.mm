@@ -58,9 +58,9 @@ RegionalCapabilitiesServiceFactory::RegionalCapabilitiesServiceFactory(
 
 std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<regional_capabilities::RegionalCapabilitiesService>(
-      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(profile.GetPrefs()),
       std::make_unique<RegionalCapabilitiesServiceClient>(
           GetApplicationContext()->GetVariationsService()));
 }

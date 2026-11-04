@@ -42,7 +42,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
@@ -62,15 +62,16 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForProfile(profile),
-      base::BindRepeating(&GetUserPopulationForProfile, profile),
-      profile->GetPrefs(),
+      base::BindRepeating(&GetUserPopulationForProfile,
+                          base::Unretained(&profile)),
+      profile.GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&safe_browsing::SyncUtils::
                               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
-      profile->IsOffTheRecord(), base::BindRepeating(&GetVariationsService),
+      profile.IsOffTheRecord(), base::BindRepeating(&GetVariationsService),
       min_allowed_timestamp_for_referrer_chains_getter, referrer_chain_provider,
       /*webui_delegate=*/safe_browsing::WebUIIOSInfoSingleton::GetInstance(),
       /*intelligent_scan_delegate=*/nullptr,

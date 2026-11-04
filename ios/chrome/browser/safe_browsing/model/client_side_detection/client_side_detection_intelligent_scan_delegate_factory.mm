@@ -30,7 +30,7 @@ ClientSideDetectionIntelligentScanDelegateFactory::
 
 std::unique_ptr<KeyedService>
 ClientSideDetectionIntelligentScanDelegateFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionEnabledIos)) {
     return nullptr;
@@ -45,7 +45,7 @@ ClientSideDetectionIntelligentScanDelegateFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  PrefService* prefs = profile->GetPrefs();
+  PrefService* prefs = profile.GetPrefs();
   CHECK(prefs);
   return std::make_unique<
       safe_browsing::ClientSideDetectionIntelligentScanDelegateIOS>(*prefs,

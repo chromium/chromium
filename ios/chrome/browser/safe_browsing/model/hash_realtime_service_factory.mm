@@ -32,7 +32,7 @@ HashRealTimeServiceFactory::HashRealTimeServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService>
-HashRealTimeServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+HashRealTimeServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {

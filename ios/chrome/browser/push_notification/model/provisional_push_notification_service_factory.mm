@@ -23,7 +23,7 @@ ProvisionalPushNotificationServiceFactory::
 
 std::unique_ptr<KeyedService>
 ProvisionalPushNotificationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ProvisionalPushNotificationService>(
       IdentityManagerFactory::GetForProfile(profile),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
