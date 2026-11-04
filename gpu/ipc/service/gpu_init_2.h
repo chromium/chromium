@@ -91,7 +91,7 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   bool ReinitializeGLWithWarp(InitState& state);
   void SaveHardwareGpuInfoAndGpuFeatureInfo();
   void AdjustInfoToWarp();
-  void MaybeFallbackToWarpEarly(InitState& state);
+  void MaybeFallbackToWarpEarly(const InitState& state);
 #endif  // BUILDFLAG(IS_WIN)
   bool InitializeDawn();
   bool InitializeVulkan();
@@ -100,13 +100,16 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
 
   // Helper functions for the steps of InitializeAndStartSandbox(). Some are
   // also used by InitializeInProcess().
-  void RecordStartupCrashKeys(InitState& state);
+  void RecordStartupCrashKeys(const InitState& state);
   bool CollectBasicInfoAndComputeFeatures(InitState& state);
   void ConfigureGpuSelection();
   void StartWatchdogAndMaybeSandboxEarly(InitState& state);
   bool InitializeGLBindingsAndDisplay(InitState& state);
   void SelectCommandDecoder();
   bool FinalizeFeaturesWithContextInfo(InitState& state);
+  // Collects context GPU info, then recomputes `gpu_feature_info_`. Returns
+  // false if the info collection fails, unless in-process.
+  bool CollectContextInfoAndRecomputeFeatures(InitState& state);
   bool ResolveGrContextType(InitState& state);
   bool InitializeVulkanIfNeeded();
   bool FinalizeGLInitialization(InitState& state);
