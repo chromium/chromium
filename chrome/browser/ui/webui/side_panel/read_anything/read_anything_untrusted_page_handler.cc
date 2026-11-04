@@ -984,6 +984,32 @@ bool ReadAnythingUntrustedPageHandler::AreActionsAllowedInTree(
          rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS();
 }
 
+bool ReadAnythingUntrustedPageHandler::CheckAndRecordRendererRequestAllowed(
+    const ui::AXTreeID& tree_id,
+    std::string_view histogram_name,
+    std::string_view request_name) const {
+  if (!IsObservingTree(tree_id)) {
+    base::UmaHistogramEnumeration(
+        histogram_name, ReadAnythingRendererRequestResult::kNotObservedTree);
+    VLOG(1) << "Received " << request_name << " request for tree_id " << tree_id
+            << " which is not currently being observed";
+    return false;
+  }
+
+  if (!AreActionsAllowedInTree(tree_id)) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        ReadAnythingRendererRequestResult::kDisallowedActionOnPageType);
+    VLOG(1) << "Ignoring " << request_name
+            << " request on non-HTTP/HTTPS frame";
+    return false;
+  }
+
+  base::UmaHistogramEnumeration(histogram_name,
+                                ReadAnythingRendererRequestResult::kAllowed);
+  return true;
+}
+
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
     read_anything::mojom::LineSpacing line_spacing) {
   profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineSpacing,
@@ -1181,25 +1207,10 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     return;
   }
 
-  if (!IsObservingTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererLinkRequestHistogram,
-        ReadAnythingRendererRequestResult::kNotObservedTree);
-    VLOG(1) << "Received link click request for tree_id " << target_tree_id
-            << " which is not currently being observed";
+  if (!CheckAndRecordRendererRequestAllowed(
+          target_tree_id, kRendererLinkRequestHistogram, "link click")) {
     return;
   }
-
-  if (!AreActionsAllowedInTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererLinkRequestHistogram,
-        ReadAnythingRendererRequestResult::kDisallowedActionOnPageType);
-    VLOG(1) << "Ignoring link click on non-HTTP/HTTPS frame";
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kRendererLinkRequestHistogram,
-                                ReadAnythingRendererRequestResult::kAllowed);
 
   if (!ui::IsValidAXNodeIDFromRenderer(target_node_id)) {
     VLOG(1) << "Received link click request with invalid target_node_id "
@@ -1217,25 +1228,10 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
 void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
-  if (!IsObservingTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererImageRequestHistogram,
-        ReadAnythingRendererRequestResult::kNotObservedTree);
-    VLOG(1) << "Received image data request for tree_id " << target_tree_id
-            << " which is not currently being observed";
+  if (!CheckAndRecordRendererRequestAllowed(
+          target_tree_id, kRendererImageRequestHistogram, "image data")) {
     return;
   }
-
-  if (!AreActionsAllowedInTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererImageRequestHistogram,
-        ReadAnythingRendererRequestResult::kDisallowedActionOnPageType);
-    VLOG(1) << "Ignoring image data request on non-HTTP/HTTPS frame";
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kRendererImageRequestHistogram,
-                                ReadAnythingRendererRequestResult::kAllowed);
 
   if (!ui::IsValidAXNodeIDFromRenderer(target_node_id)) {
     VLOG(1) << "Received image data request with invalid target_node_id "
@@ -1453,27 +1449,12 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     return;
   }
 
-  if (!IsObservingTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererSelectionRequestHistogram,
-        ReadAnythingRendererRequestResult::kNotObservedTree);
-    VLOG(1) << "Received selection request for tree_id " << target_tree_id
-            << " which is not currently being observed";
+  if (!CheckAndRecordRendererRequestAllowed(
+          target_tree_id, kRendererSelectionRequestHistogram, "selection")) {
     std::move(callback).Run(false);
     return;
   }
 
-  if (!AreActionsAllowedInTree(target_tree_id)) {
-    base::UmaHistogramEnumeration(
-        kRendererSelectionRequestHistogram,
-        ReadAnythingRendererRequestResult::kDisallowedActionOnPageType);
-    VLOG(1) << "Ignoring selection change on non-HTTP/HTTPS frame";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kRendererSelectionRequestHistogram,
-                                ReadAnythingRendererRequestResult::kAllowed);
   if (!ui::IsValidAXNodeIDFromRenderer(anchor_node_id)) {
     VLOG(1) << "Received selection request with invalid anchor_node_id "
             << anchor_node_id;
