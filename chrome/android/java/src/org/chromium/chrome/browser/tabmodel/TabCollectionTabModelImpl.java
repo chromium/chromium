@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabStripCollection;
@@ -581,9 +583,27 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
-        int[] result = new int[snapshot.tabs.size()];
-        Arrays.fill(result, Tab.INVALID_TAB_ID);
-        return result;
+        assertOnUiThread();
+        int tabCount = snapshot.tabs.size();
+        // Snapshots of saved tab groups or without a valid entry id are not restored.
+        if (mNativeTabCollectionTabModelImplPtr == 0
+                || snapshot.kind == ClosureKind.SAVED_GROUPS
+                || snapshot.entryId == TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID) {
+            return createInvalidTabIds(tabCount);
+        }
+
+        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
+            // TODO(crbug.com/437141942): addTab() commits all pending closures, which also
+            // dismisses other undo snackbars.
+            int[] restoredIds =
+                    mModelDelegate.restoreForUndo(
+                            /* tabModel= */ this, snapshot.entryId, snapshot.tabs);
+            if (restoredIds.length != tabCount) {
+                restoredIds = createInvalidTabIds(tabCount);
+            }
+            applyUndoSelection(restoredIds, snapshot, reselect);
+            return restoredIds;
+        }
     }
 
     @Override
@@ -1977,6 +1997,34 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         if (oldSelectedTab == null) {
             setIndex(0, TabSelectionType.FROM_NEW);
         }
+    }
+
+    private void applyUndoSelection(
+            int[] restoredIds, UndoClosureSnapshot snapshot, boolean reselect) {
+        @Nullable Tab firstRestoredTab = null;
+        for (int i = 0; i < restoredIds.length; i++) {
+            @TabId int restoredId = restoredIds[i];
+            if (restoredId == Tab.INVALID_TAB_ID) continue;
+            Tab restoredTab = getTabById(restoredId);
+            if (restoredTab == null) continue;
+
+            if (firstRestoredTab == null) firstRestoredTab = restoredTab;
+            if (reselect && snapshot.tabs.get(i).wasSelected) {
+                setIndex(indexOf(restoredTab), TabSelectionType.FROM_UNDO);
+                return;
+            }
+        }
+
+        // The fallback picks the first restored tab in snapshot.tabs order.
+        if (isActiveModel() && index() == TabList.INVALID_TAB_INDEX && firstRestoredTab != null) {
+            setIndex(indexOf(firstRestoredTab), TabSelectionType.FROM_UNDO);
+        }
+    }
+
+    private static int[] createInvalidTabIds(int count) {
+        int[] tabIds = new int[count];
+        Arrays.fill(tabIds, Tab.INVALID_TAB_ID);
+        return tabIds;
     }
 
     private void moveTabOutOfGroupInDirectionInternal(@TabId int sourceTabId, boolean trailing) {

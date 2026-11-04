@@ -10,7 +10,12 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class serves as a callback from TabModel to TabModelSelector. Avoid adding unnecessary
@@ -37,6 +42,25 @@ public interface TabModelDelegate {
      * @param model The model requesting the restore.
      */
     default void openMostRecentlyClosedEntry(TabModel model) {}
+
+    /**
+     * Requests the native TabRestoreService to restore the tabs of a Recent Tabs entry for an undo
+     * operation. The entry is consumed. The delegate itself does not commit pending closures, but
+     * adding the restored tabs to {@code tabModel} may commit them.
+     *
+     * @param tabModel The model to restore the tabs into.
+     * @param entryId The id of the TabRestoreService entry holding the closed tabs.
+     * @param tabs The closed tabs to restore, each with the placement it had before closure.
+     * @return The restored tab ids using the same indexing as {@code tabs}, i.e. element {@code i}
+     *     is the new id of {@code tabs.get(i)}, or {@link Tab#INVALID_TAB_ID} if that tab was not
+     *     restored. Always has {@code tabs.size()} elements.
+     */
+    default int[] restoreForUndo(
+            TabModel tabModel, @TabRestoreEntryId int entryId, List<ClosedTab> tabs) {
+        int[] restoredIds = new int[tabs.size()];
+        Arrays.fill(restoredIds, Tab.INVALID_TAB_ID);
+        return restoredIds;
+    }
 
     /**
      * Gets the timestamp of the most recent tab closure event stored by the native

@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -49,17 +52,20 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.recent_tabs.RecentlyClosedBridge;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImplTest.TestTabModelObserver.ActiveStateChangeEvent;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -79,6 +85,7 @@ public class TabModelSelectorImplTest {
     // Test activity type that does not restore tab on cold restart.
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
+    private static final @TabRestoreEntryId int ENTRY_ID = 42;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -102,6 +109,7 @@ public class TabModelSelectorImplTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private Context mContext;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private RecentlyClosedBridge mRecentlyClosedBridge;
 
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
@@ -687,5 +695,71 @@ public class TabModelSelectorImplTest {
         mTabModelSelector.initializeForTesting(stubRegularModel, mIncognitoTabModel);
         mTabModelSelector.markTabStateInitialized();
         assertTrue(mTabModelSelector.isTabStateInitialized());
+    }
+
+    @Test
+    public void testRestoreForUndo_passesPlacementArraysToBridge() {
+        mTabModelSelector.setRecentlyClosedBridgeForTesting(mRecentlyClosedBridge);
+        List<ClosedTab> tabs = createClosedTabs();
+        when(mRecentlyClosedBridge.restoreForUndo(
+                        eq(mRegularTabModel),
+                        eq(ENTRY_ID),
+                        aryEq(new int[] {5, 6}),
+                        aryEq(new int[] {0, 3}),
+                        aryEq(new boolean[] {true, false})))
+                .thenReturn(new int[] {11, Tab.INVALID_TAB_ID});
+
+        int[] restoredIds = mTabModelSelector.restoreForUndo(mRegularTabModel, ENTRY_ID, tabs);
+
+        assertArrayEquals(new int[] {11, Tab.INVALID_TAB_ID}, restoredIds);
+        verify(mRecentlyClosedBridge)
+                .restoreForUndo(
+                        eq(mRegularTabModel),
+                        eq(ENTRY_ID),
+                        aryEq(new int[] {5, 6}),
+                        aryEq(new int[] {0, 3}),
+                        aryEq(new boolean[] {true, false}));
+    }
+
+    @Test
+    public void testRestoreForUndo_emptyBridgeResultReturnsInvalidIds() {
+        mTabModelSelector.setRecentlyClosedBridgeForTesting(mRecentlyClosedBridge);
+        when(mRecentlyClosedBridge.restoreForUndo(
+                        eq(mRegularTabModel), eq(ENTRY_ID), any(), any(), any()))
+                .thenReturn(new int[0]);
+
+        int[] restoredIds =
+                mTabModelSelector.restoreForUndo(mRegularTabModel, ENTRY_ID, createClosedTabs());
+
+        assertArrayEquals(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID}, restoredIds);
+    }
+
+    @Test
+    public void testRestoreForUndo_incognitoModelAsserts() {
+        mTabModelSelector.setRecentlyClosedBridgeForTesting(mRecentlyClosedBridge);
+        List<ClosedTab> tabs = createClosedTabs();
+
+        assertThrows(
+                AssertionError.class,
+                () -> mTabModelSelector.restoreForUndo(mIncognitoTabModel, ENTRY_ID, tabs));
+        verify(mRecentlyClosedBridge, never()).restoreForUndo(any(), anyInt(), any(), any(), any());
+    }
+
+    private static List<ClosedTab> createClosedTabs() {
+        return List.of(
+                new ClosedTab(
+                        /* id= */ 5,
+                        /* title= */ "Tab 5",
+                        /* groupId= */ null,
+                        /* modelIndex= */ 0,
+                        /* pinned= */ true,
+                        /* wasSelected= */ false),
+                new ClosedTab(
+                        /* id= */ 6,
+                        /* title= */ "Tab 6",
+                        /* groupId= */ null,
+                        /* modelIndex= */ 3,
+                        /* pinned= */ false,
+                        /* wasSelected= */ true));
     }
 }

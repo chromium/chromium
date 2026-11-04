@@ -34,15 +34,18 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -302,6 +305,34 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
     }
 
     @Override
+    public int[] restoreForUndo(
+            TabModel tabModel, @TabRestoreEntryId int entryId, List<ClosedTab> tabs) {
+        assert tabModel == getModel(/* incognito= */ false)
+                : "Trying to restore a tab from an off-the-record tab model.";
+        assumeNonNull(mRecentlyClosedBridge);
+
+        int tabCount = tabs.size();
+        int[] tabIds = new int[tabCount];
+        int[] indices = new int[tabCount];
+        boolean[] pinned = new boolean[tabCount];
+        for (int i = 0; i < tabCount; i++) {
+            ClosedTab tab = tabs.get(i);
+            tabIds[i] = tab.id;
+            indices[i] = tab.modelIndex;
+            pinned[i] = tab.pinned;
+        }
+        int[] restoredIds =
+                mRecentlyClosedBridge.restoreForUndo(tabModel, entryId, tabIds, indices, pinned);
+        // An empty result means the entry no longer exists or the service is unavailable.
+        if (restoredIds.length != tabCount) {
+            int[] invalidTabIds = new int[tabCount];
+            Arrays.fill(invalidTabIds, Tab.INVALID_TAB_ID);
+            return invalidTabIds;
+        }
+        return restoredIds;
+    }
+
+    @Override
     public long getMostRecentClosureTime() {
         assumeNonNull(mRecentlyClosedBridge);
         List<RecentlyClosedEntry> entries =
@@ -327,6 +358,17 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
     public void initializeForTesting(
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         initialize(normalModel, incognitoModel);
+    }
+
+    /**
+     * Sets the {@link RecentlyClosedBridge} used to restore closed tabs, which is otherwise created
+     * in {@link #onNativeLibraryReady}.
+     *
+     * @param recentlyClosedBridge The bridge to use.
+     */
+    void setRecentlyClosedBridgeForTesting(RecentlyClosedBridge recentlyClosedBridge) {
+        assert mRecentlyClosedBridge == null;
+        mRecentlyClosedBridge = recentlyClosedBridge;
     }
 
     @Override
