@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "android_webview/browser/aw_print_manager.h"
@@ -55,8 +56,7 @@ AwPdfExporter::AwPdfExporter(JNIEnv* env,
                              content::WebContents* web_contents)
     : java_ref_(env, obj), web_contents_(web_contents) {
   DCHECK(obj);
-  Java_AwPdfExporter_setNativeAwPdfExporter(env, obj,
-                                            reinterpret_cast<intptr_t>(this));
+  Java_AwPdfExporter_setNativeAwPdfExporter(env, obj, jni_zero::MakeRaw(this));
 }
 
 AwPdfExporter::~AwPdfExporter() {
@@ -65,7 +65,7 @@ AwPdfExporter::~AwPdfExporter() {
   if (!obj)
     return;
   // Clear the Java peer's weak pointer to |this| object.
-  Java_AwPdfExporter_setNativeAwPdfExporter(env, obj, 0);
+  Java_AwPdfExporter_setNativeAwPdfExporter(env, obj, nullptr);
 }
 
 void AwPdfExporter::ExportToPdf(JNIEnv* env,

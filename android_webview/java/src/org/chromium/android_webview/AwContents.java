@@ -2230,7 +2230,7 @@ public class AwContents implements SmartClipProvider {
         if (TRACE) Log.i(TAG, "%s getPdfExporter", this);
         if (isDestroyed(WARN)) return null;
         if (mAwPdfExporter == null) {
-            mAwPdfExporter = new AwPdfExporter(mContainerView);
+            mAwPdfExporter = new AwPdfExporter(mContainerView, this);
             AwContentsJni.get().createPdfExporter(mNativeAwContents, mAwPdfExporter);
         }
         return mAwPdfExporter;

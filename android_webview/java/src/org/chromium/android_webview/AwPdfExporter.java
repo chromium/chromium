@@ -11,11 +11,16 @@ import android.view.ViewGroup;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.DoNotInline;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Export the android webview as a PDF.
@@ -26,8 +31,12 @@ import org.chromium.build.annotations.DoNotInline;
 @Lifetime.WebView
 @JNINamespace("android_webview")
 public class AwPdfExporter {
+    @JniType("::android_webview::AwPdfExporter")
+    interface NativeAwPdfExporter extends JniTypeToken {}
+
     private static final String TAG = "AwPdfExporter";
-    private long mNativeAwPdfExporter;
+    private final AwContents mAwContents;
+    private @Nullable JniRawPtr<NativeAwPdfExporter> mNativeAwPdfExporter;
     // TODO(sgurun) result callback should return an int/object indicating errors.
     // potential errors: invalid print parameters, already pending, IO error
     private AwPdfExporterCallback mResultCallback;
@@ -49,7 +58,8 @@ public class AwPdfExporter {
         void pdfWritingDone(int pageCount);
     }
 
-    AwPdfExporter(ViewGroup containerView) {
+    AwPdfExporter(ViewGroup containerView, AwContents awContents) {
+        mAwContents = awContents;
         setContainerView(containerView);
     }
 
@@ -81,7 +91,7 @@ public class AwPdfExporter {
         if (attributes.getMinMargins() == null) {
             throw new IllegalArgumentException("attributes must specify margins");
         }
-        if (mNativeAwPdfExporter == 0) {
+        if (mNativeAwPdfExporter == null) {
             resultCallback.pdfWritingDone(0);
             return;
         }
@@ -92,11 +102,18 @@ public class AwPdfExporter {
     }
 
     @CalledByNative
-    private void setNativeAwPdfExporter(long nativePdfExporter) {
+    private void setNativeAwPdfExporter(
+            @Nullable JniRawPtr<NativeAwPdfExporter> nativePdfExporter) {
+        if (mNativeAwPdfExporter != null) {
+            mNativeAwPdfExporter.release();
+        }
         mNativeAwPdfExporter = nativePdfExporter;
+        if (nativePdfExporter != null) {
+            mAwContents.registerSafePointer(nativePdfExporter);
+        }
         // Handle the cornercase that the native side is destroyed (for example
         // via Webview.Destroy) before it has a chance to complete the pdf exporting.
-        if (nativePdfExporter == 0 && mResultCallback != null) {
+        if (nativePdfExporter == null && mResultCallback != null) {
             try {
                 mResultCallback.pdfWritingDone(0);
                 mResultCallback = null;
@@ -169,8 +186,8 @@ public class AwPdfExporter {
     @NativeMethods
     interface Natives {
         void exportToPdf(
-                long nativeAwPdfExporter,
-                AwPdfExporter self,
+                JniPtr<NativeAwPdfExporter> self,
+                AwPdfExporter caller,
                 int fd,
                 int[] pages,
                 CancellationSignal cancellationSignal);

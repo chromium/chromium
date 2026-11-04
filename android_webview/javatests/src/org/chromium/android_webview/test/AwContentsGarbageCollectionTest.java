@@ -138,6 +138,27 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testPdfExporter() throws Throwable {
+        runAwContentsGcTest(
+                () -> {
+                    TestAwContentsClient client = new TestAwContentsClient();
+                    AwTestContainerView containerView =
+                            mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    Assert.assertNotNull(
+                                            containerView.getAwContents().getPdfExporter()));
+                    mActivityTestRule.loadUrlAsync(
+                            containerView.getAwContents(),
+                            ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                    return null;
+                });
+    }
+
+    @Test
+    @DisableHardwareAcceleration
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testHoldKeyboardResultReceiver() throws Throwable {
         runAwContentsGcTest(
                 () -> {
