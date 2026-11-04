@@ -39,7 +39,6 @@
 #import "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #import "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
-#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/display/display.h"
 #import "ui/display/screen.h"
 
@@ -775,7 +774,7 @@ content::WebContents* ContentWebState::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    ui::mojom::WindowOpenDisposition disposition,
+    WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {

@@ -419,7 +419,6 @@ source_set("ios_web_web_state_unittests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base:test_support",
-    "//ui/base/mojom",
     "//ui/gfx:test_support",
   ]
 

@@ -33,7 +33,6 @@ source_set("web_state") {
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
     "//ios/web/webui",
     "//net",
-    "//ui/base/mojom",
     "//ui/gfx",
   ]
 

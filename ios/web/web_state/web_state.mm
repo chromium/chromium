@@ -8,7 +8,6 @@
 
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web {
 
@@ -17,13 +16,12 @@ WebState::CreateParams::CreateParams(web::BrowserState* browser_state)
 
 WebState::CreateParams::~CreateParams() {}
 
-WebState::OpenURLParams::OpenURLParams(
-    const GURL& url,
-    const GURL& virtual_url,
-    const Referrer& referrer,
-    ui::mojom::WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool is_renderer_initiated)
+WebState::OpenURLParams::OpenURLParams(const GURL& url,
+                                       const GURL& virtual_url,
+                                       const Referrer& referrer,
+                                       WindowOpenDisposition disposition,
+                                       ui::PageTransition transition,
+                                       bool is_renderer_initiated)
     : url(url),
       virtual_url(virtual_url),
       referrer(referrer),
@@ -31,12 +29,11 @@ WebState::OpenURLParams::OpenURLParams(
       transition(transition),
       is_renderer_initiated(is_renderer_initiated) {}
 
-WebState::OpenURLParams::OpenURLParams(
-    const GURL& url,
-    const Referrer& referrer,
-    ui::mojom::WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool is_renderer_initiated)
+WebState::OpenURLParams::OpenURLParams(const GURL& url,
+                                       const Referrer& referrer,
+                                       WindowOpenDisposition disposition,
+                                       ui::PageTransition transition,
+                                       bool is_renderer_initiated)
     : OpenURLParams(url,
                     GURL(),
                     referrer,

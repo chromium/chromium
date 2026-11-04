@@ -77,7 +77,7 @@
 #import "ios/web/web_state/web_view_pass_key.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
-#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
+#import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -2081,9 +2081,10 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   if (!URL.is_valid() || !URL.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  web::WebState::OpenURLParams params(
-      URL, web::Referrer(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  web::WebState::OpenURLParams params(URL, web::Referrer(),
+                                      WindowOpenDisposition::kNewForegroundTab,
+                                      ui::PAGE_TRANSITION_LINK,
+                                      /*is_renderer_initiated=*/false);
   self.webStateImpl->OpenURL(params);
 }
 
