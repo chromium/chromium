@@ -729,7 +729,7 @@ void ReadAnythingAppModel::ClearPendingUpdates() {
   has_pending_selection_ = false;
 }
 
-void ReadAnythingAppModel::UnserializePendingUpdates(
+bool ReadAnythingAppModel::UnserializePendingUpdates(
     const ui::AXTreeID& tree_id) {
   // PDF updates use EventFrom::kNone, so ProcessGeneratedEvents() won't reset a
   // stale reading mode selection count that would hide the pending selection.
@@ -746,7 +746,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
     VLOG(1) << "Returning early in UnserializePendingUpdates because it "
                "doesn't contain tree id "
             << tree_id;
-    return;
+    return true;
   }
   // TODO(crbug.com/40802192): Ensure there are no crashes/unexpected behavior
   // if an accessibility event is received on the same tree after
@@ -756,17 +756,20 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
     // Unserialize the updates in batches in the groupings in which they were
     // received by QueueAccessibilityUpdates.
     DCHECK(update.empty() || tree_id == active_tree_id_);
-    UnserializeUpdates(update, tree_id);
+    if (!UnserializeUpdates(update, tree_id)) {
+      return false;
+    }
   }
+  return true;
 }
 
-void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
+bool ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
                                               const ui::AXTreeID& tree_id) {
   VLOG(1) << "Unserializing updates for " << tree_id;
   if (updates.empty()) {
     VLOG(1) << "Unable to unserialize updates for " << tree_id
             << " because the updates are empty";
-    return;
+    return true;
   }
 
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
@@ -775,9 +778,6 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
   auto* const tree =
       static_cast<ui::AXSerializableTree*>(it->second->manager->ax_tree());
   CHECK(tree);
-
-  // Build an event generator prior to any unserializations.
-  ui::AXEventGenerator event_generator(tree);
 
   // Unserialize the updates.
   const size_t prev_tree_size = tree->size();
@@ -791,7 +791,7 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
     if (!tree->root() && update.root_id == ui::kInvalidAXNodeID) {
       VLOG(1) << "Skipping unserialize because the tree has no root and the "
                  "update has an invalid root";
-      return;
+      return true;
     }
     if (update.tree_data.tree_id == ui::AXTreeIDUnknown()) {
       VLOG(1) << "unserializing an update with an unknown tree ID";
@@ -805,7 +805,7 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
     DUMP_WILL_BE_CHECK(unserialized);
     if (!unserialized) {
       OnAXTreeDestroyed(tree_id);
-      return;
+      return false;
     }
   }
 
@@ -815,12 +815,19 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
   // Reset cached original page metrics since tree structure changed.
   it->second->original_page_metrics.reset();
 
+  // `AXTreeManager::event_generator()` already observes `tree` during
+  // `Unserialize()`. Clear its events after processing so they aren't
+  // re-processed on subsequent `UnserializeUpdates()` calls.
+  ui::AXEventGenerator& event_generator =
+      it->second->manager->event_generator();
   ProcessGeneratedEvents(tree_id, event_generator, prev_tree_size,
                          tree->size());
+  event_generator.ClearEvents();
 
   if (tree_id == active_tree_id_) {
     UpdateDistillationForDocsIfNeeded();
   }
+  return true;
 }
 
 void ReadAnythingAppModel::PrepareForAXTreeUpdates(
@@ -904,8 +911,10 @@ void ReadAnythingAppModel::ApplyAccessibilityUpdates(
     // We need to unserialize old updates before we can unserialize the new
     // ones.
     VLOG(1) << "ApplyAccessibilityUpdates- tree ID is the active tree";
-    UnserializePendingUpdates(tree_id);
-    UnserializeUpdates(updates, tree_id);
+    if (!UnserializePendingUpdates(tree_id) ||
+        !UnserializeUpdates(updates, tree_id)) {
+      return;
+    }
     ProcessNonGeneratedEvents(events);
 
     // has_pending_selection_ is used to process updates that would not have

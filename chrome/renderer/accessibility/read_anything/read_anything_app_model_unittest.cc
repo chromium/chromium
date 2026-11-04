@@ -20,6 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_intent.h"
@@ -341,7 +342,7 @@ TEST_F(ReadAnythingAppModelTest, SetIsPdf_PreservesStateAcrossPendingUpdates) {
   // unserialize pending updates.
   model().SetActiveTreeId(pdf_tree_id);
   EXPECT_TRUE(model().IsPdf());
-  model().UnserializePendingUpdates(pdf_tree_id);
+  EXPECT_TRUE(model().UnserializePendingUpdates(pdf_tree_id));
 
   // The OCR banner node and child text node should be ignored because the tree
   // is a PDF.
@@ -573,7 +574,7 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Ensure that there are no crashes after an accessibility event is received
   // immediately after unserializing.
-  model().UnserializePendingUpdates(tree_id_);
+  EXPECT_TRUE(model().UnserializePendingUpdates(tree_id_));
   QueueAccessibilityUpdates(tree_id_, {std::move(updates[2])});
   EXPECT_EQ(1u, model().pending_updates_for_testing().at(tree_id_).size());
   ASSERT_FALSE(AreAllPendingUpdatesEmpty());
@@ -599,6 +600,53 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
 }
 
 TEST_F(ReadAnythingAppModelTest,
+       ApplyAccessibilityUpdates_InvalidUpdate_DestroysTreeWithoutCrashing) {
+  // Clearing node 2 without updating it leaves it pending, so
+  // `AXTree::Unserialize()` fails.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.node_id_to_clear = 2;
+  update.nodes.resize(1);
+  update.nodes[0].id = 3;
+
+#if AX_FAIL_FAST_BUILD()
+  EXPECT_DEATH_IF_SUPPORTED(ApplyAccessibilityUpdates(tree_id_, {update}),
+                            "Nodes left pending by the update: 2");
+#else
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  EXPECT_FALSE(model().ContainsTree(tree_id_));
+#endif
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       ApplyAccessibilityUpdates_InvalidPendingUpdate_StopsUnserializing) {
+  std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
+  ReadAnythingAppModel::Updates updates =
+      test::CreateSimpleUpdateList(child_ids, tree_id_);
+
+  // Clearing node 2 without updating it leaves it pending, so
+  // `AXTree::Unserialize()` fails.
+  ui::AXTreeUpdate invalid_update;
+  test::SetUpdateTreeID(&invalid_update, tree_id_);
+  invalid_update.node_id_to_clear = 2;
+  invalid_update.nodes.resize(1);
+  invalid_update.nodes[0].id = 3;
+
+  QueueAccessibilityUpdates(tree_id_, {invalid_update});
+  QueueAccessibilityUpdates(tree_id_, {std::move(updates[0])});
+  ASSERT_EQ(2u, model().pending_updates_for_testing().at(tree_id_).size());
+
+#if AX_FAIL_FAST_BUILD()
+  EXPECT_DEATH_IF_SUPPORTED(
+      ApplyAccessibilityUpdates(tree_id_, {std::move(updates[1])}),
+      "Nodes left pending by the update: 2");
+#else
+  ApplyAccessibilityUpdates(tree_id_, {std::move(updates[1])});
+  EXPECT_FALSE(model().ContainsTree(tree_id_));
+#endif
+}
+
+TEST_F(ReadAnythingAppModelTest,
        QueueAccessibilityUpdates_UnserializesUpdates) {
   std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
   ReadAnythingAppModel::Updates updates =
@@ -619,7 +667,7 @@ TEST_F(ReadAnythingAppModelTest,
 
   // Complete distillation which unserializes the pending updates and distills
   // them.
-  model().UnserializePendingUpdates(tree_id_);
+  EXPECT_TRUE(model().UnserializePendingUpdates(tree_id_));
   EXPECT_FALSE(model().pending_updates_for_testing().contains(tree_id_));
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
 }
