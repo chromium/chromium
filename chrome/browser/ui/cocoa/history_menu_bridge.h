@@ -262,6 +262,12 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   void FinishCreateMenu();
 
+  // Returns up to `max_count` results, deduplicating visits with the same host
+  // and title, preferring more recent visits.
+  static std::vector<history::URLResult> DeduplicateVisitsByHostAndTitle(
+      const history::QueryResults& results,
+      size_t max_count);
+
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
                     const history::VisitedURLInfo& visited_url_info) override;

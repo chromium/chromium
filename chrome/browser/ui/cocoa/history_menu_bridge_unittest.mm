@@ -195,6 +195,13 @@ class HistoryMenuBridgeTest : public CocoaTest {
     return item;
   }
 
+  static std::vector<history::URLResult> DeduplicateVisitsByHostAndTitle(
+      const history::QueryResults& results,
+      size_t max_count) {
+    return HistoryMenuBridge::DeduplicateVisitsByHostAndTitle(results,
+                                                              max_count);
+  }
+
   void GetFaviconForHistoryItem(HistoryMenuBridge::HistoryItem* item) {
     bridge_->GetFaviconForHistoryItem(item);
   }
@@ -595,6 +602,68 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedSplits) {
 
   EXPECT_EQ(31, hist_parent->tabs[0]->session_id.id());
   EXPECT_EQ(32, hist_parent->tabs[1]->session_id.id());
+}
+
+// Test that `DeduplicateVisitsByHostAndTitle()` deduplicates visits and
+// respects `max_count`.
+TEST_F(HistoryMenuBridgeTest, DeduplicateVisitsByHostAndTitle) {
+  std::vector<history::URLResult> url_results;
+
+  // Visit with host "a.com" and title "Title A".
+  history::URLResult item1(GURL("http://a.com/1"), base::Time::Now());
+  item1.set_title(u"Title A");
+  url_results.push_back(item1);
+
+  // Same host and title, different path: should be deduplicated.
+  history::URLResult item2(GURL("http://a.com/2"),
+                           base::Time::Now() - base::Seconds(1));
+  item2.set_title(u"Title A");
+  url_results.push_back(item2);
+
+  // Same host, different title: should NOT be deduplicated.
+  history::URLResult item3(GURL("http://a.com/3"),
+                           base::Time::Now() - base::Seconds(2));
+  item3.set_title(u"Title B");
+  url_results.push_back(item3);
+
+  // Different host, same title: should NOT be deduplicated.
+  history::URLResult item4(GURL("http://b.com/1"),
+                           base::Time::Now() - base::Seconds(3));
+  item4.set_title(u"Title A");
+  url_results.push_back(item4);
+
+  // Same host, empty titles: should NOT be deduplicated.
+  history::URLResult empty1(GURL("http://c.com/1"),
+                            base::Time::Now() - base::Seconds(4));
+  url_results.push_back(empty1);
+
+  history::URLResult empty2(GURL("http://c.com/2"),
+                            base::Time::Now() - base::Seconds(5));
+  url_results.push_back(empty2);
+
+  history::QueryResults results;
+  results.SetURLResults(std::move(url_results));
+  std::vector<history::URLResult> deduped =
+      DeduplicateVisitsByHostAndTitle(results, 15);
+
+  ASSERT_EQ(deduped.size(), 5u);
+  EXPECT_EQ(deduped[0].url(), GURL("http://a.com/1"));
+  EXPECT_EQ(deduped[0].title(), u"Title A");
+  EXPECT_EQ(deduped[1].url(), GURL("http://a.com/3"));
+  EXPECT_EQ(deduped[1].title(), u"Title B");
+  EXPECT_EQ(deduped[2].url(), GURL("http://b.com/1"));
+  EXPECT_EQ(deduped[2].title(), u"Title A");
+  EXPECT_EQ(deduped[3].url(), GURL("http://c.com/1"));
+  EXPECT_EQ(deduped[3].title(), u"");
+  EXPECT_EQ(deduped[4].url(), GURL("http://c.com/2"));
+  EXPECT_EQ(deduped[4].title(), u"");
+
+  // Also verify `max_count` capping.
+  std::vector<history::URLResult> capped =
+      DeduplicateVisitsByHostAndTitle(results, 2);
+  EXPECT_EQ(capped.size(), 2u);
+  EXPECT_EQ(capped[0].url(), deduped[0].url());
+  EXPECT_EQ(capped[1].url(), deduped[1].url());
 }
 
 // Tests that we properly request an icon from the FaviconService.

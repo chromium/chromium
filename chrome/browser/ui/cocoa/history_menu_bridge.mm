@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
@@ -59,6 +61,10 @@ const int kVisitedScope = 90;
 
 // The number of visited results to get.
 const int kVisitedCount = 15;
+
+// The maximum number of visited results to query from the history service
+// before deduplicating down to `kVisitedCount`.
+const int kMaxVisitedResultsToFetch = 100;
 
 // The number of recently closed items to get.
 const unsigned int kRecentlyClosedCount = 10;
@@ -562,7 +568,7 @@ void HistoryMenuBridge::FinishCreateMenu() {
   need_recreate_ = false;
 
   history::QueryOptions options;
-  options.max_count = kVisitedCount;
+  options.max_count = kMaxVisitedResultsToFetch;
   options.SetRecentDayRange(kVisitedScope);
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
 
@@ -596,11 +602,14 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   ClearMenuSection(menu, kVisited);
   NSInteger top_item = [menu indexOfItemWithTag:kVisitedTitle] + 1;
 
-  size_t count = results.size();
+  std::vector<history::URLResult> deduplicated_results =
+      DeduplicateVisitsByHostAndTitle(results, kVisitedCount);
+
+  size_t count = deduplicated_results.size();
   // Loop through all the items. Early out if the menu changes while we're
   // rebuilding it.
   for (size_t i = 0; i < count && !need_recreate_; ++i) {
-    const history::URLResult& result = results[i];
+    const history::URLResult& result = deduplicated_results[i];
 
     auto item = std::make_unique<HistoryItem>();
     item->title = result.title();
@@ -623,6 +632,28 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
   // `this` may be deleted because it is tied to the current profile through
   // `AppController`, and the profile may have been deleted when the keep alive
   // was released.
+}
+
+// static
+std::vector<history::URLResult>
+HistoryMenuBridge::DeduplicateVisitsByHostAndTitle(
+    const history::QueryResults& results,
+    size_t max_count) {
+  std::vector<history::URLResult> deduplicated;
+  std::set<std::pair<std::string, std::u16string>> seen;
+  for (const auto& result : results) {
+    if (deduplicated.size() >= max_count) {
+      break;
+    }
+    // If the title is not empty, deduplicate by (host, title). When the title
+    // is empty, the menu title falls back to the URL, so do not deduplicate
+    // across different URLs.
+    if (result.title().empty() ||
+        seen.emplace(result.url().host(), result.title()).second) {
+      deduplicated.push_back(result);
+    }
+  }
+  return deduplicated;
 }
 
 std::unique_ptr<HistoryMenuBridge::HistoryItem>
