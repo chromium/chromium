@@ -59,6 +59,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           }
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://enclave.ua5v.com"
           last_reviewed: "2023-07-05"
         }
         policy {
