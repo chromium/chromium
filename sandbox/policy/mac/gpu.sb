@@ -76,6 +76,23 @@
       (iokit-property "bgcs")
 )))
 
+; Support paravirtualized graphics. Based on WebKit's GPU sandboxing rules at
+; https://github.com/WebKit/WebKit/blob/46c22422f9bdff5c4d1e58bf08efced8c797840d/Source/WebKit/GPUProcess/mac/com.apple.WebKit.GPUProcess.sb.in#L92-L116
+(define (allow-paravirtualization)
+  (allow iokit-open-service
+    (iokit-registry-entry-class "AppleVideoToolboxParavirtualizationDriver"))
+  (allow iokit-open-service
+    (iokit-registry-entry-class "AppleM2ScalerParavirtDriver"))
+  (allow iokit-open-user-client
+    (iokit-user-client-class "IOSurfaceAcceleratorParavirtClient"))
+  (allow iokit-open-user-client
+    (iokit-user-client-class "AppleVideoToolboxParavirtualizationUserClient")))
+
+(if (>= os-version 2600)
+  (with-filter (system-attribute virtual-device)
+    (allow-paravirtualization))
+  (allow-paravirtualization))
+
 (allow ipc-posix-shm-read-data
   (ipc-posix-name "apple.shm.notification_center"))
 
