@@ -684,7 +684,6 @@ if (!is_android && !is_chromeos_device) {
       "//components/user_education/views",
       "//content/test:test_support",
       "//testing/gtest",
-      "//third_party/blink/public/common:headers",
       "//ui/base",
       "//ui/base:ozone_buildflags",
       "//ui/events:test_support",

@@ -266,12 +266,6 @@ class WebUIToolbarDropSimulator {
   bool PerformDrop(content::DropData drop_data,
                    bool drag_exited_before_drop = false);
 
-  // Like `PerformDrop()`, but sends the sequence without waiting for the
-  // renderer, which handles it in order. This allows dropping while a drag out
-  // of the toolbar is in progress. `key_modifiers` are the
-  // `blink::WebInputEvent` modifiers held during the drag.
-  void SendDrop(content::DropData drop_data, int key_modifiers = 0);
-
   // Drop of a link, i.e. `text/uri-list` only. Expects the drag to be
   // accepted.
   void SimulateLinkDrop(const std::string& url, DragOrigin origin);
