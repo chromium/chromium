@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -20,7 +21,6 @@
 #include "remoting/codec/utils.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
-#include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
@@ -29,28 +29,12 @@ namespace remoting {
 
 namespace {
 
-// Number of bytes in an RGBx pixel.
-constexpr int kBytesPerRgbPixel = 4;
-
 // Magic encoder profile numbers for I420 and I444 input formats.
 constexpr int kVp9I420ProfileNumber = 0;
 constexpr int kVp9I444ProfileNumber = 1;
 
 // Magic encoder constant for adaptive quantization strategy.
 constexpr int kVp9AqModeCyclicRefresh = 3;
-
-constexpr int kDefaultTargetBitrateKbps = 1000;
-
-// Minimum target bitrate per megapixel. The value is chosen experimentally such
-// that when screen is not changing the codec converges to the target quantizer
-// above in less than 10 frames.
-// TODO(zijiehe): This value is for VP8 only; reconsider the value for VP9.
-constexpr int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
-
-// Default values for the encoder speed of the supported codecs.
-constexpr int kVp9LosslessEncodeSpeed = 5;
-constexpr int kVp9DefaultEncoderSpeed = 9;
-constexpr int kVp9MaxEncoderSpeed = 9;
 
 void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
                               const webrtc::DesktopSize& size) {
@@ -80,8 +64,8 @@ void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
   config->rc_dropframe_thresh = 0;
   // Set a reasonable default for the first key frame before WebRTC begins
   // sending updated max/min qp values based on network conditions.
-  config->rc_min_quantizer = 10;
-  config->rc_max_quantizer = 50;
+  config->rc_min_quantizer = WebrtcVideoEncoder::kMinQuantizer;
+  config->rc_max_quantizer = WebrtcVideoEncoder::kMaxQuantizer;
   // We do not want variations in bandwidth.
   config->rc_end_usage = VPX_CBR;
   config->rc_undershoot_pct = 100;
@@ -129,7 +113,8 @@ void SetVp9CodecParameters(vpx_codec_enc_cfg_t* config,
 void SetVp8CodecOptions(vpx_codec_ctx_t* codec) {
   // CPUUSED of 16 will have the smallest CPU load. This turns off sub-pixel
   // motion search.
-  vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, 16);
+  vpx_codec_err_t ret = vpx_codec_control(
+      codec, VP8E_SET_CPUUSED, WebrtcVideoEncoderVpx::kVp8DefaultEncoderSpeed);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
   // Use the lowest level of noise sensitivity so as to spend less time
@@ -204,8 +189,8 @@ void WebrtcVideoEncoderVpx::SetEncoderSpeed(int encoder_speed) {
     return;
   }
 
-  int clamped_speed = std::clamp<int>(encoder_speed, kVp9LosslessEncodeSpeed,
-                                      kVp9MaxEncoderSpeed);
+  int clamped_speed =
+      std::clamp<int>(encoder_speed, kVp9MinEncoderSpeed, kVp9MaxEncoderSpeed);
   if (vp9_encoder_speed_ != clamped_speed) {
     VLOG(0) << "Setting VP9 encoder speed to " << clamped_speed;
     vp9_encoder_speed_ = clamped_speed;
@@ -233,8 +218,8 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     return;
   }
 
-  DCHECK_GE(frame_size.width(), 32);
-  DCHECK_GE(frame_size.height(), 32);
+  DCHECK_GE(frame_size.width(), kMinDimension);
+  DCHECK_GE(frame_size.height(), kMinDimension);
 
   // Create or reconfigure the codec to match the size of |frame|.
   if (!codec_ || !frame_size.equals(previous_frame_size)) {
@@ -336,7 +321,8 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 WebrtcVideoEncoderVpx::WebrtcVideoEncoderVpx(bool use_vp9)
     : use_vp9_(use_vp9),
       image_(nullptr, vpx_img_free),
-      bitrate_filter_(kVp8MinimumTargetBitrateKbpsPerMegapixel) {
+      bitrate_filter_(
+          EncoderBitrateFilter::kDefaultMinimumBitrateKbpsPerMegapixel) {
   // Indicates config is still uninitialized.
   config_.g_timebase.den = 0;
 
@@ -387,7 +373,7 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
     SetVp8CodecParameters(&config_, size);
   }
 
-  config_.rc_target_bitrate = kDefaultTargetBitrateKbps;
+  config_.rc_target_bitrate = EncoderBitrateFilter::kDefaultMinimumBitrateKbps;
 
   // Initialize or re-configure the codec with the custom configuration.
   if (!codec_) {
@@ -490,49 +476,23 @@ void WebrtcVideoEncoderVpx::PrepareImage(
   }
 
   // Convert the updated region to YUV ready for encoding.
-  const uint8_t* rgb_data = frame->data();
-  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
-  const int rgb_stride = frame->stride();
-  const int y_stride = image_->stride[0];
-  DCHECK_EQ(image_->stride[1], image_->stride[2]);
-  const int uv_stride = image_->stride[1];
-  uint8_t* y_data = image_->planes[0];
-  uint8_t* u_data = image_->planes[1];
-  uint8_t* v_data = image_->planes[2];
-
-  switch (image_->fmt) {
-    case VPX_IMG_FMT_I444:
-      for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
-           r.Advance()) {
-        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
-        int rgb_offset =
-            rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
-        int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
-                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
-                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
-                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
-                           rect.width(), rect.height());
-      }
-      break;
-    case VPX_IMG_FMT_I420:
-      for (webrtc::DesktopRegion::Iterator r(*updated_region); !r.IsAtEnd();
-           r.Advance()) {
-        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
-        int rgb_offset =
-            rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
-        int y_offset = y_stride * rect.top() + rect.left();
-        int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
-                           UNSAFE_TODO(y_data + y_offset), y_stride,
-                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
-                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
-                           rect.width(), rect.height());
-      }
-      break;
-    default:
-      NOTREACHED();
-  }
+  DCHECK(image_->fmt == VPX_IMG_FMT_I420 || image_->fmt == VPX_IMG_FMT_I444);
+  const bool is_i444 = image_->fmt == VPX_IMG_FMT_I444;
+  const size_t y_rows = image_->d_h;
+  const size_t uv_rows = is_i444 ? image_->d_h : (image_->d_h + 1) / 2;
+  // SAFETY: `image_->planes[i]` is allocated by `vpx_img_alloc` with at least
+  // `image_->stride[i] * rows` bytes for each plane.
+  ConvertDesktopFrameRegionToYuv(
+      *frame, *updated_region, is_i444,
+      UNSAFE_TODO(base::span(image_->planes[0],
+                             static_cast<size_t>(image_->stride[0]) * y_rows)),
+      image_->stride[0],
+      UNSAFE_TODO(base::span(image_->planes[1],
+                             static_cast<size_t>(image_->stride[1]) * uv_rows)),
+      image_->stride[1],
+      UNSAFE_TODO(base::span(image_->planes[2],
+                             static_cast<size_t>(image_->stride[2]) * uv_rows)),
+      image_->stride[2]);
 }
 
 }  // namespace remoting

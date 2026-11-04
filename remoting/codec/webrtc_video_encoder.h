@@ -27,6 +27,13 @@ namespace remoting {
 // interface is asynchronous to enable maximum throughput.
 class WebrtcVideoEncoder {
  public:
+  // Minimum frame dimension (width or height) supported by the encoders.
+  static constexpr int kMinDimension = 32;
+
+  // Default minimum and maximum quantizer bounds for realtime screen encoding.
+  static constexpr int kMinQuantizer = 10;
+  static constexpr int kMaxQuantizer = 50;
+
   struct FrameParams {
     // Target bitrate in kilobits per second.
     int bitrate_kbps = -1;

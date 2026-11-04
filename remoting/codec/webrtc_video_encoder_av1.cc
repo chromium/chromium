@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -16,7 +17,6 @@
 #include "remoting/codec/utils.h"
 #include "third_party/libaom/source/libaom/aom/aom_image.h"
 #include "third_party/libaom/source/libaom/aom/aomcx.h"
-#include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
@@ -34,21 +34,14 @@ void DestroyAomCodecContext(aom_codec_ctx_t* codec_ctx) {
   delete codec_ctx;
 }
 
-// Minimum target bitrate per megapixel.
-// TODO(joedow): Perform some additional testing to see if this needs tweaking.
-constexpr int kAv1MinimumTargetBitrateKbpsPerMegapixel = 2500;
-
-// Use the highest possible encoder speed as it produces frames faster than the
-// lower settings, requires fewer CPU resources, and still has low bitrates.
-constexpr int kAv1DefaultEncoderSpeed = 11;
-
 }  // namespace
 
 WebrtcVideoEncoderAV1::WebrtcVideoEncoderAV1()
     : codec_(nullptr, DestroyAomCodecContext),
       image_(nullptr, aom_img_free),
-      av1_encoder_speed_(kAv1DefaultEncoderSpeed),
-      bitrate_filter_(kAv1MinimumTargetBitrateKbpsPerMegapixel) {
+      av1_encoder_speed_(kDefaultEncoderSpeed),
+      bitrate_filter_(
+          EncoderBitrateFilter::kDefaultMinimumBitrateKbpsPerMegapixel) {
   ConfigureCodecParams();
 }
 WebrtcVideoEncoderAV1::~WebrtcVideoEncoderAV1() = default;
@@ -65,7 +58,8 @@ void WebrtcVideoEncoderAV1::SetEncoderSpeed(int encoder_speed) {
   // realtime encoding with AV1.  This allows for client-driven experimentation,
   // however in practice, a value of 10 or 11 should be chosen as they will give
   // the best performance.
-  int clamped_speed = std::clamp<int>(encoder_speed, 7, 11);
+  int clamped_speed =
+      std::clamp<int>(encoder_speed, kMinEncoderSpeed, kMaxEncoderSpeed);
   if (av1_encoder_speed_ != clamped_speed) {
     VLOG(0) << "Setting AV1 encoder speed to " << clamped_speed;
     av1_encoder_speed_ = clamped_speed;
@@ -270,49 +264,23 @@ void WebrtcVideoEncoderAV1::PrepareImage(
   }
 
   // Convert the updated region to YUV ready for encoding.
-  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
-  const uint8_t* rgb_data = frame->data();
-  const int rgb_stride = frame->stride();
-  const int y_stride = image_->stride[0];
-  DCHECK_EQ(image_->stride[1], image_->stride[2]);
-  const int uv_stride = image_->stride[1];
-  uint8_t* y_data = image_->planes[0];
-  uint8_t* u_data = image_->planes[1];
-  uint8_t* v_data = image_->planes[2];
-
-  switch (image_->fmt) {
-    case AOM_IMG_FMT_I420:
-      for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
-           r.Advance()) {
-        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
-        int rgb_offset = rgb_stride * rect.top() +
-                         rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
-        int y_offset = y_stride * rect.top() + rect.left();
-        int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
-                           UNSAFE_TODO(y_data + y_offset), y_stride,
-                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
-                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
-                           rect.width(), rect.height());
-      }
-      break;
-    case AOM_IMG_FMT_I444:
-      for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
-           r.Advance()) {
-        webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->d_w);
-        int rgb_offset = rgb_stride * rect.top() +
-                         rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
-        int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
-                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
-                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
-                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
-                           rect.width(), rect.height());
-      }
-      break;
-    default:
-      NOTREACHED();
-  }
+  DCHECK(image_->fmt == AOM_IMG_FMT_I420 || image_->fmt == AOM_IMG_FMT_I444);
+  const bool is_i444 = image_->fmt == AOM_IMG_FMT_I444;
+  const size_t y_rows = image_->d_h;
+  const size_t uv_rows = is_i444 ? image_->d_h : (image_->d_h + 1) / 2;
+  // SAFETY: `image_->planes[i]` is allocated by `aom_img_alloc` with at least
+  // `image_->stride[i] * rows` bytes for each plane.
+  ConvertDesktopFrameRegionToYuv(
+      *frame, updated_region, is_i444,
+      UNSAFE_TODO(base::span(image_->planes[0],
+                             static_cast<size_t>(image_->stride[0]) * y_rows)),
+      image_->stride[0],
+      UNSAFE_TODO(base::span(image_->planes[1],
+                             static_cast<size_t>(image_->stride[1]) * uv_rows)),
+      image_->stride[1],
+      UNSAFE_TODO(base::span(image_->planes[2],
+                             static_cast<size_t>(image_->stride[2]) * uv_rows)),
+      image_->stride[2]);
 }
 
 void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
@@ -349,8 +317,8 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   // updates and reducing the number of top-off frames needed to converge to the
   // minimum quantizer (10), below which additional bandwidth yields negligible
   // visual improvement.
-  config_.rc_max_quantizer = 50;
-  config_.rc_min_quantizer = 10;
+  config_.rc_max_quantizer = kMaxQuantizer;
+  config_.rc_min_quantizer = kMinQuantizer;
   config_.rc_dropframe_thresh = 0;
   config_.rc_undershoot_pct = 50;
   config_.rc_overshoot_pct = 50;
@@ -358,7 +326,7 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   config_.rc_buf_optimal_sz = 600;
   config_.rc_buf_sz = 1000;
   config_.rc_end_usage = AOM_CBR;
-  config_.rc_target_bitrate = 1024;  // 1024 Kbps = 1Mbps.
+  config_.rc_target_bitrate = EncoderBitrateFilter::kDefaultMinimumBitrateKbps;
 }
 
 void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
@@ -415,8 +383,8 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     return;
   }
 
-  DCHECK_GE(frame_size.width(), 32);
-  DCHECK_GE(frame_size.height(), 32);
+  DCHECK_GE(frame_size.width(), kMinDimension);
+  DCHECK_GE(frame_size.height(), kMinDimension);
 
   // Create or reconfigure the codec to match the size of |frame|.
   if (!codec_ || !frame_size.equals(previous_frame_size)) {

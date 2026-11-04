@@ -37,6 +37,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "remoting/codec/encoder_bitrate_filter.h"
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/test/frame_generator/differ_frame_generator.h"
@@ -51,20 +52,6 @@ namespace {
 
 constexpr int kDefaultFrames = 100;
 constexpr double kDefaultFps = 30.0;
-constexpr int kDefaultTargetBitrateKbpsPerMegapixel = 2500;
-constexpr int kMinimumDefaultBitrateKbps = 1000;
-constexpr int kMinDimension = 32;
-constexpr int kMinQuantizer = 10;
-
-constexpr int kAv1DefaultEncoderSpeed = 11;
-constexpr int kAv1MinEncoderSpeed = 7;
-constexpr int kAv1MaxEncoderSpeed = 11;
-
-constexpr int kVp9DefaultEncoderSpeed = 9;
-constexpr int kVp9MinEncoderSpeed = 5;
-constexpr int kVp9MaxEncoderSpeed = 9;
-
-constexpr int kVp8FixedEncoderSpeed = 16;
 
 enum class Codec {
   kAv1,
@@ -87,7 +74,7 @@ struct EncoderConfig {
   Codec codec = Codec::kAv1;
   Profile profile = Profile::k0;
   ColorSpace color_space = ColorSpace::kI420;
-  int encoder_speed = kAv1DefaultEncoderSpeed;
+  int encoder_speed = WebrtcVideoEncoderAV1::kDefaultEncoderSpeed;
   bool use_active_map = false;
   int bitrate_kbps = 0;
 };
@@ -169,24 +156,18 @@ std::string DefaultEncoderName(const EncoderConfig& config) {
 
 // Returns the target bitrate (in kbps) for a benchmark run. If an explicit
 // bitrate was configured (via the top-level or per-encoder JSON "bitrate_kbps"
-// field), that value is used directly. Otherwise, the default target bitrate is
-// scaled linearly with the frame resolution at 2500 kbps per megapixel (e.g.,
-// ~5.18 Mbps for 1080p, ~9.22 Mbps for 1440p, ~20.74 Mbps for 4K), with a floor
-// of 1000 kbps for sub-megapixel resolutions. This matches the 2500 kbps/MP
-// density used by WebrtcVideoEncoderVpx so that multi-resolution runs (1080p,
-// 1440p, 4K) maintain a consistent bits-per-pixel budget rather than starving
-// higher resolutions at a fixed 1080p bitrate.
+// field), that value is used directly. Otherwise, delegates to
+// EncoderBitrateFilter to compute the resolution-scaled minimum target bitrate
+// (2500 kbps per megapixel with a 1000 kbps floor).
 int GetTargetBitrateKbps(int configured_bitrate_kbps,
                          const webrtc::DesktopSize& size) {
   if (configured_bitrate_kbps > 0) {
     return configured_bitrate_kbps;
   }
-  constexpr int64_t kPixelsPerMegapixel = 1000000;
-  int64_t pixels =
-      static_cast<int64_t>(size.width()) * static_cast<int64_t>(size.height());
-  int scaled_bitrate_kbps = static_cast<int>(
-      (pixels * kDefaultTargetBitrateKbpsPerMegapixel) / kPixelsPerMegapixel);
-  return std::max(kMinimumDefaultBitrateKbps, scaled_bitrate_kbps);
+  EncoderBitrateFilter bitrate_filter(
+      EncoderBitrateFilter::kDefaultMinimumBitrateKbpsPerMegapixel);
+  bitrate_filter.SetFrameSize(size.width(), size.height());
+  return bitrate_filter.GetTargetBitrateKbps();
 }
 
 std::unique_ptr<WebrtcVideoEncoder> CreateEncoder(const EncoderConfig& config) {
@@ -506,7 +487,7 @@ class EncoderBenchmark {
       metric.quantizer = frame->quantizer;
       metric.key_frame = frame->key_frame;
       frame_metrics_.push_back(metric);
-      top_off_active_ = (frame->quantizer > kMinQuantizer);
+      top_off_active_ = (frame->quantizer > WebrtcVideoEncoder::kMinQuantizer);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
     }
@@ -824,11 +805,12 @@ bool ParseSizeWxH(std::string_view size_str, webrtc::DesktopSize& out_size) {
   int width = 0;
   int height = 0;
   if (!base::StringToInt(dims[0], &width) ||
-      !base::StringToInt(dims[1], &height) || width < kMinDimension ||
-      height < kMinDimension) {
+      !base::StringToInt(dims[1], &height) ||
+      width < WebrtcVideoEncoder::kMinDimension ||
+      height < WebrtcVideoEncoder::kMinDimension) {
     LOG(ERROR) << "Invalid size dimensions '" << size_str
-               << "'. Width and height must be integers >= " << kMinDimension
-               << ".";
+               << "'. Width and height must be integers >= "
+               << WebrtcVideoEncoder::kMinDimension << ".";
     return false;
   }
   out_size = webrtc::DesktopSize(width, height);
@@ -895,18 +877,22 @@ bool ParseEncoderConfig(const base::DictValue& dict,
     }
     int speed = speed_value->GetInt();
     if (out_config.codec == Codec::kAv1) {
-      if (speed < kAv1MinEncoderSpeed || speed > kAv1MaxEncoderSpeed) {
+      if (speed < WebrtcVideoEncoderAV1::kMinEncoderSpeed ||
+          speed > WebrtcVideoEncoderAV1::kMaxEncoderSpeed) {
         LOG(ERROR) << "AV1 encoder_speed must be between "
-                   << kAv1MinEncoderSpeed << " and " << kAv1MaxEncoderSpeed
-                   << " (got " << speed << ").";
+                   << WebrtcVideoEncoderAV1::kMinEncoderSpeed << " and "
+                   << WebrtcVideoEncoderAV1::kMaxEncoderSpeed << " (got "
+                   << speed << ").";
         return false;
       }
       out_config.encoder_speed = speed;
     } else if (out_config.codec == Codec::kVp9) {
-      if (speed < kVp9MinEncoderSpeed || speed > kVp9MaxEncoderSpeed) {
+      if (speed < WebrtcVideoEncoderVpx::kVp9MinEncoderSpeed ||
+          speed > WebrtcVideoEncoderVpx::kVp9MaxEncoderSpeed) {
         LOG(ERROR) << "VP9 encoder_speed must be between "
-                   << kVp9MinEncoderSpeed << " and " << kVp9MaxEncoderSpeed
-                   << " (got " << speed << ").";
+                   << WebrtcVideoEncoderVpx::kVp9MinEncoderSpeed << " and "
+                   << WebrtcVideoEncoderVpx::kVp9MaxEncoderSpeed << " (got "
+                   << speed << ").";
         return false;
       }
       out_config.encoder_speed = speed;
@@ -917,13 +903,15 @@ bool ParseEncoderConfig(const base::DictValue& dict,
   } else {
     switch (out_config.codec) {
       case Codec::kAv1:
-        out_config.encoder_speed = kAv1DefaultEncoderSpeed;
+        out_config.encoder_speed = WebrtcVideoEncoderAV1::kDefaultEncoderSpeed;
         break;
       case Codec::kVp9:
-        out_config.encoder_speed = kVp9DefaultEncoderSpeed;
+        out_config.encoder_speed =
+            WebrtcVideoEncoderVpx::kVp9DefaultEncoderSpeed;
         break;
       case Codec::kVp8:
-        out_config.encoder_speed = kVp8FixedEncoderSpeed;
+        out_config.encoder_speed =
+            WebrtcVideoEncoderVpx::kVp8DefaultEncoderSpeed;
         break;
     }
   }

@@ -80,13 +80,17 @@ if (!is_component_build && (is_win || is_linux)) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "encoder_bitrate_filter_unittest.cc" ]
+  sources = [
+    "encoder_bitrate_filter_unittest.cc",
+    "utils_unittest.cc",
+  ]
 
   deps = [
     ":encoder",
     "//base",
     "//remoting/base:codec_utils",
     "//testing/gtest",
+    "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",
   ]

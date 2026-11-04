@@ -25,6 +25,10 @@ namespace remoting {
 // real-time screen sharing.
 class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
  public:
+  static constexpr int kMinEncoderSpeed = 7;
+  static constexpr int kMaxEncoderSpeed = 11;
+  static constexpr int kDefaultEncoderSpeed = 11;
+
   WebrtcVideoEncoderAV1();
   WebrtcVideoEncoderAV1(const WebrtcVideoEncoderAV1&) = delete;
   WebrtcVideoEncoderAV1& operator=(const WebrtcVideoEncoderAV1&) = delete;

@@ -30,6 +30,12 @@ namespace remoting {
 // once the old implementation is no longer in use.
 class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
  public:
+  // Minimum supported VP9 encode speed (also used for lossless color encode).
+  static constexpr int kVp9MinEncoderSpeed = 5;
+  static constexpr int kVp9DefaultEncoderSpeed = 9;
+  static constexpr int kVp9MaxEncoderSpeed = 9;
+  static constexpr int kVp8DefaultEncoderSpeed = 16;
+
   // Creates encoder for the specified protocol.
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP8();
   static std::unique_ptr<WebrtcVideoEncoder> CreateForVP9();
