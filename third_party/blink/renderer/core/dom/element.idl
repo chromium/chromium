@@ -82,9 +82,9 @@ dictionary ParseHTMLUnsafeOptions {
     [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
     [PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
-    [RaisesException] Element? closest(DOMString selectors);
-    [RaisesException] boolean matches(DOMString selectors);
-    [RaisesException, ImplementedAs=matches, MeasureAs=ElementPrefixedMatchesSelector] boolean webkitMatchesSelector(DOMString selectors); // historical alias of .matches
+    [Affects=Nothing, RaisesException] Element? closest(DOMString selectors);
+    [Affects=Nothing, RaisesException] boolean matches(DOMString selectors);
+    [Affects=Nothing, RaisesException, ImplementedAs=matches, MeasureAs=ElementPrefixedMatchesSelector] boolean webkitMatchesSelector(DOMString selectors); // historical alias of .matches
 
     [Affects=Nothing] HTMLCollection getElementsByTagName(DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);

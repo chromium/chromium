@@ -102,6 +102,9 @@
   await checkHasNoSideEffect(`divNoAttrs.hasAttributeNS(namespace)`);
 
   await checkHasNoSideEffect(`div.hasAttributes()`);
+  await checkHasNoSideEffect(`div.matches('div')`);
+  await checkHasNoSideEffect(`div.webkitMatchesSelector('div')`);
+  await checkHasNoSideEffect(`spanWithClass.closest('div')`);
 
   // Node
   var testNodes = ['div', 'document', 'textNode'];

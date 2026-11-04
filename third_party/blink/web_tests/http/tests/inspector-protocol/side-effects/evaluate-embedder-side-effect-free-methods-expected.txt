@@ -91,6 +91,12 @@ Expression `divNoAttrs.hasAttributeNS(namespace)`
 has side effect: false, expected: false
 Expression `div.hasAttributes()`
 has side effect: false, expected: false
+Expression `div.matches('div')`
+has side effect: false, expected: false
+Expression `div.webkitMatchesSelector('div')`
+has side effect: false, expected: false
+Expression `spanWithClass.closest('div')`
+has side effect: false, expected: false
 Expression `div.contains(textNode)`
 has side effect: false, expected: false
 Expression `div.contains()`
