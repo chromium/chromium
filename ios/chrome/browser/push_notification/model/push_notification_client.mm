@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -62,8 +61,6 @@ enum class IOSProfileLocalNotificationErrorCode {
 // Creates a standardized `NSError` for Profile-based notification scheduling
 // failures due to an invalid or missing Profile.
 NSError* CreateInvalidProfileError() {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-
   NSDictionary* user_info = @{
     NSLocalizedDescriptionKey : @"Invalid Profile provided when scheduling "
                                 @"Profile-based local notification.",
@@ -79,8 +76,6 @@ NSError* CreateInvalidProfileError() {
 // Creates a standardized `NSError` for failures to create a
 // `UNNotificationRequest` for a Profile-based notification.
 NSError* CreateRequestCreationError() {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-
   NSDictionary* userInfo = @{
     NSLocalizedDescriptionKey : @"Failed to create the UNNotificationRequest "
                                 @"for Profile-based local notification.",
@@ -97,7 +92,6 @@ NSError* CreateRequestCreationError() {
 // notification content's `userInfo` dictionary.
 void AddProfileNameToNotificationContent(UNMutableNotificationContent* content,
                                          std::string_view profile_name) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
   CHECK(content);
   CHECK(!profile_name.empty());
 
@@ -150,10 +144,7 @@ PushNotificationClient::PushNotificationClient(
     : client_id_(client_id),
       client_scope_(PushNotificationClientScope::kPerProfile),
       profile_(profile->AsWeakPtr()) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-  CHECK(profile_.get())
-      << "Profile must be provided for kPerProfile client "
-         "when IsMultiProfilePushNotificationHandlingEnabled() returns YES";
+  CHECK(profile_.get()) << "Profile must be provided for kPerProfile client";
   // Ensure this Profile is not an off-the-record Profile.
   // Off-the-record (incognito) Profiles have an empty Profile name.
   CHECK(!profile->GetProfileName().empty())
@@ -188,9 +179,6 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
     return;
   }
 
-  // TODO(crbug.com/41497027): The notifications should probbaly be linked
-  // to a specific profile, and thus this should check that the code here
-  // use the correct profile.
   Browser* browser = GetActiveForegroundBrowser();
   CHECK(browser);
 
@@ -223,20 +211,21 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 }
 
 Browser* PushNotificationClient::GetActiveForegroundBrowser() const {
-  if (!IsMultiProfilePushNotificationHandlingEnabled() ||
-      client_scope_ != PushNotificationClientScope::kPerProfile) {
-    for (ProfileIOS* profile :
-         GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-      if (Browser* browser =
-              GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
-        return browser;
-      }
-    }
-
-    return nullptr;
+  if (client_scope_ == PushNotificationClientScope::kPerProfile) {
+    return GetSceneLevelForegroundActiveBrowserForProfile(profile_.get());
   }
 
-  return GetSceneLevelForegroundActiveBrowserForProfile(profile_.get());
+  // App-wide clients are not tied to a Profile, so any foreground active
+  // Browser is suitable.
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    if (Browser* browser =
+            GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
+      return browser;
+    }
+  }
+
+  return nullptr;
 }
 
 ProfileIOS* PushNotificationClient::GetProfile() const {
@@ -297,8 +286,6 @@ void PushNotificationClient::ScheduleProfileNotification(
     ScheduledNotificationRequest request,
     base::OnceCallback<void(NSError*)> completion,
     std::string_view profile_name) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-
   if (profile_name.empty()) {
     std::move(completion).Run(CreateInvalidProfileError());
 
@@ -405,8 +392,6 @@ UNNotificationRequest* PushNotificationClient::CreateRequest(
 UNNotificationRequest* PushNotificationClient::CreateRequestForProfile(
     ScheduledNotificationRequest request,
     std::string_view profile_name) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-
   if (profile_name.empty()) {
     LogProfileRequestCreationFailure(
         client_id_,

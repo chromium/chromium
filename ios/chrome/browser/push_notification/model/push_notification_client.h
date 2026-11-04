@@ -44,9 +44,7 @@ class PushNotificationClient {
  public:
   // Constructor for `PushNotificationClient`s that are scoped per-Profile.
   // This constructor should be used for clients whose `scope` is implicitly
-  // `PushNotificationClientScope::kPerProfile`. It is intended for use when
-  // multi-Profile push notification handling is enabled (i.e.,
-  // `IsMultiProfilePushNotificationHandlingEnabled()` returns YES).
+  // `PushNotificationClientScope::kPerProfile`.
   PushNotificationClient(PushNotificationClientId client_id,
                          ProfileIOS* profile);
   // Constructor for `PushNotificationClient`s that are app-scoped (i.e., not
@@ -101,10 +99,8 @@ class PushNotificationClient {
   // Returns the feature's `client_scope_`.
   PushNotificationClientScope GetClientScope() const;
 
-  // Loads a url in a new tab once an active browser is ready.
-  // TODO(crbug.com/41497027): This API should includes an identifier of the
-  // Profile that should be used to open the URL which should come from the
-  // notification (maybe by including the gaia id of the associated profile).
+  // Loads a url in a new tab once an active browser is ready. For
+  // `kPerProfile` clients, the Browser belongs to the client's Profile.
   void LoadUrlInNewTab(const GURL& url);
 
   // Loads a url in a new tab once an active browser is ready. Runs `callback`
@@ -112,10 +108,8 @@ class PushNotificationClient {
   void LoadUrlInNewTab(const GURL& url,
                        base::OnceCallback<void(Browser*)> callback);
 
-  // Loads the feedback view controller once an active browser is ready.
-  // TODO(crbug.com/41497027): This API should includes an identifier of the
-  // Profile that should be used to open the URL which should come from the
-  // notification (maybe by including the gaia id of the associated profile).
+  // Loads the feedback view controller once an active browser is ready. For
+  // `kPerProfile` clients, the Browser belongs to the client's Profile.
   void LoadFeedbackWithPayloadAndClientId(
       NSDictionary<NSString*, NSString*>* data,
       PushNotificationClientId clientId);
@@ -130,8 +124,6 @@ class PushNotificationClient {
   // metadata, ensuring it's routed to the correct notification client during
   // interactions. `profile_name` must not be empty. Calls `completion` upon
   // finish.
-  //
-  // `IsMultiProfilePushNotificationHandlingEnabled()` must return YES.
   void ScheduleProfileNotification(
       ScheduledNotificationRequest request,
       base::OnceCallback<void(NSError*)> completion,
@@ -225,8 +217,7 @@ class PushNotificationClient {
 
   // Creates a `UNNotificationRequest` specific to the given `profile_name`.
   // Uses the provided `request.content` and triggers after
-  // `request.time_interval`. Requires multi-profile handling to be enabled
-  // (`IsMultiProfilePushNotificationHandlingEnabled()` must return YES).
+  // `request.time_interval`.
   UNNotificationRequest* CreateRequestForProfile(
       ScheduledNotificationRequest request,
       std::string_view profile_name);

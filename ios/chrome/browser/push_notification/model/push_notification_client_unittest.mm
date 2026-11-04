@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_push_notification_client.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -42,14 +41,9 @@ class PushNotificationClientTest : public PlatformTest {
         [UNUserNotificationCenter class], @selector(currentNotificationCenter),
         swizzle_block);
 
-    if (IsMultiProfilePushNotificationHandlingEnabled()) {
-      ProfileIOS* profile =
-          profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
-
-      client_ = std::make_unique<SendTabPushNotificationClient>(profile);
-    } else {
-      client_ = std::make_unique<SendTabPushNotificationClient>();
-    }
+    ProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    client_ = std::make_unique<SendTabPushNotificationClient>(profile);
   }
 
   // Stubs the notification center's completion callback for
