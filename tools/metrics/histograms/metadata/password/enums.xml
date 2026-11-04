@@ -1537,6 +1537,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Never save for this site"/>
   <int value="6" label="Key retrieval failed or canceled"/>
   <int value="7" label="Tab destroyed before resolution"/>
+  <int value="8"
+      label="Trusted vault error resolution abandoned (navigation, new
+             password submission, account change)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:SaveWithTrustedVaultErrorOutcome) -->
@@ -1585,6 +1588,9 @@ chromium-metrics-reviews@google.com.
       label="Clicked 'About password change' link in the password change
              bubble."/>
   <int value="16" label="Clicked 'Not now' in the save password bubble."/>
+  <int value="17"
+      label="Clicked 'Continue' to resolve an error blocking saving in the
+             save/update password bubble"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/password_manager/core/browser/password_manager_metrics_util.h:UIDismissalReason) -->

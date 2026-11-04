@@ -3869,17 +3869,22 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Records the outcome of the password save prompt when saving is blocked by a
-    trusted vault error. Recorded when the message times out, when the user
-    dismisses the prompt, when the user selects never save, when device lock UI
-    is canceled, when key retrieval fails or is canceled, when the tab is
-    destroyed before resolution, when a new store error occurs, or when key
-    retrieval completes and the password is saved successfully.
+    trusted vault error.
 
-    Note: When key retrieval fails or is canceled, a reprompt is shown to allow
-    the user to retry. Therefore, 'Key retrieval failed or canceled' can be
-    recorded alongside a subsequent outcome (such as reprompt dismissal, tab
-    destruction, or successful save upon retry) if the flow continues. A single
-    dismissal event never logs multiple outcomes. Logged on Android only.
+    On Android, recorded when the message times out, when the user dismisses the
+    prompt, when the user selects never save, when device lock UI is canceled,
+    when key retrieval fails or is canceled, when the tab is destroyed before
+    resolution, when a new store error occurs, or when key retrieval completes
+    and the password is saved successfully. When key retrieval fails or is
+    canceled, a reprompt is shown to allow the user to retry; therefore, 'Key
+    retrieval failed or canceled' can be recorded alongside a subsequent outcome
+    (such as reprompt dismissal, tab destruction, or successful save upon retry)
+    if the flow continues.
+
+    On desktop, pre-recovery bubble dismissals are recorded in
+    PasswordManager.SaveUIDismissalReason.TrustedVaultError, and this histogram
+    is recorded once per 'Continue' click when the pending error-resolution save
+    concludes.
   </summary>
 </histogram>
 

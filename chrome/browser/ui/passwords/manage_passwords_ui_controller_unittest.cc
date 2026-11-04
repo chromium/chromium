@@ -380,28 +380,6 @@ class ManagePasswordsUIControllerTest : public ChromeRenderViewHostTestHarness {
         ManagePasswordsUIController::FromWebContents(web_contents()));
   }
 
-  void SetUpPendingPasswordBlockedByTrustedVault() {
-    std::vector<PasswordForm> best_matches;
-    auto test_form_manager =
-        CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-    EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-    EXPECT_CALL(*test_form_manager,
-                GetPasswordStoreForSaving(Eq(submitted_form())))
-        .WillRepeatedly(
-            Return(password_manager::PasswordForm::Store::kProfileStore));
-    EXPECT_CALL(*test_form_manager, Save()).Times(0);
-
-    EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
-        .WillRepeatedly(
-            Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
-
-    controller()->OnPasswordSubmitted(std::move(test_form_manager));
-    controller()->SavePasswordAfterTrustedVaultErrorResolution(
-        submitted_form().username_value, submitted_form().password_value);
-    ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-              controller()->GetState());
-  }
-
   void WaitForPasswordStore();
 
   std::vector<StoredCredential> insecure_storage_;
@@ -607,39 +585,58 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSaved) {
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
   histogram_tester.ExpectTotalCount(
       "PasswordManager.PasswordChangeRecoveryFlow", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
 }
+
+class ManagePasswordsUIControllerTrustedVaultErrorTest
+    : public ManagePasswordsUIControllerTest {
+ protected:
+  MockPasswordFormManagerForUI& SetUpPendingPasswordBlockedByTrustedVault(
+      bool expect_save = false,
+      testing::Cardinality expected_ui_updates = AtLeast(1)) {
+    std::vector<PasswordForm> best_matches;
+    auto test_form_manager =
+        CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+    MockPasswordFormManagerForUI* raw_form_manager = test_form_manager.get();
+    EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility())
+        .Times(expected_ui_updates);
+    EXPECT_CALL(*test_form_manager,
+                GetPasswordStoreForSaving(Eq(submitted_form())))
+        .WillRepeatedly(
+            Return(password_manager::PasswordForm::Store::kProfileStore));
+    EXPECT_CALL(*test_form_manager, Save()).Times(expect_save ? 1 : 0);
+    // Simulating the trusted vault error state that prevents from saving the
+    // password.
+    EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+        .WillRepeatedly(
+            Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+    controller()->OnPasswordSubmitted(std::move(test_form_manager));
+    EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+              controller()->GetState());
+
+    // This method is being called when the user presses the "Continue" button
+    // on the password saving bubble.
+    controller()->SavePasswordAfterTrustedVaultErrorResolution(
+        submitted_form().username_value, submitted_form().password_value);
+    EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+              controller()->GetState());
+    return *raw_form_manager;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+};
 
 // If the user started the trusted vault error resolution flow, we must
 // automatically save the password after the error is fixed.
-TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
-
-  std::vector<PasswordForm> best_matches;
-  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
-      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
-  EXPECT_CALL(*test_form_manager,
-              GetPasswordStoreForSaving(Eq(submitted_form())))
-      .WillRepeatedly(
-          Return(password_manager::PasswordForm::Store::kProfileStore));
-  EXPECT_CALL(*test_form_manager, Save());
-  // Simulating the trusted vault error state that prevents from saving the
-  // password.
-  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
-      .WillRepeatedly(
-          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
-
-  controller()->OnPasswordSubmitted(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
-
-  // This method is being called when the user presses the "Continue" button on
-  // the password saving bubble.
-  controller()->SavePasswordAfterTrustedVaultErrorResolution(
-      submitted_form().username_value, submitted_form().password_value);
-  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
-            controller()->GetState());
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       PasswordSavedAfterErrorResolution) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault(
+      /*expect_save=*/true, /*expected_ui_updates=*/Exactly(2));
 
   // Simulate the situation when `OnErrorStateChanged` is being called but the
   // error state didn't change. In this case the password should remain in the
@@ -649,6 +646,8 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
 
   // Simulate the situation when `OnErrorStateChanged` is being called and the
   // trusted vault error has been fixed. In this case the password should be
@@ -661,13 +660,23 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedAfterErrorResolution) {
   WaitForPasswordStore();
   EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
   EXPECT_FALSE(controller()->IsShowingBubble());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+
+  // Subsequent `Cleanup()` on tab destruction must not log a second outcome.
+  DeleteContents();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
 }
 
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        PasswordSavedWithEditsAfterTrustedVaultErrorResolution) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
-
   const std::u16string kEditedUsername = u"edited_username";
   const password_manager::PasswordString kEditedPassword(u"edited_password");
 
@@ -705,10 +714,9 @@ TEST_F(ManagePasswordsUIControllerTest,
 // the profile menu notification, or by performing the trusted vault encryption
 // reset in a different browser) - we must not automatically save the password.
 // The UI should remain in PENDING_PASSWORD_STATE and Save() must not be called.
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        PasswordBubbleClosedAfterErrorResolutionElsewhere) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
+  base::HistogramTester histogram_tester;
 
   std::vector<PasswordForm> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
@@ -745,13 +753,13 @@ TEST_F(ManagePasswordsUIControllerTest,
   // We expect the pending state in this case.
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+  DeleteContents();
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
 }
 
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        OnErrorStateChangedIgnoresNonRelevantStore) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
-
   std::vector<PasswordForm> best_matches;
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
       CreateFormManagerWithBestMatches(best_matches, &submitted_form());
@@ -784,10 +792,9 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 }
 
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        PasswordNotSavedIfUserSignsOutAfterStartingErrorResolution) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
+  base::HistogramTester histogram_tester;
   SetUpPendingPasswordBlockedByTrustedVault();
 
   // User signs out instead of unlocking.
@@ -803,12 +810,16 @@ TEST_F(ManagePasswordsUIControllerTest,
   // Must remain in pending state and not automatically saved.
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
 }
 
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        PasswordNotSavedIfUserDisablesPasswordSyncAfterStartingErrorResolution) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
+  base::HistogramTester histogram_tester;
   SetUpPendingPasswordBlockedByTrustedVault();
 
   // User turns off password sync in settings instead of unlocking.
@@ -823,12 +834,16 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
 }
 
-TEST_F(ManagePasswordsUIControllerTest,
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
        PasswordNotSavedIfUserSwitchesAccountAfterStartingErrorResolution) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::kPasswordSaveInContextErrorResolution};
+  base::HistogramTester histogram_tester;
   SetUpPendingPasswordBlockedByTrustedVault();
 
   // User switches account instead of unlocking.
@@ -847,6 +862,188 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
             controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SavePasswordAfterTrustedVaultErrorResolutionImmediateSaveLogsOnce) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<PasswordForm> best_matches;
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*test_form_manager, Save());
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+
+  // If the trusted vault error was already resolved by the time "Continue" is
+  // clicked, the password is saved immediately and `kSavedSuccessfully` is
+  // logged once.
+  controller()->SavePasswordAfterTrustedVaultErrorResolution(
+      submitted_form().username_value, submitted_form().password_value);
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       PendingSaveSurvivesOtherStoreErrorAndLogsSavedOnce) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault(/*expect_save=*/true);
+
+  // An intermediate store error other than `kNoError` keeps the save pending
+  // without logging an outcome.
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kSignInNeeded);
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome", 0);
+
+  // When the error later clears to `kNoError`, the password is saved and
+  // `kSavedSuccessfully` is logged once.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+  WaitForPasswordStore();
+  EXPECT_EQ(password_manager::ui::MANAGE_STATE, controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SaveWithTrustedVaultErrorOutcomeNeverForThisSite) {
+  base::HistogramTester histogram_tester;
+  MockPasswordFormManagerForUI& test_form_manager =
+      SetUpPendingPasswordBlockedByTrustedVault();
+  EXPECT_CALL(test_form_manager, OnNeverClicked());
+
+  controller()->NeverSavePassword();
+  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kNeverForThisSite,
+      1);
+
+  // Subsequent error resolution or tab destruction must not save or log a
+  // second outcome.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+  DeleteContents();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kNeverForThisSite,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SaveWithTrustedVaultErrorOutcomeTabDestroyedOnCleanup) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  DeleteContents();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kTabDestroyed,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SaveWithTrustedVaultErrorOutcomeAbandonedOnNavigation) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  controller()->OnBubbleHidden();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             GURL(kExampleUrl));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SaveWithTrustedVaultErrorOutcomeAbandonedOnNewPasswordSubmitted) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  std::vector<PasswordForm> best_matches;
+  std::unique_ptr<MockPasswordFormManagerForUI> second_form_manager =
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+  controller()->OnPasswordSubmitted(std::move(second_form_manager));
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
+}
+
+TEST_F(ManagePasswordsUIControllerTrustedVaultErrorTest,
+       SaveWithTrustedVaultErrorOutcomeAbandonedOnManualFallbackForSaving) {
+  base::HistogramTester histogram_tester;
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  std::vector<PasswordForm> best_matches;
+  std::unique_ptr<MockPasswordFormManagerForUI> fallback_form_manager =
+      CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+  EXPECT_CALL(*fallback_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kProfileStore));
+  EXPECT_CALL(*fallback_form_manager, Save()).Times(0);
+
+  controller()->OnShowManualFallbackForSaving(std::move(fallback_form_manager),
+                                              /*has_generated_password=*/false,
+                                              /*is_update=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
+
+  // When the trusted vault error later resolves, the unsubmitted manual
+  // fallback form must not be auto-saved and no second outcome is logged.
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kErrorResolutionAbandoned,
+      1);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {

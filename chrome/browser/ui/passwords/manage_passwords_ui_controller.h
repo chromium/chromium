@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
@@ -366,8 +367,13 @@ class ManagePasswordsUIController
   bool IsAutoSaveAfterErrorResolutionValid() const;
 
   // Resets the state tracking automatic password saving after trusted vault
-  // error resolution.
-  void ResetAutoSaveAfterErrorResolution();
+  // error resolution and, if `outcome` is provided and an error-resolution save
+  // was pending, records `*outcome` to
+  // `PasswordManager.SaveWithTrustedVaultError.Outcome`.
+  void ResetAutoSaveAfterErrorResolution(
+      std::optional<
+          password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome>
+          outcome);
 
   // Completes saving the password after the trusted vault error is resolved.
   void CompleteSavePasswordAfterTrustedVaultErrorResolution();

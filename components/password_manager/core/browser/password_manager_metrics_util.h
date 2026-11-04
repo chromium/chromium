@@ -98,6 +98,9 @@ enum UIDismissalReason {
   CLICKED_GOT_IT = 14,
   CLICKED_ABOUT_PASSWORD_CHANGE = 15,
   CLICKED_NOT_NOW = 16,
+  // The user clicked the button that starts resolving the error blocking
+  // saving (e.g. "Continue" for a trusted vault error).
+  CLICKED_RESOLVE_ERROR = 17,
   NUM_UI_RESPONSES,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerUIDismissalReason)
@@ -422,7 +425,11 @@ enum class SaveWithTrustedVaultErrorOutcome {
   kNeverForThisSite = 5,
   kKeyRetrievalFailedOrCanceled = 6,
   kTabDestroyed = 7,
-  kMaxValue = kTabDestroyed,
+  // The pending save after starting trusted vault error resolution was
+  // abandoned before the error was resolved (e.g. primary-page navigation, new
+  // password submission, or account/sync state change).
+  kErrorResolutionAbandoned = 8,
+  kMaxValue = kErrorResolutionAbandoned,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:SaveWithTrustedVaultErrorOutcome)
 
@@ -706,7 +713,7 @@ void LogSaveUIDismissalReason(
     std::optional<ActionableError> saving_blocked_error);
 
 // Log the outcome of saving a password when saving is blocked by a trusted
-// vault error (logged on Android only).
+// vault error (logged on Android and Desktop).
 void LogSaveWithTrustedVaultErrorOutcome(
     SaveWithTrustedVaultErrorOutcome outcome);
 

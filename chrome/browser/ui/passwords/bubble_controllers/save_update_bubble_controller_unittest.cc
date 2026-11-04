@@ -878,11 +878,14 @@ TEST_F(SaveUpdateBubbleControllerTest,
   PretendPasswordWaiting();
   EXPECT_CALL(*delegate(), IsSavingBlockedByTrustedVaultError())
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_smart_bubble_stats_store(), AddSiteStats).Times(0);
+  EXPECT_CALL(*delegate(), OnNoInteraction()).Times(0);
 
-  controller()->OnSaveClicked();
+  controller()->OnTrustedVaultUnlockClicked();
   DestroyModelAndVerifyControllerExpectations();
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SaveUIDismissalReason.TrustedVaultError",
-      static_cast<int>(password_manager::metrics_util::CLICKED_ACCEPT), 1);
+      static_cast<int>(password_manager::metrics_util::CLICKED_RESOLVE_ERROR),
+      1);
 }
