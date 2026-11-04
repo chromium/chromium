@@ -23,7 +23,6 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
@@ -107,6 +106,16 @@ void PartnerBookmarksReader::PartnerBookmarksCreationComplete(JNIEnv* env) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
       std::move(wip_partner_bookmarks_root_));
+  wip_next_available_id_ = 0;
+}
+
+void PartnerBookmarksReader::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+void PartnerBookmarksReader::Reset(JNIEnv* env) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  wip_partner_bookmarks_root_.reset();
   wip_next_available_id_ = 0;
 }
 
@@ -372,16 +381,16 @@ static void JNI_PartnerBookmarksReader_DisablePartnerBookmarksEditing(
   PartnerBookmarksShim::DisablePartnerBookmarksEditing();
 }
 
-static jni_zero::JniUniquePtr<PartnerBookmarksReader>
-JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
   PartnerBookmarksShim* partner_bookmarks_shim =
       PartnerBookmarksShim::BuildForBrowserContext(profile);
   if (!partner_bookmarks_shim) {
-    return nullptr;
+    return 0;
   }
 
-  return jni_zero::MakeUnique<PartnerBookmarksReader>(partner_bookmarks_shim,
-                                                      profile);
+  PartnerBookmarksReader* reader =
+      new PartnerBookmarksReader(partner_bookmarks_shim, profile);
+  return reinterpret_cast<intptr_t>(reader);
 }
 
 static std::string JNI_PartnerBookmarksReader_GetNativeUrlString(

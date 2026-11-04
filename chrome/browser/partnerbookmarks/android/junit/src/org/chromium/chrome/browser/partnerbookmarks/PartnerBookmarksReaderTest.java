@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.partnerbookmarks;
 
 import android.content.Context;
 
-import org.jni_zero.JniUniquePtr;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,20 +31,12 @@ public class PartnerBookmarksReaderTest {
     @Mock private PartnerBrowserCustomizations mBrowserCustomizations;
     @Captor private ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
 
-    private JniUniquePtr<PartnerBookmarksReader.NativePartnerBookmarksReader> mNativeReader;
-
     @Before
     public void setUp() {
         PartnerBookmarksReaderJni.setInstanceForTesting(mJniMock);
         Mockito.doNothing()
                 .when(mBrowserCustomizations)
                 .setOnInitializeAsyncFinished(mBrowserCustomizationsInitCallback.capture());
-        mNativeReader = JniUniquePtr.createForTesting(1L);
-    }
-
-    @After
-    public void tearDown() {
-        mNativeReader.destroy();
     }
 
     /**
@@ -62,7 +52,11 @@ public class PartnerBookmarksReaderTest {
         Mockito.when(mBrowserCustomizations.isInitialized())
                 .thenReturn(browserCustomizationsInitialized);
         return new PartnerBookmarksReader(
-                mContextMock, mBrowserCustomizations, hasNullNativePointer ? null : mNativeReader);
+                mContextMock,
+                mBrowserCustomizations,
+                hasNullNativePointer
+                        ? PartnerBookmarksReader.NULL_NATIVE_POINTER
+                        : PartnerBookmarksReader.NULL_NATIVE_POINTER + 1);
     }
 
     @Test
@@ -121,7 +115,8 @@ public class PartnerBookmarksReaderTest {
                         /* hasNullNativePointer= */ false);
         reader.onBookmarksRead();
 
-        Mockito.verify(mJniMock, Mockito.never()).partnerBookmarksCreationComplete(mNativeReader);
+        Mockito.verify(mJniMock, Mockito.never())
+                .partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -131,7 +126,8 @@ public class PartnerBookmarksReaderTest {
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
 
-        Mockito.verify(mJniMock, Mockito.never()).partnerBookmarksCreationComplete(mNativeReader);
+        Mockito.verify(mJniMock, Mockito.never())
+                .partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -144,7 +140,7 @@ public class PartnerBookmarksReaderTest {
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
 
-        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(mNativeReader);
+        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 
     @Test
@@ -157,6 +153,6 @@ public class PartnerBookmarksReaderTest {
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();
 
-        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(mNativeReader);
+        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(Mockito.anyLong());
     }
 }
