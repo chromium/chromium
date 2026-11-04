@@ -116,7 +116,7 @@ TEST_F(TtcVoicePlateMediatorTest, StopSessionDrivesTTCService) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
-// Tests that startSession fails gracefully when the feature is disabled.
+// Tests that `startSession` fails gracefully when the feature is disabled.
 TEST_F(TtcVoicePlateMediatorTest, StartSessionFailsWhenFeatureDisabled) {
   base::test::ScopedFeatureList disabled_feature_list;
   disabled_feature_list.InitAndDisableFeature(kTTCEnabled);
@@ -271,6 +271,25 @@ TEST_F(TtcVoicePlateMediatorTest, SessionErrorDispatchesErrorMessage) {
   session_controller->OnConversationError(
       ttc::ErrorCode::kInternalBackendError);
 
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that `toggleMicMuted` mutes and unmutes the active session controller
+// and updates the consumer.
+TEST_F(TtcVoicePlateMediatorTest, ToggleMicMutedTogglesActiveSessionMute) {
+  mediator_.consumer = mock_consumer_;
+  [mediator_ startSession];
+  TtcSessionController* session_controller = ttc_service_->session_controller();
+  ASSERT_NE(session_controller, nullptr);
+  session_controller->OnConversationInitialized();
+
+  OCMExpect([mock_consumer_ setMicMuted:YES]);
+  [mediator_ toggleMicMuted];
+  EXPECT_TRUE(session_controller->IsMicMuted());
+
+  OCMExpect([mock_consumer_ setMicMuted:NO]);
+  [mediator_ toggleMicMuted];
+  EXPECT_FALSE(session_controller->IsMicMuted());
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 

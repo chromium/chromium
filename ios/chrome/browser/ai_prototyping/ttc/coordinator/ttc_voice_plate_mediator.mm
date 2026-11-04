@@ -122,6 +122,14 @@ TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
   }
 }
 
+- (void)toggleMicMuted {
+  if (_observedSessionController &&
+      _observedSessionController->lifecycle() == TTCSessionLifecycle::kLive) {
+    _observedSessionController->SetMicMuted(
+        !_observedSessionController->IsMicMuted());
+  }
+}
+
 #pragma mark - TTCSessionControllerObserver
 
 - (void)sessionController:(TtcSessionController*)controller

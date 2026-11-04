@@ -17,6 +17,9 @@
 // Gracefully terminates the active voice session.
 - (void)stopSession;
 
+// Toggles microphone capture between muted and unmuted while a session is live.
+- (void)toggleMicMuted;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_UI_TTC_VOICE_PLATE_MUTATOR_H_
