@@ -81,8 +81,7 @@ void ContextualTasksCloseButtonController::OnEntryShown(SidePanelEntry* entry) {
 void ContextualTasksCloseButtonController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
-  if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+  if (contextual_tasks::IsContextualTasksEphemeralEntryPointEnabled()) {
     is_panel_hiding_ = true;
     MaybeNotifyVisibilityShouldChange();
   }
@@ -90,8 +89,7 @@ void ContextualTasksCloseButtonController::OnEntryWillHide(
 
 void ContextualTasksCloseButtonController::OnEntryHideCancelled(
     SidePanelEntry* entry) {
-  if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+  if (contextual_tasks::IsContextualTasksEphemeralEntryPointEnabled()) {
     is_panel_hiding_ = false;
     MaybeNotifyVisibilityShouldChange();
   }

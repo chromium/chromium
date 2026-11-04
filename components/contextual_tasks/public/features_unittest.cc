@@ -126,6 +126,36 @@ TEST(FeaturesTest, IsContextualTasksUIEnabled_SidePanelRearchitectureEnabled) {
   EXPECT_TRUE(IsContextualTasksUIEnabled());
 }
 
+TEST(FeaturesTest,
+     IsContextualTasksEphemeralEntryPointEnabled_DefaultDisabled) {
+  EXPECT_FALSE(IsContextualTasksEphemeralEntryPointEnabled());
+}
+
+TEST(FeaturesTest, IsContextualTasksEphemeralEntryPointEnabled_LegacyParam) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeatureWithParameters(
+      kContextualTasksEphemeralBrandedEntryPoint,
+      {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}});
+  EXPECT_TRUE(IsContextualTasksEphemeralEntryPointEnabled());
+}
+
+TEST(FeaturesTest,
+     IsContextualTasksEphemeralEntryPointEnabled_PinButtonRefactor) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {kContextualTasksPinningV2, kContextualTasksEphemeralPinButtonRefactor},
+      {});
+  EXPECT_TRUE(IsContextualTasksEphemeralEntryPointEnabled());
+}
+
+TEST(FeaturesTest,
+     IsContextualTasksEphemeralEntryPointEnabled_RefactorRequiresPinningV2) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({kContextualTasksEphemeralPinButtonRefactor},
+                                   {kContextualTasksPinningV2});
+  EXPECT_FALSE(IsContextualTasksEphemeralEntryPointEnabled());
+}
+
 TEST(FeaturesTest, GetEphemeralButtonContextMenuOption_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndDisableFeature(

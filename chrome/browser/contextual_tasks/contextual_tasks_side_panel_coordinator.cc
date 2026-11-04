@@ -145,7 +145,6 @@ std::string GetContextualTasksArmShortName() {
   ExpandButtonOption expand_button = contextual_tasks::GetExpandButtonOption();
   bool lens_enabled = contextual_tasks::GetEnableLensInContextualTasks();
   bool tab_auto_chip = contextual_tasks::GetIsTabAutoSuggestionChipEnabled();
-  const auto entrypoint = contextual_tasks::kShowEntryPoint.Get();
 
   if (expand_button == ExpandButtonOption::kSidePanelExpandButton) {
     if (lens_enabled && tab_auto_chip) {
@@ -159,8 +158,7 @@ std::string GetContextualTasksArmShortName() {
     }
   } else if (expand_button == ExpandButtonOption::kToolbarCloseButton) {
     if (lens_enabled && tab_auto_chip &&
-        entrypoint !=
-            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+        !contextual_tasks::IsContextualTasksEphemeralEntryPointEnabled()) {
       return "Arm 5";
     }
     if (!lens_enabled && tab_auto_chip) {
@@ -170,8 +168,7 @@ std::string GetContextualTasksArmShortName() {
       return "Arm 7";
     }
     if (lens_enabled && tab_auto_chip &&
-        entrypoint ==
-            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+        contextual_tasks::IsContextualTasksEphemeralEntryPointEnabled()) {
       return "Arm 8";
     }
   }
@@ -2324,8 +2321,7 @@ bool ContextualTasksSidePanelCoordinator::ShouldPreserveTaskOnClose() const {
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
       (contextual_tasks::GetEffectivePinState(browser_window_->GetProfile()) ||
        contextual_tasks::IsContextualTasksEphemeralPinButtonRefactorEnabled());
-  return contextual_tasks::kShowEntryPoint.Get() ==
-             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded ||
+  return contextual_tasks::IsContextualTasksEphemeralEntryPointEnabled() ||
          can_resume_from_pinned_button;
 }
 

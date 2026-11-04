@@ -668,6 +668,13 @@ extern bool IsContextualTasksPinningV2Enabled();
 // ContextualTasksButton.
 extern bool IsContextualTasksEphemeralPinButtonRefactorEnabled();
 
+// Returns whether an ephemeral toolbar entry point for Contextual Tasks is
+// active, either the legacy `toolbar-ephemeral-branded` entry point param or
+// the ephemeral pin button refactor. Use this instead of comparing
+// `kShowEntryPoint` directly so behavior does not silently depend on the
+// legacy param once the refactor is the only ephemeral entry point.
+extern bool IsContextualTasksEphemeralEntryPointEnabled();
+
 // Returns whether the permanent pinned contextual tasks toolbar button should
 // show an active indicator when the active tab has an ongoing thread/session.
 extern bool IsContextualTasksPinnedButtonActiveIndicatorEnabled();
