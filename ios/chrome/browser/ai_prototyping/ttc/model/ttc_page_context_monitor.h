@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_PAGE_CONTEXT_MONITOR_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_PAGE_CONTEXT_MONITOR_H_
 
+#import <memory>
+
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -40,12 +43,17 @@ class TtcPageContextMonitor : public web::WebStateObserver {
   // finished loading, starts an initial asynchronous page context extraction
   // immediately (or synchronously notifies `delegate` with
   // `kPageNotExtractableError` if `web_state` is not eligible for extraction).
-  TtcPageContextMonitor(web::WebState& web_state, Delegate* delegate);
+  TtcPageContextMonitor(web::WebState& web_state,
+                        Delegate* delegate,
+                        TTCJournal* journal = nullptr);
 
   TtcPageContextMonitor(const TtcPageContextMonitor&) = delete;
   TtcPageContextMonitor& operator=(const TtcPageContextMonitor&) = delete;
 
   ~TtcPageContextMonitor() override;
+
+  // Sets the optional session journal for structured event logging.
+  void set_journal(TTCJournal* journal);
 
   // Stops observing the monitored `WebState`, cancels any in-flight extraction,
   // and clears the delegate.
@@ -95,6 +103,12 @@ class TtcPageContextMonitor : public web::WebStateObserver {
 
   // Active wrapper performing asynchronous APC extraction.
   PageContextWrapper* page_context_wrapper_ = nil;
+
+  // Optional session journal for structured event logging.
+  base::WeakPtr<TTCJournal> journal_;
+
+  // Active async journal entry for the in-flight extraction, if any.
+  std::unique_ptr<TTCJournal::PendingAsyncEntry> active_async_entry_;
 
   // Weak pointer factory invalidated whenever a navigation or teardown cancels
   // an in-flight extraction.

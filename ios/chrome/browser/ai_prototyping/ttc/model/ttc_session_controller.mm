@@ -198,7 +198,7 @@ void TtcSessionController::OnVoiceFocusedWebStateChanged(
     return;
   }
   page_context_monitor_ =
-      std::make_unique<TtcPageContextMonitor>(*web_state, this);
+      std::make_unique<TtcPageContextMonitor>(*web_state, this, journal_.get());
 }
 
 #pragma mark - TtcPageContextMonitor::Delegate
@@ -300,6 +300,9 @@ void TtcSessionController::set_journal(TTCJournal* journal) {
   conversation_->set_journal(journal);
   if (actuation_handler_) {
     actuation_handler_->set_journal(journal);
+  }
+  if (page_context_monitor_) {
+    page_context_monitor_->set_journal(journal);
   }
 }
 

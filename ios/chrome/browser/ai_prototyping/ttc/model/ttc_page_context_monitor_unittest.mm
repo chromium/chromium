@@ -17,6 +17,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -298,4 +299,88 @@ TEST_F(TtcPageContextMonitorTest, WebStateDestroyedCancelsPendingExtraction) {
   transient_web_state.reset();
   EXPECT_EQ(monitor.web_state(), nullptr);
   EXPECT_FALSE(HasPendingWrapper(monitor));
+}
+
+// Tests that `TtcPageContextMonitor` records `kBegin` and `kEnd` journal
+// entries with `actionable=true`, `result=ok`, and `size_bytes` when extraction
+// succeeds.
+TEST_F(TtcPageContextMonitorTest,
+       LogsBeginAndEndJournalEntriesOnSuccessfulExtraction) {
+  TTCJournal journal;
+  const GURL url("https://example.com/initial");
+  TtcPageContextMonitor monitor(web_state_, &delegate_, &journal);
+  ASSERT_EQ(journal.entries().size(), 1u);
+
+  SimulateExtractionCompleted(monitor, url,
+                              MakePageContextResponse(url, "Initial Page"));
+
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[0].type, TTCJournalEntryType::kBegin);
+  EXPECT_EQ(journal.entries()[0].event_name, "TtcPageContextExtraction");
+  EXPECT_THAT(journal.entries()[0].details,
+              testing::Contains(TTCJournalDetail{"actionable", "true"}));
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_EQ(journal.entries()[1].event_name, "TtcPageContextExtraction");
+  EXPECT_EQ(journal.entries()[1].summary, "Extracted APC (45 B)");
+  EXPECT_THAT(journal.entries()[1].details,
+              testing::IsSupersetOf({
+                  TTCJournalDetail{"result", "ok"},
+                  TTCJournalDetail{"size_bytes", "45"},
+              }));
+}
+
+// Tests that cancelling an in-flight extraction via `Disconnect()` records a
+// `kEnd` journal entry with `result=cancelled`.
+TEST_F(TtcPageContextMonitorTest,
+       DisconnectLogsCancelledJournalEntryForPendingExtraction) {
+  TTCJournal journal;
+  TtcPageContextMonitor monitor(web_state_, &delegate_, &journal);
+  ASSERT_EQ(journal.entries().size(), 1u);
+
+  monitor.Disconnect();
+
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_EQ(journal.entries()[1].event_name, "TtcPageContextExtraction");
+  EXPECT_THAT(journal.entries()[1].details,
+              testing::Contains(TTCJournalDetail{"result", "cancelled"}));
+}
+
+// Tests that `TtcPageContextMonitor` records a `kEnd` journal entry with
+// `result=stale_url` when `WebState` navigated away before extraction finished.
+TEST_F(TtcPageContextMonitorTest,
+       LogsStaleUrlJournalEntryWhenExtractionCompletesAfterUrlChange) {
+  TTCJournal journal;
+  TtcPageContextMonitor monitor(web_state_, &delegate_, &journal);
+  ASSERT_EQ(journal.entries().size(), 1u);
+  web_state_.SetCurrentURL(GURL("https://example.com/other"));
+
+  SimulateExtractionCompleted(
+      monitor, GURL("https://example.com/initial"),
+      MakePageContextResponse(GURL("https://example.com/initial"), "Stale"));
+
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_THAT(journal.entries()[1].details,
+              testing::Contains(TTCJournalDetail{"result", "stale_url"}));
+}
+
+// Tests that `TtcPageContextMonitor` records a `kEnd` journal entry with
+// `result=error` and `error=generic_error` when extraction fails.
+TEST_F(TtcPageContextMonitorTest, LogsErrorJournalEntryWhenExtractionFails) {
+  TTCJournal journal;
+  TtcPageContextMonitor monitor(web_state_, &delegate_, &journal);
+  ASSERT_EQ(journal.entries().size(), 1u);
+
+  SimulateExtractionCompleted(
+      monitor, GURL("https://example.com/initial"),
+      base::unexpected(PageContextWrapperError::kGenericError));
+
+  ASSERT_EQ(journal.entries().size(), 2u);
+  EXPECT_EQ(journal.entries()[1].type, TTCJournalEntryType::kEnd);
+  EXPECT_THAT(journal.entries()[1].details,
+              testing::IsSupersetOf({
+                  TTCJournalDetail{"result", "error"},
+                  TTCJournalDetail{"error", "generic_error"},
+              }));
 }
