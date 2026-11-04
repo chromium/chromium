@@ -135,7 +135,6 @@ public class TabSwitcherPaneMediator
             _ -> notifyBackPressStateChangedInternal();
 
     /** Interface for getting scroll positions of tabs. */
-    @FunctionalInterface
     public interface TabIndexLookup {
         /**
          * Returns the scroll position of a tab or tab group from its tab ID in the
@@ -144,6 +143,14 @@ public class TabSwitcherPaneMediator
          * @param tabId The ID of the tab to look up.
          */
         int getIndexFromTabId(@TabId int tabId);
+
+        /**
+         * Returns the scroll position of a tab group from its tab group ID in the
+         * TabListRecyclerView.
+         *
+         * @param tabGroupId The ID of the tab group to look up.
+         */
+        int getIndexFromTabGroupId(Token tabGroupId);
     }
 
     private final Context mContext;
@@ -358,12 +365,12 @@ public class TabSwitcherPaneMediator
     }
 
     /**
-     * Scrolls to a given tab or tab group by ID.
+     * Scrolls to a given tab group by group ID.
      *
-     * @param tabId The ID of the tab to scroll to.
+     * @param tabGroupId The group ID of the tab group to scroll to.
      */
-    public void scrollToTabById(@TabId int tabId) {
-        int index = mTabIndexLookup.getIndexFromTabId(tabId);
+    public void scrollToTabGroup(Token tabGroupId) {
+        int index = mTabIndexLookup.getIndexFromTabGroupId(tabGroupId);
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         scrollToTab(index);
@@ -461,7 +468,7 @@ public class TabSwitcherPaneMediator
         if (tabsInGroup.isEmpty()) {
             tabsInGroup = null;
         } else if (shouldScroll) {
-            scrollToTabById(tabsInGroup.get(0).getId());
+            scrollToTabGroup(assumeNonNull(tabGroupId));
         }
         assumeNonNull(mTabGridDialogControllerSupplier.get()).resetWithListOfTabs(tabsInGroup);
     }

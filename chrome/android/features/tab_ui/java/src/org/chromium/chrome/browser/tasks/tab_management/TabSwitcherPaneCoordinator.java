@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneMediator.TabIndexLookup;
 import org.chromium.chrome.browser.tasks.tab_management.labels.SendTabToSelfTabLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.labels.TabGroupLabeller;
 import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs.PinnedTabStripCoordinator;
@@ -411,7 +412,18 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             isVisibleSupplier,
                             isAnimatingSupplier,
                             onTabClickCallback,
-                            this::getIndexFromTabId,
+                            new TabIndexLookup() {
+                                @Override
+                                public int getIndexFromTabId(@TabId int tabId) {
+                                    return TabSwitcherPaneCoordinator.this.getIndexFromTabId(tabId);
+                                }
+
+                                @Override
+                                public int getIndexFromTabGroupId(Token tabGroupId) {
+                                    return TabSwitcherPaneCoordinator.this.getIndexFromTabGroupId(
+                                            tabGroupId);
+                                }
+                            },
                             bottomSheetController,
                             this::addOnLayoutChangedAfterInitialScrollListener,
                             hubSearchBoxVisibilitySupplier);
@@ -1142,6 +1154,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private int getIndexFromTabId(@TabId int tabId) {
         return mTabListCoordinator.getIndexFromTabId(tabId);
+    }
+
+    private int getIndexFromTabGroupId(Token tabGroupId) {
+        return mTabListCoordinator.getIndexFromTabGroupId(tabGroupId);
     }
 
     private void updateBottomPadding() {

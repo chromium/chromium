@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -168,6 +169,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabIndexLookup.getIndexFromTabId(UNGROUPED_TAB_ID)).thenReturn(0);
         when(mTabIndexLookup.getIndexFromTabId(GROUPED_TAB_1_ID)).thenReturn(1);
         when(mTabIndexLookup.getIndexFromTabId(GROUPED_TAB_2_ID)).thenReturn(1);
+        when(mTabIndexLookup.getIndexFromTabGroupId(GROUP_ID)).thenReturn(1);
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
                 .thenReturn(mDialogBackPressChangedSupplier);
@@ -413,6 +415,8 @@ public class TabSwitcherPaneMediatorUnitTest {
         mMediator.openTabGroupDialog(GROUP_ID, /* shouldScroll= */ true);
 
         assertEquals(1, mModel.get(INITIAL_SCROLL_INDEX).intValue());
+        verify(mTabIndexLookup).getIndexFromTabGroupId(GROUP_ID);
+        verify(mTabIndexLookup, never()).getIndexFromTabId(anyInt());
         verify(mTabGridDialogController).resetWithListOfTabs(List.of(mGroupedTab1, mGroupedTab2));
     }
 
@@ -434,14 +438,21 @@ public class TabSwitcherPaneMediatorUnitTest {
         mMediator.scrollToTab(index);
         assertEquals(index, mModel.get(INITIAL_SCROLL_INDEX).intValue());
 
-        mMediator.scrollToTabById(GROUPED_TAB_2_ID);
-        assertEquals(1, mModel.get(INITIAL_SCROLL_INDEX).intValue());
+        verify(mAllOnLayoutChangedAfterInitialScrollListener, times(2)).run();
+    }
 
-        when(mTabIndexLookup.getIndexFromTabId(Tab.INVALID_TAB_ID))
+    @Test
+    public void testScrollToTabGroup() {
+        int index = 3;
+        when(mTabIndexLookup.getIndexFromTabGroupId(GROUP_ID)).thenReturn(index);
+
+        mMediator.scrollToTabGroup(GROUP_ID);
+        assertEquals(index, mModel.get(INITIAL_SCROLL_INDEX).intValue());
+
+        when(mTabIndexLookup.getIndexFromTabGroupId(GROUP_ID))
                 .thenReturn(TabModel.INVALID_TAB_INDEX);
-        mMediator.scrollToTabById(Tab.INVALID_TAB_ID);
-        assertEquals(1, mModel.get(INITIAL_SCROLL_INDEX).intValue());
-        verify(mAllOnLayoutChangedAfterInitialScrollListener, times(3)).run();
+        mMediator.scrollToTabGroup(GROUP_ID);
+        assertEquals(index, mModel.get(INITIAL_SCROLL_INDEX).intValue());
     }
 
     @Test
