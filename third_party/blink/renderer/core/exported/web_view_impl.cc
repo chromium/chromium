@@ -134,6 +134,7 @@
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -853,6 +854,17 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
       GetPage()->GetVisualViewport().ClampDocumentOffsetAtScale(scroll, scale);
 }
 
+// For <img usemap="...">, Chromium treats the whole image as a link because
+// HTMLImageElement::IsLink() returns true whenever the usemap attribute is
+// present. HitTestResult::SetInnerNode already resolves a tap inside a map
+// area to the HTMLAreaElement, so an HTMLImageElement with usemap reaching
+// link-highlight code here means the tap missed every area and should not
+// trigger a highlight.
+static bool IsImageUsemapWithoutAreaHit(const Node* node) {
+  const auto* image = DynamicTo<HTMLImageElement>(node);
+  return image && image->FastHasAttribute(html_names::kUsemapAttr);
+}
+
 static Node* FindLinkHighlightAncestor(Node* node) {
   // Go up the tree to find the node that defines a mouse cursor style
   while (node) {
@@ -888,6 +900,19 @@ Node* WebViewImpl::BestTapNode(
   // Walk up the tree until we have a node with an attached layoutObject
   while (!best_touch_node->GetLayoutObject()) {
     best_touch_node = LayoutTreeBuilderTraversal::Parent(*best_touch_node);
+    if (!best_touch_node) {
+      return nullptr;
+    }
+  }
+
+  // An <img usemap=""> tap that landed outside every <area> must not light up
+  // the image itself. Step past it so an enclosing anchor can still be the
+  // highlight target.
+  if (IsImageUsemapWithoutAreaHit(best_touch_node)) {
+    best_touch_node = LayoutTreeBuilderTraversal::Parent(*best_touch_node);
+    while (best_touch_node && !best_touch_node->GetLayoutObject()) {
+      best_touch_node = LayoutTreeBuilderTraversal::Parent(*best_touch_node);
+    }
     if (!best_touch_node) {
       return nullptr;
     }

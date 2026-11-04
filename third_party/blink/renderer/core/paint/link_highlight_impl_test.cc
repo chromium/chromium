@@ -35,12 +35,14 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
@@ -97,6 +99,38 @@ class LinkHighlightImplTest : public testing::Test,
                                 WebGestureDevice::kTouchscreen);
     touch_event.SetPositionInWidget(point);
     return GetTargetedEvent(touch_event);
+  }
+
+  // Injects a sized <img usemap> at (300, 20) whose single <area> covers the
+  // top-left 20x20 corner. Returns the <area> so tests can assert against it.
+  Element* SetUpImageUsemap() {
+    Document* document = web_view_helper_.GetWebView()
+                             ->MainFrameImpl()
+                             ->GetFrame()
+                             ->GetDocument();
+    Element* map = document->CreateRawElement(html_names::kMapTag);
+    map->setAttribute(html_names::kNameAttr, AtomicString("usemap-test"));
+    Element* area = document->CreateRawElement(html_names::kAreaTag);
+    area->setAttribute(html_names::kShapeAttr, AtomicString("rect"));
+    area->setAttribute(html_names::kCoordsAttr, AtomicString("0,0,20,20"));
+    area->setAttribute(html_names::kHrefAttr,
+                       AtomicString("http://www.test.com/area"));
+    map->AppendChild(area);
+    Element* image = document->CreateRawElement(html_names::kImgTag);
+    image->setAttribute(html_names::kWidthAttr, AtomicString("100"));
+    image->setAttribute(html_names::kHeightAttr, AtomicString("100"));
+    image->setAttribute(html_names::kUsemapAttr, AtomicString("#usemap-test"));
+    image->setAttribute(
+        html_names::kSrcAttr,
+        AtomicString("data:image/gif;base64,"
+                     "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="));
+    image->setAttribute(
+        html_names::kStyleAttr,
+        AtomicString("position: absolute; left: 300px; top: 20px;"));
+    document->body()->AppendChild(map);
+    document->body()->AppendChild(image);
+    UpdateAllLifecyclePhases();
+    return area;
   }
 
   void TearDown() override {
@@ -395,6 +429,35 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   UpdateAllLifecyclePhases();
   // Removing the highlight layer should drop the cc layers for highlights.
   EXPECT_EQ(layer_count_before_highlight, LayerCount());
+}
+
+TEST_P(LinkHighlightImplTest, ImageUsemapOutsideAreaDoesNotHighlight) {
+  // Regression test for crbug.com/40909819. Tapping on <img usemap="...">
+  // outside of every map area must not produce a link highlight.
+  WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
+  SetUpImageUsemap();
+
+  // Image bounds are (300..400, 20..120); the <area> covers only
+  // (300..320, 20..40). (350, 60) is inside the image but outside every
+  // area. Pre-fix, BestTapNode returned the image here (because <img
+  // usemap> sets IsLink()) and a highlight briefly painted and then
+  // disappeared, which is the flicker the user reported.
+  GestureEventWithHitTestResults outside_area =
+      GestureShowPress(gfx::PointF(350, 60));
+  EXPECT_FALSE(web_view_impl->BestTapNode(outside_area));
+}
+
+TEST_P(LinkHighlightImplTest, ImageUsemapInsideAreaResolvesToArea) {
+  // Complement to ImageUsemapOutsideAreaDoesNotHighlight: a tap inside the
+  // <area> must still resolve to the area link (not get filtered out by
+  // the image-usemap skip in BestTapNode).
+  Element* area = SetUpImageUsemap();
+
+  // (310, 30) is inside the <area> rect; HitTestResult::SetInnerNode
+  // resolves the inner node to the <area> via ImageAreaForImage.
+  GestureEventWithHitTestResults inside_area =
+      GestureShowPress(gfx::PointF(310, 30));
+  EXPECT_EQ(area, inside_area.GetHitTestResult().InnerNode());
 }
 
 TEST_P(LinkHighlightImplTest, DisplayContents) {
