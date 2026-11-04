@@ -17,8 +17,8 @@ NtpBackgroundServiceFactory::NtpBackgroundServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 NtpBackgroundServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<NtpBackgroundService>(
       GetApplicationContext()->GetApplicationLocaleStorage(),
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }

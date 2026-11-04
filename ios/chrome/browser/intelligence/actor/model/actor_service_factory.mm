@@ -24,11 +24,11 @@ ActorServiceFactory::ActorServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ActorServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!IsActorEnabled()) {
     return nullptr;
   }
-  return std::make_unique<ActorService>(profile);
+  return std::make_unique<ActorService>(&profile);
 }
 
 }  // namespace actor

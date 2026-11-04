@@ -20,7 +20,7 @@ AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<language::AcceptLanguagesService>(
-      profile->GetPrefs(), language::prefs::kAcceptLanguages);
+      profile.GetPrefs(), language::prefs::kAcceptLanguages);
 }

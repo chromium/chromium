@@ -19,9 +19,9 @@ UserUploadedImageManagerFactory::UserUploadedImageManagerFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UserUploadedImageManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<UserUploadedImageManager>(
-      profile->GetStatePath(),
+      profile.GetStatePath(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));

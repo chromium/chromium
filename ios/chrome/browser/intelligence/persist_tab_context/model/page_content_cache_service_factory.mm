@@ -39,14 +39,12 @@ PageContentCacheServiceFactory::PageContentCacheServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 PageContentCacheServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(profile);
-
+    ProfileIOS& profile) const {
   os_crypt_async::OSCryptAsync* os_crypt_async =
       GetApplicationContext()->GetOSCryptAsync();
   CHECK(os_crypt_async);
 
-  PrefService* prefs = profile->GetPrefs();
+  PrefService* prefs = profile.GetPrefs();
   base::TimeDelta max_context_age = GetPersistedContextEffectiveTTL(prefs);
 
   base::FilePath storage_directory_path = GetStoragePathForProfile(profile);

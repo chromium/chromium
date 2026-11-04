@@ -19,7 +19,7 @@ HomeBackgroundImageServiceFactory::HomeBackgroundImageServiceFactory(
 
 std::unique_ptr<KeyedService>
 HomeBackgroundImageServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<HomeBackgroundImageService>(
       NtpBackgroundServiceFactory::GetForProfile(profile));
 }

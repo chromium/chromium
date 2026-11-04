@@ -29,6 +29,6 @@ IOSChromeProfileInvalidationProviderFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<ProfileInvalidationProvider>();
 }

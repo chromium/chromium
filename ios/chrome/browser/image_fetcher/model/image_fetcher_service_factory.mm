@@ -24,26 +24,26 @@ ImageFetcherServiceFactory::ImageFetcherServiceFactory(PassKey key)
                                          "ImageFetcherService") {}
 
 std::unique_ptr<KeyedService>
-ImageFetcherServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+ImageFetcherServiceFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   base::DefaultClock* clock = base::DefaultClock::GetInstance();
 
-  base::FilePath cache_path = profile->GetStatePath();
+  base::FilePath cache_path = profile.GetStatePath();
   auto metadata_store =
       std::make_unique<image_fetcher::ImageMetadataStoreLevelDB>(
-          profile->GetProtoDatabaseProvider(), cache_path, task_runner, clock);
+          profile.GetProtoDatabaseProvider(), cache_path, task_runner, clock);
   auto data_store = std::make_unique<image_fetcher::ImageDataStoreDisk>(
       cache_path, task_runner);
 
   scoped_refptr<image_fetcher::ImageCache> image_cache =
       base::MakeRefCounted<image_fetcher::ImageCache>(
-          std::move(data_store), std::move(metadata_store), profile->GetPrefs(),
+          std::move(data_store), std::move(metadata_store), profile.GetPrefs(),
           clock, task_runner);
 
   return std::make_unique<image_fetcher::ImageFetcherService>(
       image_fetcher::CreateIOSImageDecoder(),
-      profile->GetSharedURLLoaderFactory(), std::move(image_cache),
+      profile.GetSharedURLLoaderFactory(), std::move(image_cache),
       /*readonly=*/false);
 }

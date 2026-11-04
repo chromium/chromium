@@ -25,12 +25,12 @@ HomeBackgroundCustomizationServiceFactory::
 
 std::unique_ptr<KeyedService>
 HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<HomeBackgroundCustomizationService>(
-      profile->GetPrefs(),
+      profile.GetPrefs(),
       UserUploadedImageManagerFactory::GetForProfile(profile),
       HomeBackgroundImageServiceFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(), profile->GetStatePath(),
+      profile.GetSharedURLLoaderFactory(), profile.GetStatePath(),
       PromosManagerFactory::GetForProfile(profile));
 }
 
