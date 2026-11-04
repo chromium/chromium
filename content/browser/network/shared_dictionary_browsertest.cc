@@ -2059,18 +2059,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
-IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
-                       DoNotPreloadDictionayUnderMemoryPressure) {
-  SendMemoryPressureToNetworkService();
-  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
-      preloaded_shared_dictionaries_handle;
-  GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
-      {GetURL("/")},
-      preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
-  FlushNetworkServiceInstanceForTesting();
-  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
-}
-
+// Verifies that memory pressure is delivered end to end to the
+// SharedDictionaryManager in the network service. The manager's behavior under
+// memory pressure is covered by shared_dictionary_manager_unittest.cc.
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                        PreloadedDictionayDiscardedByMemoryPressure) {
   mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>

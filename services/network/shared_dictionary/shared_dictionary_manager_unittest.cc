@@ -2840,6 +2840,45 @@ TEST_P(SharedDictionaryManagerTest, PreloadSharedDictionaryInfo) {
 }
 
 TEST_P(SharedDictionaryManagerTest,
+       DoNotPreloadSharedDictionaryInfoUnderMemoryPressure) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      handle;
+  manager->PreloadSharedDictionaryInfoForDocument(
+      {GURL("https://origin1.test/p1")},
+      handle.InitWithNewPipeAndPassReceiver());
+  EXPECT_FALSE(manager->HasPreloadedSharedDictionaryInfo());
+}
+
+TEST_P(SharedDictionaryManagerTest,
+       PreloadedSharedDictionaryInfoDiscardedByMemoryPressure) {
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+
+  mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
+      handle;
+  manager->PreloadSharedDictionaryInfoForDocument(
+      {GURL("https://origin1.test/p1")},
+      handle.InitWithNewPipeAndPassReceiver());
+  EXPECT_TRUE(manager->HasPreloadedSharedDictionaryInfo());
+
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      base::kModerateMemoryPressureThreshold, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  EXPECT_FALSE(manager->HasPreloadedSharedDictionaryInfo());
+}
+
+TEST_P(SharedDictionaryManagerTest,
        PreloadSharedDictionaryInfoOpaqueOriginDoNotCrash) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
