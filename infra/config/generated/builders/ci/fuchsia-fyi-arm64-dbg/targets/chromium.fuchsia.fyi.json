@@ -466,7 +466,8 @@
       },
       {
         "args": [
-          "--orchestrate"
+          "--orchestrate",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.components_unittests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

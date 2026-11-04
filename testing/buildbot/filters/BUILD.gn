@@ -148,8 +148,10 @@ source_set("chromeos_filters") {
 source_set("components_unittests_filters") {
   testonly = true
 
-  data =
-      [ "//testing/buildbot/filters/android.mte.components_unittests.filter" ]
+  data = [
+    "//testing/buildbot/filters/android.mte.components_unittests.filter",
+    "//testing/buildbot/filters/fuchsia.debug.components_unittests.filter",
+  ]
 }
 
 bundle_data("compositor_unittests_filters_bundle_data") {

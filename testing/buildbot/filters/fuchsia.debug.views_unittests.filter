@@ -21,3 +21,6 @@
 -TouchSelectionControllerImplTest.KeyEventDeactivatesTouchSelection
 -TouchSelectionControllerImplTest.MouseCaptureChangedEventIgnored
 -TouchSelectionControllerImplTest.MouseEventDeactivatesTouchSelection
+
+# SwiftShader LLVM JIT crash on the vk::Queue thread. https://crbug.com/581012628
+-InteractiveViewsTestTest.*

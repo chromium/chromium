@@ -1,0 +1,5 @@
+# Note, this file is only used on fuchsia-fyi-arm64-dbg.
+# https://crbug.com/581012364
+-GaiaCookieManagerServiceTest.GaiaCookieLastListAccountsDataSaved
+-GaiaCookieManagerServiceTest.LogoutRetried
+-GaiaCookieManagerServiceTest.LogoutRetriedTwice
