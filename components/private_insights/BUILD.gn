@@ -4,6 +4,7 @@
 
 component("private_insights") {
   public = [
+    "event_queue.h",
     "private_insights_features.h",
     "private_insights_service.h",
   ]
@@ -15,6 +16,7 @@ component("private_insights") {
   ]
   defines = [ "IS_PRIVATE_INSIGHTS_IMPL" ]
   public_deps = [
+    "//base",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/prefs",
@@ -28,7 +30,6 @@ component("private_insights") {
     ":fcp_log_manager",
     ":fcp_simple_task_environment",
     ":fcp_utils",
-    "//base",
     "//base:i18n",
     "//components/version_info",
     "//google_apis",
@@ -122,6 +123,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "contextual_cue_log_event_helpers_unittest.cc",
+    "event_queue_unittest.cc",
     "fcp_event_publisher_unittest.cc",
     "fcp_files_unittest.cc",
     "fcp_http_client_unittest.cc",
@@ -145,6 +147,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/private_insights/events:coarse_system_profile_proto",
     "//components/private_insights/events:contextual_cue_log_event_proto",
+    "//components/private_insights/events:storage_access_log_event_proto",
     "//components/version_info",
     "//services/network:test_support",
     "//testing/gmock",

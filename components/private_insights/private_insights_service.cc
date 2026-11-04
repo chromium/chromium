@@ -4,10 +4,8 @@
 
 #include "components/private_insights/private_insights_service.h"
 
-#include <functional>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -111,7 +109,9 @@ PrivateInsightsService::PrivateInsightsService(
     PrefService* local_state,
     const base::FilePath& profile_dir,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : local_state_(local_state), profile_dir_(profile_dir) {
+    : local_state_(local_state),
+      profile_dir_(profile_dir),
+      contextual_cue_events_(kContextualCueEventsHistogramPrefix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_state_);
 
@@ -186,50 +186,13 @@ void PrivateInsightsService::Shutdown() {
 void PrivateInsightsService::LogContextualCueEvent(
     events::ContextualCueLogEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int max_events = kMaxContextualCueEvents.Get();
-  contextual_cue_events_.emplace_back(base::Time::Now(), std::move(event));
-  int removed_count = 0;
-  while (static_cast<int>(contextual_cue_events_.size()) > max_events) {
-    contextual_cue_events_.pop_front();
-    removed_count++;
-  }
-  if (removed_count > 0) {
-    base::UmaHistogramCounts100(
-        kContextualCueEventsLoggingRemovedCountHistogram, removed_count);
-  }
-  base::UmaHistogramCounts100(kContextualCueEventsLoggingQueuedCountHistogram,
-                              static_cast<int>(contextual_cue_events_.size()));
-}
-
-template <typename EventProto>
-void PrivateInsightsService::RequeueEvents(
-    base::circular_deque<EventEntry<EventProto>> events,
-    base::circular_deque<EventEntry<EventProto>>& target_queue,
-    int max_events,
-    std::string_view requeued_count_histogram,
-    std::string_view dropped_count_histogram) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (events.empty()) {
-    return;
-  }
-
-  int requeued_count = 0;
-  while (!events.empty() &&
-         static_cast<int>(target_queue.size()) < max_events) {
-    target_queue.push_front(std::move(events.back()));
-    events.pop_back();
-    requeued_count++;
-  }
-  int dropped_count = static_cast<int>(events.size());
-
-  base::UmaHistogramCounts100(requeued_count_histogram, requeued_count);
-  base::UmaHistogramCounts100(dropped_count_histogram, dropped_count);
+  contextual_cue_events_.Push(std::move(event), kMaxContextualCueEvents.Get());
 }
 
 // static
 template <typename EventProto>
 void PrivateInsightsService::SerializeEventsToQueryResult(
-    const base::circular_deque<EventEntry<EventProto>>& events,
+    const typename EventQueue<EventProto>::Entries& events,
     fcp::client::ExampleQueryResult* query_result) {
   CHECK(query_result);
 
@@ -259,11 +222,9 @@ PrivateInsightsService::UploadTask::~UploadTask() = default;
 
 template <typename EventProto>
 PrivateInsightsService::UploadTask PrivateInsightsService::MakeUploadTask(
-    base::circular_deque<EventEntry<EventProto>>& queue,
+    EventQueue<EventProto>& queue,
     std::string population_name,
-    int max_events,
-    std::string_view requeued_count_histogram,
-    std::string_view dropped_count_histogram) {
+    int max_events) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UploadTask task;
   task.task_env = fcp_task_env_;
@@ -271,33 +232,20 @@ PrivateInsightsService::UploadTask PrivateInsightsService::MakeUploadTask(
   task.population_name = std::move(population_name);
   task.trigger_time = base::TimeTicks::Now();
 
-  // Detach the queued events, leaving `queue` empty. (Swap rather than move:
-  // a moved-from `circular_deque` is only "valid but unspecified", whereas
-  // after a swap `queue` is guaranteed empty and ready for new events.)
-  base::circular_deque<EventEntry<EventProto>> detached_events;
-  detached_events.swap(queue);
-
-  // `base::BindOnce` only cancels on an invalidated WeakPtr for member
-  // function targets, so the lambda takes the WeakPtr explicitly and checks
-  // it before touching `queue` (a member of `*this`).
+  // The requeue callback holds a WeakPtr to the queue, so it is a no-op if the
+  // queue (and the service that owns it) is gone by the time the upload
+  // completes. (`base::BindOnce` only cancels on an invalidated WeakPtr for
+  // member function targets, so the lambda checks it explicitly.)
   task.batch = std::make_unique<TypedPendingEventsBatch<EventProto>>(
-      std::move(detached_events),
+      queue.TakeAll(),
       base::BindOnce(
-          [](base::WeakPtr<PrivateInsightsService> service,
-             base::circular_deque<EventEntry<EventProto>>& target_queue,
-             int max_events, std::string requeued_count_histogram,
-             std::string dropped_count_histogram,
-             base::circular_deque<EventEntry<EventProto>> events) {
-            if (!service) {
-              return;
+          [](base::WeakPtr<EventQueue<EventProto>> queue, int max_events,
+             typename EventQueue<EventProto>::Entries events) {
+            if (queue) {
+              queue->Requeue(std::move(events), max_events);
             }
-            service->RequeueEvents(std::move(events), target_queue, max_events,
-                                   requeued_count_histogram,
-                                   dropped_count_histogram);
           },
-          weak_ptr_factory_.GetWeakPtr(), std::ref(queue), max_events,
-          std::string(requeued_count_histogram),
-          std::string(dropped_count_histogram)));
+          queue.GetWeakPtr(), max_events));
   return task;
 }
 
@@ -314,8 +262,8 @@ void PrivateInsightsService::TriggerUpload() {
     return;
   }
 
-  base::circular_deque<ContextualCueEventEntry> pending_events =
-      std::move(contextual_cue_events_);
+  ContextualCueEventQueue::Entries pending_events =
+      contextual_cue_events_.TakeAll();
   if (pending_events.empty()) {
     base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
                                   TriggerUploadOutcome::kSkippedNoData);
@@ -323,7 +271,8 @@ void PrivateInsightsService::TriggerUpload() {
   }
 
   fcp_task_env_->result().Clear();
-  SerializeEventsToQueryResult(pending_events, &fcp_task_env_->result());
+  SerializeEventsToQueryResult<events::ContextualCueLogEvent>(
+      pending_events, &fcp_task_env_->result());
 
   is_upload_running_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -389,11 +338,9 @@ void PrivateInsightsService::TriggerUploadTask() {
 
   // TODO(b/574637098): Iterate over registered populations instead of
   // hard-coding Contextual Cues once the population registry lands.
-  UploadTask task = MakeUploadTask(
-      contextual_cue_events_, kFcpPopulationNameContextualCues.Get(),
-      kMaxContextualCueEvents.Get(),
-      kContextualCueEventsRequeuingRequeuedCountHistogram,
-      kContextualCueEventsRequeuingDroppedCountHistogram);
+  UploadTask task = MakeUploadTask(contextual_cue_events_,
+                                   kFcpPopulationNameContextualCues.Get(),
+                                   kMaxContextualCueEvents.Get());
   if (task.batch->size() == 0) {
     base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
                                   TriggerUploadOutcome::kSkippedNoData);
@@ -511,7 +458,7 @@ void PrivateInsightsService::SetRunFederatedComputationForTesting(  // IN-TEST
 }
 
 void PrivateInsightsService::OnUploadComplete(
-    base::circular_deque<ContextualCueEventEntry> pending_events,
+    ContextualCueEventQueue::Entries pending_events,
     FederatedComputationResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_upload_running_ = false;
@@ -526,12 +473,10 @@ void PrivateInsightsService::OnUploadComplete(
   if (result.outcome == FederatedComputationOutcome::kFailed) {
     // Requeue only when we're sure the contribution failed. If it partially
     // succeeded or we're unsure, we have to drop the data to avoid accidentally
-    // contributing the dame data twice, as it would undermine privacy
+    // contributing the same data twice, as it would undermine privacy
     // guarantees of FCP.
-    RequeueEvents(std::move(pending_events), contextual_cue_events_,
-                  kMaxContextualCueEvents.Get(),
-                  kContextualCueEventsRequeuingRequeuedCountHistogram,
-                  kContextualCueEventsRequeuingDroppedCountHistogram);
+    contextual_cue_events_.Requeue(std::move(pending_events),
+                                   kMaxContextualCueEvents.Get());
   }
 }
 

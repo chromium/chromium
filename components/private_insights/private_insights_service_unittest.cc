@@ -32,6 +32,23 @@
 
 namespace private_insights {
 
+namespace {
+
+// Contextual Cues `EventQueue` histograms. Production derives these from
+// `kContextualCueEventsHistogramPrefix`; the tests spell them out so that a
+// change to the derivation is caught.
+constexpr char kContextualCueEventsLoggingQueuedCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.QueuedCount";
+constexpr char kContextualCueEventsLoggingRemovedCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Logging.RemovedCount";
+constexpr char kContextualCueEventsRequeuingRequeuedCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Requeuing."
+    "RequeuedCount";
+constexpr char kContextualCueEventsRequeuingDroppedCountHistogram[] =
+    "PrivateMetrics.PrivateInsights.ContextualCueEvents.Requeuing.DroppedCount";
+
+}  // namespace
+
 // Shared fixture state. Tests derive from one of the parameterized fixtures
 // below so that every upload scenario runs against both the original upload
 // path and the `kPrivateInsightsUploadTaskPipeline` path.
@@ -370,7 +387,8 @@ TEST_P(PrivateInsightsServiceTest, LogContextualCueEvent) {
   service.LogContextualCueEvent(event1);
 
   EXPECT_EQ(service.contextual_cue_events_.size(), 1u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_1");
   histogram_tester.ExpectBucketCount(
       kContextualCueEventsLoggingQueuedCountHistogram, 1, 1);
 
@@ -379,8 +397,10 @@ TEST_P(PrivateInsightsServiceTest, LogContextualCueEvent) {
   service.LogContextualCueEvent(event2);
 
   EXPECT_EQ(service.contextual_cue_events_.size(), 2u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
-  EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_2");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_1");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[1].event.cue_id(),
+            "cue_2");
   histogram_tester.ExpectBucketCount(
       kContextualCueEventsLoggingQueuedCountHistogram, 2, 1);
   histogram_tester.ExpectTotalCount(
@@ -393,8 +413,10 @@ TEST_P(PrivateInsightsServiceTest, LogContextualCueEvent) {
   service.LogContextualCueEvent(event3);
 
   EXPECT_EQ(service.contextual_cue_events_.size(), 2u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_2");
-  EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_3");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_2");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[1].event.cue_id(),
+            "cue_3");
   histogram_tester.ExpectBucketCount(
       kContextualCueEventsLoggingQueuedCountHistogram, 2, 2);
   histogram_tester.ExpectUniqueSample(
@@ -491,7 +513,8 @@ TEST_P(PrivateInsightsServiceTest, RequeueEventsEmpty) {
   event1.set_cue_id("cue_1");
   service.LogContextualCueEvent(event1);
   EXPECT_EQ(service.contextual_cue_events_.size(), 1u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_1");
   histogram_tester.ExpectTotalCount(
       kContextualCueEventsRequeuingRequeuedCountHistogram, 0);
 }
@@ -529,10 +552,14 @@ TEST_P(PrivateInsightsServiceTest, RequeueEventsPrependsRequeuedEvents) {
 
   // A failed upload requeues pending events before existing events.
   EXPECT_EQ(service.contextual_cue_events_.size(), 4u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
-  EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_2");
-  EXPECT_EQ(service.contextual_cue_events_[2].event.cue_id(), "cue_3");
-  EXPECT_EQ(service.contextual_cue_events_[3].event.cue_id(), "cue_4");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_1");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[1].event.cue_id(),
+            "cue_2");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[2].event.cue_id(),
+            "cue_3");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[3].event.cue_id(),
+            "cue_4");
 
   histogram_tester.ExpectUniqueSample(
       kContextualCueEventsRequeuingRequeuedCountHistogram, 2, 1);
@@ -576,8 +603,10 @@ TEST_P(PrivateInsightsServiceTest, RequeueEventsExceedsMaxEvents) {
   // A failed upload requeues; events that don't fit under max_events (2) are
   // dropped, oldest first.
   EXPECT_EQ(service.contextual_cue_events_.size(), 2u);
-  EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_2");
-  EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_3");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+            "cue_2");
+  EXPECT_EQ(service.contextual_cue_events_.entries()[1].event.cue_id(),
+            "cue_3");
 
   histogram_tester.ExpectUniqueSample(
       kContextualCueEventsRequeuingRequeuedCountHistogram, 1, 1);
@@ -706,12 +735,15 @@ TEST_P(PrivateInsightsServiceTriggerUploadTest, HandleEvents) {
   if (param.should_requeue) {
     // Requeued event ("cue_1") should be placed before new event ("cue_2").
     EXPECT_EQ(service.contextual_cue_events_.size(), 2u);
-    EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_1");
-    EXPECT_EQ(service.contextual_cue_events_[1].event.cue_id(), "cue_2");
+    EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+              "cue_1");
+    EXPECT_EQ(service.contextual_cue_events_.entries()[1].event.cue_id(),
+              "cue_2");
   } else {
     // Event is not requeued, so only the new event ("cue_2") remains in queue.
     EXPECT_EQ(service.contextual_cue_events_.size(), 1u);
-    EXPECT_EQ(service.contextual_cue_events_[0].event.cue_id(), "cue_2");
+    EXPECT_EQ(service.contextual_cue_events_.entries()[0].event.cue_id(),
+              "cue_2");
   }
 }
 
