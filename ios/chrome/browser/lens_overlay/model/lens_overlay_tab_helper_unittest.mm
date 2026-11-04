@@ -51,14 +51,17 @@ class LensOverlayTabHelperTest : public PlatformTest {
     dispatcher_ = dispatcher;
 
     LensOverlayTabHelper::CreateForWebState(web_state_.get());
-    helper_ = LensOverlayTabHelper::FromWebState(web_state_.get());
-    ASSERT_TRUE(helper_);
+    ASSERT_TRUE(tab_helper());
 
-    helper_->SetLensOverlayCommandsHandler(dispatcher);
+    tab_helper()->SetLensOverlayCommandsHandler(dispatcher);
 
     mock_commands_handler_ = OCMProtocolMock(@protocol(LensOverlayCommands));
     [dispatcher_ startDispatchingToTarget:mock_commands_handler_
                               forProtocol:@protocol(LensOverlayCommands)];
+  }
+
+  LensOverlayTabHelper* tab_helper() {
+    return LensOverlayTabHelper::FromWebState(web_state_.get());
   }
 
  protected:
@@ -68,7 +71,6 @@ class LensOverlayTabHelperTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<LensOverlayTabHelper, DanglingUntriaged> helper_ = nullptr;
   id handler_;
   id dispatcher_;
   id mock_commands_handler_;
@@ -77,7 +79,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
 
 // Test that web state destruction causes lens UI to destroy with no animation.
 TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestruction) {
-  helper_->SetLensOverlayUIAttachedAndAlive(true);
+  tab_helper()->SetLensOverlayUIAttachedAndAlive(true);
   OCMExpect([mock_commands_handler_
       destroyLensUI:NO
              reason:lens::LensOverlayDismissalSource::kTabClosed]);
@@ -91,7 +93,7 @@ TEST_F(LensOverlayTabHelperTest, ShouldNotDestroyUIOnWebStateDestruction) {
   [[[mock_commands_handler_ reject] ignoringNonObjectArgs]
       destroyLensUI:[OCMArg any]
              reason:lens::LensOverlayDismissalSource::kTabClosed];
-  helper_->SetLensOverlayUIAttachedAndAlive(false);
+  tab_helper()->SetLensOverlayUIAttachedAndAlive(false);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -104,12 +106,12 @@ TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
   web_state_->SetNavigationManager(std::move(fake_navigation_manager));
 
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayUIAttachedAndAlive(true);
+  tab_helper()->SetLensOverlayUIAttachedAndAlive(true);
 
   // Then the Lens UI should be shown.
   OCMExpect([mock_commands_handler_ showLensUI:NO]);
   // When the tab helper is notifed of a change in the web state.
-  helper_->WasShown(web_state_.get());
+  tab_helper()->WasShown(web_state_.get());
 
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -117,11 +119,11 @@ TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
 // Tests that a change in the web state is propagated to the commands handler.
 TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
   // Given a shown lens overlay state.
-  helper_->SetLensOverlayUIAttachedAndAlive(true);
+  tab_helper()->SetLensOverlayUIAttachedAndAlive(true);
   // Then the Lens UI should be hidden.
   OCMExpect([mock_commands_handler_ hideLensUI:NO completion:nil]);
   // When the tab helper is notify of a change in the web state.
-  helper_->WasHidden(web_state_.get());
+  tab_helper()->WasHidden(web_state_.get());
 
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
@@ -130,13 +132,13 @@ TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
 // handler when the lens overlay is not shown.
 TEST_F(LensOverlayTabHelperTest, ShouldNotChangeUIStateWhenOverlayIsNotShown) {
   // Given a lens overlay not show.
-  helper_->SetLensOverlayUIAttachedAndAlive(false);
+  tab_helper()->SetLensOverlayUIAttachedAndAlive(false);
   // Then the Lens UI methods should not be called.
   OCMReject([mock_commands_handler_ showLensUI:YES]);
   OCMReject([mock_commands_handler_ hideLensUI:YES completion:nil]);
   // When the tab helper is notify of a change in the web state.
-  helper_->WasShown(web_state_.get());
-  helper_->WasHidden(web_state_.get());
+  tab_helper()->WasShown(web_state_.get());
+  tab_helper()->WasHidden(web_state_.get());
 
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
