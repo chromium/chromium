@@ -2165,13 +2165,14 @@ NavigationRequest::NavigationRequest(
   if (NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
     if (GetContentClient()->browser()->ShouldPreconnectNavigation(
             frame_tree_node_->current_frame_host()) &&
-        IsAllowedByConnectionAllowlist(/*is_redirect=*/false)) {
+        IsAllowedByConnectionAllowlist(/*is_redirect=*/false,
+                                       /*should_report=*/false)) {
       auto* storage_partition =
           frame_tree_node_->current_frame_host()->GetStoragePartition();
 
       // Initiator frame's `network_restriction_id` is not passed because the
       // preconnection has already been checked against the connection-allowlist
-      // by the `IsAllowedByConnectionAllowlist(false)` call above.
+      // by the `IsAllowedByConnectionAllowlist()` call above.
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key(),
@@ -3009,7 +3010,8 @@ void NavigationRequest::BeginNavigationImpl() {
   }
 
   // Connection Allowlist: check whether navigation to the url is allowed.
-  if (!IsAllowedByConnectionAllowlist(/*is_redirect=*/false)) {
+  if (!IsAllowedByConnectionAllowlist(/*is_redirect=*/false,
+                                      /*should_report=*/true)) {
     // Record that this navigation is blocked by the initiator's
     // Connection-Allowlist before StartNavigation() notifies observers. This
     // lets observers (e.g. //chrome's LoadingPredictor) suppress speculative
@@ -3797,7 +3799,8 @@ void NavigationRequest::OnRequestRedirected(
   ScopedCrashKeys crash_keys(*this);
 
   if (!was_redirected_ &&
-      !IsAllowedByConnectionAllowlist(/*is_redirect=*/true)) {
+      !IsAllowedByConnectionAllowlist(/*is_redirect=*/true,
+                                      /*should_report=*/true)) {
     // As in BeginNavigationImpl(), record that this navigation is blocked by
     // the initiator's Connection-Allowlist so observers can suppress
     // speculative network activity for it. (Today no speculative work runs
@@ -7974,7 +7977,8 @@ void NavigationRequest::UpdateSiteInfo(
   SetExpectedProcess(post_redirect_process);
 }
 
-bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
+bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect,
+                                                       bool should_report) {
   // The connection allowlist base feature is the kill switch for the feature.
   // It is checked first. Then connection allowlist also requires origin trial
   // enabled. In order to check the origin trial status, the initiator policy
@@ -8009,8 +8013,13 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
   net::NetworkAnonymizationKey network_anonymization_key;
   std::optional<base::UnguessableToken> reporting_source;
 
+  // A null `network_context` means no violation reports will be queued. Don't
+  // report when the caller asks not to (e.g. for speculative preconnect
+  // checks), or for history navigations: their URLs come from session history,
+  // not from the initiator, so reporting them to the initiator would leak
+  // URLs of other pages in the session history. See crbug.com/572312779.
   RenderFrameHostImpl* initiator_rfh = GetInitiatorDocumentRenderFrameHost();
-  if (initiator_rfh) {
+  if (initiator_rfh && should_report && !IsHistory()) {
     network_context =
         initiator_rfh->GetProcess()->GetStoragePartition()->GetNetworkContext();
     network_anonymization_key = initiator_rfh->GetIsolationInfoForSubresources()
