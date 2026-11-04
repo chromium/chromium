@@ -53,6 +53,7 @@ public final class FuseboxIconUtils {
             case IconResourceIds.ADD_PHOTO_ALTERNATE_VALUE -> R.drawable.add_photo_alternate_24dp;
             case IconResourceIds.LENS_CAMERA_VALUE -> R.drawable.photo_camera_24dp;
             case IconResourceIds.DRIVE_VALUE -> R.drawable.gs_drive_vd_theme_24;
+            case IconResourceIds.PTM_TOOL_VALUE -> R.drawable.pro_model_24dp;
             default -> Resources.ID_NULL;
         };
     }

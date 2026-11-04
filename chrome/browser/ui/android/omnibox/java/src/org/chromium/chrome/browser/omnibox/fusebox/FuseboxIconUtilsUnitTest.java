@@ -68,6 +68,9 @@ public class FuseboxIconUtilsUnitTest {
         assertEquals(
                 R.drawable.gs_drive_vd_theme_24,
                 FuseboxIconUtils.getResIdForIconId(IconResourceIds.DRIVE_VALUE));
+        assertEquals(
+                R.drawable.pro_model_24dp,
+                FuseboxIconUtils.getResIdForIconId(IconResourceIds.PTM_TOOL_VALUE));
     }
 
     @Test
