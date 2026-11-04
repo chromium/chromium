@@ -39,16 +39,22 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWebRtc
   void OnInitialized(webrtc::VideoCaptureOptions::Status status) override;
 
   // Check if the necessary services are available on the system.
-  // Specifically this means that PipeWire and xdg-desktop-portal are running.
-  // The return will always be true at first and may change during device
-  // enumeration. So it should be checked again in the GetDevicesInfo()
-  // callback.
+  // Specifically this means that PipeWire and xdg-desktop-portal are running
+  // and that the Camera portal granted access. It is false if the portal is
+  // missing, fails or denies access. The return will always be true at first
+  // and may change during device enumeration. So it should be checked again in
+  // the GetDevicesInfo() callback.
   bool IsAvailable();
 
   static webrtc::VideoType WebRtcVideoTypeFromChromiumPixelFormat(
       VideoPixelFormat pixel_format);
   static VideoPixelFormat WebRtcVideoTypeToChromiumPixelFormat(
       webrtc::VideoType video_type);
+
+ protected:
+  // Starts the asynchronous PipeWire and Camera portal initialization, which
+  // finishes with OnInitialized(). Virtual for testing.
+  virtual void InitializeOptions();
 
  private:
   // Collect the camera devices and call the GetDevicesInfo() callback.

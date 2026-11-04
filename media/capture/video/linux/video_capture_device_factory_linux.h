@@ -25,6 +25,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryLinux
  public:
   explicit VideoCaptureDeviceFactoryLinux(
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+#if defined(WEBRTC_USE_PIPEWIRE)
+  // Uses |factory| for V4L2 devices and |webrtc_factory| for PipeWire
+  // devices. For testing.
+  VideoCaptureDeviceFactoryLinux(
+      std::unique_ptr<VideoCaptureDeviceFactory> factory,
+      std::unique_ptr<VideoCaptureDeviceFactoryWebRtc> webrtc_factory);
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
 
   VideoCaptureDeviceFactoryLinux(const VideoCaptureDeviceFactoryLinux&) =
       delete;

@@ -108,6 +108,10 @@ source_set("unit_tests") {
     "video_capture_device_factory_v4l2_unittest.cc",
   ]
 
+  if (rtc_use_pipewire) {
+    sources += [ "video_capture_device_factory_linux_unittest.cc" ]
+  }
+
   deps = [
     ":linux",
     ":test_support",

@@ -111,6 +111,10 @@ void VideoCaptureDeviceFactoryWebRtc::GetDevicesInfo(
     return;
   }
 
+  InitializeOptions();
+}
+
+void VideoCaptureDeviceFactoryWebRtc::InitializeOptions() {
   options_ = std::make_unique<webrtc::VideoCaptureOptions>();
 #if defined(WEBRTC_USE_PIPEWIRE)
   if (base::FeatureList::IsEnabled(features::kWebRtcPipeWireCamera)) {
@@ -131,7 +135,10 @@ void VideoCaptureDeviceFactoryWebRtc::OnInitialized(
 }
 
 bool VideoCaptureDeviceFactoryWebRtc::IsAvailable() {
-  return status_ != webrtc::VideoCaptureOptions::Status::UNAVAILABLE;
+  // DENIED and ERROR mean that the Camera portal denied access, is missing or
+  // failed. V4L2 may still be able to open the cameras then.
+  return status_ == webrtc::VideoCaptureOptions::Status::UNINITIALIZED ||
+         status_ == webrtc::VideoCaptureOptions::Status::SUCCESS;
 }
 
 webrtc::VideoType
