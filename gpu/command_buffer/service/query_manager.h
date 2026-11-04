@@ -212,7 +212,9 @@ class GPU_GLES2_EXPORT QueryManager {
   // Returns false if any query is pointing to invalid shared memory.
   void QueryCounter(Query* query, base::subtle::Atomic32 submit_count);
 
-  void PauseQueries();
+  // Called by the GL context virtualization layer when the owning decoder's
+  // virtual context is switched out / back in.
+  virtual void PauseQueries();
   void ResumeQueries();
 
   void BeginProcessingCommands();
@@ -225,6 +227,10 @@ class GPU_GLES2_EXPORT QueryManager {
 
   // True if there are pending queries.
   bool HavePendingQueries();
+
+  // True if there are active (begun, not yet ended) queries, including ones
+  // currently paused by a virtual context switch.
+  bool HaveActiveQueries() const { return !active_queries_.empty(); }
 
   void GenQueries(GLsizei n, const GLuint* queries);
   bool IsValidQuery(GLuint id);

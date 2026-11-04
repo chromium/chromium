@@ -70,6 +70,11 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
                      scoped_refptr<gpu::Buffer> buffer,
                      QuerySync* sync) override;
 
+  // Flushes this decoder's query job chain when its virtual context is
+  // switched out, if the flush_queries_before_deleting_or_unbinding_fbo
+  // driver-bug workaround is active (see implementation).
+  void PauseQueries() override;
+
   // Do any updates we need to do when the frame has begun.
   void ProcessFrameBeginUpdates();
 
@@ -89,6 +94,8 @@ class GPU_GLES2_EXPORT GLES2QueryManager : public QueryManager {
   void SafelyResetDisjointValue();
 
   raw_ptr<GLES2Decoder> decoder_;
+
+  const bool flush_queries_before_deleting_or_unbinding_fbo_;
 
   // Whether we are tracking disjoint values every frame.
   bool update_disjoints_continually_;

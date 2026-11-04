@@ -477,6 +477,10 @@ GLES2QueryManager::GLES2Query::~GLES2Query() = default;
 GLES2QueryManager::GLES2QueryManager(GLES2Decoder* decoder,
                                      FeatureInfo* feature_info)
     : decoder_(decoder),
+      flush_queries_before_deleting_or_unbinding_fbo_(
+          feature_info &&
+          feature_info->workarounds()
+              .flush_queries_before_deleting_or_unbinding_fbo),
       update_disjoints_continually_(false),
       disjoint_notify_shm_id_(-1),
       disjoint_notify_shm_offset_(0),
@@ -491,6 +495,35 @@ GLES2QueryManager::GLES2QueryManager(GLES2Decoder* decoder,
 }
 
 GLES2QueryManager::~GLES2QueryManager() = default;
+
+void GLES2QueryManager::PauseQueries() {
+  const bool had_unflushed_queries = HaveActiveQueries() || HavePendingQueries();
+  QueryManager::PauseQueries();
+
+  // Driver-bug workaround flush_queries_before_deleting_or_unbinding_fbo
+  // (ARM Mali Valhall/Avalon, crbug.com/534468209): a user FBO must not be
+  // unbound or deleted while GPU jobs/queries that reference it are still
+  // unflushed. GLES2DecoderImpl guards its own glBindFramebuffer /
+  // glDeleteFramebuffers, but with virtualized GL contexts every other
+  // virtual context on the same real context (the raster SharedContextState
+  // and its Skia Ganesh-GL GrGLGpu, other decoders) issues FBO binds and
+  // deletes without any knowledge of this decoder's queries -- Skia's own
+  // copy of the workaround is keyed on Skia-issued timer queries only. So
+  // flush this decoder's query job chain at the point where the invariant
+  // "every query on this real context is mine" stops holding: the virtual
+  // context switch.
+  if (had_unflushed_queries &&
+      flush_queries_before_deleting_or_unbinding_fbo_) {
+    gl::GLApi* api = gl::g_current_gl_context;
+    GLsync sync = api->glFenceSyncFn(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    if (sync) {
+      api->glClientWaitSyncFn(sync, GL_SYNC_FLUSH_COMMANDS_BIT, 0);
+      api->glDeleteSyncFn(sync);
+    } else {
+      api->glFinishFn();
+    }
+  }
+}
 
 QueryManager::Query* GLES2QueryManager::CreateQuery(
     GLenum target,
