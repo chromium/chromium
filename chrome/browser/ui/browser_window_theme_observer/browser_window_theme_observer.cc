@@ -11,6 +11,8 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "ui/native_theme/native_theme.h"
 
 DEFINE_USER_DATA(BrowserWindowThemeObserver);
 
@@ -21,6 +23,14 @@ BrowserWindowThemeObserver::BrowserWindowThemeObserver(
       ThemeServiceFactory::GetForProfile(browser->GetProfile());
   CHECK(theme_service);
   theme_service_observation_.Observe(theme_service);
+
+  // Native theme bridging is gated so that BrowserView is not notified twice
+  // (once via BrowserWidget's own ui::NativeThemeObserver and once here) until
+  // BrowserWidget has been migrated onto this observer.
+  if (features::IsBrowserWindowListenerObservationEnabled()) {
+    native_theme_observation_.Observe(
+        ui::NativeTheme::GetInstanceForNativeUi());
+  }
 }
 
 BrowserWindowThemeObserver::~BrowserWindowThemeObserver() {
@@ -54,4 +64,13 @@ void BrowserWindowThemeObserver::NotifyThemeChanged(
 
 void BrowserWindowThemeObserver::OnThemeChanged() {
   NotifyThemeChanged(BrowserThemeChangeType::kBrowserTheme);
+}
+
+void BrowserWindowThemeObserver::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  NotifyThemeChanged(BrowserThemeChangeType::kNativeTheme);
+}
+
+bool BrowserWindowThemeObserver::IsObservingNativeThemeForTesting() const {
+  return native_theme_observation_.IsObserving();
 }

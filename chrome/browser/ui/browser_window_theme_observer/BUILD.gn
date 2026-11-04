@@ -11,9 +11,11 @@ source_set("browser_window_theme_observer") {
     "//base",
     "//chrome/browser/themes",
     "//ui/base/unowned_user_data",
+    "//ui/native_theme",
   ]
   deps = [
     "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
   ]
 }
@@ -27,11 +29,13 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/test:test_support",
     "//components/keyed_service/core",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/native_theme",
   ]
 }

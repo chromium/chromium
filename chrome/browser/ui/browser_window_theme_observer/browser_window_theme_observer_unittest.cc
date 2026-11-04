@@ -9,17 +9,20 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -162,5 +165,63 @@ TEST_F(BrowserWindowThemeObserverTest, UnsubscribeDuringNotificationIsSafe) {
   observer.NotifyThemeChanged(BrowserThemeChangeType::kBrowserTheme);
   EXPECT_EQ(1, call_count);
 }
+
+// Exercises ui::NativeTheme bridging with the feature flag on and off.
+class BrowserWindowThemeObserverNativeThemeTest
+    : public BrowserWindowThemeObserverTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  BrowserWindowThemeObserverNativeThemeTest() {
+    feature_list_.InitWithFeatureState(
+        features::kBrowserWindowListenerObservation, IsFeatureEnabled());
+  }
+
+  bool IsFeatureEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(BrowserWindowThemeObserverNativeThemeTest,
+       ObservesNativeThemeOnlyWhenEnabled) {
+  BrowserWindowThemeObserver observer(&mock_browser());
+  EXPECT_EQ(IsFeatureEnabled(), observer.IsObservingNativeThemeForTesting());
+}
+
+TEST_P(BrowserWindowThemeObserverNativeThemeTest,
+       NativeThemeUpdateNotifiesNativeThemeType) {
+  BrowserWindowThemeObserver observer(&mock_browser());
+
+  base::MockCallback<BrowserWindowThemeObserver::ThemeChangedCallback> callback;
+  base::CallbackListSubscription subscription =
+      observer.RegisterThemeChangedCallback(callback.Get());
+
+  // With the feature enabled a native theme update is translated into a
+  // kNativeTheme change; with it disabled the observer must stay silent so
+  // BrowserView is not notified twice (BrowserWidget still observes the native
+  // theme directly).
+  EXPECT_CALL(callback, Run(BrowserThemeChangeType::kNativeTheme))
+      .Times(IsFeatureEnabled() ? 1 : 0);
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+}
+
+TEST_P(BrowserWindowThemeObserverNativeThemeTest,
+       ThemeServiceStillNotifiesRegardlessOfFlag) {
+  BrowserWindowThemeObserver observer(&mock_browser());
+
+  base::MockCallback<BrowserWindowThemeObserver::ThemeChangedCallback> callback;
+  base::CallbackListSubscription subscription =
+      observer.RegisterThemeChangedCallback(callback.Get());
+
+  EXPECT_CALL(callback, Run(BrowserThemeChangeType::kBrowserTheme)).Times(1);
+  theme_service()->NotifyThemeChanged();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserWindowThemeObserverNativeThemeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Enabled" : "Disabled";
+                         });
 
 }  // namespace
