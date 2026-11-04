@@ -10,7 +10,6 @@ import static org.chromium.ui.base.DeviceFormFactor.PHONE;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.ActivityFinisher;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -108,11 +106,6 @@ public class TabSwitcherSearchRenderTest {
         mTestServer =
                 mCtaTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT).getServer();
         mInitialPage = mCtaTestRule.startOnBlankPage();
-    }
-
-    @After
-    public void tearDown() {
-        ActivityFinisher.finishAll();
     }
 
     @Test

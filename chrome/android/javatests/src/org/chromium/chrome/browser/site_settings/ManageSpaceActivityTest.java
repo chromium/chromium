@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
-import android.app.Activity;
 import android.content.Intent;
 
 import androidx.appcompat.app.AlertDialog;
@@ -23,14 +22,12 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -41,7 +38,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -68,17 +64,6 @@ public class ManageSpaceActivityTest {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
-    }
-
-    @After
-    public void tearDown() {
-        if (ApplicationStatus.isInitialized()) {
-            for (Activity activity : ApplicationStatus.getRunningActivities()) {
-                if (!(activity instanceof ChromeTabbedActivity)) {
-                    ApplicationTestUtils.finishActivity(activity);
-                }
-            }
-        }
     }
 
     private ManageSpaceActivity startManageSpaceActivity() {

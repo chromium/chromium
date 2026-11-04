@@ -20,7 +20,6 @@ import android.os.Build.VERSION_CODES;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -112,14 +110,6 @@ public class AutoPictureInPictureTabHelperTest {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mPage.getActivity();
-    }
-
-    @After
-    public void tearDown() {
-        if (mActivity != null) {
-            ApplicationTestUtils.finishActivity(mActivity);
-        }
-        waitForNoPictureInPictureActivity();
     }
 
     @Test
@@ -915,26 +905,5 @@ public class AutoPictureInPictureTabHelperTest {
                             AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(
                                     webContents, url));
                 });
-    }
-
-    /** Closes any running {@link PictureInPictureActivity} and waits for it to be destroyed. */
-    private void waitForNoPictureInPictureActivity() {
-        PictureInPictureActivity pipActivity = null;
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity instanceof PictureInPictureActivity) {
-                pipActivity = (PictureInPictureActivity) activity;
-                break;
-            }
-        }
-
-        if (pipActivity != null) {
-            final PictureInPictureActivity activityToFinish = pipActivity;
-            ThreadUtils.runOnUiThreadBlocking(activityToFinish::finish);
-            CriteriaHelper.pollUiThread(
-                    activityToFinish::isDestroyed,
-                    "PictureInPictureActivity was not closed.",
-                    PIP_TIMEOUT_MS,
-                    CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        }
     }
 }
