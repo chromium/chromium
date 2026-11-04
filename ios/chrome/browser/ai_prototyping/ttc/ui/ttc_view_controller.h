@@ -8,17 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller_protocol.h"
 
+@class TTCVoicePlateView;
 @protocol TTCMutator;
-@protocol TTCVoicePlateMutator;
 
 // View controller displaying the TTC prototype UI.
 @interface TTCViewController
-    : UIViewController <AIPrototypingViewControllerProtocol,
-                        TTCConsumer,
-                        TTCVoicePlateConsumer>
+    : UIViewController <AIPrototypingViewControllerProtocol, TTCConsumer>
 
 // Mutator handling common AI prototyping interactions.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
@@ -26,8 +23,8 @@
 // Mutator handling TTC session journal actions.
 @property(nonatomic, weak) id<TTCMutator> ttcMutator;
 
-// Mutator handling voice session lifecycle.
-@property(nonatomic, weak) id<TTCVoicePlateMutator> voicePlateMutator;
+// Reusable Voice Plate view hosted above the session journal.
+@property(nonatomic, strong, readonly) TTCVoicePlateView* voicePlateView;
 
 // Use `initForFeature:` from `AIPrototypingViewControllerProtocol` instead.
 - (instancetype)init NS_UNAVAILABLE;

@@ -8,28 +8,20 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_mutator.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_consumer.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_mutator.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_view.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
 // Layout and dimension constants.
-constexpr CGFloat kMicButtonSize = 88.0;
-constexpr CGFloat kMicSymbolPointSize = 40.0;
 constexpr CGFloat kHeaderStackSpacing = 8.0;
 constexpr CGFloat kContentStackSpacing = 16.0;
-constexpr CGFloat kStatusLabelSpacing = 10.0;
 constexpr CGFloat kCardCornerRadius = 12.0;
 constexpr CGFloat kCardInternalPadding = 12.0;
 constexpr CGFloat kCardItemSpacing = 8.0;
 
-constexpr CGFloat kMicButtonShadowOffsetY = 4.0;
-constexpr float kMicButtonShadowOpacity = 0.2f;
-constexpr CGFloat kMicButtonShadowRadius = 8.0;
 constexpr CGFloat kJournalTextViewHeight = 220.0;
 constexpr CGFloat kJournalFontSize = 11.0;
 constexpr CGFloat kJournalCornerRadius = 8.0;
@@ -37,11 +29,6 @@ constexpr CGFloat kJournalHeaderSpacing = 12.0;
 
 // UI string constants.
 NSString* const kHeaderTitleText = @"TTC";
-NSString* const kStatusLabelIdleText = @"Tap to start conversation";
-NSString* const kStatusLabelConnectingText = @"Connecting to server...";
-NSString* const kStatusLabelListeningText = @"Listening... Speak now";
-NSString* const kStatusLabelErrorText = @"Session error occurred";
-NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
 NSString* const kJournalTitleText = @"Session Journal";
 NSString* const kJournalDetailsButtonText = @"Details";
 NSString* const kJournalSimpleButtonText = @"Simple";
@@ -71,12 +58,8 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
 }  // namespace
 
 @implementation TTCViewController {
-  TTCSessionUIState _currentState;
   BOOL _isJournalDetailedMode;
 
-  UIButton* _micButton;
-  UILabel* _statusLabel;
-  UIProgressView* _energyLevelMeter;
   UITextView* _journalTextView;
   UIButton* _journalDetailsButton;
   UIButton* _journalCopyButton;
@@ -94,9 +77,10 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _feature = feature;
-    _currentState = TTCSessionUIState::kIdle;
     _isJournalDetailedMode = NO;
     _journalLines = [[NSMutableArray alloc] init];
+    _voicePlateView = [[TTCVoicePlateView alloc] initWithFrame:CGRectZero];
+    _voicePlateView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return self;
 }
@@ -131,51 +115,12 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
   headerStack.axis = UILayoutConstraintAxisVertical;
   headerStack.spacing = kHeaderStackSpacing;
 
-  // Mic Button.
-  _micButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _micButton.translatesAutoresizingMaskIntoConstraints = NO;
-  _micButton.backgroundColor = [UIColor colorNamed:kBlueColor];
-  _micButton.tintColor = [UIColor whiteColor];
-  _micButton.layer.cornerRadius = kMicButtonSize / 2.0;
-  _micButton.layer.masksToBounds = NO;
-  _micButton.layer.shadowColor = [[UIColor blackColor] CGColor];
-  _micButton.layer.shadowOffset = CGSizeMake(0.0, kMicButtonShadowOffsetY);
-  _micButton.layer.shadowOpacity = kMicButtonShadowOpacity;
-  _micButton.layer.shadowRadius = kMicButtonShadowRadius;
-
-  UIImage* micImage =
-      SymbolWithPointSize(SymbolMicrophoneFill, kMicSymbolPointSize);
-  [_micButton setImage:micImage forState:UIControlStateNormal];
-  [_micButton addTarget:self
-                 action:@selector(micButtonTapped:)
-       forControlEvents:UIControlEventTouchUpInside];
-
-  // Status Label.
-  _statusLabel = [[UILabel alloc] init];
-  _statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _statusLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  _statusLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  _statusLabel.textAlignment = NSTextAlignmentCenter;
-  _statusLabel.numberOfLines = 0;
-  _statusLabel.text = kStatusLabelIdleText;
-
-  UIStackView* micContainer = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ _micButton, _statusLabel ]];
-  micContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  micContainer.axis = UILayoutConstraintAxisVertical;
-  micContainer.alignment = UIStackViewAlignmentCenter;
-  micContainer.spacing = kStatusLabelSpacing;
-
-  // Microphone Input Level Card.
-  UIView* meterCard = [self createMeterCard];
-
   // Session Journal Card.
   UIView* journalCard = [self createJournalCard];
 
   // Main Vertical Content Stack.
   UIStackView* mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    headerStack, micContainer, meterCard, journalCard
+    headerStack, self.voicePlateView, journalCard
   ]];
   mainStack.translatesAutoresizingMaskIntoConstraints = NO;
   mainStack.axis = UILayoutConstraintAxisVertical;
@@ -210,13 +155,8 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
     [mainStack.trailingAnchor
         constraintEqualToAnchor:scrollView.frameLayoutGuide.trailingAnchor
                        constant:-kHorizontalInset],
-
-    [_micButton.widthAnchor constraintEqualToConstant:kMicButtonSize],
-    [_micButton.heightAnchor constraintEqualToConstant:kMicButtonSize],
   ]];
 
-  // Re-apply hydrated session and journal states.
-  [self setSessionState:_currentState];
   [self refreshJournalTextView];
 }
 
@@ -228,49 +168,6 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
 
 - (void)updateResponseField:(NSString*)response {
   // No-op for TTC audio session.
-}
-
-#pragma mark - TTCVoicePlateConsumer
-
-- (void)setSessionState:(TTCSessionUIState)state {
-  _currentState = state;
-  switch (state) {
-    case TTCSessionUIState::kIdle:
-      _micButton.backgroundColor = [UIColor colorNamed:kBlueColor];
-      _statusLabel.text = kStatusLabelIdleText;
-      _statusLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      [_energyLevelMeter setProgress:0.0 animated:NO];
-      break;
-    case TTCSessionUIState::kConnecting:
-      _micButton.backgroundColor = [UIColor colorNamed:kOrange500Color];
-      _statusLabel.text = kStatusLabelConnectingText;
-      _statusLabel.textColor = [UIColor colorNamed:kOrange500Color];
-      break;
-    case TTCSessionUIState::kListening:
-      _micButton.backgroundColor = [UIColor colorNamed:kRedColor];
-      _statusLabel.text = kStatusLabelListeningText;
-      _statusLabel.textColor = [UIColor colorNamed:kRedColor];
-      break;
-    case TTCSessionUIState::kError:
-      _micButton.backgroundColor = [UIColor colorNamed:kBlueColor];
-      _statusLabel.text = kStatusLabelErrorText;
-      _statusLabel.textColor = [UIColor colorNamed:kRedColor];
-      [_energyLevelMeter setProgress:0.0 animated:NO];
-      break;
-  }
-}
-
-- (void)setMicMuted:(BOOL)micMuted {
-  // Handled by `TTCVoicePlateView` in follow-up CL.
-}
-
-- (void)setMicEnergyLevel:(float)rms {
-  [_energyLevelMeter setProgress:rms animated:YES];
-}
-
-- (void)showErrorMessage:(NSString*)errorMessage {
-  _statusLabel.text = errorMessage ?: kStatusLabelErrorText;
-  _statusLabel.textColor = [UIColor colorNamed:kRedColor];
 }
 
 #pragma mark - TTCConsumer
@@ -292,16 +189,6 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
 }
 
 #pragma mark - Actions
-
-- (void)micButtonTapped:(UIButton*)sender {
-  if (_currentState != TTCSessionUIState::kIdle &&
-      _currentState != TTCSessionUIState::kError) {
-    [self.voicePlateMutator stopSession];
-    return;
-  }
-
-  [self.voicePlateMutator startSession];
-}
 
 - (void)detailsJournalButtonTapped:(UIButton*)sender {
   _isJournalDetailedMode = !_isJournalDetailedMode;
@@ -328,50 +215,6 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
 }
 
 #pragma mark - Private UI Helpers
-
-// Creates a card showing the microphone input energy progress meter.
-- (UIView*)createMeterCard {
-  UIView* cardView = [[UIView alloc] init];
-  cardView.translatesAutoresizingMaskIntoConstraints = NO;
-  cardView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  cardView.layer.cornerRadius = kCardCornerRadius;
-  cardView.layer.masksToBounds = YES;
-
-  UILabel* meterLabel = [[UILabel alloc] init];
-  meterLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  meterLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  meterLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  meterLabel.text = kEnergyMeterLabelText;
-
-  _energyLevelMeter = [[UIProgressView alloc]
-      initWithProgressViewStyle:UIProgressViewStyleDefault];
-  _energyLevelMeter.translatesAutoresizingMaskIntoConstraints = NO;
-  _energyLevelMeter.progressTintColor = [UIColor colorNamed:kBlueColor];
-  _energyLevelMeter.trackTintColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
-  _energyLevelMeter.progress = 0.0;
-
-  UIStackView* cardStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ meterLabel, _energyLevelMeter ]];
-  cardStack.translatesAutoresizingMaskIntoConstraints = NO;
-  cardStack.axis = UILayoutConstraintAxisVertical;
-  cardStack.spacing = kCardItemSpacing;
-
-  [cardView addSubview:cardStack];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [cardStack.topAnchor constraintEqualToAnchor:cardView.topAnchor
-                                        constant:kCardInternalPadding],
-    [cardStack.bottomAnchor constraintEqualToAnchor:cardView.bottomAnchor
-                                           constant:-kCardInternalPadding],
-    [cardStack.leadingAnchor constraintEqualToAnchor:cardView.leadingAnchor
-                                            constant:kCardInternalPadding],
-    [cardStack.trailingAnchor constraintEqualToAnchor:cardView.trailingAnchor
-                                             constant:-kCardInternalPadding],
-  ]];
-
-  return cardView;
-}
 
 // Creates a card displaying the live session journal with component filter,
 // simplified/detailed toggle, copy, and clear controls.

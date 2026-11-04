@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_view.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -39,8 +40,9 @@
   _mediator.consumer = _viewController;
   _viewController.ttcMutator = _mediator;
 
-  _voicePlateMediator.consumer = _viewController;
-  _viewController.voicePlateMutator = _voicePlateMediator;
+  TTCVoicePlateView* voicePlateView = _viewController.voicePlateView;
+  _voicePlateMediator.consumer = voicePlateView;
+  voicePlateView.mutator = _voicePlateMediator;
 }
 
 - (void)stop {
