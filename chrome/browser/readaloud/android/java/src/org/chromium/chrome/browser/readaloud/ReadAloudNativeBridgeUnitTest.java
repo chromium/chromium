@@ -13,12 +13,15 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,10 +54,17 @@ public class ReadAloudNativeBridgeUnitTest {
     @Before
     public void setUp() {
         ReadAloudNativeBridgeJni.setInstanceForTesting(mNativeBridgeNatives);
-        when(mNativeBridgeNatives.init(any(), any())).thenReturn(NATIVE_PTR);
+        doAnswer(invocation -> JniRawPtr.createForTesting(NATIVE_PTR))
+                .when(mNativeBridgeNatives)
+                .init(any(), any());
         when(mWebContents.isDestroyed()).thenReturn(false);
 
         mBridge = new ReadAloudNativeBridge();
+    }
+
+    @After
+    public void tearDown() {
+        mBridge.destroy();
     }
 
     @Test
@@ -73,12 +83,14 @@ public class ReadAloudNativeBridgeUnitTest {
         assertTrue(mBridge.isInitialized());
 
         long secondNativePtr = 67890L;
-        when(mNativeBridgeNatives.init(any(), any())).thenReturn(secondNativePtr);
+        doAnswer(invocation -> JniRawPtr.createForTesting(secondNativePtr))
+                .when(mNativeBridgeNatives)
+                .init(any(), any());
 
         // Re-initializing should destroy the first native instance before creating the second.
         mBridge.initialize(mProfile, mController);
 
-        verify(mNativeBridgeNatives).destroy(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).destroy(any());
         verify(mNativeBridgeNatives, times(2)).init(eq(mProfile), eq(mBridge));
         assertTrue(mBridge.isInitialized());
     }
@@ -90,12 +102,12 @@ public class ReadAloudNativeBridgeUnitTest {
 
         mBridge.destroy();
 
-        verify(mNativeBridgeNatives).destroy(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).destroy(any());
         assertFalse(mBridge.isInitialized());
 
         // Subsequent destroy calls should be safe no-ops.
         mBridge.destroy();
-        verify(mNativeBridgeNatives, times(1)).destroy(anyLong());
+        verify(mNativeBridgeNatives, times(1)).destroy(any());
     }
 
     @Test
@@ -103,59 +115,58 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.initialize(mProfile, mController);
 
         mBridge.initializeSession(mWebContents);
-        verify(mNativeBridgeNatives).initializeSession(eq(NATIVE_PTR), eq(mWebContents));
+        verify(mNativeBridgeNatives).initializeSession(any(), eq(mWebContents));
 
         mBridge.play(mWebContents);
-        verify(mNativeBridgeNatives).play(eq(NATIVE_PTR), eq(mWebContents));
+        verify(mNativeBridgeNatives).play(any(), eq(mWebContents));
 
         mBridge.pause();
-        verify(mNativeBridgeNatives).pause(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).pause(any());
 
         mBridge.stop();
-        verify(mNativeBridgeNatives).stop(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).stop(any());
 
         mBridge.seekToWord(2, 15);
-        verify(mNativeBridgeNatives).seekToWord(eq(NATIVE_PTR), eq(2), eq(15));
+        verify(mNativeBridgeNatives).seekToWord(any(), eq(2), eq(15));
 
         mBridge.seek(5000L);
-        verify(mNativeBridgeNatives).seek(eq(NATIVE_PTR), eq(5000L));
+        verify(mNativeBridgeNatives).seek(any(), eq(5000L));
 
         mBridge.seekRelative(200L);
-        verify(mNativeBridgeNatives).seekRelative(eq(NATIVE_PTR), eq(200L));
+        verify(mNativeBridgeNatives).seekRelative(any(), eq(200L));
 
         mBridge.setPlaybackRate(1.5f);
-        verify(mNativeBridgeNatives).setPlaybackRate(eq(NATIVE_PTR), eq(1.5f));
+        verify(mNativeBridgeNatives).setPlaybackRate(any(), eq(1.5f));
 
         mBridge.setVoice("voice_1");
-        verify(mNativeBridgeNatives).setVoice(eq(NATIVE_PTR), eq("voice_1"));
+        verify(mNativeBridgeNatives).setVoice(any(), eq("voice_1"));
 
         mBridge.setLanguageCode("es");
-        verify(mNativeBridgeNatives).setLanguageCode(eq(NATIVE_PTR), eq("es"));
+        verify(mNativeBridgeNatives).setLanguageCode(any(), eq("es"));
 
         mBridge.previewVoice("voice_1", "Preview text");
-        verify(mNativeBridgeNatives)
-                .previewVoice(eq(NATIVE_PTR), eq("voice_1"), eq("Preview text"));
+        verify(mNativeBridgeNatives).previewVoice(any(), eq("voice_1"), eq("Preview text"));
 
         mBridge.pauseVoicePreview();
-        verify(mNativeBridgeNatives).pauseVoicePreview(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).pauseVoicePreview(any());
 
         mBridge.stopVoicePreview();
-        verify(mNativeBridgeNatives).stopVoicePreview(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).stopVoicePreview(any());
 
         mBridge.setPlaybackMode(1);
-        verify(mNativeBridgeNatives).setPlaybackMode(eq(NATIVE_PTR), eq(1));
+        verify(mNativeBridgeNatives).setPlaybackMode(any(), eq(1));
 
         mBridge.setHighlightingEnabled(true);
-        verify(mNativeBridgeNatives).setHighlightingEnabled(eq(NATIVE_PTR), eq(true));
+        verify(mNativeBridgeNatives).setHighlightingEnabled(any(), eq(true));
 
         mBridge.sendFeedback(2);
-        verify(mNativeBridgeNatives).sendFeedback(eq(NATIVE_PTR), eq(2));
+        verify(mNativeBridgeNatives).sendFeedback(any(), eq(2));
 
         mBridge.checkReadability(TEST_GURL);
-        verify(mNativeBridgeNatives).checkReadability(eq(NATIVE_PTR), eq(TEST_GURL));
+        verify(mNativeBridgeNatives).checkReadability(any(), eq(TEST_GURL));
 
         mBridge.initVoices();
-        verify(mNativeBridgeNatives).initVoices(eq(NATIVE_PTR));
+        verify(mNativeBridgeNatives).initVoices(any());
     }
 
     @Test
@@ -180,23 +191,23 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.checkReadability(TEST_GURL);
         mBridge.initVoices();
 
-        verify(mNativeBridgeNatives, never()).play(anyLong(), any());
-        verify(mNativeBridgeNatives, never()).pause(anyLong());
-        verify(mNativeBridgeNatives, never()).stop(anyLong());
-        verify(mNativeBridgeNatives, never()).seekToWord(anyLong(), anyInt(), anyInt());
-        verify(mNativeBridgeNatives, never()).seek(anyLong(), anyLong());
-        verify(mNativeBridgeNatives, never()).seekRelative(anyLong(), anyLong());
-        verify(mNativeBridgeNatives, never()).setPlaybackRate(anyLong(), anyFloat());
-        verify(mNativeBridgeNatives, never()).setVoice(anyLong(), anyString());
-        verify(mNativeBridgeNatives, never()).setLanguageCode(anyLong(), anyString());
-        verify(mNativeBridgeNatives, never()).previewVoice(anyLong(), anyString(), anyString());
-        verify(mNativeBridgeNatives, never()).pauseVoicePreview(anyLong());
-        verify(mNativeBridgeNatives, never()).stopVoicePreview(anyLong());
-        verify(mNativeBridgeNatives, never()).setPlaybackMode(anyLong(), anyInt());
-        verify(mNativeBridgeNatives, never()).setHighlightingEnabled(anyLong(), anyBoolean());
-        verify(mNativeBridgeNatives, never()).sendFeedback(anyLong(), anyInt());
-        verify(mNativeBridgeNatives, never()).checkReadability(anyLong(), any());
-        verify(mNativeBridgeNatives, never()).initVoices(anyLong());
+        verify(mNativeBridgeNatives, never()).play(any(), any());
+        verify(mNativeBridgeNatives, never()).pause(any());
+        verify(mNativeBridgeNatives, never()).stop(any());
+        verify(mNativeBridgeNatives, never()).seekToWord(any(), anyInt(), anyInt());
+        verify(mNativeBridgeNatives, never()).seek(any(), anyLong());
+        verify(mNativeBridgeNatives, never()).seekRelative(any(), anyLong());
+        verify(mNativeBridgeNatives, never()).setPlaybackRate(any(), anyFloat());
+        verify(mNativeBridgeNatives, never()).setVoice(any(), anyString());
+        verify(mNativeBridgeNatives, never()).setLanguageCode(any(), anyString());
+        verify(mNativeBridgeNatives, never()).previewVoice(any(), anyString(), anyString());
+        verify(mNativeBridgeNatives, never()).pauseVoicePreview(any());
+        verify(mNativeBridgeNatives, never()).stopVoicePreview(any());
+        verify(mNativeBridgeNatives, never()).setPlaybackMode(any(), anyInt());
+        verify(mNativeBridgeNatives, never()).setHighlightingEnabled(any(), anyBoolean());
+        verify(mNativeBridgeNatives, never()).sendFeedback(any(), anyInt());
+        verify(mNativeBridgeNatives, never()).checkReadability(any(), any());
+        verify(mNativeBridgeNatives, never()).initVoices(any());
     }
 
     @Test
@@ -204,11 +215,11 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.initialize(mProfile, mController);
 
         mBridge.play(null);
-        verify(mNativeBridgeNatives, never()).play(anyLong(), any());
+        verify(mNativeBridgeNatives, never()).play(any(), any());
 
         when(mWebContents.isDestroyed()).thenReturn(true);
         mBridge.play(mWebContents);
-        verify(mNativeBridgeNatives, never()).play(anyLong(), any());
+        verify(mNativeBridgeNatives, never()).play(any(), any());
     }
 
     @Test
@@ -216,7 +227,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.initialize(mProfile, mController);
 
         mBridge.checkReadability(null);
-        verify(mNativeBridgeNatives, never()).checkReadability(anyLong(), any());
+        verify(mNativeBridgeNatives, never()).checkReadability(any(), any());
     }
 
     @Test

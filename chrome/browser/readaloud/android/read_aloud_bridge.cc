@@ -15,6 +15,7 @@
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // JNI header generated automatically by JNI Zero.
@@ -294,22 +295,22 @@ void ReadAloudBridge::OnNativeDestroyed() {
 // JNI Inbound Methods (Java -> C++ Commands)
 // ============================================================================
 
-static jlong JNI_ReadAloudNativeBridge_Init(
+static jni_zero::JniRawPtr<ReadAloudBridge> JNI_ReadAloudNativeBridge_Init(
     JNIEnv* env,
     Profile* profile,
     const JavaRef<jobject>& j_native_bridge) {
   if (!profile) {
-    return 0;
+    return nullptr;
   }
   ReadAloudService* service = ReadAloudServiceFactory::GetForProfile(profile);
   if (!service) {
-    return 0;
+    return nullptr;
   }
   auto bridge =
       std::make_unique<ReadAloudBridge>(env, j_native_bridge, service);
   auto* bridge_ptr = bridge.get();
   service->SetDelegate(std::move(bridge));
-  return reinterpret_cast<jlong>(bridge_ptr);
+  return jni_zero::MakeRaw(bridge_ptr);
 }
 
 void ReadAloudBridge::InitializeSession(JNIEnv* env,
@@ -427,6 +428,10 @@ void ReadAloudBridge::InitVoices(JNIEnv* env) {
 }
 
 void ReadAloudBridge::Destroy(JNIEnv* env) {
+  if (ScopedJavaLocalRef<jobject> j_bridge =
+          weak_java_native_bridge_.get(env)) {
+    Java_ReadAloudNativeBridge_releaseNativePtr(env, j_bridge);
+  }
   weak_java_native_bridge_.reset();
   if (service_) {
     service_->SetDelegate(nullptr);

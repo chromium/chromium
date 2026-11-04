@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.readaloud;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -44,8 +47,11 @@ import org.chromium.url.GURL;
 @JNINamespace("readaloud")
 @NullMarked
 class ReadAloudNativeBridge {
-    // Address of the native C++ ReadAloudBridge instance (for handling Java -> native calls).
-    private long mNativeReadAloudBridge;
+    @JniType("::readaloud::ReadAloudBridge")
+    interface NativeReadAloudBridge extends JniTypeToken {}
+
+    // Borrowed reference to the native C++ ReadAloudBridge instance.
+    private @Nullable JniRawPtr<NativeReadAloudBridge> mNativeReadAloudBridge;
     // ReadAloudController reference (for handling native -> Java calls).
     private @Nullable ReadAloudController mController;
 
@@ -60,7 +66,7 @@ class ReadAloudNativeBridge {
      */
     public void initialize(Profile profile, ReadAloudController controller) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             destroy();
         }
         mController = controller;
@@ -70,15 +76,15 @@ class ReadAloudNativeBridge {
     /** Returns true if the native bridge is initialized and active. */
     public boolean isInitialized() {
         ThreadUtils.assertOnUiThread();
-        return mNativeReadAloudBridge != 0;
+        return mNativeReadAloudBridge != null;
     }
 
-    /** Unregisters the delegate in native and resets the pointer to 0. */
+    /** Unregisters the delegate in native and releases the pointer reference. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().destroy(mNativeReadAloudBridge);
-            mNativeReadAloudBridge = 0;
+            releaseNativePtr();
         }
         mController = null;
     }
@@ -94,7 +100,7 @@ class ReadAloudNativeBridge {
     /** Initializes the native playback session for the given web contents. */
     public void initializeSession(@Nullable WebContents webContents) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0 && webContents != null && !webContents.isDestroyed()) {
+        if (mNativeReadAloudBridge != null && webContents != null && !webContents.isDestroyed()) {
             ReadAloudNativeBridgeJni.get().initializeSession(mNativeReadAloudBridge, webContents);
         }
     }
@@ -102,7 +108,7 @@ class ReadAloudNativeBridge {
     /** Starts or resumes audio playback. */
     public void play(@Nullable WebContents webContents) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0 && webContents != null && !webContents.isDestroyed()) {
+        if (mNativeReadAloudBridge != null && webContents != null && !webContents.isDestroyed()) {
             ReadAloudNativeBridgeJni.get().play(mNativeReadAloudBridge, webContents);
         }
     }
@@ -110,7 +116,7 @@ class ReadAloudNativeBridge {
     /** Pauses active audio playback. */
     public void pause() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().pause(mNativeReadAloudBridge);
         }
     }
@@ -118,7 +124,7 @@ class ReadAloudNativeBridge {
     /** Stops audio playback and releases playback resources. */
     public void stop() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().stop(mNativeReadAloudBridge);
         }
     }
@@ -126,7 +132,7 @@ class ReadAloudNativeBridge {
     /** Seeks to the word at the specified segment index and character offset. */
     public void seekToWord(int segmentIndex, int characterOffset) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get()
                     .seekToWord(mNativeReadAloudBridge, segmentIndex, characterOffset);
         }
@@ -135,7 +141,7 @@ class ReadAloudNativeBridge {
     /** Seeks to a specific absolute time offset from the beginning of the audio. */
     public void seek(long absoluteTimeNanos) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().seek(mNativeReadAloudBridge, absoluteTimeNanos);
         }
     }
@@ -143,7 +149,7 @@ class ReadAloudNativeBridge {
     /** Seeks forward or backward relatively (e.g., for skip buttons). */
     public void seekRelative(long offsetNanos) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().seekRelative(mNativeReadAloudBridge, offsetNanos);
         }
     }
@@ -151,7 +157,7 @@ class ReadAloudNativeBridge {
     /** Adjusts the audio playback speed (rate multiplier). */
     public void setPlaybackRate(float rate) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().setPlaybackRate(mNativeReadAloudBridge, rate);
         }
     }
@@ -159,7 +165,7 @@ class ReadAloudNativeBridge {
     /** Sets the voice to be used for text-to-speech synthesis. */
     public void setVoice(String voiceId) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().setVoice(mNativeReadAloudBridge, voiceId);
         }
     }
@@ -167,7 +173,7 @@ class ReadAloudNativeBridge {
     /** Sets the target language code for text-to-speech synthesis. */
     public void setLanguageCode(String languageCode) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().setLanguageCode(mNativeReadAloudBridge, languageCode);
         }
     }
@@ -175,7 +181,7 @@ class ReadAloudNativeBridge {
     /** Plays or resumes a short audio sample of the specified voice. */
     public void previewVoice(String voiceId, String previewText) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get()
                     .previewVoice(mNativeReadAloudBridge, voiceId, previewText);
         }
@@ -184,7 +190,7 @@ class ReadAloudNativeBridge {
     /** Pauses the active voice preview playback. */
     public void pauseVoicePreview() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().pauseVoicePreview(mNativeReadAloudBridge);
         }
     }
@@ -192,7 +198,7 @@ class ReadAloudNativeBridge {
     /** Stops the active voice preview playback. */
     public void stopVoicePreview() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().stopVoicePreview(mNativeReadAloudBridge);
         }
     }
@@ -200,7 +206,7 @@ class ReadAloudNativeBridge {
     /** Sets the playback mode (classic full read or summary overview). */
     public void setPlaybackMode(int mode) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().setPlaybackMode(mNativeReadAloudBridge, mode);
         }
     }
@@ -208,7 +214,7 @@ class ReadAloudNativeBridge {
     /** Toggles synchronized word highlighting in the UI. */
     public void setHighlightingEnabled(boolean enabled) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().setHighlightingEnabled(mNativeReadAloudBridge, enabled);
         }
     }
@@ -216,7 +222,7 @@ class ReadAloudNativeBridge {
     /** Submits user feedback (e.g., thumbs up/down) for logging. */
     public void sendFeedback(int feedbackType) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().sendFeedback(mNativeReadAloudBridge, feedbackType);
         }
     }
@@ -224,7 +230,7 @@ class ReadAloudNativeBridge {
     /** Initiates an asynchronous check to determine if the URL is readable. */
     public void checkReadability(@Nullable GURL url) {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0 && url != null) {
+        if (mNativeReadAloudBridge != null && url != null) {
             ReadAloudNativeBridgeJni.get().checkReadability(mNativeReadAloudBridge, url);
         }
     }
@@ -232,7 +238,7 @@ class ReadAloudNativeBridge {
     /** Initializes and fetches the available synthesis voices from native. */
     public void initVoices() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeReadAloudBridge != 0) {
+        if (mNativeReadAloudBridge != null) {
             ReadAloudNativeBridgeJni.get().initVoices(mNativeReadAloudBridge);
         }
     }
@@ -344,9 +350,18 @@ class ReadAloudNativeBridge {
     }
 
     @CalledByNative
+    void releaseNativePtr() {
+        ThreadUtils.assertOnUiThread();
+        if (mNativeReadAloudBridge != null) {
+            mNativeReadAloudBridge.release();
+            mNativeReadAloudBridge = null;
+        }
+    }
+
+    @CalledByNative
     void onNativeDestroyed() {
         ThreadUtils.assertOnUiThread();
-        mNativeReadAloudBridge = 0;
+        releaseNativePtr();
         if (mController != null) {
             mController.onNativeDestroyed();
         }
@@ -357,79 +372,80 @@ class ReadAloudNativeBridge {
     //
     // Abstract method declarations parsed by Chromium's jni_zero tool to generate
     // the C++ JNI binding code (ReadAloudNativeBridgeJni). Each method accepts
-    // long nativeReadAloudBridge as its first argument to map to ReadAloudBridge
+    // JniPtr<NativeReadAloudBridge> as its first argument to map to ReadAloudBridge
     // instance methods in C++.
     // ============================================================================
 
     @NativeMethods
     interface Natives {
         // Initializes the native ReadAloudBridge C++ instance.
-        long init(@JniType("Profile*") Profile profile, ReadAloudNativeBridge bridge);
+        @Nullable JniRawPtr<NativeReadAloudBridge> init(
+                @JniType("Profile*") Profile profile, ReadAloudNativeBridge bridge);
 
         // Initializes the native playback session for the given web contents without starting audio
         // playback.
         void initializeSession(
-                long nativeReadAloudBridge,
+                JniPtr<NativeReadAloudBridge> self,
                 @JniType("content::WebContents*") WebContents webContents);
 
         // Starts or resumes audio playback.
         void play(
-                long nativeReadAloudBridge,
+                JniPtr<NativeReadAloudBridge> self,
                 @JniType("content::WebContents*") WebContents webContents);
 
         // Pauses the current audio playback.
-        void pause(long nativeReadAloudBridge);
+        void pause(JniPtr<NativeReadAloudBridge> self);
 
         // Stops audio playback and releases playback resources.
-        void stop(long nativeReadAloudBridge);
+        void stop(JniPtr<NativeReadAloudBridge> self);
 
         // Seeks to the word at the specified segment index and character offset.
-        void seekToWord(long nativeReadAloudBridge, int segmentIndex, int characterOffset);
+        void seekToWord(JniPtr<NativeReadAloudBridge> self, int segmentIndex, int characterOffset);
 
         // Seeks to a specific absolute time offset from the beginning of the audio.
-        void seek(long nativeReadAloudBridge, long absoluteTimeNanos);
+        void seek(JniPtr<NativeReadAloudBridge> self, long absoluteTimeNanos);
 
         // Seeks forward or backward relatively.
-        void seekRelative(long nativeReadAloudBridge, long offsetNanos);
+        void seekRelative(JniPtr<NativeReadAloudBridge> self, long offsetNanos);
 
         // Adjusts the audio playback speed (rate multiplier).
-        void setPlaybackRate(long nativeReadAloudBridge, float rate);
+        void setPlaybackRate(JniPtr<NativeReadAloudBridge> self, float rate);
 
         // Sets the voice to be used for text-to-speech synthesis.
-        void setVoice(long nativeReadAloudBridge, @JniType("std::string") String voiceId);
+        void setVoice(JniPtr<NativeReadAloudBridge> self, @JniType("std::string") String voiceId);
 
         // Sets the target language code for text-to-speech synthesis.
         void setLanguageCode(
-                long nativeReadAloudBridge, @JniType("std::string") String languageCode);
+                JniPtr<NativeReadAloudBridge> self, @JniType("std::string") String languageCode);
 
         // Plays or resumes a short audio sample of the specified voice.
         void previewVoice(
-                long nativeReadAloudBridge,
+                JniPtr<NativeReadAloudBridge> self,
                 @JniType("std::string") String voiceId,
                 @JniType("std::u16string") String previewText);
 
         // Pauses the active voice preview playback.
-        void pauseVoicePreview(long nativeReadAloudBridge);
+        void pauseVoicePreview(JniPtr<NativeReadAloudBridge> self);
 
         // Stops the active voice preview playback.
-        void stopVoicePreview(long nativeReadAloudBridge);
+        void stopVoicePreview(JniPtr<NativeReadAloudBridge> self);
 
         // Sets the playback mode (classic full read or summary overview).
-        void setPlaybackMode(long nativeReadAloudBridge, int mode);
+        void setPlaybackMode(JniPtr<NativeReadAloudBridge> self, int mode);
 
         // Toggles synchronized word highlighting in the UI.
-        void setHighlightingEnabled(long nativeReadAloudBridge, boolean enabled);
+        void setHighlightingEnabled(JniPtr<NativeReadAloudBridge> self, boolean enabled);
 
         // Submits user feedback (e.g., thumbs up/down) for logging.
-        void sendFeedback(long nativeReadAloudBridge, int feedbackType);
+        void sendFeedback(JniPtr<NativeReadAloudBridge> self, int feedbackType);
 
         // Initiates an asynchronous check to determine if the URL is readable.
-        void checkReadability(long nativeReadAloudBridge, @JniType("GURL") GURL url);
+        void checkReadability(JniPtr<NativeReadAloudBridge> self, @JniType("GURL") GURL url);
 
         // Initializes and fetches the available synthesis voices from native.
-        void initVoices(long nativeReadAloudBridge);
+        void initVoices(JniPtr<NativeReadAloudBridge> self);
 
         // Destroys the native bridge delegate.
-        void destroy(long nativeReadAloudBridge);
+        void destroy(JniPtr<NativeReadAloudBridge> self);
     }
 }
