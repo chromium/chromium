@@ -205,7 +205,7 @@ wl_surface* XdgActivation::TokenRequest::DetermineSurface(
 }
 
 void XdgActivation::TokenRequest::OnTimeout() {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M163);
   DVLOG(1) << "token request timed out";
   // Run callback with an empty token if we did not receive a token from the
   // server yet.
@@ -230,8 +230,8 @@ void XdgActivation::TokenRequest::OnTokenReceived(
   DVLOG(1) << "new token received from server: " << token;
   auto* const self = static_cast<XdgActivation::TokenRequest*>(data);
   CHECK(self);
-  DCHECK(!self->callback_.is_null());
-  DCHECK(self->timer_.IsRunning());
+  CHECK(!self->callback_.is_null(), base::NotFatalUntil::M163);
+  CHECK(self->timer_.IsRunning(), base::NotFatalUntil::M163);
   self->OnDone(token);
 }
 

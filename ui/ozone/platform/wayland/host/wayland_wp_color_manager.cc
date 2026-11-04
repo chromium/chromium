@@ -139,7 +139,7 @@ void WaylandWpColorManager::Instantiate(WaylandConnection* connection,
 WaylandWpColorManager::WaylandWpColorManager(wp_color_manager_v1* color_manager,
                                              WaylandConnection* connection)
     : manager_(color_manager), connection_(connection) {
-  DCHECK(manager_);
+  CHECK(manager_, base::NotFatalUntil::M163);
   static constexpr wp_color_manager_v1_listener kListener = {
       .supported_intent = &OnSupportedIntent,
       .supported_feature = &OnSupportedFeature,

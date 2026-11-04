@@ -129,8 +129,8 @@ void OrgGnomeMutterIdleMonitor::OnWatchFiredSignalConnected(
     bool succeeded) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  DCHECK_EQ(interface, kInterface);
-  DCHECK_EQ(signal, kSignalWatchFired);
+  CHECK_EQ(interface, kInterface, base::NotFatalUntil::M163);
+  CHECK_EQ(signal, kSignalWatchFired, base::NotFatalUntil::M163);
 
   if (!succeeded) {
     LOG(WARNING) << "Cannot connect to " << kSignalWatchFired << " signal of "
@@ -191,7 +191,7 @@ void OrgGnomeMutterIdleMonitor::OnGetIdletime(dbus::Response* response) {
 void OrgGnomeMutterIdleMonitor::OnWatchFired(dbus::Signal* signal) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  DCHECK(signal);
+  CHECK(signal, base::NotFatalUntil::M163);
 
   dbus::MessageReader reader(signal);
   uint32_t id;
@@ -241,7 +241,7 @@ bool OrgGnomeMutterIdleMonitor::ReadWatchId(dbus::Message* message,
     return false;
   }
 
-  DCHECK(watch_id);
+  CHECK(watch_id, base::NotFatalUntil::M163);
 
   dbus::MessageReader reader(message);
   return (reader.PopUint32(watch_id) && !reader.HasMoreData());

@@ -77,7 +77,7 @@ WaylandBufferManagerHost::BindInterface() {
 }
 
 void WaylandBufferManagerHost::OnChannelDestroyed() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
   buffer_backings_.clear();
   dma_buffers_.clear();
@@ -143,8 +143,8 @@ void WaylandBufferManagerHost::CreateDmabufBasedBuffer(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(error_message_.empty());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
 
   TRACE_EVENT2("wayland", "WaylandBufferManagerHost::CreateDmabufBasedBuffer",
                "Format", format, "Buffer id", buffer_id);
@@ -192,8 +192,8 @@ void WaylandBufferManagerHost::CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
                                                     uint64_t length,
                                                     const gfx::Size& size,
                                                     uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(error_message_.empty());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
 
   TRACE_EVENT1("wayland", "WaylandBufferManagerHost::CreateShmBasedBuffer",
                "Buffer id", buffer_id);
@@ -223,8 +223,8 @@ void WaylandBufferManagerHost::CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
 
 void WaylandBufferManagerHost::CreateSinglePixelBuffer(const SkColor4f& color,
                                                        uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(error_message_.empty());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
   TRACE_EVENT1("wayland", "WaylandBufferManagerHost::CreateSinglePixelBuffer",
                "Buffer id", buffer_id);
 
@@ -264,9 +264,9 @@ void WaylandBufferManagerHost::CreateSinglePixelBuffer(const SkColor4f& color,
 WaylandBufferHandle* WaylandBufferManagerHost::EnsureBufferHandle(
     WaylandSurface* requestor,
     uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(error_message_.empty());
-  DCHECK(requestor);
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
+  CHECK(requestor, base::NotFatalUntil::M163);
 
   auto it = buffer_backings_.find(buffer_id);
   if (it == buffer_backings_.end())
@@ -278,8 +278,8 @@ WaylandBufferHandle* WaylandBufferManagerHost::EnsureBufferHandle(
 WaylandBufferHandle* WaylandBufferManagerHost::GetBufferHandle(
     WaylandSurface* requestor,
     uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(requestor);
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(requestor, base::NotFatalUntil::M163);
 
   auto it = buffer_backings_.find(buffer_id);
   if (it == buffer_backings_.end())
@@ -293,11 +293,11 @@ void WaylandBufferManagerHost::CommitOverlays(
     uint32_t frame_id,
     const gfx::FrameData& data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
   TRACE_EVENT0("wayland", "WaylandBufferManagerHost::CommitOverlays");
 
-  DCHECK(error_message_.empty());
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
 
   if (widget == gfx::kNullAcceleratedWidget) {
     error_message_ = "Invalid widget.";
@@ -314,12 +314,12 @@ void WaylandBufferManagerHost::CommitOverlays(
 }
 
 void WaylandBufferManagerHost::DestroyBuffer(uint32_t buffer_id) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
   TRACE_EVENT1("wayland", "WaylandBufferManagerHost::DestroyBuffer",
                "Buffer id", buffer_id);
 
-  DCHECK(error_message_.empty());
+  CHECK(error_message_.empty(), base::NotFatalUntil::M163);
   if (!ValidateBufferExistence(buffer_id)) {
     TerminateGpuProcess();
     return;
@@ -439,9 +439,9 @@ void WaylandBufferManagerHost::OnSubmission(
     const gfx::SwapResult& swap_result,
     gfx::GpuFenceHandle release_fence,
     const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
-  DCHECK(buffer_manager_gpu_associated_);
+  CHECK(buffer_manager_gpu_associated_, base::NotFatalUntil::M163);
   buffer_manager_gpu_associated_->OnSubmission(widget, frame_id, swap_result,
                                                std::move(release_fence),
                                                presentation_infos);
@@ -450,15 +450,15 @@ void WaylandBufferManagerHost::OnSubmission(
 void WaylandBufferManagerHost::OnPresentation(
     gfx::AcceleratedWidget widget,
     const std::vector<wl::WaylandPresentationInfo>& presentation_infos) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
-  DCHECK(buffer_manager_gpu_associated_);
+  CHECK(buffer_manager_gpu_associated_, base::NotFatalUntil::M163);
   buffer_manager_gpu_associated_->OnPresentation(widget, presentation_infos);
 }
 
 void WaylandBufferManagerHost::InsertAcquireFence(uint32_t buffer_id,
                                                   int sync_fd) {
-  DCHECK(connection_->UseImplicitSyncInterop());
+  CHECK(connection_->UseImplicitSyncInterop(), base::NotFatalUntil::M163);
   auto it = dma_buffers_.find(buffer_id);
   if (it == dma_buffers_.end()) {
     return;
@@ -475,7 +475,7 @@ void WaylandBufferManagerHost::InsertAcquireFence(uint32_t buffer_id,
 
 base::ScopedFD WaylandBufferManagerHost::ExtractReleaseFence(
     uint32_t buffer_id) {
-  DCHECK(connection_->UseImplicitSyncInterop());
+  CHECK(connection_->UseImplicitSyncInterop(), base::NotFatalUntil::M163);
   auto it = dma_buffers_.find(buffer_id);
   if (it == dma_buffers_.end()) {
     return base::ScopedFD();
@@ -506,7 +506,7 @@ void WaylandBufferManagerHost::SetDrmSyncobjWrapper(
 }
 
 void WaylandBufferManagerHost::TerminateGpuProcess() {
-  DCHECK(!error_message_.empty());
+  CHECK(!error_message_.empty(), base::NotFatalUntil::M163);
   std::move(terminate_gpu_cb_).Run(std::move(error_message_));
   // The GPU process' failure results in calling ::OnChannelDestroyed.
 }

@@ -62,7 +62,7 @@ void WaylandTouch::OnTouchDown(void* data,
     return;
 
   auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   self->connection_->serial_tracker().UpdateSerial(wl::SerialType::kTouchPress,
                                                    serial);
@@ -84,7 +84,7 @@ void WaylandTouch::OnTouchUp(void* data,
                              uint32_t time,
                              int32_t id) {
   auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   self->delegate_->OnTouchReleaseEvent(wl::EventMillisecondsToTimeTicks(time),
                                        id, GetEventDispatchPolicy(),
@@ -99,7 +99,7 @@ void WaylandTouch::OnTouchMotion(void* data,
                                  wl_fixed_t x,
                                  wl_fixed_t y) {
   auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   const WaylandWindow* target = self->delegate_->GetTouchTarget(id);
   if (!target) {
@@ -132,7 +132,7 @@ void WaylandTouch::OnTouchOrientation(void* data,
 // static
 void WaylandTouch::OnTouchCancel(void* data, wl_touch* touch) {
   auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   self->delegate_->OnTouchCancelEvent();
 }
@@ -140,7 +140,7 @@ void WaylandTouch::OnTouchCancel(void* data, wl_touch* touch) {
 // static
 void WaylandTouch::OnTouchFrame(void* data, wl_touch* touch) {
   auto* self = static_cast<WaylandTouch*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   self->delegate_->OnTouchFrame();
 }

@@ -34,8 +34,8 @@ WaylandBufferBackingDmabuf::~WaylandBufferBackingDmabuf() = default;
 
 void WaylandBufferBackingDmabuf::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(fd_.is_valid());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
+  CHECK(fd_.is_valid(), base::NotFatalUntil::M163);
   connection()->buffer_factory()->CreateDmabufBuffer(
       fd_, size(), strides_, offsets_, modifiers_, format_, planes_count_,
       std::move(callback));

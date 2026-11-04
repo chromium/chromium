@@ -51,8 +51,8 @@ WaylandZwpPointerConstraints::WaylandZwpPointerConstraints(
     zwp_pointer_constraints_v1* pointer_constraints,
     WaylandConnection* connection)
     : obj_(pointer_constraints), connection_(connection) {
-  DCHECK(obj_);
-  DCHECK(connection_);
+  CHECK(obj_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
 }
 
 WaylandZwpPointerConstraints::~WaylandZwpPointerConstraints() = default;

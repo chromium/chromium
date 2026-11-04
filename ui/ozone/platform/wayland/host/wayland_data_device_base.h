@@ -34,7 +34,7 @@ class WaylandDataDeviceBase {
 
   // Sets the callback responsible for handling selection events.
   void set_selection_offer_callback(SelectionOfferCallback callback) {
-    DCHECK(!selection_offer_callback_ || !callback);
+    CHECK(!selection_offer_callback_ || !callback, base::NotFatalUntil::M163);
     selection_offer_callback_ = callback;
   }
 

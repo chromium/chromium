@@ -98,7 +98,8 @@ class XdgForeignWrapperImpl
     } else {
       // The |surface| has already been exported and its handle has been
       // received. Execute the |cb| and send the handle.
-      DCHECK(!exported_surface->exported_handle.empty());
+      CHECK(!exported_surface->exported_handle.empty(),
+            base::NotFatalUntil::M163);
       std::move(cb).Run(exported_surface->exported_handle);
     }
   }
@@ -131,7 +132,7 @@ class XdgForeignWrapperImpl
   static void OnHandle(void* data, ExportedType* exported, const char* handle) {
     auto* self =
         static_cast<XdgForeignWrapperImpl<ExporterType, ExportedType>*>(data);
-    DCHECK(self);
+    CHECK(self, base::NotFatalUntil::M163);
 
     auto exported_surface_it =
         std::ranges::find(self->exported_surfaces_, exported,

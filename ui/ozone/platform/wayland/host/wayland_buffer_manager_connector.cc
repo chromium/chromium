@@ -54,7 +54,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
   binder_.Run(
       ozone::mojom::WaylandBufferManagerGpu::Name_,
       buffer_manager_gpu_remote.BindNewPipeAndPassReceiver().PassPipe());
-  DCHECK(buffer_manager_gpu_remote);
+  CHECK(buffer_manager_gpu_remote, base::NotFatalUntil::M163);
 
   wl::SharedImageFormatsWithModifiersMap shared_image_formats_with_modifiers =
       buffer_manager_host_->GetSupportedSharedImageFormats();
@@ -73,7 +73,7 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {
   DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
 
-  DCHECK(!terminate_callback_.is_null());
+  CHECK(!terminate_callback_.is_null(), base::NotFatalUntil::M163);
   std::move(terminate_callback_).Run(std::move(message));
 }
 

@@ -15,8 +15,8 @@ WaylandBufferBacking::WaylandBufferBacking(const WaylandConnection* connection,
                                            const gfx::Size& size,
                                            BufferBackingType type)
     : connection_(connection), buffer_id_(buffer_id), size_(size), type_(type) {
-  DCHECK(connection_);
-  DCHECK_NE(buffer_id_, kInvalidBufferId);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK_NE(buffer_id_, kInvalidBufferId, base::NotFatalUntil::M163);
 }
 
 WaylandBufferBacking::~WaylandBufferBacking() = default;
@@ -55,10 +55,10 @@ WaylandBufferHandle* WaylandBufferBacking::EnsureBufferHandle(
 
 WaylandBufferHandle* WaylandBufferBacking::GetBufferHandle(
     WaylandSurface* requestor) {
-  DCHECK(requestor);
+  CHECK(requestor, base::NotFatalUntil::M163);
   if (UseExplicitSyncRelease()) {
     requestor = nullptr;
-    DCHECK_LE(buffer_handles_.size(), 1u);
+    CHECK_LE(buffer_handles_.size(), 1u, base::NotFatalUntil::M163);
   }
   return buffer_handles_[requestor].get();
 }

@@ -26,8 +26,8 @@ WaylandBufferBackingShm::~WaylandBufferBackingShm() = default;
 
 void WaylandBufferBackingShm::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
-  DCHECK(!callback.is_null());
-  DCHECK(fd_.is_valid());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
+  CHECK(fd_.is_valid(), base::NotFatalUntil::M163);
 
   std::move(callback).Run(connection()->buffer_factory()->CreateShmBuffer(
       fd_, length_, size(), /*with_alpha_channel=*/true));

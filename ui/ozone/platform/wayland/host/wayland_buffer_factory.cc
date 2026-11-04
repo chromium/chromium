@@ -24,7 +24,7 @@ void WaylandBufferFactory::CreateDmabufBuffer(
     uint32_t format,
     uint32_t planes_count,
     wl::OnRequestBufferCallback callback) const {
-  DCHECK(SupportsDmabuf());
+  CHECK(SupportsDmabuf(), base::NotFatalUntil::M163);
   if (wayland_zwp_dmabuf_) {
     wayland_zwp_dmabuf_->CreateBuffer(fd, size, strides, offsets, modifiers,
                                       format, planes_count,

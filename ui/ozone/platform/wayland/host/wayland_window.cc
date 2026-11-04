@@ -278,7 +278,7 @@ void WaylandWindow::ActivateBubble(WaylandBubble* window) {
 }
 
 void WaylandWindow::SetWindowScale(float new_scale) {
-  DCHECK_GE(new_scale, 0.f);
+  CHECK_GE(new_scale, 0.f, base::NotFatalUntil::M163);
   auto state = GetLatestRequestedState();
   state.window_scale = new_scale;
   // Note that we still need to call this even if the state does not change,
@@ -289,7 +289,7 @@ void WaylandWindow::SetWindowScale(float new_scale) {
 }
 
 std::optional<float> WaylandWindow::GetScaleFactorFromEnteredOutputs() {
-  DCHECK(connection_->wayland_output_manager());
+  CHECK(connection_->wayland_output_manager(), base::NotFatalUntil::M163);
   const auto* output_manager = connection_->wayland_output_manager();
   auto preferred_outputs_id = GetPreferredEnteredOutputId();
   if (!preferred_outputs_id.has_value()) {
@@ -329,8 +329,9 @@ std::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   }
 
   // PlatformWindowType::kPopup are created as toplevel windows as well.
-  DCHECK(type() == PlatformWindowType::kWindow ||
-         type() == PlatformWindowType::kPopup);
+  CHECK(type() == PlatformWindowType::kWindow ||
+            type() == PlatformWindowType::kPopup,
+        base::NotFatalUntil::M163);
 
   WaylandOutput::Id preferred_id = root_surface_->entered_outputs().front();
   const auto* output_manager = connection_->wayland_output_manager();
@@ -421,7 +422,7 @@ bool WaylandWindow::StartDrag(
 
   std::move(drag_started_callback).Run();
 
-  DCHECK(drag_finished_callback_.is_null());
+  CHECK(drag_finished_callback_.is_null(), base::NotFatalUntil::M163);
   drag_finished_callback_ = std::move(drag_finished_callback);
 
   base::RunLoop drag_loop(base::RunLoop::Type::kNestableTasksAllowed);
@@ -701,7 +702,7 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 }
 
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
-  DCHECK(platform_cursor);
+  CHECK(platform_cursor, base::NotFatalUntil::M163);
 
   auto async_cursor = WaylandAsyncCursor::FromPlatformCursor(platform_cursor);
 
@@ -819,7 +820,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 bool WaylandWindow::CanAcceptEvent(const Event& event) {
 #if DCHECK_IS_ON()
   if (!disable_null_target_dcheck_for_test_) {
-    DCHECK(event.target());
+    CHECK(event.target(), base::NotFatalUntil::M163);
   }
 #endif
   return this == event.target();
@@ -1170,8 +1171,8 @@ uint32_t WaylandWindow::DispatchEventToDelegate(
 }
 
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
-  DCHECK(shutting_down_);
-  DCHECK(root_surface_);
+  CHECK(shutting_down_, base::NotFatalUntil::M163);
+  CHECK(root_surface_, base::NotFatalUntil::M163);
   root_surface_->UnsetRootWindow();
   return std::move(root_surface_);
 }
@@ -1184,7 +1185,7 @@ bool WaylandWindow::RequestSubsurface() {
   connection_->window_manager()->AddSubsurface(GetWidget(), subsurface.get());
   subsurface_stack_above_.push_back(subsurface.get());
   auto result = wayland_subsurfaces_.emplace(std::move(subsurface));
-  DCHECK(result.second);
+  CHECK(result.second, base::NotFatalUntil::M163);
   return true;
 }
 
@@ -1195,8 +1196,9 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
     }
   }
 
-  DCHECK(subsurface_stack_below_.size() + subsurface_stack_above_.size() >=
-         above + below);
+  CHECK(subsurface_stack_below_.size() + subsurface_stack_above_.size() >=
+            above + below,
+        base::NotFatalUntil::M163);
 
   if (subsurface_stack_above_.size() < above) {
     auto splice_start = subsurface_stack_below_.begin();
@@ -1217,8 +1219,8 @@ bool WaylandWindow::ArrangeSubsurfaceStack(size_t above, size_t below) {
                                    subsurface_stack_above_.end());
   }
 
-  DCHECK(subsurface_stack_below_.size() >= below);
-  DCHECK(subsurface_stack_above_.size() >= above);
+  CHECK(subsurface_stack_below_.size() >= below, base::NotFatalUntil::M163);
+  CHECK(subsurface_stack_above_.size() >= above, base::NotFatalUntil::M163);
   return true;
 }
 
@@ -1242,7 +1244,8 @@ bool WaylandWindow::CommitOverlays(
   wl::WaylandOverlayConfig value;
   auto split = std::lower_bound(overlays.begin(), overlays.end(), value,
                                 OverlayStackOrderCompare);
-  DCHECK(split == overlays.end() || (*split).z_order >= 0);
+  CHECK(split == overlays.end() || (*split).z_order >= 0,
+        base::NotFatalUntil::M163);
   size_t num_primary_planes =
       (split != overlays.end() && (*split).z_order == 0) ? 1 : 0;
   size_t num_background_planes =
@@ -1261,7 +1264,7 @@ bool WaylandWindow::CommitOverlays(
   float buffer_scale = (*overlays.begin()).surface_scale_factor;
 
   if (!wayland_overlay_delegation_enabled_) {
-    DCHECK_EQ(overlays.size(), 1u);
+    CHECK_EQ(overlays.size(), 1u, base::NotFatalUntil::M163);
     frame_manager_->RecordFrame(std::make_unique<WaylandFrame>(
         frame_id, data, root_surface(), std::move(*overlays.begin())));
     return true;
@@ -1333,7 +1336,7 @@ bool WaylandWindow::CommitOverlays(
 }
 
 void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
-  DCHECK(cursor);
+  CHECK(cursor, base::NotFatalUntil::M163);
   CHECK(cursor->type() == CursorType::kNone ||
         base::IsValueInRangeForNumericType<int>(
             cursor->cursor_image_scale_factor()));

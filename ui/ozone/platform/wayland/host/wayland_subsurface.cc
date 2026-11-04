@@ -27,8 +27,6 @@ gfx::RectF AdjustSubsurfaceBounds(const gfx::RectF& bounds_px,
   return wl::TranslateBoundsToParentCoordinatesF(bounds_dip, parent_bounds_dip);
 }
 
-const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
-
 }  // namespace
 
 namespace ui {
@@ -38,8 +36,8 @@ WaylandSubsurface::WaylandSubsurface(WaylandConnection* connection,
     : wayland_surface_(connection, parent),
       connection_(connection),
       parent_(parent) {
-  DCHECK(parent_);
-  DCHECK(connection_);
+  CHECK(parent_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
   if (!surface()) {
     LOG(ERROR) << "Failed to create wl_surface";
     return;
@@ -87,18 +85,18 @@ bool WaylandSubsurface::IsVisible() const {
 }
 
 void WaylandSubsurface::CreateSubsurface() {
-  DCHECK(parent_);
+  CHECK(parent_, base::NotFatalUntil::M163);
   wayland_surface_.SetRootWindow(parent_);
 
   wl_subcompositor* subcompositor = connection_->subcompositor();
-  DCHECK(subcompositor);
+  CHECK(subcompositor, base::NotFatalUntil::M163);
   subsurface_ = wayland_surface()->CreateSubsurface(parent_->root_surface());
   position_dip_ = {0, 0};
 
   // A new sub-surface is initially added as the top-most in the stack.
   parent_->subsurface_stack_committed()->Append(this);
 
-  DCHECK(subsurface_);
+  CHECK(subsurface_, base::NotFatalUntil::M163);
   wl_subsurface_set_sync(subsurface_.get());
 
   // Subsurfaces don't need to trap input events. Its display rect is fully
@@ -133,9 +131,9 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
   }
 
   // Setup the stacking order of this subsurface.
-  DCHECK(!new_above || !new_below);
+  CHECK(!new_above || !new_below, base::NotFatalUntil::M163);
   if (new_below && new_below != previous()) {
-    DCHECK_EQ(parent_, new_below->parent_);
+    CHECK_EQ(parent_, new_below->parent_, base::NotFatalUntil::M163);
     RemoveFromList();
     InsertAfter(new_below);
     wl_subsurface_place_above(subsurface_.get(), new_below->surface());
@@ -143,7 +141,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
     // stacking order depend on the sync mode of the parent surface.
     needs_commit = true;
   } else if (new_above && new_above != next()) {
-    DCHECK_EQ(parent_, new_above->parent_);
+    CHECK_EQ(parent_, new_above->parent_, base::NotFatalUntil::M163);
     RemoveFromList();
     InsertBefore(new_above);
     wl_subsurface_place_below(subsurface_.get(), new_above->surface());

@@ -76,7 +76,7 @@ display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
 
 WaylandScreen::WaylandScreen(WaylandConnection* connection)
     : connection_(connection), weak_factory_(this) {
-  DCHECK(connection_);
+  CHECK(connection_, base::NotFatalUntil::M163);
 
   // Chromium specifies either RGBA_8888 or BGRA_8888 as initial image format
   // for alpha case and RGBX_8888 for no alpha case. Figure out
@@ -119,7 +119,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   // when it's available, but for some reason Chromium gets broken when it's
   // used. Though, we can import RGBX_8888 dma buffer to EGLImage
   // successfully. Enable that back when the issue is resolved.
-  DCHECK(!image_format_no_alpha_);
+  CHECK(!image_format_no_alpha_, base::NotFatalUntil::M163);
   image_format_no_alpha_ = image_format_alpha_;
 
   if (!image_format_hdr_)
@@ -138,7 +138,8 @@ void WaylandScreen::OnOutputAddedOrUpdated(
   WaylandOutput::Metrics copy = metrics;
 
   if (metrics.display_id == display::kInvalidDisplayId) {
-    DCHECK(display_id_map_.contains(metrics.output_id));
+    CHECK(display_id_map_.contains(metrics.output_id),
+          base::NotFatalUntil::M163);
     copy.display_id = display_id_map_[metrics.output_id];
   }
 
@@ -152,7 +153,7 @@ void WaylandScreen::OnOutputAddedOrUpdated(
 }
 
 void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
-  DCHECK(display_id_map_.contains(output_id));
+  CHECK(display_id_map_.contains(output_id), base::NotFatalUntil::M163);
   auto iter = display_id_map_.find(output_id);
   if (iter == display_id_map_.end()) {
     return;
@@ -193,17 +194,22 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
 }
 
 void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
-  DCHECK_NE(metrics.display_id, display::kInvalidDisplayId);
+  CHECK_NE(metrics.display_id, display::kInvalidDisplayId,
+           base::NotFatalUntil::M163);
   display::Display changed_display(metrics.display_id);
 
-  DCHECK_GE(metrics.panel_transform, WL_OUTPUT_TRANSFORM_NORMAL);
-  DCHECK_LE(metrics.panel_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  CHECK_GE(metrics.panel_transform, WL_OUTPUT_TRANSFORM_NORMAL,
+           base::NotFatalUntil::M163);
+  CHECK_LE(metrics.panel_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270,
+           base::NotFatalUntil::M163);
   display::Display::Rotation panel_rotation =
       WaylandTransformToRotation(metrics.panel_transform);
   changed_display.set_panel_rotation(panel_rotation);
 
-  DCHECK_GE(metrics.logical_transform, WL_OUTPUT_TRANSFORM_NORMAL);
-  DCHECK_LE(metrics.logical_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  CHECK_GE(metrics.logical_transform, WL_OUTPUT_TRANSFORM_NORMAL,
+           base::NotFatalUntil::M163);
+  CHECK_LE(metrics.logical_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270,
+           base::NotFatalUntil::M163);
   display::Display::Rotation rotation =
       WaylandTransformToRotation(metrics.logical_transform);
   changed_display.set_rotation(rotation);
@@ -326,7 +332,7 @@ const std::vector<display::Display>& WaylandScreen::GetAllDisplays() const {
 }
 
 display::Display WaylandScreen::GetPrimaryDisplay() const {
-  DCHECK(display_list_.IsValid());
+  CHECK(display_list_.IsValid(), base::NotFatalUntil::M163);
   return display_list_.displays().empty()
              ? display::Display::GetDefaultDisplay()
              : *display_list_.GetPrimaryDisplayIterator();
@@ -359,7 +365,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
 
   int64_t display_id = display_id_map_.find(entered_output_id.value())->second;
 
-  DCHECK(!display_list_.displays().empty());
+  CHECK(!display_list_.displays().empty(), base::NotFatalUntil::M163);
   for (const auto& display : display_list_.displays()) {
     if (display.id() == display_id)
       return display;
@@ -386,7 +392,7 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
 
   // Otherwise, make sure the returned point does not overlap any known window.
   auto* window = connection_->window_manager()->GetWindowWithLargestBounds();
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   const gfx::Rect bounds = window->GetBoundsInDIP();
   return gfx::Point(bounds.width() + 10, bounds.height() + 10);
 }

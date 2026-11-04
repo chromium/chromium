@@ -108,8 +108,9 @@ class WaylandSurface {
   // Sets an optional transformation for how the Wayland compositor interprets
   // the contents of the buffer attached to this surface.
   void set_buffer_transform(gfx::OverlayTransform transform) {
-    DCHECK(!apply_state_immediately_);
-    DCHECK(transform != gfx::OVERLAY_TRANSFORM_INVALID);
+    CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
+    CHECK(transform != gfx::OVERLAY_TRANSFORM_INVALID,
+          base::NotFatalUntil::M163);
     pending_state_.buffer_transform = transform;
     return;
   }
@@ -145,7 +146,7 @@ class WaylandSurface {
   // Note this method does not send corresponding wayland requests until
   // attaching the next buffer.
   void set_buffer_crop(const gfx::RectF& crop) {
-    DCHECK(!apply_state_immediately_);
+    CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
     pending_state_.crop = crop == gfx::RectF{1.f, 1.f} ? gfx::RectF() : crop;
   }
 

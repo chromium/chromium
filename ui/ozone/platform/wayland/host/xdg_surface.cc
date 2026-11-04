@@ -42,13 +42,13 @@ bool XdgSurface::Initialize() {
 
 void XdgSurface::AckConfigure(uint32_t serial) {
   // We must not ack any serial more than once, so check for that here.
-  DCHECK_LE(last_acked_serial_, serial);
+  CHECK_LE(last_acked_serial_, serial, base::NotFatalUntil::M163);
   if (serial == last_acked_serial_) {
     return;
   }
 
   last_acked_serial_ = serial;
-  DCHECK(xdg_surface_);
+  CHECK(xdg_surface_, base::NotFatalUntil::M163);
   xdg_surface_ack_configure(xdg_surface_.get(), serial);
 
   is_configured_ = true;
@@ -60,7 +60,7 @@ bool XdgSurface::IsConfigured() {
 }
 
 void XdgSurface::SetWindowGeometry(const gfx::Rect& bounds) {
-  DCHECK(xdg_surface_);
+  CHECK(xdg_surface_, base::NotFatalUntil::M163);
   CHECK(!bounds.IsEmpty()) << "The xdg-shell protocol specification forbids "
                               "empty bounds (zero width or height). bounds="
                            << bounds.ToString();
@@ -73,7 +73,7 @@ void XdgSurface::OnConfigure(void* data,
                              struct xdg_surface* surface,
                              uint32_t serial) {
   auto* self = static_cast<XdgSurface*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // Calls to HandleSurfaceConfigure() might end up hiding the enclosing
   // toplevel window, and deleting this object.

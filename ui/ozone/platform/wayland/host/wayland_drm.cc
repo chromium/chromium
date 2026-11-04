@@ -135,7 +135,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
   if (!wl_drm_)
     return;
 
-  DCHECK(drm_device_path);
+  CHECK(drm_device_path, base::NotFatalUntil::M163);
   base::ScopedFD drm_fd(open(drm_device_path, O_RDWR));
   if (!drm_fd.is_valid()) {
     HandleDrmFailure("Drm open failed: " + std::string(drm_device_path));
@@ -166,7 +166,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
 }
 
 void WaylandDrm::DrmDeviceAuthenticated(wl_drm* drm) {
-  DCHECK(wl_drm_ && wl_drm_.get() == drm);
+  CHECK(wl_drm_ && wl_drm_.get() == drm, base::NotFatalUntil::M163);
   authenticated_ = true;
 }
 
@@ -179,28 +179,28 @@ void WaylandDrm::HandleCapabilities(uint32_t value) {
 // static
 void WaylandDrm::OnDevice(void* data, wl_drm* drm, const char* path) {
   auto* self = static_cast<WaylandDrm*>(data);
-  DCHECK(self && self->wl_drm_.get() == drm);
+  CHECK(self && self->wl_drm_.get() == drm, base::NotFatalUntil::M163);
   self->Authenticate(path);
 }
 
 // static
 void WaylandDrm::OnFormat(void* data, wl_drm* drm, uint32_t format) {
   auto* self = static_cast<WaylandDrm*>(data);
-  DCHECK(self && self->wl_drm_.get() == drm);
+  CHECK(self && self->wl_drm_.get() == drm, base::NotFatalUntil::M163);
   self->AddSupportedFourCCFormat(format);
 }
 
 // static
 void WaylandDrm::OnAuthenticated(void* data, wl_drm* drm) {
   auto* self = static_cast<WaylandDrm*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->DrmDeviceAuthenticated(drm);
 }
 
 // static
 void WaylandDrm::OnCapabilities(void* data, wl_drm* drm, uint32_t value) {
   auto* self = static_cast<WaylandDrm*>(data);
-  DCHECK(self && self->wl_drm_.get() == drm);
+  CHECK(self && self->wl_drm_.get() == drm, base::NotFatalUntil::M163);
   self->HandleCapabilities(value);
 }
 

@@ -38,14 +38,14 @@ void WaylandProxyImpl::RoundTripQueue() {
 wl_surface* WaylandProxyImpl::GetWlSurfaceForAcceleratedWidget(
     gfx::AcceleratedWidget widget) {
   auto* window = connection_->window_manager()->GetWindow(widget);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window->root_surface()->surface();
 }
 
 ui::WaylandWindow* WaylandProxyImpl::GetWaylandWindowForAcceleratedWidget(
     gfx::AcceleratedWidget widget) {
   auto* window = connection_->window_manager()->GetWindow(widget);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window;
 }
 
@@ -53,7 +53,7 @@ wl_buffer* WaylandProxyImpl::CreateShmBasedWlBuffer(
     const gfx::Size& buffer_size) {
   ui::WaylandShmBuffer shm_buffer(connection_->buffer_factory(), buffer_size);
   auto* wlbuffer = shm_buffer.get();
-  DCHECK(wlbuffer);
+  CHECK(wlbuffer, base::NotFatalUntil::M163);
   shm_buffers_.emplace_back(std::move(shm_buffer));
   return wlbuffer;
 }
@@ -71,19 +71,19 @@ void WaylandProxyImpl::FlushForTesting() {
 ui::PlatformWindowType WaylandProxyImpl::GetWindowType(
     gfx::AcceleratedWidget widget) {
   auto* window = connection_->window_manager()->GetWindow(widget);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window->type();
 }
 
 bool WaylandProxyImpl::WindowHasPointerFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->window_manager()->GetWindow(widget);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window->HasPointerFocus();
 }
 
 bool WaylandProxyImpl::WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) {
   auto* window = connection_->window_manager()->GetWindow(widget);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M163);
   return window->HasKeyboardFocus();
 }
 

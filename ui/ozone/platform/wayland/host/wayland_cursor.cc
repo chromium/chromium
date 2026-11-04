@@ -32,7 +32,7 @@ WaylandCursor::~WaylandCursor() = default;
 // static
 void WaylandCursor::OnBufferRelease(void* data, wl_buffer* buffer) {
   auto* cursor = static_cast<WaylandCursor*>(data);
-  DCHECK_GT(cursor->buffers_.count(buffer), 0u);
+  CHECK_GT(cursor->buffers_.count(buffer), 0u, base::NotFatalUntil::M163);
   cursor->buffers_.erase(buffer);
 }
 
@@ -102,7 +102,7 @@ void WaylandCursor::HideCursor() {
     return;
   }
 
-  DCHECK(pointer_);
+  CHECK(pointer_, base::NotFatalUntil::M163);
   wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
                         nullptr, 0, 0);
 
@@ -116,7 +116,7 @@ void WaylandCursor::HideCursor() {
 }
 
 void WaylandCursor::SetPlatformShapeInternal() {
-  DCHECK_GT(cursor_data_->image_count, 0U);
+  CHECK_GT(cursor_data_->image_count, 0U, base::NotFatalUntil::M163);
 
   // Under some conditions, either `images` is nullptr, or `image_count` is 0.
   // See https://crbug.com/1341202
@@ -161,7 +161,7 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
     return;
   }
 
-  DCHECK(pointer_);
+  CHECK(pointer_, base::NotFatalUntil::M163);
 
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
   // Note: should the offset be non-zero, use wl_surface_offset() to set it.

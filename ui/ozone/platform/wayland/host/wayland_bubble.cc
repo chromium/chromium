@@ -162,7 +162,7 @@ void WaylandBubble::AddToParentAsSubsurface() {
 
   subsurface_ =
       root_surface()->CreateSubsurface(parent_window()->root_surface());
-  DCHECK(subsurface_);
+  CHECK(subsurface_, base::NotFatalUntil::M163);
 
   SetSubsurfacePosition();
 
@@ -199,7 +199,7 @@ void WaylandBubble::SetSubsurfacePosition() {
 
 bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
                                  PlatformWindowDelegate::State* state) {
-  DCHECK(parent_window());
+  CHECK(parent_window(), base::NotFatalUntil::M163);
 
   // `window_state` is always `kNormal` on WaylandBubble.
   state->window_state = PlatformWindowState::kNormal;

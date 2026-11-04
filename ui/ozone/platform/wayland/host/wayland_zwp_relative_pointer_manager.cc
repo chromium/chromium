@@ -54,9 +54,9 @@ WaylandZwpRelativePointerManager::WaylandZwpRelativePointerManager(
     : obj_(relative_pointer_manager),
       connection_(connection),
       delegate_(connection_->event_source()) {
-  DCHECK(obj_);
-  DCHECK(connection_);
-  DCHECK(delegate_);
+  CHECK(obj_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 WaylandZwpRelativePointerManager::~WaylandZwpRelativePointerManager() = default;

@@ -23,7 +23,7 @@ WaylandBufferBackingSinglePixel::~WaylandBufferBackingSinglePixel() = default;
 
 void WaylandBufferBackingSinglePixel::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   std::move(callback).Run(
       connection()->single_pixel_buffer()->CreateSinglePixelBuffer(color_));
 }

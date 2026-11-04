@@ -25,25 +25,25 @@ SerialTracker::SerialTracker()
 SerialTracker::~SerialTracker() = default;
 
 void SerialTracker::UpdateSerial(SerialType type, uint32_t serial) {
-  DCHECK(serials_.contains(type));
+  CHECK(serials_.contains(type), base::NotFatalUntil::M163);
   serials_.at(type) = {.value = serial,
                        .type = type,
                        .timestamp = base::TimeTicks::Now() - base_time_};
 }
 
 void SerialTracker::ResetSerial(SerialType type) {
-  DCHECK(serials_.contains(type));
+  CHECK(serials_.contains(type), base::NotFatalUntil::M163);
   serials_.at(type) = std::nullopt;
 }
 
 std::optional<Serial> SerialTracker::GetSerial(SerialType type) const {
-  DCHECK(serials_.contains(type));
+  CHECK(serials_.contains(type), base::NotFatalUntil::M163);
   return serials_.at(type);
 }
 
 std::optional<Serial> SerialTracker::GetSerial(
     const std::vector<SerialType>& types) const {
-  DCHECK(!types.empty());
+  CHECK(!types.empty(), base::NotFatalUntil::M163);
   std::optional<Serial> most_recent;
   for (const auto& type : types) {
     if (auto serial = GetSerial(type)) {

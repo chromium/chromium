@@ -131,7 +131,7 @@ WaylandWpImageDescription::WaylandWpImageDescription(
     : image_description_(std::move(image_description)),
       connection_(connection),
       creation_callback_(std::move(callback)) {
-  DCHECK(image_description_);
+  CHECK(image_description_, base::NotFatalUntil::M163);
   if (color_space.has_value()) {
     color_space_ = *color_space;
   }
@@ -256,7 +256,7 @@ void WaylandWpImageDescription::OnFailed(
     uint32_t cause,
     const char* msg) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   LOG(ERROR) << "Failed to create image description: " << msg;
   if (self->creation_callback_) {
     std::move(self->creation_callback_).Run(nullptr);
@@ -269,7 +269,7 @@ void WaylandWpImageDescription::OnReady(
     wp_image_description_v1* image_description,
     uint32_t identity) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // If this description was created from a gfx::ColorSpace, it's ready.
   if (self->color_space_.IsValid()) {
@@ -302,7 +302,7 @@ void WaylandWpImageDescription::OnInfoDone(
     void* data,
     wp_image_description_info_v1* image_info) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   self->sdr_max_luminance_nits_ = self->pending_reference_lum_.value_or(
       gfx::ColorSpace::kDefaultSDRWhiteLevel);
@@ -349,7 +349,7 @@ void WaylandWpImageDescription::OnInfoPrimaries(
     int32_t w_x,
     int32_t w_y) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   SkColorSpacePrimaries primaries = {
       r_x / 1000000.f, r_y / 1000000.f, g_x / 1000000.f, g_y / 1000000.f,
       b_x / 1000000.f, b_y / 1000000.f, w_x / 1000000.f, w_y / 1000000.f};
@@ -365,7 +365,7 @@ void WaylandWpImageDescription::OnInfoTfNamed(
     wp_image_description_info_v1* image_info,
     uint32_t tf) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->pending_transfer_id_ =
       ToGfxTransferID(static_cast<wp_color_manager_v1_transfer_function>(tf));
 }
@@ -376,7 +376,7 @@ void WaylandWpImageDescription::OnInfoTfPower(
     wp_image_description_info_v1* info,
     uint32_t eexp) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->pending_custom_transfer_fn_ = skcms_TransferFunction{
       .g = eexp / 10000.f, .a = 1.0f, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0};
 }
@@ -389,7 +389,7 @@ void WaylandWpImageDescription::OnInfoLuminances(
     uint32_t max_lum,
     uint32_t reference_lum) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   if (reference_lum) {
     self->pending_reference_lum_ = reference_lum;
   }
@@ -415,7 +415,7 @@ void WaylandWpImageDescription::OnInfoTargetLuminance(
     uint32_t min_lum,
     uint32_t max_lum) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   if (max_lum) {
     self->pending_target_max_lum_ = max_lum;
   }
@@ -439,7 +439,7 @@ void WaylandWpImageDescription::OnInfoPrimariesNamed(
     wp_image_description_info_v1* image_info,
     uint32_t primaries) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
   self->pending_primary_id_ =
       ToGfxPrimaryID(static_cast<wp_color_manager_v1_primaries>(primaries));
 }

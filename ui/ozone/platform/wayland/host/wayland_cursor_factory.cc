@@ -57,7 +57,7 @@ void WaylandCursorFactory::ThemeData::AddThemeLoadedCallback(
 }
 
 void WaylandCursorFactory::ThemeData::SetLoadedTheme(wl_cursor_theme* theme) {
-  DCHECK(!loaded_);
+  CHECK(!loaded_, base::NotFatalUntil::M163);
   theme_.reset(theme);
   loaded_ = true;
   for (auto& callback : callbacks_) {
@@ -78,7 +78,7 @@ WaylandCursorFactory::~WaylandCursorFactory() {
 
 void WaylandCursorFactory::ObserveThemeChanges() {
   auto* linux_ui = LinuxUi::instance();
-  DCHECK(linux_ui);
+  CHECK(linux_ui, base::NotFatalUntil::M163);
   cursor_theme_observer_.Observe(linux_ui);
 }
 
@@ -166,7 +166,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
     mojom::CursorType type,
     float scale) {
   auto* const current_theme = GetThemeForScale(scale);
-  DCHECK(current_theme);
+  CHECK(current_theme, base::NotFatalUntil::M163);
   if (current_theme->cache().count(type) == 0) {
     auto async_cursor = base::MakeRefCounted<WaylandAsyncCursor>();
     current_theme->cache()[type] = async_cursor;

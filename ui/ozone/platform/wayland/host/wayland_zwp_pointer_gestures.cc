@@ -57,16 +57,16 @@ WaylandZwpPointerGestures::WaylandZwpPointerGestures(
     WaylandConnection* connection,
     Delegate* delegate)
     : obj_(pointer_gestures), connection_(connection), delegate_(delegate) {
-  DCHECK(obj_);
-  DCHECK(connection_);
-  DCHECK(delegate_);
+  CHECK(obj_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 WaylandZwpPointerGestures::~WaylandZwpPointerGestures() = default;
 
 void WaylandZwpPointerGestures::Init() {
-  DCHECK(connection_->seat());
-  DCHECK(connection_->seat()->pointer());
+  CHECK(connection_->seat(), base::NotFatalUntil::M163);
+  CHECK(connection_->seat()->pointer(), base::NotFatalUntil::M163);
   wl_pointer* pointer = connection_->seat()->pointer()->wl_object();
 
   pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(obj_.get(), pointer));

@@ -59,14 +59,14 @@ bool ZwpIdleInhibitManager::CreateInhibitor() {
   // surface that we should use is the one owned by the window that is focused
   // currently.
   const auto* window_manager = connection_->window_manager();
-  DCHECK(window_manager);
+  CHECK(window_manager, base::NotFatalUntil::M163);
   auto* current_window = window_manager->GetCurrentFocusedWindow();
   if (!current_window) {
     LOG(WARNING) << "Cannot inhibit going idle when no window is focused";
     return false;
   }
 
-  DCHECK(current_window->root_surface());
+  CHECK(current_window->root_surface(), base::NotFatalUntil::M163);
   auto new_inhibitor = wl::Object<zwp_idle_inhibitor_v1>(
       zwp_idle_inhibit_manager_v1_create_inhibitor(
           manager_.get(), current_window->root_surface()->surface()));

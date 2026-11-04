@@ -28,9 +28,9 @@ WaylandWpColorManagementSurface::WaylandWpColorManagementSurface(
       connection_(connection),
       management_surface_(std::move(management_surface)),
       feedback_surface_(std::move(feedback_surface)) {
-  DCHECK(wayland_surface_);
-  DCHECK(connection_);
-  DCHECK(management_surface_);
+  CHECK(wayland_surface_, base::NotFatalUntil::M163);
+  CHECK(connection_, base::NotFatalUntil::M163);
+  CHECK(management_surface_, base::NotFatalUntil::M163);
   if (feedback_surface_) {
     static constexpr wp_color_management_surface_feedback_v1_listener
         kListener = {.preferred_changed = &OnPreferredChanged};
@@ -58,7 +58,7 @@ void WaylandWpColorManagementSurface::SetColorSpace(
   }
 
   auto* color_manager = connection_->wp_color_manager();
-  DCHECK(color_manager);
+  CHECK(color_manager, base::NotFatalUntil::M163);
 
   color_manager->GetImageDescription(
       color_space, hdr_metadata,

@@ -44,7 +44,7 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
                                   uint32_t serial,
                                   wl_surface* icon_surface,
                                   DragDelegate* delegate) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M163);
   CHECK(!drag_delegate_);
   drag_delegate_ = delegate;
 
@@ -87,8 +87,8 @@ void WaylandDataDevice::OnDataOffer(void* data,
                                     wl_data_device* data_device,
                                     wl_data_offer* offer) {
   auto* self = static_cast<WaylandDataDevice*>(data);
-  DCHECK(self);
-  DCHECK(!self->new_offer_);
+  CHECK(self, base::NotFatalUntil::M163);
+  CHECK(!self->new_offer_, base::NotFatalUntil::M163);
   self->new_offer_ = std::make_unique<WaylandDataOffer>(offer);
 }
 
@@ -120,7 +120,7 @@ void WaylandDataDevice::OnEnter(void* data,
   if (!self->drag_delegate_)
     self->drag_delegate_ = self->connection()->data_drag_controller();
 
-  DCHECK(self->new_offer_);
+  CHECK(self->new_offer_, base::NotFatalUntil::M163);
   self->drag_delegate_->OnDragOffer(std::move(self->new_offer_));
 
   self->drag_delegate_->OnDragEnter(
@@ -168,14 +168,14 @@ void WaylandDataDevice::OnSelection(void* data,
                                     wl_data_device* data_device,
                                     wl_data_offer* offer) {
   auto* self = static_cast<WaylandDataDevice*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // 'offer' will be null to indicate that the selection is no longer valid,
   // i.e. there is no longer selection data available to fetch.
   if (!offer) {
     self->ResetDataOffer();
   } else {
-    DCHECK(self->new_offer_);
+    CHECK(self->new_offer_, base::NotFatalUntil::M163);
     self->set_data_offer(std::move(self->new_offer_));
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }

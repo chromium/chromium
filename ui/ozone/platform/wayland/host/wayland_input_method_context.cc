@@ -71,8 +71,9 @@ std::optional<size_t> OffsetFromUTF8Offset(std::string_view text,
 bool IsImeEnabled() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   // We do not expect both switches are set at the same time.
-  DCHECK(!cmd_line->HasSwitch(switches::kEnableWaylandIme) ||
-         !cmd_line->HasSwitch(switches::kDisableWaylandIme));
+  CHECK(!cmd_line->HasSwitch(switches::kEnableWaylandIme) ||
+            !cmd_line->HasSwitch(switches::kDisableWaylandIme),
+        base::NotFatalUntil::M163);
   // Force enable/disable wayland IMEs, when explictly specified via commandline
   // arguments.
   if (cmd_line->HasSwitch(switches::kEnableWaylandIme))
@@ -752,7 +753,7 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
                                                         uint32_t length) {
   const auto& [surrounding_text, utf16_offset, selection, unsused_composition] =
       surrounding_text_tracker_.predicted_state();
-  DCHECK(selection.IsValid());
+  CHECK(selection.IsValid(), base::NotFatalUntil::M163);
 
   // TODO(crbug.com/40189286): Currently data sent from delete surrounding text
   // from exo is broken. Currently this broken behavior is supported to prevent

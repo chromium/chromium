@@ -85,8 +85,6 @@ uint32_t TranslatePriority(gfx::OverlayPriorityHint priority_hint) {
   return priority;
 }
 
-const wl_fixed_t kMinusOne = wl_fixed_from_int(-1);
-
 }  // namespace
 
 WaylandSurface::WaylandSurface(WaylandConnection* connection,
@@ -107,7 +105,7 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
 WaylandSurface::~WaylandSurface() = default;
 
 void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {
-  DCHECK(!next_explicit_release_request_);
+  CHECK(!next_explicit_release_request_, base::NotFatalUntil::M163);
   next_explicit_release_request_ = std::move(callback);
 }
 
@@ -220,7 +218,7 @@ bool WaylandSurface::Initialize() {
 }
 
 void WaylandSurface::UnsetRootWindow() {
-  DCHECK(surface_);
+  CHECK(surface_, base::NotFatalUntil::M163);
   root_window_ = nullptr;
 }
 
@@ -231,9 +229,10 @@ void WaylandSurface::SetRootWindow(WaylandWindow* window) {
 void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.
-  DCHECK(!apply_state_immediately_);
-  DCHECK(connection_->SupportsExplicitSync() ||
-         connection_->UseImplicitSyncInterop());
+  CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
+  CHECK(connection_->SupportsExplicitSync() ||
+            connection_->UseImplicitSyncInterop(),
+        base::NotFatalUntil::M163);
   if (!acquire_fence.is_null() &&
       // linux-drm-syncobj explicit sync expects that a fence is always set,
       // even if it has been signaled already.
@@ -249,7 +248,7 @@ void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
 }
 
 bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
-  DCHECK(!apply_state_immediately_);
+  CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
   if (!buffer_handle) {
     pending_state_.buffer = nullptr;
     pending_state_.buffer_id = 0;
@@ -272,7 +271,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
 }
 
 void WaylandSurface::UpdateBufferDamageRegion(const gfx::Rect& damage_px) {
-  DCHECK(!apply_state_immediately_);
+  CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
   pending_state_.damage_px.push_back(damage_px);
 }
 
@@ -389,7 +388,7 @@ bool WaylandSurface::IsViewportScaled(const State& state) {
 wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
     float buffer_scale) {
-  DCHECK(root_window_);
+  CHECK(root_window_, base::NotFatalUntil::M163);
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
@@ -494,16 +493,16 @@ void WaylandSurface::OnFenceAvailable(uint32_t buffer_id,
 
 wl::Object<wl_subsurface> WaylandSurface::CreateSubsurface(
     WaylandSurface* parent) {
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M163);
   wl_subcompositor* subcompositor = connection_->subcompositor();
-  DCHECK(subcompositor);
+  CHECK(subcompositor, base::NotFatalUntil::M163);
   wl::Object<wl_subsurface> subsurface(wl_subcompositor_get_subsurface(
       subcompositor, surface_.get(), parent->surface_.get()));
   return subsurface;
 }
 
 std::optional<bool> WaylandSurface::ApplyPendingState() {
-  DCHECK(!apply_state_immediately_);
+  CHECK(!apply_state_immediately_, base::NotFatalUntil::M163);
   bool needs_commit = false;
 
   if (pending_state_.buffer_id != state_.buffer_id) {
@@ -564,13 +563,13 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   }
 
   if (pending_state_.opacity != state_.opacity) {
-    DCHECK(blending());
+    CHECK(blending(), base::NotFatalUntil::M163);
     zcr_blending_v1_set_alpha(blending(),
                               wl_fixed_from_double(pending_state_.opacity));
     needs_commit = true;
   }
   if (pending_state_.use_blending != state_.use_blending) {
-    DCHECK(blending());
+    CHECK(blending(), base::NotFatalUntil::M163);
     zcr_blending_v1_set_blending(blending(),
                                  pending_state_.use_blending
                                      ? ZCR_BLENDING_V1_BLENDING_EQUATION_PREMULT
@@ -579,7 +578,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
   }
 
   if (pending_state_.priority_hint != state_.priority_hint) {
-    DCHECK(overlay_priority_surface());
+    CHECK(overlay_priority_surface(), base::NotFatalUntil::M163);
     overlay_prioritized_surface_set_overlay_priority(
         overlay_priority_surface(),
         TranslatePriority(pending_state_.priority_hint));
@@ -691,7 +690,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     surface_scale_set_ = applying_surface_scale;
     needs_commit = true;
   }
-  DCHECK_GE(surface_scale_set_, 1);
+  CHECK_GE(surface_scale_set_, 1, base::NotFatalUntil::M163);
 
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
@@ -705,7 +704,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
         wl::ToWaylandTransform(pending_state_.buffer_transform));
     viewport_src_dip =
         gfx::ScaleRect(crop_transformed, bounds.width(), bounds.height());
-    DCHECK(viewport());
+    CHECK(viewport(), base::NotFatalUntil::M163);
 
     // It not completely unexpected to stretch a texture more than the smallest
     // fixed point can represent. The two cases here are solid color buffers
@@ -785,7 +784,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     UNSAFE_TODO(memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set)));
   }
 
-  DCHECK_LE(pending_state_.damage_px.size(), 1u);
+  CHECK_LE(pending_state_.damage_px.size(), 1u, base::NotFatalUntil::M163);
   if (pending_state_.damage_px.empty() ||
       pending_state_.damage_px.back().IsEmpty()) {
     pending_state_.damage_px.clear();
@@ -793,7 +792,7 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     return needs_commit;
   }
 
-  DCHECK(pending_state_.buffer);
+  CHECK(pending_state_.buffer, base::NotFatalUntil::M163);
 
   gfx::Rect damage = ScaleToEnclosingRect(
       pending_state_.damage_px.back(), 1.f / GetWaylandScale(pending_state_));
@@ -845,7 +844,7 @@ void WaylandSurface::OnEnter(void* data,
                              wl_surface* surface,
                              wl_output* output) {
   auto* self = static_cast<WaylandSurface*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // The compositor can send a null output. See https://crbug.com/1332540.
   if (!output) {
@@ -856,9 +855,9 @@ void WaylandSurface::OnEnter(void* data,
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
 
-  DCHECK_NE(self->connection_->wayland_output_manager()->GetOutput(
-                wayland_output->output_id()),
-            nullptr);
+  CHECK_NE(self->connection_->wayland_output_manager()->GetOutput(
+               wayland_output->output_id()),
+           nullptr, base::NotFatalUntil::M163);
 
   if (auto it = std::ranges::find(self->entered_outputs_,
                                   wayland_output->output_id());
@@ -876,7 +875,7 @@ void WaylandSurface::OnLeave(void* data,
                              wl_surface* surface,
                              wl_output* output) {
   auto* self = static_cast<WaylandSurface*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   // The compositor can send a null output. See https://crbug.com/1332540.
   if (!output) {
@@ -894,7 +893,7 @@ void WaylandSurface::OnPreferredScale(void* data,
                                       wp_fractional_scale_v1* fractional_scale,
                                       uint32_t scale) {
   auto* self = static_cast<WaylandSurface*>(data);
-  DCHECK(self);
+  CHECK(self, base::NotFatalUntil::M163);
 
   if (!self->connection_->UsePerSurfaceScaling()) {
     VLOG(1) << "Per-surface scaling is disabled.";
