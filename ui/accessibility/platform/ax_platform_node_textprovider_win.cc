@@ -91,7 +91,9 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
   AXNodePosition::AXPositionInstance end =
       focus_object->GetDelegate()->CreatePositionAt(end_offset);
 
-  CHECK(!start->IsNullPosition(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580103833): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!start->IsNullPosition());
   CHECK(!end->IsNullPosition(), base::NotFatalUntil::M163);
 
   start->SnapToMaxTextOffsetIfBeyond();
