@@ -314,7 +314,8 @@ void PopupNoticeView::FocusLink() {
     GetViewAccessibility().NotifyEvent(ax::mojom::Event::kFocus, true);
     GetViewAccessibility().SetIsSelected(true);
     if (views::Link* link = GetLink()) {
-      announce_callback_.Run(std::u16string(link->GetText()), /*polite=*/false);
+      announce_callback_.Run(link->GetViewAccessibility().GetCachedName(),
+                             /*polite=*/false);
     }
   }
 }
@@ -388,10 +389,14 @@ void PopupNoticeView::Layout(views::View::PassKey pass_key) {
   // configure the link. This sets its focus behavior to `NEVER` (preventing
   // clicking the link from stealing native focus from the search bar/input
   // field) and applies the active focus border styling.
-  auto* link = GetLink();
-  if (link) {
-    link->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-    link->SetFontList(link->font_list().DeriveWithStyle(gfx::Font::UNDERLINE));
+  if (description_) {
+    for (views::View* child : description_->children()) {
+      if (auto* link = views::AsViewClass<views::Link>(child)) {
+        link->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+        link->SetFontList(
+            link->font_list().DeriveWithStyle(gfx::Font::UNDERLINE));
+      }
+    }
   }
   UpdateLinkBorders(is_link_focused_);
 }

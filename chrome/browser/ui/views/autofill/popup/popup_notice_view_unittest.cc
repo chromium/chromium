@@ -564,6 +564,38 @@ TEST_F(PopupNoticeViewTest, AccessibilitySelectionAndAnnouncements) {
   EXPECT_FALSE(IsViewSelected());
 }
 
+// Tests that when a long link wraps across multiple lines in StyledLabel, all
+// views::Link fragments have FocusBehavior::NEVER and UNDERLINE styling, and
+// focusing the link announces the full accessible link name rather than only
+// the first line fragment.
+TEST_F(PopupNoticeViewTest, WrappedMultiLineLinkFragmentsConfiguredAndAnnounced) {
+  const std::u16string kLongLinkText =
+      u"Manage your personal context and autofill settings in Chrome";
+  ShowView(std::make_unique<PopupNoticeView>(
+      mock_a11y_selection_delegate(), mock_announce_callback().Get(),
+      controller().GetWeakPtr(), kNoticePosition,
+      u"Autofill can use your saved information",
+      u"You can review and control what Gemini and Autofill use at any time in",
+      kLongLinkText, kTestAcceptButton, kTestAcceptButtonA11yLabel,
+      kTestA11yInstructions, mock_on_link_clicked().Get(), kTestHistogram));
+  widget().SetBounds(gfx::Rect(0, 0, 320, 500));
+  widget().LayoutRootViewIfNecessary();
+
+  size_t link_fragment_count = 0;
+  for (views::View* child : test_api(view()).description()->children()) {
+    if (auto* link = views::AsViewClass<views::Link>(child)) {
+      ++link_fragment_count;
+      SCOPED_TRACE(link_fragment_count);
+      EXPECT_EQ(link->GetFocusBehavior(), views::View::FocusBehavior::NEVER);
+      EXPECT_NE(link->font_list().GetFontStyle() & gfx::Font::UNDERLINE, 0);
+    }
+  }
+  EXPECT_GT(link_fragment_count, 1u);
+
+  EXPECT_CALL(mock_announce_callback(), Run(kLongLinkText, false));
+  view().SetSelectedCell(PopupInteractiveRowView::CellType::kContent);
+}
+
 // Tests that when the notice is the only suggestion shown in the popup, neither
 // a custom background nor a border is applied to the view.
 TEST_F(PopupNoticeViewTest, SingleSuggestionNoCustomBackgroundOrBorder) {
