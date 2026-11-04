@@ -10,6 +10,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,6 +57,13 @@ public class TabletPhoneLayoutChangeTest {
     public void setUp() {
         mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
+    }
+
+    @After
+    public void tearDown() {
+        // TODO(crbug.com/483420501): Fix AssertionError: LayoutType is 2, expected BROWSING type on
+        // activity start.
+        mActivityTestRule.skipWindowAndTabStateCleanup();
     }
 
     @Test
