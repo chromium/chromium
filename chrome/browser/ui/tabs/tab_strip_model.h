@@ -458,8 +458,7 @@ class TabStripModel {
 
   // Notify any observers that the tab has changed in some way. See
   // TabChangeType for details of `change_type`.
-  void NotifyTabChanged(tabs::TabInterface* tab,
-                        TabChangeType change_type);
+  void NotifyTabChanged(tabs::TabInterface* tab, TabChangeType change_type);
 
   // Notify any observers that the WebContents has changed in some way. See
   // TabChangeType for details of `change_type`.
@@ -1017,6 +1016,14 @@ class TabStripModel {
   // split related observations within the group.
   void NotifyTabGroupAttached(tabs::TabGroupTabCollection* group_collection);
 
+  // Notify observers that the tab at `index` is added to the group with id
+  // `new_group` or removed from a group with id `old_group`.
+  void NotifyTabGroupedStateChanged(
+      std::optional<tab_groups::TabGroupId> old_group,
+      std::optional<tab_groups::TabGroupId> new_group,
+      tabs::TabInterface* tab,
+      int index);
+
   // Notify observers that split with `split_id` has been created.
   void NotifySplitTabCreated(
       split_tabs::SplitTabId split_id,
@@ -1362,9 +1369,6 @@ class TabStripModel {
       tabs::TabInterface* tab,
       bool initial_pinned_state,
       const std::optional<tab_groups::TabGroupId>& initial_focused_group);
-
-  // Updates the `group_model` by incrementing the tab count of `group`.
-  void AddTabToGroupModel(const tab_groups::TabGroupId& group);
 
   // Checks if the `contents_data_` is in a valid order. This checks for
   // pinned tabs placement, group contiguity and selected tabs validity.

@@ -2719,6 +2719,16 @@ void TabStripModel::NotifyTabGroupAttached(
   }
 }
 
+void TabStripModel::NotifyTabGroupedStateChanged(
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {
+  for (auto& observer : observers_) {
+    observer.TabGroupedStateChanged(this, old_group, new_group, tab, index);
+  }
+}
+
 void TabStripModel::NotifySplitTabCreated(
     split_tabs::SplitTabId split_id,
     const std::vector<std::pair<tabs::TabInterface*, int>>& tabs_with_indices,
@@ -5426,10 +5436,7 @@ void TabStripModel::TabGroupStateChanged(
     tab_group->RemoveTab();
 
     // Send the observation
-    for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(this, initial_group, std::nullopt, tab,
-                                      index);
-    }
+    NotifyTabGroupedStateChanged(initial_group, std::nullopt, tab, index);
 
     // If the group model must be deleted, then do that at this point.
     if (tab_group->IsEmpty()) {
@@ -5448,29 +5455,33 @@ void TabStripModel::TabGroupStateChanged(
     }
   }
 
-  if (new_group.has_value()) {
-    // Use IsEmpty() method as it relies on the tab_count_ maintained by  the
-    // TabGroup object. Any method that relies on the model for this would be
-    // wrong since the model is already updated.
-    const bool is_group_empty =
-        group_model_->GetTabGroup(new_group.value())->IsEmpty();
+  if (!new_group.has_value()) {
+    return;
+  }
 
-    // Update the group model.
-    AddTabToGroupModel(new_group.value());
+  TabGroup* tab_group = group_model_->GetTabGroup(new_group.value());
 
-    // Send the observation
-    for (auto& observer : observers_) {
-      observer.TabGroupedStateChanged(this, std::nullopt, new_group, tab,
-                                      index);
-    }
+  // Use IsEmpty() method as it relies on the tab_count_ maintained by  the
+  // TabGroup object. Any method that relies on the model for this would be
+  // wrong since the model is already updated.
+  const bool is_group_empty = tab_group->IsEmpty();
 
-    // TODO(398256328): Look into replacing the empty visual change with
-    // providing the right initial value or migrating clients to working with
-    // TabGroupChange::kCreated.
-    if (is_group_empty) {
-      TabGroupChange::VisualsChange visuals;
-      NotifyTabGroupVisualsChanged(new_group.value(), visuals);
-    }
+  // Update the group model.
+  tab_group->AddTab();
+
+  // Send the observations.
+  if (is_group_empty) {
+    NotifyTabGroupCreated(new_group.value());
+  }
+
+  NotifyTabGroupedStateChanged(std::nullopt, new_group, tab, index);
+
+  // TODO(398256328): Look into replacing the empty visual change with
+  // providing the right initial value or migrating clients to working with
+  // TabGroupChange::kCreated.
+  if (is_group_empty) {
+    TabGroupChange::VisualsChange visuals;
+    NotifyTabGroupVisualsChanged(new_group.value(), visuals);
   }
 }
 
@@ -5496,17 +5507,6 @@ void TabStripModel::MaybeUpdateFocusModeForMovedTab(
   ExitFocusMode(initial_pinned_state
                     ? TabGroupFocusExitReason::kUnpinActiveTab
                     : TabGroupFocusExitReason::kActiveTabGroupOperation);
-}
-
-void TabStripModel::AddTabToGroupModel(const tab_groups::TabGroupId& group) {
-  if (!group_model_) {
-    return;
-  }
-  TabGroup* tab_group = group_model_->GetTabGroup(group);
-  if (tab_group->IsEmpty()) {
-    NotifyTabGroupCreated(group);
-  }
-  tab_group->AddTab();
 }
 
 void TabStripModel::CompleteModelUpdateTransaction() {
