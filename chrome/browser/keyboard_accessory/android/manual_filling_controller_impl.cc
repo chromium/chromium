@@ -29,9 +29,6 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/unique_ids.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
@@ -316,8 +313,7 @@ void ManualFillingControllerImpl::Initialize() {
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents) {
   if (ChromePasswordManagerClient* password_client =
           ChromePasswordManagerClient::FromWebContents(web_contents)) {
     pwd_controller_ =
@@ -345,8 +341,7 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     base::WeakPtr<PaymentMethodAccessoryController> payment_method_controller,
     base::WeakPtr<AtMemoryAccessoryController> at_memory_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
+    : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
       pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       payment_method_controller_(std::move(payment_method_controller)),
@@ -354,53 +349,6 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       view_(std::move(view)) {}
 
 ManualFillingControllerImpl::~ManualFillingControllerImpl() = default;
-
-void ManualFillingControllerImpl::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (IsLastFocusedFrame(render_frame_host)) {
-    ResetFocus();
-  }
-}
-
-void ManualFillingControllerImpl::RenderFrameHostChanged(
-    content::RenderFrameHost* old_host,
-    content::RenderFrameHost* new_host) {
-  if (IsLastFocusedFrame(old_host)) {
-    ResetFocus();
-  }
-}
-
-void ManualFillingControllerImpl::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-  // Covers main-frame navigations and same-RFH subframe navigations.
-  if (navigation_handle->IsInPrimaryMainFrame() ||
-      IsLastFocusedFrame(navigation_handle->GetRenderFrameHost())) {
-    ResetFocus();
-  }
-}
-
-bool ManualFillingControllerImpl::IsLastFocusedFrame(
-    content::RenderFrameHost* rfh) const {
-  return rfh && last_focused_field_id_.frame_token ==
-                    autofill::LocalFrameToken(rfh->GetFrameToken().value());
-}
-
-void ManualFillingControllerImpl::ResetFocus() {
-  if (GetWebContents().IsBeingDestroyed()) {
-    return;
-  }
-  if (!last_focused_field_id_ &&
-      last_focused_field_type_ == FocusedFieldType::kUnknown) {
-    last_focused_field_id_ = autofill::FieldGlobalId();
-    return;
-  }
-  NotifyFocusedInputChanged(autofill::FieldGlobalId(),
-                            FocusedFieldType::kUnknown);
-}
 
 bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
     const {
