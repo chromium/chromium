@@ -1867,7 +1867,6 @@ public class TabGridDialogTest {
     @Feature({"RenderTest"})
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisabledTest(message = "crbug.com/362762206, see also crbug.com/360072870")
     public void testRenderDialog_TwoRows_Portrait(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule.getActivityTestRule(), 3, 0, "about:blank");
@@ -1886,12 +1885,11 @@ public class TabGridDialogTest {
                 (RecyclerView) dialogView.findViewById(R.id.tab_list_recycler_view));
         mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_share_button");
 
+        // Open and close the share flow; the dialog should stay open.
         onView(allOf(isDescendantOfA(withId(R.id.dialog_parent_view)), withId(R.id.share_button)))
                 .perform(click());
-        // Dismiss the bottom sheet.
         Espresso.pressBack();
-
-        mRenderTestRule.render(dialogView, "3_tabs_portrait_2_row_toolbar_image_tiles");
+        waitForView(withId(R.id.share_button), isDescendantOfA(withId(R.id.dialog_parent_view)));
     }
 
     /**
