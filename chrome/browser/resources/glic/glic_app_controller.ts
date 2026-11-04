@@ -144,11 +144,8 @@ export class GlicAppController implements WebviewDelegate {
   private showingSecurityInterstitial = false;
 
   state: WebUiState|undefined;
-  // Last value reported to `pageHandler.onClientLoadFailed()`: `undefined`
-  // before the first `setState()` call, or `null` when not in a failed state.
-  private lastReportedLoadFailedReason: ClientLoadErrorReason|null|undefined;
-  private readonly loadWaiters:
-      Array<(result: {errorReason: ClientLoadErrorReason|null}) => void> = [];
+  private clientLoadFailed: boolean|undefined;
+  private loadWaiters: Array<(result: {failed: boolean}) => void> = [];
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -395,19 +392,12 @@ export class GlicAppController implements WebviewDelegate {
     }
     this.clientLoadErrorReported = false;
     this.maybeReportClientLoadError();
-    const failedReason = this.currentClientLoadErrorReason();
-    if (this.lastReportedLoadFailedReason !== failedReason) {
-      this.lastReportedLoadFailedReason = failedReason;
-      this.browserProxy.pageHandler.onClientLoadFailed(failedReason);
+    const failed = this.hasClientLoadFailed(this.state);
+    if (this.clientLoadFailed !== failed) {
+      this.clientLoadFailed = failed;
+      this.browserProxy.pageHandler.onClientLoadFailed(failed);
     }
     this.maybeResolveLoadWaiters();
-  }
-
-  private currentClientLoadErrorReason(): ClientLoadErrorReason|null {
-    if (this.state === undefined || !this.hasClientLoadFailed(this.state)) {
-      return null;
-    }
-    return this.clientLoadErrorReason ?? ClientLoadErrorReason.kUnknown;
   }
 
   // Whether `state` is one the client cannot leave without being reloaded.
@@ -477,12 +467,12 @@ export class GlicAppController implements WebviewDelegate {
       return;
     }
     const loaded = this.isClientLoaded();
-    const errorReason = this.currentClientLoadErrorReason();
-    if (!loaded && errorReason === null) {
+    const failed = this.hasClientLoadFailed(this.state);
+    if (!loaded && !failed) {
       return;
     }
     for (const resolve of this.loadWaiters.splice(0)) {
-      resolve({errorReason});
+      resolve({failed});
     }
   }
 
@@ -1076,16 +1066,13 @@ export class GlicAppController implements WebviewDelegate {
   intentToShow() {
     if (this.stateDescriptor()?.reloadOnOpen) {
       this.reload();
-    } else if (this.lastReportedLoadFailedReason != null) {
-      this.browserProxy.pageHandler.onClientLoadFailed(
-          this.lastReportedLoadFailedReason);
+    } else if (this.clientLoadFailed) {
+      this.browserProxy.pageHandler.onClientLoadFailed(true);
     }
   }
 
-  waitForLoad(): Promise<{errorReason: ClientLoadErrorReason | null}> {
-    const {promise, resolve} = Promise.withResolvers<{
-      errorReason: ClientLoadErrorReason | null,
-    }>();
+  waitForLoad(): Promise<{failed: boolean}> {
+    const {promise, resolve} = Promise.withResolvers<{failed: boolean}>();
     this.loadWaiters.push(resolve);
     this.maybeResolveLoadWaiters();
     return promise;

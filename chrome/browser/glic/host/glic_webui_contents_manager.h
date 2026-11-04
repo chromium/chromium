@@ -7,14 +7,12 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "content/public/browser/visibility.h"
@@ -62,7 +60,7 @@ class GlicWebUIContentsManager : public content::WebContentsObserver,
  private:
   void OnWebUiLoadComplete(GlicPageHandler* page_handler,
                            uint64_t request_id,
-                           std::optional<ClientLoadErrorReason> error_reason);
+                           bool failed);
   // content::WebContentsObserver:
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;

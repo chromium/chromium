@@ -8,7 +8,6 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {GlicAppController} from './glic_app_controller.js';
 import {PanelStateKind} from './glic_enums.mojom-webui.js';
-import {ClientLoadErrorReason} from './glic_webui.mojom-webui.js';
 import type {ProfileReadyState, ZoomAction} from './glic_webui.mojom-webui.js';
 
 export enum AppView {
@@ -89,9 +88,9 @@ export class AppRouter {
     this.glicController?.intentToShow();
   }
 
-  private waitForLoad_(): Promise<{errorReason: ClientLoadErrorReason | null}> {
+  private waitForLoad_(): Promise<{failed: boolean}> {
     if (!this.glicController) {
-      return Promise.resolve({errorReason: ClientLoadErrorReason.kUnknown});
+      return Promise.resolve({failed: true});
     }
     return this.glicController.waitForLoad();
   }

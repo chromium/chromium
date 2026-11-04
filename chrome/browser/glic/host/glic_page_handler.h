@@ -6,14 +6,12 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -49,8 +47,7 @@ class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
 
   void NotifyWindowIntentToShow();
 
-  void WaitForLoad(
-      base::OnceCallback<void(std::optional<ClientLoadErrorReason>)> callback);
+  void WaitForLoad(mojom::Page::WaitForLoadCallback callback);
 
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source);
 
@@ -96,8 +93,7 @@ class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
   void UpdateProfileReadyState();
 
   void OnWebUiStateChanged(glic::mojom::WebUiState new_state) override;
-  void OnClientLoadFailed(
-      std::optional<glic::mojom::ClientLoadErrorReason> error_reason) override;
+  void OnClientLoadFailed(bool failed) override;
 
   void NotifyClientLoadError(
       glic::mojom::ClientLoadErrorReason reason) override;

@@ -697,21 +697,18 @@ void Host::ClearClientLoadFailed() {
   UpdateClientLoadState();
 }
 
-void Host::SetClientLoadFailed(GlicPageHandler* page_handler,
-                               ClientLoadErrorReason error_reason) {
+void Host::SetClientLoadFailed(GlicPageHandler* page_handler, bool failed) {
   if (page_handler != page_handler_) {
     // A page handler that is no longer current is on its way out; its report
     // describes the load being replaced, not the one in progress.
     return;
   }
-  SetClientLoadFailed(error_reason);
-}
-
-void Host::ClearClientLoadFailed(GlicPageHandler* page_handler) {
-  if (page_handler != page_handler_) {
+  if (!failed) {
+    ClearClientLoadFailed();
     return;
   }
-  ClearClientLoadFailed();
+  client_load_failed_ = true;
+  UpdateClientLoadState();
 }
 
 void Host::UpdateClientLoadState() {

@@ -100,16 +100,13 @@ interface Page {
   // `OnClientLoadFailed()`: the page retries most failures when it is shown,
   // and the browser must not act on a verdict that the page is about to
   // reconsider. A page that does not retry its current failure must report it
-  // again, through `OnClientLoadFailed(error_reason)`, in response to this
-  // call.
+  // again, through `OnClientLoadFailed(true)`, in response to this call.
   IntentToShow();
 
   // Waits for the page to finish loading, or returns immediately if loading
-  // has already succeeded or failed. `error_reason` carries the active failure
-  // cause (`kUnknown` when no more specific cause applies, such as
-  // `kGuestError`) if the page reached a failure state it will not leave
-  // without being reloaded, and is null if loading succeeded.
-  WaitForLoad() => (ClientLoadErrorReason? error_reason);
+  // has already succeeded or failed. `failed` is true if the page reached a
+  // failure state it will not leave without being reloaded.
+  WaitForLoad() => (bool failed);
 
   // TODO(crbug.com/454120908): Remove this method after WebContents warming is
   // rolled out.
@@ -310,10 +307,7 @@ interface PageHandler {
   // not connected is still on its way or has given up.
   //
   // Unlike `NotifyClientLoadError()`, which reports the cause of one
-  // user-visible failure so it can be recorded, this is the current state
-  // (including while hidden) and exists to drive browser-side waits on the
-  // client. `error_reason` carries the active failure cause when the page has
-  // failed (`kUnknown` when no more specific cause applies, such as
-  // `kGuestError`) and is null otherwise.
-  OnClientLoadFailed(ClientLoadErrorReason? error_reason);
+  // user-visible failure so it can be recorded, this is the current state and
+  // exists to drive browser-side waits on the client.
+  OnClientLoadFailed(bool failed);
 };
