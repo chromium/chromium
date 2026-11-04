@@ -11637,6 +11637,30 @@
             ]
         }
     ],
+    "MacMemoryPressureEvaluators": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TargetCombined_1200MB_800MB_150MB_50MB_45Percent",
+                    "params": {
+                        "MacCompressorCriticalThresholdPercent": "45",
+                        "MacCriticalThresholdMB": "800",
+                        "MacFreeCriticalThresholdMB": "50",
+                        "MacFreeModerateThresholdMB": "150",
+                        "MacModerateThresholdMB": "1200"
+                    },
+                    "enable_features": [
+                        "MacAvailableMemoryPressureEvaluator",
+                        "MacCompressorMemoryPressureEvaluator",
+                        "MacFreeMemoryPressureEvaluator"
+                    ]
+                }
+            ]
+        }
+    ],
     "MagiChromePasskeySignIn": [
         {
             "platforms": [
