@@ -119,6 +119,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   CGFloat _bottomMargin;
   // Whether the grabber button is hidden.
   BOOL _grabberHidden;
+  // Whether VoiceOver focus should be restored to the grabber button once the
+  // active detent animation completes.
+  BOOL _shouldRefocusGrabber;
 }
 
 @synthesize isAnimating = _isAnimating;
@@ -309,6 +312,10 @@ inline LayoutStateAssistantPassKey PassKey() {
   UIViewAnimationOptions options =
       curve << 16 | UIViewAnimationOptionBeginFromCurrentState;
 
+  if (!self.isAnimating) {
+    _shouldRefocusGrabber =
+        [_assistantContainerView.grabberButton accessibilityElementIsFocused];
+  }
   self.isAnimating = YES;
 
   if (duration <= 0) {
@@ -758,6 +765,12 @@ inline LayoutStateAssistantPassKey PassKey() {
 // Called when the animation to a detent completes.
 - (void)didCompleteDetentAnimationWithDetent:(AssistantContainerDetent)detent {
   self.isAnimating = NO;
+  if (_shouldRefocusGrabber && !_grabberHidden &&
+      self.presentationContext == AssistantPresentationContext::kSheet) {
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    _assistantContainerView.grabberButton);
+  }
+  _shouldRefocusGrabber = NO;
 }
 
 // Executes the layout pass and notifies the delegate of the transition.
