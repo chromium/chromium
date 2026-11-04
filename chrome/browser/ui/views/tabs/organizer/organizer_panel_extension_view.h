@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
@@ -53,8 +52,6 @@ class OrganizerPanelExtensionView : public OrganizerPanelView,
 
   void OnOrganizerPanelStateChanged(OrganizerPanelController* state_controller);
 
- private:
-  const raw_ref<BrowserWindowInterface> browser_;
   const raw_ptr<actions::ActionItem> root_action_item_;
   const base::CallbackListSubscription state_controller_subscription_;
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>

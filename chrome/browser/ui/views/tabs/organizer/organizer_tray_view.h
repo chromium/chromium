@@ -54,7 +54,6 @@ class OrganizerTrayView : public views::FlexLayoutView,
   bool HasOrganizerPanelView() const override;
 
   // views::View:
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void VisibilityChanged(views::View* from, bool visible) override;

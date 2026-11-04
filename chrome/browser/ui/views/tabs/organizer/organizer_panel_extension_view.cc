@@ -24,7 +24,6 @@
 OrganizerPanelExtensionView::OrganizerPanelExtensionView(
     BrowserWindowInterface& browser)
     : OrganizerPanelView(browser),
-      browser_(browser),
       root_action_item_(BrowserActions::From(&browser)->root_action_item()),
       state_controller_subscription_(
           OrganizerPanelController::From(&browser)->RegisterOnStateChanged(
@@ -43,13 +42,13 @@ bool OrganizerPanelExtensionView::IsInExtensionModeForTesting() const {
 }
 
 void OrganizerPanelExtensionView::ResetExtensionContent() {
-  if (current_extension_id_ && extension_host_ && browser_->GetProfile() &&
-      !browser_->IsDeleteScheduled()) {
+  if (current_extension_id_ && extension_host_ && browser().GetProfile() &&
+      !browser().IsDeleteScheduled()) {
     if (auto* const service =
-            extensions::SidePanelService::Get(browser_->GetProfile())) {
+            extensions::SidePanelService::Get(browser().GetProfile())) {
       service->DispatchOnClosedEvent(
           *current_extension_id_,
-          extensions::ExtensionTabUtil::GetWindowId(&*browser_),
+          extensions::ExtensionTabUtil::GetWindowId(&browser()),
           /*tab_id=*/std::nullopt, extension_host_->initial_url().GetPath());
     }
   }
@@ -81,11 +80,11 @@ void OrganizerPanelExtensionView::UpdateExtensionContent(
 
   ResetExtensionContent();
 
-  if (!browser_->GetProfile()) {
+  if (!browser().GetProfile()) {
     return;
   }
 
-  Profile* const profile = browser_->GetProfile();
+  Profile* const profile = browser().GetProfile();
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           extension_id);
@@ -110,7 +109,7 @@ void OrganizerPanelExtensionView::UpdateExtensionContent(
   }
 
   extension_host_ = extensions::ExtensionViewHostFactory::CreateSidePanelHost(
-      *extension, side_panel_url, &*browser_, /*tab_interface=*/nullptr);
+      *extension, side_panel_url, &browser(), /*tab_interface=*/nullptr);
   if (!extension_host_) {
     return;
   }
@@ -138,25 +137,25 @@ void OrganizerPanelExtensionView::UpdateExtensionContent(
   scoped_host_observation_.Observe(extension_host_.get());
 
   service->DispatchOnOpenedEvent(
-      extension_id, extensions::ExtensionTabUtil::GetWindowId(&*browser_),
+      extension_id, extensions::ExtensionTabUtil::GetWindowId(&browser()),
       /*tab_id=*/std::nullopt, side_panel_url.GetPath());
 }
 
 void OrganizerPanelExtensionView::UpdateDefaultExtensionContent() {
-  if (!browser_->GetProfile()) {
+  if (!browser().GetProfile()) {
     return;
   }
 
-  auto* registry = extensions::ExtensionRegistry::Get(browser_->GetProfile());
-  auto* service = extensions::SidePanelService::Get(browser_->GetProfile());
+  auto* registry = extensions::ExtensionRegistry::Get(browser().GetProfile());
+  auto* service = extensions::SidePanelService::Get(browser().GetProfile());
   if (!registry || !service) {
     return;
   }
 
   for (const auto& extension : registry->enabled_extensions()) {
-    if (browser_->GetProfile()->IsOffTheRecord() &&
+    if (browser().GetProfile()->IsOffTheRecord() &&
         !extensions::util::IsIncognitoEnabled(extension->id(),
-                                              browser_->GetProfile())) {
+                                              browser().GetProfile())) {
       continue;
     }
 
@@ -179,12 +178,12 @@ void OrganizerPanelExtensionView::OnExtensionHostDestroyed(
     extensions::ExtensionHost* host) {
   CHECK_EQ(extension_host_.get(), host, base::NotFatalUntil::M162);
   scoped_host_observation_.Reset();
-  if (current_extension_id_ && browser_->GetProfile()) {
-    auto* service = extensions::SidePanelService::Get(browser_->GetProfile());
+  if (current_extension_id_ && browser().GetProfile()) {
+    auto* service = extensions::SidePanelService::Get(browser().GetProfile());
     if (service) {
       service->DispatchOnClosedEvent(
           *current_extension_id_,
-          extensions::ExtensionTabUtil::GetWindowId(&*browser_),
+          extensions::ExtensionTabUtil::GetWindowId(&browser()),
           /*tab_id=*/std::nullopt, host->initial_url().GetPath());
     }
   }

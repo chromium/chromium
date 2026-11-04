@@ -27,15 +27,18 @@
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
@@ -92,7 +95,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
                                public views::ViewObserver {
  public:
   explicit OrganizerPanelViewImpl(BrowserWindowInterface& browser)
-      : OrganizerPanelView(browser), browser_(browser) {
+      : OrganizerPanelView(browser) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     web_view_ = AddChildView(
         std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
@@ -111,7 +114,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
   }
 
   ~OrganizerPanelViewImpl() override {
-    if (auto* const controller = OrganizerPanelController::From(&*browser_)) {
+    if (auto* const controller = OrganizerPanelController::From(&browser())) {
       controller->UnregisterPanelView(this);
     }
     AttachWebContents(nullptr);
@@ -152,7 +155,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
       // Focus the location bar only if the browser window is active.
       if (GetWidget() && GetWidget()->IsActive()) {
         if (auto* browser_view =
-                BrowserView::GetBrowserViewForBrowser(&*browser_)) {
+                BrowserView::GetBrowserViewForBrowser(&browser())) {
           browser_view->SetFocusToLocationBar(false);
         }
       }
@@ -163,7 +166,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     if (!web_contents()) {
       return false;
     }
-    if (!DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser_.get())) {
+    if (!DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser())) {
       return false;
     }
     const gfx::Point point_in_webview =
@@ -176,7 +179,6 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     return web_view_ ? web_view_->web_contents() : nullptr;
   }
 
-  const raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<OrganizerPanelWebView> web_view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
   views::ViewTracker previously_focused_view_;
@@ -198,7 +200,8 @@ std::unique_ptr<OrganizerPanelView> OrganizerPanelView::Create(
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OrganizerPanelView, kWebViewElementId);
 
 OrganizerPanelView::OrganizerPanelView(BrowserWindowInterface& browser)
-    : animation_subscription_(
+    : browser_(browser),
+      animation_subscription_(
           BrowserAnimationController::From(&browser)->Subscribe(
               OrganizerPanelAnimations::kOrganizerPanel,
               base::BindRepeating(
@@ -217,6 +220,8 @@ OrganizerPanelView::OrganizerPanelView(BrowserWindowInterface& browser)
   accessibility.SetRole(ax::mojom::Role::kPane);
   accessibility.SetName(l10n_util::GetStringUTF16(IDS_ORGANIZER_PANEL));
   SetFocusBehavior(FocusBehavior::NEVER);
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 OrganizerPanelView::~OrganizerPanelView() = default;
@@ -231,6 +236,24 @@ bool OrganizerPanelView::IsPositionInWindowCaption(
 }
 
 void OrganizerPanelView::AttachWebContents(content::WebContents* web_contents) {
+}
+
+bool OrganizerPanelView::AcceleratorPressed(
+    const ui::Accelerator& accelerator) {
+  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
+    if (auto* const controller = OrganizerPanelController::From(&browser());
+        controller && controller->IsOrganizerPanelVisible()) {
+      controller->SetOrganizerVisible(false);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool OrganizerPanelView::CanHandleAccelerators() const {
+  const auto* const focus_manager = GetFocusManager();
+  return focus_manager && Contains(focus_manager->GetFocusedView()) &&
+         views::View::CanHandleAccelerators();
 }
 
 BEGIN_METADATA(OrganizerPanelView)

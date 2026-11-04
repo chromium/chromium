@@ -307,3 +307,30 @@ TEST_F(OrganizerPanelViewTest, LazyWebContentsInitialization) {
   EXPECT_NE(web_view->web_contents(), nullptr);
   EXPECT_EQ(web_view->web_contents(), state_controller()->web_contents());
 }
+
+TEST_F(OrganizerPanelViewTest, ClosesOnEscapeOnlyWhenFocused) {
+  CreateView();
+  views::View* web_view = GetWebView();
+  ASSERT_NE(web_view, nullptr);
+
+  views::View* outside_view =
+      widget()->GetRootView()->AddChildView(std::make_unique<views::View>());
+  outside_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  state_controller()->SetOrganizerVisible(true, /*immediate=*/true);
+  ASSERT_TRUE(state_controller()->IsOrganizerPanelVisible());
+
+  const ui::Accelerator escape(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  // Pressing Escape when focus is outside the panel should not close it.
+  outside_view->RequestFocus();
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), outside_view);
+  EXPECT_FALSE(widget()->GetFocusManager()->ProcessAccelerator(escape));
+  EXPECT_TRUE(state_controller()->IsOrganizerPanelVisible());
+
+  // Pressing Escape when focus is inside the panel should close it.
+  web_view->RequestFocus();
+  EXPECT_EQ(widget()->GetFocusManager()->GetFocusedView(), web_view);
+  EXPECT_TRUE(widget()->GetFocusManager()->ProcessAccelerator(escape));
+  EXPECT_FALSE(state_controller()->IsOrganizerPanelVisible());
+}

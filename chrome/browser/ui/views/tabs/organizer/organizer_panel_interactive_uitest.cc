@@ -507,6 +507,31 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       PanelClosesOnEscInVerticalTabsWhenFocused) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(true), OpenOrganizerPanel(),
+      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
+      CheckViewProperty(OrganizerPanelView::kWebViewElementId,
+                        &views::View::HasFocus, true),
+      SendAccelerator(kBrowserViewElementId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForPanelClose(), CheckControllerState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       PanelDoesNotCloseOnEscInVerticalTabsWhenUnfocused) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(true), OpenOrganizerPanel(),
+      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
+      FocusElement(ContentsWebView::kContentsWebViewElementId),
+      CheckViewProperty(OrganizerPanelView::kWebViewElementId,
+                        &views::View::HasFocus, false),
+      SendAccelerator(kBrowserViewElementId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      CheckControllerState(true), EnsurePresent(kOrganizerPanelElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                        MatchesVerticalTabsWidthWhenLargerThanMinWidth) {
   constexpr int kVerticalTabsRegionWidth =
       organizer_panel::kOrganizerPanelMinWidth + 100;

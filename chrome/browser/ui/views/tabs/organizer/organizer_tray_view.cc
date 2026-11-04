@@ -126,7 +126,6 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
       kPanelShadowElevation, kPanelShadowAlpha));
   shadow_frame_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   SetVisible(false);
 }
 
@@ -179,14 +178,6 @@ std::unique_ptr<views::View> OrganizerTrayView::TakeOrganizerPanelView() {
 
 bool OrganizerTrayView::HasOrganizerPanelView() const {
   return panel_view_;
-}
-
-bool OrganizerTrayView::AcceleratorPressed(const ui::Accelerator& accelerator) {
-  if (accelerator.key_code() == ui::VKEY_ESCAPE) {
-    ClosePanel();
-    return true;
-  }
-  return false;
 }
 
 void OrganizerTrayView::AddedToWidget() {
