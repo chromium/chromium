@@ -46,7 +46,6 @@ source_set("content_notification_client") {
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile:features",
     "//ui/base",
     "//url",
   ]
@@ -127,7 +126,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",

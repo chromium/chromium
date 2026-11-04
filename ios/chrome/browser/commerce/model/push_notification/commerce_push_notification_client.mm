@@ -23,9 +23,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "url/gurl.h"
 
 namespace {
@@ -49,37 +46,11 @@ NSString* const kUntrackPriceIdentifier = @"untrack_price";
 // Text for option 'Untrack price' when long pressing notification.
 NSString* const kUntrackPriceTitle = @"Untrack price";
 
-// Returns an arbitrary profile amongst the currently loaded profile. This
-// means that this API is not safe when there are multiple profiles. Instead
-// the push notification system should be re-designed to not depend on this
-// method (either create specific manager per-profile, or include in the
-// notification an identifier for the profile, e.g. gaia id).
-// TODO(crbug.com/41497027): This API should be redesigned.
-ProfileIOS* GetAnyProfile() {
-  std::vector<ProfileIOS*> loaded_profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  // Even if there is only one Profile on disk, it may have not been loaded yet.
-  if (loaded_profiles.empty()) {
-    return nullptr;
-  }
-
-  return loaded_profiles.back();
-}
-
 }  // namespace
 
 CommercePushNotificationClient::CommercePushNotificationClient(
     ProfileIOS* profile)
-    : PushNotificationClient(PushNotificationClientId::kCommerce, profile) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-}
-
-CommercePushNotificationClient::CommercePushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kCommerce,
-                             PushNotificationClientScope::kPerProfile) {
-  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
-}
+    : PushNotificationClient(PushNotificationClientId::kCommerce, profile) {}
 
 CommercePushNotificationClient::~CommercePushNotificationClient() = default;
 
@@ -133,7 +104,7 @@ bool CommercePushNotificationClient::HandleNotificationInteraction(
 std::optional<UIBackgroundFetchResult>
 CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
-  ProfileIOS* profile = GetTargetProfile();
+  ProfileIOS* profile = GetProfile();
 
   if (!profile) {
     // Cannot process the notification without a Profile.
@@ -191,21 +162,13 @@ CommercePushNotificationClient::RegisterActionableNotifications() {
                      options:UNNotificationCategoryOptionNone] ];
 }
 
-ProfileIOS* CommercePushNotificationClient::GetTargetProfile() {
-  if (IsMultiProfilePushNotificationHandlingEnabled()) {
-    return GetProfile();
-  }
-
-  return GetAnyProfile();
-}
-
 commerce::ShoppingService*
 CommercePushNotificationClient::GetShoppingService() {
-  return commerce::ShoppingServiceFactory::GetForProfile(GetTargetProfile());
+  return commerce::ShoppingServiceFactory::GetForProfile(GetProfile());
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
-  return ios::BookmarkModelFactory::GetForProfile(GetTargetProfile());
+  return ios::BookmarkModelFactory::GetForProfile(GetProfile());
 }
 
 bool CommercePushNotificationClient::HandleNotificationInteraction(

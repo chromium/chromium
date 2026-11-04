@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -199,9 +198,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
                      forProtocol:@protocol(SceneCommands)];
 
     commerce_push_notification_client_ =
-        IsMultiProfilePushNotificationHandlingEnabled()
-            ? std::make_unique<CommercePushNotificationClient>(profile_.get())
-            : std::make_unique<CommercePushNotificationClient>();
+        std::make_unique<CommercePushNotificationClient>(profile_.get());
   }
 
   void TearDown() override {

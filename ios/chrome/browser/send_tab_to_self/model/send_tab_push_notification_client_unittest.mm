@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -68,9 +67,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     browser_ = std::make_unique<TestBrowser>(profile, scene_state_);
     list->AddBrowser(browser_.get());
-    client_ = IsMultiProfilePushNotificationHandlingEnabled()
-                  ? std::make_unique<SendTabPushNotificationClient>(profile)
-                  : std::make_unique<SendTabPushNotificationClient>();
+    client_ = std::make_unique<SendTabPushNotificationClient>(profile);
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(kSendTabNotificationKey, true);

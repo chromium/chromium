@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -46,15 +45,7 @@ NSString* const kIdentifierKey = @"SendTabGuid";
 
 SendTabPushNotificationClient::SendTabPushNotificationClient(
     ProfileIOS* profile)
-    : PushNotificationClient(PushNotificationClientId::kSendTab, profile) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-}
-
-SendTabPushNotificationClient::SendTabPushNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kSendTab,
-                             PushNotificationClientScope::kPerProfile) {
-  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
-}
+    : PushNotificationClient(PushNotificationClientId::kSendTab, profile) {}
 
 SendTabPushNotificationClient::~SendTabPushNotificationClient() = default;
 

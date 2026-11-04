@@ -32,14 +32,7 @@ class SafetyCheckNotificationClient
     : public PushNotificationClient,
       public IOSChromeSafetyCheckManagerObserver {
  public:
-  // Constructs a SafetyCheckNotificationClient without specific Profile
-  // context. Use this when multi-Profile push notification handling
-  // (kIOSPushNotificationMultiProfile) is disabled (legacy behavior).
-  explicit SafetyCheckNotificationClient(
-      const scoped_refptr<base::SequencedTaskRunner> task_runner);
-  // Constructs a Profile-aware SafetyCheckNotificationClient. Use this when
-  // multi-Profile push notification handling (kIOSPushNotificationMultiProfile)
-  // is enabled, providing the associated `profile`.
+  // Constructs a SafetyCheckNotificationClient for the associated `profile`.
   explicit SafetyCheckNotificationClient(
       ProfileIOS* profile,
       const scoped_refptr<base::SequencedTaskRunner> task_runner);

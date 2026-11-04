@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -131,22 +130,12 @@ UNNotificationRequest* CreateNotificationRequestFromScheduledRequest(
 }  // namespace
 
 SafetyCheckNotificationClient::SafetyCheckNotificationClient(
-    const scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : PushNotificationClient(PushNotificationClientId::kSafetyCheck,
-                             PushNotificationClientScope::kPerProfile),
-      task_runner_(task_runner) {
-  CHECK(task_runner);
-  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
-}
-
-SafetyCheckNotificationClient::SafetyCheckNotificationClient(
     ProfileIOS* profile,
     const scoped_refptr<base::SequencedTaskRunner> task_runner)
     : PushNotificationClient(PushNotificationClientId::kSafetyCheck, profile),
       task_runner_(task_runner) {
   CHECK(profile);
   CHECK(task_runner);
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
 }
 
 SafetyCheckNotificationClient::~SafetyCheckNotificationClient() = default;
@@ -448,27 +437,12 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kPasswords));
 
-    if (IsMultiProfilePushNotificationHandlingEnabled()) {
-      ProfileIOS* current_profile = GetProfile();
-      CHECK(current_profile);
+    ProfileIOS* current_profile = GetProfile();
+    CHECK(current_profile);
 
-      ScheduleProfileNotification(password_request.value(),
-                                  std::move(schedule_completion_callback),
-                                  current_profile->GetProfileName());
-    } else {
-      UNNotificationRequest* notification_request =
-          CreateNotificationRequestFromScheduledRequest(
-              password_request.value());
-
-      CHECK(notification_request);
-
-      [UNUserNotificationCenter.currentNotificationCenter
-          addNotificationRequest:notification_request
-           withCompletionHandler:nil];
-
-      LogSafetyCheckNotificationRequested(
-          SafetyCheckNotificationType::kPasswords);
-    }
+    ScheduleProfileNotification(password_request.value(),
+                                std::move(schedule_completion_callback),
+                                current_profile->GetProfileName());
 
     return;
   }
@@ -485,27 +459,12 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         prefs::kIosSafetyCheckNotificationsLastSent,
         static_cast<int>(SafetyCheckNotificationType::kSafeBrowsing));
 
-    if (IsMultiProfilePushNotificationHandlingEnabled()) {
-      ProfileIOS* current_profile = GetProfile();
-      CHECK(current_profile);
+    ProfileIOS* current_profile = GetProfile();
+    CHECK(current_profile);
 
-      ScheduleProfileNotification(safe_browsing_request.value(),
-                                  std::move(schedule_completion_callback),
-                                  current_profile->GetProfileName());
-    } else {
-      UNNotificationRequest* notification_request =
-          CreateNotificationRequestFromScheduledRequest(
-              safe_browsing_request.value());
-
-      CHECK(notification_request);
-
-      [UNUserNotificationCenter.currentNotificationCenter
-          addNotificationRequest:notification_request
-           withCompletionHandler:nil];
-
-      LogSafetyCheckNotificationRequested(
-          SafetyCheckNotificationType::kSafeBrowsing);
-    }
+    ScheduleProfileNotification(safe_browsing_request.value(),
+                                std::move(schedule_completion_callback),
+                                current_profile->GetProfileName());
 
     return;
   }
@@ -736,13 +695,10 @@ void SafetyCheckNotificationClient::OnGetDeliveredNotificationsForRemoval(
     NSArray<UNNotification*>* notifications) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NSString* current_profile_name = nil;
-
-  if (IsMultiProfilePushNotificationHandlingEnabled()) {
-    ProfileIOS* profile = GetProfile();
-    CHECK(profile);
-    current_profile_name = base::SysUTF8ToNSString(profile->GetProfileName());
-  }
+  ProfileIOS* profile = GetProfile();
+  CHECK(profile);
+  NSString* current_profile_name =
+      base::SysUTF8ToNSString(profile->GetProfileName());
 
   NSMutableArray<NSString*>* notification_ids_to_remove =
       [NSMutableArray array];
@@ -761,8 +717,7 @@ void SafetyCheckNotificationClient::OnGetDeliveredNotificationsForRemoval(
 
     // Profile Check: Update Chrome notifications are effectively app-wide,
     // others are per-profile.
-    if (IsMultiProfilePushNotificationHandlingEnabled() &&
-        type.value() != SafetyCheckNotificationType::kUpdateChrome) {
+    if (type.value() != SafetyCheckNotificationType::kUpdateChrome) {
       NSString* originating_profile_name =
           notification.request.content.userInfo[kOriginatingProfileNameKey];
       if (![originating_profile_name isEqualToString:current_profile_name]) {

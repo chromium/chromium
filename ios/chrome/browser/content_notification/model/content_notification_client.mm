@@ -11,22 +11,13 @@
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 ContentNotificationClient::ContentNotificationClient(ProfileIOS* profile)
-    : PushNotificationClient(PushNotificationClientId::kContent, profile) {
-  CHECK(IsMultiProfilePushNotificationHandlingEnabled());
-}
-
-ContentNotificationClient::ContentNotificationClient()
-    : PushNotificationClient(PushNotificationClientId::kContent,
-                             PushNotificationClientScope::kPerProfile) {
-  CHECK(!IsMultiProfilePushNotificationHandlingEnabled());
-}
+    : PushNotificationClient(PushNotificationClientId::kContent, profile) {}
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 
@@ -52,9 +43,8 @@ bool ContentNotificationClient::HandleNotificationInteraction(
     return false;
   }
 
-  // If the app is not foreground active, store this interaction and process it
-  // later. This uses an arbitrary Browser and thus is unsafe in multi-profile.
-  // TODO(crbug.com/41497027): This API should be redesigned.
+  // If the app is not foreground active for this client's Profile, store this
+  // interaction and process it later.
   Browser* browser = GetActiveForegroundBrowser();
   if (!browser) {
     stored_interaction_ = response;
