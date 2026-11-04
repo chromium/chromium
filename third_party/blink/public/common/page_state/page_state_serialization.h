@@ -27,14 +27,17 @@ constexpr int kMaxScrollAnchorSelectorLength = 500;
 struct BLINK_COMMON_EXPORT ExplodedHttpBody {
   std::optional<std::u16string> http_content_type;
   scoped_refptr<network::ResourceRequestBody> request_body;
-  bool contains_passwords;
+  bool contains_passwords = false;
 
   ExplodedHttpBody();
+  ExplodedHttpBody(const ExplodedHttpBody&);
+  ExplodedHttpBody& operator=(const ExplodedHttpBody&);
+  ExplodedHttpBody(ExplodedHttpBody&&) noexcept;
+  ExplodedHttpBody& operator=(ExplodedHttpBody&&) noexcept;
   ~ExplodedHttpBody();
 };
 
 struct BLINK_COMMON_EXPORT ExplodedFrameState {
-  // When adding a new member, also add it to ExplodedFrameState::assign.
   std::optional<std::u16string> url_string;
   std::optional<std::u16string> referrer;
   std::optional<url::Origin> initiator_origin;
@@ -63,12 +66,11 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
   std::vector<ExplodedFrameState> children;
 
   ExplodedFrameState();
-  ExplodedFrameState(const ExplodedFrameState& other);
+  ExplodedFrameState(const ExplodedFrameState&);
+  ExplodedFrameState& operator=(const ExplodedFrameState&);
+  ExplodedFrameState(ExplodedFrameState&&) noexcept;
+  ExplodedFrameState& operator=(ExplodedFrameState&&) noexcept;
   ~ExplodedFrameState();
-  void operator=(const ExplodedFrameState& other);
-
- private:
-  void assign(const ExplodedFrameState& other);
 };
 
 struct BLINK_COMMON_EXPORT ExplodedPageState {
@@ -80,6 +82,10 @@ struct BLINK_COMMON_EXPORT ExplodedPageState {
   ExplodedFrameState top;
 
   ExplodedPageState();
+  ExplodedPageState(const ExplodedPageState&) = delete;
+  ExplodedPageState& operator=(const ExplodedPageState&) = delete;
+  ExplodedPageState(ExplodedPageState&&) noexcept;
+  ExplodedPageState& operator=(ExplodedPageState&&) noexcept;
   ~ExplodedPageState();
 };
 

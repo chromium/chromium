@@ -15,6 +15,8 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -422,14 +424,17 @@ void WriteU16StringVector(
   }
 }
 
-void ReadU16StringVector(DeserializeObject* obj,
-                         std::vector<std::optional<std::u16string>>* result) {
+std::vector<std::optional<std::u16string>> ReadU16StringVector(
+    DeserializeObject* obj) {
   size_t num_elements =
       ReadAndValidateVectorSize(obj, sizeof(std::optional<std::u16string>));
 
-  result->resize(num_elements);
-  for (size_t i = 0; i < num_elements; ++i)
-    (*result)[i] = ReadU16String(obj);
+  std::vector<std::optional<std::u16string>> result;
+  result.reserve(num_elements);
+  for (size_t i = 0; i < num_elements; ++i) {
+    result.push_back(ReadU16String(obj));
+  }
+  return result;
 }
 
 void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
@@ -460,9 +465,9 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
   WriteInteger64(request_body.identifier(), obj);
 }
 
-void ReadResourceRequestBody(
-    DeserializeObject* obj,
-    const scoped_refptr<network::ResourceRequestBody>& request_body) {
+scoped_refptr<network::ResourceRequestBody> ReadResourceRequestBody(
+    DeserializeObject* obj) {
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
   int num_elements = ReadInteger(obj);
   for (int i = 0; i < num_elements; ++i) {
     HTTPBodyElementType type =
@@ -491,18 +496,21 @@ void ReadResourceRequestBody(
     }
   }
   request_body->set_identifier(ReadInteger64(obj));
+  return request_body;
 }
 
-void ReadHttpBody(DeserializeObject* obj, ExplodedHttpBody* http_body) {
+ExplodedHttpBody ReadHttpBody(DeserializeObject* obj) {
+  ExplodedHttpBody http_body;
   // An initial boolean indicates if we have an HTTP body.
   if (!ReadBoolean(obj))
-    return;
+    return http_body;
 
-  http_body->request_body = new network::ResourceRequestBody();
-  ReadResourceRequestBody(obj, http_body->request_body);
+  http_body.request_body = ReadResourceRequestBody(obj);
 
   if (obj->version >= 12)
-    http_body->contains_passwords = ReadBoolean(obj);
+    http_body.contains_passwords = ReadBoolean(obj);
+
+  return http_body;
 }
 
 void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
@@ -516,23 +524,23 @@ void WriteHttpBody(const ExplodedHttpBody& http_body, SerializeObject* obj) {
 }
 
 // This is only used for versions < 26. Later versions use ReadMojoFrameState.
-void ReadLegacyFrameState(
+ExplodedFrameState ReadLegacyFrameState(
     DeserializeObject* obj,
     bool is_top,
-    std::vector<UniqueNameHelper::Replacement>* unique_name_replacements,
-    ExplodedFrameState* state) {
+    std::vector<UniqueNameHelper::Replacement>* unique_name_replacements) {
+  ExplodedFrameState state;
   if (obj->version < 14 && !is_top)
     ReadInteger(obj);  // Skip over redundant version field.
 
-  state->url_string = ReadU16String(obj);
+  state.url_string = ReadU16String(obj);
 
   if (obj->version < 19)
     ReadU16StringView(obj);  // Skip obsolete original url string field.
 
-  state->target = ReadU16String(obj);
-  if (obj->version < 25 && state->target) {
-    state->target = base::UTF8ToUTF16(UniqueNameHelper::UpdateLegacyNameFromV24(
-        base::UTF16ToUTF8(*state->target), unique_name_replacements));
+  state.target = ReadU16String(obj);
+  if (obj->version < 25 && state.target) {
+    state.target = base::UTF8ToUTF16(UniqueNameHelper::UpdateLegacyNameFromV24(
+        base::UTF16ToUTF8(*state.target), unique_name_replacements));
   }
   if (obj->version < 15) {
     ReadU16StringView(obj);  // Skip obsolete parent field.
@@ -542,30 +550,31 @@ void ReadLegacyFrameState(
   }
 
   if (obj->version >= 24) {
-    state->did_save_scroll_or_scale_state = ReadBoolean(obj);
+    state.did_save_scroll_or_scale_state = ReadBoolean(obj);
   } else {
-    state->did_save_scroll_or_scale_state = true;
+    state.did_save_scroll_or_scale_state = true;
   }
 
-  if (state->did_save_scroll_or_scale_state) {
+  if (state.did_save_scroll_or_scale_state) {
     int x = ReadInteger(obj);
     int y = ReadInteger(obj);
-    state->scroll_offset = gfx::Point(x, y);
+    state.scroll_offset = gfx::Point(x, y);
   }
 
   if (obj->version < 15) {
     ReadBoolean(obj);  // Skip obsolete target item flag.
     ReadInteger(obj);  // Skip obsolete visit count field.
   }
-  state->referrer = ReadU16String(obj);
+  state.referrer = ReadU16String(obj);
 
-  ReadU16StringVector(obj, &state->document_state);
+  state.document_state = ReadU16StringVector(obj);
 
-  if (state->did_save_scroll_or_scale_state)
-    state->page_scale_factor = ReadReal(obj);
+  if (state.did_save_scroll_or_scale_state) {
+    state.page_scale_factor = ReadReal(obj);
+  }
 
-  state->item_sequence_number = ReadInteger64(obj);
-  state->document_sequence_number = ReadInteger64(obj);
+  state.item_sequence_number = ReadInteger64(obj);
+  state.document_sequence_number = ReadInteger64(obj);
   if (obj->version >= 21 && obj->version < 23)
     ReadInteger64(obj);  // Skip obsolete frame sequence number.
 
@@ -573,35 +582,35 @@ void ReadLegacyFrameState(
     ReadInteger64(obj);  // Skip obsolete target frame id number.
 
   if (obj->version >= 18) {
-    state->referrer_policy =
+    state.referrer_policy =
         mojo::ConvertIntToMojoEnum<network::mojom::ReferrerPolicy>(
             ReadInteger(obj))
             .value_or(network::mojom::ReferrerPolicy::kDefault);
   }
 
-  if (obj->version >= 20 && state->did_save_scroll_or_scale_state) {
+  if (obj->version >= 20 && state.did_save_scroll_or_scale_state) {
     double x = ReadReal(obj);
     double y = ReadReal(obj);
-    state->visual_viewport_scroll_offset = gfx::PointF(x, y);
+    state.visual_viewport_scroll_offset = gfx::PointF(x, y);
   } else {
-    state->visual_viewport_scroll_offset = gfx::PointF(-1, -1);
+    state.visual_viewport_scroll_offset = gfx::PointF(-1, -1);
   }
 
   if (obj->version >= 22) {
-    state->scroll_restoration_type =
+    state.scroll_restoration_type =
         static_cast<mojom::ScrollRestorationType>(ReadInteger(obj));
   }
 
   bool has_state_object = ReadBoolean(obj);
   if (has_state_object)
-    state->state_object = ReadU16String(obj);
+    state.state_object = ReadU16String(obj);
 
-  ReadHttpBody(obj, &state->http_body);
+  state.http_body = ReadHttpBody(obj);
 
   // NOTE: It is a quirk of the format that we still have to read the
   // http_content_type field when the HTTP body is null.  That's why this code
   // is here instead of inside ReadHttpBody.
-  state->http_body.http_content_type = ReadU16String(obj);
+  state.http_body.http_content_type = ReadU16String(obj);
 
   if (obj->version < 14)
     ReadU16StringView(obj);  // Skip unused referrer string.
@@ -615,16 +624,16 @@ void ReadLegacyFrameState(
 
     // In this version, page_scale_factor included device_scale_factor and
     // scroll offsets were premultiplied by pageScaleFactor.
-    if (state->page_scale_factor) {
+    if (state.page_scale_factor) {
       float device_scale_factor = g_device_scale_factor_for_testing;
       if (!device_scale_factor) {
         device_scale_factor =
             display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
       }
-      state->scroll_offset =
-          gfx::Point(state->scroll_offset.x() / state->page_scale_factor,
-                     state->scroll_offset.y() / state->page_scale_factor);
-      state->page_scale_factor /= device_scale_factor;
+      state.scroll_offset =
+          gfx::Point(state.scroll_offset.x() / state.page_scale_factor,
+                     state.scroll_offset.y() / state.page_scale_factor);
+      state.page_scale_factor /= device_scale_factor;
     }
   }
 #endif
@@ -632,11 +641,12 @@ void ReadLegacyFrameState(
   // Subitems
   size_t num_children =
       ReadAndValidateVectorSize(obj, sizeof(ExplodedFrameState));
-  state->children.resize(num_children);
+  state.children.reserve(num_children);
   for (size_t i = 0; i < num_children; ++i) {
-    ReadLegacyFrameState(obj, false, unique_name_replacements,
-                         &state->children[i]);
+    state.children.push_back(
+        ReadLegacyFrameState(obj, /*is_top=*/false, unique_name_replacements));
   }
+  return state;
 }
 
 // Writes the ExplodedFrameState data into the SerializeObject object for
@@ -708,8 +718,9 @@ void WriteLegacyPageState(const ExplodedPageState& state,
 //-----------------------------------------------------------------------------
 // "Modern" read/write functions start here. These are probably what you want.
 
-void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
-                              mojom::RequestBody* mojo_body) {
+mojom::RequestBodyPtr WriteResourceRequestBody(
+    const network::ResourceRequestBody& request_body) {
+  mojom::RequestBodyPtr mojo_body = mojom::RequestBody::New();
   for (const auto& element : *request_body.elements()) {
     mojom::ElementPtr data_element;
     switch (element.type()) {
@@ -735,11 +746,12 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
     mojo_body->elements.push_back(std::move(data_element));
   }
   mojo_body->identifier = request_body.identifier();
+  return mojo_body;
 }
 
-void ReadResourceRequestBody(
-    mojom::RequestBody* mojo_body,
-    const scoped_refptr<network::ResourceRequestBody>& request_body) {
+scoped_refptr<network::ResourceRequestBody> ReadResourceRequestBody(
+    mojom::RequestBodyPtr mojo_body) {
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
   for (const auto& element : mojo_body->elements) {
     mojom::Element::Tag tag = element->which();
     switch (tag) {
@@ -761,35 +773,35 @@ void ReadResourceRequestBody(
     }
   }
   request_body->set_identifier(mojo_body->identifier);
+  return request_body;
 }
 
-void WriteHttpBody(const ExplodedHttpBody& http_body,
-                   mojom::HttpBody* mojo_body) {
+mojom::HttpBodyPtr WriteHttpBody(const ExplodedHttpBody& http_body) {
+  mojom::HttpBodyPtr mojo_body = mojom::HttpBody::New();
   if (http_body.request_body) {
-    mojo_body->request_body = mojom::RequestBody::New();
     mojo_body->contains_passwords = http_body.contains_passwords;
     mojo_body->http_content_type = http_body.http_content_type;
-    WriteResourceRequestBody(*http_body.request_body,
-                             mojo_body->request_body.get());
+    mojo_body->request_body = WriteResourceRequestBody(*http_body.request_body);
   }
+  return mojo_body;
 }
 
-void ReadHttpBody(mojom::HttpBody* mojo_body, ExplodedHttpBody* http_body) {
-  http_body->contains_passwords = mojo_body->contains_passwords;
-  http_body->http_content_type = mojo_body->http_content_type;
+ExplodedHttpBody ReadHttpBody(mojom::HttpBodyPtr mojo_body) {
+  ExplodedHttpBody http_body;
+  http_body.contains_passwords = mojo_body->contains_passwords;
+  http_body.http_content_type = std::move(mojo_body->http_content_type);
   if (mojo_body->request_body) {
-    http_body->request_body =
-        base::MakeRefCounted<network::ResourceRequestBody>();
-    ReadResourceRequestBody(mojo_body->request_body.get(),
-                            http_body->request_body);
+    http_body.request_body =
+        ReadResourceRequestBody(std::move(mojo_body->request_body));
   }
+  return http_body;
 }
 
 // Do not depend on feature state when writing data to frame, so that the
 // contents of persisted history do not depend on whether a feature is enabled
 // or not.
-void WriteMojoFrameState(const ExplodedFrameState& state,
-                         mojom::FrameState* frame) {
+mojom::FrameStatePtr WriteMojoFrameState(const ExplodedFrameState& state) {
+  mojom::FrameStatePtr frame = mojom::FrameState::New();
   frame->url_string = state.url_string;
   frame->referrer = state.referrer;
   if (state.initiator_origin.has_value())
@@ -824,8 +836,7 @@ void WriteMojoFrameState(const ExplodedFrameState& state,
 
   frame->referrer_policy = state.referrer_policy;
 
-  frame->http_body = mojom::HttpBody::New();
-  WriteHttpBody(state.http_body, frame->http_body.get());
+  frame->http_body = WriteHttpBody(state.http_body);
 
   frame->navigation_api_key = state.navigation_api_key;
   frame->navigation_api_id = state.navigation_api_id;
@@ -833,93 +844,83 @@ void WriteMojoFrameState(const ExplodedFrameState& state,
   frame->protect_url_in_navigation_api = state.protect_url_in_navigation_api;
 
   // Subitems
-  const std::vector<ExplodedFrameState>& children = state.children;
-  for (const auto& child : children) {
-    mojom::FrameStatePtr child_frame = mojom::FrameState::New();
-    WriteMojoFrameState(child, child_frame.get());
-    frame->children.push_back(std::move(child_frame));
-  }
+  frame->children = base::ToVector(state.children, &WriteMojoFrameState);
+  return frame;
 }
 
 // This is used for versions >= 26.
-void ReadMojoFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
-  state->url_string = frame->url_string;
-  state->referrer = frame->referrer;
+ExplodedFrameState ReadMojoFrameState(mojom::FrameStatePtr frame) {
+  ExplodedFrameState state;
+  state.url_string = std::move(frame->url_string);
+  state.referrer = std::move(frame->referrer);
   if (frame->initiator_origin.has_value()) {
-    state->initiator_origin =
+    state.initiator_origin =
         url::Origin::Create(GURL(frame->initiator_origin.value()));
   }
-  state->initiator_base_url_string = frame->initiator_base_url_string;
+  state.initiator_base_url_string = std::move(frame->initiator_base_url_string);
 
-  state->target = frame->target;
-  state->state_object = frame->state_object;
+  state.target = std::move(frame->target);
+  state.state_object = std::move(frame->state_object);
+  state.document_state = std::move(frame->document_state);
 
-  for (const auto& s : frame->document_state) {
-    state->document_state.push_back(s);
-  }
-
-  state->scroll_restoration_type =
-      static_cast<mojom::ScrollRestorationType>(frame->scroll_restoration_type);
+  state.scroll_restoration_type = frame->scroll_restoration_type;
 
   if (frame->view_state) {
-    state->did_save_scroll_or_scale_state = true;
-    state->visual_viewport_scroll_offset =
+    state.did_save_scroll_or_scale_state = true;
+    state.visual_viewport_scroll_offset =
         frame->view_state->visual_viewport_scroll_offset;
-    state->scroll_offset = frame->view_state->scroll_offset;
-    state->page_scale_factor = frame->view_state->page_scale_factor;
-  }
-
-  if (frame->view_state) {
-    state->scroll_anchor_selector = frame->view_state->scroll_anchor_selector;
-    state->scroll_anchor_offset =
+    state.scroll_offset = frame->view_state->scroll_offset;
+    state.page_scale_factor = frame->view_state->page_scale_factor;
+    state.scroll_anchor_selector =
+        std::move(frame->view_state->scroll_anchor_selector);
+    state.scroll_anchor_offset =
         frame->view_state->scroll_anchor_offset.value_or(gfx::PointF());
-    state->scroll_anchor_simhash = frame->view_state->scroll_anchor_simhash;
+    state.scroll_anchor_simhash = frame->view_state->scroll_anchor_simhash;
   }
 
-  state->item_sequence_number = frame->item_sequence_number;
-  state->document_sequence_number = frame->document_sequence_number;
+  state.item_sequence_number = frame->item_sequence_number;
+  state.document_sequence_number = frame->document_sequence_number;
 
-  state->referrer_policy = frame->referrer_policy;
+  state.referrer_policy = frame->referrer_policy;
   if (frame->http_body) {
-    ReadHttpBody(frame->http_body.get(), &state->http_body);
-  } else {
-    state->http_body.request_body = nullptr;
+    state.http_body = ReadHttpBody(std::move(frame->http_body));
   }
 
-  state->navigation_api_key = frame->navigation_api_key;
-  state->navigation_api_id = frame->navigation_api_id;
-  state->navigation_api_state = frame->navigation_api_state;
-  state->protect_url_in_navigation_api = frame->protect_url_in_navigation_api;
+  state.navigation_api_key = std::move(frame->navigation_api_key);
+  state.navigation_api_id = std::move(frame->navigation_api_id);
+  state.navigation_api_state = std::move(frame->navigation_api_state);
+  state.protect_url_in_navigation_api = frame->protect_url_in_navigation_api;
 
-  state->children.resize(frame->children.size());
-  int i = 0;
-  for (const auto& child : frame->children)
-    ReadMojoFrameState(child.get(), &state->children[i++]);
+  state.children =
+      base::ToVector(frame->children, [](mojom::FrameStatePtr& child) {
+        return ReadMojoFrameState(std::move(child));
+      });
+  return state;
 }
 
-void ReadMojoPageState(DeserializeObject* obj, ExplodedPageState* state) {
+ExplodedPageState ReadMojoPageState(DeserializeObject* obj) {
+  ExplodedPageState state;
   std::optional<base::span<const uint8_t>> data = ReadData(obj);
   if (obj->parse_error) {
-    return;
+    return state;
   }
 
   mojom::PageStatePtr page;
   obj->parse_error = !mojom::PageState::Deserialize(*data, &page);
   if (obj->parse_error) {
-    return;
+    return state;
   }
 
-  for (const auto& referenced_file : page->referenced_files) {
-    state->referenced_files.push_back(referenced_file);
-  }
-
-  ReadMojoFrameState(page->top.get(), &state->top);
+  state.referenced_files = std::move(page->referenced_files);
+  state.top = ReadMojoFrameState(std::move(page->top));
 
   // TODO(crbug.com/579030935): De-dupe properly; std::unique only removes
   // consecutive duplicates.
-  state->referenced_files.erase(std::unique(state->referenced_files.begin(),
-                                            state->referenced_files.end()),
-                                state->referenced_files.end());
+  state.referenced_files.erase(
+      std::unique(state.referenced_files.begin(), state.referenced_files.end()),
+      state.referenced_files.end());
+
+  return state;
 }
 
 void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
@@ -935,112 +936,104 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   CHECK(std::ranges::all_of(state.referenced_files,
                             &std::optional<std::u16string>::has_value));
   page->referenced_files = state.referenced_files;
-
-  page->top = mojom::FrameState::New();
-  WriteMojoFrameState(state.top, page->top.get());
+  page->top = WriteMojoFrameState(state.top);
 
   std::vector<uint8_t> page_bytes = mojom::PageState::Serialize(&page);
   obj->pickle.WriteData(page_bytes);
 }
 
-void ReadPageState(DeserializeObject* obj, ExplodedPageState* state) {
+ExplodedPageState ReadPageState(DeserializeObject* obj) {
   obj->version = ReadInteger(obj);
 
   if (obj->version == -1) {
     GURL url = ReadGURL(obj);
+    ExplodedPageState state;
     // NOTE: GURL::possibly_invalid_spec() always returns valid UTF-8.
-    state->top.url_string = base::UTF8ToUTF16(url.possibly_invalid_spec());
-    return;
+    state.top.url_string = base::UTF8ToUTF16(url.possibly_invalid_spec());
+    return state;
   }
 
   if (obj->version > kCurrentVersion || obj->version < kMinVersion) {
     obj->parse_error = true;
-    return;
+    return {};
   }
 
   if (obj->version >= 26) {
-    ReadMojoPageState(obj, state);
-    return;
+    return ReadMojoPageState(obj);
   }
 
-  if (obj->version >= 14)
-    ReadU16StringVector(obj, &state->referenced_files);
+  ExplodedPageState state;
+  if (obj->version >= 14) {
+    state.referenced_files = ReadU16StringVector(obj);
+  }
 
   std::vector<UniqueNameHelper::Replacement> unique_name_replacements;
-  ReadLegacyFrameState(obj, true, &unique_name_replacements, &state->top);
+  state.top =
+      ReadLegacyFrameState(obj, /*is_top=*/true, &unique_name_replacements);
 
-  if (obj->version < 14)
-    RecursivelyAppendReferencedFiles(state->top, &state->referenced_files);
+  if (obj->version < 14) {
+    RecursivelyAppendReferencedFiles(state.top, &state.referenced_files);
+  }
 
   // TODO(crbug.com/579030935): De-dupe properly; std::unique only removes
   // consecutive duplicates.
-  state->referenced_files.erase(std::unique(state->referenced_files.begin(),
-                                            state->referenced_files.end()),
-                                state->referenced_files.end());
+  state.referenced_files.erase(
+      std::unique(state.referenced_files.begin(), state.referenced_files.end()),
+      state.referenced_files.end());
+
+  return state;
 }
 
 }  // namespace
 
-ExplodedHttpBody::ExplodedHttpBody() : contains_passwords(false) {}
+ExplodedHttpBody::ExplodedHttpBody() = default;
 
-ExplodedHttpBody::~ExplodedHttpBody() {}
+ExplodedHttpBody::ExplodedHttpBody(const ExplodedHttpBody&) = default;
+
+ExplodedHttpBody& ExplodedHttpBody::operator=(const ExplodedHttpBody&) =
+    default;
+
+ExplodedHttpBody::ExplodedHttpBody(ExplodedHttpBody&&) noexcept = default;
+
+ExplodedHttpBody& ExplodedHttpBody::operator=(ExplodedHttpBody&&) noexcept =
+    default;
+
+ExplodedHttpBody::~ExplodedHttpBody() = default;
 
 ExplodedFrameState::ExplodedFrameState() = default;
 
-ExplodedFrameState::ExplodedFrameState(const ExplodedFrameState& other) {
-  assign(other);
-}
+ExplodedFrameState::ExplodedFrameState(const ExplodedFrameState&) = default;
 
-ExplodedFrameState::~ExplodedFrameState() {}
+ExplodedFrameState& ExplodedFrameState::operator=(const ExplodedFrameState&) =
+    default;
 
-void ExplodedFrameState::operator=(const ExplodedFrameState& other) {
-  if (&other != this)
-    assign(other);
-}
+ExplodedFrameState::ExplodedFrameState(ExplodedFrameState&&) noexcept = default;
 
-// All members of ExplodedFrameState should be copied.
-void ExplodedFrameState::assign(const ExplodedFrameState& other) {
-  url_string = other.url_string;
-  referrer = other.referrer;
-  initiator_origin = other.initiator_origin;
-  initiator_base_url_string = other.initiator_base_url_string;
-  target = other.target;
-  state_object = other.state_object;
-  document_state = other.document_state;
-  scroll_restoration_type = other.scroll_restoration_type;
-  did_save_scroll_or_scale_state = other.did_save_scroll_or_scale_state;
-  visual_viewport_scroll_offset = other.visual_viewport_scroll_offset;
-  scroll_offset = other.scroll_offset;
-  item_sequence_number = other.item_sequence_number;
-  document_sequence_number = other.document_sequence_number;
-  page_scale_factor = other.page_scale_factor;
-  referrer_policy = other.referrer_policy;
-  http_body = other.http_body;
-  scroll_anchor_selector = other.scroll_anchor_selector;
-  scroll_anchor_offset = other.scroll_anchor_offset;
-  scroll_anchor_simhash = other.scroll_anchor_simhash;
-  navigation_api_key = other.navigation_api_key;
-  navigation_api_id = other.navigation_api_id;
-  navigation_api_state = other.navigation_api_state;
-  protect_url_in_navigation_api = other.protect_url_in_navigation_api;
-  children = other.children;
-}
+ExplodedFrameState& ExplodedFrameState::operator=(
+    ExplodedFrameState&&) noexcept = default;
 
-ExplodedPageState::ExplodedPageState() {}
+ExplodedFrameState::~ExplodedFrameState() = default;
 
-ExplodedPageState::~ExplodedPageState() {}
+ExplodedPageState::ExplodedPageState() = default;
+
+ExplodedPageState::ExplodedPageState(ExplodedPageState&&) noexcept = default;
+
+ExplodedPageState& ExplodedPageState::operator=(ExplodedPageState&&) noexcept =
+    default;
+
+ExplodedPageState::~ExplodedPageState() = default;
 
 namespace {
 
 int DecodePageStateInternal(const std::string& encoded,
                             ExplodedPageState* exploded) {
-  *exploded = ExplodedPageState();
-
-  if (encoded.empty())
+  if (encoded.empty()) {
+    *exploded = ExplodedPageState();
     return true;
+  }
 
   DeserializeObject obj(base::as_byte_span(encoded));
-  ReadPageState(&obj, exploded);
+  *exploded = ReadPageState(&obj);
 
   if (obj.version < kCurrentVersion) {
     // Record when a PageState with an earlier version number is decoded, to
@@ -1133,10 +1126,9 @@ bool DecodePageStateWithDeviceScaleFactorForTesting(
 
 scoped_refptr<network::ResourceRequestBody> DecodeResourceRequestBody(
     base::span<const uint8_t> data) {
-  scoped_refptr<network::ResourceRequestBody> result =
-      new network::ResourceRequestBody();
   DeserializeObject obj(data);
-  ReadResourceRequestBody(&obj, result);
+  scoped_refptr<network::ResourceRequestBody> result =
+      ReadResourceRequestBody(&obj);
   // Please see the EncodeResourceRequestBody() function below for information
   // about why the contains_sensitive_info() field is being explicitly
   // deserialized.
