@@ -357,16 +357,5 @@ std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
   return test_future.Take();
 }
 
-std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
-    base::WeakPtr<content::WebContents> web_contents,
-    const blink::mojom::Manifest& manifest,
-    WebAppInstallInfoConstructOptions construct_options) {
-  auto converted = blink::ManifestFromMojom(manifest);
-  CHECK(converted.has_value())
-      << blink::ManifestInvariantErrorToString(converted.error());
-  return GetInstallInfoForCurrentManifest(web_contents, *converted,
-                                          construct_options);
-}
-
 }  // namespace test
 }  // namespace web_app

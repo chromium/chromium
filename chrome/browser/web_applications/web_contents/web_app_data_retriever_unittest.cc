@@ -39,7 +39,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 
 namespace web_app {
@@ -319,7 +318,7 @@ TEST_F(WebAppDataRetrieverTest,
   {
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
         web_contents(), webapps::InstallableStatusCode::NO_MANIFEST, GURL(),
-        blink::mojom::Manifest::New());
+        /*manifest=*/std::nullopt);
   }
 
   base::RunLoop run_loop;
@@ -403,15 +402,16 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityAndRetrieveManifest) {
   const SkColor manifest_theme_color = 0xAABBCCDD;
 
   {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->manifest_url = GURL("https://example.com/manifest");
-    manifest->short_name = manifest_short_name;
-    manifest->name = manifest_name;
-    manifest->start_url = manifest_start_url;
-    manifest->id =
-        GenerateManifestIdFromStartUrlOnly(manifest_start_url).value();
-    manifest->scope = manifest_scope;
-    manifest->theme_color = manifest_theme_color;
+    blink::Manifest manifest =
+        blink::Manifest::Builder(
+            manifest_start_url,
+            GenerateManifestIdFromStartUrlOnly(manifest_start_url).value(),
+            manifest_scope)
+            .SetManifestUrl(GURL("https://example.com/manifest"))
+            .SetShortName(manifest_short_name)
+            .SetName(manifest_name)
+            .SetThemeColor(manifest_theme_color)
+            .BuildChecked();
 
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
         web_contents(), webapps::InstallableStatusCode::NO_ERROR_DETECTED,
@@ -455,7 +455,7 @@ TEST_F(WebAppDataRetrieverTest, CheckInstallabilityFails) {
   {
     webapps::FakeInstallableManager::CreateForWebContentsWithManifest(
         web_contents(), webapps::InstallableStatusCode::NO_MANIFEST, GURL(),
-        blink::mojom::Manifest::New());
+        /*manifest=*/std::nullopt);
   }
 
   base::RunLoop run_loop;

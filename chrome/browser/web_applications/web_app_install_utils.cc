@@ -275,11 +275,11 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
 }
 
 apps::FileHandler::LaunchType ToFileHandlerLaunchType(
-    blink::mojom::ManifestFileHandler::LaunchType launch_type) {
+    blink::mojom::ManifestFileHandler_LaunchType launch_type) {
   switch (launch_type) {
-    case blink::mojom::ManifestFileHandler::LaunchType::kSingleClient:
+    case blink::mojom::ManifestFileHandler_LaunchType::kSingleClient:
       return apps::FileHandler::LaunchType::kSingleClient;
-    case blink::mojom::ManifestFileHandler::LaunchType::kMultipleClients:
+    case blink::mojom::ManifestFileHandler_LaunchType::kMultipleClients:
       return apps::FileHandler::LaunchType::kMultipleClients;
   }
 }
@@ -353,26 +353,6 @@ void PopulateFileHandlerInfoFromManifest(
   }
 
   web_app_info->file_handlers = std::move(web_app_file_handlers);
-}
-
-void PopulateFileHandlerInfoFromManifest(
-    const std::vector<blink::mojom::ManifestFileHandlerPtr>&
-        manifest_file_handlers,
-    const GURL& app_scope,
-    WebAppInstallInfo* web_app_info) {
-  std::vector<blink::Manifest::FileHandler> converted;
-  for (const auto& handler : manifest_file_handlers) {
-    if (!handler) {
-      continue;
-    }
-    blink::Manifest::FileHandler h;
-    h.action = handler->action;
-    h.name = handler->name;
-    h.accept = handler->accept;
-    h.launch_type = handler->launch_type;
-    converted.push_back(std::move(h));
-  }
-  PopulateFileHandlerInfoFromManifest(converted, app_scope, web_app_info);
 }
 
 void PopulateOtherIcons(WebAppInstallInfo* web_app_info,

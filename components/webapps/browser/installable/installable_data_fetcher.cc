@@ -146,12 +146,12 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
     for (const auto& url : manifest->screenshots()) {
 #if BUILDFLAG(IS_ANDROID)
       if (url.form_factor ==
-          blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+          blink::mojom::ManifestScreenshot_FormFactor::kWide) {
         continue;
       }
 #else
       if (url.form_factor !=
-          blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+          blink::mojom::ManifestScreenshot_FormFactor::kWide) {
         continue;
       }
 #endif  // BUILDFLAG(IS_ANDROID)

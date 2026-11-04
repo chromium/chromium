@@ -11,8 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webapps/browser/installable/installable_data.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
 
@@ -75,25 +73,6 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
   installable_manager->data_ = std::move(installable_data);
 
   return installable_manager;
-}
-
-// static
-FakeInstallableManager*
-FakeInstallableManager::CreateForWebContentsWithManifest(
-    content::WebContents* web_contents,
-    InstallableStatusCode installable_code,
-    const GURL& manifest_url,
-    blink::mojom::ManifestPtr manifest) {
-  std::optional<blink::Manifest> converted_manifest;
-  if (manifest && !blink::IsEmptyManifest(manifest)) {
-    auto result = blink::ManifestFromMojom(*manifest);
-    if (result.has_value()) {
-      converted_manifest = std::move(result.value());
-    }
-  }
-  return CreateForWebContentsWithManifest(web_contents, installable_code,
-                                          manifest_url,
-                                          std::move(converted_manifest));
 }
 
 }  // namespace webapps

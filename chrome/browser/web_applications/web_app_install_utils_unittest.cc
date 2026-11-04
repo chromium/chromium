@@ -34,7 +34,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -305,14 +304,14 @@ TEST(WebAppInstallUtils, PopulateHomeTabIconsNoHomeTabIcons_TabStrip) {
 
 class FileHandlersFromManifestTest : public ::testing::Test {
  protected:
-  static std::vector<blink::mojom::ManifestFileHandlerPtr>
-  CreateManifestFileHandlers(unsigned count) {
-    std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+  static std::vector<blink::Manifest::FileHandler> CreateManifestFileHandlers(
+      unsigned count) {
+    std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
     for (unsigned i = 0; i < count; ++i) {
-      auto file_handler = blink::mojom::ManifestFileHandler::New();
-      file_handler->action = MakeActionUrl(i);
-      file_handler->name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
-      file_handler->accept[base::UTF8ToUTF16(MakeMimeType(i))] = {
+      blink::Manifest::FileHandler file_handler;
+      file_handler.action = MakeActionUrl(i);
+      file_handler.name = base::UTF8ToUTF16(base::StringPrintf("n%u", i));
+      file_handler.accept[base::UTF8ToUTF16(MakeMimeType(i))] = {
           base::UTF8ToUTF16(MakeExtension(i))};
       manifest_file_handlers.push_back(std::move(file_handler));
     }
@@ -337,7 +336,7 @@ class FileHandlersFromManifestTest : public ::testing::Test {
 };
 
 TEST_F(FileHandlersFromManifestTest, Basic) {
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers =
+  std::vector<blink::Manifest::FileHandler> manifest_file_handlers =
       CreateManifestFileHandlers(6);
 
   auto web_app_info = CreateWebAppInstallInfo();
@@ -357,24 +356,24 @@ TEST_F(FileHandlersFromManifestTest, Basic) {
 
 TEST_F(FileHandlersFromManifestTest,
        MultipleValidHandlersWithMultipleAcceptAndExtensions) {
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+  std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
 
   // Handler 1: Images with multiple MIME types and multiple extensions.
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(0);
-    file_handler->name = u"Image Handler";
-    file_handler->accept[u"image/png"] = {u".png"};
-    file_handler->accept[u"image/jpeg"] = {u".jpg", u".jpeg"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(0);
+    file_handler.name = u"Image Handler";
+    file_handler.accept[u"image/png"] = {u".png"};
+    file_handler.accept[u"image/jpeg"] = {u".jpg", u".jpeg"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
   // Handler 2: Documents with a single MIME type.
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(1);
-    file_handler->name = u"PDF Handler";
-    file_handler->accept[u"application/pdf"] = {u".pdf"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(1);
+    file_handler.name = u"PDF Handler";
+    file_handler.accept[u"application/pdf"] = {u".pdf"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
@@ -397,41 +396,41 @@ TEST_F(FileHandlersFromManifestTest,
 }
 
 TEST_F(FileHandlersFromManifestTest, InvalidMimeTypesAndExtensions) {
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+  std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
 
   // Invalid MIME type: x-scheme-handler/mailto
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(0);
-    file_handler->name = u"Invalid1";
-    file_handler->accept[u"x-scheme-handler/mailto"] = {u".eml"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(0);
+    file_handler.name = u"Invalid1";
+    file_handler.accept[u"x-scheme-handler/mailto"] = {u".eml"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
   // Invalid MIME type: not a valid format (missing slash)
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(1);
-    file_handler->name = u"Invalid2";
-    file_handler->accept[u"image_png"] = {u".png"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(1);
+    file_handler.name = u"Invalid2";
+    file_handler.accept[u"image_png"] = {u".png"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
   // Invalid extension: missing leading dot
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(2);
-    file_handler->name = u"Invalid3";
-    file_handler->accept[u"image/png"] = {u"png"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(2);
+    file_handler.name = u"Invalid3";
+    file_handler.accept[u"image/png"] = {u"png"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
   // Invalid extension: single dot only
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(3);
-    file_handler->name = u"Invalid4";
-    file_handler->accept[u"image/png"] = {u"."};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(3);
+    file_handler.name = u"Invalid4";
+    file_handler.accept[u"image/png"] = {u"."};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 
@@ -444,7 +443,7 @@ TEST_F(FileHandlersFromManifestTest, InvalidMimeTypesAndExtensions) {
 }
 
 TEST_F(FileHandlersFromManifestTest, MixedValidAndInvalidFileHandlers) {
-  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+  std::vector<blink::Manifest::FileHandler> manifest_file_handlers;
 
   // File handler containing a mix of valid and invalid accept entries /
   // extensions:
@@ -453,12 +452,12 @@ TEST_F(FileHandlersFromManifestTest, MixedValidAndInvalidFileHandlers) {
   // ("invalid_ext", ".") extensions.
   // - "text/plain": valid MIME type with valid (".txt") extension.
   {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = MakeActionUrl(0);
-    file_handler->name = u"Mixed";
-    file_handler->accept[u"x-scheme-handler/https"] = {u".html"};
-    file_handler->accept[u"image/png"] = {u"invalid_ext", u".", u".png"};
-    file_handler->accept[u"text/plain"] = {u".txt"};
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = MakeActionUrl(0);
+    file_handler.name = u"Mixed";
+    file_handler.accept[u"x-scheme-handler/https"] = {u".html"};
+    file_handler.accept[u"image/png"] = {u"invalid_ext", u".", u".png"};
+    file_handler.accept[u"text/plain"] = {u".txt"};
     manifest_file_handlers.push_back(std::move(file_handler));
   }
 

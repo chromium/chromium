@@ -504,12 +504,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ThemeColor) {
       embedded_https_test_server().GetURL("/web_apps/no_manifest.html");
   {
     const SkColor theme_color = SkColorSetA(SK_ColorBLUE, 0xF0);
-    blink::mojom::Manifest manifest;
-    manifest.manifest_url = GURL(kExampleManifestURL);
-    manifest.start_url = start_url;
-    manifest.id = GenerateManifestIdFromStartUrlOnly(start_url).value();
-    manifest.scope = manifest.start_url.GetWithoutFilename();
-    manifest.theme_color = theme_color;
+    blink::Manifest manifest =
+        blink::Manifest::Builder(
+            start_url, GenerateManifestIdFromStartUrlOnly(start_url).value(),
+            start_url.GetWithoutFilename())
+            .SetManifestUrl(GURL(kExampleManifestURL))
+            .SetThemeColor(theme_color)
+            .BuildChecked();
     std::unique_ptr<WebAppInstallInfo> web_app_info =
         test::GetInstallInfoForCurrentManifest(
             browser()->GetTabStripModel()->GetActiveWebContents()->GetWeakPtr(),
@@ -545,12 +546,14 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, ThemeColor) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, BackgroundColor) {
-  blink::mojom::Manifest manifest;
-  manifest.manifest_url = GURL(kExampleManifestURL);
-  manifest.start_url = GURL(kExampleURL);
-  manifest.id = GenerateManifestIdFromStartUrlOnly(manifest.start_url).value();
-  manifest.scope = GURL(kExampleURL);
-  manifest.background_color = SkColorSetA(SK_ColorBLUE, 0xF0);
+  const GURL start_url(kExampleURL);
+  blink::Manifest manifest =
+      blink::Manifest::Builder(
+          start_url, GenerateManifestIdFromStartUrlOnly(start_url).value(),
+          start_url)
+          .SetManifestUrl(GURL(kExampleManifestURL))
+          .SetBackgroundColor(SkColorSetA(SK_ColorBLUE, 0xF0))
+          .BuildChecked();
   std::unique_ptr<WebAppInstallInfo> web_app_info =
       test::GetInstallInfoForCurrentManifest(
           browser()->GetTabStripModel()->GetActiveWebContents()->GetWeakPtr(),

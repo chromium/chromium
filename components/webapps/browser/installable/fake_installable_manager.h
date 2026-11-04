@@ -13,7 +13,6 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -45,12 +44,6 @@ class FakeInstallableManager : public InstallableManager {
       InstallableStatusCode installable_code,
       const GURL& manifest_url,
       std::optional<blink::Manifest> manifest = std::nullopt);
-
-  static FakeInstallableManager* CreateForWebContentsWithManifest(
-      content::WebContents* web_contents,
-      InstallableStatusCode installable_code,
-      const GURL& manifest_url,
-      blink::mojom::ManifestPtr manifest);
 
  private:
   GURL manifest_url_;

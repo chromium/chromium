@@ -82,7 +82,7 @@ To keep each CL small and independently reviewable:
   `ParseManifestFromStringJob`, and `//chrome/browser/web_applications/jobs/`**
 - [x] **Milestone 11: Migrate `WebAppDataRetriever`, `PrepareInstallInfoJob`,
   `WebAppCommandScheduler`, UI, and Commands**
-- [ ] **Milestone 12: Migrate `FakeWebContentsManager`, `IsolatedWebAppBuilder`,
+- [x] **Milestone 12: Migrate `FakeWebContentsManager`, `IsolatedWebAppBuilder`,
   and WebApp Unit/Browser Tests**
 - [ ] **Milestone 13: Activate `blink.mojom.Manifest` Mojo Typemap, Remove
   Bridges, and Run Harness Freshness Audit**

@@ -22,7 +22,6 @@
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
 
@@ -183,39 +182,6 @@ InstallableStatusCode InstallableEvaluator::GetDisplayError(
   // this value is installable.
   if (!manifest.display_override().empty()) {
     display_mode_to_evaluate = manifest.display_override()[0].display();
-    error_type_if_invalid =
-        InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
-  }
-
-  switch (criteria) {
-    case InstallableCriteria::kValidManifestWithIcons:
-      if (!IsInstallableDisplayMode(display_mode_to_evaluate)) {
-        return error_type_if_invalid;
-      }
-      break;
-    case InstallableCriteria::kImplicitManifestFieldsHTML:
-    case InstallableCriteria::kNoManifestAtRootScope:
-      if (display_mode_to_evaluate == blink::mojom::DisplayMode::kBrowser) {
-        return error_type_if_invalid;
-      }
-      break;
-    case InstallableCriteria::kValidManifestIgnoreDisplay:
-      break;
-    case InstallableCriteria::kDoNotCheck:
-      NOTREACHED();
-  }
-  return InstallableStatusCode::NO_ERROR_DETECTED;
-}
-
-InstallableStatusCode InstallableEvaluator::GetDisplayError(
-    const blink::mojom::Manifest& manifest,
-    InstallableCriteria criteria) {
-  blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
-  InstallableStatusCode error_type_if_invalid =
-      InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
-
-  if (!manifest.display_override.empty()) {
-    display_mode_to_evaluate = manifest.display_override[0].display();
     error_type_if_invalid =
         InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
   }

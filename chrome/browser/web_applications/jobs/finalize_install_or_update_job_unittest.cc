@@ -272,11 +272,11 @@ class FinalizeInstallOrUpdateJobTest : public WebAppTest {
   }
 
   void AddFileHandler(
-      std::vector<blink::mojom::ManifestFileHandlerPtr>* file_handlers) {
-    auto file_handler = blink::mojom::ManifestFileHandler::New();
-    file_handler->action = GURL("https://example.com/action");
-    file_handler->name = u"Test handler";
-    file_handler->accept[u"application/pdf"].emplace_back(u".pdf");
+      std::vector<blink::Manifest::FileHandler>* file_handlers) {
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = GURL("https://example.com/action");
+    file_handler.name = u"Test handler";
+    file_handler.accept[u"application/pdf"].emplace_back(u".pdf");
     file_handlers->push_back(std::move(file_handler));
   }
 
@@ -903,7 +903,7 @@ TEST_F(FinalizeInstallOrUpdateJobTest, InstallOsHooksDisabledForDefaultApps) {
                                   info->start_url()));
 
   // Update the app, adding a file handler.
-  std::vector<blink::mojom::ManifestFileHandlerPtr> file_handlers;
+  std::vector<blink::Manifest::FileHandler> file_handlers;
   AddFileHandler(&file_handlers);
   PopulateFileHandlerInfoFromManifest(file_handlers, info->start_url(),
                                       info.get());

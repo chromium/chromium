@@ -14,7 +14,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/webapps/common/web_app_id.h"
 #include "crypto/sha2.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -48,11 +47,6 @@ webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
 webapps::AppId GenerateAppId(const std::optional<std::string>& manifest_id_path,
                              const GURL& start_url) {
   return internal::GenerateAppId(manifest_id_path, start_url);
-}
-
-webapps::AppId GenerateAppIdFromManifest(
-    const blink::mojom::Manifest& manifest) {
-  return internal::GenerateAppIdFromManifest(manifest);
 }
 
 webapps::AppId GenerateAppIdFromManifest(const blink::Manifest& manifest) {

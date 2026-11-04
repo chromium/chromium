@@ -17,7 +17,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 class GURL;
 class Profile;
@@ -107,12 +106,6 @@ webapps::AppId InstallForWebContents(
 std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
     base::WeakPtr<content::WebContents> web_contents,
     const blink::Manifest& manifest,
-    WebAppInstallInfoConstructOptions construct_options =
-        WebAppInstallInfoConstructOptions{});
-
-std::unique_ptr<WebAppInstallInfo> GetInstallInfoForCurrentManifest(
-    base::WeakPtr<content::WebContents> web_contents,
-    const blink::mojom::Manifest& manifest,
     WebAppInstallInfoConstructOptions construct_options =
         WebAppInstallInfoConstructOptions{});
 

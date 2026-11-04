@@ -46,6 +46,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -407,17 +409,16 @@ class IsolatedWebAppUpdateCheckAndPrepareTaskPrepareUpdateTest
     return bundle_update->FakeInstallPageState(profile());
   }
 
-  blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                  const IwaVersion version) {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->id = application_url.DeprecatedGetOriginAsURL();
-    manifest->scope = application_url.Resolve("/");
-    manifest->start_url = application_url.Resolve("/testing-start-url.html");
-    manifest->display = DisplayMode::kStandalone;
-    manifest->short_name = u"updated app";
-    manifest->version = base::UTF8ToUTF16(version.GetString());
-
-    return manifest;
+  blink::Manifest CreateDefaultManifest(const GURL& application_url,
+                                        const IwaVersion version) {
+    return blink::Manifest::Builder(
+               application_url.Resolve("/testing-start-url.html"),
+               application_url.DeprecatedGetOriginAsURL(),
+               application_url.Resolve("/"))
+        .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+        .SetShortName(u"updated app")
+        .SetVersion(base::UTF8ToUTF16(version.GetString()))
+        .BuildChecked();
   }
 };
 
