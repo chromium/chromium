@@ -11615,6 +11615,26 @@
             ]
         }
     ],
+    "MagicStackTipsV2Ios": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Actionable",
+                    "params": {
+                        "actionable_variation": "true"
+                    },
+                    "enable_features": [
+                        "MagicStackNTPCustomizationTipIos",
+                        "MagicStackNTPThemeTipIos",
+                        "MagicStackTipsNotificationTipIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainNodeAnnotationsRollout": [
         {
             "platforms": [
