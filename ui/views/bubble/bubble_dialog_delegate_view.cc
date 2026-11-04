@@ -216,8 +216,9 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble,
                                   ? Widget::InitParams::Activatable::kYes
                                   : Widget::InitParams::Activatable::kNo;
   bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget.get());
-  CHECK(bubble_params.parent || !bubble->has_parent(),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/580312768): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(bubble_params.parent || !bubble->has_parent());
   bubble_widget->Init(std::move(bubble_params));
   return bubble_widget.release();
 }
