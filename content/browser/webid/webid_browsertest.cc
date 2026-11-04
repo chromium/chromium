@@ -2058,16 +2058,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
       testing::UnorderedElementsAre("Sam"));
 }
 
-// Flaky on mac, https://crbug.com/415953689
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ConditionalMediationForMediatedRequest \
-  DISABLED_ConditionalMediationForMediatedRequest
-#else
-#define MAYBE_ConditionalMediationForMediatedRequest \
-  ConditionalMediationForMediatedRequest
-#endif
 IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest,
-                       MAYBE_ConditionalMediationForMediatedRequest) {
+                       ConditionalMediationForMediatedRequest) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
   auto mock = std::make_unique<
