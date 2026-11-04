@@ -3683,41 +3683,35 @@ void QuicChromiumClientSession::StartProbing(
     return;
   }
 
-  // Create and configure socket on `network`.
-  // TODO(crbug.com/518753285): Once we no longer bindToNetwork via
-  // `FinishStartProbing`, bind the socket via this `CreateSocket` call, by
-  // passing in `network` instead of `handles::kInvalidNetworkHandle`.
-  std::unique_ptr<DatagramClientSocket> probing_socket =
-      session_pool_->CreateSocket(handles::kInvalidNetworkHandle,
-                                  net_log_.net_log(), net_log_.source());
-  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+  StartProbing(
+      CreateMigrationAttemptContext(migration_cause, network, peer_address),
+      std::move(probing_callback));
+}
 
-  RecordUnusedConnectionIdsAtMigrationAttempt();
+void QuicChromiumClientSession::StartProbing(
+    std::unique_ptr<QuicMigrationAttemptContext> context,
+    ProbingCallback probing_callback) {
+  CHECK(context);
+  CHECK(session_pool_);
 
-  auto attempt_context = std::make_unique<QuicMigrationAttemptContext>(
-      migration_cause, GetCurrentNetwork(), network, peer_address,
-      std::make_unique<QuicChromiumPacketReader>(
-          std::move(probing_socket), clock_, this, yield_after_packets_,
-          yield_after_duration_, net_log_),
-      std::make_unique<QuicChromiumPacketWriter>(probing_socket_ptr,
-                                                 task_runner_),
-      CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
+  DatagramClientSocket* probing_socket_ptr = context->reader()->socket();
+  IPEndPoint peer_address = ToIPEndPoint(context->target_peer_address());
+  handles::NetworkHandle network = context->target_network();
+  QuicMigrationAttemptCause migration_cause = context->cause();
 
   QuicSessionPool::ConnectAndConfigureCallback configure_callback =
       base::BindOnce(&QuicChromiumClientSession::FinishStartProbing,
                      weak_factory_.GetWeakPtr(), std::move(probing_callback),
-                     std::move(attempt_context));
+                     std::move(context));
 
   if (migration_cause != QuicMigrationAttemptCause::kUnknown &&
       !MidMigrationCallbackForTesting().is_null()) {
     std::move(MidMigrationCallbackForTesting()).Run();  // IN-TEST
   }
 
-  session_pool_->ConnectAndConfigureSocket(
-      std::move(configure_callback), probing_socket_ptr,
-      ToIPEndPoint(peer_address), network, session_key_.socket_tag());
-
-  return;
+  session_pool_->ConnectAndConfigureSocket(std::move(configure_callback),
+                                           probing_socket_ptr, peer_address,
+                                           network, session_key_.socket_tag());
 }
 
 void QuicChromiumClientSession::FinishStartProbing(

@@ -1077,6 +1077,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                     handles::NetworkHandle network,
                     const quic::QuicSocketAddress& peer_address,
                     ProbingCallback probing_callback);
+  void StartProbing(std::unique_ptr<QuicMigrationAttemptContext> context,
+                    ProbingCallback probing_callback);
 
   // Helper to finish network probe once socket has been opened. Always called
   // asynchronously.
