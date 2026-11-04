@@ -88,11 +88,11 @@ class SSLPlatformKeyAndroidTest : public testing::TestWithParam<TestKey>,
 
 TEST_P(SSLPlatformKeyAndroidTest, Matches) {
   const TestKey& test_key = GetParam();
-  if (base::android::android_info::sdk_int_full() <
-          base::android::android_info::SDK_VERSION_FULL_BAKLAVA_1 &&
+  if (base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_CINNAMON_BUN &&
       (test_key.type == EVP_PKEY_ML_DSA_65 ||
        test_key.type == EVP_PKEY_ML_DSA_87)) {
-    GTEST_SKIP() << "Android added ML-DSA-65 in API level 36.1";
+    GTEST_SKIP() << "Android added ML-DSA-65 and ML-DSA-87 in API level 37";
   }
   // TODO(crbug.com/536164653): When ML-DSA-44 is shipped, add the appropriate
   // SDK check here. For now, we just skip the test.
@@ -127,11 +127,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(SSLPlatformKeyAndroidTest, MatchesPublicKey) {
   const TestKey& test_key = GetParam();
-  if (base::android::android_info::sdk_int_full() <
-          base::android::android_info::SDK_VERSION_FULL_BAKLAVA_1 &&
+  if (base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_CINNAMON_BUN &&
       (test_key.type == EVP_PKEY_ML_DSA_65 ||
        test_key.type == EVP_PKEY_ML_DSA_87)) {
-    GTEST_SKIP() << "Android added ML-DSA-65 in API level 36.1";
+    GTEST_SKIP() << "Android added ML-DSA-65 and ML-DSA-87 in API level 37";
   }
   // TODO(crbug.com/536164653): When ML-DSA-44 is shipped, add the appropriate
   // SDK check here. For now, we just skip the test.
