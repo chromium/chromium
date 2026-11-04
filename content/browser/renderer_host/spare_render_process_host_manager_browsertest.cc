@@ -637,6 +637,12 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   spare_manager.WarmupSpare(browser_context());
   ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
   RenderProcessHost* spare = spare_manager.GetSpares()[0];
+  // The launcher thread keeps using the ContentBrowserClient while the
+  // process launches, so let the launch finish before `browser_client` goes
+  // away.
+  RenderProcessHostWatcher(spare,
+                           RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY)
+      .Wait();
 
   EXPECT_FALSE(spare_manager.WarmupSpare(other_browser_context.get()));
 
