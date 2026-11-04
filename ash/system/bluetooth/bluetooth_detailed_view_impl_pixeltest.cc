@@ -176,7 +176,7 @@ TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("check_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 1,
       detailed_view));
 }
 
@@ -205,7 +205,7 @@ TEST_P(BluetoothDetailedViewImplPixelTest, BluetoothUnavailable) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("bluetooth_unavailable_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
       detailed_view));
 }
 

@@ -48,7 +48,7 @@ TEST_P(AccessibilityDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("check_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 16 : 1,
       detailed_view_container));
 }
 

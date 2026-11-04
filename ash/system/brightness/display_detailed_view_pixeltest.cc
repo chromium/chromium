@@ -54,7 +54,7 @@ TEST_P(DisplayDetailedViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("qs_display_detailed_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 1,
       detailed_view));
 }
 

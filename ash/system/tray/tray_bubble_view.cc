@@ -51,7 +51,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/painter.h"
@@ -354,9 +353,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        params_.corner_radius,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
     const bool is_translucent =
         init_params.translucent && chromeos::features::IsSystemBlurEnabled();
@@ -375,10 +371,14 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     }
   }
 
-  if (params_.has_shadow) {
-    shadow_ = SystemDecoration::CreateForView(this, params_.shadow_type);
-    shadow_->SetRoundedCorners(gfx::RoundedCornersF(params_.corner_radius));
-  }
+  decoration_ = SystemDecoration::CreateForView(
+      this,
+      params_.has_shadow ? params_.shadow_type
+                         : SystemDecoration::ShadowType::kNone,
+      init_params.transparent
+          ? SystemDecoration::HighlightBorderMode::kNone
+          : SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(gfx::RoundedCornersF(params_.corner_radius));
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
   layout_ = SetLayoutManager(std::move(layout))->box_layout();

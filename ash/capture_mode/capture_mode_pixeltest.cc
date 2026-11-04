@@ -168,7 +168,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"video_capture_notification_view_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/10, notification_view));
+      /*revision_number=*/11, notification_view));
 }
 
 }  // namespace ash

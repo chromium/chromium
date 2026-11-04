@@ -131,7 +131,7 @@ TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("OngoingProcessView"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 3,
       test_api()->GetNotificationCenterView()));
 }
 

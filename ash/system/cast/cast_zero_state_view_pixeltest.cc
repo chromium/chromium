@@ -54,7 +54,7 @@ TEST_P(CastZeroStateViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("cast_zero_state_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 1,
       detailed_view));
 }
 

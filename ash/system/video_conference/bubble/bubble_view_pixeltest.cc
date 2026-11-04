@@ -219,7 +219,7 @@ TEST_P(BubbleViewPixelTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_bubble_view_basic"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 17 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 18 : 1,
       bubble_view()));
 }
 
@@ -245,7 +245,7 @@ TEST_P(BubbleViewPixelTest, ToggleButton) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_bubble_view_no_focus_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 1,
       toggle_effect_button_container));
 
   // Toggle the first button, the UI should change.
@@ -253,7 +253,7 @@ TEST_P(BubbleViewPixelTest, ToggleButton) {
   ASSERT_EQ(1, office_bunny()->num_activations_for_testing());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_bubble_view_no_focus_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 1,
       toggle_effect_button_container));
 
   // Un-toggle the button, then keyboard focus it.
@@ -273,7 +273,7 @@ TEST_P(BubbleViewPixelTest, ToggleButton) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_bubble_view_with_focus_not_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 1,
       toggle_effect_button_container));
 
   // Re-toggle the button.
@@ -283,7 +283,7 @@ TEST_P(BubbleViewPixelTest, ToggleButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_bubble_view_with_focus_toggled"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 13 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 14 : 1,
       toggle_effect_button_container));
 }
 
@@ -308,7 +308,7 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   // makes background replace enabled by default in the VC bubble.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_return_to_app_one_app"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 2,
       GetReturnToAppPanel()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
@@ -326,7 +326,7 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_return_to_app_two_apps_collapsed"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 2,
       return_to_app_panel));
 
   // Click the summary row to expand the panel.
@@ -338,7 +338,7 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_return_to_app_two_apps_expanded"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 2,
       return_to_app_panel));
 }
 
@@ -358,7 +358,7 @@ TEST_P(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_linux_bubble_one_app"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 2,
       video_conference_tray()->GetBubbleView()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
@@ -373,7 +373,7 @@ TEST_P(BubbleViewPixelTest, ReturnToAppLinux) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_linux_bubble_two_app"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 1,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 2,
       video_conference_tray()->GetBubbleView()));
 }
 

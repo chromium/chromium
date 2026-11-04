@@ -277,6 +277,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   views::BoxLayout* box_layout() { return layout_; }
   const views::BoxLayout* box_layout() const { return layout_; }
 
+  SystemDecoration* decoration_for_testing() { return decoration_.get(); }
+
  protected:
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
@@ -332,7 +334,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // keyboard.
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   base::CallbackListSubscription name_changed_subscription_;
 };
