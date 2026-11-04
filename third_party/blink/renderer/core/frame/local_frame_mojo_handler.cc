@@ -808,8 +808,10 @@ void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
 
   frame_->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kSecurity,
-      mojom::blink::ConsoleMessageLevel::kError, violation->console_message,
-      source_location));
+      violation->type == network::mojom::ContentSecurityPolicyType::kReport
+          ? mojom::blink::ConsoleMessageLevel::kInfo
+          : mojom::blink::ConsoleMessageLevel::kError,
+      violation->console_message, source_location));
 
   auto directive_type =
       ContentSecurityPolicy::GetDirectiveType(violation->effective_directive);

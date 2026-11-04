@@ -1,0 +1,6 @@
+Tests that the Log.entryAdded for a report-only frame-src violation has the info level.
+Message[0]: security info: Framing 'http://127.0.0.1:8000/inspector-protocol/resources/empty.html' violates the following report-only Content Security Policy directive: "frame-src 'none'". The violation has been logged, but no further action has been taken.
+
+Message[1]: security info: Framing 'http://127.0.0.1:8000/inspector-protocol/resources/empty.html' violates the following report-only Content Security Policy directive: "frame-src 'none'". The violation has been logged, but no further action has been taken.
+
+
