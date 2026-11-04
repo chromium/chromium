@@ -42,6 +42,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_media_session.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
@@ -487,7 +488,9 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
                                       base::Unretained(test)),
                   base::BindRepeating(
                       &ReadAloudServiceTest::BindAudioStreamFactory,
-                      base::Unretained(test)));
+                      base::Unretained(test)),
+                  base::BindRepeating(&ReadAloudServiceTest::GetMediaSession,
+                                      base::Unretained(test)));
             },
             this));
   }
@@ -550,6 +553,18 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
 
   FakeAudioStreamFactory* fake_audio_stream_factory() {
     return &fake_audio_stream_factory_;
+  }
+
+  void SetMockMediaSession(
+      std::unique_ptr<content::MockMediaSession> mock_media_session) {
+    mock_media_session_ = std::move(mock_media_session);
+  }
+
+  content::MediaSession* GetMediaSession(content::WebContents* contents) {
+    if (mock_media_session_) {
+      return mock_media_session_.get();
+    }
+    return content::MediaSession::Get(contents);
   }
 
   void ExpectInitializeCallbacks(
@@ -669,6 +684,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<FakePlaybackController> fake_controller_;
   FakeAudioStreamFactory fake_audio_stream_factory_;
+  std::unique_ptr<content::MockMediaSession> mock_media_session_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1790,6 +1806,129 @@ TEST_F(ReadAloudServiceMediaSessionTest,
       .Times(1);
   fake_controller()->client()->OnPlaybackStateChanged(
       read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+}
+
+// `Play()` does not register Read Aloud with `MediaSession` while the session
+// is still in `kPlaybackCreation` or initial `kBuffering`, so page audio is
+// not interrupted and suspending `MediaSession` does not pause Read Aloud
+// until `kPlaying`.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       PlayDoesNotRegisterWithMediaSessionUntilPlaying) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+
+  service()->Initialize(web_contents());
+  base::RunLoop play_loop;
+  fake_controller()->set_play_callback(play_loop.QuitClosure());
+  service()->Play(web_contents());
+  play_loop.Run();
+
+  // Before `kPlaying` is reported (including during initial `kBuffering`),
+  // Read Aloud is not in `MediaSession`, so suspending the session only
+  // suspends `page_player`.
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kBuffering);
+  media_session()->Suspend(SuspendType::kUI);
+  fake_controller()->FlushForTesting();
+  EXPECT_EQ(page_player.suspend_count(), 1);
+  EXPECT_EQ(fake_controller()->pause_count(), 0);
+}
+
+// `kBuffering` mid-playback does not pause or remove Read Aloud in
+// `MediaSession`, so Read Aloud retains audio focus and receives session
+// suspends while buffering.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       BufferingMidPlaybackKeepsPlayerInMediaSession) {
+  MockDelegate* delegate = SetUpMockDelegate();
+  StartReadAloud();
+
+  EXPECT_CALL(*delegate, OnPlaybackStateChanged(
+                             read_aloud::mojom::PlaybackState::kBuffering))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kBuffering);
+  fake_controller()->FlushForTesting();
+
+  SuspendAndWaitForUtilityPause(SuspendType::kUI);
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+}
+
+// When `MediaSession::AddPlayer()` accepts Read Aloud on `kPlaying`,
+// `ReadAloudService` forwards `kPlaying` to the UI delegate without pausing
+// the utility process.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       AudioFocusGrantedOnPlayingNotifiesDelegate) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  auto mock_session =
+      std::make_unique<testing::NiceMock<content::MockMediaSession>>();
+  content::MockMediaSession* mock_session_ptr = mock_session.get();
+  SetMockMediaSession(std::move(mock_session));
+
+  service()->Initialize(web_contents());
+  base::RunLoop play_loop;
+  fake_controller()->set_play_callback(play_loop.QuitClosure());
+  service()->Play(web_contents());
+  play_loop.Run();
+
+  MockDelegate* delegate = SetUpMockDelegate();
+  EXPECT_CALL(*delegate, OnPlaybackStateChanged(
+                             read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+  EXPECT_CALL(*mock_session_ptr, AddPlayer(testing::_, /*player_id=*/0))
+      .WillOnce(testing::Return(true));
+
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 0);
+}
+
+// When `MediaSession::AddPlayer()` rejects Read Aloud on `kPlaying` (e.g.
+// system audio focus denied), `ReadAloudService` immediately pauses the utility
+// process, does not emit `kPlaying` to the UI delegate, and forwards the
+// resulting `kPaused` state from the utility to the UI delegate.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       AudioFocusDeniedOnPlayingPausesUtility) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  auto mock_session =
+      std::make_unique<testing::NiceMock<content::MockMediaSession>>();
+  content::MockMediaSession* mock_session_ptr = mock_session.get();
+  SetMockMediaSession(std::move(mock_session));
+
+  service()->Initialize(web_contents());
+  base::RunLoop play_loop;
+  fake_controller()->set_play_callback(play_loop.QuitClosure());
+  service()->Play(web_contents());
+  play_loop.Run();
+
+  MockDelegate* delegate = SetUpMockDelegate();
+  EXPECT_CALL(*delegate, OnPlaybackStateChanged(
+                             read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(0);
+  EXPECT_CALL(*delegate,
+              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
+      .Times(1);
+  EXPECT_CALL(*mock_session_ptr, AddPlayer(testing::_, /*player_id=*/0))
+      .WillOnce(testing::Return(false));
+
+  base::RunLoop pause_loop;
+  fake_controller()->set_pause_callback(pause_loop.QuitClosure());
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  pause_loop.Run();
+
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+
+  // In production, `ReadAloudPlaybackController::Pause()` transitions from
+  // `kPlaying` to `kPaused` and reports `kPaused` back to `ReadAloudService`.
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
   fake_controller()->FlushForTesting();
 }
 

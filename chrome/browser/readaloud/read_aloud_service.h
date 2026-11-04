@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/readaloud/read_aloud_audio_broker.h"
+#include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "chrome/browser/readaloud/read_aloud_voice_catalog.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "components/dom_distiller/core/task_tracker.h"
@@ -34,7 +35,6 @@ class Profile;
 namespace readaloud {
 
 class OverviewGenerationBroker;
-class ReadAloudPlaybackSession;
 class ReadAloudServiceTest;
 class SpeechSynthesisBroker;
 class VoicePreviewController;
@@ -167,7 +167,8 @@ class ReadAloudService
   explicit ReadAloudService(
       Profile* profile,
       PlaybackControllerBinder controller_binder = {},
-      ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder = {});
+      ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder = {},
+      ReadAloudPlaybackSession::MediaSessionGetter media_session_getter = {});
 
   ReadAloudService(const ReadAloudService&) = delete;
   ReadAloudService& operator=(const ReadAloudService&) = delete;
@@ -319,6 +320,7 @@ class ReadAloudService
 
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;
+  ReadAloudPlaybackSession::MediaSessionGetter media_session_getter_;
   std::unique_ptr<ReadAloudAudioBroker> audio_broker_;
   std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
   std::unique_ptr<Delegate> delegate_;

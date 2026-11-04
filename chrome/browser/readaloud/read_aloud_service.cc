@@ -84,9 +84,11 @@ constexpr char kStandardPlaybackTimeToFirstAudioHistogram[] =
 ReadAloudService::ReadAloudService(
     Profile* profile,
     PlaybackControllerBinder controller_binder,
-    ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder)
+    ReadAloudAudioBroker::AudioStreamFactoryBinder factory_binder,
+    ReadAloudPlaybackSession::MediaSessionGetter media_session_getter)
     : profile_(profile),
       controller_binder_(controller_binder),
+      media_session_getter_(std::move(media_session_getter)),
       audio_broker_(std::make_unique<ReadAloudAudioBroker>(factory_binder)),
       speech_synthesis_broker_(std::make_unique<SpeechSynthesisBroker>()),
       overview_generation_broker_(std::make_unique<OverviewGenerationBroker>()),
@@ -523,8 +525,8 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   ResetVoicePreview();
   ResetPlayback();
   Observe(new_web_contents);
-  media_session_ =
-      std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
+  media_session_ = std::make_unique<ReadAloudPlaybackSession>(
+      new_web_contents, this, media_session_getter_);
 
   ProvideInitialMetadata();
   NotifyPlaybackStateChanged(
@@ -720,8 +722,9 @@ void ReadAloudService::OnPlaybackStateChanged(
       return;
     case read_aloud::mojom::PlaybackState::kPlaying:
       MaybeRecordStartupSuccess();
-      if (media_session_) {
-        media_session_->NotifyPlaybackStarted();
+      if (media_session_ && !media_session_->NotifyPlaybackStarted()) {
+        Pause();
+        return;
       }
       NotifyPlaybackStateChanged(state);
       return;

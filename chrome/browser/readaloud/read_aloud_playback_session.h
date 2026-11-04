@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_READALOUD_READ_ALOUD_PLAYBACK_SESSION_H_
 #define CHROME_BROWSER_READALOUD_READ_ALOUD_PLAYBACK_SESSION_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/media_session_player_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
+class MediaSession;
 class WebContents;
 class RenderFrameHost;
 }  // namespace content
@@ -22,8 +24,14 @@ class ReadAloudService;
 class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
                                  public content::WebContentsObserver {
  public:
+  // Callback used to retrieve the `content::MediaSession` for a given
+  // `WebContents`. Primarily used to inject mock sessions during testing.
+  using MediaSessionGetter =
+      base::RepeatingCallback<content::MediaSession*(content::WebContents*)>;
+
   ReadAloudPlaybackSession(content::WebContents* web_contents,
-                           ReadAloudService* service);
+                           ReadAloudService* service,
+                           MediaSessionGetter media_session_getter = {});
   ReadAloudPlaybackSession(const ReadAloudPlaybackSession&) = delete;
   ReadAloudPlaybackSession& operator=(const ReadAloudPlaybackSession&) = delete;
   ~ReadAloudPlaybackSession() override;
@@ -35,7 +43,10 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   // `NotifyPlaybackStarted()` only updates local state. `MediaSession` has
   // already updated its own state, and calling back into it can change its
   // player list while it is iterating over it (b/572721812).
-  void NotifyPlaybackStarted();
+  //
+  // `NotifyPlaybackStarted()` returns `false` if `MediaSession::AddPlayer()`
+  // rejected the player (e.g., when system audio focus was denied).
+  bool NotifyPlaybackStarted();
   void NotifyPlaybackPaused();
   void NotifyPlaybackStopped();
 
@@ -59,7 +70,11 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   // `command`.
   bool ConsumePendingSessionCommand(SessionCommand command);
 
+  content::MediaSession* GetOrCreateMediaSession();
+  content::MediaSession* GetMediaSessionIfExists();
+
   const raw_ptr<ReadAloudService> service_;
+  MediaSessionGetter media_session_getter_;
   static constexpr int kPlayerId = 0;
 
   bool is_paused_ = true;
