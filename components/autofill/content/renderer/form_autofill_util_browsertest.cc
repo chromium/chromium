@@ -1319,9 +1319,11 @@ TEST_F(FormAutofillUtilsTest,
   ExecuteJavaScriptForTests(R"(
     const obj = document.getElementById('obj');
     const doc = obj.contentDocument;
-    doc.body.innerHTML =
+    doc.open();
+    doc.write(
         '<div style="content-visibility: hidden">' +
-        '<input id="i1"><input id="i2"><iframe></iframe></div>';
+        '<input id="i1"><input id="i2"><iframe></iframe></div>');
+    doc.close();
     // Flush layout so the content-visibility DisplayLockContext is active, and
     // detach `obj`'s LayoutObject (without detaching its ContentFrame) via
     // display:none.
@@ -2967,6 +2969,21 @@ TEST_P(FormAutofillUtilsTest_AdmissibleUrls, ExtractFormData) {
     EXPECT_NE(form, std::nullopt);
   } else {
     EXPECT_EQ(form, std::nullopt);
+  }
+}
+
+// Tests that a form control element and its form can be extracted from
+// admissible URLs.
+TEST_P(FormAutofillUtilsTest_AdmissibleUrls,
+       FindFormAndFieldForFormControlElement) {
+  LoadHTMLWithUrlOverride(R"(<form id=f><input id=i></form>)", Url());
+  std::optional<FormAndField> form_and_field =
+      FindFormAndFieldForFormControlElement(
+          GetFormControlElementById(GetDocument(), "i"));
+  if (extractable()) {
+    EXPECT_NE(form_and_field, std::nullopt);
+  } else {
+    EXPECT_EQ(form_and_field, std::nullopt);
   }
 }
 

@@ -25,9 +25,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.autofill.AutofillValue;
+import android.webkit.WebResourceResponse;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
+import androidx.webkit.WebViewAssetLoader;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -98,7 +100,8 @@ public class AwAutofillTest extends AwParameterizedTest {
     private static final long EVENT_TIMEOUT_MS = ScalableTimeout.scaleTimeout(10000);
 
     public static final String FILE = "/login.html";
-    public static final String FILE_URL = "file:///android_asset/autofill.html";
+    public static final String ASSET_URL =
+            "https://" + WebViewAssetLoader.DEFAULT_DOMAIN + "/assets/autofill.html";
 
     public static final int AUTOFILL_VIEW_ENTERED = 0;
     public static final int AUTOFILL_VIEW_EXITED = 1;
@@ -1173,9 +1176,28 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
-    public void testLoadFileURL() throws Throwable {
+    public void testLoadAssetURL() throws Throwable {
+        final WebViewAssetLoader assetLoader =
+                new WebViewAssetLoader.Builder()
+                        .addPathHandler(
+                                "/assets/",
+                                new WebViewAssetLoader.AssetsPathHandler(mRule.getActivity()))
+                        .build();
+        mContentsClient.setShouldInterceptRequestImpl(
+                request -> {
+                    WebResourceResponse response =
+                            assetLoader.shouldInterceptRequest(Uri.parse(request.getUrl()));
+                    if (response == null) return null;
+                    return new WebResourceResponseInfo(
+                            response.getMimeType(),
+                            response.getEncoding(),
+                            response.getData(),
+                            response.getStatusCode(),
+                            response.getReasonPhrase(),
+                            response.getResponseHeaders());
+                });
         int cnt = 0;
-        loadUrlSync(FILE_URL);
+        loadUrlSync(ASSET_URL);
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         // Cancel called for the first query.

@@ -149,6 +149,7 @@ template("_androidx_prebuilt") {
       ]
     } else if (target_name == "androidx_webkit_webkit_java") {
       visibility = [
+        "//android_webview/test:*",
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
         "//third_party/androidx:*",

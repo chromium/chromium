@@ -2430,6 +2430,10 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
   }
 
   WebDocument document = element.GetDocument();
+  if (!IsAdmissibleUrl(document.Url())) {
+    return std::nullopt;
+  }
+
   WebFormElement owning_form = element.GetOwningFormForAutofill();
   FormRendererId owning_form_id = GetFormRendererId(owning_form);
   std::optional<FormData> form =
