@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiContainer.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntry.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiScope.java",
+    "java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java",
+  ]
+  deps = [
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "javatests/src/org/chromium/components/browser_ui/adaptive_ui/AdaptiveUiEntryTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/junit",
+  ]
+}

@@ -101,7 +101,9 @@ public interface BottomSheetController {
         // STOP: Updates here require an update in enums.xml.
         int MAX_VALUE = CLOSE_BUTTON;
     }
-    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:BottomSheet.StateChangeReason)
+
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:BottomSheet.StateChangeReason,
+    // //components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java:DismissReason)
 
     /**
      * Request that some content be shown in the bottom sheet.

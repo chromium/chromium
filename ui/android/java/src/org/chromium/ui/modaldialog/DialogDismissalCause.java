@@ -111,5 +111,6 @@ public @interface DialogDismissalCause {
     /** Controlled by client: The dialog was automatically dismissed after a timeout. */
     int CLIENT_TIMEOUT = 17;
 
-    // LINT.ThenChange(//ui/android/modal_dialog_wrapper.h:DismissalCause)
+    // LINT.ThenChange(//ui/android/modal_dialog_wrapper.h:DismissalCause,
+    // //components/browser_ui/adaptive_ui/android/java/src/org/chromium/components/browser_ui/adaptive_ui/DismissReason.java:DismissReason)
 }
