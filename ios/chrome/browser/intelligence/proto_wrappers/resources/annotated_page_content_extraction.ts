@@ -1375,6 +1375,21 @@ function getComputedStyleForElement(
  * @return The viewport rectangle.
  */
 function getViewportRect(doc: Document): Rect {
+  // On WebKit iOS, `getBoundingClientRect()` and the tab screenshot reflect the
+  // visual viewport, while `clientWidth` and `clientHeight` reflect the
+  // unzoomed layout viewport. Use `window.visualViewport` for the main frame so
+  // the viewport rectangle matches the visible area and screenshot when zoomed.
+  const visualViewport = (doc === document && window === window.top) ?
+      window.visualViewport :
+      null;
+  const visualViewportWidth = visualViewport?.width;
+  const visualViewportHeight = visualViewport?.height;
+  if (typeof visualViewportWidth === 'number' &&
+      Number.isFinite(visualViewportWidth) && visualViewportWidth > 0 &&
+      typeof visualViewportHeight === 'number' &&
+      Number.isFinite(visualViewportHeight) && visualViewportHeight > 0) {
+    return createRect(0, 0, visualViewportWidth, visualViewportHeight);
+  }
   // Using clientWidth/Height instead of window.innerWidth/Height to exclude
   // scrollbars, which is more consistent with how Blink calculates the
   // viewport area. In quirks mode ('BackCompat'), the layout viewport is the
@@ -4525,12 +4540,6 @@ export function extractAnnotatedPageContent(
       actionableMode, undefined, styleCache);
 
   const viewportRect = getViewportRect(document);
-
-  // Start the viewport at (0, 0) as it represents the entire page surface which
-  // is the root surface. This deliberately extracts the layout viewport bounds,
-  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
-  // to maintain parity with Blink's ConvertViewportGeometry in
-  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
   const viewportGeometry = toEnclosingRect(viewportRect);
 
   // Stack to track the current ancestry chain. At this point it is known that
