@@ -160,6 +160,15 @@ class TestingContextualTasksUiService
 
   content::WebContents* stub_web_contents() { return stub_web_contents_.get(); }
 
+  bool IsWebContentsInSidePanel(
+      content::WebContents* web_contents) const override {
+    if (stub_web_contents_ && web_contents == stub_web_contents_) {
+      return true;
+    }
+    return contextual_tasks::ContextualTasksUiService::IsWebContentsInSidePanel(
+        web_contents);
+  }
+
   void InitSidePanelWithGhostLoader(
       BrowserWindowInterface* browser_window_interface,
       tabs::TabInterface* tab_interface,
