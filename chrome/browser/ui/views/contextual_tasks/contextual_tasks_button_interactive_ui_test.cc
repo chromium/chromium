@@ -2916,8 +2916,15 @@ class ContextualTasksPinnedButtonActiveIndicatorWithContextMenuInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksPinnedButtonActiveIndicatorWithContextMenuInteractiveTest,
-    RightClickPinnedButtonDoesNotShowCloseSidePanelWhenPinned) {
+    RightClickPinnedButtonShowsCloseSidePanelOnlyWhenClosedWithActiveTask) {
   raw_ptr<PinnedActionToolbarButton> pinned_button = nullptr;
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  auto IsActiveIndicatorVisible = [&]() {
+    return pinned_button && pinned_button->GetStatusIndicatorForTesting() &&
+           pinned_button->GetStatusIndicatorForTesting()->GetVisible();
+  };
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
@@ -2941,16 +2948,23 @@ IN_PROC_BROWSER_TEST_F(
                   pinned_button = b;
                   return true;
                 }),
+      // Without an ongoing task, right-clicking the permanent pin button
+      // should not show "Close/Hide side panel".
+      ShowToolbarButtonContextMenu(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kPinnedActionToolbarUnpinElementId),
+      WaitForShow(kPinnedActionToolbarCustomizeElementId),
+      EnsureNotPresent(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
+      WaitForHide(kPinnedActionToolbarUnpinElementId),
       // Create an ongoing task on Tab 0 and open the side panel: the active
-      // indicator should show, and right-clicking the permanent pin button
-      // should not show "Close/Hide side panel" when pinned.
+      // indicator should show, but "Close/Hide side panel" should not be
+      // offered while the side panel is open.
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       WaitForShow(
           ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
-      Check([&]() {
-        return pinned_button->GetStatusIndicatorForTesting() &&
-               pinned_button->GetStatusIndicatorForTesting()->GetVisible();
-      }),
+      Check([&]() { return IsActiveIndicatorVisible(); }),
       ShowToolbarButtonContextMenu(
           kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       WaitForShow(kPinnedActionToolbarUnpinElementId),
@@ -2960,25 +2974,22 @@ IN_PROC_BROWSER_TEST_F(
       SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
       WaitForHide(kPinnedActionToolbarUnpinElementId),
       SimulateClosingContextualTaskSidePanel(),
-      // Even when the side panel is closed with an active task, right-clicking
-      // the pinned button should not show "Close/Hide side panel".
+      // Once the side panel is closed with an active task, right-clicking the
+      // pinned button SHOULD show "Close/Hide side panel".
+      Check([&]() { return IsActiveIndicatorVisible(); }),
       ShowToolbarButtonContextMenu(
           kPinnedToolbarActionShowSidePanelContextualTasksElementId),
       WaitForShow(kPinnedActionToolbarUnpinElementId),
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
-      EnsureNotPresent(
+      WaitForShow(
           ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
-      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
-      WaitForHide(kPinnedActionToolbarUnpinElementId), Do([&]() {
-        base::UserActionTester user_action_tester;
-        base::HistogramTester histogram_tester;
-        actions::ActionItem* const close_action =
-            actions::ActionManager::Get().FindAction(
-                kActionContextualTasksCloseSidePanel,
-                BrowserActions::From(browser())->root_action_item());
-        ASSERT_NE(close_action, nullptr);
-        close_action->SetEnabled(true);
-        close_action->InvokeAction();
+      // Selecting it should dismiss the task for this tab and clear the
+      // active indicator.
+      SelectMenuItem(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      WaitForHide(kPinnedActionToolbarUnpinElementId),
+      Check([&]() { return !IsActiveIndicatorVisible(); }),
+      Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "RemoveByContextMenu"));
@@ -2986,7 +2997,16 @@ IN_PROC_BROWSER_TEST_F(
             "ContextualTasks.EphemeralToolbarButton.UserAction."
             "RemoveByContextMenu",
             true, 1);
-      }));
+      }),
+      // The option should be gone again now that the task was dismissed.
+      ShowToolbarButtonContextMenu(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kPinnedActionToolbarUnpinElementId),
+      WaitForShow(kPinnedActionToolbarCustomizeElementId),
+      EnsureNotPresent(
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
+      WaitForHide(kPinnedActionToolbarUnpinElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(
