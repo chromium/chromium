@@ -137,8 +137,7 @@ suite('DomQueries', () => {
       div.textContent = 'Clocks tick and phones still ring';
       document.body.appendChild(div);
 
-      const segments =
-          [{node: ReadAloudNode.create(div)!, start: 0, length: 6}];
+      const segments = [{node: ReadAloudNode.create(div), start: 0, length: 6}];
       const rects = getRectsForSegments(segments);
 
       assertTrue(rects.length > 0);
@@ -157,7 +156,7 @@ suite('DomQueries', () => {
       document.body.appendChild(root);
 
       const segments =
-          [{node: ReadAloudNode.create(root)!, start: 11, length: 5}];
+          [{node: ReadAloudNode.create(root), start: 11, length: 5}];
       const rects = getRectsForSegments(segments);
 
       assertTrue(rects.length > 0);
@@ -169,8 +168,8 @@ suite('DomQueries', () => {
       document.body.appendChild(div);
 
       const segments = [
-        {node: ReadAloudNode.create(div)!, start: 0, length: 3},
-        {node: ReadAloudNode.create(div)!, start: 4, length: 6},
+        {node: ReadAloudNode.create(div), start: 0, length: 3},
+        {node: ReadAloudNode.create(div), start: 4, length: 6},
       ];
       const rects = getRectsForSegments(segments);
 
@@ -184,8 +183,8 @@ suite('DomQueries', () => {
       document.body.appendChild(div);
 
       const segments = [
-        {node: ReadAloudNode.create(div)!, start: 0, length: 10},
-        {node: ReadAloudNode.create(div)!, start: 3, length: 7},
+        {node: ReadAloudNode.create(div), start: 0, length: 10},
+        {node: ReadAloudNode.create(div), start: 3, length: 7},
       ];
       const rects = getRectsForSegments(segments);
 
@@ -202,8 +201,8 @@ suite('DomQueries', () => {
       document.body.appendChild(div2);
 
       const segments = [
-        {node: ReadAloudNode.create(div1)!, start: 0, length: 4},
-        {node: ReadAloudNode.create(div2)!, start: 0, length: 3},
+        {node: ReadAloudNode.create(div1), start: 0, length: 4},
+        {node: ReadAloudNode.create(div2), start: 0, length: 3},
       ];
       const rects = getRectsForSegments(segments);
 

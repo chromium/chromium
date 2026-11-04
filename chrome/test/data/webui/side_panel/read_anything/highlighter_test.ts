@@ -55,7 +55,7 @@ suite('Highlighter', () => {
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(firstWordSentence));
     nodeStore.setDomNode(sentence, firstWordNodeId);
-    const node = ReadAloudNode.create(sentence)!;
+    const node = ReadAloudNode.create(sentence);
     readAloudModel.setHighlightForCurrentSegmentIndex(
         [{node, start: 0, length: 5}]);
     const segments = [{node, start: 0, length: firstWordSentence.length}];
@@ -101,7 +101,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, nodeId);
     const segments = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: text1.length,
       length: text2.length,
     }];
@@ -134,8 +134,8 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id1);
     nodeStore.setDomNode(bold, id2);
     const segments = [
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: text1.length},
-      {node: ReadAloudNode.create(bold)!, start: 0, length: text2.length},
+      {node: ReadAloudNode.create(sentence), start: 0, length: text1.length},
+      {node: ReadAloudNode.create(bold), start: 0, length: text2.length},
     ];
     readAloudModel.setCurrentTextSegments(segments);
 
@@ -188,22 +188,22 @@ suite('Highlighter', () => {
 
         const segments = [
           {
-            node: ReadAloudNode.create(textNode1)!,
+            node: ReadAloudNode.create(textNode1),
             start: 0,
             length: text1.length,
           },
           {
-            node: ReadAloudNode.create(subTextNode)!,
+            node: ReadAloudNode.create(subTextNode),
             start: 0,
             length: text2.length,
           },
           {
-            node: ReadAloudNode.create(textNode3)!,
+            node: ReadAloudNode.create(textNode3),
             start: 0,
             length: text3.length,
           },
           {
-            node: ReadAloudNode.create(supTextNode)!,
+            node: ReadAloudNode.create(supTextNode),
             start: 0,
             length: text4.length,
           },
@@ -234,7 +234,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
     const segments = [
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: text.length},
+      {node: ReadAloudNode.create(sentence), start: 0, length: text.length},
     ];
     readAloudModel.setCurrentTextSegments(segments);
 
@@ -256,7 +256,7 @@ suite('Highlighter', () => {
         'Will your your eyes still smile from your cheeks?'));
     nodeStore.setDomNode(sentence, id);
     const highlights =
-        [{node: ReadAloudNode.create(sentence)!, start: 5, length: 5}];
+        [{node: ReadAloudNode.create(sentence), start: 5, length: 5}];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
     const wordSegments = highlighter.highlightCurrentGranularity(
@@ -280,10 +280,10 @@ suite('Highlighter', () => {
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
-    const word = [{node: ReadAloudNode.create(sentence)!, start: 5, length: 5}];
+    const word = [{node: ReadAloudNode.create(sentence), start: 5, length: 5}];
     readAloudModel.setHighlightForCurrentSegmentIndex(word);
     const segments = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: 0,
       length: text.length,
     }];
@@ -308,10 +308,10 @@ suite('Highlighter', () => {
     const sentence = document.createElement('p');
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
-    const word = [{node: ReadAloudNode.create(sentence)!, start: 5, length: 5}];
+    const word = [{node: ReadAloudNode.create(sentence), start: 5, length: 5}];
     readAloudModel.setHighlightForCurrentSegmentIndex(word);
     const segments = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: 0,
       length: text.length,
     }];
@@ -338,7 +338,7 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id);
     const highlights = [
       {
-        node: ReadAloudNode.create(sentence)!,
+        node: ReadAloudNode.create(sentence),
         start: 0,
         length: segmenterLength,
       },
@@ -372,11 +372,11 @@ suite('Highlighter', () => {
         sentence.appendChild(document.createTextNode(text));
         nodeStore.setDomNode(sentence, id);
         const highlights =
-            [{node: ReadAloudNode.create(sentence)!, start: 0, length: 3}];
+            [{node: ReadAloudNode.create(sentence), start: 0, length: 3}];
         readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
         const segments = [
           {
-            node: ReadAloudNode.create(sentence)!,
+            node: ReadAloudNode.create(sentence),
             start: 0,
             length: text.length,
           },
@@ -412,8 +412,8 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(bold, id1);
     nodeStore.setDomNode(sentence, id2);
     const highlights = [
-      {node: ReadAloudNode.create(bold)!, start: 0, length: 3},
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: 1},
+      {node: ReadAloudNode.create(bold), start: 0, length: 3},
+      {node: ReadAloudNode.create(sentence), start: 0, length: 1},
     ];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
@@ -446,8 +446,8 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(bold, id1);
     nodeStore.setDomNode(sentence, id2);
     const highlights = [
-      {node: ReadAloudNode.create(bold)!, start: 0, length: text1.length},
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: 3},
+      {node: ReadAloudNode.create(bold), start: 0, length: text1.length},
+      {node: ReadAloudNode.create(sentence), start: 0, length: 3},
     ];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
@@ -475,7 +475,7 @@ suite('Highlighter', () => {
 
     // Mock the backend to return a segment for just the punctuation.
     const highlights = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: sentenceText.length,
       length: 1,
     }];
@@ -505,7 +505,7 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id);
 
     const highlights = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: 0,
       length: 1,
     }];
@@ -531,7 +531,7 @@ suite('Highlighter', () => {
         'But darling I will be loving you till we\'re 70.'));
     nodeStore.setDomNode(sentence, id);
     const highlights =
-        [{node: ReadAloudNode.create(sentence)!, start: 12, length: 20}];
+        [{node: ReadAloudNode.create(sentence), start: 12, length: 20}];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
     const wordSegments = highlighter.highlightCurrentGranularity(
@@ -559,7 +559,7 @@ suite('Highlighter', () => {
         'But darling I will be loving you till we\'re 70.'));
     nodeStore.setDomNode(sentence, id);
     const highlights =
-        [{node: ReadAloudNode.create(sentence)!, start: 12, length: 20}];
+        [{node: ReadAloudNode.create(sentence), start: 12, length: 20}];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
     highlighter.highlightCurrentGranularity(
@@ -666,12 +666,12 @@ suite('Highlighter', () => {
         sentence.appendChild(document.createTextNode(text));
         nodeStore.setDomNode(sentence, id);
         const highlights =
-            [{node: ReadAloudNode.create(sentence)!, start: 0, length: 2}];
+            [{node: ReadAloudNode.create(sentence), start: 0, length: 2}];
         readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
         const segments = [
           {
-            node: ReadAloudNode.create(sentence)!,
+            node: ReadAloudNode.create(sentence),
             start: 0,
             length: text.length,
           },
@@ -707,8 +707,8 @@ suite('Highlighter', () => {
     nodeStore.setDomNode(sentence, id1);
     nodeStore.setDomNode(bold, id2);
     const highlights = [
-      {node: ReadAloudNode.create(sentence)!, start: 10, length: 9},
-      {node: ReadAloudNode.create(bold)!, start: 0, length: 23},
+      {node: ReadAloudNode.create(sentence), start: 10, length: 9},
+      {node: ReadAloudNode.create(bold), start: 0, length: 23},
     ];
     readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
@@ -742,7 +742,7 @@ suite('Highlighter', () => {
             'Hungry for something that I can\'t eat. '));
         nodeStore.setDomNode(sentence, id);
         const highlights =
-            [{node: ReadAloudNode.create(sentence)!, start: 0, length: 20}];
+            [{node: ReadAloudNode.create(sentence), start: 0, length: 20}];
         readAloudModel.setHighlightForCurrentSegmentIndex(highlights);
 
         highlighter.highlightCurrentGranularity(
@@ -767,7 +767,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, nodeId);
     const segments = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: text1.length,
       length: text2.length,
     }];
@@ -797,7 +797,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text1 + text2));
     nodeStore.setDomNode(sentence, id);
     const segments = [{
-      node: ReadAloudNode.create(sentence)!,
+      node: ReadAloudNode.create(sentence),
       start: text1.length,
       length: text1.length + text2.length,
     }];
@@ -822,7 +822,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
     const segments = [
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: text.length},
+      {node: ReadAloudNode.create(sentence), start: 0, length: text.length},
     ];
     readAloudModel.setCurrentTextSegments(segments);
     highlighter.highlightCurrentGranularity(
@@ -845,7 +845,7 @@ suite('Highlighter', () => {
     sentence.appendChild(document.createTextNode(text));
     nodeStore.setDomNode(sentence, id);
     const segments = [
-      {node: ReadAloudNode.create(sentence)!, start: 0, length: text.length},
+      {node: ReadAloudNode.create(sentence), start: 0, length: text.length},
     ];
     readAloudModel.setCurrentTextSegments(segments);
     highlighter.highlightCurrentGranularity(segments, false, true);
@@ -870,7 +870,7 @@ suite('Highlighter', () => {
         nodeStore.setDomNode(sentence, id);
         const segments = [
           {
-            node: ReadAloudNode.create(sentence)!,
+            node: ReadAloudNode.create(sentence),
             start: 0,
             length: text.length,
           },
@@ -897,12 +897,12 @@ suite('Highlighter', () => {
         sentence.appendChild(document.createTextNode(text1 + text2));
         nodeStore.setDomNode(sentence, id);
         const sentence1 = [{
-          node: ReadAloudNode.create(sentence)!,
+          node: ReadAloudNode.create(sentence),
           start: 0,
           length: text1.length,
         }];
         const sentence2 = [{
-          node: ReadAloudNode.create(sentence)!,
+          node: ReadAloudNode.create(sentence),
           start: text1.length + 1,
           length: text2.length,
         }];

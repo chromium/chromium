@@ -249,7 +249,7 @@ export function setContent(
   const node = document.createTextNode(text);
   NodeStore.getInstance().setDomNode(node, id);
   const segments: Segment[] =
-      [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+      [{node: ReadAloudNode.create(node), start: 0, length: text.length}];
   if (model) {
     model.setCurrentTextSegments(segments);
     model.setCurrentTextContent(text);

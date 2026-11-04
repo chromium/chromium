@@ -10,7 +10,7 @@ import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import type {OffsetByNode, Segment, SegmentedSentence, Sentence} from './read_aloud_types.js';
-import {DomReadAloudNode, ReadAloudNode} from './read_aloud_types.js';
+import {ReadAloudNode} from './read_aloud_types.js';
 import {TextSegmenter} from './text_segmenter.js';
 
 // The number of sentences, starting with the current sentence, that phrase
@@ -107,8 +107,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return this.initialized_;
   }
 
-  init(context: DomReadAloudNode): void {
-    if (!(context instanceof DomReadAloudNode) || this.initialized_) {
+  init(context: ReadAloudNode): void {
+    if (this.initialized_) {
       return;
     }
 
@@ -121,7 +121,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       // Do not set this if the context node is a DocumentFragment, which
       // happens when Readability is enabled and the fragment has just been
       // appended to the DOM (and therefore emptied).
-      if (context.domNode()?.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) {
+      if (context.domNode().nodeType !== Node.DOCUMENT_FRAGMENT_NODE) {
         this.initialized_ = true;
       }
       return;
@@ -155,7 +155,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     // Filter out any segments containing the now deleted node.
     this.sentences_.forEach(sentence => {
       sentence.segments = sentence.segments.filter(
-          segment => !segment.node.domNode()?.isEqualNode(deletedNode));
+          segment => !segment.node.domNode().isEqualNode(deletedNode));
     });
 
     // Before filtering the main sentences list, count how many sentences
@@ -238,7 +238,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   // Takes a list of nodes to process and returns an object containing the
   // concatenated text content and a list of nodes with their starting offset
   // in their node in the concatenated text.
-  private buildTextAndOffsets_(textNodes: DomReadAloudNode[]): {
+  private buildTextAndOffsets_(textNodes: ReadAloudNode[]): {
     fullText: string,
     nodeOffsets: OffsetByNode[],
   } {
@@ -277,7 +277,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return {fullText, nodeOffsets};
   }
 
-  private isLineBreakingItem(node1: DomReadAloudNode, node2: DomReadAloudNode):
+  private isLineBreakingItem(node1: ReadAloudNode, node2: ReadAloudNode):
       boolean {
     const blockAncestor1 = node1.getBlockAncestor();
     const blockAncestor2 = node2.getBlockAncestor();
@@ -424,7 +424,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return null;
   }
 
-  // Returns the list of DomReadAloudNodes associated with the provided.
+  // Returns the list of ReadAloudNodes associated with the provided sentence.
   // Nodes before `startNodeIndex` must end before the sentence starts.
   private findNodesForSentence_(
       sentence: Sentence, nodeOffsets: OffsetByNode[],
@@ -529,22 +529,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return {segments, nextNodeIndex};
   }
 
-  private getAllTextNodesFrom_(node: Node|undefined): DomReadAloudNode[] {
-    if (!node) {
-      return [];
-    }
-
-    const nodes = getReadingModeTextNodes(node);
-
-    // Convert raw DOM nodes into the speech-wrapped DomReadAloudNode class,
-    // filtering out any null value nodes.
-    return nodes
-        .map(n => {
-          const readAloudNode = ReadAloudNode.create(n);
-          return readAloudNode instanceof DomReadAloudNode ? readAloudNode :
-                                                             null;
-        })
-        .filter((n): n is DomReadAloudNode => !!n);
+  private getAllTextNodesFrom_(node: Node): ReadAloudNode[] {
+    return getReadingModeTextNodes(node).map(n => ReadAloudNode.create(n));
   }
 
   private getWordHighlightSegment(
@@ -594,10 +580,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       // text starts in the sentence text. This allows extra characters such as
       // spaces that were added to make speech sound more natural to be indexed
       // correctly.
-      const segmentText =
-          (segment.node as DomReadAloudNode)
-              .getText()
-              .substring(segment.start, segment.start + segment.length);
+      const segmentText = segment.node.getText().substring(
+          segment.start, segment.start + segment.length);
       const segmentStart = sentenceText.indexOf(segmentText, textSoFarIndex);
 
       if (segmentStart === -1) {

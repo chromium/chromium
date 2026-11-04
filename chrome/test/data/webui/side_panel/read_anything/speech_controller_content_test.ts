@@ -225,7 +225,7 @@ suite('SpeechController', () => {
     parent.appendChild(node);
     nodeStore.setDomNode(parent, id);
     const segments: Segment[] =
-        [{node: ReadAloudNode.create(parent)!, start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(parent), start: 0, length: text.length}];
     readAloudModel.setCurrentTextContent(text);
     nodeStore.hideImageNode(2);
     let calls = 0;

@@ -584,15 +584,12 @@ export class ContentController {
         this.listeners_.forEach(l => l.onNewPageDrawn());
       }
       this.nodeStore_.estimateWordsSeenWithDelay();
-      // Initialize the speech tree with the new content.
-      const contextNode = ReadAloudNode.create(rootNode);
-      if (contextNode) {
-        // Don't initialize until after drawing otherwise, the DOM nodes might
-        // not yet exist in the tree.
-        // TODO(crbug.com/575459750): Don't let Read Aloud setup block
-        // distillation or other Reading mode work.
-        getReadAloudModel().init(contextNode);
-      }
+      // Initialize the speech tree with the new content. Don't initialize
+      // until after drawing. Otherwise, the DOM nodes might not yet exist in
+      // the tree.
+      // TODO(crbug.com/575459750): Don't let Read Aloud setup block
+      // distillation or other Reading mode work.
+      getReadAloudModel().init(ReadAloudNode.create(rootNode));
     });
   }
 

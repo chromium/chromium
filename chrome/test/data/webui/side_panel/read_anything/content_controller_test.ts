@@ -324,7 +324,7 @@ suite('ContentController', () => {
       node.textContent = text;
       nodeStore.setDomNode(node, rootId);
       const segments = [
-        {node: ReadAloudNode.create(node)!, start: 0, length: text.length},
+        {node: ReadAloudNode.create(node), start: 0, length: text.length},
       ];
       readAloudModel.setCurrentTextSegments(segments);
       readAloudModel.setCurrentTextContent(text);
@@ -1635,7 +1635,7 @@ suite('ContentController', () => {
           calls++;
           if (calls === 1) {
             return [{
-              node: ReadAloudNode.create(nodeStore.getDomNode(textId)!)!,
+              node: ReadAloudNode.create(nodeStore.getDomNode(textId)!),
               start: 0,
               length: 3,
             }];

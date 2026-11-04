@@ -226,7 +226,7 @@ suite('LineFocusMoveMode', () => {
       model.setMaxY(defaultHeight * 2);
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 7,
         length: 5,
       }];
@@ -242,7 +242,7 @@ suite('LineFocusMoveMode', () => {
       const container = createShortContainer();
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 7,
         length: 5,
       }];
@@ -268,7 +268,7 @@ suite('LineFocusMoveMode', () => {
 
           nodeStore.setDomNode(container, 1);
           const segments = [{
-            node: ReadAloudNode.create(container)!,
+            node: ReadAloudNode.create(container),
             start: 0,
             length: 5,
           }];
@@ -296,7 +296,7 @@ suite('LineFocusMoveMode', () => {
           assertLT(supRect.bottom, line2.bottom);
 
           const segments = [{
-            node: ReadAloudNode.create(sup)!,
+            node: ReadAloudNode.create(sup),
             start: 0,
             length: 1,
           }];
@@ -327,7 +327,7 @@ suite('LineFocusMoveMode', () => {
           assertLT(supCenter, line2Center);
 
           const segments = [{
-            node: ReadAloudNode.create(sup)!,
+            node: ReadAloudNode.create(sup),
             start: 0,
             length: 1,
           }];
@@ -344,12 +344,12 @@ suite('LineFocusMoveMode', () => {
       mockLinesCounters();
       nodeStore.setDomNode(container, 1);
       const segments1 = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];
       const segments2 = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 5,
         length: 3,
       }];
@@ -792,7 +792,7 @@ suite('LineFocusMoveMode', () => {
       model.setMaxY(defaultHeight * 2);
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];
@@ -818,7 +818,7 @@ suite('LineFocusMoveMode', () => {
           assertLT(supRect.bottom, line2.bottom);
 
           const segments = [{
-            node: ReadAloudNode.create(sup)!,
+            node: ReadAloudNode.create(sup),
             start: 0,
             length: 1,
           }];
@@ -847,7 +847,7 @@ suite('LineFocusMoveMode', () => {
           assertLT(supCenter, line2Center);
 
           const segments = [{
-            node: ReadAloudNode.create(sup)!,
+            node: ReadAloudNode.create(sup),
             start: 0,
             length: 1,
           }];
@@ -863,7 +863,7 @@ suite('LineFocusMoveMode', () => {
       model.setMaxY(10);
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];
@@ -880,12 +880,12 @@ suite('LineFocusMoveMode', () => {
       mockLinesCounters();
       nodeStore.setDomNode(container, 1);
       const segments1 = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 5,
         length: 5,
       }];
       const segments2 = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 12,
         length: 3,
       }];
@@ -907,7 +907,7 @@ suite('LineFocusMoveMode', () => {
 
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];
@@ -926,7 +926,7 @@ suite('LineFocusMoveMode', () => {
 
           nodeStore.setDomNode(container, 1);
           const segments = [{
-            node: ReadAloudNode.create(container)!,
+            node: ReadAloudNode.create(container),
             start: 0,
             length: 5,
           }];
@@ -944,7 +944,7 @@ suite('LineFocusMoveMode', () => {
 
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];
@@ -969,7 +969,7 @@ suite('LineFocusMoveMode', () => {
 
           nodeStore.setDomNode(container, 1);
           const segments = [{
-            node: ReadAloudNode.create(container)!,
+            node: ReadAloudNode.create(container),
             start: 0,
             length: 5,
           }];
@@ -1000,7 +1000,7 @@ suite('LineFocusMoveMode', () => {
           const preScrollLineBottom = model.getTextBounds()[0]!.bottom;
           nodeStore.setDomNode(container, 1);
           const segments = [{
-            node: ReadAloudNode.create(container)!,
+            node: ReadAloudNode.create(container),
             start: 0,
             length: 5,
           }];
@@ -1677,7 +1677,7 @@ suite('LineFocusMoveMode', () => {
       const container = createShortContainer();
       nodeStore.setDomNode(container, 1);
       const segments = [{
-        node: ReadAloudNode.create(container)!,
+        node: ReadAloudNode.create(container),
         start: 0,
         length: 5,
       }];

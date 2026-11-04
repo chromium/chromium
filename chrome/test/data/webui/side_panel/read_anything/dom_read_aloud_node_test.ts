@@ -3,24 +3,24 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {DomReadAloudNode, ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {ReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-suite('DomReadAloudNode', () => {
+suite('ReadAloudNode', () => {
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   function ancestorNotEquals(
-      node: DomReadAloudNode, nodesToCompare: DomReadAloudNode[]) {
+      node: ReadAloudNode, nodesToCompare: ReadAloudNode[]) {
     assertNotEquals(undefined, node.getBlockAncestor());
     nodesToCompare.forEach(compare => {
       assertNotEquals(undefined, compare.getBlockAncestor());
       assertNotEquals(compare.getBlockAncestor(), node.getBlockAncestor());
     });
   }
-  function ancestorSame(nodesToCompare: DomReadAloudNode[]) {
+  function ancestorSame(nodesToCompare: ReadAloudNode[]) {
     const ancestors = nodesToCompare.map(node => node.getBlockAncestor());
     const uniqueAncestors = new Set(ancestors);
     assertEquals(1, uniqueAncestors.size);
@@ -48,13 +48,6 @@ suite('DomReadAloudNode', () => {
     const textBeforeNode = ReadAloudNode.create(textBeforeBold);
     const boldNode = ReadAloudNode.create(bold);
     const textAfterNode = ReadAloudNode.create(textAfterBold);
-
-    // All of the nodes should be DomReadAloudNode because this test
-    // should only be run when the TsSegmentation flag is true.
-    assertTrue(headerNode instanceof DomReadAloudNode);
-    assertTrue(textBeforeNode instanceof DomReadAloudNode);
-    assertTrue(textAfterNode instanceof DomReadAloudNode);
-    assertTrue(boldNode instanceof DomReadAloudNode);
 
     // The header should not have the same block ancestor as the paragraph
     // nodes.
@@ -86,10 +79,6 @@ suite('DomReadAloudNode', () => {
     const node2 = ReadAloudNode.create(text2);
     const node3 = ReadAloudNode.create(text3);
 
-    assertTrue(node1 instanceof DomReadAloudNode);
-    assertTrue(node2 instanceof DomReadAloudNode);
-    assertTrue(node3 instanceof DomReadAloudNode);
-
     // All text nodes, despite different levels of inline nesting (a, b, or
     // direct child of p), should resolve to the same paragraph block ancestor.
     assertEquals(paragraph, node1.getBlockAncestor());
@@ -100,7 +89,6 @@ suite('DomReadAloudNode', () => {
   test('getBlockAncestor returns undefined for detached node', () => {
     const detachedText = document.createTextNode('detached');
     const detachedNode = ReadAloudNode.create(detachedText);
-    assertTrue(detachedNode instanceof DomReadAloudNode);
     assertEquals(undefined, detachedNode.getBlockAncestor());
   });
 
@@ -123,9 +111,9 @@ suite('DomReadAloudNode', () => {
     // Check if they are structurally equal.
     assertTrue(div1.isEqualNode(div2));
 
-    const node1 = ReadAloudNode.create(div1)!;
-    const node2 = ReadAloudNode.create(div2)!;
-    const node3 = ReadAloudNode.create(div1)!;
+    const node1 = ReadAloudNode.create(div1);
+    const node2 = ReadAloudNode.create(div2);
+    const node3 = ReadAloudNode.create(div1);
 
     // node1 === node3, since they both were created with div1.
     assertTrue(node1.equals(node3));
@@ -136,5 +124,4 @@ suite('DomReadAloudNode', () => {
     assertFalse(node1.equals(node2));
     assertFalse(node2.equals(node1));
   });
-
 });

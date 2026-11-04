@@ -454,11 +454,7 @@ export class SpeechController {
         startOffset = 0;
       }
 
-      const readAloudNode = ReadAloudNode.create(startNode);
-      if (!readAloudNode) {
-        return;
-      }
-      this.movePlaybackToNode_(readAloudNode, startOffset);
+      this.movePlaybackToNode_(ReadAloudNode.create(startNode), startOffset);
       // Play the next granularity, which includes the selection.
       if (this.highlightAndPlayMessage_()) {
         this.logger_.logSpeechControlClick(speechControl);

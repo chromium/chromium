@@ -2,24 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DomReadAloudNode} from './read_aloud_types.js';
+import type {ReadAloudNode} from './read_aloud_types.js';
 // Manages ReadAloudNodes for use with read aloud
 export class ReadAloudNodeStore {
-  private domNodeToReadAloudNodes_: WeakMap<Node, Set<DomReadAloudNode>> =
+  private domNodeToReadAloudNodes_: WeakMap<Node, Set<ReadAloudNode>> =
       new WeakMap();
 
-  // Registers this DomReadAloudNode to the node store.
-  register(domReadAloudNode: DomReadAloudNode) {
-    const node = domReadAloudNode.domNode();
-    if (!node) {
-      return;
-    }
-
-    if (node && !this.domNodeToReadAloudNodes_.has(node)) {
+  // Registers this ReadAloudNode to the node store.
+  register(readAloudNode: ReadAloudNode) {
+    const node = readAloudNode.domNode();
+    if (!this.domNodeToReadAloudNodes_.has(node)) {
       this.domNodeToReadAloudNodes_.set(node, new Set());
     }
 
-    this.domNodeToReadAloudNodes_.get(node)!.add(domReadAloudNode);
+    this.domNodeToReadAloudNodes_.get(node)!.add(readAloudNode);
   }
 
   // Updates that a DOM element has been replaced, such as from highlighting.

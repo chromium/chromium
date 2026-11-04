@@ -376,7 +376,7 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     readAloudModel.setCurrentTextSegments(
-        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+        [{node: ReadAloudNode.create(container), start: 0, length: 1}]);
     readAloudModel.setCurrentTextContent('a');
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
@@ -394,7 +394,7 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     readAloudModel.setCurrentTextSegments(
-        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+        [{node: ReadAloudNode.create(container), start: 0, length: 1}]);
     readAloudModel.setCurrentTextContent('a');
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
@@ -425,7 +425,7 @@ suite('LineFocusController', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
     readAloudModel.setCurrentTextSegments(
-        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+        [{node: ReadAloudNode.create(container), start: 0, length: 1}]);
     readAloudModel.setCurrentTextContent('a');
     lineFocusController.toggle(true, container, defaultHeight);
     lineFocusController.onStyleChange(

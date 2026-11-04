@@ -65,7 +65,7 @@ export type {ReadAloudModelBrowserProxy} from './read_aloud/read_aloud_model_bro
 export {getReadAloudModel, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
 export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export type {AncestorNode, Segment} from './read_aloud/read_aloud_types.js';
-export {DomReadAloudNode, ReadAloudNode} from './read_aloud/read_aloud_types.js';
+export {ReadAloudNode} from './read_aloud/read_aloud_types.js';
 export type {SpeechBrowserProxy} from './read_aloud/speech_browser_proxy.js';
 export {SpeechBrowserProxyImpl} from './read_aloud/speech_browser_proxy.js';
 export type {SpeechListener} from './read_aloud/speech_controller.js';

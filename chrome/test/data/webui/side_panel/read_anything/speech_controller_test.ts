@@ -1033,7 +1033,7 @@ suite('SpeechController', () => {
     const node = document.createTextNode(text);
     nodeStore.setDomNode(node, id);
     const segments: Segment[] =
-        [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(node), start: 0, length: text.length}];
     readAloudModel.setCurrentTextSegments(segments);
     readAloudModel.setCurrentTextContent(text);
     element.appendChild(node);
@@ -1064,7 +1064,7 @@ suite('SpeechController', () => {
     const node = document.createTextNode(text);
     nodeStore.setDomNode(node, id);
     const segments: Segment[] =
-        [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(node), start: 0, length: text.length}];
     readAloudModel.setCurrentTextSegments(segments);
     readAloudModel.setCurrentTextContent(text);
     element.appendChild(node);
@@ -1089,7 +1089,7 @@ suite('SpeechController', () => {
     const node = document.createTextNode(text);
     nodeStore.setDomNode(node, id);
     const segments: Segment[] =
-        [{node: ReadAloudNode.create(node)!, start: 0, length: text.length}];
+        [{node: ReadAloudNode.create(node), start: 0, length: text.length}];
     readAloudModel.setCurrentTextSegments(segments);
     readAloudModel.setCurrentTextContent(text);
     element.appendChild(node);
@@ -1133,7 +1133,7 @@ suite('SpeechController', () => {
         const node = document.createTextNode(text);
         nodeStore.setDomNode(node, id);
         const segments: Segment[] = [
-          {node: ReadAloudNode.create(node)!, start: 0, length: text.length},
+          {node: ReadAloudNode.create(node), start: 0, length: text.length},
         ];
         readAloudModel.setCurrentTextSegments(segments);
         readAloudModel.setCurrentTextContent(text);
@@ -1193,17 +1193,17 @@ suite('SpeechController', () => {
         nodeStore.setDomNode(node3, 3);
 
         const segment1 = {
-          node: ReadAloudNode.create(node1)!,
+          node: ReadAloudNode.create(node1),
           start: 0,
           length: text1.length,
         };
         const segment2 = {
-          node: ReadAloudNode.create(node2)!,
+          node: ReadAloudNode.create(node2),
           start: 0,
           length: text2.length,
         };
         const segment3 = {
-          node: ReadAloudNode.create(node3)!,
+          node: ReadAloudNode.create(node3),
           start: 0,
           length: text3.length,
         };
@@ -1289,7 +1289,7 @@ suite('SpeechController', () => {
         const id = 2;
         nodeStore.setDomNode(node, id);
         const segments: Segment[] = [
-          {node: ReadAloudNode.create(node)!, start: 0, length: text.length},
+          {node: ReadAloudNode.create(node), start: 0, length: text.length},
         ];
         readAloudModel.setCurrentTextSegments(segments);
 

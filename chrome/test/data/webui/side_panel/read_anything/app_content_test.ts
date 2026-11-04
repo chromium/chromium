@@ -663,7 +663,7 @@ suite('AppContent', () => {
       readAloudModel.setInitialized(true);
       readAloudModel.setCurrentTextContent(text);
       readAloudModel.setCurrentTextSegments([{
-        node: ReadAloudNode.create(link.firstChild!)!,
+        node: ReadAloudNode.create(link.firstChild!),
         start: 0,
         length: text.length,
       }]);
@@ -726,10 +726,10 @@ suite('AppContent', () => {
     nodeStore.setDomNode(node2, id2);
 
     const segments =
-        [{node: ReadAloudNode.create(node1)!, start: 0, length: text1.length}];
+        [{node: ReadAloudNode.create(node1), start: 0, length: text1.length}];
     readAloudModel.setCurrentTextSegments(segments);
     readAloudModel.setCurrentTextContent(text1);
-    readAloudModel.init(ReadAloudNode.create(document.body)!);
+    readAloudModel.init(ReadAloudNode.create(document.body));
 
     // Start speech to initialize read aloud state.
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);
