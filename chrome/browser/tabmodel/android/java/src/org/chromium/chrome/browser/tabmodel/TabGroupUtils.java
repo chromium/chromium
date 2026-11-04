@@ -65,7 +65,10 @@ public class TabGroupUtils {
      * @param tabModel The tab model that owns the {@code tab}.
      * @param tab The {@link Tab}.
      * @return The selected tab of the group which contains the {@code tab}.
+     * @deprecated Remove once ANDROID_TAB_UI_REFACTOR launches; only used on legacy layout
+     *     fallback.
      */
+    @Deprecated
     public static Tab getSelectedTabInGroupForTab(TabModel tabModel, Tab tab) {
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return tab;

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 
 import org.chromium.base.Token;
@@ -13,7 +11,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.util.List;
 import java.util.Objects;
 
 /** Helper class to handle tab group title related utilities. */
@@ -57,8 +54,8 @@ public class TabGroupTitleUtils {
     }
 
     /**
-     * Returns a displayable title for a given tab group by root id. While this function can help
-     * some UI surfaces, sometimes it is difficult to follow MVC with this approach.
+     * Returns a displayable title for a given tab group by tab group Token. While this function can
+     * help some UI surfaces, sometimes it is difficult to follow MVC with this approach.
      *
      * @param context To load resources from.
      * @param tabModel To read tab and tab group data from.
@@ -67,15 +64,13 @@ public class TabGroupTitleUtils {
      */
     public static String getDisplayableTitle(
             Context context, TabModel tabModel, @Nullable Token tabGroupId) {
-        boolean tabGroupExists = tabGroupId != null && tabModel.containsTabGroup(tabGroupId);
-        String explicitTitle =
-                tabGroupExists
-                        ? tabModel.getTabGroupTitle(assumeNonNull(tabGroupId))
-                        : UNSET_TAB_GROUP_TITLE;
+        if (tabGroupId == null || !tabModel.containsTabGroup(tabGroupId)) {
+            return getDefaultTitle(context, /* numRelatedTabs= */ 0);
+        }
+        String explicitTitle = tabModel.getTabGroupTitle(tabGroupId);
         if (isTitleUnset(explicitTitle)) {
             int tabCount = 0;
-            List<Tab> tabsInGroup = tabModel.getTabsInGroup(assumeNonNull(tabGroupId));
-            for (Tab tab : tabsInGroup) {
+            for (Tab tab : tabModel.getTabsInGroup(tabGroupId)) {
                 if (!tab.isClosing()) {
                     tabCount++;
                 }

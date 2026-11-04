@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
@@ -161,5 +164,17 @@ public class TabGroupTitleUtilsUnitTest {
         String title = TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID);
 
         assertTrue(title.contains("0"));
+    }
+
+    @Test
+    public void testGetDisplayableTitle_InvalidGroupId() {
+        when(mTabModel.containsTabGroup(TAB_GROUP_ID)).thenReturn(false);
+
+        assertTrue(
+                TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, TAB_GROUP_ID)
+                        .contains("0"));
+        assertTrue(TabGroupTitleUtils.getDisplayableTitle(mContext, mTabModel, null).contains("0"));
+
+        verify(mTabModel, never()).getTabsInGroup(any());
     }
 }

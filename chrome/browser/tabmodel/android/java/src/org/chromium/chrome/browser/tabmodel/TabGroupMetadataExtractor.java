@@ -57,7 +57,7 @@ public class TabGroupMetadataExtractor {
         }
         if (!selectedTabIsInGroup) selectedTabId = groupedTabs.get(0).getId();
 
-        // 2. Get the first tab as a representative to retrieve the tab group ID.
+        // 2. Read the tab group ID from a member tab.
         Tab firstTab = groupedTabs.get(0);
         @Nullable Token tabGroupId = firstTab.getTabGroupId();
         if (tabGroupId == null) return null;

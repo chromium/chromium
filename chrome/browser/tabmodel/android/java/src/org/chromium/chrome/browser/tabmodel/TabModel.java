@@ -538,10 +538,10 @@ public interface TabModel extends TabList {
     void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId);
 
     /**
-     * This method appends a list of {@link Tab}s to the destination group that contains the {@code}
-     * destinationTab. The {@link TabModel} ordering of the tabs in the given list is not preserved.
-     * After calling this method, the {@link TabModel} ordering of these tabs would become the
-     * ordering of {@code tabs}.
+     * Appends a list of {@link Tab}s to the destination group that contains the {@code
+     * destinationTab}. The {@link TabModel} ordering of the tabs in the given list is not
+     * preserved. After calling this method, the {@link TabModel} ordering of these tabs would
+     * become the ordering of {@code tabs}.
      *
      * @param tabs List of {@link Tab}s to be appended.
      * @param destinationTab The destination {@link Tab} to be append to.
@@ -553,8 +553,8 @@ public interface TabModel extends TabList {
     }
 
     /**
-     * This method merges a list of {@link Tab}s into the destination group that contains the
-     * {@code} destinationTab.
+     * Merges a list of {@link Tab}s into the destination group that contains the {@code
+     * destinationTab}.
      *
      * @param tabs List of {@link Tab}s to be merged. The ordering of this list is preserved.
      * @param destinationTab The destination {@link Tab}. If not in a group, a new group will be
@@ -655,7 +655,7 @@ public interface TabModel extends TabList {
      * exist, then GREY will be returned. This method is intended to be used by UI surfaces that
      * want to show a color, and they need the color returned to be valid.
      *
-     * @param tabGroupId The tab group ID whose related tab group color will be fetched if found.
+     * @param tabGroupId The tab group ID whose tab group color will be fetched if found.
      * @return The color that should be used for this group.
      */
     @TabGroupColorId
