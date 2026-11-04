@@ -1000,17 +1000,8 @@ void LayoutBoxModelObject::MoveChildTo(
   DCHECK_EQ(this, child->Parent());
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
 
-  if (to_box_model_object->IsLayoutBlock() ||
-      to_box_model_object->IsLayoutInline()) {
-    // Takes care of adding the new child correctly if toBlock and fromBlock
-    // have different kind of children (block vs inline).
-    to_box_model_object->AddChild(
-        VirtualChildren()->RemoveChildNode(this, child), before_child);
-  } else {
-    to_box_model_object->VirtualChildren()->InsertChildNode(
-        to_box_model_object, VirtualChildren()->RemoveChildNode(this, child),
-        before_child);
-  }
+  to_box_model_object->AddChild(VirtualChildren()->RemoveChildNode(this, child),
+                                before_child);
 }
 
 void LayoutBoxModelObject::MoveChildrenTo(
