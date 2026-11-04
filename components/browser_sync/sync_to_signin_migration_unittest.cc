@@ -92,8 +92,7 @@ class SyncToSigninMigrationTestBase {
   SyncToSigninMigrationTestBase(bool migration_feature_enabled,
                                 bool force_migration_feature_enabled) {
     features_.InitWithFeatureStates(
-        {{syncer::kReplaceSyncPromosWithSignInPromos, true},
-         {switches::kMigrateSyncingUserToSignedIn, migration_feature_enabled},
+        {{switches::kMigrateSyncingUserToSignedIn, migration_feature_enabled},
          {switches::kForceMigrateSyncingUserToSignedIn,
           force_migration_feature_enabled}});
 
