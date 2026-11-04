@@ -157,6 +157,10 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     return;
   }
 
+  if (extensions_menu_widget_) {
+    extensions_menu_widget_->CloseNow();
+  }
+
   pressed_lock_ = menu_button_controller_->TakeLock();
   extensions_toolbar_->OnMenuOpening();
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
