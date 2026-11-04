@@ -183,6 +183,10 @@ source_set("impl") {
     sources += [ "auto_picture_in_picture_window_occlusion_helper_stub.cc" ]
   }
 
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -238,6 +242,9 @@ source_set("unit_tests") {
       "//components/unified_consent",
       "//ui/events:test_support",
     ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   } else {
     sources +=
         [ "auto_picture_in_picture_tab_model_observer_helper_unittest.cc" ]

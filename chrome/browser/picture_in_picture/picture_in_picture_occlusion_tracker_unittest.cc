@@ -3,13 +3,19 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -446,6 +452,38 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
 
   picture_in_picture_widget->SetBounds({0, 0, 500, 500});
   WaitForBoundsChangedDebounce();
+}
+
+class PictureInPictureOcclusionTrackerDesktopWidgetTest
+    : public PictureInPictureOcclusionTrackerTest {
+ public:
+  void SetUp() override {
+    set_native_widget_type(NativeWidgetType::kDesktop);
+    PictureInPictureOcclusionTrackerTest::SetUp();
+  }
+};
+
+TEST_F(PictureInPictureOcclusionTrackerDesktopWidgetTest,
+       SeparateTopLevelWidgetsOnlyOccludeWithGlobalScreenCoordinates) {
+  MockPictureInPictureOcclusionObserver observer;
+  ScopedPictureInPictureOcclusionObservation observation(&observer);
+  std::unique_ptr<views::Widget> picture_in_picture_widget =
+      CreatePictureInPictureWidget();
+
+  std::unique_ptr<views::Widget> occludable_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget->Show();
+  occludable_widget->SetBounds({0, 0, 200, 200});
+
+  bool expected_occluded = true;
+#if BUILDFLAG(IS_OZONE)
+  expected_occluded = ui::OzonePlatform::GetInstance()
+                          ->GetPlatformProperties()
+                          .supports_global_screen_coordinates;
+#endif
+  EXPECT_CALL(observer, OnOcclusionStateChanged(expected_occluded));
+  observation.Observe(occludable_widget.get());
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace

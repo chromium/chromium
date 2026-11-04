@@ -142,6 +142,9 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//services/network:test_support",
   ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 source_set("interactive_ui_tests") {

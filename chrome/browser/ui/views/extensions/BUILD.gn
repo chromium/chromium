@@ -360,6 +360,9 @@ source_set("browser_tests") {
     if (use_aura && !is_chromeos) {
       deps += [ "//chrome/browser/ui/views:native_widget_factory" ]
     }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 
   if (!is_android && !is_chromeos) {
