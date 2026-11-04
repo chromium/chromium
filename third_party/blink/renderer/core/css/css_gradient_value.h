@@ -305,14 +305,6 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
 
   String CustomCSSText() const;
 
-  void SetShape(CSSIdentifierValue* val) { shape_ = val; }
-  void SetSizingBehavior(CSSIdentifierValue* val) { sizing_behavior_ = val; }
-
-  void SetEndHorizontalSize(CSSPrimitiveValue* val) {
-    end_horizontal_size_ = val;
-  }
-  void SetEndVerticalSize(CSSPrimitiveValue* val) { end_vertical_size_ = val; }
-
   // Create the gradient for a given size.
   std::unique_ptr<Gradient> CreateGradient(const CSSToLengthConversionData&,
                                            const gfx::SizeF&,

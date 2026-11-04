@@ -51,7 +51,6 @@ class CORE_EXPORT StyleInvalidator {
 
   bool MatchesCurrentInvalidationSets(Element&) const;
   bool MatchesCurrentInvalidationSetsAsSlotted(Element&) const;
-  bool MatchesCurrentInvalidationSetsAsParts(Element&) const;
 
   bool HasInvalidationSets() const {
     return !WholeSubtreeInvalid() &&

@@ -79,8 +79,6 @@ class CORE_EXPORT AbstractPropertySetCSSStyleDeclaration
                    ExceptionState&) final;
   String removeProperty(const String& property_name, ExceptionState&) final;
   void QuietlyRemoveProperty(const String& property_name) final;
-  String CssFloat() const;
-  void SetCSSFloat(const String&, ExceptionState&);
   String cssText() const override;
   void setCSSText(const ExecutionContext*,
                   const String&,

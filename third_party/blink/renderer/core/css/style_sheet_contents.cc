@@ -587,17 +587,6 @@ bool StyleSheetContents::HasSingleOwnerNode() const {
   return RootStyleSheet()->HasOneClient();
 }
 
-Node* StyleSheetContents::SingleOwnerNode() const {
-  StyleSheetContents* root = RootStyleSheet();
-  if (!root->HasOneClient()) {
-    return nullptr;
-  }
-  if (root->loading_clients_.size()) {
-    return (*root->loading_clients_.begin())->ownerNode();
-  }
-  return (*root->completed_clients_.begin())->ownerNode();
-}
-
 Document* StyleSheetContents::SingleOwnerDocument() const {
   StyleSheetContents* root = RootStyleSheet();
   return root->ClientSingleOwnerDocument();

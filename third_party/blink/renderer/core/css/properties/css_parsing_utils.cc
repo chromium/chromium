@@ -4413,20 +4413,9 @@ bool FontFamilyNeedsQuoting(const AtomicString& string) {
           !can_serialize_unquoted);
 }
 
-// https://drafts.csswg.org/css-cascade/#default
-bool IsRevertKeyword(StringView keyword) {
-  return EqualIgnoringAsciiCase(keyword, "revert");
-}
-
 // https://drafts.csswg.org/css-values-4/#identifier-value
 bool IsDefaultKeyword(StringView keyword) {
   return EqualIgnoringAsciiCase(keyword, "default");
-}
-
-// https://drafts.csswg.org/css-syntax/#typedef-hash-token
-bool IsHashIdentifier(const CSSParserToken& token) {
-  return token.GetType() == kHashToken &&
-         token.GetHashTokenType() == kHashTokenId;
 }
 
 bool IsDashedIdent(const CSSParserToken& token) {
@@ -4470,14 +4459,6 @@ CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream,
     default:
       NOTREACHED();
   }
-}
-
-bool IsTimelineName(const CSSParserToken& token) {
-  if (token.GetType() == kStringToken) {
-    return true;
-  }
-  return token.GetType() == kIdentToken &&
-         IsCustomIdent<CSSValueID::kNone>(token.Id());
 }
 
 CSSValue* ConsumeSelfPositionOverflowPosition(
@@ -4806,13 +4787,6 @@ CSSValue* ConsumeTimelineRangeNameAndPercent(
   }
   list->Append(*percentage);
   return list;
-}
-
-CSSValue* ConsumeAnimationDelay(CSSParserTokenStream& stream,
-                                const CSSParserContext& context,
-                                CSSParserLocalContext& local_context) {
-  return ConsumeTime(stream, context, local_context,
-                     CSSPrimitiveValue::ValueRange::kAll);
 }
 
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,

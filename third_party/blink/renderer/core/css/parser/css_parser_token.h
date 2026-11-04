@@ -168,8 +168,6 @@ class CORE_EXPORT CSSParserToken {
     return static_cast<CSSValueID>(id_);
   }
 
-  bool HasStringBacking() const;
-
   CSSPropertyID ParseAsUnresolvedCSSPropertyID(
       const ExecutionContext* execution_context,
       CSSParserMode mode = kHTMLStandardMode) const;
@@ -183,20 +181,6 @@ class CORE_EXPORT CSSParserToken {
     token.value_length_ = 0;
     token.value_data_char_raw_ = nullptr;
     return token;
-  }
-
-  static CSSParserTokenType ClosingTokenType(CSSParserTokenType opening_type) {
-    switch (opening_type) {
-      case kFunctionToken:
-      case kLeftParenthesisToken:
-        return kRightParenthesisToken;
-      case kLeftBracketToken:
-        return kRightBracketToken;
-      case kLeftBraceToken:
-        return kRightBraceToken;
-      default:
-        NOTREACHED();
-    }
   }
 
   // For debugging/logging only.
@@ -263,8 +247,8 @@ class CORE_EXPORT CSSParserToken {
   unsigned numeric_sign_ : 2;        // NumericSign
   unsigned unit_ : 7;                // CSSPrimitiveValue::UnitType
 
-  // The variables below are only used if the token type is string-backed
-  // (which depends on type_; see HasStringBacking() for the list).
+  // The variables below are only used if the token type is string-backed,
+  // i.e. an ident, function, at-keyword, hash, url, dimension or string token.
 
   // Short strings (eight bytes or fewer) may be stored directly into the
   // CSSParserToken, freeing us from allocating a backing string for the

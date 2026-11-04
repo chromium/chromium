@@ -123,10 +123,6 @@ class CORE_EXPORT InvalidationSet
   void AddCustomPseudoName(const AtomicString& custom_pseudo_name);
   void AddAttribute(const AtomicString& attribute_local_name);
 
-  void SetInvalidationFlags(InvalidationFlags flags) {
-    invalidation_flags_ = flags;
-  }
-
   void SetWholeSubtreeInvalid();
   bool WholeSubtreeInvalid() const {
     return invalidation_flags_.WholeSubtreeInvalid();

@@ -653,11 +653,6 @@ class CORE_EXPORT CSSParserTokenStream {
            detail::IsTokenTypeOneOf<EndTypes...>(token.GetType());
   }
 
-  const CSSParserToken& PeekInternal() {
-    EnsureLookAhead();
-    return UncheckedPeekInternal();
-  }
-
   const CSSParserToken& UncheckedPeekInternal() const {
     DCHECK(HasLookAhead());
     return next_;

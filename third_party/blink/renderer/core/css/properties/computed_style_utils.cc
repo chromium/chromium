@@ -2948,17 +2948,6 @@ CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehavior(
-    const EAnimationTriggerBehavior trigger_behavior) {
-  return CSSIdentifierValue::Create(PlatformEnumToCSSValueID(trigger_behavior));
-}
-
-CSSValue* ComputedStyleUtils::ValueForAnimationTriggerBehaviorList(
-    const Vector<EAnimationTriggerBehavior>& behavior_list) {
-  return CreateAnimationValueList(behavior_list,
-                                  &ValueForAnimationTriggerBehavior);
-}
-
 CSSValue* ComputedStyleUtils::ValueForTimelineTriggerActivationRangeStartList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {

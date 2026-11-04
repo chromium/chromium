@@ -49,9 +49,6 @@ class CORE_EXPORT CSSPositionValue final : public CSSStyleValue {
     CSSStyleValue::Trace(visitor);
   }
 
- private:
-  static bool IsValidCoordinate(CSSNumericValue* coord);
-
  protected:
   Member<CSSNumericValue> x_;
   Member<CSSNumericValue> y_;

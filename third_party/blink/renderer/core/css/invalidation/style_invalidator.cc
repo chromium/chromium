@@ -101,21 +101,6 @@ bool StyleInvalidator::MatchesCurrentInvalidationSetsAsSlotted(
   return false;
 }
 
-bool StyleInvalidator::MatchesCurrentInvalidationSetsAsParts(
-    Element& element) const {
-  DCHECK(invalidation_flags_.InvalidatesParts());
-
-  for (auto* const invalidation_set : invalidation_sets_) {
-    if (!invalidation_set->InvalidatesParts()) {
-      continue;
-    }
-    if (invalidation_set->InvalidatesElement(element)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void StyleInvalidator::SiblingData::PushInvalidationSet(
     const SiblingInvalidationSet& invalidation_set) {
   unsigned invalidation_limit;

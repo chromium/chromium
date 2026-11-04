@@ -101,7 +101,6 @@ class CORE_EXPORT StyleSheetContents final
 
   StyleSheetContents* RootStyleSheet() const;
   bool HasSingleOwnerNode() const;
-  Node* SingleOwnerNode() const;
   Document* SingleOwnerDocument() const;
   bool HasSingleOwnerDocument() const { return has_single_owner_document_; }
 

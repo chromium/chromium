@@ -232,10 +232,6 @@ class CORE_EXPORT ComputedStyleUtils {
       const Vector<TimelineOffsetOrAuto>& range_list,
       const ComputedStyle& style,
       const Length& default_offset);
-  static CSSValue* ValueForAnimationTriggerBehavior(
-      const EAnimationTriggerBehavior);
-  static CSSValue* ValueForAnimationTriggerBehaviorList(
-      const Vector<EAnimationTriggerBehavior>& behavior_list);
   static CSSValue* ValueForTimelineTriggerActivationRangeStartList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);

@@ -412,8 +412,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                const ComputedStyle* new_root_style);
   void SetUsesTreeCountingFunctions() { uses_tree_counting_functions_ = true; }
 
-  void ResetCSSFeatureFlags(const RuleFeatureSet&);
-
   bool CountersChanged() const { return counters_changed_; }
   void MarkCountersDirty() { counters_changed_ = true; }
   void MarkCountersClean() { counters_changed_ = false; }
@@ -733,10 +731,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
   bool InInterleavedStyleRecalc() const {
     return InContainerQueryStyleRecalc() || InPositionTryStyleRecalc();
-  }
-  void SetInScrollMarkersAttachment(bool in_scroll_markers_attachment) {
-    DCHECK(!in_scroll_markers_attachment_ || !in_scroll_markers_attachment);
-    in_scroll_markers_attachment_ = in_scroll_markers_attachment;
   }
   bool InScrollMarkersAttachment() const {
     return in_scroll_markers_attachment_;

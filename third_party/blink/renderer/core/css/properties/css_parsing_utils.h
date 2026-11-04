@@ -404,9 +404,7 @@ bool IsContentPositionOrLeftOrRightKeyword(CSSValueID);
 CORE_EXPORT bool IsCSSWideKeyword(CSSValueID);
 CORE_EXPORT bool IsCSSWideKeyword(StringView);
 bool FontFamilyNeedsQuoting(const AtomicString&);
-bool IsRevertKeyword(StringView);
 bool IsDefaultKeyword(StringView);
-bool IsHashIdentifier(const CSSParserToken&);
 CORE_EXPORT bool IsDashedIdent(const CSSParserToken&);
 
 // https://drafts.csswg.org/css-mixins-1/#function-rule
@@ -426,9 +424,6 @@ CORE_EXPORT CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream&,
 // https://drafts.csswg.org/css-values-4/#identifier-value
 template <CSSValueID, CSSValueID...>
 bool IsCustomIdent(CSSValueID);
-
-// https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-name
-bool IsTimelineName(const CSSParserToken&);
 
 // TODO(nrosenthal) add definition once the spec PR lands.
 // See https://github.com/w3c/csswg-drafts/pull/12359
@@ -460,9 +455,6 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenStream&);
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenStream&,
                                              const CSSParserContext&,
                                              CSSParserLocalContext&);
-CSSValue* ConsumeAnimationDelay(CSSParserTokenStream&,
-                                const CSSParserContext&,
-                                CSSParserLocalContext&);
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream&,
                                 const CSSParserContext&,
                                 CSSParserLocalContext&,

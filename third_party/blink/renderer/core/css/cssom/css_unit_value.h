@@ -60,9 +60,6 @@ class CORE_EXPORT CSSUnitValue final : public CSSNumericValue {
   CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
-  double ConvertFixedLength(CSSPrimitiveValue::UnitType) const;
-  double ConvertAngle(CSSPrimitiveValue::UnitType) const;
-
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;
 
   // From CSSNumericValue
