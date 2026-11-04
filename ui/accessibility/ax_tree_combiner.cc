@@ -35,8 +35,9 @@ bool AXTreeCombiner::Combine() {
 
   if (trees_.size() == 1) {
     // Nothing to combine -- only one tree.
-    CHECK(root_tree_id_ == trees_[0].tree_data.tree_id,
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/580311394): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(root_tree_id_ == trees_[0].tree_data.tree_id);
     combined_ = std::move(trees_[0]);
     return true;
   }
