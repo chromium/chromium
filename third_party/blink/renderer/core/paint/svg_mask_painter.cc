@@ -6,7 +6,6 @@
 
 #include "base/containers/adapters.h"
 #include "cc/paint/color_filter.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -59,9 +58,6 @@ LayoutSVGResourceMasker* ResolveElementReference(
   auto* masker =
       GetSVGResourceAsType<LayoutSVGResourceMasker>(*client, mask_resource);
   if (!masker) {
-    return nullptr;
-  }
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker)) {
     return nullptr;
   }
   SECURITY_CHECK(!masker->SelfNeedsFullLayout());

@@ -24,6 +24,7 @@ class ImageResourceObserver;
 class LayoutSVGResourceContainer;
 class QualifiedName;
 class SVGFilterPrimitiveStandardAttributes;
+class SVGForeignObjectElement;
 class SVGResourceClient;
 class SVGResourceDocumentContent;
 class TreeScope;
@@ -78,12 +79,6 @@ class SVGResource : public GarbageCollected<SVGResource> {
 
   virtual bool IsLoading() const { return false; }
 
-  Element* Target() const { return target_; }
-  // Returns the target's LayoutObject (if target exists and is attached to the
-  // layout tree). Also perform cycle-checking, and may thus return nullptr if
-  // this SVGResourceClient -> SVGResource reference would start a cycle.
-  LayoutSVGResourceContainer* ResourceContainer(SVGResourceClient&) const;
-  // Same as the above, minus the cycle-checking.
   enum class Usage {
     kElement,  // Intent to use the target element only. This may return an
                // Element with stale layout, and should thus not be used when
@@ -91,6 +86,12 @@ class SVGResource : public GarbageCollected<SVGResource> {
                // paint a resource).
     kContent,  // Intent to use the content of the resource for painting.
   };
+  Element* Target(Usage usage) const;
+  // Returns the target's LayoutObject (if target exists and is attached to the
+  // layout tree). Also perform cycle-checking, and may thus return nullptr if
+  // this SVGResourceClient -> SVGResource reference would start a cycle.
+  LayoutSVGResourceContainer* ResourceContainer(SVGResourceClient&) const;
+  // Same as the above, minus the cycle-checking.
   LayoutSVGResourceContainer* ResourceContainerNoCycleCheck(Usage usage) const;
   // Run cycle-checking for this SVGResourceClient -> SVGResource
   // reference. Used internally by the cycle-checking, and shouldn't be called
@@ -141,6 +142,9 @@ class LocalSVGResource final : public SVGResource {
   LocalSVGResource(TreeScope&, const AtomicString& id);
 
   void Unregister();
+  void NotifyDisplayLockChanged(
+      const Element& element,
+      const SVGForeignObjectElement* enclosing_foreign_object);
 
   using SVGResource::NotifyContentChanged;
 

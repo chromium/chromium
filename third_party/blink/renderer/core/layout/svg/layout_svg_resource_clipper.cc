@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -66,8 +65,6 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
   const LayoutObject* layout_object = element.GetLayoutObject();
   if (!layout_object)
     return ClipStrategy::kNone;
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
-    return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->Style();
   if (style.Display() == EDisplay::kNone ||
       style.Visibility() != EVisibility::kVisible) {
@@ -90,9 +87,6 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
   if (auto* svg_use_element = DynamicTo<SVGUseElement>(element)) {
     const LayoutObject* use_layout_object = element.GetLayoutObject();
     if (!use_layout_object)
-      return ClipStrategy::kNone;
-    if (DisplayLockUtilities::LockedAncestorPreventingLayout(
-            *use_layout_object))
       return ClipStrategy::kNone;
     if (use_layout_object->Style().Display() == EDisplay::kNone) {
       return ClipStrategy::kNone;
@@ -210,7 +204,7 @@ PaintRecord LayoutSVGResourceClipper::CreatePaintRecord(
   // - fill is set to the initial fill paint server (solid, black)
   // - stroke is set to the initial stroke paint server (none)
   PaintInfo info(builder.Context(), CullRect::Infinite(),
-                 PaintPhase::kForeground, ChildPaintBlockedByDisplayLock(),
+                 PaintPhase::kForeground, /*descendant_painting_blocked=*/false,
                  PaintFlag::kPaintingClipPathAsMask |
                      PaintFlag::kPaintingResourceSubtree | paint_flags);
 

@@ -181,8 +181,10 @@ void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   // in tree order), notify any clients that they need to reevaluate the
   // resource's contents.
   LocalSVGResource* resource = ResourceForContainer(*this);
-  if (!resource || resource->Target() != GetElement())
+  if (!resource ||
+      resource->Target(SVGResource::Usage::kElement) != GetElement()) {
     return;
+  }
   GetDocument().ScheduleSVGResourceInvalidation(*resource);
 }
 
@@ -311,8 +313,10 @@ void LayoutSVGResourceContainer::MarkAllClientsForInvalidation(
   if (is_invalidating_)
     return;
   LocalSVGResource* resource = ResourceForContainer(*this);
-  if (!resource || resource->Target() != GetElement())
+  if (!resource ||
+      resource->Target(SVGResource::Usage::kElement) != GetElement()) {
     return;
+  }
   // Remove modes for which invalidations have already been
   // performed. If no modes remain we are done.
   invalidation_mask &= ~completed_invalidations_mask_;

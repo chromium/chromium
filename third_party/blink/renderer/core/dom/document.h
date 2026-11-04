@@ -252,6 +252,7 @@ class Resource;
 class ResourceFetcher;
 class RootScrollerController;
 class SVGDocumentExtensions;
+class SVGTreeScopeResources;
 class SVGUseElement;
 class ScriptElementBase;
 class ScriptRegexp;
@@ -743,6 +744,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void ScheduleSVGResourceInvalidation(LocalSVGResource&);
   void InvalidatePendingSVGResources();
+  void RegisterSVGTreeScopeResources(SVGTreeScopeResources&);
+  void UnregisterSVGTreeScopeResources(SVGTreeScopeResources&);
+  void NotifyDisplayLockChangedForSVGResources(const Element& element);
 
   void EvaluateMediaQueryList();
 
@@ -3158,6 +3162,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // state. Should be populated during layout detach or style recalc, and be
   // empty before and after those operations.
   HeapHashSet<Member<LocalSVGResource>> svg_resources_needing_invalidation_;
+  // Per-TreeScope SVG resource maps belonging to this Document (including
+  // ShadowRoots), tracked so LocalSVGResource clients can be invalidated when
+  // display-lock state changes.
+  HeapHashSet<WeakMember<SVGTreeScopeResources>> svg_tree_scope_resources_;
 
   ParserSynchronizationPolicy parser_sync_policy_ = kAllowDeferredParsing;
 

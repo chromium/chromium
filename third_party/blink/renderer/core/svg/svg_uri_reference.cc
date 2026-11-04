@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
@@ -132,7 +133,16 @@ Element* SVGURIReference::TargetElementFromIRIString(
     return nullptr;
   if (fragment_identifier)
     *fragment_identifier = id;
-  return tree_scope.getElementById(id);
+  Element* target = tree_scope.getElementById(id);
+  // TODO(crbug.com/576326793): Skipping all paint-locked targets here means
+  // forced-layout queries (e.g., getBBox) on elements inside a display-locked
+  // subtree will not resolve targets in the same subtree (such as <textPath>
+  // or <mpath>).
+  if (!target || DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+                     target, /*inclusive_check=*/true)) {
+    return nullptr;
+  }
+  return target;
 }
 
 Element* SVGURIReference::ObserveTarget(Member<IdTargetObserver>& observer,

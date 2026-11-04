@@ -59,6 +59,10 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
     return false;
   }
 
+  // Called when the last client of an SVGResource referencing this container
+  // is removed.
+  virtual void LastClientRemoved() { NOT_DESTROYED(); }
+
   SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
   bool IsSVGResourceContainer() const final {
     NOT_DESTROYED();

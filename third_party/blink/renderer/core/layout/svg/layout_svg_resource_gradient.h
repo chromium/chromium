@@ -42,6 +42,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
   void RemoveAllClientsFromCache() final;
   bool RemoveClientFromCache(SVGResourceClient&) final;
+  void LastClientRemoved() final;
 
   bool ApplyShader(const SVGResourceClient&,
                    const gfx::RectF& reference_box,

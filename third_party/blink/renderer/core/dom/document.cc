@@ -361,9 +361,11 @@
 #include "third_party/blink/renderer/core/scroll/snap_event.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
+#include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_unknown_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_element_factory.h"
@@ -3335,6 +3337,42 @@ void Document::InvalidatePendingSVGResources() {
     resource->NotifyContentChanged();
   }
   DCHECK(svg_resources_needing_invalidation_.empty());
+}
+
+void Document::RegisterSVGTreeScopeResources(SVGTreeScopeResources& resources) {
+  svg_tree_scope_resources_.insert(&resources);
+}
+
+void Document::UnregisterSVGTreeScopeResources(
+    SVGTreeScopeResources& resources) {
+  svg_tree_scope_resources_.erase(&resources);
+}
+
+void Document::NotifyDisplayLockChangedForSVGResources(const Element& element) {
+  if (lifecycle_.GetState() >= DocumentLifecycle::kStopping ||
+      svg_tree_scope_resources_.empty()) {
+    return;
+  }
+  // Among SVG elements, only outermost <svg> roots can be display-locked, so
+  // `element` can only be a descendant of an SVG resource target if it has a
+  // <foreignObject> flat-tree ancestor.
+  const SVGForeignObjectElement* enclosing_foreign_object = nullptr;
+  if (svg_extensions_ && svg_extensions_->MayContainForeignObjects() &&
+      element.isConnected() && !IsFlatTreeTraversalForbidden() &&
+      !IsSlotAssignmentDirty()) {
+    for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(element)) {
+      if (const auto* foreign_object =
+              DynamicTo<SVGForeignObjectElement>(ancestor)) {
+        enclosing_foreign_object = foreign_object;
+        break;
+      }
+    }
+  }
+  HeapVector<Member<SVGTreeScopeResources>, 16> scope_resources(
+      svg_tree_scope_resources_);
+  for (SVGTreeScopeResources* resources : scope_resources) {
+    resources->NotifyDisplayLockChanged(element, enclosing_foreign_object);
+  }
 }
 
 StyleResolver& Document::GetStyleResolver() const {
@@ -9669,6 +9707,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(element_data_cache_);
   visitor->Trace(use_elements_needing_update_);
   visitor->Trace(svg_resources_needing_invalidation_);
+  visitor->Trace(svg_tree_scope_resources_);
   visitor->Trace(template_document_);
   visitor->Trace(template_document_host_);
   visitor->Trace(user_action_elements_);

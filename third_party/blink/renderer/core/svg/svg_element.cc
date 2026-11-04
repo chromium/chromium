@@ -965,7 +965,7 @@ void SVGElement::NotifyResourceClients() const {
   LocalSVGResource* resource =
       GetTreeScope().EnsureSVGTreeScopedResources().ExistingResourceForId(
           GetIdAttribute());
-  if (!resource || resource->Target() != this) {
+  if (!resource || resource->Target(SVGResource::Usage::kElement) != this) {
     return;
   }
   resource->NotifyContentChanged();
@@ -1119,6 +1119,13 @@ SVGElementSet* SVGElement::SetOfIncomingReferences() const {
   if (!HasSVGRareData())
     return nullptr;
   return &SvgRareData()->IncomingReferences();
+}
+
+const SVGElementSet* SVGElement::SetOfOutgoingReferences() const {
+  if (!HasSVGRareData()) {
+    return nullptr;
+  }
+  return &SvgRareData()->OutgoingReferences();
 }
 
 void SVGElement::AddReferenceTo(SVGElement* target_element) {

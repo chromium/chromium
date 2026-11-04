@@ -46,6 +46,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
 
   void RemoveAllClientsFromCache() override;
   bool RemoveClientFromCache(SVGResourceClient&) override;
+  void LastClientRemoved() override;
 
   bool ApplyShader(const SVGResourceClient&,
                    const gfx::RectF& reference_box,

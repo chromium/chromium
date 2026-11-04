@@ -6,7 +6,6 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -73,9 +72,6 @@ LayoutSVGResourceClipper* ResolveElementReference(
     return nullptr;
 
   resource_clipper->ClearInvalidationMask();
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*resource_clipper))
-    return nullptr;
-
   SECURITY_DCHECK(!resource_clipper->SelfNeedsFullLayout());
   return resource_clipper;
 }

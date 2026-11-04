@@ -301,6 +301,8 @@ void DisplayLockContext::Lock() {
   // layout objects, since otherwise they would be hoisted out of our subtree.
   DetachDescendantTopLayerElements();
 
+  document_->NotifyDisplayLockChangedForSVGResources(*element_);
+
   // Schedule ContentVisibilityAutoStateChange event if needed.
   ScheduleStateChangeEventIfNeeded();
 
@@ -609,6 +611,8 @@ void DisplayLockContext::Unlock() {
   if (auto* ax_cache = element_->GetDocument().ExistingAXObjectCache()) {
     ax_cache->RemoveSubtree(element_);
   }
+
+  document_->NotifyDisplayLockChangedForSVGResources(*element_);
 
   // Schedule ContentVisibilityAutoStateChange event if needed.
   ScheduleStateChangeEventIfNeeded();

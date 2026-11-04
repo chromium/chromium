@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 
-#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -37,6 +38,18 @@ LocalSVGResource* SVGTreeScopeResources::ExistingResourceForId(
   if (it == resources_.end())
     return nullptr;
   return it->value.Get();
+}
+
+void SVGTreeScopeResources::NotifyDisplayLockChanged(
+    const Element& element,
+    const SVGForeignObjectElement* enclosing_foreign_object) {
+  if (resources_.empty() || !tree_scope_->RootNode().isConnected()) {
+    return;
+  }
+  HeapVector<Member<LocalSVGResource>, 16> resources(resources_.Values());
+  for (LocalSVGResource* resource : resources) {
+    resource->NotifyDisplayLockChanged(element, enclosing_foreign_object);
+  }
 }
 
 void SVGTreeScopeResources::ProcessCustomWeakness(const LivenessBroker& info) {

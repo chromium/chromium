@@ -224,7 +224,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   explicit TreeScope(Document&);
   virtual ~TreeScope();
 
-  void SetDocument(Document& document) { document_ = &document; }
+  void SetDocument(Document& document);
   void SetParentTreeScope(TreeScope&);
 
  private:

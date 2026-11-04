@@ -19,7 +19,6 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -59,8 +58,7 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(PaintFlags paint_flags) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();
     if (!layout_object)
       continue;
-    if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
-        layout_object->Style().Display() == EDisplay::kNone) {
+    if (layout_object->Style().Display() == EDisplay::kNone) {
       continue;
     }
     SVGObjectPainter(*layout_object, nullptr)

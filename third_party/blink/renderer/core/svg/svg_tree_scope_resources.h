@@ -13,7 +13,9 @@
 
 namespace blink {
 
+class Element;
 class LocalSVGResource;
+class SVGForeignObjectElement;
 class TreeScope;
 
 // This class keeps track of SVG resources and pending references to such for a
@@ -28,6 +30,9 @@ class SVGTreeScopeResources final
 
   LocalSVGResource* ResourceForId(const AtomicString& id);
   LocalSVGResource* ExistingResourceForId(const AtomicString& id) const;
+  void NotifyDisplayLockChanged(
+      const Element& element,
+      const SVGForeignObjectElement* enclosing_foreign_object);
 
   void Trace(Visitor*) const;
 

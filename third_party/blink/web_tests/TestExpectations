@@ -8532,3 +8532,6 @@ crbug.com/579037663 external/wpt/streams/readable-byte-streams/crashtests/from-c
 
 # Gardener 2026-11-04
 crbug.com/581567966 [ Win11-arm64 ] fast/block/float/float-avoidance.html [ Failure ]
+
+# Forced-layout queries on SVG resource references in display-locked subtrees
+crbug.com/576326793 external/wpt/css/css-contain/content-visibility/content-visibility-svg-textpath.html [ Failure ]

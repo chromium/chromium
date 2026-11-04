@@ -6,14 +6,22 @@
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_image_element.h"
+#include "third_party/blink/renderer/core/svg/svg_filter_element.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -58,6 +66,9 @@ void SVGResource::RemoveClient(SVGResourceClient& client) {
   if (LayoutSVGResourceContainer* container =
           ResourceContainerNoCycleCheck(Usage::kElement)) {
     container->RemoveClientFromCache(client);
+    if (clients_.empty()) {
+      container->LastClientRemoved();
+    }
   }
 }
 
@@ -127,15 +138,29 @@ void SVGResource::NotifyContentChanged() {
     client->ResourceContentChanged(this);
 }
 
-LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck(
-    Usage usage) const {
+Element* SVGResource::Target(Usage usage) const {
   if (!target_) {
     return nullptr;
   }
   if (usage == Usage::kContent) {
     UpdateContentLifecycleForUse();
+    // TODO(crbug.com/576326793): Skipping all paint-locked targets here means
+    // forced-layout queries (e.g., getBBox) on elements inside a display-locked
+    // subtree will not resolve resources in the same subtree.
+    if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+            target_, /*inclusive_check=*/true)) {
+      return nullptr;
+    }
   }
-  return DynamicTo<LayoutSVGResourceContainer>(target_->GetLayoutObject());
+  return target_;
+}
+
+LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck(
+    Usage usage) const {
+  if (Element* target = Target(usage)) {
+    return DynamicTo<LayoutSVGResourceContainer>(target->GetLayoutObject());
+  }
+  return nullptr;
 }
 
 LayoutSVGResourceContainer* SVGResource::ResourceContainerForCycleCheck()
@@ -239,6 +264,125 @@ LocalSVGResource::LocalSVGResource(TreeScope& tree_scope,
 
 void LocalSVGResource::Unregister() {
   SVGURIReference::UnobserveTarget(id_observer_);
+}
+
+namespace {
+
+// Returns true if:
+//  * `target` is `element`.
+//  * `target` is inside `element`'s flat-tree subtree. For example:
+//    <div id="element"><svg><linearGradient id="target"/></svg></div>
+//  * `target` contains `element` via a `<foreignObject>`. For example:
+//    <g id="target"><foreignObject><div id="element"/></foreignObject></g>
+//    `enclosing_foreign_object` is the innermost `<foreignObject>` flat-tree
+//    ancestor of `element`, if any.
+bool IsElementAffectedByDisplayLock(
+    const Element& target,
+    const Element& element,
+    const SVGForeignObjectElement* enclosing_foreign_object) {
+  DCHECK(target.isConnected());
+  DCHECK(element.isConnected());
+  if (FlatTreeTraversal::Contains(element, target)) {
+    return true;
+  }
+  return enclosing_foreign_object &&
+         FlatTreeTraversal::Contains(target, *enclosing_foreign_object);
+}
+
+// Returns true if locking or unlocking `element` affects the resource
+// rooted at `target`, which covers the following scenarios:
+//  * True if `target` itself is affected (`IsElementAffectedByDisplayLock`).
+//  * True if a transitive outgoing reference (`href` chain) is affected. E.g.:
+//    <div id="element"><svg><linearGradient id="g"/></svg></div>
+//    <svg><linearGradient id="target" href="#g"/></svg>
+//  * True if a `<filter>`'s `<feImage>` target is affected. E.g.:
+//    <div id="element"><svg><rect id="r"/></svg></div>
+//    <svg><filter id="target"><feImage href="#r"/></filter></svg>
+bool IsResourceTargetAffectedByDisplayLock(
+    Element& target,
+    const Element& element,
+    const SVGForeignObjectElement* enclosing_foreign_object) {
+  if (!target.isConnected()) {
+    return false;
+  }
+  Document& document = target.GetDocument();
+  if (!element.isConnected() || document.IsFlatTreeTraversalForbidden() ||
+      document.IsSlotAssignmentDirty()) {
+    return true;
+  }
+  if (IsElementAffectedByDisplayLock(target, element,
+                                     enclosing_foreign_object)) {
+    return true;
+  }
+  const auto* svg_target = DynamicTo<SVGElement>(target);
+  if (!svg_target) {
+    return false;
+  }
+
+  HeapVector<Member<const SVGElement>, 4> stack;
+  auto push_outgoing = [&stack](const SVGElement& svg_element) {
+    if (const SVGElementSet* outgoing = svg_element.SetOfOutgoingReferences()) {
+      for (const Member<SVGElement>& ref : *outgoing) {
+        if (ref->isConnected()) {
+          stack.push_back(ref);
+        }
+      }
+    }
+  };
+
+  push_outgoing(*svg_target);
+  if (IsA<SVGFilterElement>(*svg_target)) {
+    for (const SVGFEImageElement& fe_image :
+         Traversal<SVGFEImageElement>::ChildrenOf(*svg_target)) {
+      push_outgoing(fe_image);
+    }
+  }
+  if (stack.empty()) {
+    return false;
+  }
+
+  HeapHashSet<Member<const SVGElement>> visited;
+  visited.insert(svg_target);
+  while (!stack.empty()) {
+    const SVGElement* current = stack.back();
+    stack.pop_back();
+    if (!visited.insert(current).is_new_entry) {
+      continue;
+    }
+    if (IsElementAffectedByDisplayLock(*current, element,
+                                       enclosing_foreign_object)) {
+      return true;
+    }
+    push_outgoing(*current);
+  }
+  return false;
+}
+
+}  // namespace
+
+void LocalSVGResource::NotifyDisplayLockChanged(
+    const Element& element,
+    const SVGForeignObjectElement* enclosing_foreign_object) {
+  if (!target_ || !IsResourceTargetAffectedByDisplayLock(
+                      *target_, element, enclosing_foreign_object)) {
+    return;
+  }
+  if (LayoutSVGResourceContainer* container =
+          ResourceContainerNoCycleCheck(Usage::kElement)) {
+    container->ClearInvalidationMask();
+    container->RemoveAllClientsFromCache();
+    return;
+  }
+  if (clients_.empty()) {
+    return;
+  }
+  Document& document = tree_scope_->GetDocument();
+  if (document.InStyleRecalc() ||
+      document.GetStyleEngine().InDetachLayoutTree()) {
+    document.ScheduleSVGResourceInvalidation(*this);
+  } else {
+    NotifyContentChanged();
+  }
 }
 
 void LocalSVGResource::NotifyFilterPrimitiveChanged(

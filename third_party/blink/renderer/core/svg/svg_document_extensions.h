@@ -45,6 +45,9 @@ class CORE_EXPORT SVGDocumentExtensions final
   void AddTimeContainer(SVGSVGElement*);
   void RemoveTimeContainer(SVGSVGElement*);
 
+  void SetContainsForeignObject() { may_contain_foreign_objects_ = true; }
+  bool MayContainForeignObjects() const { return may_contain_foreign_objects_; }
+
   // True if a SMIL animation frame is successfully scheduled.
   static bool ServiceSmilOnAnimationFrame(Document&);
 
@@ -69,6 +72,9 @@ class CORE_EXPORT SVGDocumentExtensions final
   Member<Document> document_;
   HeapHashSet<Member<SVGSVGElement>> time_containers_;
   gfx::Vector2dF translate_;
+  // Set to true whenever a <foreignObject> is connected to the document. Does
+  // not get reset if all <foreignObject>s are removed.
+  bool may_contain_foreign_objects_ = false;
 };
 
 }  // namespace blink

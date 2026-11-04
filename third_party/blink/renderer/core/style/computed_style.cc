@@ -1731,11 +1731,17 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     if (!resource) {
       return;
     }
-    // Call ResourceContainerNoCycleCheck() to ensure the resource's style is
-    // up-to-date.
-    resource->ResourceContainerNoCycleCheck(SVGResource::Usage::kContent);
-
-    const auto* target = DynamicTo<SVGGeometryElement>(resource->Target());
+    // TODO(crbug.com/576326793): Using Usage::kContent here means that
+    // forced-layout queries (e.g., getBBox) on elements with offset-path in
+    // a display-locked subtree incorrectly use an empty (i.e., blocked by
+    // display locking) offset-path. Supporting layout queries requires adding
+    // a layout usage mode and plumbing the client LayoutObject/Node (including
+    // for SVG children, where TransformHelper passes a null box) to ensure
+    // forced-layout updates on a locked subtree (e.g., lockedPath.getBBox())
+    // don't let unlocked elements resolve a paint-locked offset-path during
+    // layout and paint with it.
+    const auto* target = DynamicTo<SVGGeometryElement>(
+        resource->Target(SVGResource::Usage::kContent));
     Path path;
     if (!target || !target->GetComputedStyle()) {
       // Failure to find a shape should be equivalent to a "m0,0" path.

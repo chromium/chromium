@@ -235,7 +235,9 @@ static void WriteSVGPaintingResource(StringBuilder& ts,
     default:
       NOTREACHED();
   }
-  ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
+  ts << " [id=\""
+     << resource.Target(SVGResource::Usage::kElement)->GetIdAttribute()
+     << "\"]";
 }
 
 static bool WriteSVGPaint(StringBuilder& ts,

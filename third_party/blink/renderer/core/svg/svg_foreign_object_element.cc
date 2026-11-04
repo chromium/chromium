@@ -20,10 +20,12 @@
 
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -65,6 +67,14 @@ void SVGForeignObjectElement::Trace(Visitor* visitor) const {
   visitor->Trace(width_);
   visitor->Trace(height_);
   SVGGraphicsElement::Trace(visitor);
+}
+
+Node::InsertionNotificationRequest SVGForeignObjectElement::InsertedInto(
+    ContainerNode& root_parent) {
+  if (root_parent.isConnected()) {
+    GetDocument().AccessSVGExtensions().SetContainsForeignObject();
+  }
+  return SVGGraphicsElement::InsertedInto(root_parent);
 }
 
 void SVGForeignObjectElement::SvgAttributeChanged(

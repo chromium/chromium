@@ -44,6 +44,7 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   void Trace(Visitor*) const override;
 
  private:
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

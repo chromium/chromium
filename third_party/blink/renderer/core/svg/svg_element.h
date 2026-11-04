@@ -171,6 +171,7 @@ class CORE_EXPORT SVGElement : public Element {
   bool InUseShadowTree() const;
 
   void AddReferenceTo(SVGElement*);
+  const SVGElementSet* SetOfOutgoingReferences() const;
   template <typename InvalidationFunction>
   void NotifyIncomingReferences(InvalidationFunction&&);
   void RemoveAllIncomingReferences();

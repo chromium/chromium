@@ -528,15 +528,16 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
     bool input_tainted,
     bool input_contains_backdrop) const {
   SVGResource* resource = reference_operation.Resource();
-  auto* filter_element =
-      DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
-  if (!filter_element)
+  auto* filter_element = DynamicTo<SVGFilterElement>(
+      resource ? resource->Target(SVGResource::Usage::kContent) : nullptr);
+  if (!filter_element) {
     return nullptr;
+  }
   if (is_in_canvas_subtree_ && !filter_element->IsInCanvasSubtree()) {
     return nullptr;
   }
   if (auto* resource_container = resource->ResourceContainerNoCycleCheck(
-          SVGResource::Usage::kContent)) {
+          SVGResource::Usage::kElement)) {
     resource_container->ClearInvalidationMask();
   }
 

@@ -89,6 +89,19 @@ TreeScope::TreeScope(Document& document)
 
 TreeScope::~TreeScope() = default;
 
+void TreeScope::SetDocument(Document& document) {
+  if (document_ == &document) {
+    return;
+  }
+  if (svg_tree_scoped_resources_) {
+    document_->UnregisterSVGTreeScopeResources(*svg_tree_scoped_resources_);
+  }
+  document_ = &document;
+  if (svg_tree_scoped_resources_) {
+    document_->RegisterSVGTreeScopeResources(*svg_tree_scoped_resources_);
+  }
+}
+
 void TreeScope::SetParentTreeScope(TreeScope& new_parent_scope) {
   // A document node cannot be re-parented.
   DCHECK(!RootNode().IsDocumentNode());
@@ -432,6 +445,7 @@ SVGTreeScopeResources& TreeScope::EnsureSVGTreeScopedResources() {
   if (!svg_tree_scoped_resources_) {
     svg_tree_scoped_resources_ =
         MakeGarbageCollected<SVGTreeScopeResources>(this);
+    GetDocument().RegisterSVGTreeScopeResources(*svg_tree_scoped_resources_);
   }
   return *svg_tree_scoped_resources_;
 }

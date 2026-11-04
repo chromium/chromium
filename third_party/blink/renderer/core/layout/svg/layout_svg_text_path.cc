@@ -92,7 +92,9 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
   // If path attribute was not present or produced an empty/invalid path,
   // fall back to href
   if (path.IsEmpty()) {
-    // Use href to reference a path element
+    // Use href to reference a path element.
+    // TODO(crbug.com/576326793): Invalidate <textPath> when a referenced
+    // <path>'s display lock state changes.
     Element* target_element = SVGURIReference::TargetElementFromIRIString(
         text_path_element.HrefString(),
         text_path_element.OriginatingTreeScope());

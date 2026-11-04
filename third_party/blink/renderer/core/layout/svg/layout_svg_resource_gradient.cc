@@ -99,6 +99,13 @@ bool LayoutSVGResourceGradient::RemoveClientFromCache(
   return true;
 }
 
+void LayoutSVGResourceGradient::LastClientRemoved() {
+  NOT_DESTROYED();
+  // Reset cached attributes so a collected `LocalSVGResource` cannot leave
+  // stale `href` attributes cached across a display-lock change.
+  should_collect_gradient_attributes_ = true;
+}
+
 std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
     const gfx::RectF& object_bounding_box) const {
   NOT_DESTROYED();
