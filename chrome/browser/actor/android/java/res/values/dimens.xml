@@ -26,20 +26,9 @@ found in the LICENSE file.
     <dimen name="actor_gts_glow_strong_spread">2dp</dimen>
 
     <!-- Actor Overlay Button Dimensions -->
-    <dimen name="actor_overlay_button_height">56dp</dimen>
-    <dimen name="actor_overlay_button_margin_top">16dp</dimen>
     <dimen name="actor_overlay_button_padding_vertical">16dp</dimen>
     <dimen name="actor_overlay_button_padding_horizontal">24dp</dimen>
     <dimen name="actor_overlay_button_icon_size">24dp</dimen>
     <dimen name="actor_overlay_button_icon_padding">8dp</dimen>
     <dimen name="actor_overlay_button_corner_radius">100dp</dimen>
-    <dimen name="actor_overlay_button_glow_padding">20dp</dimen>
-
-    <!-- Glic/Actor button glow dimensions -->
-    <dimen name="actor_button_glow_soft_spread_x">3.0dp</dimen>
-    <dimen name="actor_button_glow_soft_spread_y">0.2dp</dimen>
-    <dimen name="actor_button_glow_strong_spread_x">1.2dp</dimen>
-    <dimen name="actor_button_glow_v_offset">0.8dp</dimen>
-    <dimen name="actor_button_glow_soft_blur">8dp</dimen>
-    <dimen name="actor_button_glow_strong_blur">2dp</dimen>
 </resources>

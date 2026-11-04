@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.base.ViewUtils;
@@ -66,7 +67,7 @@ public class ActorOverlayCoordinator {
     private @Nullable ActorOverlayView mView;
     private @Nullable PropertyModelChangeProcessor mChangeProcessor;
     private @Nullable ViewStub mHandoffButtonStub;
-    private @Nullable ActorHandoffButtonView mHandoffButtonView;
+    private @Nullable FloatingPillContainer mHandoffButtonView;
     private @Nullable PropertyModelChangeProcessor mHandoffButtonChangeProcessor;
     private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable ActorKeyedService mActorKeyedService;
@@ -173,7 +174,7 @@ public class ActorOverlayCoordinator {
 
     private void inflateHandoffButtonView() {
         if (mHandoffButtonView != null || mContainer == null || mHandoffButtonStub == null) return;
-        mHandoffButtonView = (ActorHandoffButtonView) mHandoffButtonStub.inflate();
+        mHandoffButtonView = (FloatingPillContainer) mHandoffButtonStub.inflate();
         mHandoffButtonStub = null;
         mHandoffButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -287,7 +288,7 @@ public class ActorOverlayCoordinator {
         return mView;
     }
 
-    @Nullable ActorHandoffButtonView getHandoffButtonViewForTesting() {
+    @Nullable FloatingPillContainer getHandoffButtonViewForTesting() {
         return mHandoffButtonView;
     }
 

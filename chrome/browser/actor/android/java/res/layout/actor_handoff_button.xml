@@ -5,17 +5,11 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.actor.ui.ActorHandoffButtonView
+<org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/actor_handoff_button_container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/actor_overlay_button_glow_padding"
-    android:paddingTop="@dimen/actor_overlay_button_glow_padding"
-    android:paddingEnd="@dimen/actor_overlay_button_glow_padding"
-    android:paddingBottom="@dimen/actor_overlay_button_glow_padding"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     android:visibility="gone">
 
     <com.google.android.material.button.MaterialButton
@@ -23,14 +17,15 @@ found in the LICENSE file.
         style="@style/ActorTakeOverButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/actor_overlay_button_height"
-        android:layout_gravity="center"
+        android:minHeight="@dimen/floating_pill_height"
+        android:layout_gravity="center_vertical"
         android:elevation="0dp"
         android:stateListAnimator="@null"
+        android:pointerIcon="hand"
         android:paddingStart="@dimen/actor_overlay_button_padding_horizontal"
         android:paddingTop="@dimen/actor_overlay_button_padding_vertical"
         android:paddingEnd="@dimen/actor_overlay_button_padding_horizontal"
         android:paddingBottom="@dimen/actor_overlay_button_padding_vertical"
         android:text="@string/handoff_take_over_task_label" />
 
-</org.chromium.chrome.browser.actor.ui.ActorHandoffButtonView>
+</org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer>

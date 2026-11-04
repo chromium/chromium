@@ -8,10 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binds model properties to the ActorHandoffButtonView. */
+/** Binds model properties to the handoff button's {@link FloatingPillContainer}. */
 @NullMarked
 class ActorHandoffButtonViewBinder {
     /**
@@ -21,7 +22,7 @@ class ActorHandoffButtonViewBinder {
      * @param view The view to bind to.
      * @param key The property key that changed.
      */
-    public static void bind(PropertyModel model, ActorHandoffButtonView view, PropertyKey key) {
+    public static void bind(PropertyModel model, FloatingPillContainer view, PropertyKey key) {
         if (key == ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE) {
             boolean visible = model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE);
             int visibility = visible ? View.VISIBLE : View.GONE;
@@ -29,7 +30,7 @@ class ActorHandoffButtonViewBinder {
                 view.setVisibility(visibility);
             }
         } else if (key == ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER) {
-            View button = view.getButton();
+            View button = view.findViewById(R.id.take_over_task_button);
             if (button != null) {
                 button.setOnClickListener(
                         model.get(ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER));

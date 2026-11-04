@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.floating_pill.FloatingPillContainer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -53,9 +54,7 @@ class ActorOverlayMediator
     private final Runnable mInflateOverlayCallback;
     private final Runnable mBackPressCallback;
     private final Runnable mDismissSnackbarCallback;
-    private final int mButtonContainerHeight;
-    private final int mButtonMarginTop;
-    private final int mGlowPadding;
+    private final Resources mResources;
     private final PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
 
     private @Nullable Tab mCurrentTab;
@@ -89,12 +88,7 @@ class ActorOverlayMediator
             Runnable backPressCallback,
             Runnable dismissSnackbarCallback) {
         mModel = model;
-        Resources res = context.getResources();
-        mButtonContainerHeight =
-                res.getDimensionPixelSize(R.dimen.actor_overlay_button_height)
-                        + 2 * res.getDimensionPixelSize(R.dimen.actor_overlay_button_glow_padding);
-        mButtonMarginTop = res.getDimensionPixelSize(R.dimen.actor_overlay_button_margin_top);
-        mGlowPadding = res.getDimensionPixelSize(R.dimen.actor_overlay_button_glow_padding);
+        mResources = context.getResources();
 
         mModelObserver =
                 (source, key) -> {
@@ -323,12 +317,9 @@ class ActorOverlayMediator
         int topControlsHeight = mModel.get(ActorOverlayProperties.TOP_MARGIN);
         @ControlsPosition
         int controlsPosition = mModel.get(ActorOverlayProperties.CONTROLS_POSITION);
-        int topMargin;
-        if (controlsPosition == ControlsPosition.BOTTOM) {
-            topMargin = topControlsHeight + mButtonMarginTop - mGlowPadding;
-        } else {
-            topMargin = topControlsHeight - mButtonContainerHeight / 2;
-        }
+        int topMargin =
+                FloatingPillContainer.getTopMargin(
+                        mResources, topControlsHeight, controlsPosition == ControlsPosition.BOTTOM);
         mModel.set(ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN, topMargin);
     }
 
