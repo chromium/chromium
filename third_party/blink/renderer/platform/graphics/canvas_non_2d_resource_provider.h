@@ -25,7 +25,6 @@
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -156,15 +155,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
   const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
-  CanvasSnapshotInfo GetInfo() const {
-    return {
-        .alpha_type = GetAlphaType(),
-        .color_space = GetColorSpace(),
-        .hdr_metadata = GetHdrMetadata(),
-        .format = GetSharedImageFormat(),
-        .size = Size(),
-    };
-  }
 
   base::ByteSize EstimatedSizeInBytes() const;
 
