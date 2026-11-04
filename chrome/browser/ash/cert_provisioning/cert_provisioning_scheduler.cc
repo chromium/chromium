@@ -77,18 +77,20 @@ FailedWorkerInfo& FailedWorkerInfo::operator=(const FailedWorkerInfo&) =
 std::unique_ptr<CertProvisioningScheduler>
 CertProvisioningSchedulerImpl::CreateUserCertProvisioningScheduler(
     Profile* profile) {
-  PrefService* pref_service = profile->GetPrefs();
+  CHECK(profile);
   policy::CloudPolicyClient* cloud_policy_client =
       GetCloudPolicyClientForUser(profile);
   platform_keys::PlatformKeysService* platform_keys_service =
       GetPlatformKeysService(CertScope::kUser, profile);
   NetworkStateHandler* network_state_handler = GetNetworkStateHandler();
 
-  if (!profile || !pref_service || !cloud_policy_client ||
-      !network_state_handler) {
+  if (!cloud_policy_client || !network_state_handler) {
     LOG(ERROR) << "Failed to create user certificate provisioning scheduler";
     return nullptr;
   }
+
+  PrefService* pref_service = profile->GetPrefs();
+  CHECK(pref_service);
 
   return std::make_unique<CertProvisioningSchedulerImpl>(
       CertScope::kUser, profile, pref_service,

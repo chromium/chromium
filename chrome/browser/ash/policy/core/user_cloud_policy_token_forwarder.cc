@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/core/user_cloud_policy_token_forwarder.h"
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -45,6 +46,8 @@ UserCloudPolicyTokenForwarder::UserCloudPolicyTokenForwarder(
       retry_backoff_(
           std::make_unique<net::BackoffEntry>(&kFetchTokenRetryBackoffPolicy)),
       clock_(base::DefaultClock::GetInstance()) {
+  CHECK(manager_);
+  CHECK(identity_manager_);
   // Start by waiting for the CloudPolicyService to be initialized, so that
   // we can check if it already has a DMToken or not.
   if (manager_->core()->service()->IsInitializationComplete()) {

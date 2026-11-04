@@ -57,12 +57,14 @@ FullRestoreService* FullRestoreServiceFactory::GetForProfile(Profile* profile) {
 }
 
 FullRestoreServiceFactory::FullRestoreServiceFactory()
-    : ProfileKeyedServiceFactory("FullRestoreService",
-                                 ProfileSelections::Builder()
-                                     .WithGuest(ProfileSelection::kOriginalOnly)
-                                     .WithSystem(ProfileSelection::kNone)
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory(
+          "FullRestoreService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
+              .WithSystem(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
