@@ -58,6 +58,9 @@ public class CustomTabNavigationBarControllerTest {
         mContext = activity;
         CustomTabsConnection.setInstanceForTesting(mConnection);
         when(mCustomTabIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
+        // While fitted the helper tracks the activity's navigation bar color (the theme default
+        // from startup); only the edge-to-edge branch makes it transparent.
+        when(mSystemBarColorHelper.getNavigationBarColor()).thenReturn(Color.WHITE);
     }
 
     @Test
@@ -279,6 +282,41 @@ public class CustomTabNavigationBarControllerTest {
                 "The fitted divider must not survive into edge-to-edge.",
                 Color.TRANSPARENT,
                 colorHelper.getNavigationBarDividerColor());
+        colorHelper.destroy();
+    }
+
+    @Test
+    public void edgeToEdgeToFittedRestoresDefaultWhenIntentHasNoNavigationBarColor() {
+        // No EXTRA_NAVIGATION_BAR_COLOR / manifest theme color.
+        when(mColorProvider.getNavigationBarColor()).thenReturn(null);
+        EdgeToEdgeSystemBarColorHelper colorHelper =
+                new EdgeToEdgeSystemBarColorHelper(
+                        mWindow,
+                        ObservableSuppliers.createNonNull(false),
+                        new OneshotSupplierImpl<SystemBarColorHelper>(),
+                        /* canColorStatusBarColor= */ true);
+        int defaultColor = CustomTabNavigationBarController.defaultNavigationBarColor(mContext);
+        colorHelper.setNavigationBarColor(defaultColor);
+
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                colorHelper,
+                /* edgeToEdgeContentColor= */ Color.BLACK);
+        assertEquals(Color.TRANSPARENT, colorHelper.getNavigationBarColor());
+
+        // Token released: without the fallback the bar would stay transparent with the
+        // edge-to-edge era button colors, because there is no intent color to apply.
+        CustomTabNavigationBarController.update(
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                colorHelper);
+
+        assertEquals(defaultColor, colorHelper.getNavigationBarColor());
         colorHelper.destroy();
     }
 

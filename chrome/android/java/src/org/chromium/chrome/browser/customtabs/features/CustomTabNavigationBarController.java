@@ -8,14 +8,19 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /**
@@ -100,6 +105,15 @@ public class CustomTabNavigationBarController {
             navigationBarDividerColor =
                     context.getColor(R.color.google_bottom_bar_background_color);
         }
+        if (navigationBarColor == null
+                && systemBarColorHelper != null
+                && systemBarColorHelper.getNavigationBarColor() == Color.TRANSPARENT) {
+            // The app has no intent/manifest navigation bar color and the bar is still
+            // transparent from the edge-to-edge branch above. Without a color updateBarColor()
+            // bails out, leaving the bar transparent with edge-to-edge era button colors, so
+            // restore the activity default that startup applied.
+            navigationBarColor = defaultNavigationBarColor(context);
+        }
         // PCCT is deemed incapable of system dark button support due to the way it implements
         // partial height (window coordinate translation). We do the darkening ourselves.
         boolean supportsDarkButtons = !intentDataProvider.isPartialCustomTab();
@@ -115,6 +129,15 @@ public class CustomTabNavigationBarController {
                 supportsDarkButtons,
                 needsDarkButtons,
                 systemBarColorHelper);
+    }
+
+    /** Returns the navigation bar color the activity theme starts out with. */
+    @VisibleForTesting
+    public static @ColorInt int defaultNavigationBarColor(Context context) {
+        @ColorInt
+        int themeColor =
+                AttrUtils.resolveColor(context.getTheme(), android.R.attr.navigationBarColor);
+        return themeColor != 0 ? themeColor : SemanticColorUtils.getDefaultBgColor(context);
     }
 
     /** Sets the navigation bar and divider colors, then the matching button appearance. */
