@@ -167,7 +167,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame/",
       "//chrome/browser/ui/views/glic",
       "//chrome/common:chrome_features",
-      "//chrome/test:test_support_ui",
       "//components/keep_alive_registry",
       "//components/prefs",
       "//content/test:test_support",

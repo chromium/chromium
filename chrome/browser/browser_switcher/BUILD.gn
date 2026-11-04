@@ -138,7 +138,9 @@ if (!is_android) {
       deps += [
         ":browser_switcher",
         "//base/test:test_config",
-        "//chrome/test:test_support_ui",
+        "//chrome/browser/profiles:profile",
+        "//chrome/test/base:in_process_browser_test",
+        "//chrome/test/base:ui_test_utils",
         "//components/policy:generated",
         "//components/policy:policy_code_generate",
         "//components/policy/core/browser",

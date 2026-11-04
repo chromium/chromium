@@ -69,8 +69,10 @@ if (!is_android) {
     deps = [
       ":content_index",
       "//base/test:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
       "//components/offline_items_collection/core",
       "//components/ukm:test_support",
       "//content/public/common",

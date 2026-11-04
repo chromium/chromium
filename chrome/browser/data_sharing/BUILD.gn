@@ -596,7 +596,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/common",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
       "//components/data_sharing/public",
     ]
   }

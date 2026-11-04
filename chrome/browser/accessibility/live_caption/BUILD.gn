@@ -147,8 +147,9 @@ source_set("test_support") {
   sources = [ "live_caption_test_util.cc" ]
   public_deps = [
     "//base",
+    "//base/test:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:in_process_browser_test",
   ]
   deps = [
     "//chrome/browser:browser_process",
