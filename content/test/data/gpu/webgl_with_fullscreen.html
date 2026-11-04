@@ -8,6 +8,7 @@ fullscreen on a page with a WebGL context must not lose the context.
 var gl;
 var contextWasLost = false;
 var enteredFullscreen = false;
+var fullscreenRequestFailed = false;
 
 function contextLostHandler() {
   contextWasLost = true;
@@ -35,12 +36,13 @@ function fullscreenChangeHandler() {
 }
 
 function enterFullscreen() {
+  fullscreenRequestFailed = false;
   var canvas = document.getElementById("canvas1");
   var promise = canvas.requestFullscreen();
   if (promise && promise.catch) {
     promise.catch(function(err) {
       console.error("requestFullscreen failed:", err);
-      window.domAutomationController.send("FAILED");
+      fullscreenRequestFailed = true;
     });
   }
 }

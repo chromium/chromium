@@ -428,14 +428,31 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Entering fullscreen requires focus and user activation, so focus the tab,
     # wait for the document to actually gain focus (window activation after
     # Page.bringToFront is asynchronous on macOS), and synthesize a real click
-    # on the button rather than calling requestFullscreen() from script.
-    self.tab._inspector_backend._websocket.SyncRequest(
-      {'method': 'Page.bringToFront'}, timeout=60
-    )
-    self.tab.action_runner.WaitForJavaScriptCondition(
-      'document.hasFocus()', timeout=10
-    )
-    self.tab.action_runner.ClickElement(selector='#enterFullscreenButton')
+    # on the button rather than calling requestFullscreen() from script. On
+    # macOS, document.hasFocus() can become true before the asynchronous
+    # WindowServer IPC marks the NSWindow as key (is_window_key_), causing
+    # RenderFrameHostImpl::EnterFullscreen to reject requestFullscreen() with
+    # "or if key window lacks focus". Retry bringing the tab to the front and
+    # clicking the button if requestFullscreen() rejects while the window is
+    # still becoming key.
+    for attempt in range(5):
+      self.tab._inspector_backend._websocket.SyncRequest(
+        {'method': 'Page.bringToFront'}, timeout=60
+      )
+      self.tab.action_runner.WaitForJavaScriptCondition(
+        'document.hasFocus()', timeout=10
+      )
+      self.tab.action_runner.ClickElement(selector='#enterFullscreenButton')
+      self.tab.action_runner.WaitForJavaScriptCondition(
+        'window.domAutomationController._finished || '
+        'window.enteredFullscreen || window.fullscreenRequestFailed',
+        timeout=10,
+      )
+      if not self.tab.EvaluateJavaScript('window.fullscreenRequestFailed'):
+        break
+      if attempt == 4:
+        self.fail('requestFullscreen() repeatedly failed to enter fullscreen')
+      self.tab.action_runner.Wait(0.5)
     self._WaitForTabAndCheckCompletion()
 
   def _ContextLost_WebGLContextLostInHiddenTab(self, test_path: str) -> None:
