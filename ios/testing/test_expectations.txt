@@ -330,3 +330,4 @@ crbug.com/573762988 [ Simulator ] PolicyUIMojoDisabledTestCase/testPolicyPageMan
 crbug.com/581806739 [ Simulator ] FileUploadPanelTestCase/testPhotoPickerMultipleSelection [ Pass Failure ]
 crbug.com/581840364 [ Simulator ] FormInputAccessoryEGTest/testFillCreditCardFieldsOnForm_UserEdited [ Pass Failure ]
 crbug.com/447098101 BlockPopupsTestCase/testSettingsPageWithExceptions [ Pass Failure ]
+crbug.com/572662973 [ iPad Device ] GeminiAppSwitchingTestCase/testAppSwitchingAISummarizationMismatchedAccountSnackbar [ Pass Failure ]
