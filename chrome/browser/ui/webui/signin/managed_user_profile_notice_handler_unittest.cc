@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -755,3 +756,26 @@ TEST_F(ManagedUserProfileNoticeHandlerTestBase, OnIdentityManagerShutdown) {
   DeleteHandler();
 }
 
+TEST_F(ManagedUserProfileNoticeHandlerTestBase,
+       HandleInitializedEmptyAccountInfo) {
+  base::test::TestFuture<signin::SigninChoice> choice_future;
+  base::test::TestFuture<void> done_future;
+
+  InitializeHandler(
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*user_already_signed_in=*/false,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          choice_future.GetCallback(), done_future.GetCallback()));
+
+  base::ListValue args;
+  args.Append("callback-id");
+  web_ui()->HandleReceivedMessage("initialized", args);
+
+  EXPECT_EQ(signin::SIGNIN_CHOICE_CANCEL, choice_future.Get());
+  EXPECT_TRUE(done_future.Wait());
+}

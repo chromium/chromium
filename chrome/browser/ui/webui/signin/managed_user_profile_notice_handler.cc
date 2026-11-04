@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -39,6 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -87,6 +90,21 @@ std::string GetManagedDeviceTitle() {
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_DEVICE_MANAGED_BY,
       base::UTF8ToUTF16(*device_manager));
+}
+
+bool RequiresAccountInfo(ManagedUserProfileNoticeUI::ScreenType type) {
+  switch (type) {
+    case ManagedUserProfileNoticeUI::ScreenType::kFirstRun:
+    case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
+      return true;
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kConsumerAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
+    case ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer:
+      return false;
+  }
 }
 
 }  // namespace
@@ -260,6 +278,17 @@ void ManagedUserProfileNoticeHandler::HandleInitialized(
     const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   AllowJavascript();
+
+  if (RequiresAccountInfo(type_)) {
+    AccountInfo account_info =
+        IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+            ->FindExtendedAccountInfoByAccountId(account_id_);
+    if (account_info.IsEmpty()) {
+      HandleCancel(base::ListValue());
+      return;
+    }
+  }
+
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
 
@@ -434,11 +463,13 @@ void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
   }
 
   // If the account has been removed, we should not update the profile info.
-  if (auto account_info =
-          IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
-              ->FindExtendedAccountInfoByAccountId(account_id_);
-      account_info.IsEmpty()) {
-    return;
+  if (RequiresAccountInfo(type_)) {
+    if (auto account_info =
+            IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
+                ->FindExtendedAccountInfoByAccountId(account_id_);
+        account_info.IsEmpty()) {
+      return;
+    }
   }
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
@@ -537,7 +568,7 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
     case ManagedUserProfileNoticeUI::ScreenType::kFirstRun:
       // TODO(crbug.com/483637730): Specify the exact UI for the First Run case
     case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
-    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation: {
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
@@ -547,6 +578,7 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
       subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
                                                  entry, domain_name_, email_);
 
+      CHECK(RequiresAccountInfo(type_));
       AccountInfo account_info =
           IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
               ->FindExtendedAccountInfoByAccountId(account_id_);
@@ -577,6 +609,7 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                     check_link_Data_checkbox_by_default_from_legacy_policy));
 #endif
       break;
+    }
   }
 
   dict.Set("title", title);
@@ -602,9 +635,7 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
     AccountInfo account_info =
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
             ->FindExtendedAccountInfoByAccountId(account_id_);
-    // TODO(crbug.com/575097335): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK(!account_info.IsEmpty());
+    CHECK(!account_info.IsEmpty());
     icon = account_info.GetAvatarImage().value_or(
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             profiles::GetPlaceholderAvatarIconResourceID()));
