@@ -48,7 +48,7 @@ constexpr base::TimeDelta kCecaConnectionTimeout = base::Seconds(50);
 constexpr base::TimeDelta kCecaConnectionTimeout = base::Seconds(10);
 #endif
 
-std::string DebugStringForReq(HttpRequest& request) {
+std::string DebugStringForReq(const HttpRequest& request) {
   std::vector<std::string> request_strs;
 
   request_strs.push_back("Request:");
@@ -72,7 +72,45 @@ std::string DebugStringForReq(HttpRequest& request) {
   return base::JoinString(request_strs, "\n  ");
 }
 
+// Returns the first failure of `matchers` on `request`, or success if all
+// matchers succeed.
+testing::AssertionResult MatchAll(const request::MatcherGroup& matchers,
+                                  const HttpRequest& request) {
+  for (const request::Matcher& matcher : matchers) {
+    if (testing::AssertionResult result = matcher.Run(request); !result) {
+      return result;
+    }
+  }
+  return testing::AssertionSuccess();
+}
+
 }  // namespace
+
+ScopedServer::Expectation::Expectation(request::MatcherGroup matchers,
+                                       std::string response_body,
+                                       net::HttpStatusCode response_status_code)
+    : Expectation(
+          std::move(matchers),
+          base::BindRepeating([](const std::string& response_body,
+                                 bool /*is_v4*/) { return response_body; },
+                              std::move(response_body)),
+          response_status_code) {}
+
+ScopedServer::Expectation::Expectation(
+    request::MatcherGroup matchers,
+    base::RepeatingCallback<std::string(bool)> response_body_provider,
+    net::HttpStatusCode response_status_code)
+    : matchers(std::move(matchers)),
+      response_body_provider(std::move(response_body_provider)),
+      response_status_code(response_status_code) {}
+
+ScopedServer::Expectation::Expectation(const Expectation&) = default;
+ScopedServer::Expectation& ScopedServer::Expectation::operator=(
+    const Expectation&) = default;
+ScopedServer::Expectation::Expectation(Expectation&&) = default;
+ScopedServer::Expectation& ScopedServer::Expectation::operator=(Expectation&&) =
+    default;
+ScopedServer::Expectation::~Expectation() = default;
 
 ScopedServer::ScopedServer() {
   test_server_.RegisterRequestHandler(base::BindRepeating(
@@ -95,10 +133,10 @@ ScopedServer::~ScopedServer() {
   // after the members it uses are destroyed.
   test_server_handle_ = net::test_server::EmbeddedTestServerHandle();
   base::AutoLock lock(lock_);
-  for (const auto& request_matcher_group : request_matcher_groups_) {
+  for (const Expectation& expectation : expectations_) {
     // Probes each matcher with an empty request to collect failure messages.
     std::vector<std::string> unmet_reasons;
-    for (const request::Matcher& matcher : request_matcher_group) {
+    for (const request::Matcher& matcher : expectation.matchers) {
       if (testing::AssertionResult result = matcher.Run(HttpRequest());
           !result) {
         unmet_reasons.push_back(result.message());
@@ -111,23 +149,20 @@ ScopedServer::~ScopedServer() {
 
 void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,
                               const std::string& response_body,
-                              net::HttpStatusCode http_status_code) {
+                              net::HttpStatusCode response_status_code) {
   base::AutoLock lock(lock_);
-  request_matcher_groups_.push_back(std::move(request_matcher_group));
-  responses_.emplace_back(
-      http_status_code,
-      base::BindRepeating([](const std::string& response_body,
-                             bool v4) { return response_body; },
-                          response_body));
+  expectations_.emplace_back(std::move(request_matcher_group), response_body,
+                             response_status_code);
 }
 
 void ScopedServer::ExpectOnce(
     request::MatcherGroup request_matcher_group,
     base::RepeatingCallback<std::string(bool)> response_body_provider,
-    net::HttpStatusCode http_status_code) {
+    net::HttpStatusCode response_status_code) {
   base::AutoLock lock(lock_);
-  request_matcher_groups_.push_back(std::move(request_matcher_group));
-  responses_.emplace_back(http_status_code, response_body_provider);
+  expectations_.emplace_back(std::move(request_matcher_group),
+                             std::move(response_body_provider),
+                             response_status_code);
 }
 
 void ScopedServer::set_download_delay(base::TimeDelta delay) {
@@ -147,20 +182,20 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   VLOG(3) << DebugStringForReq(request);
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   base::AutoLock lock(lock_);
-  if (request_matcher_groups_.empty()) {
+  if (expectations_.empty()) {
     VLOG(0) << "Unexpected request.";
     ADD_FAILURE() << "Unexpected " << DebugStringForReq(request);
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
     return response;
   }
-  for (const request::Matcher& matcher : request_matcher_groups_.front()) {
-    if (testing::AssertionResult result = matcher.Run(request); !result) {
-      VLOG(0) << "Request did not match.";
-      ADD_FAILURE() << "Unmatched " << DebugStringForReq(request) << "\n  "
-                    << result.message();
-      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-      return response;
-    }
+  const Expectation& expectation = expectations_.front();
+  if (testing::AssertionResult result = MatchAll(expectation.matchers, request);
+      !result) {
+    VLOG(0) << "Request did not match.";
+    ADD_FAILURE() << "Unmatched " << DebugStringForReq(request) << "\n  "
+                  << result.message();
+    response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+    return response;
   }
 
   if (request.relative_url.starts_with(download_path()) &&
@@ -169,11 +204,10 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response.reset(new net::test_server::DelayedHttpResponse(download_delay_));
   }
 
-  const auto& [response_code, response_body_provider] = responses_.front();
   const std::string response_body =
-      response_body_provider.Run(re2::RE2::PartialMatch(
+      expectation.response_body_provider.Run(re2::RE2::PartialMatch(
           request.decoded_content, "\"protocol\": *\"4\\.0\""));
-  response->set_code(response_code);
+  response->set_code(expectation.response_status_code);
   if (request.relative_url.starts_with(device_management_path())) {
     response->set_content_type("application/x-protobuf");
   }
@@ -205,8 +239,7 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
     response->set_content(response_body);
   }
 
-  request_matcher_groups_.pop_front();
-  responses_.pop_front();
+  expectations_.pop_front();
   return response;
 }
 

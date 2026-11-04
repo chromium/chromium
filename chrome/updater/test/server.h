@@ -8,9 +8,8 @@
 #include <list>
 #include <memory>
 #include <string>
-#include <utility>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -39,6 +38,28 @@ class IntegrationTestCommands;
 // thread and must not call `ExpectOnce` or the setters.
 class ScopedServer {
  public:
+  // An expected request and the response to it. A request matches if every
+  // matcher in `matchers` succeeds. `response_body_provider` receives `true`
+  // for protocol 4.0 requests.
+  struct Expectation {
+    Expectation(request::MatcherGroup matchers,
+                std::string response_body,
+                net::HttpStatusCode response_status_code = net::HTTP_OK);
+    Expectation(
+        request::MatcherGroup matchers,
+        base::RepeatingCallback<std::string(bool)> response_body_provider,
+        net::HttpStatusCode response_status_code = net::HTTP_OK);
+    Expectation(const Expectation&);
+    Expectation& operator=(const Expectation&);
+    Expectation(Expectation&&);
+    Expectation& operator=(Expectation&&);
+    ~Expectation();
+
+    request::MatcherGroup matchers;
+    base::RepeatingCallback<std::string(bool)> response_body_provider;
+    net::HttpStatusCode response_status_code;
+  };
+
   // Creates and starts a scoped server without setting up an updater to use
   // it.
   ScopedServer();
@@ -131,10 +152,7 @@ class ScopedServer {
   net::test_server::EmbeddedTestServer test_server_;
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::Lock lock_;
-  std::list<request::MatcherGroup> request_matcher_groups_ GUARDED_BY(lock_);
-  std::list<std::pair<net::HttpStatusCode,
-                      base::RepeatingCallback<std::string(bool)>>>
-      responses_ GUARDED_BY(lock_);
+  std::list<Expectation> expectations_ GUARDED_BY(lock_);
   base::TimeDelta download_delay_ GUARDED_BY(lock_);
   bool gzip_response_ GUARDED_BY(lock_) = false;
 };
