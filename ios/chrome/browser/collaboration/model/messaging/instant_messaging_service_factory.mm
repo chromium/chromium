@@ -24,8 +24,8 @@ InstantMessagingServiceFactory::InstantMessagingServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 InstantMessagingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
@@ -35,7 +35,7 @@ InstantMessagingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<InstantMessagingService>(profile);
+  return std::make_unique<InstantMessagingService>(&profile);
 }
 
 }  // namespace collaboration::messaging

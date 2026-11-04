@@ -31,9 +31,9 @@ CollaborationServiceFactory::CollaborationServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
-      profile->IsOffTheRecord()) {
+      profile.IsOffTheRecord()) {
     return std::make_unique<EmptyCollaborationService>();
   }
 
@@ -42,7 +42,7 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  auto* profile_prefs = profile->GetPrefs();
+  auto* profile_prefs = profile.GetPrefs();
   auto* local_prefs = GetApplicationContext()->GetLocalState();
   return std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,

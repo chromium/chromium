@@ -35,15 +35,15 @@ void BringAndroidTabsToIOSServiceFactory::RegisterProfilePrefs(
 
 std::unique_ptr<KeyedService>
 BringAndroidTabsToIOSServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  DCHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  DCHECK(!profile.IsOffTheRecord());
   // SegmentationPlatform is required for BringYourOwnTabsIOS to work.
   if (!base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
 
-  PrefService* profile_prefs = profile->GetPrefs();
+  PrefService* profile_prefs = profile.GetPrefs();
   return std::make_unique<BringAndroidTabsToIOSService>(
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetDispatcherForProfile(profile),

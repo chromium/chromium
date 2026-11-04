@@ -49,12 +49,12 @@ ShoppingServiceFactory::ShoppingServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  if (auto service = tests_hook::CreateShoppingService(profile)) {
+    ProfileIOS& profile) const {
+  if (auto service = tests_hook::CreateShoppingService(&profile)) {
     return service;
   }
 
-  PrefService* pref_service = profile->GetPrefs();
+  PrefService* pref_service = profile.GetPrefs();
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       std::string(GetApplicationContext()
@@ -65,7 +65,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       OptimizationGuideServiceFactory::GetForProfile(profile), pref_service,
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetSharedURLLoaderFactory(),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForProfile(profile),

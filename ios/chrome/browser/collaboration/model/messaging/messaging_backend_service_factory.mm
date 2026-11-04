@@ -42,8 +42,8 @@ MessagingBackendServiceFactory::MessagingBackendServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 MessagingBackendServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  CHECK(!profile->IsOffTheRecord());
+    ProfileIOS& profile) const {
+  CHECK(!profile.IsOffTheRecord());
 
   collaboration::CollaborationService* collaboration_service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
@@ -67,7 +67,7 @@ MessagingBackendServiceFactory::BuildServiceInstanceFor(
   if (base::FeatureList::IsEnabled(
           collaboration::features::kCollaborationMessagingDatabase)) {
     messaging_backend_database =
-        std::make_unique<MessagingBackendDatabaseImpl>(profile->GetStatePath());
+        std::make_unique<MessagingBackendDatabaseImpl>(profile.GetStatePath());
   } else {
     messaging_backend_database =
         std::make_unique<EmptyMessagingBackendDatabase>();

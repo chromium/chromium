@@ -62,15 +62,15 @@ ContextualSearchServiceFactory::ContextualSearchServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 ContextualSearchServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  if (auto service = tests_hook::CreateContextualSearchService(profile)) {
+    ProfileIOS& profile) const {
+  if (auto service = tests_hook::CreateContextualSearchService(&profile)) {
     return service;
   }
   auto* variations_client_service =
       VariationsClientServiceFactory::GetForProfile(profile);
   return std::make_unique<IOSContextualSearchService>(
       IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(),
+      profile.GetSharedURLLoaderFactory(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       static_cast<variations::VariationsClient*>(variations_client_service),
       ::GetChannel(),
@@ -79,5 +79,5 @@ ContextualSearchServiceFactory::BuildServiceInstanceFor(
                       ->GetTag()
                       .tag_string()),
       base::BindRepeating(&FetchIdentityDelegationHeadersForProfile,
-                          profile->AsWeakPtr()));
+                          profile.AsWeakPtr()));
 }

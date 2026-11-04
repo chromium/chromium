@@ -21,7 +21,7 @@ LocalOrSyncableBookmarkSyncServiceFactory::
 
 std::unique_ptr<KeyedService>
 LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return std::make_unique<sync_bookmarks::BookmarkSyncService>(
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 }

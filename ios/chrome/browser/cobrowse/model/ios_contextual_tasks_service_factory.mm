@@ -54,7 +54,7 @@ IOSContextualTasksServiceFactory::IOSContextualTasksServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   favicon::FaviconService* favicon_service =
       ios::FaviconServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -63,14 +63,14 @@ IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  bool supports_ephemeral_only = profile->IsOffTheRecord();
+  bool supports_ephemeral_only = profile.IsOffTheRecord();
 
   return std::make_unique<contextual_tasks::ContextualTasksServiceImpl>(
       ::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       contextual_tasks::CreateCompositeContextDecorator(favicon_service,
                                                         history_service, {}),
-      identity_manager, profile->GetPrefs(), supports_ephemeral_only,
+      identity_manager, profile.GetPrefs(), supports_ephemeral_only,
       base::BindRepeating(&GetNumberOfActiveTasks),
       base::BindRepeating(&IsGeminiThreadsEnabled));
 }

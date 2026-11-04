@@ -31,7 +31,7 @@ ConsentAuditorFactory::ConsentAuditorFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();

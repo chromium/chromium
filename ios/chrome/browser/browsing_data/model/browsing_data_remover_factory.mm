@@ -16,8 +16,8 @@ BrowsingDataRemoverFactory::BrowsingDataRemoverFactory(PassKey key)
           ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
-BrowsingDataRemoverFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+BrowsingDataRemoverFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   // TODO(crbug.com/40940855): the factory should declare the services
   // used by BrowsingDataRemoverImpl and inject them in the constructor.
-  return std::make_unique<BrowsingDataRemoverImpl>(profile);
+  return std::make_unique<BrowsingDataRemoverImpl>(&profile);
 }
