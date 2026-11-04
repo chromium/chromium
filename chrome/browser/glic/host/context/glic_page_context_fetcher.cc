@@ -41,6 +41,10 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
+
 namespace glic {
 
 class GlicPageContextFetcher {
@@ -338,13 +342,27 @@ void FetchPageContext(
   }
 #endif
 
+  url::Origin main_document_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, a PDF tab's page is an empty chrome-native://pdf placeholder
+  // with no website, so its origin is empty (""). Use the origin of the URL
+  // shown in the omnibox (`GetLastCommittedURL()`) instead: for web PDFs this
+  // is the site, same as the PDF document data and desktop. Local PDFs have no
+  // website and stay empty.
+  if (auto* tab_android = TabAndroid::FromWebContents(web_contents);
+      tab_android && tab_android->IsPdf()) {
+    main_document_origin =
+        url::Origin::Create(web_contents->GetLastCommittedURL());
+  }
+#endif
+
   page_content_annotations::FetchPageContext(
       *web_contents, options, std::move(progress_listener),
-      base::BindOnce(
-          &HandleFetchPageResult, tab->GetWeakPtr(), CreateTabData(tab),
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-          std::move(media_root_node), std::move(callback),
-          std::move(journal_entry), is_screenshot_annotated));
+      base::BindOnce(&HandleFetchPageResult, tab->GetWeakPtr(),
+                     CreateTabData(tab), std::move(main_document_origin),
+                     std::move(media_root_node), std::move(callback),
+                     std::move(journal_entry), is_screenshot_annotated));
 }
 
 }  // namespace glic

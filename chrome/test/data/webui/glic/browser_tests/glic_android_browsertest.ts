@@ -27,12 +27,15 @@ class GlicAndroidBrowserTests extends ApiTestFixtureBase {
   }
 
   async testPageContextFetchingWithWebPdf() {
-    await this.checkPdfPageContext();
+    const result = await this.checkPdfPageContext();
+    assertEquals('https://example.com:443', result.pdfDocumentData?.origin);
   }
 
-  // Fetches the context of the focused PDF tab and verifies it.
+  // Fetches the context of the focused PDF tab and verifies it, then returns
+  // the fetched context.
   private async checkPdfPageContext() {
     const result = await this.host.getContextFromFocusedTab?.({
+      innerText: true,
       pdfData: true,
       viewportScreenshot: false,
     });
@@ -53,6 +56,16 @@ class GlicAndroidBrowserTests extends ApiTestFixtureBase {
     assertEquals(
         'test.pdf', result.tabData.title,
         `Tab data has unexpected title ${result.tabData.title}`);
+
+    const details = `url=${result.tabData.url}, mainDocument.origin=${
+        result.webPageData?.mainDocument.origin}, pdf origin=${
+        result.pdfDocumentData.origin}`;
+    // The main document must have the same origin as the PDF, like on desktop.
+    assertDefined(result.webPageData);
+    assertEquals(
+        result.pdfDocumentData.origin, result.webPageData.mainDocument.origin,
+        details);
+    return result;
   }
 
   async testDeviceRotationMojoResiliency() {
