@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.subscription_eligibility;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,5 +40,6 @@ public class SubscriptionEligibilityServiceFactory {
     /** Sets a mock service for testing purposes. */
     public static void setForTesting(@Nullable SubscriptionEligibilityService service) {
         sServiceForTesting = service;
+        ResettersForTesting.register(() -> sServiceForTesting = null);
     }
 }

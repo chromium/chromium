@@ -62,7 +62,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -277,11 +276,6 @@ public class ManageSyncSettingsTest {
         when(mSubscriptionEligibilityService.getAiSubscriptionTier())
                 .thenAnswer(invocation -> mAiSubscriptionTier);
         SubscriptionEligibilityServiceFactory.setForTesting(mSubscriptionEligibilityService);
-    }
-
-    @After
-    public void tearDown() {
-        SubscriptionEligibilityServiceFactory.setForTesting(null);
     }
 
     @Test

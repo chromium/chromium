@@ -230,7 +230,6 @@ public class MainSettingsFragmentTest {
         if (mSyncTestRule.getSigninTestRule().getPrimaryAccount() != null) {
             mSyncTestRule.getSigninTestRule().forceSignOut();
         }
-        SubscriptionEligibilityServiceFactory.setForTesting(null);
     }
 
     @Test
