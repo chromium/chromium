@@ -296,7 +296,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                             .setIcon(
                                     UiUtils.getTintedDrawable(
                                             this,
-                                            R.drawable.ic_delete_fill_24dp,
+                                            R.drawable.ic_delete_24dp,
                                             R.color.default_icon_color_tint_list))
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
             return super.onCreateOptionsMenu(menu);
@@ -460,14 +460,14 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
-        if (mIsDesktopDialog) {
-            View container = mFolderSelectRow.findViewById(R.id.container);
-            if (container != null
-                    && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
-                marginParams.setMarginStart(0);
-                marginParams.setMarginEnd(0);
-                container.setLayoutParams(marginParams);
-            }
+        // Remove the RecyclerView horizontal margin so the row container aligns with the text
+        // input boxes.
+        View container = mFolderSelectRow.findViewById(R.id.container);
+        if (container != null
+                && container.getLayoutParams() instanceof MarginLayoutParams marginParams) {
+            marginParams.setMarginStart(0);
+            marginParams.setMarginEnd(0);
+            container.setLayoutParams(marginParams);
         }
         PropertyModelChangeProcessor.create(
                 mFolderSelectRowModel, mFolderSelectRow, ImprovedBookmarkRowViewBinder::bind);

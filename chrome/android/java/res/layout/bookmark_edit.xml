@@ -26,6 +26,7 @@
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/title_text"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
@@ -42,6 +43,7 @@
 
             <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
                 android:id="@+id/url_text"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
@@ -67,14 +69,9 @@
                 android:text="@string/bookmark_folder"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
 
-            <!--
-                This row is laid out for a recycler view, so when it's embedded in the edit
-                flow the margins need to be adjusted to be left aligned with the title.
-            -->
             <FrameLayout
                 android:id="@+id/folder_row_container"
                 android:layout_marginTop="6dp"
-                android:layout_marginStart="@dimen/improved_bookmark_row_horizontal_negative_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

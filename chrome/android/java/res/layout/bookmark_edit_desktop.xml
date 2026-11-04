@@ -104,11 +104,6 @@
                 android:textAppearance=
                     "@style/TextAppearance.TextSmall.Secondary" />
 
-            <!--
-                This row is laid out for a recycler view, so when it's
-                embedded in the edit flow the margins need to be adjusted
-                to be left aligned with the title.
-            -->
             <FrameLayout
                 android:id="@+id/folder_row_container"
                 android:layout_marginTop="6dp"
