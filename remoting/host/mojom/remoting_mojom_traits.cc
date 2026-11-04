@@ -102,6 +102,7 @@ bool mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
     Read(remoting::mojom::DesktopEnvironmentOptionsDataView data_view,
          ::remoting::DesktopEnvironmentOptions* out_options) {
   out_options->set_enable_curtaining(data_view.enable_curtaining());
+  out_options->set_enable_privacy_overlay(data_view.enable_privacy_overlay());
   out_options->set_enable_user_interface(data_view.enable_user_interface());
   out_options->set_enable_notifications(data_view.enable_notifications());
   out_options->set_terminate_upon_input(data_view.terminate_upon_input());
@@ -665,6 +666,7 @@ bool mojo::StructTraits<remoting::mojom::SessionOptionsDataView,
   out_options->vp9_encoder_speed = data_view.vp9_encoder_speed();
   out_options->av1_active_map = data_view.av1_active_map();
   out_options->av1_encoder_speed = data_view.av1_encoder_speed();
+  out_options->enable_privacy_overlay = data_view.enable_privacy_overlay();
   return true;
 }
 

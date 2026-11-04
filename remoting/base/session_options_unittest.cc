@@ -19,6 +19,7 @@ TEST(SessionOptionsTest, ParseAllSupportedFields) {
   dict.Set(kSessionOptionCaptureVideoOnDedicatedThread, "0");
   dict.Set(kSessionOptionDisableUdp, "");
   dict.Set(kSessionOptionAv1ActiveMap, "FALSE");
+  dict.Set(kSessionOptionEnablePrivacyOverlay, "true");
   dict.Set(kSessionOptionVp9EncoderSpeed, "4");
   dict.Set(kSessionOptionAv1EncoderSpeed, "-200");
 #if BUILDFLAG(IS_MAC)
@@ -33,6 +34,7 @@ TEST(SessionOptionsTest, ParseAllSupportedFields) {
   EXPECT_EQ(options.capture_video_on_dedicated_thread, false);
   EXPECT_EQ(options.disable_udp, true);
   EXPECT_EQ(options.av1_active_map, false);
+  EXPECT_EQ(options.enable_privacy_overlay, true);
   EXPECT_EQ(options.vp9_encoder_speed, 4);
   EXPECT_EQ(options.av1_encoder_speed, -200);
 #if BUILDFLAG(IS_MAC)

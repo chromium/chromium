@@ -338,6 +338,9 @@ struct DesktopEnvironmentOptions {
   // True if the curtain mode should be enabled.
   bool enable_curtaining;
 
+  // True if the local privacy overlay should be enabled.
+  bool enable_privacy_overlay;
+
   // True if a user-interactive windows should be displayed on the desktop.
   bool enable_user_interface;
 

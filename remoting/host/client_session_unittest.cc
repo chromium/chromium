@@ -287,13 +287,16 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
   attachment.host_config->settings[kSessionOptionVp9EncoderSpeed] = "3";
   attachment.host_config->settings[kSessionOptionAv1ActiveMap] = "1";
   attachment.host_config->settings[kSessionOptionAv1EncoderSpeed] = "4";
+  attachment.host_config->settings[kSessionOptionEnablePrivacyOverlay] = "true";
   session->SetAttachment(0, attachment);
 
   CreateClientSession(std::move(session));
 
+  DesktopEnvironmentOptions desktop_options;
   SessionOptions options;
   EXPECT_CALL(*mock_peer_session_, Start(_, _, _, _, _))
-      .WillOnce(testing::SaveArg<4>(&options));
+      .WillOnce(testing::DoAll(testing::SaveArg<2>(&desktop_options),
+                               testing::SaveArg<4>(&options)));
 
   ConnectClientSession();
   EXPECT_EQ(options.detect_updated_region, true);
@@ -302,6 +305,8 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptionsAllFields) {
   EXPECT_EQ(options.vp9_encoder_speed, 3);
   EXPECT_EQ(options.av1_active_map, true);
   EXPECT_EQ(options.av1_encoder_speed, 4);
+  EXPECT_EQ(options.enable_privacy_overlay, true);
+  EXPECT_TRUE(desktop_options.enable_privacy_overlay());
 }
 
 TEST_F(ClientSessionTest, ForwardHostSessionOptionsIgnoresUnsupportedKey) {

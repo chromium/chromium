@@ -51,6 +51,9 @@ class DesktopEnvironmentOptions final {
   bool enable_curtaining() const;
   void set_enable_curtaining(bool enabled);
 
+  bool enable_privacy_overlay() const;
+  void set_enable_privacy_overlay(bool enabled);
+
   bool enable_user_interface() const;
   void set_enable_user_interface(bool enabled);
 
@@ -91,6 +94,10 @@ class DesktopEnvironmentOptions final {
   // True if the curtain mode should be enabled by the DesktopEnvironment
   // instances. Note, not all DesktopEnvironments support curtain mode.
   bool enable_curtaining_ = false;
+
+  // True if the local privacy overlay should be enabled by the
+  // DesktopEnvironment instances on supported platforms.
+  bool enable_privacy_overlay_ = false;
 
   // True if user-interactive windows should be displayed on the desktop.
   bool enable_user_interface_ = true;

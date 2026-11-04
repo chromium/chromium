@@ -69,6 +69,8 @@ static constexpr auto kBoolFieldsMap =
 #endif  // BUILDFLAG(IS_WIN)
         {kSessionOptionDisableUdp, &SessionOptions::disable_udp},
         {kSessionOptionAv1ActiveMap, &SessionOptions::av1_active_map},
+        {kSessionOptionEnablePrivacyOverlay,
+         &SessionOptions::enable_privacy_overlay},
     });
 
 static constexpr auto kIntFieldsMap =

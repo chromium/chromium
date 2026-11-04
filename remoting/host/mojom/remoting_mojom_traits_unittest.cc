@@ -101,6 +101,7 @@ INSTANTIATE_TEST_SUITE_P(RemotingMojomTraitsTest,
 
 struct DesktopEnvironmentOptionsParams {
   bool enable_curtaining;
+  bool enable_privacy_overlay;
   bool enable_user_interface;
   bool enable_notifications;
   bool terminate_upon_input;
@@ -115,6 +116,7 @@ TEST_P(DesktopEnvironmentOptionsTest, RoundTrip) {
   const auto& params = GetParam();
   DesktopEnvironmentOptions input = DesktopEnvironmentOptions::CreateDefault();
   input.set_enable_curtaining(params.enable_curtaining);
+  input.set_enable_privacy_overlay(params.enable_privacy_overlay);
   input.set_enable_user_interface(params.enable_user_interface);
   input.set_enable_notifications(params.enable_notifications);
   input.set_terminate_upon_input(params.terminate_upon_input);
@@ -127,6 +129,7 @@ TEST_P(DesktopEnvironmentOptionsTest, RoundTrip) {
           input, output));
 
   EXPECT_EQ(input.enable_curtaining(), output.enable_curtaining());
+  EXPECT_EQ(input.enable_privacy_overlay(), output.enable_privacy_overlay());
   EXPECT_EQ(input.enable_user_interface(), output.enable_user_interface());
   EXPECT_EQ(input.enable_notifications(), output.enable_notifications());
   EXPECT_EQ(input.terminate_upon_input(), output.terminate_upon_input());
@@ -138,9 +141,9 @@ INSTANTIATE_TEST_SUITE_P(
     RemotingMojomTraitsTest,
     DesktopEnvironmentOptionsTest,
     testing::Values(DesktopEnvironmentOptionsParams{false, false, false, false,
-                                                    false, false},
+                                                    false, false, false},
                     DesktopEnvironmentOptionsParams{true, true, true, true,
-                                                    true, true}));
+                                                    true, true, true}));
 
 class DesktopCaptureResultTest
     : public testing::TestWithParam<webrtc::DesktopCapturer::Result> {};
@@ -914,6 +917,7 @@ TEST(RemotingMojomTraitsTest, SessionOptionsRoundTrip) {
   input.vp9_encoder_speed = 8;
   input.av1_active_map = false;
   input.av1_encoder_speed = 6;
+  input.enable_privacy_overlay = true;
 
   SessionOptions output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionOptions>(

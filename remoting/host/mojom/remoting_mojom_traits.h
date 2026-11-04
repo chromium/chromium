@@ -104,6 +104,11 @@ class StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
     return options.enable_curtaining();
   }
 
+  static bool enable_privacy_overlay(
+      const ::remoting::DesktopEnvironmentOptions& options) {
+    return options.enable_privacy_overlay();
+  }
+
   static bool enable_user_interface(
       const ::remoting::DesktopEnvironmentOptions& options) {
     return options.enable_user_interface();
@@ -1040,6 +1045,11 @@ class StructTraits<remoting::mojom::SessionOptionsDataView,
   static std::optional<int32_t> av1_encoder_speed(
       const ::remoting::SessionOptions& options) {
     return options.av1_encoder_speed;
+  }
+
+  static std::optional<bool> enable_privacy_overlay(
+      const ::remoting::SessionOptions& options) {
+    return options.enable_privacy_overlay;
   }
 
   static bool Read(remoting::mojom::SessionOptionsDataView data_view,

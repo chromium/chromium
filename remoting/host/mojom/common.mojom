@@ -213,6 +213,10 @@ struct SessionOptions {
   // A null value means the option is unset and uses the default value
   // (codec default speed).
   int32? av1_encoder_speed;
+
+  // Whether to enable the local privacy overlay during a remote session.
+  // A null value means the option is unset and uses the default value (false).
+  bool? enable_privacy_overlay;
 };
 // LINT.ThenChange(//remoting/base/session_options.h:SessionOptions)
 

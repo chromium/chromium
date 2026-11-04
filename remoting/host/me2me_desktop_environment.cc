@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "remoting/host/action_executor.h"
@@ -226,6 +227,10 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
         client_session_control);
 
     // Create the disconnect window.
+    if (desktop_environment_options().enable_privacy_overlay()) {
+      // TODO(crbug.com/451238243): Hook up HostWindow::CreatePrivacyOverlay().
+      NOTIMPLEMENTED();
+    }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
         interaction_strategy().CreateLocalInputMonitor());

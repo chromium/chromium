@@ -64,6 +64,14 @@ void DesktopEnvironmentOptions::set_enable_curtaining(bool enabled) {
   enable_curtaining_ = enabled;
 }
 
+bool DesktopEnvironmentOptions::enable_privacy_overlay() const {
+  return enable_privacy_overlay_;
+}
+
+void DesktopEnvironmentOptions::set_enable_privacy_overlay(bool enabled) {
+  enable_privacy_overlay_ = enabled;
+}
+
 bool DesktopEnvironmentOptions::enable_user_interface() const {
   return enable_user_interface_;
 }
@@ -148,6 +156,9 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   if (options.capture_video_on_dedicated_thread.has_value()) {
     set_capture_video_on_dedicated_thread(
         *options.capture_video_on_dedicated_thread);
+  }
+  if (options.enable_privacy_overlay.has_value()) {
+    set_enable_privacy_overlay(*options.enable_privacy_overlay);
   }
 
 #if BUILDFLAG(IS_MAC)

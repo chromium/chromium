@@ -24,6 +24,8 @@ inline constexpr char kSessionOptionDisableUdp[] = "Disable-UDP";
 inline constexpr char kSessionOptionVp9EncoderSpeed[] = "Vp9-Encoder-Speed";
 inline constexpr char kSessionOptionAv1ActiveMap[] = "Av1-Active-Map";
 inline constexpr char kSessionOptionAv1EncoderSpeed[] = "Av1-Encoder-Speed";
+inline constexpr char kSessionOptionEnablePrivacyOverlay[] =
+    "Enable-Privacy-Overlay-Alpha";
 
 }  // namespace remoting
 
