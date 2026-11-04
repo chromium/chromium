@@ -30,10 +30,14 @@
 
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace blink {
 
@@ -45,23 +49,20 @@ DateTimeChooser::~DateTimeChooser() = default;
 
 // static
 bool DateTimeChooser::ShouldSubfieldsBeFocusable(LocalFrame* frame) {
-  if (!frame || !frame->GetSettings()) {
-    return true;
+  if (frame && frame->GetSettings() &&
+      frame->GetSettings()
+          ->DateTimeSubfieldsFocusableForTesting()
+          .has_value()) {
+    return *frame->GetSettings()->DateTimeSubfieldsFocusableForTesting();
   }
-
-  const bool has_fine_pointer =
-      frame->GetSettings()->GetAvailablePointerTypes() &
-      static_cast<int>(mojom::blink::PointerType::kPointerFineType);
-  const bool has_coarse_pointer =
-      frame->GetSettings()->GetAvailablePointerTypes() &
-      static_cast<int>(mojom::blink::PointerType::kPointerCoarseType);
-
-  // We generally want to target mobile, which has a coarse pointer and no fine
-  // pointer. If a fine pointer is present, then the user should be able to
-  // click the picker icon to open the picker. If the user is using a stylus on
-  // a tablet, then they should be able to click the picker icon without the
-  // need for the entire control being a target to open the picker.
-  return has_fine_pointer || !has_coarse_pointer;
+#if BUILDFLAG(IS_ANDROID)
+  // Ideally we would look at something like the pointer type, but that didn't
+  // work out because some mobile devices were reporting unexpected pointer
+  // types. See http://crbug.com/567232773
+  return base::android::device_info::is_desktop();
+#else
+  return true;
+#endif
 }
 
 }  // namespace blink

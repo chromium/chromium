@@ -28,6 +28,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SETTINGS_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/settings_base.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
@@ -57,8 +59,22 @@ class CORE_EXPORT Settings : public SettingsBase {
 
   void SetPreferCompositingToLCDTextForTesting(bool enabled);
 
+  void SetDateTimeSubfieldsFocusableForTesting(std::optional<bool> focusable) {
+    date_time_subfields_focusable_for_testing_ = focusable;
+  }
+  std::optional<bool> DateTimeSubfieldsFocusableForTesting() const {
+    return date_time_subfields_focusable_for_testing_;
+  }
+
  private:
   GenericFontFamilySettings generic_font_family_settings_;
+  // Overrides DateTimeChooser::ShouldSubfieldsBeFocusable() in tests:
+  // - std::nullopt: Use the default platform behavior (focusable on desktop
+  //   platforms and desktop Android, not focusable on non-desktop Android).
+  // - true: Force date/time subfields and picker indicators to be focusable.
+  // - false: Force date/time subfields and picker indicators to not be
+  //   focusable (so the host input element is focused directly instead).
+  std::optional<bool> date_time_subfields_focusable_for_testing_;
 };
 
 }  // namespace blink
