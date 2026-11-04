@@ -34,7 +34,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -182,9 +181,10 @@ SystemNudgeView::SystemNudgeView(
     const AnchoredNudgeData& nudge_data,
     base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
         hover_or_focus_changed_callback)
-    : shadow_(SystemDecoration::CreateForView(
+    : decoration_(SystemDecoration::CreateForView(
           this,
-          SystemDecoration::ShadowType::kElevation4)),
+          SystemDecoration::ShadowType::kElevation4,
+          SystemDecoration::HighlightBorderMode::kHighlightBorder)),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
       hover_changed_callback_(std::move(nudge_data.hover_changed_callback)),
       hover_or_focus_changed_callback_(
@@ -509,9 +509,7 @@ bool SystemNudgeView::IsHoveredOrChildHasFocus() {
 void SystemNudgeView::SetNudgeRoundedCornerRadius(
     const gfx::RoundedCornersF& rounded_corners) {
   layer()->SetRoundedCornerRadius(rounded_corners);
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      rounded_corners, views::HighlightBorder::Type::kHighlightBorderOnShadow));
-  shadow_->SetRoundedCorners(rounded_corners);
+  decoration_->SetRoundedCorners(rounded_corners);
 }
 
 BEGIN_METADATA(SystemNudgeView)

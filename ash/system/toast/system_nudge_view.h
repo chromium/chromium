@@ -79,7 +79,7 @@ class ASH_EXPORT SystemNudgeView : public views::FlexLayoutView,
 
   std::unique_ptr<views::ViewTracker> anchor_view_tracker_;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Used to determine if the nudge will draw a pointy corner.
   const bool is_corner_anchored_;
