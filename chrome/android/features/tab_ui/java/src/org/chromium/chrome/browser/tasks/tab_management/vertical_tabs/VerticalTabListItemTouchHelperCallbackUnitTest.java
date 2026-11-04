@@ -1172,6 +1172,32 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void testOnSelectedChanged_DragCollapsedGroupHeader_DoesNotSelectTab() {
+        Token groupId = new Token(1L, 2L);
+        setBindingAdapterPosition(mViewHolder, 0);
+        setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
+        mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+
+        when(mTab1.getId()).thenReturn(1);
+        when(mTab2.getId()).thenReturn(2);
+
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabGroupCollapsed(groupId)).thenReturn(true);
+
+        // Setup mModel indices.
+        when(mTabModel.indexOf(mTab1)).thenReturn(0);
+        when(mTabModel.indexOf(mTab2)).thenReturn(1);
+        // Current active tab index (mTab3 is active, outside this group).
+        when(mTabModel.index()).thenReturn(2);
+        when(mTabModel.getTabAt(2)).thenReturn(mTab3);
+
+        mCallback.onSelectedChanged(mViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        // The group is collapsed, so the active tab should not change.
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
+    }
+
+    @Test
     public void testOnSelectedChanged_Idle_ClearsHighlight() {
         setupDragGroupHeaderState();
 

@@ -575,8 +575,13 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
                 startTab = !tabsInGroup.isEmpty() ? tabsInGroup.get(0) : null;
                 mDragStartTabId = Tab.INVALID_TAB_ID;
 
-                // Select the group header, which ensures a tab within the group is active.
-                selectTabForGroup(tabModel, tabsInGroup);
+                // Select the group header, which ensures a tab within the group is active. Skip
+                // this for collapsed groups so the active tab is unchanged and a hidden tab is not
+                // activated.
+                if (mDragStartGroupId == null
+                        || !tabModel.getTabGroupCollapsed(mDragStartGroupId)) {
+                    selectTabForGroup(tabModel, tabsInGroup);
+                }
 
                 int currentSelectedTabId = getCurrentSelectedTabId();
 
