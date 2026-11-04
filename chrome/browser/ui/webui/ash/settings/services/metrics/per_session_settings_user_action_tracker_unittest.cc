@@ -27,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -102,6 +103,9 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   }
 
   void TearDown() override {
+    // The prefs have to be detached before the profile holding them dies.
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(account_id_);
+
     TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
 
     LoginState::Shutdown();
@@ -109,19 +113,25 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
 
   // Creates regular_user profile and user then sets that account to active.
   void LoginTestUser(FakeChromeUserManager* fake_user_manager) {
-    const AccountId id = AccountId::FromUserEmail(kProfileName);
-    auto* user = fake_user_manager->AddUser(id);
+    account_id_ = AccountId::FromUserEmail(kProfileName);
+    auto* user = fake_user_manager->AddUser(account_id_);
     testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             testing_profile_);
-    LoginAndSetActiveUserInUserManager(id, fake_user_manager);
+    LoginAndSetActiveUserInUserManager(account_id_, fake_user_manager);
+    // Attach the profile's prefs to the User, as the production
+    // ProfileUserManagerController does once the profile exists.
+    ASSERT_TRUE(fake_user_manager->OnUserProfileCreated(
+        account_id_, testing_profile_->GetPrefs()));
   }
 
   // Helper to set active user in the UserManager.
   void LoginAndSetActiveUserInUserManager(
       const AccountId& id,
       FakeChromeUserManager* fake_user_manager) {
-    fake_user_manager->LoginUser(id);
+    // The profile-created flag is left to OnUserProfileCreated(), which is
+    // what attaches the prefs along with it.
+    fake_user_manager->LoginUser(id, /*set_profile_created_flag=*/false);
     fake_user_manager->SwitchActiveUser(id);
   }
 
@@ -133,6 +143,7 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  AccountId account_id_;
   raw_ptr<TestingProfile> testing_profile_;
   raw_ptr<PrefService> test_pref_service_;
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;

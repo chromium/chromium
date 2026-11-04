@@ -7,11 +7,13 @@
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::settings {
 
@@ -51,10 +53,19 @@ void OsSettingsMetricsProvider::LogVerifiedAccessEnabled() {
 }
 
 void OsSettingsMetricsProvider::MaybeLogTotalUniqueSettingsChanged() {
-  // Log total unique Settings changed over the device's lifetime if allowed.
-  PrefService* profile_pref_service =
-      ProfileManager::GetActiveUserProfile()->GetPrefs();
-  CHECK(profile_pref_service, base::NotFatalUntil::M162);
+  // Metrics are uploaded whether or not anybody is logged in, and these are
+  // the user's own prefs, which only exist once their profile has been
+  // created.
+  if (!user_manager::UserManager::IsInitialized()) {
+    return;
+  }
+  user_manager::User* const user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  PrefService* const profile_pref_service =
+      user ? user->GetProfilePrefs() : nullptr;
+  if (!profile_pref_service) {
+    return;
+  }
 
   // We do not have consent to record the metrics.
   if (!ShouldRecordMetrics(profile_pref_service)) {
