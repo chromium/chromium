@@ -156,8 +156,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     this.isShortcutCustomizationEnabled_ =
         loadTimeData.getBoolean('isShortcutCustomizationEnabled');
     this.metaKey_ = MetaKey.kSearch;
-    this.languagePacksInSettingsEnabled_ =
-        loadTimeData.getBoolean('languagePacksInSettingsEnabled');
+    // TODO: crbug.com/335232633 - Inline this and remove it.
+    this.languagePacksInSettingsEnabled_ = false;
   }
 
   // Public API: Bidirectional data flow.
@@ -196,6 +196,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   declare private onDeviceGrammarCheckEnabled_: boolean;
+  // TODO: crbug.com/335232633 - Inline this and remove it.
   declare private languagePacksInSettingsEnabled_: boolean;
 
   // Computed properties.

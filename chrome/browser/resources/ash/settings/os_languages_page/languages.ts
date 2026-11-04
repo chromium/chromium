@@ -14,7 +14,6 @@
 // consider merging the two.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -255,8 +254,8 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
   // loadTimeData flags.
   // We do not expect this to change over the lifetime of this element, so this
   // is not included in `properties()` above.
-  private languagePacksInSettingsEnabled_ =
-      loadTimeData.getBoolean('languagePacksInSettingsEnabled');
+  // TODO: crbug.com/335232633 - Inline this and remove it.
+  private languagePacksInSettingsEnabled_ = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
