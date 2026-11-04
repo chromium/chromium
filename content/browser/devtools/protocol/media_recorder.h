@@ -29,6 +29,7 @@
 #include "media/capture/video/video_frame_receiver_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -39,6 +40,7 @@ class SequencedTaskRunner;
 namespace content {
 class DevToolsIOContext;
 class InProcessLaunchedVideoCaptureDevice;
+class MediaStreamUI;
 class RenderFrameHostImpl;
 class WebContents;
 class WebContentsVideoCaptureDevice;
@@ -64,11 +66,14 @@ class CONTENT_EXPORT MediaRecorder
 
   // Records a display surface, for example the browser window that shows the
   // target, with the device that getDisplayMedia() uses for `media_id`.
-  // Captures audio from `audio_source` if `audio` is true. Runs `callback`
-  // when the recording has started, or with an error. If the device fails
-  // later, the capture stops, but the recording stays active until Stop().
+  // Captures audio from `audio_source` if `audio` is true. Starts `ui` (if not
+  // null), which shows that the surface is captured, and owns it while the
+  // capture runs. Runs `callback` when the recording has started, or with an
+  // error. If the device fails later, the capture stops and the UI is removed,
+  // but the recording stays active until Stop().
   void StartDisplayCapture(const DesktopMediaID& media_id,
                            WebContents* audio_source,
+                           std::unique_ptr<MediaStreamUI> ui,
                            bool audio,
                            int max_width,
                            int max_height,
@@ -85,8 +90,15 @@ class CONTENT_EXPORT MediaRecorder
   void OnVideoCaptureError();
 
  private:
-  // Stops capturing frames and audio. The recording stays active until Stop().
+  // Stops capturing frames and audio, and removes the UI. The recording stays
+  // active until Stop().
   void StopDisplayCapture();
+  // Pauses or resumes the capture when the UI asks for it, for example when a
+  // data leak prevention policy restricts the captured content.
+  void OnStateChangeFromUI(const DesktopMediaID& media_id,
+                           blink::mojom::MediaStreamStateChange new_state);
+  // Tells the UI that the device stopped, and then destroys the UI.
+  void ReleaseUI();
   void StartEncodingService(int max_width,
                             int max_height,
                             int frame_rate,
@@ -122,6 +134,10 @@ class CONTENT_EXPORT MediaRecorder
   // Used instead of `video_capturer_` for the browser window.
   std::unique_ptr<DisplayCaptureLauncher> display_capture_launcher_;
   std::unique_ptr<media::VideoFrameReceiver> display_capture_receiver_;
+  std::unique_ptr<MediaStreamUI> media_stream_ui_;
+  // The label and the device of the capture that `media_stream_ui_` shows.
+  std::string ui_label_;
+  DesktopMediaID ui_media_id_;
   std::unique_ptr<base::RepeatingTimer> video_timer_;
   struct ClientBuffer : public base::RefCountedThreadSafe<ClientBuffer> {
     ClientBuffer();

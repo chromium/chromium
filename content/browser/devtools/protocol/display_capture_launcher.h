@@ -38,6 +38,11 @@ class CONTENT_EXPORT DisplayCaptureLauncher {
   // change.
   void RequestRefreshFrame();
 
+  // Suspends or resumes the device, for example when a data leak prevention
+  // policy pauses the capture. Works also before the device has launched.
+  void Suspend();
+  void Resume();
+
  private:
   class Core;
 

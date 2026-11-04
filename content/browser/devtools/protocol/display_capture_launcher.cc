@@ -85,6 +85,20 @@ class DisplayCaptureLauncher::Core {
     }
   }
 
+  void SetSuspended(bool suspended) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    suspended_ = suspended;
+    if (!device_) {
+      // OnDeviceLaunched() applies the state.
+      return;
+    }
+    if (suspended_) {
+      device_->MaybeSuspendDevice();
+    } else {
+      device_->ResumeDevice();
+    }
+  }
+
  private:
   class LauncherCallbacks : public VideoCaptureDeviceLauncher::Callbacks {
    public:
@@ -98,7 +112,11 @@ class DisplayCaptureLauncher::Core {
       // If `core_` is gone, `device` is destroyed here, which stops it.
       if (core_) {
         core_->device_ = std::move(device);
-        core_->device_->RequestRefreshFrame();
+        if (core_->suspended_) {
+          core_->device_->MaybeSuspendDevice();
+        } else {
+          core_->device_->RequestRefreshFrame();
+        }
       }
     }
     void OnDeviceLaunchFailed(media::VideoCaptureError error) override {
@@ -122,6 +140,8 @@ class DisplayCaptureLauncher::Core {
   ForwardingReceiver receiver_;
   // Stops the device when it is destroyed.
   std::unique_ptr<LaunchedVideoCaptureDevice> device_;
+  // Whether the device must be suspended, also if it launches later.
+  bool suspended_ = false;
   base::WeakPtrFactory<Core> weak_factory_{this};
 };
 
@@ -146,6 +166,20 @@ void DisplayCaptureLauncher::RequestRefreshFrame() {
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&Core::RequestRefreshFrame,
                                 base::Unretained(core_.get())));
+}
+
+void DisplayCaptureLauncher::Suspend() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::SetSuspended, base::Unretained(core_.get()), true));
+}
+
+void DisplayCaptureLauncher::Resume() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Core::SetSuspended,
+                                base::Unretained(core_.get()), false));
 }
 
 }  // namespace content::protocol

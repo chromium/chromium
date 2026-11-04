@@ -5,8 +5,10 @@
 #include "content/browser/devtools/protocol/media_recorder.h"
 
 #include "base/functional/bind.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/devtools/devtools_stream_file.h"
@@ -18,6 +20,8 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/audio/audio_input_device.h"
@@ -308,6 +312,7 @@ Response MediaRecorder::Start(RenderFrameHostImpl* host,
 void MediaRecorder::StartDisplayCapture(
     const DesktopMediaID& media_id,
     WebContents* audio_source,
+    std::unique_ptr<MediaStreamUI> ui,
     bool audio,
     int max_width,
     int max_height,
@@ -341,6 +346,31 @@ void MediaRecorder::StartDisplayCapture(
       media_id.ToString(), params, receiver->GetWeakPtr());
   display_capture_receiver_ = std::move(receiver);
 
+  // Show the screen sharing UI. Its Stop button stops the frames, but keeps
+  // the recording, so that Page.stopScreenRecording still returns the stream.
+  if (ui) {
+    media_stream_ui_ = std::move(ui);
+    // DLP and the capture indicator use the label as a key, so it must be
+    // unique, as in MediaStreamManager.
+    ui_label_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    ui_media_id_ = media_id;
+    std::vector<DesktopMediaID> screen_capture_ids;
+    if (!ui_media_id_.is_null()) {
+      screen_capture_ids.push_back(ui_media_id_);
+    }
+    // The UI runs these callbacks from its own event handlers, for example
+    // when the user clicks Stop. Post them, so that the UI is not destroyed
+    // while it handles the event, as MediaStreamUIProxy does for
+    // getDisplayMedia().
+    media_stream_ui_->OnStarted(
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+            &MediaRecorder::StopDisplayCapture, weak_factory_.GetWeakPtr())),
+        MediaStreamUI::SourceCallback(), ui_label_,
+        std::move(screen_capture_ids),
+        base::BindPostTaskToCurrentDefault(base::BindRepeating(
+            &MediaRecorder::OnStateChangeFromUI, weak_factory_.GetWeakPtr())));
+  }
+
   video_timer_ = std::make_unique<base::RepeatingTimer>();
   video_timer_->Start(FROM_HERE, base::Milliseconds(kIdleKeepAliveIntervalMs),
                       base::BindRepeating(&MediaRecorder::RequestRefreshFrame,
@@ -360,8 +390,8 @@ void MediaRecorder::OnVideoCaptureError() {
     return;
   }
   // The device failed, for example because the window was closed. Stop the
-  // capture, but keep the recording, so that Page.stopScreenRecording still
-  // returns the frames until this point.
+  // capture and remove the UI, but keep the recording, so that
+  // Page.stopScreenRecording still returns the frames until this point.
   StopDisplayCapture();
 }
 
@@ -376,6 +406,28 @@ void MediaRecorder::StopDisplayCapture() {
     audio_capturer_->Stop();
     audio_capturer_ = nullptr;
   }
+  ReleaseUI();
+}
+
+void MediaRecorder::OnStateChangeFromUI(
+    const DesktopMediaID& media_id,
+    blink::mojom::MediaStreamStateChange new_state) {
+  if (!display_capture_launcher_) {
+    return;
+  }
+  if (new_state == blink::mojom::MediaStreamStateChange::PAUSE) {
+    display_capture_launcher_->Suspend();
+  } else {
+    display_capture_launcher_->Resume();
+  }
+}
+
+void MediaRecorder::ReleaseUI() {
+  if (!media_stream_ui_) {
+    return;
+  }
+  media_stream_ui_->OnDeviceStopped(ui_label_, ui_media_id_);
+  media_stream_ui_.reset();
 }
 
 void MediaRecorder::StartEncodingService(int max_width,
@@ -579,6 +631,7 @@ void MediaRecorder::Stop(
   }
   display_capture_launcher_.reset();
   display_capture_receiver_.reset();
+  ReleaseUI();
   if (audio_capturer_) {
     audio_capturer_->Stop();
     audio_capturer_ = nullptr;
