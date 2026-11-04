@@ -100,47 +100,18 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
 @interface ManagementUITestCase : ChromeTestCase
 @end
 
-@implementation ManagementUITestCase {
-  std::unique_ptr<enterprise_connectors::test::RealtimeReportingTestEnvironment>
-      _reportingEnvironment;
-}
+@implementation ManagementUITestCase
 
 #pragma mark - ChromeTestCase
 
-// TODO(crbug.com/577136777): Simplify the setup for the test cases here.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector(testSecureGatewaySection)]) {
-    config.features_enabled.push_back(
-        enterprise_net::kEnableDynamicRouteFetching);
-    config.additional_args.push_back(
-        base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
-  } else {
-    config.additional_args.push_back(base::StrCat(
-        {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
-    config.additional_args.push_back(
-        base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName,
-                      "</key><string>", kEnrollmentToken, "</string></dict>"}));
-  }
-
-  if ([self isRunningTest:@selector(testSecurityEventSection)]) {
-    _reportingEnvironment =
-        enterprise_connectors::test::RealtimeReportingTestEnvironment::Create();
-    CHECK(_reportingEnvironment);
-    CHECK(_reportingEnvironment->Start());
-    std::vector<std::string> reporting_args =
-        _reportingEnvironment->GetArguments();
-    config.additional_args.insert(config.additional_args.end(),
-                                  reporting_args.begin(), reporting_args.end());
-    config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  }
-
-  if ([self isRunningTest:@selector(testTextEnterEventSection)]) {
-    config.features_enabled.push_back(
-        enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
-  }
-
+  config.features_enabled.push_back(
+      enterprise_net::kEnableDynamicRouteFetching);
+  config.features_enabled.push_back(
+      enterprise_connectors::kEnableBulkDataEntryConnectorIOS);
+  config.additional_args.push_back(
+      base::StrCat({"--", switches::kEnableChromeBrowserCloudManagement}));
   return config;
 }
 
@@ -153,8 +124,17 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
                                             kEnterpriseRealTimeUrlCheckMode];
   [ChromeEarlGrey clearUserPrefWithName:enterprise_connectors::
                                             kEnterpriseRealTimeUrlCheckScope];
-  _reportingEnvironment.reset();
   [super tearDownHelper];
+}
+
+// Sets up a fake enterprise policy and browser DM token so
+// `chrome://management` treats the browser as managed for connector tests.
+- (void)setUpEnterpriseManagement {
+  [PolicyAppInterface
+      setPolicyValue:base::SysUTF8ToNSString(
+                         base::StrCat({"\"", kEnrollmentToken, "\""}))
+              forKey:base::SysUTF8ToNSString(kEnrollmentTokenPolicyName)];
+  [AnalysisConnectorsAppInterface setBrowserDMToken];
 }
 
 #pragma mark - Tests
@@ -182,20 +162,10 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
           l10n_util::GetStringUTF8(IDS_MANAGEMENT_SECURE_GATEWAY_DISCLOSURE)];
 }
 
-// Tests that management page displays the Security event title and
-// description when `OnSecurityEventEnterpriseConnector` is enabled.
-- (void)testSecurityEventSection {
-  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
-
-  VerifyVisibleEventSection(kSecurityEventSectionId,
-                            IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT,
-                            IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA);
-}
-
 // Tests that management page displays the Page Visit event title and
 // description when `EnterpriseRealTimeUrlCheckMode` is enabled.
 - (void)testPageVisitEventSection {
-  [AnalysisConnectorsAppInterface setBrowserDMToken];
+  [self setUpEnterpriseManagement];
   [ChromeEarlGrey
       setIntegerValue:enterprise_connectors::
                           REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED
@@ -214,6 +184,7 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
 // Tests that management page displays the File Download event title and
 // description when `OnFileDownloadedEnterpriseConnector` is enabled.
 - (void)testFileDownloadEventSection {
+  [self setUpEnterpriseManagement];
   [AnalysisConnectorsAppInterface setDownloadProtectionRules];
 
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -226,6 +197,7 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
 // Tests that management page displays the Text Enter event title and
 // description when `OnBulkDataEntryEnterpriseConnector` is enabled.
 - (void)testTextEnterEventSection {
+  [self setUpEnterpriseManagement];
   [AnalysisConnectorsAppInterface setBulkDataEntryRules];
 
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -233,6 +205,59 @@ void VerifyVisibleEventSection(std::string_view visible_section_id,
   VerifyVisibleEventSection(kTextEnterEventSectionId,
                             IDS_MANAGEMENT_TEXT_ENTERED_EVENT,
                             IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA);
+}
+
+@end
+
+// Tests the Security Event section on `chrome://management`, which requires
+// launching with `RealtimeReportingTestEnvironment` and CBCM enrollment.
+@interface ManagementUISecurityEventTestCase : ChromeTestCase
+@end
+
+@implementation ManagementUISecurityEventTestCase {
+  std::unique_ptr<enterprise_connectors::test::RealtimeReportingTestEnvironment>
+      _reportingEnvironment;
+}
+
+#pragma mark - ChromeTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  // `OnSecurityEventEnterpriseConnector` is a cloud-only policy that requires
+  // a matching DM token for its scope. Launch with an enrollment token and
+  // `RealtimeReportingTestEnvironment` so the browser enrolls and fetches the
+  // machine-scoped cloud policy and DM token from the local test server.
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(base::StrCat(
+      {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+  config.additional_args.push_back(
+      base::StrCat({"<dict><key>", kEnrollmentTokenPolicyName, "</key><string>",
+                    kEnrollmentToken, "</string></dict>"}));
+  _reportingEnvironment =
+      enterprise_connectors::test::RealtimeReportingTestEnvironment::Create();
+  CHECK(_reportingEnvironment);
+  CHECK(_reportingEnvironment->Start());
+  std::vector<std::string> reporting_args =
+      _reportingEnvironment->GetArguments();
+  config.additional_args.insert(config.additional_args.end(),
+                                reporting_args.begin(), reporting_args.end());
+  return config;
+}
+
+- (void)tearDownHelper {
+  _reportingEnvironment.reset();
+  [super tearDownHelper];
+}
+
+#pragma mark - Tests
+
+// Tests that management page displays the Security event title and
+// description when `OnSecurityEventEnterpriseConnector` is enabled.
+- (void)testSecurityEventSection {
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+
+  VerifyVisibleEventSection(kSecurityEventSectionId,
+                            IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT,
+                            IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA);
 }
 
 @end
