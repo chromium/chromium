@@ -21,7 +21,7 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   kNoService = 2,
   kSuccessCacheMatchFound = 3,
   // kSuccess = 4,  // Obsolete. Replaced by kSuccessReceivedMatchFound.
-  kError = 5,
+  // kError = 5,  // Obsolete. Replaced by the specific error values.
   kMockOtp = 6,
   // kNoCallback = 7,  // Obsolete.
   kSuccessReceivedMatchFound = 8,

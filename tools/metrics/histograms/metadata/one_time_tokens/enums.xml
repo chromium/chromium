@@ -52,7 +52,9 @@ found in the LICENSE file.
   <int value="2" label="NoService"/>
   <int value="3" label="SuccessCacheMatchFound"/>
   <int value="4" label="(Obsolete) Success"/>
-  <int value="5" label="Error"/>
+  <int value="5" label="(Obsolete) Error">
+    Replaced by the specific error buckets.
+  </int>
   <int value="6" label="MockOtp"/>
   <int value="7" label="(Obsolete) NoCallback"/>
   <int value="8" label="SuccessReceivedMatchFound"/>
