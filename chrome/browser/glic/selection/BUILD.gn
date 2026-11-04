@@ -145,6 +145,7 @@ source_set("browser_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/optimization_guide",
+    "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/common:constants",

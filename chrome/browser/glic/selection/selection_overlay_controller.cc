@@ -30,6 +30,8 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/selection/features.h"
@@ -43,6 +45,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/tabs/public/tab_interface.h"
@@ -637,6 +640,16 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
   if (::selection::SuggestionService* const suggestion_service =
           ::selection::SuggestionService::From(tab_)) {
     suggestion_service->MaybePrewarmServerRequest();
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kQuickAnswersSelectionSuggestions) &&
+      !base::FeatureList::IsEnabled(
+          ::selection::kSmartSelectionServerSuggestions)) {
+    if (auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
+            tab_->GetProfile())) {
+      opt_guide->PrewarmModelExecution(
+          optimization_guide::ModelBasedCapabilityKey::kQuickAnswers);
+    }
   }
   ObserveActiveTabChanges();
   ObserveSidePanelState();

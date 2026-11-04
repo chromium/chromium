@@ -76,6 +76,10 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
        optimization_guide::OptimizationGuideModelExecutionStreamingCallback),
       (override));
   MOCK_METHOD(void,
+              PrewarmModelExecution,
+              (optimization_guide::ModelBasedCapabilityKey),
+              (override));
+  MOCK_METHOD(void,
               AddOnDeviceModelAvailabilityChangeObserver,
               (optimization_guide::mojom::OnDeviceFeature feature,
                optimization_guide::OnDeviceModelAvailabilityObserver* observer),

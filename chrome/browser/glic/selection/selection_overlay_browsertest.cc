@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,6 +59,7 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/network_change_notifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -69,6 +71,8 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace glic {
+
+using ::testing::NiceMock;
 
 class SelectionOverlayBrowserTest : public GlicBrowserTest {
  public:
@@ -725,6 +729,65 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(eligible_listener.actions()[1]->icon,
             selection::SuggestedActionIcon::kExplain);
 }
+
+class SelectionOverlayQuickAnswersPrewarmBrowserTest
+    : public SelectionOverlayQuickAnswersSuggestionsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SelectionOverlayQuickAnswersPrewarmBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          ::selection::kSmartSelectionServerSuggestions);
+    }
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    SelectionOverlayQuickAnswersSuggestionsBrowserTest::
+        SetUpBrowserContextKeyedServices(context);
+    OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              NiceMock<MockOptimizationGuideKeyedService>>();
+        }));
+  }
+
+  NiceMock<MockOptimizationGuideKeyedService>& mock_opt_guide() {
+    return *static_cast<NiceMock<MockOptimizationGuideKeyedService>*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile()));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SelectionOverlayQuickAnswersPrewarmBrowserTest,
+                       PrewarmsQuickAnswersOnlyWhenServerSuggestionsDisabled) {
+  const bool server_suggestions_enabled = GetParam();
+  EXPECT_CALL(mock_opt_guide(),
+              PrewarmModelExecution(
+                  optimization_guide::ModelBasedCapabilityKey::kQuickAnswers))
+      .Times(server_suggestions_enabled ? 0 : 1);
+
+  tabs::TabInterface* const tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* const web_contents = tab->GetContents();
+
+  SelectionOverlayController* const controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SelectionOverlayQuickAnswersPrewarmBrowserTest,
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        ShowWithSelectionPopulatesSelection) {
