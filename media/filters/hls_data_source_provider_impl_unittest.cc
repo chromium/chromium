@@ -422,4 +422,30 @@ TEST_F(HlsDataSourceProviderImplUnittest, ReadFromDataUrl) {
   EXPECT_TRUE(error_complete);
 }
 
+TEST_F(HlsDataSourceProviderImplUnittest, RedirectToDataUrlIsDisallowed) {
+  HlsDataSourceProvider::UrlDataSegment segment(GURL("http://example.com"),
+                                                std::nullopt);
+
+  {
+    MockDataSourceFactory::DataSourceBehavior params;
+    params.original_uri = GURL("http://example.com");
+    params.redirect_uri = "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==";
+    factory_->Expect(std::move(params));
+  }
+
+  bool has_error = false;
+  impl_->ReadFromUrl(
+      std::move(segment),
+      base::BindOnce(
+          [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
+            ASSERT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
+            *error_canary = true;
+          },
+          &has_error));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(has_error);
+}
+
 }  // namespace media
