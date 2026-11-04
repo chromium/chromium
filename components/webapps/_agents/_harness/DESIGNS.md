@@ -15,19 +15,25 @@ Document in Chromium.
 ## Purpose of a Design
 
 A Design document is strictly about **architecture**. Its purpose is to explore,
-define, and document the structure, data models, API surfaces, dependencies, and
-technical trade-offs of a proposed system *before* any implementation planning
-or coding begins.
+define, and document the structure, data models, component boundaries,
+invariants, and technical trade-offs of a proposed system *before* any
+implementation planning or coding begins.
 
 A Design document answers the questions:
 
 - "What problem are we solving?"
-- "What is the shape of the data, C++ classes, and Mojo APIs?"
+- "How do the components fit together, and what are the key invariants?"
 - "What were the alternative approaches, and why were they rejected?"
+- "What non-obvious integration hazards or edge cases must the implementer
+  know?"
 
-**A Design Document is NOT an Execution Plan.** It does not contain
-implementation steps, file editing instructions, or milestones. It focuses
-entirely on establishing agreement on the technical architecture.
+**A Design Document is NOT an Execution Plan.** It does not contain step-by-step
+file editing instructions or CL milestones. Assume a reasonably capable
+plan-creator and implementation agent will work through standard code mechanics;
+keep **Section 2 (Proposed Architecture)** focused on architectural concepts and
+decisions rather than exhaustive C++ header dumps, and use **Section 8 (Detailed
+Implementation Breakdown)** to capture concrete class sketches and non-obvious
+implementation callouts.
 
 ## Lifecycle and Workflow
 
@@ -44,6 +50,9 @@ In standard Chromium engineering:
 When asked to author or propose a technical design, conduct thorough research of
 the existing repository context and generate a comprehensive markdown document.
 Ensure your design is objective and addresses the constraints of the system.
+
+Write prose for human readers in Simplified Technical English (ASD-STE100). If a
+Simplified Technical English skill is available, use it.
 
 **Tailoring for Scale:** This template is comprehensive and covers all
 considerations for a major Chrome feature. For smaller changes, refactors, or
@@ -107,8 +116,13 @@ prevent scope-creep.
 
 ## 2. Proposed Architecture
 
-High-level architecture overview. How does this align with the subsystem
-boundaries (e.g. Browser/Renderer Mojo boundary, DEPS constraints)?
+High-level architecture overview, component responsibilities, state machines,
+and invariants. How does this align with subsystem boundaries (e.g.
+Browser/Renderer Mojo boundary, DEPS constraints)? Keep this section focused on
+architectural design rather than low-level code mechanics; defer detailed class
+sketches and caller-specific integration gotchas to Section 8. Orient diagrams
+top-down (for example, `flowchart TD`) or split wide diagrams so they fit
+narrow viewports without horizontal scrolling.
 
 ### Platforms Affected
 *   [ ] Windows
@@ -130,12 +144,14 @@ boundaries (e.g. Browser/Renderer Mojo boundary, DEPS constraints)?
 
 ### Data Models & Schemas
 
-Detail the shape of data. Structures, database schemas, preferences, or core
-domain classes.
+Summarize the conceptual shape of key domain data, persistent storage schemas,
+preferences, or core state enums/structs.
 
 ### API Surface & Mojo Interfaces
 
-Define public interfaces, C++ class declarations, or `.mojom` definitions.
+Summarize high-level component boundaries and any `.mojom` interface changes.
+(Full C++ class specs or method signatures, if needed to clarify contracts,
+belong in Section 8.)
 
 ## 3. Alternatives Considered
 
@@ -198,8 +214,14 @@ Explore at least one viable alternative. Describe approach and state trade-offs
 
 ## 8. Detailed Implementation Breakdown
 
-Detailed architectural breakdown. Enumerate primary subsystems modified or
-created. Rationale for change.
+Detailed subsystem-by-subsystem breakdown for the plan-creator and implementer.
+This section does **not** need to be only a table—use subsections, prose, and
+targeted C++ class/interface sketches to document:
+*   Primary subsystems and files modified or created, and the rationale for each.
+*   Concrete class/API sketches where helpful.
+*   **Non-obvious implementation details & gotchas:** Tricky lifetime handoffs,
+    existing `CHECK`/`DCHECK` invariants in callers, legacy compatibility
+    constraints, or subtle state-machine interactions uncovered during design.
 
 ## 9. Future Work & Technical Debt
 *   Existing tech debt being addressed.

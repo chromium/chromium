@@ -37,6 +37,9 @@ step-by-step across reviewable Gerrit Changelists (CLs).
 
 ## Authoring an Execution Plan
 
+Write prose for human readers in Simplified Technical English (ASD-STE100). If a
+Simplified Technical English skill is available, use it.
+
 ### File Naming and Location
 
 All execution plans must be placed in the project's `plans/` subdirectory (e.g.,

@@ -47,6 +47,10 @@ ______________________________________________________________________
      structure.
    - Ensure all markdown links use standard relative paths or paths from the
      `src/` root (e.g. `/content/browser/...`), never `file://` URLs or `@/`.
+   - Write prose for human readers in Simplified Technical English (ASD-STE100).
+     If a Simplified Technical English skill is available, use it.
+   - Use active voice, \<= 25 words per descriptive sentence, \<= 20 words per
+     procedural step, and no semicolons.
 
 ### Phase 2: Adversarial Critique Loop
 
@@ -71,6 +75,10 @@ ______________________________________________________________________
    - Update the draft to address blockers and important critique items.
    - Repeat the review loop if major architectural adjustments were made (up to
      3 iterations).
+   - If you delegate an STE rewrite to a subagent, audit the diff to confirm no
+     technical details changed.
+   - After substantive edits or an STE rewrite, re-run
+     `chromium_design_reviewer` on the design or plan.
 
 ### Phase 3: Human Approval & Finalization
 
