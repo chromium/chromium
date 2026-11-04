@@ -110,6 +110,15 @@ crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapTurnOffButtonInOptionsV
 crbug.com/481633359 [ Device ] ReaderModeTestCase/testTapOutsideOptionsViewDismissesIt [ Pass Failure ]
 crbug.com/481633359 [ Device ] ReaderModeTestCase/testSampleContextualChipVisibleInReaderMode [ Pass Failure ]
 
+# Migrated from in-source test disable annotations: supervised_user.
+crbug.com/476358542 SupervisedUserWithParentalControlsTestCase/testSupervisedUserSignedOutOnPolicyChange [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserInterstitialOnBackButton [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange [ Pass Failure ]
+crbug.com/435140688 [ Device ] SupervisedUserWithParentalControlsTestCase/testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen [ Pass Failure ]
+
 # Gardening surpression 2026-07-09
 crbug.com/533057223 [ iPad ] SigninCoordinatorTestCase/testSyncOnWhenPassphraseIntroducedAfterSignIn [ Pass Failure ]
 crbug.com/533075931 [ iOS18 iOS26 iPad Simulator ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]

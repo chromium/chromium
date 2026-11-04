@@ -55,14 +55,6 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 @interface SupervisedUserWithParentalControlsTestCase : ChromeTestCase
 @end
 
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserInterstitialOnBackButton \
-  testSupervisedUserInterstitialOnBackButton
-#else
-#define MAYBE_testSupervisedUserInterstitialOnBackButton \
-  FLAKY_testSupervisedUserInterstitialOnBackButton
-#endif
-
 @implementation SupervisedUserWithParentalControlsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -75,12 +67,14 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
-  } else if ([self isRunningTest:@selector
-                   (MAYBE_testSupervisedUserInterstitialOnBackButton)]) {
+  } else if ([self isRunningTest:
+                       @selector(testSupervisedUserInterstitialOnBackButton)]) {
     config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
-  } else if ([self
-                 isRunningTest:@selector
-                 (testSupervisedUserStaysSignedInAfterClearingBrowsingData)]) {
+  } else if (
+      [self
+          isRunningTest:
+              @selector(
+                  testSupervisedUserStaysSignedInAfterClearingBrowsingData)]) {
     config.features_enabled.push_back(kFullscreenRefactoring);
   } else {
     config.features_enabled_and_params.push_back(
@@ -214,16 +208,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-// TODO(crbug.com/435140688): Reenable this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
-  testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
-#else
-#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
-  FLAKY_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
-#endif
-- (void)
-    MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Sign in the user and allow all sites.
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface
@@ -287,9 +272,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-// TODO(crbug.com/476358542): This test is flaky on iOS simulator. Reenable
-// this test.
-- (void)FLAKY_testSupervisedUserSignedOutOnPolicyChange {
+- (void)testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -483,16 +466,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 
 // Tests that block-listing a url, results in showing immediately the
 // interstitial if the user has the url open in a tab.
-// TODO(crbug.com/435140688): Reenable this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing \
-  testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing
-#else
-#define MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing \
-  FLAKY_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing
-#endif
-- (void)
-    MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
+- (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface
       setWebFilterType:supervised_user::WebFilterType::kAllowAllSites];
@@ -510,16 +484,8 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 // Tests that users who have the filtering behaviour changed from "Allow all
 // sites" to "Only allow certain sites" will be shown the interstitial as soon
 // as the filtering behaviour changes.
-// TODO(crbug.com/435140688): Reenable this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange \
-  testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange
-#else
-#define MAYBE_testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange \
-  FLAKY_testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange
-#endif
 - (void)
-    MAYBE_testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange {
+    testSupervisedUserWithOnlyAllowCertainSitesFilteringIsBlockedOnFilterChange {
   [self signInSupervisedUser];
   GURL safeURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:safeURL];
@@ -537,16 +503,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 // Tests that for users who have the filtering behaviour changed from "Only
 // allow certain sites" to "Allow all sites", a blocked page will be refreshed
 // and unblocks as soon as the filtering behaviour changes.
-// TODO(crbug.com/435140688): Reenable this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange \
-  testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange
-#else
-#define MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange \
-  FLAKY_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange
-#endif
-- (void)
-    MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
+- (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface
       setWebFilterType:supervised_user::WebFilterType::kCertainSites];
@@ -594,8 +551,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 // Checks the behaviour of the "Details" link on click (expand/shrink details).
 // Test that the when Local Web Approval is disabled, the "Back" button of the
 // interstitial gets us to the previous page.
-// TODO(crbug.com/435140688): Reenable this test.
-- (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
+- (void)testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFakePermissionCreator];
   [FamilyLinkSettingsAppInterface
@@ -625,16 +581,7 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 
 // Test that the when Local Web Approval is enabled, users can request a local
 // web approval from the waiting screen.
-// TODO(crbug.com/435140688): Reenable this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen \
-  testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen
-#else
-#define MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen \
-  FLAKY_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen
-#endif
-- (void)
-    MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
+- (void)testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFakePermissionCreator];
   [FamilyLinkSettingsAppInterface
