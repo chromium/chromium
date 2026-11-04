@@ -718,6 +718,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       return ^{
         [weakSelf startGeminiFlowForAppSwitcherIntent];
       };
+    case REMOTE_ACTOR_CREDENTIAL_SHARING:
+      return ^{
+        [weakSelf handleRemoteActorCredentialSharing];
+      };
     default:
       return nil;
   }
@@ -2711,6 +2715,11 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
                         baseViewController:self.activeViewController
                   showSnackbarOnCompletion:YES
                                 completion:nil];
+}
+
+// Handles a Remote Actor credential sharing request from an external app.
+- (void)handleRemoteActorCredentialSharing {
+  // TODO(crbug.com/577152706): Wire up to RemoteActorCoordinator.
 }
 
 // Returns the condition to check in order to show the `IncognitoIntertitial`

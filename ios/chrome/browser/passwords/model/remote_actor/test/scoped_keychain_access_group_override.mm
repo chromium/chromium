@@ -9,11 +9,10 @@
 ScopedRemoteActorKeychainAccessGroupOverrideForTesting::
     ScopedRemoteActorKeychainAccessGroupOverrideForTesting(
         NSString* access_group_override) {
-  SetRemoteActorKeychainAccessGroupOverrideForTesting(  // IN-TEST
-      access_group_override);
+  SetRemoteActorKeychainAccessGroupOverrideForTesting(access_group_override);
 }
 
 ScopedRemoteActorKeychainAccessGroupOverrideForTesting::
     ~ScopedRemoteActorKeychainAccessGroupOverrideForTesting() {
-  ResetRemoteActorKeychainAccessGroupOverrideForTesting();  // IN-TEST
+  ResetRemoteActorKeychainAccessGroupOverrideForTesting();
 }

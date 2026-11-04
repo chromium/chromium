@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -173,6 +174,12 @@ void ShowGoogleOneForURL(SceneState* scene_state, const GURL& url) {
       ApplicationModeForTabOpening::UNDETERMINED;
 
   NSString* host = url.host;
+
+  if ([host isEqualToString:kRemoteActorURLHost]) {
+    // TODO(crbug.com/462018636): Support Remote Actor credential sharing in the
+    // new startup flow.
+    return;
+  }
 
   if ([host isEqualToString:kExternalActionURLHost]) {
     NSString* path = ExtractSinglePathComponent(url);
