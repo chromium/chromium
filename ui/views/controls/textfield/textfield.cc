@@ -1113,9 +1113,10 @@ views::View::DropCallback Textfield::GetDropCallback(
     }
   }
 
-  CHECK(!initiating_drag_ ||
-            !GetRenderText()->IsPointInSelection(event.location()),
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/580097037): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!initiating_drag_ ||
+         !GetRenderText()->IsPointInSelection(event.location()));
 
   return base::BindOnce(&Textfield::DropDraggedText,
                         drop_weak_ptr_factory_.GetWeakPtr());
