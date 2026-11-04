@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,6 +45,11 @@ void PaintStabilityMonitor::Start() {
             interaction_effects_monitor_->TotalPaintedArea()});
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kPaintStabilityDeferInitialPaintTimeout)) {
+    return;
+  }
+
   // There won't be any interactions if the underlying frame does not support
   // monitoring, which is the case for iframes. Avoid invoking the
   // `is_stable_callback_` in that case.
@@ -60,9 +66,27 @@ void PaintStabilityMonitor::WaitForStable(base::OnceClosure callback) {
   CHECK(!is_stable_callback_);
   is_stable_callback_ = std::move(callback);
   is_wait_for_stable_started_ = true;
+
   // Paint stability might have been reached between `Start()` and now.
   if (is_stability_reached_) {
     OnPaintStabilityDetected();
+    return;
+  }
+
+  // Defer the initial contentful paint timeout until `WaitForStable()` is
+  // called so it does not expire prematurely during `monitoring_start_delay_`.
+  // If a contentful paint already occurred between `Start()` and now,
+  // `OnContentfulPaint()` has already scheduled the subsequent paint timeout.
+  if (base::FeatureList::IsEnabled(
+          features::kPaintStabilityDeferInitialPaintTimeout) &&
+      !contentful_paint_timer_.IsRunning()) {
+    // There won't be any interactions if the underlying frame does not support
+    // monitoring, which is the case for iframes. Avoid invoking the
+    // `is_stable_callback_` in that case.
+    if (interaction_effects_monitor_->InteractionCount() == 0) {
+      return;
+    }
+    ScheduleContentfulPaintTimeoutTask(FROM_HERE, GetInitialPaintTimeout());
   }
 }
 
