@@ -33,3 +33,5 @@ tast.crash.SenderNoConsent.fieldtrial_testing_config_on
 # b/580937362
 tast.hwsec.CrossVersionChromeLogin.ti50_r120
 
+# b/580727944
+tast.crostini.AppFirefoxNonalphanumericInput.bookworm_clamshell_stable
