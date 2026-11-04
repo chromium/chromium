@@ -4,6 +4,9 @@
 
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 
+#include <memory>
+
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -19,6 +22,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/page_content_annotations/android/page_content_extraction_tab_model_observer_android.h"
+#else
+#include "chrome/browser/page_content_annotations/page_content_extraction_tab_strip_model_observer.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -26,13 +32,6 @@
 #endif
 
 namespace page_content_annotations {
-
-namespace {
-#if BUILDFLAG(IS_ANDROID)
-const char kPageContentExtractionTabModelObserverAndroidKey[] =
-    "page_content_extraction_tab_model_observer_android";
-#endif
-}  // namespace
 
 // static
 PageContentExtractionService*
@@ -56,6 +55,9 @@ PageContentExtractionServiceFactory::PageContentExtractionServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
+#endif
 }
 
 PageContentExtractionServiceFactory::~PageContentExtractionServiceFactory() =
@@ -77,15 +79,21 @@ PageContentExtractionServiceFactory::BuildServiceInstanceForBrowserContext(
   auto service = std::make_unique<PageContentExtractionService>(
       g_browser_process->os_crypt_async(), profile->GetPath(), tracker);
 
-#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kPageContentCache)) {
-    auto observer =
+    static constexpr char kPageContentExtractionTabObserverKey[] =
+        "page_content_extraction_tab_observer";
+#if BUILDFLAG(IS_ANDROID)
+    service->SetUserData(
+        kPageContentExtractionTabObserverKey,
         std::make_unique<PageContentExtractionTabModelObserverAndroid>(
-            profile, service.get());
-    service->SetUserData(kPageContentExtractionTabModelObserverAndroidKey,
-                         std::move(observer));
-  }
+            profile, service.get()));
+#else
+    service->SetUserData(
+        kPageContentExtractionTabObserverKey,
+        std::make_unique<PageContentExtractionTabStripModelObserver>(
+            profile, service.get()));
 #endif
+  }
   return service;
 }
 

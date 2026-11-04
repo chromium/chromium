@@ -30,6 +30,7 @@ source_set("page_content_annotations") {
     "//services/metrics/public/cpp:metrics_cpp",
   ]
   deps = [
+    ":extraction_service_impl",
     "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/autocomplete",
@@ -58,7 +59,6 @@ source_set("page_content_annotations") {
 
 source_set("extraction_service") {
   public = [ "page_content_extraction_service_factory.h" ]
-  sources = [ "page_content_extraction_service_factory.cc" ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -67,6 +67,11 @@ source_set("extraction_service") {
     "//components/page_content_annotations/core",
     "//content/public/browser",
   ]
+}
+
+source_set("extraction_service_impl") {
+  sources = [ "page_content_extraction_service_factory.cc" ]
+  public_deps = [ ":extraction_service" ]
   deps = [
     ":fetcher",
     "//build:buildflag_header_h",
@@ -92,6 +97,19 @@ source_set("extraction_service") {
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/tabwindow",
       "//chrome/browser/ui/android/tab_model",
+    ]
+  } else {
+    sources += [
+      "page_content_extraction_tab_strip_model_observer.cc",
+      "page_content_extraction_tab_strip_model_observer.h",
+    ]
+    deps += [
+      "//chrome/browser/lifetime",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/sessions",
     ]
   }
   if (is_chromeos) {
@@ -244,6 +262,7 @@ if (is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
@@ -315,6 +334,27 @@ source_set("unit_tests") {
     "//third_party/blink/public/common",
     "//ui/base/unowned_user_data",
   ]
+  if (!is_android) {
+    sources +=
+        [ "page_content_extraction_tab_strip_model_observer_unittest.cc" ]
+    deps += [
+      ":extraction_service_impl",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/os_crypt/async/browser",
+      "//components/os_crypt/async/browser:test_support",
+      "//components/sessions",
+      "//content/public/browser",
+      "//url",
+    ]
+  }
 }
 
 source_set("test_support") {

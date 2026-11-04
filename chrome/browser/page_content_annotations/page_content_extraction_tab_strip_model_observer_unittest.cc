@@ -1,0 +1,258 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/page_content_annotations/page_content_extraction_tab_strip_model_observer.h"
+
+#include <stdint.h>
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/callback_list.h"
+#include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+namespace page_content_annotations {
+
+namespace {
+
+using ::testing::NiceMock;
+using ::testing::Return;
+
+class TestPageContentExtractionService : public PageContentExtractionService {
+ public:
+  TestPageContentExtractionService(os_crypt_async::OSCryptAsync* os_crypt_async,
+                                   const base::FilePath& profile_path)
+      : PageContentExtractionService(os_crypt_async,
+                                     profile_path,
+                                     /*tracker=*/nullptr) {}
+
+  int64_t CacheContentForTab(content::WebContents* contents,
+                             const std::string& title) {
+    const int64_t tab_id = sessions::SessionTabHelper::IdForTab(contents).id();
+    EXPECT_GT(tab_id, 0);
+    contents->WasHidden();
+    optimization_guide::proto::AnnotatedPageContent apc;
+    apc.mutable_main_frame_data()->set_title(title);
+    auto apc_ptr =
+        base::MakeRefCounted<RefCountedAnnotatedPageContent>(std::move(apc));
+    OnPageContentExtracted(contents->GetPrimaryPage(), std::move(apc_ptr),
+                           /*screenshot_data=*/{}, tab_id);
+    return tab_id;
+  }
+};
+
+class ScopedMockBrowserWindow {
+ public:
+  explicit ScopedMockBrowserWindow(
+      Profile* profile,
+      BrowserWindowInterface::Type type = BrowserWindowInterface::TYPE_NORMAL)
+      : tab_strip_model_(std::make_unique<TabStripModel>(&delegate_, profile)) {
+    delegate_.SetBrowserWindowInterface(&browser_window_);
+    ON_CALL(browser_window_, GetProfile()).WillByDefault(Return(profile));
+    ON_CALL(browser_window_, GetType()).WillByDefault(Return(type));
+    ON_CALL(browser_window_, GetTabStripModel())
+        .WillByDefault(Return(tab_strip_model_.get()));
+    ON_CALL(browser_window_, IsDeleteScheduled()).WillByDefault(Return(false));
+    ON_CALL(browser_window_, RegisterBrowserDidClose)
+        .WillByDefault(
+            [this](BrowserWindowInterface::BrowserDidCloseCallback callback) {
+              return browser_did_close_callbacks_.Add(std::move(callback));
+            });
+
+    BrowserManagerServiceFactory::GetForProfile(profile)->AddBrowserForTesting(
+        &browser_window_);
+  }
+
+  ~ScopedMockBrowserWindow() { Close(); }
+
+  ScopedMockBrowserWindow(const ScopedMockBrowserWindow&) = delete;
+  ScopedMockBrowserWindow& operator=(const ScopedMockBrowserWindow&) = delete;
+
+  void Close() {
+    if (closed_) {
+      return;
+    }
+    closed_ = true;
+    browser_did_close_callbacks_.Notify(&browser_window_);
+  }
+
+  TabStripModel* tab_strip_model() { return tab_strip_model_.get(); }
+
+ private:
+  NiceMock<MockBrowserWindowInterface> browser_window_;
+  TestTabStripModelDelegate delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  base::RepeatingCallbackList<void(BrowserWindowInterface*)>
+      browser_did_close_callbacks_;
+  bool closed_ = false;
+};
+
+}  // namespace
+
+class PageContentExtractionTabStripModelObserverTest : public testing::Test {
+ public:
+  PageContentExtractionTabStripModelObserverTest() {
+    feature_list_.InitAndEnableFeature(features::kPageContentCache);
+  }
+
+  void SetUp() override {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
+    service_ = std::make_unique<TestPageContentExtractionService>(
+        os_crypt_async_.get(), profile_.GetPath());
+    // Wait for `OSCryptAsync` and SQLite store initialization
+    // (`pending_tasks_`) to complete before test bodies issue cache operations.
+    ASSERT_FALSE(GetCachedContentForTab(1).has_value());
+  }
+
+  void TearDown() override {
+    browser_shutdown::SetTryingToQuit(false);
+    observer_.reset();
+    service_.reset();
+  }
+
+ protected:
+  content::WebContents* AppendTabWithUrl(TabStripModel* tab_strip_model,
+                                         const GURL& url) {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(contents.get(),
+                                                               url);
+    content::WebContents* raw_contents = contents.get();
+    tab_strip_model->AppendWebContents(std::move(contents),
+                                       /*foreground=*/true);
+    return raw_contents;
+  }
+
+  std::optional<optimization_guide::proto::PageContext> GetCachedContentForTab(
+      int64_t tab_id) {
+    base::test::TestFuture<
+        std::optional<optimization_guide::proto::PageContext>>
+        future;
+    service_->GetPageContentFromOnDiskCache(tab_id, future.GetCallback());
+    return future.Take();
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_feature_init_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingProfile profile_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  std::unique_ptr<TestPageContentExtractionService> service_;
+  std::unique_ptr<PageContentExtractionTabStripModelObserver> observer_;
+};
+
+TEST_F(PageContentExtractionTabStripModelObserverTest,
+       LastWindowCloseAllTabsPreservesCacheWhileSecondaryWindowCloseEvicts) {
+  ScopedMockBrowserWindow window1(&profile_);
+  content::WebContents* single_close_contents = AppendTabWithUrl(
+      window1.tab_strip_model(), GURL("https://example.com/win1_single"));
+  const int64_t single_close_tab_id =
+      service_->CacheContentForTab(single_close_contents, "win1_single");
+  content::WebContents* contents1 = AppendTabWithUrl(
+      window1.tab_strip_model(), GURL("https://example.com/win1"));
+  const int64_t window1_tab_id =
+      service_->CacheContentForTab(contents1, "win1");
+
+  // Create `observer_` after `window1` exists (exercising constructor
+  // attachment via `ForEach`) and before `window2` is created (exercising
+  // dynamic attachment via `OnBrowserCreated`).
+  observer_ = std::make_unique<PageContentExtractionTabStripModelObserver>(
+      &profile_, service_.get());
+
+  // Closing an individual tab (`!closing_all()`) while `window1` is the only
+  // open window should evict that tab's cached entry while preserving other
+  // tabs in `window1`.
+  window1.tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_FALSE(GetCachedContentForTab(single_close_tab_id).has_value());
+  EXPECT_TRUE(GetCachedContentForTab(window1_tab_id).has_value());
+
+  ScopedMockBrowserWindow window2(&profile_);
+  content::WebContents* contents2 = AppendTabWithUrl(
+      window2.tab_strip_model(), GURL("https://example.com/win2"));
+  const int64_t window2_tab_id =
+      service_->CacheContentForTab(contents2, "win2");
+  ASSERT_TRUE(GetCachedContentForTab(window2_tab_id).has_value());
+
+  // Closing all tabs in secondary `window2` while `window1` stays open
+  // should evict `window2`'s tabs.
+  window2.tab_strip_model()->CloseAllTabs();
+  window2.Close();
+
+  EXPECT_TRUE(GetCachedContentForTab(window1_tab_id).has_value());
+  EXPECT_FALSE(GetCachedContentForTab(window2_tab_id).has_value());
+
+  // Quitting the app (`IsTryingToQuit()`) with multiple normal windows open
+  // should preserve `window3`'s cached entries.
+  ScopedMockBrowserWindow window3(&profile_);
+  content::WebContents* contents3 = AppendTabWithUrl(
+      window3.tab_strip_model(), GURL("https://example.com/win3"));
+  const int64_t window3_tab_id =
+      service_->CacheContentForTab(contents3, "win3");
+  ASSERT_TRUE(GetCachedContentForTab(window3_tab_id).has_value());
+
+  browser_shutdown::SetTryingToQuit(true);
+  window3.tab_strip_model()->CloseAllTabs();
+  window3.Close();
+  browser_shutdown::SetTryingToQuit(false);
+  EXPECT_TRUE(GetCachedContentForTab(window3_tab_id).has_value());
+
+  // Replacing/discarding a tab's `WebContents` with a new `SessionID` should
+  // evict the old `SessionID`.
+  std::unique_ptr<content::WebContents> replacement_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  content::WebContents* raw_replacement = replacement_contents.get();
+  window1.tab_strip_model()->DiscardWebContents(
+      contents1, std::move(replacement_contents));
+  EXPECT_FALSE(GetCachedContentForTab(window1_tab_id).has_value());
+
+  const int64_t replacement_tab_id =
+      service_->CacheContentForTab(raw_replacement, "win1_replaced");
+  ASSERT_TRUE(GetCachedContentForTab(replacement_tab_id).has_value());
+
+  // Closing all tabs in the last remaining `TYPE_NORMAL` `window1` for the
+  // profile while a non-tabbed auxiliary window (such as DevTools) remains open
+  // should still preserve `window1`'s cached entries across session restarts.
+  ScopedMockBrowserWindow devtools_window(
+      &profile_, BrowserWindowInterface::TYPE_DEVTOOLS);
+  window1.tab_strip_model()->CloseAllTabs();
+  window1.Close();
+
+  EXPECT_TRUE(GetCachedContentForTab(replacement_tab_id).has_value());
+}
+
+}  // namespace page_content_annotations
