@@ -21,9 +21,13 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace user_education {
 
@@ -64,9 +68,21 @@ class BrowserFeaturePromoControllerRotatingPromoTest
     return result;
   }
 
+  // Verifies that the tracked element corresponding to `id` (whether a native
+  // Views view or a WebUI element hosted inside a WebView) has the
+  // `kHasInProductHelpPromoKey` property set while its help bubble is open.
   auto VerifyHasHelpBubble(ui::ElementIdentifier id) {
-    return CheckView(id, [](views::View* view) {
-      return view->GetProperty(user_education::kHasInProductHelpPromoKey);
+    return CheckElement(id, [](ui::TrackedElement* el) {
+      if (auto* const view_el = el->AsA<views::TrackedElementViews>()) {
+        return view_el->view()->GetProperty(
+            user_education::kHasInProductHelpPromoKey);
+      }
+      if (auto* const webui_el = el->AsA<ui::TrackedElementWebUI>()) {
+        return webui_el->GetWebView() &&
+               webui_el->GetWebView()->GetProperty(
+                   user_education::kHasInProductHelpPromoKey);
+      }
+      return false;
     });
   }
 
