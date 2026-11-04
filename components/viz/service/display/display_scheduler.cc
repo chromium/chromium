@@ -673,7 +673,7 @@ bool DisplayScheduler::CanDrawForPreviousFrame(
 }
 
 void DisplayScheduler::AttemptSwapForPreviousFrame() {
-  TRACE_EVENT0("viz", "DisplayScheduler::ForceImmediateSwapForPreviousFrame");
+  TRACE_EVENT("viz", "DisplayScheduler::AttemptSwapForPreviousFrame");
   swap_for_previous_frame_task_.Cancel();
 
   if (!last_undrawn_begin_frame_args_.has_value() ||
