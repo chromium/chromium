@@ -175,8 +175,11 @@ void StackTrace::OutputToStreamWithPrefixImpl(
     }
 
     if (dl_info_found) {
-      std::string build_id =
-          ReadElfBuildId(dl_info.dli_fbase, /*uppercase=*/false);
+      // SAFETY: `dladdr()` succeeded, so `dli_fbase` is the base address of
+      // the shared object containing `address`, which the dynamic loader has
+      // fully mapped into memory.
+      std::string build_id = UNSAFE_BUFFERS(
+          ReadElfBuildId(dl_info.dli_fbase, /*uppercase=*/false));
       if (!build_id.empty()) {
         *os << " (BuildId: " << build_id << ")";
       }

@@ -6,7 +6,6 @@
 
 #include <arpa/inet.h>
 #include <elf.h>
-#include <string.h>
 
 #include <optional>
 #include <string>
@@ -15,6 +14,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 
@@ -49,73 +49,99 @@ constexpr size_t kMaxBuildIdByteLength = 32;
 // null pointer if the header is invalid. Here and below |elf_mapped_base| is a
 // pointer to the start of the ELF image.
 const Ehdr* GetElfHeader(const void* elf_mapped_base) {
-  if (UNSAFE_TODO(strncmp(reinterpret_cast<const char*>(elf_mapped_base),
-                          ELFMAG, SELFMAG)) != 0) {
+  const Ehdr* elf_header = reinterpret_cast<const Ehdr*>(elf_mapped_base);
+  if (span(elf_header->e_ident).first<SELFMAG>() !=
+      byte_span_from_cstring(ELFMAG)) {
     return nullptr;
   }
 
-  return reinterpret_cast<const Ehdr*>(elf_mapped_base);
+  return elf_header;
+}
+
+// Returns the offset to add to virtual addresses in the image mapped at
+// `elf_mapped_base` to compute the mapped virtual address, given the image's
+// `program_headers`.
+size_t ComputeRelocationOffset(const void* elf_mapped_base,
+                               span<const Phdr> program_headers) {
+  for (const Phdr& header : program_headers) {
+    if (header.p_type == PT_LOAD) {
+      // `elf_mapped_base` + `header.p_offset` is the mapped address of this
+      // segment. `header.p_vaddr` is the specified virtual address within the
+      // ELF image.
+      const uintptr_t mapped_address =
+          reinterpret_cast<uintptr_t>(elf_mapped_base) + header.p_offset;
+      return mapped_address - header.p_vaddr;
+    }
+  }
+
+  // Assume the virtual addresses in the image start at 0, so the offset is
+  // from 0 to the actual mapped base address.
+  return static_cast<size_t>(reinterpret_cast<uintptr_t>(elf_mapped_base) -
+                             reinterpret_cast<uintptr_t>(nullptr));
 }
 
 }  // namespace
 
 std::string ReadElfBuildId(const void* elf_mapped_base, bool uppercase) {
-  const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
-  if (!elf_header) {
-    return "";
-  }
-
-  const size_t relocation_offset = GetRelocationOffset(elf_mapped_base);
-  for (const Phdr& header : GetElfProgramHeaders(elf_mapped_base)) {
+  // GetElfProgramHeaders() validates the ELF header and returns an empty span
+  // if it is invalid.
+  // SAFETY: Required from caller, see UNSAFE_BUFFER_USAGE in header.
+  const span<const Phdr> program_headers =
+      UNSAFE_BUFFERS(GetElfProgramHeaders(elf_mapped_base));
+  const size_t relocation_offset =
+      ComputeRelocationOffset(elf_mapped_base, program_headers);
+  for (const Phdr& header : program_headers) {
     if (header.p_type != PT_NOTE) {
       continue;
     }
 
-    // Look for a NT_GNU_BUILD_ID note with name == "GNU".
-    const char* current_section =
-        reinterpret_cast<const char*>(header.p_vaddr + relocation_offset);
-    const char* section_end = UNSAFE_TODO(current_section + header.p_memsz);
-    const Nhdr* current_note = nullptr;
-    bool found = false;
-    while (current_section < section_end) {
-      current_note = reinterpret_cast<const Nhdr*>(current_section);
-      if (current_note->n_type == NT_GNU_BUILD_ID) {
-        std::string_view note_name(UNSAFE_TODO(current_section + sizeof(Nhdr)),
-                                   current_note->n_namesz);
-        // Explicit constructor is used to include the '\0' character.
-        if (note_name == std::string_view(kGnuNoteName, sizeof(kGnuNoteName))) {
-          found = true;
-          break;
-        }
-      }
+    // SAFETY: `elf_mapped_base` points to a fully mapped ELF image, as required
+    // from the caller (see UNSAFE_BUFFER_USAGE in header). The PT_NOTE segment
+    // described by this program header is mapped at
+    // `p_vaddr + relocation_offset` and spans `p_memsz` bytes.
+    SpanReader reader(UNSAFE_BUFFERS(span(
+        reinterpret_cast<const uint8_t*>(header.p_vaddr + relocation_offset),
+        static_cast<size_t>(header.p_memsz))));
 
-      size_t section_size =
-          bits::AlignUp(current_note->n_namesz, static_cast<Word>(4)) +
-          bits::AlignUp(current_note->n_descsz, static_cast<Word>(4)) +
-          sizeof(Nhdr);
-      if (section_size > static_cast<size_t>(section_end - current_section)) {
+    // Look for a NT_GNU_BUILD_ID note with name == "GNU".
+    while (reader.remaining() > 0) {
+      const std::optional<Nhdr> note = reader.ReadNativeEndian<Nhdr>();
+      if (!note) {
         return "";
       }
-      UNSAFE_TODO(current_section += section_size);
-    }
 
-    if (!found) {
-      continue;
-    }
+      // The note header is followed by the name and the descriptor, each
+      // padded to a multiple of 4 bytes.
+      const std::optional<span<const uint8_t>> name =
+          reader.Read(bits::AlignUp(note->n_namesz, static_cast<Word>(4)));
+      if (!name) {
+        return "";
+      }
 
-    // Validate that the build ID is reasonably sized.
-    size_t note_size = current_note->n_descsz;
-    if (note_size > kMaxBuildIdByteLength) {
-      continue;
-    }
+      // `kGnuNoteName` includes the '\0' character.
+      if (note->n_type == NT_GNU_BUILD_ID &&
+          note->n_namesz == sizeof(kGnuNoteName) &&
+          *name == byte_span_with_nul_from_cstring(kGnuNoteName)) {
+        // Validate that the build ID is reasonably sized. If it is not, move on
+        // to the next PT_NOTE segment.
+        if (note->n_descsz > kMaxBuildIdByteLength) {
+          break;
+        }
 
-    // Return the build ID as a hex string.
-    span<const uint8_t> build_id_bytes = UNSAFE_TODO(
-        span(reinterpret_cast<const uint8_t*>(current_note) + sizeof(Nhdr) +
-                 bits::AlignUp(current_note->n_namesz, static_cast<Word>(4)),
-             note_size));
-    return uppercase ? HexEncode(build_id_bytes)
-                     : HexEncodeLower(build_id_bytes);
+        // Return the build ID as a hex string.
+        const std::optional<span<const uint8_t>> build_id_bytes =
+            reader.Read(note->n_descsz);
+        if (!build_id_bytes) {
+          return "";
+        }
+        return uppercase ? HexEncode(*build_id_bytes)
+                         : HexEncodeLower(*build_id_bytes);
+      }
+
+      if (!reader.Skip(bits::AlignUp(note->n_descsz, static_cast<Word>(4)))) {
+        return "";
+      }
+    }
   }
 
   return "";
@@ -123,49 +149,58 @@ std::string ReadElfBuildId(const void* elf_mapped_base, bool uppercase) {
 
 std::optional<std::string_view> ReadElfLibraryName(
     const void* elf_mapped_base) {
-  const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
-  if (!elf_header) {
-    return {};
-  }
-
-  const size_t relocation_offset = GetRelocationOffset(elf_mapped_base);
-  for (const Phdr& header : GetElfProgramHeaders(elf_mapped_base)) {
+  // GetElfProgramHeaders() validates the ELF header and returns an empty span
+  // if it is invalid.
+  // SAFETY: Required from caller, see UNSAFE_BUFFER_USAGE in header.
+  const span<const Phdr> program_headers =
+      UNSAFE_BUFFERS(GetElfProgramHeaders(elf_mapped_base));
+  const size_t relocation_offset =
+      ComputeRelocationOffset(elf_mapped_base, program_headers);
+  for (const Phdr& header : program_headers) {
     if (header.p_type != PT_DYNAMIC) {
       continue;
     }
 
+    // SAFETY: `elf_mapped_base` points to a fully mapped ELF image, as required
+    // from the caller (see UNSAFE_BUFFER_USAGE in header). The PT_DYNAMIC
+    // segment described by this program header is mapped at
+    // `p_vaddr + relocation_offset` and spans `p_memsz` bytes, i.e.
+    // `p_memsz / sizeof(Dyn)` complete entries.
+    const span<const Dyn> dynamic_entries = UNSAFE_BUFFERS(
+        span(reinterpret_cast<const Dyn*>(header.p_vaddr + relocation_offset),
+             static_cast<size_t>(header.p_memsz) / sizeof(Dyn)));
+
     // Read through the ELF dynamic sections to find the string table and
     // SONAME offsets, which are used to compute the offset of the library
     // name string.
-    const Dyn* dynamic_start =
-        reinterpret_cast<const Dyn*>(header.p_vaddr + relocation_offset);
-    const Dyn* dynamic_end = reinterpret_cast<const Dyn*>(
-        header.p_vaddr + relocation_offset + header.p_memsz);
     Xword soname_strtab_offset = 0;
-    const char* strtab_addr = nullptr;
-    for (const Dyn* dynamic_iter = dynamic_start; dynamic_iter < dynamic_end;
-         UNSAFE_TODO(++dynamic_iter)) {
-      if (dynamic_iter->d_tag == DT_STRTAB) {
+    uintptr_t strtab_addr = 0;
+    for (const Dyn& dynamic_entry : dynamic_entries) {
+      if (dynamic_entry.d_tag == DT_STRTAB) {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID) || \
     (defined(ARCH_CPU_RISCV_FAMILY) && BUILDFLAG(IS_LINUX))
         // Fuchsia and Android do not relocate the strtab pointer on ELF load.
         // When the dynamic section is readonly, the strtab pointer is also not
         // relocated. This is the default ABI behavior on RISC-V GNU Linux (See
         // sysdeps/riscv/dl-relocate-ld.h).
-        strtab_addr =
-            UNSAFE_TODO(static_cast<size_t>(dynamic_iter->d_un.d_ptr) +
-                        reinterpret_cast<const char*>(relocation_offset));
+        strtab_addr = static_cast<uintptr_t>(dynamic_entry.d_un.d_ptr) +
+                      relocation_offset;
 #else
-        strtab_addr = reinterpret_cast<const char*>(dynamic_iter->d_un.d_ptr);
+        strtab_addr = static_cast<uintptr_t>(dynamic_entry.d_un.d_ptr);
 #endif
-      } else if (dynamic_iter->d_tag == DT_SONAME) {
+      } else if (dynamic_entry.d_tag == DT_SONAME) {
         // The Android NDK wrongly defines `d_val` as an Elf32_Sword for 32 bits
         // and thus needs this cast.
-        soname_strtab_offset = static_cast<Xword>(dynamic_iter->d_un.d_val);
+        soname_strtab_offset = static_cast<Xword>(dynamic_entry.d_un.d_val);
       }
     }
     if (soname_strtab_offset && strtab_addr) {
-      return std::string_view(UNSAFE_TODO(strtab_addr + soname_strtab_offset));
+      // SAFETY: `elf_mapped_base` points to a fully mapped ELF image, as
+      // required from the caller (see UNSAFE_BUFFER_USAGE in header). DT_STRTAB
+      // is the mapped address of the dynamic string table, and DT_SONAME is the
+      // offset within it of the NUL-terminated library name.
+      return std::string_view(UNSAFE_BUFFERS(
+          reinterpret_cast<const char*>(strtab_addr) + soname_strtab_offset));
     }
   }
 
@@ -178,31 +213,22 @@ span<const Phdr> GetElfProgramHeaders(const void* elf_mapped_base) {
     return {};
   }
 
-  const char* phdr_start = UNSAFE_TODO(
-      reinterpret_cast<const char*>(elf_header) + elf_header->e_phoff);
-  return UNSAFE_TODO(span<const Phdr>(reinterpret_cast<const Phdr*>(phdr_start),
-                                      elf_header->e_phnum));
+  // SAFETY: `elf_mapped_base` points to a fully mapped ELF image, as required
+  // from the caller (see UNSAFE_BUFFER_USAGE in header), and its header was
+  // validated above. Per the ELF specification, the program header table
+  // starts `e_phoff` bytes from the beginning of the image and holds `e_phnum`
+  // entries.
+  return UNSAFE_BUFFERS(span(
+      reinterpret_cast<const Phdr*>(
+          reinterpret_cast<const uint8_t*>(elf_header) + elf_header->e_phoff),
+      static_cast<size_t>(elf_header->e_phnum)));
 }
 
-// Returns the offset to add to virtual addresses in the image to compute the
-// mapped virtual address.
 size_t GetRelocationOffset(const void* elf_mapped_base) {
-  span<const Phdr> headers = GetElfProgramHeaders(elf_mapped_base);
-  for (const Phdr& header : headers) {
-    if (header.p_type == PT_LOAD) {
-      // |elf_mapped_base| + |header.p_offset| is the mapped address of this
-      // segment. |header.p_vaddr| is the specified virtual address within the
-      // ELF image.
-      const char* const mapped_address = UNSAFE_TODO(
-          reinterpret_cast<const char*>(elf_mapped_base) + header.p_offset);
-      return reinterpret_cast<uintptr_t>(mapped_address) - header.p_vaddr;
-    }
-  }
-
-  // Assume the virtual addresses in the image start at 0, so the offset is
-  // from 0 to the actual mapped base address.
-  return static_cast<size_t>(reinterpret_cast<uintptr_t>(elf_mapped_base) -
-                             reinterpret_cast<uintptr_t>(nullptr));
+  return ComputeRelocationOffset(
+      elf_mapped_base,
+      // SAFETY: Required from caller, see UNSAFE_BUFFER_USAGE in header.
+      UNSAFE_BUFFERS(GetElfProgramHeaders(elf_mapped_base)));
 }
 
 }  // namespace base::debug

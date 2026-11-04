@@ -53,7 +53,9 @@ TEST_P(ElfReaderTest, ReadElfBuildIdUppercase) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
-  EXPECT_EQ(kBuildIdHexString, ReadElfBuildId(image.elf_start(), true));
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  EXPECT_EQ(kBuildIdHexString,
+            UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), true)));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
@@ -63,8 +65,9 @@ TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
+  // SAFETY: `image` holds a complete ELF image built in memory.
   EXPECT_EQ(ToLowerASCII(kBuildIdHexStringLower),
-            ReadElfBuildId(image.elf_start(), false));
+            UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), false)));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
@@ -77,7 +80,9 @@ TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "GNU", kBuildIdBytes)
           .Build();
 
-  EXPECT_EQ(kBuildIdHexString, ReadElfBuildId(image.elf_start(), true));
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  EXPECT_EQ(kBuildIdHexString,
+            UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), true)));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdWrongName) {
@@ -87,7 +92,8 @@ TEST_P(ElfReaderTest, ReadElfBuildIdWrongName) {
           .AddNoteSegment(NT_GNU_BUILD_ID, "ABC", kBuildIdBytes)
           .Build();
 
-  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  EXPECT_EQ("", UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), true)));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdWrongType) {
@@ -97,7 +103,8 @@ TEST_P(ElfReaderTest, ReadElfBuildIdWrongType) {
           .AddNoteSegment(NT_GNU_BUILD_ID + 1, "GNU", kBuildIdBytes)
           .Build();
 
-  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  EXPECT_EQ("", UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), true)));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdNoBuildId) {
@@ -105,7 +112,8 @@ TEST_P(ElfReaderTest, ReadElfBuildIdNoBuildId) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
-  EXPECT_EQ("", ReadElfBuildId(image.elf_start(), true));
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  EXPECT_EQ("", UNSAFE_BUFFERS(ReadElfBuildId(image.elf_start(), true)));
 }
 
 TEST_P(ElfReaderTest, ReadElfLibraryName) {
@@ -114,8 +122,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryName) {
                            .AddSoName("mysoname")
                            .Build();
 
+  // SAFETY: `image` holds a complete ELF image built in memory.
   std::optional<std::string_view> library_name =
-      ReadElfLibraryName(image.elf_start());
+      UNSAFE_BUFFERS(ReadElfLibraryName(image.elf_start()));
   ASSERT_NE(std::nullopt, library_name);
   EXPECT_EQ("mysoname", *library_name);
 }
@@ -125,8 +134,9 @@ TEST_P(ElfReaderTest, ReadElfLibraryNameNoSoName) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
+  // SAFETY: `image` holds a complete ELF image built in memory.
   std::optional<std::string_view> library_name =
-      ReadElfLibraryName(image.elf_start());
+      UNSAFE_BUFFERS(ReadElfLibraryName(image.elf_start()));
   EXPECT_EQ(std::nullopt, library_name);
 }
 
@@ -135,20 +145,22 @@ TEST_P(ElfReaderTest, GetRelocationOffset) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
+  // SAFETY: `image` holds a complete ELF image built in memory.
+  const size_t relocation_offset =
+      UNSAFE_BUFFERS(GetRelocationOffset(image.elf_start()));
   switch (GetParam()) {
     case TestElfImageBuilder::RELOCATABLE:
-      EXPECT_EQ(reinterpret_cast<size_t>(image.elf_start()),
-                GetRelocationOffset(image.elf_start()));
+      EXPECT_EQ(reinterpret_cast<size_t>(image.elf_start()), relocation_offset);
       break;
 
     case TestElfImageBuilder::RELOCATABLE_WITH_BIAS:
       EXPECT_EQ(reinterpret_cast<size_t>(image.elf_start()) -
                     TestElfImageBuilder::kLoadBias,
-                GetRelocationOffset(image.elf_start()));
+                relocation_offset);
       break;
 
     case TestElfImageBuilder::NON_RELOCATABLE:
-      EXPECT_EQ(0u, GetRelocationOffset(image.elf_start()));
+      EXPECT_EQ(0u, relocation_offset);
       break;
   }
 }
@@ -162,7 +174,11 @@ INSTANTIATE_TEST_SUITE_P(
     &ParamInfoToString);
 
 TEST(ElfReaderTestWithCurrentElfImage, ReadElfBuildId) {
-  std::string build_id = ReadElfBuildId(&__executable_start, true);
+  // SAFETY: `__executable_start` is a linker-defined symbol at the start of
+  // the ELF image of the module containing this code, which has been loaded,
+  // and thus fully mapped into memory.
+  std::string build_id =
+      UNSAFE_BUFFERS(ReadElfBuildId(&__executable_start, true));
   ASSERT_FALSE(build_id.empty());
 
 #if defined(OFFICIAL_BUILD)
@@ -206,7 +222,11 @@ TEST(ElfReaderTestWithCurrentImage, ReadElfBuildId) {
   const void* addr = info.dli_fbase;
 #endif
 
-  auto name = ReadElfLibraryName(addr);
+  // SAFETY: `addr` is the start of a module loaded (and thus fully mapped) by
+  // the dynamic loader: either `__executable_start`, a linker-defined symbol at
+  // the start of this module, or the `dli_fbase` returned by `dladdr()` for a
+  // loaded library.
+  auto name = UNSAFE_BUFFERS(ReadElfLibraryName(addr));
   ASSERT_TRUE(name);
   EXPECT_NE(std::string::npos, name->find(kLibraryName))
       << "Library name " << *name << " doesn't contain expected "

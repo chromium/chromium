@@ -156,7 +156,13 @@ void SymbolMap::Populate() {
     // Create Segment sub-entries for all PT_LOAD headers.
     // Each Segment corresponds to a "mmap" line in the output.
     next_entry.segment_count = 0;
-    for (const Elf64_Phdr& phdr : GetElfProgramHeaders(next_entry.addr)) {
+    // SAFETY: `lmap` is an entry of the dynamic linker's list of loaded
+    // modules, so the module is fully mapped into memory. `l_addr` is its load
+    // bias, which is also the address of its ELF header since Fuchsia modules
+    // are position-independent and linked at address 0 (this is also assumed
+    // when computing `segment.addr` below).
+    for (const Elf64_Phdr& phdr :
+         UNSAFE_BUFFERS(GetElfProgramHeaders(next_entry.addr))) {
       if (phdr.p_type != PT_LOAD) {
         continue;
       }
@@ -179,8 +185,9 @@ void SymbolMap::Populate() {
 
     // Get the human-readable library name from the ELF header, falling back on
     // using names from the link map for binaries that aren't shared libraries.
+    // SAFETY: See the call to `GetElfProgramHeaders()` above.
     std::optional<std::string_view> elf_library_name =
-        ReadElfLibraryName(next_entry.addr);
+        UNSAFE_BUFFERS(ReadElfLibraryName(next_entry.addr));
     if (elf_library_name) {
       UNSAFE_TODO(strlcpy(next_entry.name, elf_library_name->data(),
                           elf_library_name->size() + 1));
@@ -200,7 +207,9 @@ void SymbolMap::Populate() {
                           link_map_name.size() + 1));
     }
 
-    next_entry.build_id = ReadElfBuildId(next_entry.addr, false);
+    // SAFETY: See the call to `GetElfProgramHeaders()` above.
+    next_entry.build_id =
+        UNSAFE_BUFFERS(ReadElfBuildId(next_entry.addr, false));
     if (next_entry.build_id.empty()) {
       LOG(WARNING) << "Couldn't read build ID.";
       continue;

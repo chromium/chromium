@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/debug/elf_reader.h"
 #include "base/logging.h"
 
@@ -13,8 +14,11 @@ extern char __executable_start;
 
 namespace crash_reporter {
 std::string GetElfBuildId() {
+  // SAFETY: `__executable_start` is a linker-defined symbol at the start of
+  // the ELF image of the module containing this code, which has been loaded,
+  // and thus fully mapped into memory.
   std::string build_id =
-      base::debug::ReadElfBuildId(&__executable_start, false);
+      UNSAFE_BUFFERS(base::debug::ReadElfBuildId(&__executable_start, false));
   CHECK(!build_id.empty()) << "Failed to read BuildId";
 
   // Official builds use SHA1 (40 chars), but debug builds use whatever is

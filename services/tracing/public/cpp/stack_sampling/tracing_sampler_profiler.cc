@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/android/library_loader/anchor_functions.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -225,12 +226,17 @@ struct FrameDetails {
   // Sets Chrome's module info for the frame.
   void SetChromeModuleInfo() {
     module_base_address = executable_start_addr();
+    // SAFETY: `executable_start_addr()` is the address of `__executable_start`,
+    // a linker-defined symbol at the start of the ELF image of the module
+    // containing this code, which has been loaded, and thus fully mapped into
+    // memory.
     static const std::optional<std::string_view> library_name =
-        base::debug::ReadElfLibraryName(
-            reinterpret_cast<void*>(executable_start_addr()));
+        UNSAFE_BUFFERS(base::debug::ReadElfLibraryName(
+            reinterpret_cast<void*>(executable_start_addr())));
+    // SAFETY: As above.
     static const base::NoDestructor<std::string> chrome_debug_id(
-        base::debug::ReadElfBuildId(
-            reinterpret_cast<void*>(executable_start_addr()), true));
+        UNSAFE_BUFFERS(base::debug::ReadElfBuildId(
+            reinterpret_cast<void*>(executable_start_addr()), true)));
     if (library_name) {
       module_name = std::string(*library_name);
     }
