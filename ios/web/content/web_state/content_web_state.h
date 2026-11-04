@@ -23,6 +23,7 @@
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 @class CRCWebViewportContainerView;
 @class CRWWebViewProxy;
@@ -209,7 +210,7 @@ class ContentWebState : public WebState,
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
