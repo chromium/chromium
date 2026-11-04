@@ -4231,8 +4231,8 @@ TEST_F(GlicEnablingGeicPolicyTest, ConsumerOnlyEntryPointsDisabledForGeic) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
-  // Gemini Enterprise profiles are consented, so only the provider keeps PDF
-  // auto-open off.
+  // Complete the GEiC FRE so only the provider keeps PDF auto-open off.
+  geic::CompleteFre(profile());
   ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
 
   EXPECT_FALSE(GlicEnabling::IsPdfSummarizeEnabled(profile()));
