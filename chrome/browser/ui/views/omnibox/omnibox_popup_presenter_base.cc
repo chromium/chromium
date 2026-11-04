@@ -22,11 +22,13 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -70,6 +72,20 @@ std::string_view CreationReasonToString(
   }
 }
 
+// Whether the content is created to prewarm the popup, before anything needs
+// it.
+bool IsPrewarm(OmniboxPopupPresenterBase::CreationReason reason) {
+  switch (reason) {
+    case OmniboxPopupPresenterBase::CreationReason::kEager:
+    case OmniboxPopupPresenterBase::CreationReason::kAfterWindowPresentation:
+    case OmniboxPopupPresenterBase::CreationReason::kOmniboxFocus:
+      return true;
+    case OmniboxPopupPresenterBase::CreationReason::kShow:
+    case OmniboxPopupPresenterBase::CreationReason::kContextMenu:
+      return false;
+  }
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxPopupPresenterBase,
@@ -87,6 +103,7 @@ OmniboxPopupPresenterBase::OmniboxPopupPresenterBase(
 }
 
 OmniboxPopupPresenterBase::~OmniboxPopupPresenterBase() {
+  pool_client_.reset();
   ReleaseWidget();
   // `ReleaseWidget()` only queues the widget for deferred destruction, so drain
   // the queue here: this destroys both the widget just closed above and any
@@ -457,6 +474,15 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
   if (auto* content = GetWebUIContent()) {
     return content;
   }
+  if (pool_client_) {
+    if (IsPrewarm(reason)) {
+      if (pool_client_->HasSharedWebUIContent()) {
+        return nullptr;
+      }
+    } else if (auto contents = pool_client_->TakeIdleWebUIContents()) {
+      return AdoptWebUIContents(std::move(contents));
+    }
+  }
   // Covers `CreateWebUIContent()`, which creates the WebContents and starts
   // its navigation.
   // TODO(crbug.com/570224989): Record an enum histogram of `CreationReason` for
@@ -491,6 +517,17 @@ OmniboxPopupPresenterBase::ReleaseWebUIContents() {
   omnibox_popup_webui_content_ = nullptr;
   content->parent()->RemoveChildViewT(content);
   return contents;
+}
+
+bool OmniboxPopupPresenterBase::CanReleaseWebUIContents() {
+  OmniboxPopupWebUIBaseContent* content = GetWebUIContent();
+  return content && !IsShown() && !is_open_ && !has_active_blockers() &&
+         !IsPermissionPromptPreventingClose() &&
+         content->CanReleaseContentsWrapper();
+}
+
+OmniboxPopupState OmniboxPopupPresenterBase::GetSharedPopupKind() const {
+  return OmniboxPopupState::kNone;
 }
 
 OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::AdoptWebUIContents(
@@ -537,6 +574,12 @@ void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
 void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
     WebUIContentCreationStrategy strategy) {
   content_creation_strategy_ = strategy;
+  // Joins the profile's pool before prewarming, so that prewarming can see the
+  // other windows' popups. `location_bar_` is null in unit tests.
+  if (location_bar_) {
+    pool_client_ = OmniboxPopupWebUIPoolClient::CreateIfSharingEnabled(
+        *this, location_bar_->GetProfile());
+  }
   switch (strategy) {
     case WebUIContentCreationStrategy::kEager:
       GetOrCreateWebUIContent(CreationReason::kEager);

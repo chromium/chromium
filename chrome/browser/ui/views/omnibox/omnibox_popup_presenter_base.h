@@ -29,8 +29,10 @@ class LocationBar;
 class OmniboxPopupUI;
 class OmniboxPopupWebUIBaseContent;
 class OmniboxPopupPresenterDelegate;
+class OmniboxPopupWebUIPoolClient;
 class RoundedOmniboxResultsFrame;
 class OmniboxController;
+enum class OmniboxPopupState;
 template <typename T>
 class WebUIContentsWrapperT;
 
@@ -139,8 +141,12 @@ class OmniboxPopupPresenterBase
   // if it does not exist yet. Creating the content creates a WebContents and
   // starts its navigation, so call this only where the content is needed,
   // e.g. to show the popup. Use `GetWebUIContent()` to read the content
-  // without creating it. Returns null only for unit-test presenters without
-  // WebUI content.
+  // without creating it. If the popup is shared across windows, this adopts
+  // an idle popup from another browser window of the profile instead, and
+  // skips prewarming (`kEager`, `kAfterWindowPresentation`) when another
+  // window already has a popup of this kind; it then returns null.
+  // Otherwise returns null only for unit-test presenters without WebUI
+  // content.
   OmniboxPopupWebUIBaseContent* GetOrCreateWebUIContent(CreationReason reason);
 
   // Releases the loaded WebContents of the popup, which must be hidden, so
@@ -149,6 +155,19 @@ class OmniboxPopupPresenterBase
   // presenter's content; the next `GetOrCreateWebUIContent()` creates a new
   // one.
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> ReleaseWebUIContents();
+
+  // Returns whether `ReleaseWebUIContents()` may move the popup to another
+  // browser window now. Errs toward false: the popup must have loaded content,
+  // be hidden, hold no deactivation blocker or permission prompt, and its
+  // content must hold no work for this window; see
+  // `OmniboxPopupWebUIBaseContent::CanReleaseContentsWrapper()`.
+  bool CanReleaseWebUIContents();
+
+  // Returns the kind of popup that this presenter shares with the other
+  // browser windows of its profile with
+  // `omnibox::kOmniboxWebUIPopupShareAcrossWindows`, or
+  // `OmniboxPopupState::kNone` if it does not share its popup.
+  virtual OmniboxPopupState GetSharedPopupKind() const;
 
   // Creates this presenter's content around `contents`, which another browser
   // window's presenter released, instead of loading a new WebContents. The
@@ -470,6 +489,9 @@ class OmniboxPopupPresenterBase
   BrowserWidgetObserver browser_widget_observer_{*this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_widget_observation_{&browser_widget_observer_};
+
+  // Set if this presenter shares its popup with the profile's other windows.
+  std::unique_ptr<OmniboxPopupWebUIPoolClient> pool_client_;
 
   // The popup widget that contains this WebView. Created, closed and owned by
   // `this`; see `ReleaseWidget()` for how it is destroyed.

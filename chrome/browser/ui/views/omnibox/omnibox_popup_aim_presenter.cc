@@ -61,6 +61,10 @@ std::string_view OmniboxPopupAimPresenter::GetPopupMetricPrefix() const {
   return OmniboxPopupPresenterBase::kAimPopupMetricPrefix;
 }
 
+OmniboxPopupState OmniboxPopupAimPresenter::GetSharedPopupKind() const {
+  return OmniboxPopupState::kAim;
+}
+
 std::unique_ptr<OmniboxPopupWebUIBaseContent>
 OmniboxPopupAimPresenter::CreateWebUIContent(
     std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {

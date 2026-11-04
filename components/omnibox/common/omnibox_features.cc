@@ -350,6 +350,12 @@ BASE_FEATURE(kOmniboxFullWebUIDestroyWidgetOnHide, ENABLED);
 BASE_FEATURE(kOmniboxAimDestroyWidgetOnHide, ENABLED);
 BASE_FEATURE(kOmniboxWebUIDestroyWidgetOnHide, DISABLED);
 
+// When enabled, the browser windows of a profile share their classic and AI
+// Mode WebUI popups. A window that needs a popup takes an idle one of the same
+// kind from another window instead of loading a new WebContents, and skips
+// prewarming one if another window already has one.
+BASE_FEATURE(kOmniboxWebUIPopupShareAcrossWindows, DISABLED);
+
 // When enabled, a location bar creates its AI Mode popup (and the WebContents
 // behind it) only once the profile is eligible for it, instead of at window
 // creation. Ineligible profiles never show the popup, so this saves one

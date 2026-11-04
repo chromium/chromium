@@ -85,6 +85,10 @@ std::string_view OmniboxPopupPresenter::GetPopupMetricPrefix() const {
   return OmniboxPopupPresenterBase::kWebUIPopupMetricPrefix;
 }
 
+OmniboxPopupState OmniboxPopupPresenter::GetSharedPopupKind() const {
+  return OmniboxPopupState::kClassic;
+}
+
 void OmniboxPopupPresenter::WidgetDestroyed() {
   // Update the popup state manager if widget was destroyed externally, e.g., by
   // the OS. This ensures the popup state manager stays in sync. Skip this when

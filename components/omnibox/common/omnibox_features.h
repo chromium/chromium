@@ -126,6 +126,7 @@ BASE_DECLARE_FEATURE(kOmniboxWebUIPopupCreateWidgetOnShow);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDestroyWidgetOnHide);
 BASE_DECLARE_FEATURE(kOmniboxAimDestroyWidgetOnHide);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDestroyWidgetOnHide);
+BASE_DECLARE_FEATURE(kOmniboxWebUIPopupShareAcrossWindows);
 BASE_DECLARE_FEATURE(kOmniboxAimPopupRequireEligibility);
 BASE_DECLARE_FEATURE(kWebUISearchboxWithoutModelController);
 
