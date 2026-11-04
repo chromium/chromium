@@ -2095,6 +2095,16 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
   return true;
 }
 
+bool ChromeContentBrowserClient::CanBrowserContextUseSpareRenderProcessHost(
+    content::BrowserContext* browser_context) {
+  // Navigations in TopChromeWebUIProfile never use a spare, since
+  // ShouldUseSpareRenderProcessHost() refuses it for that profile. Warming up
+  // a spare for it would replace the spare of the profile that the user
+  // browses with.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile || !profile->IsTopChromeWebUIProfile();
+}
+
 bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {

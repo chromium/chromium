@@ -236,6 +236,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& site_url,
       std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason)
       override;
+  bool CanBrowserContextUseSpareRenderProcessHost(
+      content::BrowserContext* browser_context) override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
   bool ShouldAllowCrossProcessSandboxedFrameForPrecursor(

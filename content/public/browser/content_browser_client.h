@@ -520,6 +520,15 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& site_url,
       std::optional<SpareProcessRefusedByEmbedderReason>& refused_reason);
 
+  // Returns whether any navigation in `browser_context` can use a spare
+  // RenderProcessHost. If this returns false, no spare RenderProcessHost is
+  // warmed up for `browser_context`, and the existing spare (which may belong
+  // to another BrowserContext) is kept. This is useful for a BrowserContext
+  // whose navigations never use a spare, so that warming up a spare for it
+  // doesn't replace a spare that another BrowserContext could use.
+  virtual bool CanBrowserContextUseSpareRenderProcessHost(
+      BrowserContext* browser_context);
+
   // Returns true if site isolation should be enabled for |effective_site_url|.
   // This call allows the embedder to supplement the site isolation policy
   // enforced by the content layer. Will only be called if the content layer

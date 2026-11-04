@@ -455,6 +455,15 @@ SpareRenderProcessHostManagerImpl::GetLastSpareRendererCreationInfo() const {
 RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     BrowserContext* browser_context,
     std::optional<base::TimeDelta> timeout) {
+  // Keep the current spares if no navigation in `browser_context` can use a
+  // spare. `no_spare_renderer_reason_` is kept too, since this doesn't remove
+  // a spare.
+  if (!GetContentClient()
+           ->browser()
+           ->CanBrowserContextUseSpareRenderProcessHost(browser_context)) {
+    return nullptr;
+  }
+
   if (delay_timer_) {
     // If the timeout does not have a value, the delayed creation is no longer
     // required since we will create the spare renderer here.

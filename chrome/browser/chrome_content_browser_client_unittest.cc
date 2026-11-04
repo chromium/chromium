@@ -2303,6 +2303,21 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
 #endif
 }
 
+TEST_F(ChromeContentBrowserClientTest,
+       CanBrowserContextUseSpareRenderProcessHost) {
+  ChromeContentBrowserClient browser_client;
+  EXPECT_TRUE(
+      browser_client.CanBrowserContextUseSpareRenderProcessHost(&profile_));
+
+#if !BUILDFLAG(IS_ANDROID)
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+  EXPECT_FALSE(browser_client.CanBrowserContextUseSpareRenderProcessHost(
+      top_chrome_webui_profile));
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that WebPreferences of a WebContents in the Top Chrome WebUI profile
 // are computed from the user profile set for it.

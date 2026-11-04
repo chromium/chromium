@@ -8,6 +8,7 @@
 
 #include "base/callback_list.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -605,6 +606,46 @@ class NonSpareRendererContentBrowserClient
     return false;
   }
 };
+
+// A ContentBrowserClient that doesn't let navigations in one browser context
+// use a spare.
+class NoSpareForBrowserContextContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit NoSpareForBrowserContextContentBrowserClient(
+      BrowserContext* browser_context)
+      : browser_context_(browser_context) {}
+
+  bool CanBrowserContextUseSpareRenderProcessHost(
+      BrowserContext* browser_context) override {
+    return browser_context != browser_context_;
+  }
+
+ private:
+  raw_ptr<BrowserContext> browser_context_;
+};
+
+// Tests that no spare is warmed up for a browser context whose navigations
+// can't use a spare, and that the current spare is kept.
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       NoWarmupWhenSpareRefusedByEmbedder) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  auto other_browser_context = std::make_unique<ShellBrowserContext>(true);
+  NoSpareForBrowserContextContentBrowserClient browser_client(
+      other_browser_context.get());
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  spare_manager.WarmupSpare(browser_context());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* spare = spare_manager.GetSpares()[0];
+
+  EXPECT_FALSE(spare_manager.WarmupSpare(other_browser_context.get()));
+
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  EXPECT_EQ(spare_manager.GetSpares()[0], spare);
+  EXPECT_EQ(spare->GetBrowserContext(), browser_context());
+
+  spare_manager.CleanupSparesForTesting();
+}
 
 // Test that the spare renderer works correctly when the limit on the maximum
 // number of processes is small.

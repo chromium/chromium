@@ -209,6 +209,11 @@ bool ContentBrowserClient::ShouldUseSpareRenderProcessHost(
   return true;
 }
 
+bool ContentBrowserClient::CanBrowserContextUseSpareRenderProcessHost(
+    BrowserContext* browser_context) {
+  return true;
+}
+
 bool ContentBrowserClient::DoesSiteRequireDedicatedProcess(
     BrowserContext* browser_context,
     const GURL& effective_site_url) {
