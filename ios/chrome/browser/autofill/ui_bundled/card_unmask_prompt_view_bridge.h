@@ -50,20 +50,19 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 
   CreditCardData* credit_card_data() { return credit_card_data_; }
 
- protected:
+ private:
+  UIImage* GetCardIcon();
+
   // The controller `this` queries for logic and state.
-  raw_ptr<CardUnmaskPromptController, DanglingUntriaged> controller_;  // weak
+  raw_ptr<CardUnmaskPromptController> controller_;
 
   // The presented UINavigationController containing `prompt_view_controller_`.
   UINavigationController* navigation_controller_;
 
-  // Created on `Show` and destroyed when 'this' is destroyed.
+  // Created on `Show` and destroyed when `this` is destroyed.
   CardUnmaskPromptViewController* prompt_view_controller_;
 
- private:
-  UIImage* GetCardIcon();
-
-  raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
+  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   CreditCardData* credit_card_data_;
 

@@ -63,6 +63,7 @@ void CardUnmaskPromptViewBridge::Dismiss() {
 
 void CardUnmaskPromptViewBridge::ControllerGone() {
   controller_ = nullptr;
+  personal_data_manager_ = nullptr;
   PerformClose();
 }
 

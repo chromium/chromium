@@ -95,13 +95,7 @@ class MockCardUnmaskPromptViewBridge
   MockCardUnmaskPromptViewBridge& operator=(
       const MockCardUnmaskPromptViewBridge&) = delete;
 
-  ~MockCardUnmaskPromptViewBridge() override {
-    // The production implementation notifies the controller when it gets
-    // destroyed. This is not needed in the mock implementation and the
-    // controller might be destroyed at this point. Discarding the pointer
-    // prevent CardUnmaskPromptViewBridge from referencing it.
-    controller_ = nullptr;
-  }
+  ~MockCardUnmaskPromptViewBridge() override = default;
 
   MOCK_METHOD(void, PerformClose, (), (override));
 };
@@ -338,10 +332,13 @@ class CardUnmaskPromptViewControllerTest
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
-  std::unique_ptr<NiceMock<MockCardUnmaskPromptViewBridge>>
-      card_unmask_prompt_bridge_;
   std::unique_ptr<NiceMock<MockCardUnmaskPromptController>>
       card_unmask_prompt_controller_;
+  // Must be declared after `personal_data_manager_` and
+  // `card_unmask_prompt_controller_` so it is destroyed first, as the bridge
+  // holds raw_ptrs to both and notifies the controller in its destructor.
+  std::unique_ptr<NiceMock<MockCardUnmaskPromptViewBridge>>
+      card_unmask_prompt_bridge_;
   autofill::CardUnmaskPromptOptions challenge_option_;
   ScopedKeyWindow scoped_window_;
   UIViewController* root_view_controller_;
