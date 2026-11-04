@@ -218,31 +218,6 @@ void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   }
 }
 
-base::debug::CrashKeySize ToCrashKeySize(v8::CrashKeySize size) {
-  using base::debug::CrashKeySize;
-
-  switch (size) {
-    case v8::CrashKeySize::Size32:
-      return CrashKeySize::Size32;
-    case v8::CrashKeySize::Size64:
-      return CrashKeySize::Size64;
-    case v8::CrashKeySize::Size256:
-      return CrashKeySize::Size256;
-    case v8::CrashKeySize::Size1024:
-      return CrashKeySize::Size1024;
-    default:
-      NOTREACHED();
-  }
-}
-
-v8::CrashKey AllocateCrashKeyString(const char key[], v8::CrashKeySize size) {
-  return AllocateCrashKeyString(key, ToCrashKeySize(size));
-}
-
-void SetCrashKeyString(v8::CrashKey key, std::string_view value) {
-  SetCrashKeyString(reinterpret_cast<base::debug::CrashKeyString*>(key), value);
-}
-
 }  // namespace
 
 void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
@@ -1106,10 +1081,10 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
     isolate->SetPriority(v8::Isolate::Priority::kBestEffort);
   }
 
-  // Crash key API is not thread-safe, so we only set it up on the main thread.
+  // Per-isolate crash keys for isolate-specific addresses are only set up on
+  // the main thread. Process-wide crash keys are registered via
+  // v8::V8::SetCrashKeyCallbacks in gin::V8Initializer::Initialize.
   isolate->SetAddCrashKeyCallback(AddCrashKey);
-  isolate->SetCrashKeyStringCallbacks(AllocateCrashKeyString,
-                                      SetCrashKeyString);
 
   return isolate;
 }

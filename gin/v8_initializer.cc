@@ -70,6 +70,29 @@ std::optional<bool> g_use_module_dir_for_v8_files;
 #endif
 #endif
 
+base::debug::CrashKeySize ToCrashKeySize(v8::CrashKeySize size) {
+  switch (size) {
+    case v8::CrashKeySize::Size32:
+      return base::debug::CrashKeySize::Size32;
+    case v8::CrashKeySize::Size64:
+      return base::debug::CrashKeySize::Size64;
+    case v8::CrashKeySize::Size256:
+      return base::debug::CrashKeySize::Size256;
+    case v8::CrashKeySize::Size1024:
+      return base::debug::CrashKeySize::Size1024;
+  }
+  NOTREACHED();
+}
+
+v8::CrashKey AllocateCrashKey(const char key[], v8::CrashKeySize size) {
+  return base::debug::AllocateCrashKeyString(key, ToCrashKeySize(size));
+}
+
+void SetCrashKey(v8::CrashKey key, std::string_view value) {
+  base::debug::SetCrashKeyString(static_cast<base::debug::CrashKeyString*>(key),
+                                 value);
+}
+
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
   base::RandBytes(
       // SAFETY: This depends on v8 providing a valid pointer/size pair.
@@ -560,6 +583,8 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // Set this early on as some initialization steps, such as the initialization
   // of the virtual memory cage, already use V8's random number generator.
   v8::V8::SetEntropySource(&GenerateEntropy);
+
+  v8::V8::SetCrashKeyCallbacks(&AllocateCrashKey, &SetCrashKey);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {
