@@ -79,7 +79,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
     Promise<ArrayBuffer> deriveBits(
         AlgorithmIdentifier algorithm,
         CryptoKey baseKey,
-        optional unsigned long? length = null);
+        optional [EnforceRange] unsigned long? length = null);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoImportKey, RaisesException]
     Promise<CryptoKey> importKey(

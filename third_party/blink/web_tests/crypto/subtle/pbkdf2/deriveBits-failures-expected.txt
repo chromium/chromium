@@ -16,7 +16,7 @@ Deriving using iterations=-10...
 SUCCESS (rejected): TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': Pbkdf2Params: iterations: Outside of numeric range
 
 Deriving using length -10...
-SUCCESS (rejected): OperationError: Length for PBKDF2 key derivation must be a multiple of 8 bits.
+SUCCESS (rejected): TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': Value is outside the 'unsigned long' value range.
 PASS successfullyParsed is true
 
 TEST COMPLETE

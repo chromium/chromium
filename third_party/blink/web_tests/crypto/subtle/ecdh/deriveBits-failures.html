@@ -84,7 +84,7 @@ createTestKeys().then(function(result) {
   logError(result);
 
   debug("\nderiveBits() with public key that is for ECDSA...");
-  return crypto.subtle.deriveBits({name: 'ecdh', public: keyPairs.ecdsa.p256_1.publicKey}, keyPairs.ecdh.p256_1.privateKey, {test: 3});
+  return crypto.subtle.deriveBits({name: 'ecdh', public: keyPairs.ecdsa.p256_1.publicKey}, keyPairs.ecdh.p256_1.privateKey, 256);
 }).then(failAndFinishJSTest, function(result) {
   logError(result);
 }).then(finishJSTest, failAndFinishJSTest);
