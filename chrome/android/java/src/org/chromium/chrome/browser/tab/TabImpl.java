@@ -156,7 +156,9 @@ class TabImpl implements Tab, TabInternal {
     private static final LongSparseArray<TabImpl> sTabMap = new LongSparseArray<>();
 
     private static final String UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER =
-            "Autofill.ThirdPartyModeDisabled.Provider";
+            "Autofill.ThirdPartyModeDisabled.Provider2";
+
+    private static boolean sLoggedAutofillProviderDoesntUseVirtualStructureMetric;
 
     /**
      * A pref from //components/autofill/core/common/autofill_prefs.h which allows the use of
@@ -3041,6 +3043,10 @@ class TabImpl implements Tab, TabInternal {
     }
 
     private void maybeLogAutofillProviderDoesntUseVirtualStructureMetric() {
+        if (sLoggedAutofillProviderDoesntUseVirtualStructureMetric || providesAutofillStructure()) {
+            return;
+        }
+        sLoggedAutofillProviderDoesntUseVirtualStructureMetric = true;
 
         AutofillManager manager =
                 ContextUtils.getApplicationContext().getSystemService(AutofillManager.class);
@@ -3699,6 +3705,10 @@ class TabImpl implements Tab, TabInternal {
 
     boolean isContentViewDeferredForTesting() {
         return mIsContentViewDeferred;
+    }
+
+    static void resetAutofillProviderMetricForTesting() {
+        sLoggedAutofillProviderDoesntUseVirtualStructureMetric = false;
     }
 
     OnAttachStateChangeListener getAttachStateChangeListenerForTesting() {

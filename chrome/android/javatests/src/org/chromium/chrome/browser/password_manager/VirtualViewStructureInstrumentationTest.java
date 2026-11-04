@@ -52,7 +52,7 @@ public class VirtualViewStructureInstrumentationTest {
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Autofill.ThirdPartyModeDisabled.Provider", 1);
+                        "Autofill.ThirdPartyModeDisabled.Provider2", 1);
 
         // A new tab opens because the metric is logged upon tab creation.
         page.openNewTabFast();
@@ -72,7 +72,7 @@ public class VirtualViewStructureInstrumentationTest {
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectNoRecords("Autofill.ThirdPartyModeDisabled.Provider")
+                        .expectNoRecords("Autofill.ThirdPartyModeDisabled.Provider2")
                         .build();
 
         // A new tab opens because the metric is logged upon tab creation.
