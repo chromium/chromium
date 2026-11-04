@@ -22,7 +22,7 @@ export function getHtml(this: LeftHandSideElement) {
       style="${this.enableThreadsRailHybrid_
                  ? `width: ${this.expandedWidth_}px;`
                  : ''}"
-      src="${this.getExpandedLhsUrl_()}"
+      src="${this.expandedLhsUrl_}"
       ?inert="${!this.isExpandedReady_}"
       ?hidden="${this.enableThreadsRailHybrid_ &&
                  (!this.isExpandedReady_ || !this.isExpanded_)}">
