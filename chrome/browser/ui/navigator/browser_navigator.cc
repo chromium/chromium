@@ -843,8 +843,12 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
     // Picture in picture windows may not be opened by other picture in
     // picture or floating windows, or without an opener.
-    if (!params->browser || params->browser->GetType() ==
-                                BrowserWindowInterface::Type::TYPE_FLOATING) {
+    if (!params->browser ||
+        params->browser->GetType() ==
+            BrowserWindowInterface::Type::TYPE_FLOATING ||
+        !params->source_contents ||
+        PictureInPictureWindowManager::IsChildWebContents(
+            params->source_contents)) {
       params->browser = nullptr;
       return nullptr;
     }
@@ -872,8 +876,13 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       return nullptr;
     }
 
-    PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
-        params->source_contents, contents_to_navigate_or_insert);
+    auto* pip_manager = PictureInPictureWindowManager::GetInstance();
+    pip_manager->EnterDocumentPictureInPicture(params->source_contents,
+                                               contents_to_navigate_or_insert);
+    if (pip_manager->GetChildWebContents() != contents_to_navigate_or_insert) {
+      params->browser = nullptr;
+      return nullptr;
+    }
   }
 
   int singleton_index = -1;

@@ -670,9 +670,9 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
            base::NotFatalUntil::M161);
 
   if (disposition == ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
-    const GURL& opener_url = source ? source->GetLastCommittedURL() : GURL();
-    if (!PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
-            opener_url)) {
+    if (!source || PictureInPictureWindowManager::IsChildWebContents(source) ||
+        !PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+            source->GetLastCommittedURL())) {
       if (was_blocked) {
         *was_blocked = true;
       }

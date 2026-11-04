@@ -2213,6 +2213,47 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(params.browser, nullptr);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    BrowserNavigatorPictureInPictureTest,
+    Disposition_PictureInPicture_CantFromPipChildInNormalBrowser) {
+  auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
+  WebContents::CreateParams web_contents_params(browser()->GetProfile());
+  web_contents_params.picture_in_picture_options = *pip_options;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContents* tab = browser()->GetTabStripModel()->GetActiveWebContents();
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Create `pip_child` and navigate it to a supported URL before setting its
+  // PiP options or entering Document PiP (since
+  // `DocumentPictureInPictureNavigationThrottle` cancels cross-document
+  // navigations on any WebContents with `GetPictureInPictureOptions()`). This
+  // simulates a compromised renderer spoofing a supported URL via
+  // same-document replaceState on an active Document PiP child.
+  std::unique_ptr<WebContents> owned_pip_child =
+      WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
+  WebContents* pip_child = owned_pip_child.get();
+  ASSERT_TRUE(content::NavigateToURL(pip_child, url));
+
+  auto* manager = PictureInPictureWindowManager::GetInstance();
+  manager->EnterDocumentPictureInPicture(tab, pip_child);
+  ASSERT_EQ(pip_child, manager->GetChildWebContents());
+  ASSERT_TRUE(PictureInPictureWindowManager::IsChildWebContents(pip_child));
+
+  // Attempt to open another Document PiP window with `browser()` (a TYPE_NORMAL
+  // window) as `params.browser` and `pip_child` as `params.source_contents`.
+  NavigateParams second_params = MakeNavigateParams(browser());
+  second_params.disposition = WindowOpenDisposition::kNewPictureInPicture;
+  second_params.source_contents = pip_child;
+  second_params.contents_to_insert = WebContents::Create(web_contents_params);
+  EXPECT_EQ(nullptr, Navigate(&second_params));
+  EXPECT_EQ(nullptr, second_params.browser);
+  EXPECT_EQ(pip_child, manager->GetChildWebContents());
+
+  manager->ExitPictureInPicture();
+}
+
 IN_PROC_BROWSER_TEST_F(
     BrowserNavigatorTest,
     Disposition_PictureInPicture_CantWithoutASourceContents) {
