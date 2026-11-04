@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <string>
+#include <utility>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_command_line.h"
@@ -58,6 +59,11 @@ class GlicProviderChangeTest : public testing::Test {
     profile()->GetPrefs()->ClearPref(prefs::kGlicGeminiEnterpriseUrl);
   }
 
+  void SetAssistantSelection(prefs::AssistantSelection selection) {
+    profile()->GetPrefs()->SetInteger(prefs::kGlicAssistantSelection,
+                                      std::to_underlying(selection));
+  }
+
   Profile* profile() { return helper_.regular_profile(); }
 
   GlicProviderChange GetPendingProviderChange() {
@@ -99,6 +105,35 @@ TEST_F(GlicProviderChangeGeminiLatchedTest, PolicyAddedThenRemovedIsNone) {
 TEST_F(GlicProviderChangeGeminiLatchedTest, InvalidPolicyIsNone) {
   SetPolicyUrl(kInvalidPolicyUrl);
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
+}
+
+// A profile that selected consumer Gemini stays on Gemini after a relaunch, so
+// a GEiC policy isn't a pending change.
+TEST_F(GlicProviderChangeGeminiLatchedTest,
+       PolicyAddedWithConsumerSelectedIsNone) {
+  SetAssistantSelection(prefs::AssistantSelection::kConsumer);
+  SetPolicyUrl(kGeicAPolicyUrl);
+  EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
+}
+
+TEST_F(GlicProviderChangeGeminiLatchedTest,
+       PolicyAddedWithEnterpriseSelectedIsGeminiToGeic) {
+  SetAssistantSelection(prefs::AssistantSelection::kEnterprise);
+  SetPolicyUrl(kGeicAPolicyUrl);
+  EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeminiToGeic);
+}
+
+// Selecting consumer Gemini later reports the change, until it's reverted.
+TEST_F(GlicProviderChangeGeminiLatchedTest,
+       ConsumerSelectionTogglesPendingGeminiToGeic) {
+  SetPolicyUrl(kGeicAPolicyUrl);
+  ASSERT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeminiToGeic);
+
+  SetAssistantSelection(prefs::AssistantSelection::kConsumer);
+  EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
+
+  SetAssistantSelection(prefs::AssistantSelection::kAuto);
+  EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeminiToGeic);
 }
 
 TEST_F(GlicProviderChangeGeminiLatchedTest, LatchIsUnchanged) {
@@ -162,6 +197,16 @@ TEST_F(GlicProviderChangeGeicLatchedTest, PolicyModifiedThenRevertedIsNone) {
 TEST_F(GlicProviderChangeGeicLatchedTest, InvalidPolicyIsGeicToGemini) {
   SetPolicyUrl(kInvalidPolicyUrl);
   EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeicToGemini);
+}
+
+// Selecting consumer Gemini reports the change, until it's reverted.
+TEST_F(GlicProviderChangeGeicLatchedTest,
+       ConsumerSelectionTogglesPendingGeicToGemini) {
+  SetAssistantSelection(prefs::AssistantSelection::kConsumer);
+  ASSERT_EQ(GetPendingProviderChange(), GlicProviderChange::kGeicToGemini);
+
+  SetAssistantSelection(prefs::AssistantSelection::kAuto);
+  EXPECT_EQ(GetPendingProviderChange(), GlicProviderChange::kNone);
 }
 
 // `--geic-guest-url` takes precedence over Finch. GEiC guest URLs are compared

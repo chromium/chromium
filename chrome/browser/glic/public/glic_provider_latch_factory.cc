@@ -88,11 +88,10 @@ GlicProviderChange GlicProviderLatchFactory::GetPendingProviderChange(
   }
   std::optional<std::string> resolved_key;
   GURL resolved_url = geic::ResolveGeicGuestUrl(context);
-  // An invalid URL means GEiC isn't configured.
-  // TODO(b/578040846): Gate on `geic::ShouldLatchToGeminiEnterprise()` to match
-  // `BuildServiceInstanceForBrowserContext()`, so `kConsumer` profiles don't
-  // report a false `kGeminiToGeic` change.
-  if (resolved_url.is_valid()) {
+  // Make the same decision as `BuildServiceInstanceForBrowserContext()`, so
+  // e.g. a profile that selected consumer Gemini doesn't report a
+  // `kGeminiToGeic` change that a relaunch wouldn't apply.
+  if (geic::ShouldLatchToGeminiEnterprise(context, resolved_url)) {
     // The key of a GEiC spec latched with `resolved_url`.
     resolved_key =
         CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise,
