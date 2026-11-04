@@ -9,6 +9,7 @@
       "implemented_in": "chrome/browser/chromeos/extensions/wallpaper/wallpaper_api.h"
     },
     "description": "Use the <code>chrome.wallpaper</code> API to change the ChromeOS wallpaper.",
+    "nodoc": true,
     "platforms": ["chromeos"],
     "types":
     [
