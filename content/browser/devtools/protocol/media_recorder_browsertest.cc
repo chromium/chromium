@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -22,9 +23,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
+#include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
+#include "media/capture/video/video_frame_receiver_types.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 // Tests MediaRecorder::StartDisplayCapture() and how it uses the screen
 // sharing UI. The tests use a window ID that does not exist, so the device
@@ -128,16 +135,21 @@ IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureNotSupported) {
   EXPECT_TRUE(state.destroyed);
 }
 #else
-// Checks that a display capture creates the stream, and that Stop() still
-// returns it after the device failed to launch.
+// Checks that a display capture creates the stream, that the start fails
+// when the device fails to launch before the first frame, and that Stop()
+// still returns the stream.
 IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureStartAndStop) {
+  bool answered = false;
   bool started = false;
   recorder()->StartDisplayCapture(
       WindowId(), shell()->web_contents(), /*ui=*/nullptr, /*audio=*/false,
       /*max_width=*/800, /*max_height=*/600, /*frame_rate=*/30,
-      base::BindLambdaForTesting(
-          [&](Response response) { started = response.IsSuccess(); }));
-  EXPECT_TRUE(started);
+      base::BindLambdaForTesting([&](Response response) {
+        answered = true;
+        started = response.IsSuccess();
+      }));
+  EXPECT_TRUE(base::test::RunUntil([&] { return answered; }));
+  EXPECT_FALSE(started);
   const std::string stream = recorder()->GetStream();
   EXPECT_FALSE(stream.empty());
 
@@ -242,6 +254,45 @@ IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest, DisplayCaptureStopTellsUI) {
 
   recorder()->Stop(base::DoNothing());
   EXPECT_TRUE(state.destroyed);
+  EXPECT_EQ(1, state.device_stopped_count);
+  EXPECT_EQ(state.label, state.device_stopped_label);
+}
+
+// Checks that a capture error after the first frame removes the UI, as Stop in
+// the UI does. The window ID does not exist, so the launch fails after the
+// test delivers a frame.
+IN_PROC_BROWSER_TEST_F(MediaRecorderBrowserTest,
+                       DisplayCaptureErrorAfterFirstFrameRemovesUI) {
+  FakeMediaStreamUIState state;
+  bool started = false;
+  recorder()->StartDisplayCapture(
+      WindowId(), shell()->web_contents(),
+      std::make_unique<FakeMediaStreamUI>(&state), /*audio=*/false,
+      /*max_width=*/800, /*max_height=*/600, /*frame_rate=*/30,
+      base::BindLambdaForTesting(
+          [&](Response response) { started = response.IsSuccess(); }));
+  ASSERT_TRUE(state.started);
+
+  // Deliver a frame before the launch fails on the IO thread.
+  const int kBufferId = 1;
+  const gfx::Size kSize(320, 240);
+  auto region = base::ReadOnlySharedMemoryRegion::Create(
+      media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420, kSize));
+  ASSERT_TRUE(region.IsValid());
+  recorder()->OnNewBuffer(
+      kBufferId, media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
+                     std::move(region.region)));
+  recorder()->OnFrameReadyInBuffer(media::ReadyFrameInBuffer(
+      kBufferId, 0, nullptr,
+      media::mojom::VideoFrameInfo::New(
+          base::Milliseconds(10), media::VideoFrameMetadata(),
+          media::PIXEL_FORMAT_I420, kSize, gfx::Rect(kSize),
+          /*natural_size=*/kSize, /*is_premapped=*/false,
+          gfx::ColorSpace::CreateREC709(), nullptr)));
+  // The start answer is posted.
+  EXPECT_TRUE(base::test::RunUntil([&] { return started; }));
+
+  EXPECT_TRUE(base::test::RunUntil([&] { return state.destroyed; }));
   EXPECT_EQ(1, state.device_stopped_count);
   EXPECT_EQ(state.label, state.device_stopped_label);
 }

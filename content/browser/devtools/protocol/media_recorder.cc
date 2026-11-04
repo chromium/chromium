@@ -380,7 +380,16 @@ void MediaRecorder::StartDisplayCapture(
     StartAudioCapture(audio_source);
   }
 
-  std::move(callback).Run(Response::Success());
+  // Answer after the first frame arrives in OnFrameFromVideoConsumer(), so
+  // that the initial state of the window is in the recording. The answer is
+  // posted, because the caller can destroy this object when it gets an error.
+  on_start_callback_ = base::BindPostTaskToCurrentDefault(std::move(callback));
+  // Answer anyway if the first frame does not arrive in time, for example for
+  // a window that sends no frames while it is hidden.
+  constexpr base::TimeDelta kFirstFrameTimeout = base::Seconds(5);
+  first_frame_timer_.Start(FROM_HERE, kFirstFrameTimeout,
+                           base::BindOnce(&MediaRecorder::AnswerPendingStart,
+                                          base::Unretained(this)));
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
 }
 
@@ -389,13 +398,32 @@ void MediaRecorder::OnVideoCaptureError() {
   if (!display_capture_launcher_) {
     return;
   }
+  FailPendingStart("Cannot start the browser window capture device.");
   // The device failed, for example because the window was closed. Stop the
-  // capture and remove the UI, but keep the recording, so that
-  // Page.stopScreenRecording still returns the frames until this point.
+  // capture and remove the UI. After the first frame, the recording stays
+  // active, so that Page.stopScreenRecording still returns the frames until
+  // this point. Before the first frame, the error answer usually makes the
+  // caller destroy the recorder.
   StopDisplayCapture();
 }
 
+void MediaRecorder::AnswerPendingStart() {
+  first_frame_timer_.Stop();
+  if (on_start_callback_) {
+    std::move(on_start_callback_).Run(Response::Success());
+  }
+}
+
+void MediaRecorder::FailPendingStart(std::string_view message) {
+  first_frame_timer_.Stop();
+  if (on_start_callback_) {
+    std::move(on_start_callback_)
+        .Run(Response::ServerError(std::string(message)));
+  }
+}
+
 void MediaRecorder::StopDisplayCapture() {
+  FailPendingStart("Screen recording was stopped before the first frame.");
   if (video_timer_) {
     video_timer_->Stop();
     video_timer_.reset();
@@ -417,6 +445,8 @@ void MediaRecorder::OnStateChangeFromUI(
   }
   if (new_state == blink::mojom::MediaStreamStateChange::PAUSE) {
     display_capture_launcher_->Suspend();
+    // A suspended device sends no frames, so do not wait for the first frame.
+    AnswerPendingStart();
   } else {
     display_capture_launcher_->Resume();
   }
@@ -593,6 +623,7 @@ void MediaRecorder::OnFrameFromVideoConsumer(
     frame->set_timestamp(last_frame_receive_time_ - session_start_time_);
   }
   service_->RecordVideoFrame(std::move(frame));
+  AnswerPendingStart();
 }
 
 void MediaRecorder::Capture(const media::AudioBus* audio_source,
@@ -620,6 +651,7 @@ void MediaRecorder::OnCaptureMuted(bool is_muted) {}
 
 void MediaRecorder::Stop(
     base::OnceCallback<void(std::string)> on_stop_callback) {
+  FailPendingStart("Screen recording was stopped before the first frame.");
   on_stop_callback_ = std::move(on_stop_callback);
   if (video_timer_) {
     video_timer_->Stop();
@@ -668,6 +700,7 @@ void MediaRecorder::OnData(const std::vector<uint8_t>& data) {
 void MediaRecorder::OnClosed() {
   service_.reset();
   client_receiver_.reset();
+  FailPendingStart("Screen recording was stopped before the first frame.");
   if (on_stop_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(on_stop_callback_), stream_));
