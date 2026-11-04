@@ -87,7 +87,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/in_progress_download_manager.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/history/content/browser/download_conversions.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
@@ -165,10 +165,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -815,19 +811,9 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadMimeType) {
 }
 
 class IsolatedDownloadTest : public DownloadTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DownloadTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        enterprise_isolated_mode::switches::
-            kForceEnterpriseIsolatedModeReplacesIncognito);
-  }
-
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      isolated_mode_override_;
 };
 
 class DownloadTestDeferredDownloadHistory : public DownloadTest {
