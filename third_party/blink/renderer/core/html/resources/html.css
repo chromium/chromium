@@ -596,6 +596,7 @@ input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-inner-spin-button {
     pointer-events: none !important;
     text-orientation: inherit !important;
     writing-mode: inherit !important;
+    -webkit-user-modify: read-only !important;
 }
 
 input::-webkit-input-placeholder {
@@ -604,7 +605,6 @@ input::-webkit-input-placeholder {
     white-space: pre;
     word-wrap: normal;
     overflow: hidden;
-    -webkit-user-modify: read-only !important;
 }
 
 input::-internal-input-suggested {
@@ -622,6 +622,7 @@ textarea::-internal-input-suggested {
 input::-internal-input-suggested,
 textarea::-internal-input-suggested {
     pointer-events: none !important;
+    -webkit-user-modify: read-only !important;
 }
 
 /* Date and time inputs render a previewed value as text in their UA shadow

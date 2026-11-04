@@ -8,16 +8,21 @@
 
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -295,6 +300,101 @@ TEST_F(TextControlElementTest, TextAreaPlaceholderBreakAriaHidden) {
   // A trailing newline placeholder break must NOT be aria-hidden so that
   // accessibility can expose the final blank line.
   EXPECT_FALSE(newline_break->FastHasAttribute(html_names::kAriaHiddenAttr));
+}
+
+TEST_F(TextControlElementTest, PlaceholderAndSuggestedValueRemainReadOnly) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      ::placeholder,
+      ::-webkit-input-placeholder,
+      input::placeholder,
+      input::-webkit-input-placeholder,
+      textarea::placeholder,
+      textarea::-webkit-input-placeholder {
+        -webkit-user-modify: read-write !important;
+        color: rgb(10, 20, 30);
+      }
+    </style>
+    <input id="input" placeholder="sample_input_placeholder">
+    <textarea id="textarea" placeholder="sample_textarea_placeholder"></textarea>
+  )HTML");
+  Page().GetFrame().Selection().SetFrameIsFocused(true);
+  UpdateAllLifecyclePhases();
+
+  auto* input =
+      To<HTMLInputElement>(GetDocument().getElementById(AtomicString("input")));
+  auto* textarea = To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("textarea")));
+  ASSERT_TRUE(input);
+  ASSERT_TRUE(textarea);
+
+  HTMLElement* input_placeholder = input->PlaceholderElement();
+  HTMLElement* textarea_placeholder = textarea->PlaceholderElement();
+  ASSERT_TRUE(input_placeholder);
+  ASSERT_TRUE(textarea_placeholder);
+  ASSERT_TRUE(input_placeholder->GetComputedStyle());
+  ASSERT_TRUE(textarea_placeholder->GetComputedStyle());
+
+  // Placeholder elements must remain read-only, non-editable, and non-focusable
+  // regardless of author rules.
+  EXPECT_EQ(EUserModify::kReadOnly,
+            input_placeholder->GetComputedStyle()->UsedUserModify());
+  EXPECT_EQ(EUserModify::kReadOnly,
+            textarea_placeholder->GetComputedStyle()->UsedUserModify());
+  EXPECT_FALSE(IsEditable(*input_placeholder));
+  EXPECT_FALSE(IsEditable(*textarea_placeholder));
+  EXPECT_FALSE(input_placeholder->IsFocusable());
+  EXPECT_FALSE(textarea_placeholder->IsFocusable());
+
+  // Selecting placeholder text via window.find() must not focus the control or
+  // allow editing commands to modify the placeholder element.
+  ASSERT_TRUE(GetDocument().domWindow()->find(
+      "sample_textarea_placeholder", /*case_sensitive=*/true,
+      /*backwards=*/false, /*wrap=*/false, /*whole_word=*/false,
+      /*searchInFrames=*/false, /*showDialog=*/false));
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  EXPECT_FALSE(GetDocument().execCommand(
+      "insertHTML", false, "<span>sample</span>", ASSERT_NO_EXCEPTION));
+  EXPECT_EQ("sample_textarea_placeholder", textarea_placeholder->textContent());
+
+  // Standard placeholder styling and inner editor editability remain intact.
+  EXPECT_EQ(Color::FromRGB(10, 20, 30),
+            input_placeholder->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+  EXPECT_EQ(Color::FromRGB(10, 20, 30),
+            textarea_placeholder->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyColor()));
+  ASSERT_TRUE(input->InnerEditorElement());
+  ASSERT_TRUE(textarea->InnerEditorElement());
+  ASSERT_TRUE(input->InnerEditorElement()->GetComputedStyle());
+  ASSERT_TRUE(textarea->InnerEditorElement()->GetComputedStyle());
+  EXPECT_EQ(EUserModify::kReadWritePlaintextOnly,
+            input->InnerEditorElement()->GetComputedStyle()->UsedUserModify());
+  EXPECT_EQ(
+      EUserModify::kReadWritePlaintextOnly,
+      textarea->InnerEditorElement()->GetComputedStyle()->UsedUserModify());
+  EXPECT_TRUE(IsEditable(*input->InnerEditorElement()));
+  EXPECT_TRUE(IsEditable(*textarea->InnerEditorElement()));
+
+  // Suggested values (autofill previews) must also remain read-only and
+  // non-editable.
+  input->SetSuggestedValue("suggested_input");
+  textarea->SetSuggestedValue("suggested_textarea");
+  UpdateAllLifecyclePhases();
+
+  ASSERT_TRUE(input->PlaceholderElement());
+  ASSERT_TRUE(textarea->PlaceholderElement());
+  ASSERT_TRUE(input->PlaceholderElement()->GetComputedStyle());
+  ASSERT_TRUE(textarea->PlaceholderElement()->GetComputedStyle());
+  EXPECT_EQ(EUserModify::kReadOnly,
+            input->PlaceholderElement()->GetComputedStyle()->UsedUserModify());
+  EXPECT_EQ(
+      EUserModify::kReadOnly,
+      textarea->PlaceholderElement()->GetComputedStyle()->UsedUserModify());
+  EXPECT_FALSE(IsEditable(*input->PlaceholderElement()));
+  EXPECT_FALSE(IsEditable(*textarea->PlaceholderElement()));
+  EXPECT_FALSE(input->PlaceholderElement()->IsFocusable());
+  EXPECT_FALSE(textarea->PlaceholderElement()->IsFocusable());
 }
 
 }  // namespace blink
