@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "components/security_interstitials/content/ssl_error_assistant.pb.h"
 #include "components/ssl_errors/error_classification.h"
 #include "content/public/browser/certificate_request_result_type.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -149,6 +151,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   // SSL error interstitials.
   // |blocking_page_factory| will be used to create the interstitial pages
   // shown.
+  // |open_url_params|, if provided, preserves the failed navigation's
+  // parameters when redirecting to a suggested URL.
   static void HandleSSLError(
       content::WebContents* web_contents,
       net::Error cert_error,
@@ -158,7 +162,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
       network_time::NetworkTimeTracker* network_time_tracker,
       captive_portal::CaptivePortalService* captive_portal_service,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
-      bool user_can_proceed_past_interstitial = true);
+      bool user_can_proceed_past_interstitial = true,
+      std::optional<content::OpenURLParams> open_url_params = std::nullopt);
 
   // Sets the binary proto for SSL error assistant. The binary proto
   // can be downloaded by the component updater, or set by tests.
@@ -209,6 +214,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest, CalculateOptionsMask);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest,
                            NonPrimaryMainframeShouldNotAffectSSLErrorHandler);
+  FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerTest,
+                           NavigateToSuggestedURLPreservesInitiatorParams);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,
                            ShouldShowCustomInterstitialOnCaptivePortalResult);
   FRIEND_TEST_ALL_PREFIXES(SSLErrorHandlerNameMismatchTest,

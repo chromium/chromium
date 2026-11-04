@@ -6,10 +6,12 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_ERROR_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/page_navigator.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 
@@ -38,6 +40,7 @@ class SSLErrorNavigationThrottle : public content::NavigationThrottle {
       net::Error cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
+      std::optional<content::OpenURLParams> open_url_params,
       base::OnceCallback<void(
           std::unique_ptr<security_interstitials::SecurityInterstitialPage>)>
           blocking_page_ready_callback)>

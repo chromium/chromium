@@ -736,6 +736,7 @@ test("components_unittests") {
       "//components/saved_tab_groups/internal:native_java_unittests_java",
       "//components/search_engines/android:java",
       "//components/search_engines/android:test_utils_java",
+      "//components/security_interstitials/content/android:java",
       "//components/security_state/content/android:unit_tests",
       "//components/sensitive_content:unit_tests",
       "//components/signin/core/browser",

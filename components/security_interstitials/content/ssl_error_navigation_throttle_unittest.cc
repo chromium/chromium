@@ -80,13 +80,18 @@ class FakeSSLBlockingPage
 // done synchronously or using PostTask().
 void MockHandleSSLError(
     bool async,
+    std::optional<content::OpenURLParams>* out_open_url_params,
     content::WebContents* web_contents,
     net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
+    std::optional<content::OpenURLParams> open_url_params,
     base::OnceCallback<
         void(std::unique_ptr<security_interstitials::SecurityInterstitialPage>)>
         blocking_page_ready_callback) {
+  if (out_open_url_params && open_url_params.has_value()) {
+    out_open_url_params->emplace(*open_url_params);
+  }
   auto blocking_page = std::make_unique<FakeSSLBlockingPage>(
       web_contents, cert_error, ssl_info, request_url);
   if (async) {
@@ -112,11 +117,14 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
   TestSSLErrorNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
       bool async_handle_ssl_error,
+      std::optional<content::OpenURLParams>* out_open_url_params,
       base::OnceCallback<void(content::NavigationThrottle::ThrottleCheckResult)>
           on_cancel_deferred_navigation)
       : SSLErrorNavigationThrottle(
             registry,
-            base::BindOnce(&MockHandleSSLError, async_handle_ssl_error),
+            base::BindOnce(&MockHandleSSLError,
+                           async_handle_ssl_error,
+                           out_open_url_params),
             base::BindOnce(&IsInHostedApp),
             base::BindOnce(
                 &ShouldIgnoreInterstitialBecauseNavigationDefaultedToHttps)),
@@ -159,7 +167,7 @@ class SSLErrorNavigationThrottleTest
         handle_.get(),
         content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
     throttle_ = std::make_unique<TestSSLErrorNavigationThrottle>(
-        *registry_.get(), async_,
+        *registry_.get(), async_, &captured_open_url_params_,
         base::BindOnce(&SSLErrorNavigationThrottleTest::RecordDeferredResult,
                        base::Unretained(this)));
   }
@@ -171,6 +179,7 @@ class SSLErrorNavigationThrottleTest
 
  protected:
   bool async_ = false;
+  std::optional<content::OpenURLParams> captured_open_url_params_;
   std::unique_ptr<content::MockNavigationHandle> handle_;
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry_;
   std::unique_ptr<TestSSLErrorNavigationThrottle> throttle_;
@@ -211,6 +220,45 @@ TEST_P(SSLErrorNavigationThrottleTest, SSLInfoWithCertError) {
   EXPECT_EQ(net::ERR_CERT_COMMON_NAME_INVALID,
             deferred_result_.net_error_code());
   EXPECT_TRUE(deferred_result_.error_page_content().has_value());
+}
+
+// Tests that the throttle forwards OpenURLParams from the failing navigation
+// handle to HandleSSLErrorCallback.
+TEST_P(SSLErrorNavigationThrottleTest, ForwardsOpenURLParams) {
+  SCOPED_TRACE(::testing::Message()
+               << "Asynchronous MockHandleSSLError: " << async_);
+
+  const GURL request_url("https://example.test/action");
+  const url::Origin initiator_origin =
+      url::Origin::Create(GURL("https://initiator.test"));
+  handle_->set_url(request_url);
+  handle_->set_redirect_chain({request_url});
+  handle_->set_is_renderer_initiated(true);
+  handle_->set_initiator_origin(initiator_origin);
+  handle_->set_page_transition(ui::PAGE_TRANSITION_LINK);
+  EXPECT_CALL(*handle_, HasUserGesture())
+      .WillRepeatedly(testing::Return(false));
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
+  ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  handle_->set_net_error_code(net::ERR_CERT_COMMON_NAME_INVALID);
+  handle_->set_ssl_info(ssl_info);
+
+  content::NavigationThrottle::ThrottleCheckResult synchronous_result =
+      throttle_->WillFailRequest();
+  EXPECT_EQ(content::NavigationThrottle::DEFER, synchronous_result.action());
+  ASSERT_TRUE(captured_open_url_params_.has_value());
+  EXPECT_EQ(request_url, captured_open_url_params_->url);
+  EXPECT_TRUE(captured_open_url_params_->is_renderer_initiated);
+  EXPECT_EQ(initiator_origin, captured_open_url_params_->initiator_origin);
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+      captured_open_url_params_->transition, ui::PAGE_TRANSITION_LINK));
+  EXPECT_FALSE(captured_open_url_params_->user_gesture);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(content::NavigationThrottle::CANCEL, deferred_result_.action());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

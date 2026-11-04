@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -4789,6 +4790,145 @@ IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
   EXPECT_FALSE(ssl_error_handler);
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
   EXPECT_FALSE(contents->IsLoading());
+}
+
+// Verifies that when a certificate name mismatch redirects to a suggested URL,
+// the navigation preserves the original navigation's initiator and request
+// context (such as SameSite cookie restrictions and Fetch Metadata headers).
+IN_PROC_BROWSER_TEST_F(CommonNameMismatchBrowserTest,
+                       PreservesNavigationContextOnRedirect) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  base::Lock lock;
+  std::map<std::string, net::test_server::HttpRequest> observed_get_requests;
+  https_server.RegisterRequestMonitor(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request) {
+        if (request.method == net::test_server::METHOD_GET) {
+          base::AutoLock auto_lock(lock);
+          observed_get_requests[request.relative_url] = request;
+        }
+      }));
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  scoped_refptr<net::X509Certificate> cert = https_server.GetCertificate();
+
+  net::CertVerifyResult verify_result_mismatch;
+  verify_result_mismatch.verified_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "spdy_pooling.pem");
+  verify_result_mismatch.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  mock_cert_verifier()->AddResultForCertAndHost(
+      cert.get(), "example.org", verify_result_mismatch,
+      net::ERR_CERT_COMMON_NAME_INVALID);
+
+  net::CertVerifyResult verify_result_valid;
+  verify_result_valid.verified_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "spdy_pooling.pem");
+  mock_cert_verifier()->AddResultForCertAndHost(cert.get(), "www.example.org",
+                                                verify_result_valid, net::OK);
+  mock_cert_verifier()->AddResultForCertAndHost(cert.get(), "other.test",
+                                                verify_result_valid, net::OK);
+
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  const GURL www_base_url =
+      https_server.GetURL("www.example.org", "/ssl/google.html");
+  ASSERT_TRUE(content::SetCookie(contents->GetBrowserContext(), www_base_url,
+                                 "strict_cookie=1; SameSite=Strict; Secure"));
+  ASSERT_TRUE(content::SetCookie(contents->GetBrowserContext(), www_base_url,
+                                 "lax_cookie=1; SameSite=Lax; Secure"));
+
+  // 1. Cross-site renderer-initiated navigation without user activation.
+  const GURL initiator_url = https_server.GetURL("other.test", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initiator_url));
+
+  const std::string cross_site_path = "/ssl/google.html?case=cross_site";
+  const GURL mismatched_cross_site_url =
+      https_server.GetURL("example.org", cross_site_path);
+  const GURL suggested_cross_site_url =
+      https_server.GetURL("www.example.org", cross_site_path);
+  {
+    content::TestNavigationObserver observer(contents, 1);
+    ASSERT_TRUE(content::ExecJs(
+        contents,
+        content::JsReplace("location.href = $1;", mismatched_cross_site_url),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+  }
+  EXPECT_EQ(suggested_cross_site_url, contents->GetLastCommittedURL());
+  {
+    base::AutoLock auto_lock(lock);
+    auto it = observed_get_requests.find(cross_site_path);
+    ASSERT_NE(it, observed_get_requests.end());
+    const auto& headers = it->second.headers;
+    auto cookie_it = headers.find("Cookie");
+    ASSERT_NE(cookie_it, headers.end());
+    EXPECT_NE(cookie_it->second.find("lax_cookie=1"), std::string::npos);
+    EXPECT_EQ(cookie_it->second.find("strict_cookie=1"), std::string::npos);
+    auto site_it = headers.find("Sec-Fetch-Site");
+    ASSERT_NE(site_it, headers.end());
+    EXPECT_EQ("cross-site", site_it->second);
+    EXPECT_EQ(headers.find("Sec-Fetch-User"), headers.end());
+  }
+
+  // 2. Browser-initiated navigation (should include SameSite=Strict cookie).
+  const std::string browser_path = "/ssl/google.html?case=browser";
+  const GURL mismatched_browser_url =
+      https_server.GetURL("example.org", browser_path);
+  const GURL suggested_browser_url =
+      https_server.GetURL("www.example.org", browser_path);
+  {
+    content::TestNavigationObserver observer(contents, 1);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), mismatched_browser_url));
+    observer.Wait();
+  }
+  EXPECT_EQ(suggested_browser_url, contents->GetLastCommittedURL());
+  {
+    base::AutoLock auto_lock(lock);
+    auto it = observed_get_requests.find(browser_path);
+    ASSERT_NE(it, observed_get_requests.end());
+    const auto& headers = it->second.headers;
+    auto cookie_it = headers.find("Cookie");
+    ASSERT_NE(cookie_it, headers.end());
+    EXPECT_NE(cookie_it->second.find("lax_cookie=1"), std::string::npos);
+    EXPECT_NE(cookie_it->second.find("strict_cookie=1"), std::string::npos);
+    auto site_it = headers.find("Sec-Fetch-Site");
+    ASSERT_NE(site_it, headers.end());
+    EXPECT_EQ("none", site_it->second);
+    auto user_it = headers.find("Sec-Fetch-User");
+    ASSERT_NE(user_it, headers.end());
+    EXPECT_EQ("?1", user_it->second);
+  }
+
+  // 3. Cross-site server redirect before hitting the name mismatch error.
+  const std::string redirect_target_path = "/ssl/google.html?case=redirect";
+  const GURL mismatched_redirect_target_url =
+      https_server.GetURL("example.org", redirect_target_path);
+  const GURL suggested_redirect_target_url =
+      https_server.GetURL("www.example.org", redirect_target_path);
+  const GURL cross_site_redirect_url = https_server.GetURL(
+      "other.test",
+      "/server-redirect?" + mismatched_redirect_target_url.spec());
+  {
+    content::TestNavigationObserver observer(contents, 1);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), cross_site_redirect_url));
+    observer.Wait();
+  }
+  EXPECT_EQ(suggested_redirect_target_url, contents->GetLastCommittedURL());
+  {
+    base::AutoLock auto_lock(lock);
+    auto it = observed_get_requests.find(redirect_target_path);
+    ASSERT_NE(it, observed_get_requests.end());
+    const auto& headers = it->second.headers;
+    auto cookie_it = headers.find("Cookie");
+    ASSERT_NE(cookie_it, headers.end());
+    EXPECT_NE(cookie_it->second.find("lax_cookie=1"), std::string::npos);
+    EXPECT_EQ(cookie_it->second.find("strict_cookie=1"), std::string::npos);
+    auto site_it = headers.find("Sec-Fetch-Site");
+    ASSERT_NE(site_it, headers.end());
+    EXPECT_EQ("cross-site", site_it->second);
+  }
 }
 
 class SSLBlockingPageIDNTest

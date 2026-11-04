@@ -152,11 +152,17 @@ void SSLErrorNavigationThrottle::QueueShowInterstitial(
     int cert_status,
     const net::SSLInfo& ssl_info,
     const GURL& request_url) {
+  std::optional<content::OpenURLParams> open_url_params;
+  if (!navigation_handle()->GetRedirectChain().empty()) {
+    open_url_params.emplace(
+        content::OpenURLParams::FromNavigationHandle(navigation_handle()));
+  }
   // It is safe to call this without posting because SSLErrorHandler will always
   // call ShowInterstitial asynchronously, giving the throttle time to defer the
   // navigation.
   std::move(handle_ssl_error_callback)
       .Run(web_contents, net_error, ssl_info, request_url,
+           std::move(open_url_params),
            base::BindOnce(&SSLErrorNavigationThrottle::ShowInterstitial,
                           weak_ptr_factory_.GetWeakPtr(), net_error));
 }

@@ -203,6 +203,7 @@ void HandleSSLErrorWrapper(
     net::Error cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
+    std::optional<content::OpenURLParams> open_url_params,
     SSLErrorHandler::BlockingPageReadyCallback blocking_page_ready_callback) {
   CHECK(request_url.SchemeIsCryptographic(), base::NotFatalUntil::M163);
 
@@ -227,7 +228,7 @@ void HandleSSLErrorWrapper(
       std::move(blocking_page_ready_callback),
       g_browser_process->network_time_tracker(), captive_portal_service,
       std::make_unique<ChromeSecurityBlockingPageFactory>(),
-      is_ssl_error_override_allowed_for_origin);
+      is_ssl_error_override_allowed_for_origin, std::move(open_url_params));
 }
 
 // Returns whether `web_contents` is within a web app.

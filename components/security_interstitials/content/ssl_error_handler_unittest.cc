@@ -29,6 +29,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/security_interstitials/content/common_name_mismatch_handler.h"
+#include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/content/ssl_error_assistant.h"
 #include "components/security_interstitials/content/ssl_error_assistant.pb.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
@@ -1509,4 +1510,98 @@ TEST_F(SSLErrorHandlerTest, LocalSelfSignedInterstitial) {
   histograms.ExpectBucketCount(
       SSLErrorHandler::GetHistogramNameForTesting(),
       SSLErrorHandler::SHOW_LOCAL_SELF_SIGNED_INTERSTITIAL, 1);
+}
+
+namespace {
+
+class NavigationStartCapturingObserver : public content::WebContentsObserver {
+ public:
+  explicit NavigationStartCapturingObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    started_ = true;
+    url_ = navigation_handle->GetURL();
+    is_renderer_initiated_ = navigation_handle->IsRendererInitiated();
+    initiator_origin_ = navigation_handle->GetInitiatorOrigin();
+    page_transition_ = navigation_handle->GetPageTransition();
+    has_user_gesture_ = navigation_handle->HasUserGesture();
+    referrer_url_ = navigation_handle->GetReferrer().url;
+  }
+
+  bool started() const { return started_; }
+  const GURL& url() const { return url_; }
+  bool is_renderer_initiated() const { return is_renderer_initiated_; }
+  const std::optional<url::Origin>& initiator_origin() const {
+    return initiator_origin_;
+  }
+  ui::PageTransition page_transition() const { return page_transition_; }
+  bool has_user_gesture() const { return has_user_gesture_; }
+  const GURL& referrer_url() const { return referrer_url_; }
+
+ private:
+  bool started_ = false;
+  GURL url_;
+  bool is_renderer_initiated_ = false;
+  std::optional<url::Origin> initiator_origin_;
+  ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
+  bool has_user_gesture_ = false;
+  GURL referrer_url_;
+};
+
+}  // namespace
+
+TEST_F(SSLErrorHandlerTest, NavigateToSuggestedURLPreservesInitiatorParams) {
+  CommonNameMismatchHandler::set_state_for_testing(
+      CommonNameMismatchHandler::IGNORE_REQUESTS_FOR_TESTING);
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
+                                          "subjectAltName_www_example_com.pem");
+  ssl_info.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+  ssl_info.public_key_hashes.push_back(kCertPublicKeyHashValue);
+
+  const GURL request_url("https://example.com/action");
+  const GURL suggested_url("https://www.example.com/action");
+  const url::Origin initiator_origin =
+      url::Origin::Create(GURL("https://other.test"));
+
+  content::OpenURLParams open_url_params(
+      request_url,
+      content::Referrer(
+          GURL("https://other.test/page"),
+          network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin),
+      WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  open_url_params.initiator_origin = initiator_origin;
+  open_url_params.user_gesture = false;
+
+  SSLErrorHandler::HandleSSLError(
+      web_contents(), net::ERR_CERT_COMMON_NAME_INVALID, ssl_info, request_url,
+      base::DoNothing(), /*network_time_tracker=*/nullptr,
+      /*captive_portal_service=*/nullptr, /*blocking_page_factory=*/nullptr,
+      /*user_can_proceed_past_interstitial=*/true, open_url_params);
+
+  SSLErrorHandler* handler = SSLErrorHandler::FromWebContents(web_contents());
+  ASSERT_TRUE(handler);
+
+  NavigationStartCapturingObserver observer(web_contents());
+  handler->CommonNameMismatchHandlerCallback(
+      CommonNameMismatchHandler::SuggestedUrlCheckResult::
+          SUGGESTED_URL_AVAILABLE,
+      suggested_url);
+
+  EXPECT_TRUE(observer.started());
+  EXPECT_EQ(suggested_url, observer.url());
+  EXPECT_TRUE(observer.is_renderer_initiated());
+  EXPECT_EQ(initiator_origin, observer.initiator_origin());
+  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(observer.page_transition(),
+                                           ui::PAGE_TRANSITION_LINK));
+  EXPECT_FALSE(observer.has_user_gesture());
+  EXPECT_EQ(GURL("https://other.test/"), observer.referrer_url());
+  EXPECT_FALSE(SSLErrorHandler::FromWebContents(web_contents()));
+
+  CommonNameMismatchHandler::set_state_for_testing(
+      CommonNameMismatchHandler::NOT_TESTING);
 }
