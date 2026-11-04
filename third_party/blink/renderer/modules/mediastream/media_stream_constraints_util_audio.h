@@ -106,6 +106,20 @@ Vector<bool> GetSupportedVoiceIsolationValues(int platform_effects);
 bool IsVoiceIsolationInitiallyEnabled(
     const MediaStreamAudioSource* audio_source);
 
+// Returns the exact voiceIsolation constraint held by any track attached to
+// `source` (excluding `excluding_track` if non-null), or `std::nullopt` if no
+// attached track holds an exact voiceIsolation constraint.
+std::optional<bool> GetSiblingVoiceIsolationExactConstraint(
+    const MediaStreamAudioSource* source,
+    const MediaStreamAudioTrack* excluding_track = nullptr);
+
+// If `source` was started with voice isolation enabled and has a track
+// reconfigured to `voiceIsolation: {exact: false}`, returns `source`'s
+// EchoCancellationMode (which disallows `voiceIsolation = true`). Otherwise
+// returns `std::nullopt`.
+std::optional<EchoCancellationMode> GetEcModeDisallowingVoiceIsolation(
+    const MediaStreamAudioSource* source);
+
 // Returns true if voice isolation is supported by the platform (either
 // system-wide or browser-side).
 MODULES_EXPORT bool IsVoiceIsolationSupported();
@@ -146,11 +160,12 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   // |ec_modes_disallowing_voice_isolation| lists EchoCancellationModes on this
   // device that have an active source, started with voice isolation enabled,
   // with a track reconfigured to `voiceIsolation: {exact: false}`, disallowing
-  // `voiceIsolation = true` for those modes. If empty, it is populated from
-  // |source| when applicable.
-  explicit AudioDeviceCaptureCapability(
+  // `voiceIsolation = true` for those modes. The single-argument overload
+  // populates this from |source| when applicable.
+  explicit AudioDeviceCaptureCapability(blink::MediaStreamAudioSource* source);
+  AudioDeviceCaptureCapability(
       blink::MediaStreamAudioSource* source,
-      Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation = {});
+      Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation);
 
   AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability&);
   AudioDeviceCaptureCapability& operator=(const AudioDeviceCaptureCapability&);

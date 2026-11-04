@@ -1755,6 +1755,40 @@ bool IsVoiceIsolationInitiallyEnabled(
                  kVoiceIsolationEnabled;
 }
 
+std::optional<bool> GetSiblingVoiceIsolationExactConstraint(
+    const MediaStreamAudioSource* source,
+    const MediaStreamAudioTrack* excluding_track) {
+  if (!source) {
+    return std::nullopt;
+  }
+  for (MediaStreamAudioTrack* track : source->GetTracks()) {
+    if (track == excluding_track) {
+      continue;
+    }
+    std::optional<bool> voice_isolation =
+        track->VoiceIsolationExactConstraint();
+    if (voice_isolation.has_value()) {
+      return voice_isolation;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<EchoCancellationMode> GetEcModeDisallowingVoiceIsolation(
+    const MediaStreamAudioSource* source) {
+  CHECK(source);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (IsVoiceIsolationInitiallyEnabled(source) &&
+      GetSiblingVoiceIsolationExactConstraint(source) == false) {
+    if (std::optional<AudioProcessingProperties> properties =
+            source->GetAudioProcessingProperties()) {
+      return properties->echo_cancellation_mode;
+    }
+  }
+#endif
+  return std::nullopt;
+}
+
 bool IsVoiceIsolationSupported() {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return true;
@@ -1767,23 +1801,20 @@ AudioDeviceCaptureCapability::AudioDeviceCaptureCapability()
     : parameters_(media::AudioParameters::UnavailableDeviceParams()) {}
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
+    blink::MediaStreamAudioSource* source)
+    : source_(source) {
+  if (std::optional<EchoCancellationMode> ec_mode =
+          GetEcModeDisallowingVoiceIsolation(source_)) {
+    ec_modes_disallowing_voice_isolation_.push_back(*ec_mode);
+  }
+}
+
+AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
     blink::MediaStreamAudioSource* source,
     Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation)
     : source_(source),
       ec_modes_disallowing_voice_isolation_(
-          std::move(ec_modes_disallowing_voice_isolation)) {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (ec_modes_disallowing_voice_isolation_.empty() &&
-      IsVoiceIsolationInitiallyEnabled(source_) &&
-      GetVoiceIsolationExactConstraint() == false) {
-    if (std::optional<AudioProcessingProperties> properties =
-            source_->GetAudioProcessingProperties()) {
-      ec_modes_disallowing_voice_isolation_.push_back(
-          properties->echo_cancellation_mode);
-    }
-  }
-#endif
-}
+          std::move(ec_modes_disallowing_voice_isolation)) {}
 
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability(
     String device_id,
@@ -1818,20 +1849,7 @@ const media::AudioParameters& AudioDeviceCaptureCapability::Parameters() const {
 std::optional<bool>
 AudioDeviceCaptureCapability::GetVoiceIsolationExactConstraint(
     const MediaStreamAudioTrack* current_track) const {
-  if (!source_) {
-    return std::nullopt;
-  }
-  for (MediaStreamAudioTrack* track : source_->GetTracks()) {
-    if (track == current_track) {
-      continue;
-    }
-    std::optional<bool> voice_isolation =
-        track->VoiceIsolationExactConstraint();
-    if (voice_isolation.has_value()) {
-      return voice_isolation;
-    }
-  }
-  return std::nullopt;
+  return GetSiblingVoiceIsolationExactConstraint(source_, current_track);
 }
 
 AudioCaptureSettings SelectSettingsAudioCapture(

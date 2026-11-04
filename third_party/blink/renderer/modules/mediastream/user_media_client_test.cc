@@ -2986,6 +2986,355 @@ TEST_F(
       ->Stop();
   blink::WebHeap::CollectGarbageForTesting();
 }
+TEST_F(
+    UserMediaClientTest,
+    GetUserMediaVoiceIsolationEnabledToggledOffIdealThenEnabledReusesAndReenables) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  SetVoiceIsolationSupport(true);
+
+  // 1. Start Track 1 with voiceIsolation = true, then toggle to false via
+  // ideal:false.
+  MediaStreamTrack* track1 =
+      RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
+  ASSERT_TRUE(track1);
+  MediaStreamComponent* component1 = track1->Component();
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), true);
+
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetIdeal(false);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track1, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), false);
+
+  // 2. Request Track 2 with voiceIsolation = true. Track 2 must reuse Track 1's
+  // source and override its dynamic voiceIsolation setting back to true.
+  MediaStreamTrack* track2 =
+      RequestLocalAudioTrackWithVoiceIsolationIdeal(true);
+  ASSERT_TRUE(track2);
+  MediaStreamComponent* component2 = track2->Component();
+  EXPECT_EQ(MediaStreamAudioSource::From(component1->Source()),
+            MediaStreamAudioSource::From(component2->Source()));
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), true);
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), true);
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(UserMediaClientTest,
+       GetUserMediaVoiceIsolationDisabledAndEnabledToggledOffExactBlocksTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  const int effects = media::AudioParameters::ECHO_CANCELLER |
+                      media::AudioParameters::VOICE_ISOLATION_SUPPORTED;
+  media_devices_dispatcher_.AudioParameters().set_effects(effects);
+  mock_dispatcher_host_.SetAudioDeviceEffects(effects);
+
+  // 1. Start Track 1 with voiceIsolation = false so a disabled source is first
+  // in `local_sources_`.
+  MediaStreamTrack* track1 =
+      RequestLocalAudioTrackWithVoiceIsolationExact(false);
+  ASSERT_TRUE(track1);
+  MediaStreamComponent* component1 = track1->Component();
+
+  // 2. Start Track 2 with voiceIsolation = true on a second source, then
+  // reconfigure it to exact:false via applyConstraints.
+  MediaStreamTrack* track2 =
+      RequestLocalAudioTrackWithVoiceIsolationExact(true);
+  ASSERT_TRUE(track2);
+  MediaStreamComponent* component2 = track2->Component();
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(false);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track2, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), false);
+
+  // 3. With platform AEC (`ECHO_CANCELLER`), `echoCancellation` is locked to
+  // Track 2's `kBrowserDecides`. A 3rd getUserMedia request with exact:true
+  // must still see Track 2's voice-isolation-enabled source (even though Track
+  // 1's disabled source is first in `local_sources_`) and fail with
+  // CONSTRAINT_NOT_SATISFIED.
+  MediaStreamTrack* track3 =
+      RequestLocalAudioTrackWithVoiceIsolationExact(true);
+  EXPECT_FALSE(track3);
+  EXPECT_EQ(request_state(), kRequestFailed);
+  EXPECT_EQ(user_media_processor_->error_reason(),
+            mojom::blink::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED);
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(
+    UserMediaClientTest,
+    GetUserMediaVoiceIsolationDisabledWithEcTrueThenEnabledWithEcFalseDoesNotLockEcToDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  // Use software/APM echo cancellation (no platform ECHO_CANCELLER effect) so
+  // EchoCancellationContainer allows opening a second source with a different
+  // echoCancellation mode on non-ChromeOS.
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+
+  // 1. Start Track 1 with echoCancellation = true and voiceIsolation = false.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().voice_isolation.SetExact(false);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), false);
+
+  // 2. Start Track 2 on the same device with echoCancellation = false,
+  // autoGainControl = true, and voiceIsolation = true, then reconfigure it to
+  // voiceIsolation = {exact: false}.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetExact(true);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), true);
+  EXPECT_NE(MediaStreamAudioSource::From(component1->Source()),
+            MediaStreamAudioSource::From(component2->Source()));
+
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(false);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track2, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), false);
+
+  // 3. Request Track 3 with echoCancellation = true exact and
+  // voiceIsolation = false. SelectAudioDeviceSettings() must not lock
+  // EchoCancellationContainer to kDisabled, so Track 3 succeeds and reuses
+  // Track 1's source.
+  MediaStreamTrack* track3 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().voice_isolation.SetExact(false);
+    track3 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track3);
+  }
+  MediaStreamComponent* component3 = track3->Component();
+  EXPECT_EQ(MediaStreamAudioSource::From(component1->Source()),
+            MediaStreamAudioSource::From(component3->Source()));
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component3))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(
+    UserMediaClientTest,
+    GetUserMediaVoiceIsolationEnabledWithEcFalseFirstDoesNotLockEcToDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  // Use software/APM echo cancellation (no platform ECHO_CANCELLER effect).
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+
+  // 1. Start Track 1 with echoCancellation = false, autoGainControl = true, and
+  // voiceIsolation = true.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetExact(true);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+
+  // 2. Request Track 2 on the same device with echoCancellation = true exact
+  // and voiceIsolation = false. Because software/APM echo cancellation is used
+  // rather than platform AEC, EchoCancellationContainer allows opening a
+  // separate source with echoCancellation = true.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().voice_isolation.SetExact(false);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  EXPECT_NE(MediaStreamAudioSource::From(component1->Source()),
+            MediaStreamAudioSource::From(component2->Source()));
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
+
+TEST_F(
+    UserMediaClientTest,
+    GetUserMediaVoiceIsolationEnabledToggledOffExactOnMultipleEcModesBlocksBoth) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationDenoiser);
+  media_devices_dispatcher_.AudioParameters().set_effects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+  mock_dispatcher_host_.SetAudioDeviceEffects(
+      media::AudioParameters::VOICE_ISOLATION_SUPPORTED);
+
+  // 1. Start Source 1 (EC = kBrowserDecides, AGC = true, initial VI = true),
+  // then reconfigure it to voiceIsolation: {exact: false}.
+  MediaStreamTrack* track1 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetExact(true);
+    track1 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track1);
+  }
+  MediaStreamComponent* component1 = track1->Component();
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(false);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track1, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), false);
+
+  // 2. Start Source 2 (EC = kDisabled, AGC = true, initial VI = true), then
+  // reconfigure it to voiceIsolation: {exact: false}.
+  MediaStreamTrack* track2 = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetExact(true);
+    track2 = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track2);
+  }
+  MediaStreamComponent* component2 = track2->Component();
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(false);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track2, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), false);
+
+  // 3. Requesting exact voiceIsolation = true with either echoCancellation =
+  // true (`kBrowserDecides`) or echoCancellation = false (`kDisabled`) must
+  // fail with CONSTRAINT_NOT_SATISFIED (rather than reusing Source 2 and
+  // conflicting with Track 2's exact:false constraint). Note that an
+  // unconstrained echoCancellation request would also fail here because only
+  // `kBrowserDecides` and `kDisabled` are available in this test (no loopback
+  // AEC / `kAll`).
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(true);
+    factory.basic().voice_isolation.SetExact(true);
+    MediaStreamTrack* track3_ec_true =
+        RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    EXPECT_FALSE(track3_ec_true);
+    EXPECT_EQ(request_state(), kRequestFailed);
+    EXPECT_EQ(user_media_processor_->error_reason(),
+              mojom::blink::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED);
+  }
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetExact(true);
+    MediaStreamTrack* track3_ec_false =
+        RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    EXPECT_FALSE(track3_ec_false);
+    EXPECT_EQ(request_state(), kRequestFailed);
+    EXPECT_EQ(user_media_processor_->error_reason(),
+              mojom::blink::MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED);
+  }
+
+  // 4. Requesting ideal voiceIsolation = true with echoCancellation = false
+  // downgrades voiceIsolation to false and opens a separate source.
+  MediaStreamTrack* track3_ideal = nullptr;
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().echo_cancellation.SetExactBoolean(false);
+    factory.basic().auto_gain_control.SetExact(true);
+    factory.basic().voice_isolation.SetIdeal(true);
+    track3_ideal = RequestLocalAudioTrack(factory.CreateMediaConstraints());
+    ASSERT_TRUE(track3_ideal);
+  }
+  MediaStreamComponent* component3 = track3_ideal->Component();
+  EXPECT_EQ(track3_ideal->getSettings()->voiceIsolation(), false);
+  EXPECT_NE(MediaStreamAudioSource::From(component1->Source()),
+            MediaStreamAudioSource::From(component3->Source()));
+  EXPECT_NE(MediaStreamAudioSource::From(component2->Source()),
+            MediaStreamAudioSource::From(component3->Source()));
+
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component2))
+      ->Stop();
+  blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component3))
+      ->Stop();
+  blink::WebHeap::CollectGarbageForTesting();
+}
 
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #endif

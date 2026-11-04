@@ -823,28 +823,39 @@ void UserMediaProcessor::SelectAudioDeviceSettings(
   }
 
   for (const auto& device : audio_input_capabilities) {
-    // Find the first occurrence of blink::ProcessedLocalAudioSource that
-    // matches the same device ID as |device|. If more than one exists, any
-    // such source will contain the same non-reconfigurable settings that limit
-    // the associated capabilities.
+    // Find an active ProcessedLocalAudioSource matching `device->device_id`.
+    // All processed sources on the same device share the same interlocked
+    // settings (AGC, NS, channels, sample rate, latency), while multiple
+    // processed sources with different EchoCancellationModes may be active
+    // concurrently. Collect all EchoCancellationModes that have an active
+    // source, started with voice isolation enabled, with a track reconfigured
+    // to `voiceIsolation: {exact: false}`.
     blink::MediaStreamAudioSource* audio_source = nullptr;
-    auto it = std::ranges::find_if(
-        local_sources_, [&device](MediaStreamSource* source) {
-          DCHECK(source);
-          MediaStreamAudioSource* platform_source =
-              MediaStreamAudioSource::From(source);
-          ProcessedLocalAudioSource* processed_source =
-              ProcessedLocalAudioSource::From(platform_source);
-          return processed_source && source->Id() == device->device_id;
-        });
-    if (it != local_sources_.end()) {
-      WebPlatformMediaStreamSource* const source = (*it)->GetPlatformSource();
-      if (source->device().type == MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-        audio_source = static_cast<MediaStreamAudioSource*>(source);
+    Vector<EchoCancellationMode> ec_modes_disallowing_voice_isolation;
+    for (MediaStreamSource* source : local_sources_) {
+      MediaStreamAudioSource* platform_source =
+          MediaStreamAudioSource::From(source);
+      ProcessedLocalAudioSource* processed_source =
+          ProcessedLocalAudioSource::From(platform_source);
+      if (!processed_source || source->Id() != device->device_id ||
+          platform_source->device().type !=
+              MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+        continue;
       }
+      if (!audio_source) {
+        audio_source = platform_source;
+      }
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      if (std::optional<EchoCancellationMode> ec_mode =
+              GetEcModeDisallowingVoiceIsolation(platform_source);
+          ec_mode && !ec_modes_disallowing_voice_isolation.Contains(*ec_mode)) {
+        ec_modes_disallowing_voice_isolation.push_back(*ec_mode);
+      }
+#endif
     }
     if (audio_source) {
-      capabilities.emplace_back(audio_source);
+      capabilities.emplace_back(
+          audio_source, std::move(ec_modes_disallowing_voice_isolation));
     } else {
       capabilities.emplace_back(device->device_id, device->group_id,
                                 device->parameters);
@@ -2126,6 +2137,39 @@ MediaStreamComponent* UserMediaProcessor::CreateAudioTrack(
       voice_isolation_exact = constraints.Basic().voice_isolation.Exact();
     }
     platform_track->SetVoiceIsolationExactConstraint(voice_isolation_exact);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    // When reusing an existing, already-initialized source (`!is_pending`),
+    // `DetermineExistingAudioSessionId()` matches against the source's initial
+    // session-identity properties (e.g., started with voice isolation enabled).
+    // However, an existing track on that source may have dynamically toggled
+    // voice isolation off via a non-`exact` `applyConstraints()` call (e.g.,
+    // `{voiceIsolation: {ideal: false}}`). If the shared source's current
+    // dynamic voice isolation state differs from the new request's resolved
+    // setting and no sibling track on the source holds a conflicting `exact`
+    // constraint, update the source before surfacing settings.
+    if (!is_pending) {
+      if (auto* audio_source = MediaStreamAudioSource::From(source)) {
+        const auto target_voice_isolation =
+            current_request_info_->audio_capture_settings()
+                .audio_processing_properties()
+                .voice_isolation;
+        const bool target_enabled =
+            target_voice_isolation ==
+            AudioProcessingProperties::VoiceIsolationType::
+                kVoiceIsolationEnabled;
+        std::optional<AudioProcessingProperties> current_properties =
+            audio_source->GetAudioProcessingProperties();
+        if (current_properties &&
+            current_properties->voice_isolation != target_voice_isolation) {
+          std::optional<bool> sibling_exact =
+              GetSiblingVoiceIsolationExactConstraint(audio_source);
+          if (!sibling_exact.has_value() || *sibling_exact == target_enabled) {
+            audio_source->SetVoiceIsolation(target_enabled);
+          }
+        }
+      }
+    }
+#endif
   }
 
   Member<MediaStreamComponent> component =
