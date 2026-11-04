@@ -4,10 +4,16 @@
 
 package org.chromium.components.payments;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.collection.ArrayMap;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -36,15 +42,19 @@ import java.util.Map;
 @JNINamespace("payments::android")
 @NullMarked
 public class PaymentRequestSpec {
-    private long mNativePointer;
+    @JniType("::payments::android::PaymentRequestSpec")
+    interface NativePaymentRequestSpec extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativePaymentRequestSpec> mNativePointer;
 
     /**
      * Stores the information received from the renderer that invoked the Payment Request API.
      * Creates an instance of native payment_request_spec.cc with the given parameters.
+     *
      * @param options The payment options, e.g., whether shipping is requested.
      * @param details The payment details, e.g., the total amount.
      * @param methodData The list of supported payment method identifiers and corresponding payment
-     * method specific data.
+     *     method specific data.
      * @param appLocale The current application locale.
      */
     public PaymentRequestSpec(
@@ -61,27 +71,32 @@ public class PaymentRequestSpec {
                                 appLocale);
     }
 
-    /** @return Whether destroy() has been called. */
+    /**
+     * @return Whether destroy() has been called.
+     */
     public boolean isDestroyed() {
-        return mNativePointer == 0;
+        return mNativePointer == null;
     }
 
     /**
      * @return The payment options specified by the merchant. This method cannot be used after the
-     *         instance is destroyed.
+     *     instance is destroyed.
      */
     public PaymentOptions getPaymentOptions() {
         return PaymentOptions.deserialize(
-                ByteBuffer.wrap(PaymentRequestSpecJni.get().getPaymentOptions(mNativePointer)));
+                ByteBuffer.wrap(
+                        PaymentRequestSpecJni.get()
+                                .getPaymentOptions(assumeNonNull(mNativePointer))));
     }
 
     /**
-     * @return The map of supported payment method identifiers and corresponding payment
-     * method specific data. This method cannot be used after the instance is destroyed.
+     * @return The map of supported payment method identifiers and corresponding payment method
+     *     specific data. This method cannot be used after the instance is destroyed.
      */
     public Map<String, PaymentMethodData> getMethodData() {
         Map<String, PaymentMethodData> methodDataMap = new ArrayMap<>();
-        byte[][] methodDataByteArrays = PaymentRequestSpecJni.get().getMethodData(mNativePointer);
+        byte[][] methodDataByteArrays =
+                PaymentRequestSpecJni.get().getMethodData(assumeNonNull(mNativePointer));
         for (int i = 0; i < methodDataByteArrays.length; i++) {
             PaymentMethodData methodData =
                     PaymentMethodData.deserialize(ByteBuffer.wrap(methodDataByteArrays[i]));
@@ -153,34 +168,39 @@ public class PaymentRequestSpec {
 
     /**
      * @return The payment details specified in the payment request. This method cannot be used
-     *         after the instance is destroyed.
+     *     after the instance is destroyed.
      */
     public PaymentDetails getPaymentDetails() {
         return PaymentDetails.deserialize(
-                ByteBuffer.wrap(PaymentRequestSpecJni.get().getPaymentDetails(mNativePointer)));
+                ByteBuffer.wrap(
+                        PaymentRequestSpecJni.get()
+                                .getPaymentDetails(assumeNonNull(mNativePointer))));
     }
 
     /**
      * Called when the renderer updates the payment details in response to, e.g., new shipping
      * address. This cannot be used after the instance is destroyed.
+     *
      * @param details The updated payment details, e.g., the updated total amount.
      */
     public void updateWith(PaymentDetails details) {
-        PaymentRequestSpecJni.get().updateWith(mNativePointer, details.serialize());
+        PaymentRequestSpecJni.get().updateWith(assumeNonNull(mNativePointer), details.serialize());
     }
 
     /**
      * Called when merchant retries a failed payment. This cannot be used after the instance is
      * destroyed.
+     *
      * @param validationErrors The information about the fields that failed the validation.
      */
     public void retry(PaymentValidationErrors validationErrors) {
-        PaymentRequestSpecJni.get().retry(mNativePointer, validationErrors.serialize());
+        PaymentRequestSpecJni.get()
+                .retry(assumeNonNull(mNativePointer), validationErrors.serialize());
     }
 
     /** Recomputes spec based on details. This cannot be used after the instance is destroyed. */
     public void recomputeSpecForDetails() {
-        PaymentRequestSpecJni.get().recomputeSpecForDetails(mNativePointer);
+        PaymentRequestSpecJni.get().recomputeSpecForDetails(assumeNonNull(mNativePointer));
     }
 
     /**
@@ -188,50 +208,50 @@ public class PaymentRequestSpec {
      * destroyed.
      */
     public @Nullable String selectedShippingOptionError() {
-        return PaymentRequestSpecJni.get().selectedShippingOptionError(mNativePointer);
+        return PaymentRequestSpecJni.get()
+                .selectedShippingOptionError(assumeNonNull(mNativePointer));
     }
 
     /** Destroys the native pointer. */
     public void destroy() {
-        if (mNativePointer == 0) return;
-        PaymentRequestSpecJni.get().destroy(mNativePointer);
-        mNativePointer = 0;
+        if (mNativePointer == null) return;
+        mNativePointer.destroy();
+        mNativePointer = null;
     }
 
     @CalledByNative
-    private long getNativePointer() {
-        return mNativePointer;
+    JniPtr<NativePaymentRequestSpec> getNativePointer() {
+        return assumeNonNull(mNativePointer);
     }
 
     /** Whether the secure-payment-confirmation method is requested. */
     public boolean isSecurePaymentConfirmationRequested() {
-        return PaymentRequestSpecJni.get().isSecurePaymentConfirmationRequested(mNativePointer);
+        return PaymentRequestSpecJni.get()
+                .isSecurePaymentConfirmationRequested(assumeNonNull(mNativePointer));
     }
 
     @NativeMethods
     /* package */ interface Natives {
-        long create(
+        JniUniquePtr<NativePaymentRequestSpec> create(
                 ByteBuffer optionsByteBuffer,
                 ByteBuffer detailsByteBuffer,
                 ByteBuffer[] methodDataByteBuffers,
                 String appLocale);
 
-        void updateWith(long nativePaymentRequestSpec, ByteBuffer detailsByteBuffer);
+        void updateWith(JniPtr<NativePaymentRequestSpec> self, ByteBuffer detailsByteBuffer);
 
-        void retry(long nativePaymentRequestSpec, ByteBuffer validationErrorsByteBuffer);
+        void retry(JniPtr<NativePaymentRequestSpec> self, ByteBuffer validationErrorsByteBuffer);
 
-        void recomputeSpecForDetails(long nativePaymentRequestSpec);
+        void recomputeSpecForDetails(JniPtr<NativePaymentRequestSpec> self);
 
-        String selectedShippingOptionError(long nativePaymentRequestSpec);
+        String selectedShippingOptionError(JniPtr<NativePaymentRequestSpec> self);
 
-        void destroy(long nativePaymentRequestSpec);
+        byte[] getPaymentDetails(JniPtr<NativePaymentRequestSpec> self);
 
-        byte[] getPaymentDetails(long nativePaymentRequestSpec);
+        byte[][] getMethodData(JniPtr<NativePaymentRequestSpec> self);
 
-        byte[][] getMethodData(long nativePaymentRequestSpec);
+        byte[] getPaymentOptions(JniPtr<NativePaymentRequestSpec> self);
 
-        byte[] getPaymentOptions(long nativePaymentRequestSpec);
-
-        boolean isSecurePaymentConfirmationRequested(long nativePaymentRequestSpec);
+        boolean isSecurePaymentConfirmationRequested(JniPtr<NativePaymentRequestSpec> self);
     }
 }

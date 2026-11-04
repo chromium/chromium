@@ -69,11 +69,9 @@ class PaymentRequestSpec {
   // Returns the method data.
   base::android::ScopedJavaLocalRef<jobjectArray> GetMethodData(JNIEnv* env);
 
-  // Destroys this bridge.
-  void Destroy(JNIEnv* env);
+  ~PaymentRequestSpec();
 
  private:
-  ~PaymentRequestSpec();
 
   std::unique_ptr<payments::PaymentRequestSpec> spec_;
 };

@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/payments/content/android/minimal_jni/PaymentRequestSpec_jni.h"
@@ -19,7 +20,7 @@ namespace payments {
 namespace android {
 
 // static
-static int64_t JNI_PaymentRequestSpec_Create(
+static jni_zero::JniUniquePtr<PaymentRequestSpec> JNI_PaymentRequestSpec_Create(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& joptions_byte_buffer,
     const base::android::JavaRef<jobject>& jdetails_byte_buffer,
@@ -39,11 +40,11 @@ static int64_t JNI_PaymentRequestSpec_Create(
                                                &method_data);
   DCHECK(success);
 
-  return reinterpret_cast<intptr_t>(
-      new PaymentRequestSpec(std::make_unique<payments::PaymentRequestSpec>(
+  return jni_zero::MakeUnique<PaymentRequestSpec>(
+      std::make_unique<payments::PaymentRequestSpec>(
           std::move(options), std::move(details), std::move(method_data),
           /*delegate=*/nullptr,
-          base::android::ConvertJavaStringToUTF8(env, japp_locale))));
+          base::android::ConvertJavaStringToUTF8(env, japp_locale)));
 }
 
 // static
@@ -51,9 +52,7 @@ base::WeakPtr<payments::PaymentRequestSpec>
 PaymentRequestSpec::FromJavaPaymentRequestSpec(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jpayment_request_spec) {
-  return reinterpret_cast<PaymentRequestSpec*>(
-             Java_PaymentRequestSpec_getNativePointer(env,
-                                                      jpayment_request_spec))
+  return Java_PaymentRequestSpec_getNativePointer(env, jpayment_request_spec)
       ->spec_->AsWeakPtr();
 }
 
@@ -112,10 +111,6 @@ PaymentRequestSpec::GetPaymentOptions(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobjectArray>
 PaymentRequestSpec::GetMethodData(JNIEnv* env) {
   return SerializeToJavaArrayOfByteArrays(env, spec_->method_data());
-}
-
-void PaymentRequestSpec::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 PaymentRequestSpec::~PaymentRequestSpec() = default;
