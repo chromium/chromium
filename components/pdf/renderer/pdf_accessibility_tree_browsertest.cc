@@ -6151,6 +6151,183 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicFontMarkersIgnoredWhenInvalid) {
       {"Item 1oNormal font oo Combined Courier\u00A0Wingdings nbsp"}, "• ");
 }
 
+// Word draws its default bullet as a Wingdings 'l' (●), so a standalone one
+// starts a top-level list named "● " instead of "l ".
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsBullet) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"l", "Item 1", "l", "Item 2"},
+      {
+          gfx::RectF(101.0f, 44.0f, 6.0f, 6.0f),
+          gfx::RectF(124.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(101.0f, 61.0f, 6.0f, 6.0f),
+          gfx::RectF(124.0f, 57.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {wingdings_style, normal_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "● ");
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListStartReason",
+      ListStartReason::kUnorderedMarker, 1);
+}
+
+// InDesign's Wingdings square bullet may extract as "§" U+00A7.
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsSectionSignBullet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "ABCDEF+Wingdings-Regular";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"§", "Item 1", "§", "Item 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 57.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {wingdings_style, normal_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "▪ ");
+}
+
+// Wingdings private-use code points are mapped by their low byte.
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsPrivateUseBullet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"\uF0D8", "Item 1", "\uF0D8", "Item 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 57.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {wingdings_style, normal_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "➢ ");
+}
+
+// The Symbol font's bullet, extracted as "·" U+00B7, is named "• ".
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelSymbolBullet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo symbol_style = CreateNormalStyle();
+  symbol_style.font_name = "SymbolMT";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"·", "Item 1", "·", "Item 2"},
+      {
+          gfx::RectF(30.0f, 44.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 6.0f, 6.0f),
+          gfx::RectF(45.0f, 57.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {symbol_style, normal_style, symbol_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "• ");
+}
+
+// Other Symbol characters, such as Greek letters, are not bullets, even η
+// U+03B7, which shares the low byte of the Symbol bullet glyph. Wingdings
+// bullets combined with text in one run are not markers.
+TEST_F(PdfAccessibilityTreeTest, HeuristicSymbolFontMarkersIgnoredWhenInvalid) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo symbol_style = CreateNormalStyle();
+  symbol_style.font_name = "Symbol";
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"α", "is the angle", "η", "is the efficiency", "l Combined Wingdings"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 120.0f, 12.0f),
+          gfx::RectF(30.0f, 60.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 60.0f, 170.0f, 12.0f),
+          gfx::RectF(30.0f, 80.0f, 200.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {symbol_style, normal_style, symbol_style, normal_style,
+       wingdings_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "αis the angle");
+  CheckParagraph(page->GetChildAtIndex(1u), "ηis the efficiency");
+  CheckParagraph(page->GetChildAtIndex(2u), "l Combined Wingdings");
+}
+
+// Wingdings icons that are not common bullets, such as '*' (✉) and '(' (☎),
+// don't start a top-level list.
+TEST_F(PdfAccessibilityTreeTest, HeuristicTopLevelWingdingsIconIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo wingdings_style = CreateNormalStyle();
+  wingdings_style.font_name = "Wingdings";
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"*", "name@example.com", "(", "555 1234"},
+      {
+          gfx::RectF(30.0f, 40.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 40.0f, 160.0f, 12.0f),
+          gfx::RectF(30.0f, 60.0f, 10.0f, 12.0f),
+          gfx::RectF(45.0f, 60.0f, 80.0f, 12.0f),
+      },
+      /*directions=*/{},
+      {wingdings_style, normal_style, wingdings_style, normal_style});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckParagraph(page->GetChildAtIndex(0u), "*name@example.com");
+  CheckParagraph(page->GetChildAtIndex(1u), "(555 1234");
+}
+
 // Like `HeuristicNestedUnorderedListSmallMarkerFont`, but for a nested-only
 // marker, whose nesting range is checked during classification.
 // A wrapped line that starts with "– " lines up with the item's text, so it

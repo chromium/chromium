@@ -254,9 +254,11 @@ constexpr auto kNestedOnlyListMarkers = std::to_array<std::string_view>({
     "\xC2\xB7",      // · U+00B7 (middle dot)
 });
 
-// Lowercase font name substrings for Word's nested-only list markers.
+// Lowercase font name substrings for font-specific bullets: Courier for Word's
+// nested-only 'o' bullet, and Wingdings and Symbol for bullets at any level.
 constexpr std::string_view kCourierFontSubstring = "courier";
 constexpr std::string_view kWingdingsFontSubstring = "wingdings";
+constexpr std::string_view kSymbolFontSubstring = "symbol";
 
 // Code points used only as bullets, covering the defaults of common authoring
 // tools. Characters with other common uses, such as '-', '*', 'o', or dashes,
@@ -275,8 +277,30 @@ constexpr auto kUnorderedListMarkers = std::to_array<std::string_view>({
     "\xEF\x82\xA7",  // U+F0A7 (Wingdings square bullet)
 });
 
+// • U+2022, the standard bullet for Symbol markers.
+constexpr uint32_t kBulletCodePoint = 0x2022;
+
+// The Symbol font's bullet glyph is commonly extracted as one of these code
+// points.
+constexpr uint32_t kSymbolLatin1BulletCodePoint = 0xB7;
+constexpr uint32_t kSymbolPrivateUseBulletCodePoint = 0xF0B7;
+
 // ▪ U+25AA, the standard bullet for Wingdings markers.
 constexpr uint32_t kSquareBulletCodePoint = 0x25AA;
+
+// Maps Wingdings bullet glyphs to their Unicode equivalents. Keys are the low
+// byte of the extracted code point, which normalizes the private-use (U+F0xx),
+// Latin-1 and ASCII encodings.
+constexpr auto kWingdingsBulletMap =
+    base::MakeFixedFlatMap<uint32_t, uint32_t>({
+        {0x6C, 0x25CF},  // ● U+25CF
+        {0x6E, 0x25A0},  // ■ U+25A0
+        {0x71, 0x2751},  // ❑ U+2751
+        {0x76, 0x2756},  // ❖ U+2756
+        {0xA7, kSquareBulletCodePoint},
+        {0xD8, 0x27A2},  // ➢ U+27A2
+        {0xFC, 0x2713},  // ✓ U+2713
+    });
 
 // Maps private-use bullets that PDFium produces for common authoring fonts in
 // `kUnorderedListMarkers` to their standard Unicode equivalents so screen
@@ -287,7 +311,7 @@ constexpr auto kPrivateUseBulletMap =
         // Wingdings square bullet -> ▪ U+25AA
         {0xF0A7, kSquareBulletCodePoint},
         // Symbol font bullet -> • U+2022
-        {0xF0B7, 0x2022},
+        {kSymbolPrivateUseBulletCodePoint, kBulletCodePoint},
     });
 
 enum class HeaderFooterRole {
@@ -1539,21 +1563,45 @@ ListMarkerForm ClassifyUnorderedMarker(
   return ListMarkerForm::kNone;
 }
 
-// Returns the standard Unicode bullet code point for a font-specific nested
-// list marker, or `std::nullopt` if `code_point` in `font_name` is not one.
-// Word's level-2 bullet is a Courier 'o' (◦) and its level-3 bullets are
-// Wingdings characters (▪).
+// Returns the standard Unicode bullet code point for `code_point` in a
+// Wingdings font, or `std::nullopt` if it is not a common bullet. Other glyphs
+// are often icons (e.g. ✉ or ☎). The low byte normalizes the private-use
+// (U+F0xx), Latin-1 and ASCII encodings.
+std::optional<uint32_t> GetWingdingsFontBulletCodePoint(uint32_t code_point) {
+  const auto it = kWingdingsBulletMap.find(code_point & 0xFF);
+  return it != kWingdingsBulletMap.end() ? std::make_optional(it->second)
+                                         : std::nullopt;
+}
+
+// Returns the standard Unicode bullet code point for `code_point` in the Symbol
+// font, or `std::nullopt` if it is not the bullet glyph. Symbol's other glyphs,
+// such as Greek letters and math operators, are not bullets.
+std::optional<uint32_t> GetSymbolFontBulletCodePoint(uint32_t code_point) {
+  if (code_point == kSymbolLatin1BulletCodePoint ||
+      code_point == kSymbolPrivateUseBulletCodePoint) {
+    return kBulletCodePoint;
+  }
+  return std::nullopt;
+}
+
+// Returns the standard Unicode bullet code point for a font-specific list
+// marker, or `std::nullopt` if `code_point` in `font_name` is not one. Word's
+// level-2 bullet is a Courier 'o' (◦), and its deeper levels use Wingdings.
 std::optional<uint32_t> GetFontBulletCodePoint(uint32_t code_point,
                                                std::string_view font_name) {
   const std::string lower_font_name = base::ToLowerASCII(font_name);
-  // Wingdings glyphs are all pictographs and their extracted code points vary
-  // by encoding, so any character counts.
-  if (lower_font_name.contains(kWingdingsFontSubstring)) {
-    return kSquareBulletCodePoint;
-  }
   // Courier is a text font, so only 'o' counts as a possible bullet point.
   if (code_point == 'o' && lower_font_name.contains(kCourierFontSubstring)) {
     return 0x25E6;  // ◦
+  }
+  // Word's nested markers can be any Wingdings glyph, so uncommon ones are
+  // shown as ▪.
+  if (lower_font_name.contains(kWingdingsFontSubstring)) {
+    return GetWingdingsFontBulletCodePoint(code_point)
+        .value_or(kSquareBulletCodePoint);
+  }
+  if (lower_font_name.contains(kSymbolFontSubstring)) {
+    return GetSymbolFontBulletCodePoint(code_point);
   }
   return std::nullopt;
 }
@@ -1822,6 +1870,21 @@ ListMarkerKind ClassifyListMarker(
     return {.form = unordered_form};
   }
 
+  // Wingdings and Symbol bullets are often extracted as letters (e.g. Wingdings
+  // 'l' for ●), so they count as markers only when standalone.
+  const std::optional<base_icu::UChar32> code_point =
+      GetStandaloneMarkerCharacter(text, run_context);
+  if (code_point.has_value()) {
+    const std::string lower_font_name =
+        base::ToLowerASCII(run_context.run->style.font_name);
+    if ((lower_font_name.contains(kWingdingsFontSubstring) &&
+         GetWingdingsFontBulletCodePoint(*code_point).has_value()) ||
+        (lower_font_name.contains(kSymbolFontSubstring) &&
+         GetSymbolFontBulletCodePoint(*code_point).has_value())) {
+      return {.form = ListMarkerForm::kStandalone};
+    }
+  }
+
   // Nested-only markers require an enclosing list level and must start right of
   // the parent item's text, so a wrapped line that begins with punctuation such
   // as "–" stays in the item.
@@ -1914,9 +1977,9 @@ ListMarkerPrefix GetListMarkerPrefix(
 // Returns the accessible name for the list marker of `kind` that starts
 // `run_context`, followed by a space to match Blink's list markers (e.g. "• ",
 // "1. "). Ordered markers use the PDF's own number and delimiter. For unordered
-// markers, Symbol and Wingdings private-use bullets, Word's Courier 'o', and
-// other Wingdings-font markers are mapped to standard Unicode bullets so they
-// are spoken and rendered correctly.
+// markers, private-use bullets and Wingdings, Symbol and Courier font bullets
+// are mapped to standard Unicode bullets so they are spoken and rendered
+// correctly.
 std::string GetListMarkerName(const TextRunContext& run_context,
                               const ListMarkerKind& kind) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
