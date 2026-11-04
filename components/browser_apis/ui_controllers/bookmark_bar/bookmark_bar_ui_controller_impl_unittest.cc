@@ -27,7 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
