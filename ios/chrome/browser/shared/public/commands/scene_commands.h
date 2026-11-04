@@ -213,6 +213,9 @@ enum class TabGridOpeningMode {
 // migration.
 - (void)showManagedProfileCreation;
 
+// Shows the First Run UI, executing `completion` when finished.
+- (void)showFirstRunUIWithCompletion:(ProceduralBlock)completion;
+
 // Shows/Hides the Guided Tour promo and steps, executing `completion` when
 // finished with `guidedTourStarted` indicating whether the user started the
 // tour.

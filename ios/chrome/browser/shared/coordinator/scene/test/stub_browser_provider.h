@@ -23,7 +23,6 @@ class Browser;
 - (void)shutdown;
 
 @property(nonatomic, readwrite) Browser* browser;
-- (UIViewController*)viewController:(BrowserProviderPassKey)key;
 
 @end
 

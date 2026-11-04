@@ -50,6 +50,8 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/first_run/coordinator/first_run_coordinator.h"
+#import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
@@ -188,6 +190,7 @@ inline LayoutStateScenePassKey PassKey() {
 }  // namespace
 
 @interface SceneCoordinator () <AccountMenuCoordinatorDelegate,
+                                FirstRunCoordinatorDelegate,
                                 GeminiWebModalCoordinatorDelegate,
                                 HistoryCoordinatorDelegate,
                                 IncognitoInterstitialCoordinatorDelegate,
@@ -280,6 +283,8 @@ inline LayoutStateScenePassKey PassKey() {
   SettingsNavigationController* _settingsNavigationController;
   // Completion block called when Settings are dismissed.
   ProceduralBlock _settingsDismissalCompletion;
+  // Coordinator for the First Run UI.
+  FirstRunCoordinator* _firstRunCoordinator;
   // Coordinator for the Guided Tour.
   GuidedTourCoordinator* _guidedTourCoordinator;
   // Coordinator for the undo sign-out flow.
@@ -405,6 +410,8 @@ inline LayoutStateScenePassKey PassKey() {
   self.UIHandler = nil;
   self.tabGridDelegate = nil;
   self.sceneURLLoadingService = nullptr;
+  [_firstRunCoordinator stop];
+  _firstRunCoordinator = nil;
   _guidedTourCoordinator.completion = nil;
   [self hideGuidedTour];
   [_geminiContainerCoordinator stop];
@@ -1215,6 +1222,22 @@ inline LayoutStateScenePassKey PassKey() {
   [_managedConfirmationScreenCoordinator start];
 }
 
+- (void)showFirstRunUIWithCompletion:(ProceduralBlock)completion {
+  CHECK(!_firstRunCoordinator);
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:self.profile];
+  UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
+                                             ? _viewController
+                                             : self.activeViewController;
+  _firstRunCoordinator = [[FirstRunCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_regularBrowser.get()
+                  screenProvider:provider
+                      completion:completion];
+  _firstRunCoordinator.delegate = self;
+  [_firstRunCoordinator start];
+}
+
 - (void)showGuidedTourWithCompletion:
     (void (^)(BOOL guidedTourStarted))completion {
   CHECK(!_guidedTourCoordinator, base::NotFatalUntil::M162);
@@ -1234,6 +1257,13 @@ inline LayoutStateScenePassKey PassKey() {
 - (void)hideGuidedTour {
   [_guidedTourCoordinator stop];
   _guidedTourCoordinator = nil;
+}
+
+#pragma mark - FirstRunCoordinatorDelegate
+
+- (void)didFinishFirstRun {
+  [_firstRunCoordinator stopWithCompletion];
+  _firstRunCoordinator = nil;
 }
 
 #pragma mark - ManagedProfileCreationCoordinatorDelegate

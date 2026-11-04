@@ -214,7 +214,6 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/first_run/coordinator",
     "//ios/chrome/browser/first_run/coordinator:first_run_provider",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/safari_data_import/public",

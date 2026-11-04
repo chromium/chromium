@@ -36,8 +36,4 @@
   _browser = browser;
 }
 
-- (UIViewController*)viewController:(BrowserProviderPassKey)key {
-  return nil;
-}
-
 @end

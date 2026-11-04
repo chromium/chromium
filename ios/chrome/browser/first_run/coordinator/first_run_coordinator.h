@@ -24,17 +24,20 @@
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
 // `screenProvider` helps decide which screen to show.
+// `completion` will be executed if the coordinator is stopped with
+// `-stopWithCompletion`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider
+                                completion:(ProceduralBlock)completion
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Designated stop method for this coordinator with `completionHandler` executed
-// after its UI finishes dismissing.
-- (void)stopWithCompletion:(ProceduralBlock)completionHandler;
+// Stops this coordinator and executes the `completion` block passed at
+// initialization after its UI finishes dismissing.
+- (void)stopWithCompletion;
 
 @property(nonatomic, weak) id<FirstRunCoordinatorDelegate> delegate;
 

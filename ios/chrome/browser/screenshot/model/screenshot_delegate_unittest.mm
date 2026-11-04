@@ -70,10 +70,6 @@
   return _browser.get();
 }
 
-- (UIViewController*)viewController:(BrowserProviderPassKey)key {
-  NOTREACHED();
-}
-
 @end
 
 class ScreenshotDelegateTest : public PlatformTest {

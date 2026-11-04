@@ -30,10 +30,6 @@
   return self.coordinator.viewController;
 }
 
-- (UIViewController*)viewController:(BrowserProviderPassKey)key {
-  return self.coordinator.viewController;
-}
-
 - (BrowserViewController*)bvc {
   return self.coordinator.viewController;
 }

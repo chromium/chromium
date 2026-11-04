@@ -5,19 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_PROVIDER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_PROVIDER_H_
 
-#import <UIKit/UIKit.h>
-
-#import "base/types/pass_key.h"
+#import <Foundation/Foundation.h>
 
 class Browser;
-
-// Used to limit access to the UIViewController from the BrowserProvider
-// to the FirstRunProfileAgent. Will be removed when the code has been
-// refactored to no longer access this method (crbug.com/40606165).
-class FirstRunProfileAgentPassKeyFactory;
-class SceneCoordinatorPassKeyFactory;
-using BrowserProviderPassKey = base::PassKey<FirstRunProfileAgentPassKeyFactory,
-                                             SceneCoordinatorPassKeyFactory>;
 
 // A BrowserProvider is an abstraction that exposes an interface to the Chrome
 // user interface (and related model objects) to the application layer. Each
@@ -30,9 +20,6 @@ using BrowserProviderPassKey = base::PassKey<FirstRunProfileAgentPassKeyFactory,
 // The active browser. This can never be nullptr once the UI initialization has
 // completed, i.e. after the ProfileState has passed ProfileInitStage::kUIReady.
 @property(nonatomic, readonly) Browser* browser;
-
-// TODO(crbug.com/40606165): Used by FirstRunProfileAgent. Should be removed.
-- (UIViewController*)viewController:(BrowserProviderPassKey)key;
 
 @end
 

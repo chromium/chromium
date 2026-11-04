@@ -77,15 +77,19 @@ class FirstRunCoordinatorMetricsHelper final {
 @implementation FirstRunCoordinator {
   // First Run navigation controller.
   UINavigationController* _navigationController;
+  // Completion block called when the First Run UI finishes dismissing.
+  ProceduralBlock _completion;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                            screenProvider:(ScreenProvider*)screenProvider {
+                            screenProvider:(ScreenProvider*)screenProvider
+                                completion:(ProceduralBlock)completion {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     CHECK_EQ(browser->type(), Browser::Type::kRegular);
     _screenProvider = screenProvider;
+    _completion = [completion copy];
     _navigationController =
         [[UINavigationController alloc] initWithNavigationBarClass:nil
                                                       toolbarClass:nil];
@@ -111,23 +115,12 @@ class FirstRunCoordinatorMetricsHelper final {
                                       completion:completion];
 }
 
-- (void)stopWithCompletion:(ProceduralBlock)completionHandler {
-  if (self.childCoordinator) {
-    // If the child coordinator is not nil, then the FRE is stopped because
-    // Chrome is being shutdown.
-    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
-                                  first_run::kFirstRunInterrupted);
-    [self stopChildCoordinator];
-  }
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:completionHandler];
-  _navigationController = nil;
-  [super stop];
+- (void)stopWithCompletion {
+  [self stopWithExecuteCompletion:YES];
 }
 
 - (void)stop {
-  [self stopWithCompletion:nil];
+  [self stopWithExecuteCompletion:NO];
 }
 
 #pragma mark - FirstRunScreenDelegate
@@ -276,6 +269,27 @@ class FirstRunCoordinatorMetricsHelper final {
 }
 
 #pragma mark - Private
+
+// Stops the coordinator and optionally executes `_completion` after dismissal.
+- (void)stopWithExecuteCompletion:(BOOL)executeCompletion {
+  if (self.childCoordinator) {
+    // If the child coordinator is not nil, then the FRE is stopped because
+    // Chrome is being shutdown.
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  first_run::kFirstRunInterrupted);
+    [self stopChildCoordinator];
+  }
+  ProceduralBlock completion = nil;
+  if (executeCompletion) {
+    completion = _completion;
+  }
+  _completion = nil;
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:completion];
+  _navigationController = nil;
+  [super stop];
+}
 
 - (void)stopChildCoordinator {
   // The child's `stop` method must unset the delegate.
