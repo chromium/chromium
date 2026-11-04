@@ -23,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -602,13 +603,12 @@ void VisitedLinkWriter::WriteFullTable() {
   header[1] = kFileCurrentVersion;
   header[2] = table_length();
   header[3] = used_items_;
-  WriteToFile(scoped_file_holder_.get(), 0, header, sizeof(header));
-  WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_.data(),
-              sizeof(salt_));
+  WriteToFile(scoped_file_holder_.get(), 0, base::as_byte_span(header));
+  WriteToFile(scoped_file_holder_.get(), sizeof(header), salt_);
 
   // Write the hash data.
-  WriteToFile(scoped_file_holder_.get(), kFileHeaderSize, GetHashTable().data(),
-              table_length() * sizeof(Fingerprint));
+  WriteToFile(scoped_file_holder_.get(), kFileHeaderSize,
+              base::as_byte_span(hash_table_));
 
   // The hash table may have shrunk, so make sure this is the end.
   PostIOTask(FROM_HERE,
@@ -663,8 +663,8 @@ VisitedLinkWriter::LoadApartFromFile(const base::FilePath& filename) {
     return nullptr;
 
   if (!ReadFromFile(file_closer.get(), kFileHeaderSize,
-                    GetHashTableFromMapping(hash_table_memory.mapping).data(),
-                    num_entries * sizeof(Fingerprint))) {
+                    base::as_writable_byte_span(
+                        GetHashTableFromMapping(hash_table_memory.mapping)))) {
     return nullptr;
   }
 
@@ -796,8 +796,9 @@ bool VisitedLinkWriter::ReadFileHeader(FILE* file,
     return false;
 
   uint8_t header[kFileHeaderSize];
-  if (!ReadFromFile(file, 0, &header, kFileHeaderSize))
+  if (!ReadFromFile(file, 0, header)) {
     return false;
+  }
 
   // Verify the signature.
   int32_t signature;
@@ -1070,15 +1071,13 @@ void VisitedLinkWriter::OnTableRebuildComplete(
 
 void VisitedLinkWriter::WriteToFile(base::ScopedFILE* file,
                                     off_t offset,
-                                    void* data,
-                                    int32_t data_size) {
+                                    base::span<const uint8_t> data) {
   DCHECK(file);
   DCHECK(persist_to_disk_);
   DCHECK(!table_is_loading_from_file_);
-  PostIOTask(
-      FROM_HERE,
-      base::BindOnce(&AsyncWrite, file, offset,
-                     std::string(static_cast<const char*>(data), data_size)));
+  PostIOTask(FROM_HERE,
+             base::BindOnce(&AsyncWrite, file, offset,
+                            std::string(base::as_string_view(data))));
 }
 
 void VisitedLinkWriter::WriteUsedItemCountToFile() {
@@ -1087,8 +1086,8 @@ void VisitedLinkWriter::WriteUsedItemCountToFile() {
     return;  // See comment on the scoped_file_holder_ variable for why this
              // might happen.
   }
-  WriteToFile(scoped_file_holder_.get(), kFileHeaderUsedOffset, &used_items_,
-              sizeof(used_items_));
+  WriteToFile(scoped_file_holder_.get(), kFileHeaderUsedOffset,
+              base::byte_span_from_ref(used_items_));
 }
 
 void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
@@ -1098,35 +1097,37 @@ void VisitedLinkWriter::WriteHashRangeToFile(Hash first_hash, Hash last_hash) {
     return;  // See comment on the scoped_file_holder_ variable for why this
              // might happen.
   }
+  const size_t first = base::checked_cast<size_t>(first_hash);
+  const size_t last = base::checked_cast<size_t>(last_hash);
   if (last_hash < first_hash) {
     // Handle wraparound at 0. This first write is first_hash->EOF
     WriteToFile(scoped_file_holder_.get(),
                 first_hash * sizeof(Fingerprint) + kFileHeaderSize,
-                &GetHashTable()[first_hash],
-                (table_length() - first_hash) * sizeof(Fingerprint));
+                base::as_byte_span(hash_table_.subspan(first)));
 
     // Now do 0->last_lash.
     WriteToFile(scoped_file_holder_.get(), kFileHeaderSize,
-                GetHashTable().data(), (last_hash + 1) * sizeof(Fingerprint));
+                base::as_byte_span(hash_table_.first(last + 1)));
   } else {
     // Normal case, just write the range.
-    WriteToFile(scoped_file_holder_.get(),
-                first_hash * sizeof(Fingerprint) + kFileHeaderSize,
-                &GetHashTable()[first_hash],
-                (last_hash - first_hash + 1) * sizeof(Fingerprint));
+    WriteToFile(
+        scoped_file_holder_.get(),
+        first_hash * sizeof(Fingerprint) + kFileHeaderSize,
+        base::as_byte_span(hash_table_.subspan(first, last - first + 1)));
   }
 }
 
 // static
 bool VisitedLinkWriter::ReadFromFile(FILE* file,
                                      off_t offset,
-                                     void* data,
-                                     size_t data_size) {
+                                     base::span<uint8_t> data) {
   if (fseek(file, offset, SEEK_SET) != 0)
     return false;
 
-  size_t num_read = UNSAFE_TODO(fread(data, 1, data_size, file));
-  return num_read == data_size;
+  // SAFETY: `data` is a span, so `data.data()` points to `data.size()`
+  // writable bytes.
+  size_t num_read = UNSAFE_BUFFERS(fread(data.data(), 1, data.size(), file));
+  return num_read == data.size();
 }
 
 // VisitedLinkTableBuilder ----------------------------------------------------

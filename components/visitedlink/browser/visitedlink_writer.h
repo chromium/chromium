@@ -255,8 +255,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // the write to a background thread.
   void WriteToFile(base::ScopedFILE* file,
                    off_t offset,
-                   void* data,
-                   int32_t data_size);
+                   base::span<const uint8_t> data);
 
   // Helper function to schedule and asynchronous write of the used count to
   // disk (this is a common operation).
@@ -270,10 +269,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // Synchronous read from the file. Assumes that it is the first asynchronous
   // I/O operation in the background thread. Returns true if the entire buffer
   // was successfully filled.
-  static bool ReadFromFile(FILE* hfile,
-                           off_t offset,
-                           void* data,
-                           size_t data_size);
+  static bool ReadFromFile(FILE* hfile, off_t offset, base::span<uint8_t> data);
 
   // General table handling
   // ----------------------
