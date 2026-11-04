@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<body>
+  <h3>Credit Card Info (Child Frame)</h3>
+  <form name="cc_child" id="cc_child" method="POST">
+    Name on card: <input type="text" name="CCName" id="CCName"><br>
+    Credit card number: <input type="text" name="CCNo" id="CCNo"><br>
+    Expiry Date: <input type="text" name="CCExpiresMonth" id="CCExpiresMonth"> / <input type="text" name="CCExpiresYear" id="CCExpiresYear"><br>
+  </form>
+  <script>
+    // Wait for the parent frame (driven by the test) to post 'triggerAutofocus'
+    // after Autofill has parsed the form and attached bottom-sheet listeners,
+    // avoiding a race between listener attachment and programmatic focus.
+    window.autofocusTriggered = false;
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'triggerAutofocus') {
+        document.getElementById('CCName').focus();
+        window.autofocusTriggered = true;
+        window.parent.postMessage({type: 'autofocusTriggered'}, '*');
+      }
+    });
+  </script>
+</body>
+</html>

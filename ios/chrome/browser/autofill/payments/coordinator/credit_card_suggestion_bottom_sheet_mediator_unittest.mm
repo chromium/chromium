@@ -83,9 +83,11 @@ class CreditCardSuggestionBottomSheetMediatorTest : public PlatformTest {
         std::move(test_web_state_),
         WebStateList::InsertionParams::Automatic().Activate());
 
+    autofill::FormActivityParams params;
+    params.has_user_gesture = true;
     mediator_ = [[CreditCardSuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()
-                      params:autofill::FormActivityParams()
+                      params:params
          personalDataManager:&personal_data_manager_];
     mediator_.delegate = delegate_;
   }

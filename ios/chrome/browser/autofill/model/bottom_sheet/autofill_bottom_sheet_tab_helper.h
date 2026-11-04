@@ -38,6 +38,25 @@ class ScriptMessage;
 @protocol FormInputSuggestionsProvider;
 @class FormSuggestion;
 
+// Status of the user gesture check when attempting to show the payments bottom
+// sheet.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PaymentsBottomSheetUserGestureStatus)
+enum class PaymentsBottomSheetUserGestureStatus {
+  kValidGesture = 0,
+  kNoUserGesture = 1,
+  kUserNotInteracting = 2,
+  kMaxValue = kUserNotInteracting,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:PaymentsBottomSheetUserGestureStatus)
+
+// Histogram name for recording the user gesture status when attempting to show
+// the payments bottom sheet.
+inline constexpr std::string_view
+    kPaymentsBottomSheetUserGestureStatusHistogram =
+        "IOS.PaymentsBottomSheet.UserGestureStatus";
+
 // This class manages state and events relating to the showing of various bottom
 // sheets for Autofill/Password Manager.
 //

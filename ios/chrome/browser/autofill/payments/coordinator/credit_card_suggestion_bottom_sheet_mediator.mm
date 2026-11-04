@@ -483,11 +483,19 @@ enum class FillContextStatus {
 
   id<FormInputSuggestionsProvider> provider =
       tabHelper->GetAccessoryViewProvider();
-  // Setting this to true only when we are retrieving suggestions for the bottom
-  // sheet. We are not using the results from this call, it is just to set the
-  // provider so the bottom sheet can fill the fields later.
+
   autofill::FormActivityParams params = _params;
-  params.has_user_gesture = true;
+  if (!base::FeatureList::IsEnabled(
+          kAutofillPaymentsBottomSheetRequiresUserGesture)) {
+    // Setting this to true only when we are retrieving suggestions for the
+    // bottom sheet. We are not using the results from this call, it is just to
+    // set the provider so the bottom sheet can fill the fields later.
+    params.has_user_gesture = true;
+  } else {
+    // This is enforced earlier. Verify the invariant here to avoid getting
+    // unexpected behavior, especially silent fill failures, later on.
+    CHECK(params.has_user_gesture, base::NotFatalUntil::M160);
+  }
 
   FormSuggestionsReadyCompletion completion = nil;
   if (IsStateless()) {

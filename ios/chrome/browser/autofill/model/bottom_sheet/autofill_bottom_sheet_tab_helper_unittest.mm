@@ -4,7 +4,9 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -148,16 +150,104 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
             .Set("fieldType", "new_password")
             .Set("type", "new_password")
             .Set("value", "new_password")
-            .Set("hasUserGesture", "YES")
+            .Set("hasUserGesture", true)
+            .Set("frameID", frame_id));
+  }
+
+  // Returns a valid form message body to trigger the payments bottom sheet.
+  std::unique_ptr<base::Value> ValidPaymentsFormMessageBody(
+      const std::string& frame_id,
+      autofill::FieldRendererId renderer_id,
+      bool has_user_gesture) {
+    return std::make_unique<base::Value>(
+        base::DictValue()
+            .Set("formName", "test_form")
+            .Set("formRendererID", "1234")
+            .Set("fieldIdentifier", "cc_number")
+            .Set("fieldRendererID", base::NumberToString(renderer_id.value()))
+            .Set("fieldType", "text")
+            .Set("type", "focus")
+            .Set("value", "")
+            .Set("hasUserGesture", has_user_gesture)
             .Set("frameID", frame_id));
   }
 
   // Returns a script message that represents a form.
-  web::ScriptMessage ScriptMessageForForm(std::unique_ptr<base::Value> body) {
-    return web::ScriptMessage(std::move(body),
-                              /*is_user_interacting=*/true,
+  web::ScriptMessage ScriptMessageForForm(std::unique_ptr<base::Value> body,
+                                          bool is_user_interacting = true) {
+    return web::ScriptMessage(std::move(body), is_user_interacting,
                               /*is_main_frame=*/true,
                               /*request_url=*/std::nullopt, url::Origin());
+  }
+
+  // Helper to set up a page, credit card form, and personal data manager with
+  // a card, returning the main web frame, autofill manager, and form global ID.
+  void SetupPaymentsForm(autofill::FieldRendererId cc_renderer_id,
+                         autofill::FieldRendererId exp_renderer_id,
+                         web::WebFrame*& out_frame,
+                         autofill::AutofillManager*& out_manager,
+                         autofill::FormGlobalId& out_form_id) {
+    web::test::LoadHtml(@"<html><body></body></html>", web_state_.get());
+    web::WebFrame* frame = AutofillBottomSheetJavaScriptFeature::GetInstance()
+                               ->GetWebFramesManager(web_state_.get())
+                               ->GetMainWebFrame();
+    ASSERT_NE(frame, nullptr);
+    out_frame = frame;
+
+    autofill::AutofillDriverIOS* driver =
+        autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state_.get(),
+                                                             frame);
+    autofill::LocalFrameToken frame_token = driver->GetFrameToken();
+    out_manager = &driver->GetAutofillManager();
+
+    // Add a credit card to the personal data manager.
+    autofill::CreditCard card = autofill::test::GetCreditCard();
+    card.SetExpirationYear(2099);
+    autofill_client_->GetPersonalDataManager()
+        .payments_data_manager()
+        .AddCreditCard(card);
+
+    autofill::FormData form;
+    form.set_url(GURL("https://myform.com"));
+    form.set_action(GURL("https://myform.com/submit"));
+    form.set_renderer_id(autofill::FormRendererId(1234));
+
+    autofill::FormFieldData cc_field;
+    cc_field.set_form_control_type(autofill::FormControlType::kInputText);
+    cc_field.set_id_attribute(u"cc_number");
+    cc_field.set_name(u"cc_number");
+    cc_field.set_name_attribute(cc_field.name());
+    cc_field.set_renderer_id(cc_renderer_id);
+    cc_field.set_host_frame(frame_token);
+
+    autofill::FormFieldData exp_field;
+    exp_field.set_form_control_type(autofill::FormControlType::kInputText);
+    exp_field.set_id_attribute(u"cc_exp");
+    exp_field.set_name(u"cc_exp");
+    exp_field.set_name_attribute(exp_field.name());
+    exp_field.set_label(u"Expiration Date");
+    exp_field.set_renderer_id(exp_renderer_id);
+    exp_field.set_host_frame(frame_token);
+
+    form.set_fields({cc_field, exp_field});
+    out_form_id = form.global_id();
+
+    autofill::TestAutofillManagerWaiter waiter(
+        *out_manager, {autofill::AutofillManagerEvent::kFormsSeen});
+    out_manager->OnFormsSeen({form}, {},
+                             autofill::AutofillManagerTestApi::pass_key());
+    ASSERT_TRUE(waiter.Wait(1));
+
+    autofill::FormStructure* form_structure =
+        const_cast<autofill::FormStructure*>(
+            out_manager->FindCachedFormById(out_form_id));
+    ASSERT_NE(nullptr, form_structure);
+    form_structure->field(0)->SetTypeTo(
+        autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
+        autofill::AutofillPredictionSource::kHeuristics);
+    form_structure->field(1)->SetTypeTo(
+        autofill::AutofillType(autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
+        autofill::AutofillPredictionSource::kHeuristics);
   }
 
   // Helper to set up a page, form, and fake service, returning the main web
@@ -730,6 +820,7 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   params.form_name = "test_form";
   params.field_identifier = "test_field";
   params.frame_id = "test_frame";
+  params.has_user_gesture = true;
 
   FormSuggestion* test_suggestion = [FormSuggestion
       suggestionWithValue:@"Visa **** 1234"
@@ -804,6 +895,7 @@ TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
   params.form_name = "test_form";
   params.field_identifier = "test_field";
   params.frame_id = "test_frame";
+  params.has_user_gesture = true;
 
   helper_->MaybeShowPaymentsBottomSheet(params);
   ASSERT_TRUE(captured_completion != nil);
@@ -824,4 +916,149 @@ TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
       ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
   helper_->OnFormMessageReceived(form_message);
   EXPECT_FALSE(commands_handler.showAmbientAutofillNoticeCalled);
+}
+
+// Tests that receiving a payments form message without a user gesture does not
+// trigger the payments bottom sheet and records kNoUserGesture when the feature
+// is enabled.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       PaymentsBottomSheet_NoUserGesture_DoesNotShowAndLogsMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kAutofillPaymentsBottomSheetRequiresUserGesture);
+
+  base::HistogramTester histogram_tester;
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  const autofill::FieldRendererId cc_renderer_id(1);
+  const autofill::FieldRendererId exp_renderer_id(2);
+  SetupPaymentsForm(cc_renderer_id, exp_renderer_id, frame, manager, form_id);
+  helper_->UpdateListenersForPaymentsForm(*manager, form_id,
+                                          /*only_new=*/false);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  web::ScriptMessage form_message = ScriptMessageForForm(
+      ValidPaymentsFormMessageBody(frame->GetFrameId(), cc_renderer_id,
+                                   /*has_user_gesture=*/false),
+      /*is_user_interacting=*/true);
+  helper_->OnFormMessageReceived(form_message);
+
+  EXPECT_FALSE(commands_handler.showPaymentsBottomSheetCalled);
+  histogram_tester.ExpectUniqueSample(
+      kPaymentsBottomSheetUserGestureStatusHistogram,
+      PaymentsBottomSheetUserGestureStatus::kNoUserGesture, 1);
+}
+
+// Tests that receiving a payments form message when the user is not
+// interacting does not trigger the payments bottom sheet and records
+// kUserNotInteracting when the feature is enabled.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       PaymentsBottomSheet_UserNotInteracting_DoesNotShowAndLogsMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kAutofillPaymentsBottomSheetRequiresUserGesture);
+
+  base::HistogramTester histogram_tester;
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  const autofill::FieldRendererId cc_renderer_id(1);
+  const autofill::FieldRendererId exp_renderer_id(2);
+  SetupPaymentsForm(cc_renderer_id, exp_renderer_id, frame, manager, form_id);
+  helper_->UpdateListenersForPaymentsForm(*manager, form_id,
+                                          /*only_new=*/false);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  web::ScriptMessage form_message = ScriptMessageForForm(
+      ValidPaymentsFormMessageBody(frame->GetFrameId(), cc_renderer_id,
+                                   /*has_user_gesture=*/true),
+      /*is_user_interacting=*/false);
+  helper_->OnFormMessageReceived(form_message);
+
+  EXPECT_FALSE(commands_handler.showPaymentsBottomSheetCalled);
+  histogram_tester.ExpectUniqueSample(
+      kPaymentsBottomSheetUserGestureStatusHistogram,
+      PaymentsBottomSheetUserGestureStatus::kUserNotInteracting, 1);
+}
+
+// Tests that receiving a payments form message triggers the payments bottom
+// sheet even without a user gesture when the user gesture requirement feature
+// is disabled.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       PaymentsBottomSheet_FeatureDisabled_ShowsBottomSheet) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kAutofillPaymentsBottomSheetRequiresUserGesture,
+                             kAutofillPaymentsSheetV3Ios});
+
+  base::HistogramTester histogram_tester;
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  const autofill::FieldRendererId cc_renderer_id(1);
+  const autofill::FieldRendererId exp_renderer_id(2);
+  SetupPaymentsForm(cc_renderer_id, exp_renderer_id, frame, manager, form_id);
+  helper_->UpdateListenersForPaymentsForm(*manager, form_id,
+                                          /*only_new=*/false);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  web::ScriptMessage form_message = ScriptMessageForForm(
+      ValidPaymentsFormMessageBody(frame->GetFrameId(), cc_renderer_id,
+                                   /*has_user_gesture=*/false),
+      /*is_user_interacting=*/false);
+  helper_->OnFormMessageReceived(form_message);
+
+  EXPECT_TRUE(commands_handler.showPaymentsBottomSheetCalled);
+  histogram_tester.ExpectTotalCount(
+      kPaymentsBottomSheetUserGestureStatusHistogram, 0);
+}
+
+// Tests that receiving a payments form message with valid user gesture and user
+// interaction triggers the payments bottom sheet and records kValidGesture.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       PaymentsBottomSheet_ValidUserGesture_ShowsBottomSheetAndLogsMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kAutofillPaymentsBottomSheetRequiresUserGesture},
+      /*disabled_features=*/{kAutofillPaymentsSheetV3Ios});
+
+  base::HistogramTester histogram_tester;
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  const autofill::FieldRendererId cc_renderer_id(1);
+  const autofill::FieldRendererId exp_renderer_id(2);
+  SetupPaymentsForm(cc_renderer_id, exp_renderer_id, frame, manager, form_id);
+  helper_->UpdateListenersForPaymentsForm(*manager, form_id,
+                                          /*only_new=*/false);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  web::ScriptMessage form_message = ScriptMessageForForm(
+      ValidPaymentsFormMessageBody(frame->GetFrameId(), cc_renderer_id,
+                                   /*has_user_gesture=*/true),
+      /*is_user_interacting=*/true);
+  helper_->OnFormMessageReceived(form_message);
+
+  EXPECT_TRUE(commands_handler.showPaymentsBottomSheetCalled);
+  histogram_tester.ExpectUniqueSample(
+      kPaymentsBottomSheetUserGestureStatusHistogram,
+      PaymentsBottomSheetUserGestureStatus::kValidGesture, 1);
 }

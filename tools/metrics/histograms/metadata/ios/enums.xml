@@ -2616,6 +2616,16 @@ chromium-metrics-reviews@google.com.
       label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
+<!-- LINT.IfChange(PaymentsBottomSheetUserGestureStatus) -->
+
+<enum name="PaymentsBottomSheetUserGestureStatus">
+  <int value="0" label="Valid user gesture"/>
+  <int value="1" label="No user gesture"/>
+  <int value="2" label="User not interacting"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h:PaymentsBottomSheetUserGestureStatus) -->
+
 <enum name="PaymentsSuggestionBottomSheetExitReason">
   <int value="0" label="Bottom Sheet dismissed"/>
   <int value="1" label="Used payment suggestion"/>

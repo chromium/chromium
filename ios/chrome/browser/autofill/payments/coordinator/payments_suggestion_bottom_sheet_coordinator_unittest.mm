@@ -86,6 +86,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
         std::make_unique<autofill::CreditCard>(credit_card_));
     personal_data_manager->payments_data_manager().SetSyncingForTest(true);
 
+    params_.has_user_gesture = true;
     coordinator_ = [[PaymentsSuggestionBottomSheetCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
                            browser:browser_.get()

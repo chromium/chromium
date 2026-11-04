@@ -6413,6 +6413,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PaymentsBottomSheet.UserGestureStatus"
+    enum="PaymentsBottomSheetUserGestureStatus" expires_after="2027-04-01">
+  <owner>tmartino@chromium.org</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the user gesture status when an activation signal is received from
+    the payments bottom sheet form activity listeners.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PaymentsBottomSheetV3.TimeToTrigger.{Outcome}" units="ms"
     expires_after="2027-04-01">
   <owner>vincb@google.com</owner>

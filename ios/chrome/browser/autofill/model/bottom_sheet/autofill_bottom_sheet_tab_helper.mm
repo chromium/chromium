@@ -167,6 +167,27 @@ bool FieldHasPersonalContextSuggestions(
   return std::ranges::any_of(suggestions, is_personal_context_suggestion);
 }
 
+void RecordPaymentsBottomSheetUserGestureStatus(
+    PaymentsBottomSheetUserGestureStatus status) {
+  base::UmaHistogramEnumeration(kPaymentsBottomSheetUserGestureStatusHistogram,
+                                status);
+}
+
+PaymentsBottomSheetUserGestureStatus EvaluateUserGestureSufficiency(
+    const autofill::FormActivityParams& params,
+    const web::ScriptMessage& message) {
+  // `is_user_interacting` is necessary because `has_user_gesture` (derived
+  // from `event.isTrusted` in JS-land) is true for certain programmatic focus
+  // events.
+  if (!params.has_user_gesture) {
+    return PaymentsBottomSheetUserGestureStatus::kNoUserGesture;
+  }
+  if (!message.is_user_interacting()) {
+    return PaymentsBottomSheetUserGestureStatus::kUserNotInteracting;
+  }
+  return PaymentsBottomSheetUserGestureStatus::kValidGesture;
+}
+
 }  // namespace
 
 AutofillBottomSheetTabHelper::~AutofillBottomSheetTabHelper() = default;
@@ -256,6 +277,25 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   if (is_password_related) {
     ShowCredentialBottomSheet(params);
   } else if (is_payments_related) {
+    // Enforce user gesture requirement to prevent focus-jacking by embedded
+    // cross-origin frames. Only enforce this for payments because password
+    // suggestions are origin-scoped, and opening the sheet on page load is
+    // intentionally supported in that flow.
+    if (base::FeatureList::IsEnabled(
+            kAutofillPaymentsBottomSheetRequiresUserGesture)) {
+      PaymentsBottomSheetUserGestureStatus user_gesture_status =
+          EvaluateUserGestureSufficiency(params, message);
+      RecordPaymentsBottomSheetUserGestureStatus(user_gesture_status);
+      if (user_gesture_status !=
+          PaymentsBottomSheetUserGestureStatus::kValidGesture) {
+        // In its current state, the renderer will keep blurring the keyboard on
+        // subsequent focus events, so we need to detach listeners. Detaching on
+        // only this frame ensures a frame can't use this to block the bottom
+        // sheet on other frames.
+        DetachPaymentsListeners(params.frame_id, /*refocus=*/false);
+        return;
+      }
+    }
     MaybeShowPaymentsBottomSheet(params);
   } else if (is_password_generation_related) {
     ShowProactivePasswordGenerationBottomSheet(params);
@@ -323,10 +363,17 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
   id<FormInputSuggestionsProvider> provider =
       tabHelper->GetAccessoryViewProvider();
 
-  // Force this bit to true as retrieving Autofill suggestions for a form
-  // requires a user manual gesture and we consider the signal to trigger
-  // the bottom sheet as a valid signal as a manual gesture.
-  params.has_user_gesture = true;
+  if (!base::FeatureList::IsEnabled(
+          kAutofillPaymentsBottomSheetRequiresUserGesture)) {
+    // Force this bit to true as retrieving Autofill suggestions for a form
+    // requires a user manual gesture and we consider the signal to trigger
+    // the bottom sheet as a valid signal as a manual gesture.
+    params.has_user_gesture = true;
+  } else {
+    // This is enforced upstream. Verify the invariant here because otherwise
+    // we will get unexpected behavior, including silent failures, later on.
+    CHECK(params.has_user_gesture);
+  }
 
   auto completion = base::CallbackToBlock(
       base::BindOnce(&AutofillBottomSheetTabHelper::

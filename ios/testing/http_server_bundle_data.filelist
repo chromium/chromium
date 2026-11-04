@@ -25,6 +25,8 @@ data/http_server_files/contenteditable.html
 data/http_server_files/context_menu.html
 data/http_server_files/credit_card.html
 data/http_server_files/credit_card_autofocused.html
+data/http_server_files/credit_card_child_autofocus.html
+data/http_server_files/credit_card_child_frame.html
 data/http_server_files/destination.html
 data/http_server_files/download_test_page.html
 data/http_server_files/email_signup_form.html
