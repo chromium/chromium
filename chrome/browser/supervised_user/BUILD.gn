@@ -486,7 +486,7 @@ static_library("test_support") {
       "//services/network:test_support",
     ]
   } else {
-    deps += [ "//chrome/test:test_support_ui" ]
+    public_deps += [ "//chrome/test/base:mixin_based_in_process_browser_test" ]
   }
 }
 

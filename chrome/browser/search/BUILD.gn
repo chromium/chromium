@@ -167,7 +167,10 @@ if (!is_android) {
       "instant_browsertest_base.h",
     ]
 
-    public_deps = [ "//chrome/test:test_support_ui" ]
+    public_deps = [
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
+    ]
 
     deps = [
       ":search",

@@ -113,7 +113,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_otr_state",
       "//chrome/common:constants",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
       "//components/metrics:metrics_pref_names",
       "//components/prefs",
       "//content/test:test_support",

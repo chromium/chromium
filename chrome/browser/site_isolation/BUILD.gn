@@ -112,7 +112,6 @@ if (!is_android) {
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/location_bar",
         "//chrome/test:test_support",
-        "//chrome/test:test_support_ui",
         "//content/test:browsertest_support",
         "//content/test:test_support",
         "//net:test_support",
