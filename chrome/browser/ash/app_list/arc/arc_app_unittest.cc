@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -29,6 +30,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -47,7 +49,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ash/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service_factory.h"
@@ -1208,7 +1209,11 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
  protected:
   // ArcAppModelBuilderTest:
   void OnBeforeArcTestSetup() override {
-    ArcDefaultAppList::UseTestAppsDirectory();
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    arc_default_apps_dir_override_.emplace(
+        ash::DIR_ARC_DEFAULT_APPS,
+        test_data_dir.AppendASCII("arc_default_apps"));
     arc_app_test()->set_wait_default_apps(IsWaitDefaultAppsNeeded());
     ArcAppModelBuilderRecreate::OnBeforeArcTestSetup();
   }
@@ -1294,6 +1299,9 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
           ui::GetScaleForResourceScaleFactor(scale_factor));
     }
   }
+
+ private:
+  std::optional<base::ScopedPathOverride> arc_default_apps_dir_override_;
 };
 
 class ArcAppLauncherForDefaultAppTest : public ArcDefaultAppTest {

@@ -10,6 +10,7 @@
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -17,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_switches.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -46,6 +48,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -56,6 +59,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -80,7 +84,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -139,6 +142,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -4128,7 +4132,11 @@ class ChromeShelfControllerArcDefaultAppsTest
  protected:
   void SetUp() override {
     ArcAppIcon::DisableSafeDecodingForTesting();
-    ArcDefaultAppList::UseTestAppsDirectory();
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    arc_default_apps_dir_override_.emplace(
+        ash::DIR_ARC_DEFAULT_APPS,
+        test_data_dir.AppendASCII("arc_default_apps"));
     ChromeShelfControllerTestBase::SetUp();
   }
 
@@ -4143,6 +4151,7 @@ class ChromeShelfControllerArcDefaultAppsTest
 
  private:
   apps::AppServiceRegistry app_service_registry_;
+  std::optional<base::ScopedPathOverride> arc_default_apps_dir_override_;
 };
 
 class ChromeShelfControllerPlayStoreAvailabilityTest
@@ -4163,9 +4172,16 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
     }
     // To prevent crash on test exit and pending decode request.
     ArcAppIcon::DisableSafeDecodingForTesting();
-    ArcDefaultAppList::UseTestAppsDirectory();
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    arc_default_apps_dir_override_.emplace(
+        ash::DIR_ARC_DEFAULT_APPS,
+        test_data_dir.AppendASCII("arc_default_apps"));
     ChromeShelfControllerTestBase::SetUp();
   }
+
+ private:
+  std::optional<base::ScopedPathOverride> arc_default_apps_dir_override_;
 };
 
 }  // namespace

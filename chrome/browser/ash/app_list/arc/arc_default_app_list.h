@@ -63,7 +63,6 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
   ~ArcDefaultAppList() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-  static void UseTestAppsDirectory();
   static std::string GetBoardNameForTesting(
       const base::FilePath& build_prop_path);
 
@@ -96,10 +95,10 @@ class ArcDefaultAppList : public arc::ArcSessionManagerObserver {
 
   // Loads default apps from two sources:
   //
-  // /usr/share/google-chrome/extensions/arc - contains default apps for all
-  //     boards that share the same image.
-  // /usr/share/google-chrome/extensions/arc/<BOARD_NAME> - contains default
-  //     apps for particular current board.
+  // ash::DIR_ARC_DEFAULT_APPS (/usr/share/google-chrome/extensions/arc) -
+  //     contains default apps for all boards that share the same image.
+  // ash::DIR_ARC_DEFAULT_APPS/<BOARD_NAME> - contains default apps for
+  //     particular current board.
   //
   void LoadDefaultApps(std::string board_name);
 

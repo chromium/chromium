@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/common/chrome_paths.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]
@@ -47,5 +46,6 @@ specific_include_rules = {
     "+chrome/browser/policy/profile_policy_connector.h",
     "+chrome/browser/sync",
     "+chrome/browser/web_applications/test",
+    "+chrome/common/chrome_paths.h",
   ],
 }

@@ -23,6 +23,16 @@ const base::FilePath::CharType kDefaultAppOrderFileName[] =
     FILE_PATH_LITERAL("/usr/share/chromium/default_app_order.json");
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// This must be kept in sync with the "arc" sub directory of
+// chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS defined in
+// chrome/common/chrome_paths.cc.
+const base::FilePath::CharType kArcDefaultAppsDir[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    FILE_PATH_LITERAL("/usr/share/google-chrome/extensions/arc");
+#else
+    FILE_PATH_LITERAL("/usr/share/chromium/extensions/arc");
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 const base::FilePath::CharType kMachineHardwareInfoFileName[] =
     FILE_PATH_LITERAL("/tmp/machine-info");
 
@@ -187,6 +197,9 @@ bool PathProvider(int key, base::FilePath* result) {
       *result = cur.Append(FILE_PATH_LITERAL("custom_wallpapers"));
       break;
     }
+    case DIR_ARC_DEFAULT_APPS:
+      *result = base::FilePath(kArcDefaultAppsDir);
+      break;
 
     default:
       return false;

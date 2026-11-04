@@ -53,6 +53,8 @@ std::optional<bool> g_override_using_default_data_directory_for_testing;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // The path to the external extension <id>.json files.
 // /usr/share seems like a good choice, see: http://www.pathname.com/fhs/
+// On ChromeOS, the "arc" sub directory is also exposed as
+// ash::DIR_ARC_DEFAULT_APPS (ash/constants/ash_paths.cc). Keep them in sync.
 const base::FilePath::CharType kFilepathSinglePrefExtensions[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     FILE_PATH_LITERAL("/usr/share/google-chrome/extensions");

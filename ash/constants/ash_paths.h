@@ -79,6 +79,9 @@ enum {
                                        // wallpapers reside.
   DIR_CUSTOM_WALLPAPERS,               // Directory where custom wallpapers
                                        // reside.
+  DIR_ARC_DEFAULT_APPS,  // Directory containing the declarations of the ARC
+                         // apps installed by default. Board specific ones are
+                         // in the sub directory named with the board name.
 
   PATH_END
 };
