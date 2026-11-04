@@ -58,7 +58,7 @@ public class OriginVerifierUnitTestSupport {
         info.signatures =
                 new Signature[] {new Signature(Base64.decode(PACKAGE_SIGNATURE_BASE64, 0))};
         info.packageName = packageName;
-        shadowPackageManager.addPackage(info);
+        shadowPackageManager.installPackage(info);
         shadowPackageManager.setPackagesForUid(uid, packageName);
     }
 }

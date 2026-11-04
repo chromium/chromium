@@ -7,10 +7,10 @@ package org.chromium.components.download;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ProviderInfo;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.DocumentsContract;
 
@@ -34,11 +34,14 @@ public class DownloadDocumentUriBridgeTest {
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         // Register a DocumentsProvider to handle DOCUMENTS_AUTHORITY.
-        Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
-        ResolveInfo resolveInfo = new ResolveInfo();
-        resolveInfo.providerInfo = new ProviderInfo();
-        resolveInfo.providerInfo.authority = DOCUMENTS_AUTHORITY;
-        shadowPackageManager.addResolveInfoForIntent(intent, resolveInfo);
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = context.getPackageName();
+        providerInfo.name = "org.chromium.test.documents.TestDocumentsProvider";
+        providerInfo.authority = DOCUMENTS_AUTHORITY;
+        shadowPackageManager.addOrUpdateProvider(providerInfo);
+        shadowPackageManager.addIntentFilterForProvider(
+                new ComponentName(providerInfo.packageName, providerInfo.name),
+                new IntentFilter(DocumentsContract.PROVIDER_INTERFACE));
     }
 
     @Test
