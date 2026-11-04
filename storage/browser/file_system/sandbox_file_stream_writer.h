@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
@@ -24,6 +23,7 @@ namespace storage {
 
 class FileSystemContext;
 class FileStreamWriter;
+class ScopedFile;
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
     : public FileStreamWriter {
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
                              base::File::Error file_error,
                              const base::File::Info& file_info,
                              const base::FilePath& platform_path,
-                             scoped_refptr<ShareableFileReference> file_ref);
+                             ScopedFile temp_file);
   void DidGetBucketSpaceRemaining(
       net::CompletionOnceCallback callback,
       storage::QuotaErrorOr<int64_t> space_remaining);

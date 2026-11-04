@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-#include "base/containers/span.h"
-
-
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
@@ -31,7 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -542,7 +539,7 @@ void CreateSnapshotCallback(base::File::Error* error,
                             base::File::Error result,
                             const base::File::Info&,
                             const base::FilePath&,
-                            scoped_refptr<storage::ShareableFileReference>) {
+                            storage::ScopedFile) {
   *error = result;
 }
 

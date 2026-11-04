@@ -135,7 +135,7 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation.h"
@@ -2567,7 +2567,7 @@ void DeveloperPrivateLoadDirectoryFunction::SnapshotFileCallback(
     base::File::Error result,
     const base::File::Info& file_info,
     const base::FilePath& src_path,
-    scoped_refptr<storage::ShareableFileReference> file_ref) {
+    storage::ScopedFile temp_file) {
   if (result != base::File::FILE_OK) {
     error_ = "Error in copying files from sync filesystem.";
     success_ = false;
@@ -2578,12 +2578,13 @@ void DeveloperPrivateLoadDirectoryFunction::SnapshotFileCallback(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeveloperPrivateLoadDirectoryFunction::CopyFile, this,
-                     src_path, target_path));
+                     src_path, target_path, std::move(temp_file)));
 }
 
 void DeveloperPrivateLoadDirectoryFunction::CopyFile(
     const base::FilePath& src_path,
-    const base::FilePath& target_path) {
+    const base::FilePath& target_path,
+    storage::ScopedFile temp_file) {
   if (!base::CreateDirectory(target_path.DirName())) {
     error_ = "Error in copying files from sync filesystem.";
     success_ = false;

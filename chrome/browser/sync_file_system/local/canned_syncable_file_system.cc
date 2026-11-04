@@ -25,7 +25,7 @@
 #include "chrome/browser/sync_file_system/local/sync_file_system_backend.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -115,7 +115,7 @@ void OnCreateSnapshotFileAndVerifyData(
     base::File::Error result,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<storage::ShareableFileReference> /* file_ref */) {
+    storage::ScopedFile /* temp_file */) {
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(result);
     return;
@@ -128,15 +128,14 @@ void OnCreateSnapshotFileAndVerifyData(
   std::move(callback).Run(result);
 }
 
-void OnCreateSnapshotFile(
-    base::File::Info* file_info_out,
-    base::FilePath* platform_path_out,
-    CannedSyncableFileSystem::StatusCallback callback,
-    base::File::Error result,
-    const base::File::Info& file_info,
-    const base::FilePath& platform_path,
-    scoped_refptr<storage::ShareableFileReference> file_ref) {
-  CHECK(!file_ref.get(), base::NotFatalUntil::M162);
+void OnCreateSnapshotFile(base::File::Info* file_info_out,
+                          base::FilePath* platform_path_out,
+                          CannedSyncableFileSystem::StatusCallback callback,
+                          base::File::Error result,
+                          const base::File::Info& file_info,
+                          const base::FilePath& platform_path,
+                          storage::ScopedFile temp_file) {
+  CHECK(temp_file.path().empty(), base::NotFatalUntil::M162);
   CHECK(file_info_out, base::NotFatalUntil::M162);
   CHECK(platform_path_out, base::NotFatalUntil::M162);
   *file_info_out = file_info;

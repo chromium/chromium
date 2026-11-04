@@ -20,7 +20,7 @@
 #include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
@@ -331,7 +331,7 @@ class SnapshotCopyOrMoveImpl
       base::File::Error error,
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
-      scoped_refptr<ShareableFileReference> file_ref) {
+      ScopedFile temp_file) {
     if (cancel_requested_)
       error = base::File::FILE_ERROR_ABORT;
 
@@ -346,7 +346,7 @@ class SnapshotCopyOrMoveImpl
 
     if (!validator_factory_) {
       // No validation is needed.
-      RunAfterPreWriteValidation(platform_path, file_info, std::move(file_ref),
+      RunAfterPreWriteValidation(platform_path, file_info, std::move(temp_file),
                                  std::move(callback), base::File::FILE_OK);
       return;
     }
@@ -356,13 +356,13 @@ class SnapshotCopyOrMoveImpl
         platform_path,
         base::BindOnce(&SnapshotCopyOrMoveImpl::RunAfterPreWriteValidation,
                        weak_factory_.GetWeakPtr(), platform_path, file_info,
-                       std::move(file_ref), std::move(callback)));
+                       std::move(temp_file), std::move(callback)));
   }
 
   void RunAfterPreWriteValidation(
       const base::FilePath& platform_path,
       const base::File::Info& file_info,
-      scoped_refptr<ShareableFileReference> file_ref,
+      ScopedFile temp_file,
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
     if (cancel_requested_)
@@ -373,18 +373,18 @@ class SnapshotCopyOrMoveImpl
       return;
     }
 
-    // |file_ref| is unused but necessary to keep the file alive until
+    // |temp_file| is unused but necessary to keep the file alive until
     // CopyInForeignFile() is completed.
     operation_runner_->CopyInForeignFile(
         platform_path, dest_url_,
         base::BindOnce(&SnapshotCopyOrMoveImpl::RunAfterCopyInForeignFile,
                        weak_factory_.GetWeakPtr(), file_info,
-                       std::move(file_ref), std::move(callback)));
+                       std::move(temp_file), std::move(callback)));
   }
 
   void RunAfterCopyInForeignFile(
       const base::File::Info& file_info,
-      scoped_refptr<ShareableFileReference> file_ref,
+      ScopedFile temp_file,
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
     if (cancel_requested_)
@@ -514,7 +514,7 @@ class SnapshotCopyOrMoveImpl
       base::File::Error error,
       const base::File::Info& file_info,
       const base::FilePath& platform_path,
-      scoped_refptr<ShareableFileReference> file_ref) {
+      ScopedFile temp_file) {
     if (cancel_requested_)
       error = base::File::FILE_ERROR_ABORT;
 
@@ -524,19 +524,19 @@ class SnapshotCopyOrMoveImpl
     }
 
     DCHECK(validator_);
-    // Note: file_ref passed here to keep the file alive until after
+    // Note: temp_file passed here to keep the file alive until after
     // the StartPostWriteValidation operation finishes.
     validator_->StartPostWriteValidation(
         platform_path,
         base::BindOnce(&SnapshotCopyOrMoveImpl::DidPostWriteValidation,
-                       weak_factory_.GetWeakPtr(), std::move(file_ref),
+                       weak_factory_.GetWeakPtr(), std::move(temp_file),
                        std::move(callback)));
   }
 
-  // |file_ref| is unused; it is passed here to make sure the reference is
+  // |temp_file| is unused; it is passed here to make sure the reference is
   // alive until after post-write validation is complete.
   void DidPostWriteValidation(
-      scoped_refptr<ShareableFileReference> file_ref,
+      ScopedFile temp_file,
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
     std::move(callback).Run(error);

@@ -16,7 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -65,20 +65,16 @@ std::tuple<base::File::Error, base::File::Info> GetFileInfoHelper(
   return {error, file_info};
 }
 
-std::tuple<base::File::Error,
-           base::File::Info,
-           base::FilePath,
-           scoped_refptr<ShareableFileReference>>
+std::tuple<base::File::Error, base::File::Info, base::FilePath, ScopedFile>
 CreateSnapshotFileHelper(FileSystemFileUtil& file_util,
                          std::unique_ptr<FileSystemOperationContext> context,
                          const FileSystemURL& url) {
   base::File::Error error;
   base::File::Info file_info;
   base::FilePath platform_path;
-  ScopedFile scoped_file = file_util.CreateSnapshotFile(
+  ScopedFile temp_file = file_util.CreateSnapshotFile(
       context.get(), url, &error, &file_info, &platform_path);
-  return {error, file_info, platform_path,
-          ShareableFileReference::GetOrCreate(std::move(scoped_file))};
+  return {error, file_info, platform_path, std::move(temp_file)};
 }
 
 void ReadDirectoryHelper(FileSystemFileUtil& file_util,

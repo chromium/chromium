@@ -29,7 +29,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -88,11 +88,10 @@ class EventLogger {
     read_directory_list_ = std::move(file_list);
   }
 
-  void OnCreateSnapshotFile(
-      base::File::Error error,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      scoped_refptr<storage::ShareableFileReference> file_ref) {
+  void OnCreateSnapshotFile(base::File::Error error,
+                            const base::File::Info& file_info,
+                            const base::FilePath& platform_path,
+                            storage::ScopedFile temp_file) {
     result_ = std::make_unique<base::File::Error>(error);
   }
 

@@ -18,7 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -454,7 +454,7 @@ OperationID FileSystemOperationRunner::CreateSnapshotFile(
   base::AutoReset<bool> beginning(&is_beginning_operation_, true);
   if (!operation_raw) {
     DidCreateSnapshot(id, std::move(callback), error, base::File::Info(),
-                      base::FilePath(), nullptr);
+                      base::FilePath(), ScopedFile());
     return id;
   }
   PrepareForRead(id, url);
@@ -721,7 +721,7 @@ void FileSystemOperationRunner::DidCreateSnapshot(
     base::File::Error rv,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<ShareableFileReference> file_ref) {
+    ScopedFile temp_file) {
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
@@ -733,10 +733,10 @@ void FileSystemOperationRunner::DidCreateSnapshot(
         FROM_HERE,
         base::BindOnce(&FileSystemOperationRunner::DidCreateSnapshot, weak_ptr_,
                        id, std::move(callback), rv, file_info, platform_path,
-                       std::move(file_ref)));
+                       std::move(temp_file)));
     return;
   }
-  std::move(callback).Run(rv, file_info, platform_path, std::move(file_ref));
+  std::move(callback).Run(rv, file_info, platform_path, std::move(temp_file));
   FinishOperation(id);
 }
 

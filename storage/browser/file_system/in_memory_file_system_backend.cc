@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation.h"
@@ -235,15 +235,14 @@ class InMemoryFileSystemBackend::AsyncFileUtilImpl : public AsyncFileUtil {
     // stream instead (see SupportsStreaming()), but some generic paths, e.g.
     // copying to another file system, may still ask for a snapshot.
     Reply(std::move(callback), base::File::FILE_ERROR_SECURITY,
-          base::File::Info(), base::FilePath(),
-          scoped_refptr<ShareableFileReference>());
+          base::File::Info(), base::FilePath(), ScopedFile());
   }
 
  private:
   template <typename Callback, typename... Args>
   static void Reply(Callback callback, Args... args) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), args...));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(args)...));
   }
 
   static void FailWithSecurityError(StatusCallback callback) {

@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -106,12 +107,11 @@ class SnapshotManager::FileRefsHolder
       int64_t needed_space,
       LocalPathCallback callback);
 
-  void OnCreateSnapshotFile(
-      LocalPathCallback callback,
-      base::File::Error result,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      scoped_refptr<storage::ShareableFileReference> file_ref);
+  void OnCreateSnapshotFile(LocalPathCallback callback,
+                            base::File::Error result,
+                            const base::File::Info& file_info,
+                            const base::FilePath& platform_path,
+                            storage::ScopedFile temp_file);
 
  private:
   // Struct for keeping the snapshot file reference with its file size used for
@@ -171,7 +171,7 @@ void SnapshotManager::FileRefsHolder::OnCreateSnapshotFile(
     base::File::Error result,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<storage::ShareableFileReference> file_ref) {
+    storage::ScopedFile temp_file) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (result != base::File::FILE_OK) {
@@ -179,8 +179,9 @@ void SnapshotManager::FileRefsHolder::OnCreateSnapshotFile(
     return;
   }
 
-  file_refs_.push_back(
-      FileReferenceWithSizeInfo(std::move(file_ref), file_info.size));
+  file_refs_.push_back(FileReferenceWithSizeInfo(
+      storage::ShareableFileReference::GetOrCreate(std::move(temp_file)),
+      file_info.size));
   std::move(callback).Run(platform_path);
 }
 

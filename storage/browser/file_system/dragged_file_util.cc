@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"

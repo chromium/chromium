@@ -7,12 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -54,15 +55,14 @@ void GetMetadataCallback(base::RunLoop* run_loop,
   run_loop->Quit();
 }
 
-void CreateSnapshotFileCallback(
-    base::RunLoop* run_loop,
-    base::File::Error* result_out,
-    base::FilePath* platform_path_out,
-    base::File::Error result,
-    const base::File::Info& file_info,
-    const base::FilePath& platform_path,
-    scoped_refptr<ShareableFileReference> file_ref) {
-  DCHECK(!file_ref.get());
+void CreateSnapshotFileCallback(base::RunLoop* run_loop,
+                                base::File::Error* result_out,
+                                base::FilePath* platform_path_out,
+                                base::File::Error result,
+                                const base::File::Info& file_info,
+                                const base::FilePath& platform_path,
+                                ScopedFile temp_file) {
+  CHECK(temp_file.path().empty());
   *result_out = result;
   if (platform_path_out)
     *platform_path_out = platform_path;

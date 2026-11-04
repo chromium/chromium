@@ -15,6 +15,7 @@
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/memory_file_stream_reader.h"
@@ -75,8 +76,8 @@ void SandboxFileStreamReader::DidCreateSnapshotForRead(
     base::File::Error file_error,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<ShareableFileReference> file_ref) {
-  CHECK(!file_ref);
+    ScopedFile temp_file) {
+  CHECK(temp_file.path().empty());
   DCHECK(has_pending_create_snapshot_);
   DCHECK(!file_reader_.get());
   has_pending_create_snapshot_ = false;
@@ -105,8 +106,8 @@ void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
     base::File::Error file_error,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<ShareableFileReference> file_ref) {
-  CHECK(!file_ref);
+    ScopedFile temp_file) {
+  CHECK(temp_file.path().empty());
   DCHECK(has_pending_create_snapshot_);
   DCHECK(!file_reader_.get());
   has_pending_create_snapshot_ = false;

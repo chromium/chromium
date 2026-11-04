@@ -25,7 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/native_file_util.h"
@@ -54,10 +54,8 @@ base::File::Error IsMediaHeader(base::span<const uint8_t> data) {
   return base::File::FILE_ERROR_SECURITY;
 }
 
-void HoldFileRef(scoped_refptr<storage::ShareableFileReference> file_ref) {}
-
 void DidOpenSnapshot(storage::AsyncFileUtil::CreateOrOpenCallback callback,
-                     scoped_refptr<storage::ShareableFileReference> file_ref,
+                     storage::ScopedFile temp_file,
                      base::File file) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   if (!file.IsValid()) {
@@ -65,7 +63,7 @@ void DidOpenSnapshot(storage::AsyncFileUtil::CreateOrOpenCallback callback,
     return;
   }
   std::move(callback).Run(std::move(file),
-                          base::BindOnce(&HoldFileRef, std::move(file_ref)));
+                          base::DoNothingWithBoundArgs(std::move(temp_file)));
 }
 
 }  // namespace
@@ -142,7 +140,7 @@ class NativeMediaFileUtil::Core {
       const storage::FileSystemURL& url,
       base::File::Info* file_info,
       base::FilePath* platform_path,
-      scoped_refptr<storage::ShareableFileReference>* file_ref);
+      storage::ScopedFile* temp_file);
 
   // Translates the specified URL to a |local_file_path|, with no filtering.
   base::File::Error GetLocalFilePath(
@@ -217,7 +215,7 @@ void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
     base::File::Error result,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
-    scoped_refptr<storage::ShareableFileReference> file_ref) {
+    storage::ScopedFile temp_file) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   if (result != base::File::FILE_OK) {
     std::move(callback).Run(base::File(), base::OnceClosure());
@@ -228,7 +226,7 @@ void NativeMediaFileUtil::CreatedSnapshotFileForCreateOrOpen(
       base::BindOnce(&storage::NativeFileUtil::CreateOrOpen, platform_path,
                      file_flags),
       base::BindOnce(&DidOpenSnapshot, std::move(callback),
-                     std::move(file_ref)));
+                     std::move(temp_file)));
 }
 
 void NativeMediaFileUtil::CreateOrOpen(
@@ -572,12 +570,12 @@ void NativeMediaFileUtil::Core::CreateSnapshotFileOnTaskRunnerThread(
   CHECK(IsOnTaskRunnerThread(context.get()), base::NotFatalUntil::M161);
   base::File::Info file_info;
   base::FilePath platform_path;
-  scoped_refptr<storage::ShareableFileReference> file_ref;
+  storage::ScopedFile temp_file;
   base::File::Error error = CreateSnapshotFileSync(
-      context.get(), url, &file_info, &platform_path, &file_ref);
+      context.get(), url, &file_info, &platform_path, &temp_file);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error, file_info,
-                                platform_path, file_ref));
+                                platform_path, std::move(temp_file)));
 }
 
 base::File::Error NativeMediaFileUtil::Core::GetFileInfoSync(
@@ -653,7 +651,7 @@ base::File::Error NativeMediaFileUtil::Core::CreateSnapshotFileSync(
     const storage::FileSystemURL& url,
     base::File::Info* file_info,
     base::FilePath* platform_path,
-    scoped_refptr<storage::ShareableFileReference>* file_ref) {
+    storage::ScopedFile* temp_file) {
   base::File::Error error =
       GetFileInfoSync(context, url, file_info, platform_path);
   if (error == base::File::FILE_OK && file_info->is_directory)
@@ -662,7 +660,7 @@ base::File::Error NativeMediaFileUtil::Core::CreateSnapshotFileSync(
     error = NativeMediaFileUtil::IsMediaFile(*platform_path);
 
   // We're just returning the local file information.
-  *file_ref = scoped_refptr<storage::ShareableFileReference>();
+  *temp_file = storage::ScopedFile();
 
   return error;
 }

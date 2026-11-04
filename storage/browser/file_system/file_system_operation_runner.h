@@ -289,7 +289,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationRunner {
                          base::File::Error rv,
                          const base::File::Info& file_info,
                          const base::FilePath& platform_path,
-                         scoped_refptr<ShareableFileReference> file_ref);
+                         ScopedFile temp_file);
 
   void PrepareForWrite(OperationID id, const FileSystemURL& url);
   void PrepareForRead(OperationID id, const FileSystemURL& url);

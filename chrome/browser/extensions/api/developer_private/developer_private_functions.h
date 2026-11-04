@@ -865,15 +865,15 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
       ::storage::FileSystemOperation::FileEntryList file_list,
       bool has_more);
 
-  void SnapshotFileCallback(
-      const base::FilePath& target_path,
-      base::File::Error result,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      scoped_refptr<::storage::ShareableFileReference> file_ref);
+  void SnapshotFileCallback(const base::FilePath& target_path,
+                            base::File::Error result,
+                            const base::File::Info& file_info,
+                            const base::FilePath& platform_path,
+                            ::storage::ScopedFile temp_file);
 
   void CopyFile(const base::FilePath& src_path,
-                const base::FilePath& dest_path);
+                const base::FilePath& dest_path,
+                ::storage::ScopedFile temp_file);
 
   void Load();
 

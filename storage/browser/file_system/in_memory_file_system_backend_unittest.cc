@@ -18,7 +18,7 @@
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
@@ -257,8 +257,7 @@ TEST_F(InMemoryFileSystemBackendTest, RefusesDirectoryListingsAndSnapshots) {
             read_directory_future.Get<0>());
 
   base::test::TestFuture<base::File::Error, const base::File::Info&,
-                         const base::FilePath&,
-                         scoped_refptr<ShareableFileReference>>
+                         const base::FilePath&, ScopedFile>
       snapshot_future;
   async_file_util->CreateSnapshotFile(/*context=*/nullptr, url,
                                       snapshot_future.GetCallback());

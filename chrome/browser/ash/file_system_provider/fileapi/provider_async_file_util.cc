@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/fileapi/fallback_copy_in_foreign_file.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -482,7 +482,7 @@ void ProviderAsyncFileUtil::CreateSnapshotFile(
   NOTIMPLEMENTED();
   std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION,
                           base::File::Info(), base::FilePath(),
-                          scoped_refptr<storage::ShareableFileReference>());
+                          storage::ScopedFile());
 }
 
 }  // namespace ash::file_system_provider::internal

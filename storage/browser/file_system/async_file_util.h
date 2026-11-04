@@ -21,7 +21,7 @@ class Time;
 }
 
 namespace storage {
-class ShareableFileReference;
+class ScopedFile;
 }
 
 namespace storage {
@@ -73,7 +73,7 @@ class AsyncFileUtil {
       base::OnceCallback<void(base::File::Error result,
                               const base::File::Info& file_info,
                               const base::FilePath& platform_path,
-                              scoped_refptr<ShareableFileReference> file_ref)>;
+                              ScopedFile temp_file)>;
 
   using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
@@ -339,11 +339,8 @@ class AsyncFileUtil {
   // local snapshot file and return the path of the created file.
   //
   // If implementors creates a temporary file for snapshotting and wants
-  // FileAPI backend to take care of the lifetime of the file (so that
-  // it won't get deleted while JS layer has any references to the created
-  // File/Blob object), it should return non-empty |file_ref|.
-  // Via the |file_ref| implementors can schedule a file deletion
-  // or arbitrary callbacks when the last reference of File/Blob is dropped.
+  // FileAPI backend to take care of the lifetime of the file, it should return
+  // non-empty |temp_file|.
   //
   // FileSystemOperationImpl::CreateSnapshotFile calls this.
   //

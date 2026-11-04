@@ -24,7 +24,7 @@
 #include "chrome/browser/media_galleries/fileapi/readahead_file_stream_reader.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -34,7 +34,7 @@
 using storage::AsyncFileUtil;
 using storage::FileSystemOperationContext;
 using storage::FileSystemURL;
-using storage::ShareableFileReference;
+using storage::ScopedFile;
 
 namespace {
 
@@ -147,13 +147,14 @@ base::FilePath CreateSnapshotFileOnBlockingPool(
 void OnDidCheckMediaForCreateSnapshotFile(
     AsyncFileUtil::CreateSnapshotFileCallback callback,
     const base::File::Info& file_info,
-    scoped_refptr<storage::ShareableFileReference> platform_file,
+    storage::ScopedFile temp_file,
     base::File::Error error) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  base::FilePath platform_path(platform_file.get()->path());
+  base::FilePath platform_path(temp_file.path());
   if (error != base::File::FILE_OK)
-    platform_file.reset();
-  std::move(callback).Run(error, file_info, platform_path, platform_file);
+    temp_file.Reset();
+  std::move(callback).Run(error, file_info, platform_path,
+                          std::move(temp_file));
 }
 
 // Called when the snapshot file specified by the |platform_path| is
@@ -165,20 +166,18 @@ void OnDidCreateSnapshotFile(AsyncFileUtil::CreateSnapshotFileCallback callback,
                              const base::File::Info& file_info,
                              const base::FilePath& platform_path) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  scoped_refptr<storage::ShareableFileReference> file =
-      ShareableFileReference::GetOrCreate(
-          platform_path,
-          ShareableFileReference::DELETE_ON_FINAL_RELEASE,
-          media_task_runner);
+  storage::ScopedFile temp_file(platform_path, ScopedFile::DELETE_ON_SCOPE_OUT,
+                                media_task_runner);
 
   if (validate_media_files) {
     media_task_runner->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&NativeMediaFileUtil::IsMediaFile, platform_path),
         base::BindOnce(&OnDidCheckMediaForCreateSnapshotFile,
-                       std::move(callback), file_info, file));
+                       std::move(callback), file_info, std::move(temp_file)));
   } else {
-    OnDidCheckMediaForCreateSnapshotFile(std::move(callback), file_info, file,
+    OnDidCheckMediaForCreateSnapshotFile(std::move(callback), file_info,
+                                         std::move(temp_file),
                                          base::File::FILE_OK);
   }
 }
@@ -190,7 +189,7 @@ void OnCreateSnapshotFileError(
     base::File::Error error) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   std::move(callback).Run(error, base::File::Info(), base::FilePath(),
-                          scoped_refptr<ShareableFileReference>());
+                          ScopedFile());
 }
 
 // Called when the snapshot file specified by the |snapshot_file_path| is

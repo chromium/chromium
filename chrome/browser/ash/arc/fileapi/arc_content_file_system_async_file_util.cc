@@ -14,7 +14,7 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/blob/scoped_file.h"
 
 namespace arc {
 
@@ -202,7 +202,7 @@ void ArcContentFileSystemAsyncFileUtil::CreateSnapshotFile(
       FROM_HERE,
       base::BindOnce(std::move(callback), base::File::FILE_ERROR_FAILED,
                      base::File::Info(), base::FilePath(),
-                     scoped_refptr<storage::ShareableFileReference>()));
+                     storage::ScopedFile()));
 }
 
 }  // namespace arc

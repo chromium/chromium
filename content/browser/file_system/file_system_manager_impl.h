@@ -38,7 +38,7 @@ class FilePath;
 namespace storage {
 class FileSystemURL;
 struct FileSystemInfo;
-class ShareableFileReference;
+class ScopedFile;
 }  // namespace storage
 
 namespace content {
@@ -257,13 +257,12 @@ class CONTENT_EXPORT FileSystemManagerImpl
                      const storage::FileSystemInfo& info,
                      const base::FilePath& file_path,
                      storage::FileSystemContext::ResolvedEntryType type);
-  void DidCreateSnapshot(
-      CreateSnapshotFileCallback callback,
-      const storage::FileSystemURL& url,
-      base::File::Error result,
-      const base::File::Info& info,
-      const base::FilePath& platform_path,
-      scoped_refptr<storage::ShareableFileReference> file_ref);
+  void DidCreateSnapshot(CreateSnapshotFileCallback callback,
+                         const storage::FileSystemURL& url,
+                         base::File::Error result,
+                         const base::File::Info& info,
+                         const base::FilePath& platform_path,
+                         storage::ScopedFile temp_file);
   void ContinueDidCreateSnapshot(CreateSnapshotFileCallback callback,
                                  const storage::FileSystemURL& url,
                                  base::File::Error result,

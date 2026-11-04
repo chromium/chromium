@@ -18,7 +18,6 @@
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -30,6 +29,7 @@ class FilePath;
 namespace storage {
 
 class FileSystemContext;
+class ScopedFile;
 
 // FileStreamReader implementation for Sandboxed FileSystem files.
 // This wraps either a LocalFileStreamReader or a MemoryFileStreamReader,
@@ -69,13 +69,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
                                 base::File::Error file_error,
                                 const base::File::Info& file_info,
                                 const base::FilePath& platform_path,
-                                scoped_refptr<ShareableFileReference> file_ref);
-  void DidCreateSnapshotForGetLength(
-      GetLengthCallback callback,
-      base::File::Error file_error,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      scoped_refptr<ShareableFileReference> file_ref);
+                                ScopedFile temp_file);
+  void DidCreateSnapshotForGetLength(GetLengthCallback callback,
+                                     base::File::Error file_error,
+                                     const base::File::Info& file_info,
+                                     const base::FilePath& platform_path,
+                                     ScopedFile temp_file);
   void CreateFileReader(const base::FilePath& platform_path);
 
   void OnRead(net::CompletionOnceCallback callback, int rv);
