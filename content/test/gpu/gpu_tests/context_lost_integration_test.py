@@ -489,7 +489,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Wait for the WebGL context to be restored and for the test to complete.
     # This will fail cooperatively if the context wasn't restored properly, and
     # will time out (and fail) if the context wasn't restored at all.
-    self._WaitForTabAndCheckCompletion(timeout=10)
+    self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGLBlockedAfterJSNavigation(self, test_path: str) -> None:
