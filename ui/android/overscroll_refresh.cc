@@ -115,7 +115,9 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
     }
   } else if (in_x_direction) {
     CHECK_GE(viewport_width_, 0, base::NotFatalUntil::M163);
-    CHECK_LE(scroll_begin_x_, viewport_width_, base::NotFatalUntil::M163);
+    // TODO(crbug.com/580203316): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_LE(scroll_begin_x_, viewport_width_);
     CHECK_GE(scroll_begin_x_, 0, base::NotFatalUntil::M163);
     bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
                             viewport_width_ - scroll_begin_x_ < edge_width_;
