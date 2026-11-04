@@ -176,6 +176,8 @@ struct TabInfo {
   // Whether the tab is currently loading, matching the tab strip's loading
   // indicator.
   bool is_loading;
+  // Whether this tab is the most recently active eligible tab.
+  bool recent_tab;
 };
 
 // Represents a file attachment whose upload was started browser-side (currently

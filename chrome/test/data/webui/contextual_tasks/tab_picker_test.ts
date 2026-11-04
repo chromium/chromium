@@ -96,12 +96,14 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
   }
 }
 
-function createTabInfo(id: number, title: string, url: string): TabInfo {
+function createTabInfo(
+    id: number, title: string, url: string, recentTab = false): TabInfo {
   return {
     tabId: id,
     showInCurrentTabChip: false,
     showInPreviousTabChip: false,
     isLoading: false,
+    recentTab,
     title,
     url,
     lastActive: {internalValue: 0n},
@@ -120,7 +122,8 @@ suite('TabPickerTest', () => {
   let recordedTimes: Array<{metricName: string, value: number}> = [];
   let originalRecordMediumTime: any;
 
-  const tab0 = createTabInfo(1, 'Tab One', 'https://example.com/1');
+  const tab0 =
+      createTabInfo(1, 'Tab One', 'https://example.com/1', /*recentTab=*/ true);
   const tab1 = createTabInfo(2, 'Tab Two', 'https://example.com/2');
   const tab2 = createTabInfo(3, 'Tab Three', 'https://example.com/3');
   const mockTabs: TabInfo[] = [tab0, tab1, tab2];
@@ -1031,8 +1034,9 @@ suite('TabPickerTest', () => {
   test(
       'Records ContextualSearch.TabPicker.SelectedTabIsActive.ContextualTasksExtension independently of position',
       async () => {
-        const recentTab =
-            createTabInfo(1, 'Recent Tab', 'https://example.com/recent');
+        const recentTab = createTabInfo(
+            1, 'Recent Tab', 'https://example.com/recent',
+            /*recentTab=*/ true);
         const activeTab =
             createTabInfo(10, 'Active Tab', 'https://example.com/active');
         activeTab.showInCurrentTabChip = true;
@@ -1336,9 +1340,11 @@ suite('TabPickerTest', () => {
   test(
       'Refreshes tab suggestions when hovering over trigger or menu',
       async () => {
-        const newTab = createTabInfo(4, 'Tab Four', 'https://example.com/4');
+        const newTab = createTabInfo(
+            4, 'Tab Four', 'https://example.com/4', /*recentTab=*/ true);
         testProxy.resetResolver('getRecentTabs');
-        testProxy.setRecentTabs([newTab, ...mockTabs]);
+        testProxy.setRecentTabs(
+            [newTab, {...tab0, recentTab: false}, tab1, tab2]);
 
         app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
         await testProxy.whenCalled('getRecentTabs');
@@ -1357,9 +1363,16 @@ suite('TabPickerTest', () => {
 
         // While the menu remains open, another tab is opened and the pointer
         // enters the menu.
-        const newerTab = createTabInfo(5, 'Tab Five', 'https://example.com/5');
+        const newerTab = createTabInfo(
+            5, 'Tab Five', 'https://example.com/5', /*recentTab=*/ true);
         testProxy.resetResolver('getRecentTabs');
-        testProxy.setRecentTabs([newerTab, newTab, ...mockTabs]);
+        testProxy.setRecentTabs([
+          newerTab,
+          {...newTab, recentTab: false},
+          {...tab0, recentTab: false},
+          tab1,
+          tab2,
+        ]);
 
         app.$.tabMenu.dispatchEvent(new PointerEvent('pointerenter'));
         await testProxy.whenCalled('getRecentTabs');
@@ -1411,7 +1424,8 @@ suite('TabPickerTest', () => {
 
         // A new tab is opened while the outer menu remains mounted, and the
         // user hovers over the trigger again.
-        const newTab = createTabInfo(10, 'New Tab', 'https://example.com/new');
+        const newTab = createTabInfo(
+            10, 'New Tab', 'https://example.com/new', /*recentTab=*/ true);
         testProxy.resetResolver('getRecentTabs');
         testProxy.setRecentTabs([newTab]);
 
@@ -1427,6 +1441,29 @@ suite('TabPickerTest', () => {
         assertEquals(
             'New Tab',
             items[0]!.querySelector('.tab-title')!.textContent.trim());
+      });
+
+  test(
+      'Uses recentTab signal on TabInfo independently of list order',
+      async () => {
+        const firstTab = createTabInfo(
+            1, 'First Tab', 'https://example.com/first', /*recentTab=*/ false);
+        const secondTab = createTabInfo(
+            2, 'Second Tab', 'https://example.com/second', /*recentTab=*/ true);
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([firstTab, secondTab]);
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        assertTrue(app.$.tabMenu.open);
+        assertEquals(secondTab.tabId, app.recentTabId);
+        const items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(2, items.length);
+        assertFalse(isVisible(items[0]!.querySelector('.recent-tabs-suffix')));
+        assertTrue(isVisible(items[1]!.querySelector('.recent-tabs-suffix')));
       });
 
   test(

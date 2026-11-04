@@ -238,6 +238,7 @@ suite('NewTabPageComposeboxTest', () => {
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
           isLoading: false,
+          recentTab: false,
         }]);
         await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
@@ -281,6 +282,7 @@ suite('NewTabPageComposeboxTest', () => {
           showInPreviousTabChip: false,
           lastActive: {internalValue: 0n},
           isLoading: false,
+          recentTab: false,
         };
         testProxy.searchboxCallbackRouterRemote.setAimThreadRestoredTabs(
             [restoredTab]);

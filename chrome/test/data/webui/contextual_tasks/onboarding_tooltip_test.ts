@@ -129,6 +129,7 @@ suite('ContextualTasksOnboardingTooltipForkTest', () => {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
     };
   }
 

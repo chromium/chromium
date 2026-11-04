@@ -89,6 +89,7 @@ suite('AppTest', function() {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 1n},
     };
 

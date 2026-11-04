@@ -694,6 +694,7 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
           },
           null);
       await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -758,6 +759,7 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
     };
   }
 

@@ -347,6 +347,7 @@ suite('ContextualEntrypointButton', () => {
               showInCurrentTabChip: false,
               showInPreviousTabChip: false,
               isLoading: false,
+              recentTab: false,
               lastActive: {internalValue: 0n},
             },
           ];
@@ -381,6 +382,7 @@ suite('ContextualEntrypointButton', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     const tab2: TabInfo = {
@@ -390,6 +392,7 @@ suite('ContextualEntrypointButton', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     const tab3: TabInfo = {
@@ -399,6 +402,7 @@ suite('ContextualEntrypointButton', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     const tab4: TabInfo = {
@@ -408,6 +412,7 @@ suite('ContextualEntrypointButton', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
 
@@ -469,6 +474,7 @@ suite('ContextualEntrypointButton', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         },
       ];
@@ -510,6 +516,7 @@ suite('ContextualEntrypointButton', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         },
       ];

@@ -17,6 +17,7 @@ function createTab(overrides: Partial<TabInfo> = {}): TabInfo {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       },
       overrides);

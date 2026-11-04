@@ -261,7 +261,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       }
       this.tabSuggestions = tabs || [];
       this.recentTabId =
-          this.tabSuggestions.length > 0 ? this.tabSuggestions[0]!.tabId : null;
+          this.tabSuggestions.find(t => t.recentTab)?.tabId ?? null;
       if (recordInitialLoadLatency) {
         await this.updateComplete;
         this.recordLatencyMetric_(

@@ -150,6 +150,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Restored = {
@@ -159,6 +160,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Recent = {
@@ -168,6 +170,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -177,6 +180,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -218,6 +222,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Restored = {
@@ -227,6 +232,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Recent = {
@@ -236,6 +242,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -245,6 +252,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -272,6 +280,37 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'refreshTabSuggestions() sets recentTabId from recentTab signal',
+      async () => {
+        const tab1 = {
+          tabId: 10,
+          title: 'Tab 1',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          isLoading: false,
+          recentTab: false,
+          lastActive: {internalValue: 0n},
+        };
+        const tab2 = {
+          tabId: 20,
+          title: 'Tab 2',
+          url: 'about:blank?2',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          isLoading: false,
+          recentTab: true,
+          lastActive: {internalValue: 0n},
+        };
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [tab1, tab2]}));
+
+        await element.refreshTabSuggestions();
+
+        assertEquals(20, element.recentTabId);
+      });
+
+  test(
       'Suggestions are sorted by most recently selected shown first.',
       async () => {
         loadTimeData.overrideValues({
@@ -293,6 +332,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2 = {
@@ -302,6 +342,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab3 = {
@@ -311,6 +352,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab4 = {
@@ -320,6 +362,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -368,6 +411,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab2Closed = {
@@ -377,6 +421,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -413,6 +458,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const historicalTab1 = {
@@ -422,6 +468,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const historicalTab2 = {
@@ -431,6 +478,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -472,6 +520,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -492,6 +541,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tab1Navigated = {
@@ -501,6 +551,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -546,6 +597,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         searchboxHandler.setResultFor(
@@ -610,6 +662,7 @@ suite('ComposeboxMixinTest', () => {
             showInCurrentTabChip: false,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
             lastActive: {internalValue: 0n},
           },
         ];
@@ -638,6 +691,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -1990,6 +2044,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
         element.hasCachedSubmittedTabsThisTurn = true;
@@ -2109,6 +2164,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -2137,6 +2193,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -2154,6 +2211,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -2188,6 +2246,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
 
@@ -2214,6 +2273,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
         element.hasCachedSubmittedTabsThisTurn = true;
@@ -2568,6 +2628,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tabFile = ComposeboxFile.createFromTab(
@@ -2606,6 +2667,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         const tabFile = ComposeboxFile.createFromTab(
@@ -2642,6 +2704,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -2704,6 +2767,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
 
@@ -2985,6 +3049,7 @@ suite('ComposeboxMixinTest', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         }];
         await microtasksFinished();

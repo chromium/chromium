@@ -35,6 +35,7 @@ function createTabSuggestion(overrides: Partial<TabInfo> = {}): TabInfo {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       },
       overrides);
@@ -1152,6 +1153,7 @@ suite('ContextualActionMenu', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
@@ -1179,6 +1181,7 @@ suite('ContextualActionMenu', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
@@ -1218,6 +1221,7 @@ suite('ContextualActionMenu', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         };
         actionMenu.tabSuggestions = [tabInfo];
@@ -1523,6 +1527,7 @@ suite('ContextualActionMenu', () => {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       },
     ];
@@ -1565,6 +1570,7 @@ suite('ContextualActionMenu', () => {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       },
     ];
@@ -2506,6 +2512,7 @@ suite('ContextualActionMenu', () => {
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
       isLoading: false,
+      recentTab: false,
       lastActive: {internalValue: 0n},
     };
     actionMenu.tabSuggestions = [tabInfo];
@@ -3588,6 +3595,7 @@ suite('ContextualActionMenu', () => {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       });
 
@@ -3684,6 +3692,7 @@ suite('ContextualActionMenu', () => {
             showInCurrentTabChip: false,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
             lastActive: {internalValue: 0n},
           });
           await Promise.all([microtasksFinished(), repositionedPromise]);
@@ -3956,6 +3965,7 @@ suite('ContextualActionMenu', () => {
           showInCurrentTabChip: false,
           showInPreviousTabChip: false,
           isLoading: false,
+          recentTab: false,
           lastActive: {internalValue: 0n},
         } as unknown as TabInfo,
       ];
@@ -4148,6 +4158,7 @@ suite('ContextualActionMenu', () => {
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
         isLoading: false,
+        recentTab: false,
         lastActive: {internalValue: 0n},
       });
       actionMenu.inputState = new MockInputState({

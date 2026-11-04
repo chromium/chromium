@@ -307,6 +307,7 @@ export class ComposeboxInputModel {
                // flight. This mirrors `pendingUploads`, which gates the submit
                // button, so the skeleton and the disabled submit button agree.
                isLoading: !isContextUploadStatusTerminal(file.status),
+               recentTab: false,
              } as TabInfo));
   }
 

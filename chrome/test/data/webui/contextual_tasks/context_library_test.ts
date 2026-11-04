@@ -27,6 +27,7 @@ function createTab(tabId: number, url: string): TabInfo {
     showInCurrentTabChip: false,
     showInPreviousTabChip: false,
     isLoading: false,
+    recentTab: false,
     lastActive: {internalValue: 0n},
   };
 }

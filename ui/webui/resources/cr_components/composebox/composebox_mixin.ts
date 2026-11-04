@@ -3137,7 +3137,7 @@ export const ComposeboxEmbedderMixin =
             while (this.pendingTabSuggestionNeedsRefresh_) {
               this.pendingTabSuggestionNeedsRefresh_ = false;
               const {tabs} = await this.getSearchboxHandler().getRecentTabs();
-              this.recentTabId = tabs[0]?.tabId ?? null;
+              this.recentTabId = tabs.find(t => t.recentTab)?.tabId ?? null;
 
               const openTabsMap = new Map(tabs.map(t => [t.tabId, t]));
 

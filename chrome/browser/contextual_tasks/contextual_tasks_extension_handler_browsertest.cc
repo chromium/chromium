@@ -675,6 +675,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
           [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
             EXPECT_FALSE(tabs.empty());
             EXPECT_EQ(tabs[0]->url, GURL("https://www.google.com/test"));
+            EXPECT_TRUE(tabs[0]->recent_tab);
             run_loop.Quit();
           }));
 
@@ -699,7 +700,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
           [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
             EXPECT_GE(tabs.size(), 2u);
             EXPECT_EQ(tabs[0]->url, GURL("https://www.google.com/test2"));
+            EXPECT_TRUE(tabs[0]->recent_tab);
             EXPECT_EQ(tabs[1]->url, GURL("https://www.google.com/test1"));
+            EXPECT_FALSE(tabs[1]->recent_tab);
             run_loop.Quit();
           }));
 

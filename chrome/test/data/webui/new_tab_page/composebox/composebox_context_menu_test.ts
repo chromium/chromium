@@ -154,6 +154,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           title: 'Sample Tab 1',
           url: 'https://example.com/1',
           showInRecentTabChip: true,
+          recentTab: true,
           lastActive: {internalValue: BigInt(1)},
         },
         {
@@ -161,6 +162,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           title: 'Sample Tab 2',
           url: 'https://example.com/2',
           showInRecentTabChip: true,
+          recentTab: false,
           lastActive: {internalValue: BigInt(2)},
         },
       ];
@@ -213,6 +215,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               title: 'Sample Tab 42',
               url: 'about:blank/42',
               showInRecentTabChip: true,
+              recentTab: true,
               lastActive: {internalValue: BigInt(1)},
             },
             {
@@ -220,6 +223,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
               title: 'Sample Tab 43',
               url: 'about:blank/43',
               showInRecentTabChip: true,
+              recentTab: false,
               lastActive: {internalValue: BigInt(2)},
             },
           ];
@@ -839,6 +843,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(
@@ -908,6 +913,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(
@@ -993,6 +999,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
             showInCurrentTabChip: true,
             showInPreviousTabChip: false,
             isLoading: false,
+            recentTab: false,
             lastActive: {internalValue: BigInt(1)},
           }];
           testProxy.searchboxHandler.setResultFor(

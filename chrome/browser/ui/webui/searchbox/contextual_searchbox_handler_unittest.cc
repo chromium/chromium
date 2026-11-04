@@ -4243,7 +4243,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     auto tabs = future.Take();
     ASSERT_EQ(tabs.size(), 2u);
     EXPECT_EQ(tabs[0]->tab_id, gmail_tab->GetHandle().raw_value());
+    EXPECT_TRUE(tabs[0]->recent_tab);
     EXPECT_EQ(tabs[1]->tab_id, youtube_tab->GetHandle().raw_value());
+    EXPECT_FALSE(tabs[1]->recent_tab);
   }
 
   content::WebContentsTester::For(example_tab->GetContents())
@@ -4257,7 +4259,9 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
     EXPECT_EQ(tabs[0]->tab_id, example_tab->GetHandle().raw_value());
+    EXPECT_TRUE(tabs[0]->recent_tab);
     EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
+    EXPECT_FALSE(tabs[1]->recent_tab);
   }
 }
 
@@ -4312,8 +4316,10 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   ASSERT_EQ(tabs.size(), 2u);
   EXPECT_EQ(tabs[0]->tab_id, active_tab->GetHandle().raw_value());
   EXPECT_TRUE(tabs[0]->show_in_current_tab_chip);
+  EXPECT_TRUE(tabs[0]->recent_tab);
   EXPECT_EQ(tabs[1]->tab_id, background_tab->GetHandle().raw_value());
   EXPECT_FALSE(tabs[1]->show_in_current_tab_chip);
+  EXPECT_FALSE(tabs[1]->recent_tab);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest,
