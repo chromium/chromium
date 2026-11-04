@@ -7,6 +7,7 @@ module omnibox_everywhere.mojom;
 import "components/omnibox/browser/searchbox.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Initial state when transitioning into composebox mode (e.g. from context
@@ -50,6 +51,13 @@ interface PageHandler {
   // Shows the native contextual '+' dropdown menu anchored at `anchor_rect`.
   ShowContextActionMenu(gfx.mojom.Rect anchor_rect);
 
+  // Shows the native overflow (three-dot) menu containing Omnibox Everywhere
+  // settings, anchored below `anchor_rect` (WebUI viewport coordinates, CSS
+  // DIPs). `source_type` is how the button was activated (e.g. keyboard), so
+  // that a keyboard-opened menu selects its first item.
+  ShowOverflowMenu(gfx.mojom.Rect anchor_rect,
+                   ui.mojom.MenuSourceType source_type);
+
   // Notifies the browser that the composebox presentation mode in WebUI has
   // changed (e.g. opened or closed/submitted).
   SetIsComposebox(bool is_composebox);
@@ -63,6 +71,9 @@ interface PageHandler {
 interface Page {
   // Notifies the WebUI that the native context menu was closed.
   OnContextMenuClosed();
+
+  // Notifies the WebUI that the native overflow (three-dot) menu was closed.
+  OnOverflowMenuClosed();
 
   // Notifies the page to open composebox mode (e.g. from native context menu
   // actions) with optional initial configuration (tool, model, or tab).

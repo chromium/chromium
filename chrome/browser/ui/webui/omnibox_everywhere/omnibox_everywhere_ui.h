@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
@@ -159,6 +160,13 @@ class OmniboxEverywhereUI
   // button. `anchor_rect` is in WebUI viewport coordinates (CSS DIPs).
   void ShowContextActionMenu(const gfx::Rect& anchor_rect);
 
+  // Shows the native overflow (three-dot) menu containing Omnibox Everywhere
+  // settings, anchored below the WebUI overflow button. `anchor_rect` is in
+  // WebUI viewport coordinates (CSS DIPs); `source_type` is how the button was
+  // activated.
+  void ShowOverflowMenu(const gfx::Rect& anchor_rect,
+                        ui::mojom::MenuSourceType source_type);
+
   // Computes the screen point for anchoring the native context menu given the
   // entrypoint bounding box in WebUI viewport coordinates and container bounds.
   // Handles both LTR and RTL anchor_rect bounds.
@@ -225,6 +233,8 @@ class OmniboxEverywhereUI
       omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
 
   void OnContextMenuClosed();
+  // Notifies the WebUI that the overflow (three-dot) menu closed.
+  void OnOverflowMenuClosed();
 
   bool is_composebox_mode() const { return is_composebox_mode_; }
   void SetIsComposebox(bool is_composebox);

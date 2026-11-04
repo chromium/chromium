@@ -15,12 +15,17 @@
 #include "content/public/browser/context_menu_params.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/menu/menu_types.h"
 
 class Profile;
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace views {
 class MenuRunner;
@@ -92,6 +97,16 @@ class OmniboxEverywhereContextMenuController
   // / Paste and Go label can reflect the clipboard contents.
   void HandleContextMenu(const content::ContextMenuParams& params);
 
+  // Shows the overflow (three-dot) menu with the same items as the background
+  // right-click menu, anchored below `anchor_screen_rect` (screen DIPs).
+  // `source_type` is how the menu was triggered; a keyboard-triggered menu
+  // selects its first item.
+  // `on_closed` runs once when the menu closes or is replaced, or immediately
+  // if the menu cannot be shown.
+  void ShowOverflowMenu(const gfx::Rect& anchor_screen_rect,
+                        ui::mojom::MenuSourceType source_type,
+                        base::OnceClosure on_closed);
+
   // Returns true while the menu is showing.
   bool IsOpen() const { return is_open_; }
 
@@ -129,7 +144,13 @@ class OmniboxEverywhereContextMenuController
  private:
   void ShowContextMenu(const content::ContextMenuParams& params,
                        std::u16string clipboard_text);
+  // Creates the runner for `context_menu_model_` and runs it.
+  void RunMenu(views::Widget* host_widget,
+               const gfx::Rect& anchor_screen_rect,
+               views::MenuAnchorPosition anchor_position,
+               ui::mojom::MenuSourceType source_type);
   void OnMenuClosed();
+  void RunOverflowMenuClosedCallback();
   void ReleaseRunner();
   void ResetModels();
   void BuildInputContextMenu(const content::ContextMenuParams& params,
@@ -165,6 +186,9 @@ class OmniboxEverywhereContextMenuController
 #endif  // BUILDFLAG(IS_MAC)
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
+  // Runs when the overflow (three-dot) menu closes. Null unless an overflow
+  // menu is currently open.
+  base::OnceClosure overflow_menu_closed_callback_;
 
   base::WeakPtrFactory<OmniboxEverywhereContextMenuController> weak_factory_{
       this};

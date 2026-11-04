@@ -319,6 +319,8 @@ export class OmniboxEverywhereAppElement extends
             onOpenComposebox),
         omniboxEverywhereCallbackRouter.onContextMenuClosed.addListener(
             onContextMenuClosed),
+        omniboxEverywhereCallbackRouter.onOverflowMenuClosed.addListener(
+            () => this.searchbox?.onOverflowMenuClosed()),
         omniboxEverywhereCallbackRouter.onScreenshotCaptureCancelled
             .addListener(onScreenshotCaptureCancelled),
     );

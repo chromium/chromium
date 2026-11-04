@@ -120,6 +120,55 @@ void OmniboxEverywhereContextMenuController::Reset() {
   ResetModels();
   last_params_ = content::ContextMenuParams();
   is_open_ = false;
+  RunOverflowMenuClosedCallback();
+}
+
+void OmniboxEverywhereContextMenuController::ShowOverflowMenu(
+    const gfx::Rect& anchor_screen_rect,
+    ui::mojom::MenuSourceType source_type,
+    base::OnceClosure on_closed) {
+  views::Widget* host_widget = widget();
+  if (!host_widget || !host_widget->GetContentsView()) {
+    if (on_closed) {
+      std::move(on_closed).Run();
+    }
+    return;
+  }
+
+  // Cancel and clean up any existing menu before creating a new one.
+  if (context_menu_runner_) {
+    context_menu_runner_->Cancel();
+    ReleaseRunner();
+  }
+  ResetModels();
+  RunOverflowMenuClosedCallback();
+
+  // The overflow menu only contains settings commands, which do not depend on
+  // the right-click target, so clear any stale right-click params. This also
+  // keeps the editable-only Writing Direction submenu out of this menu.
+  last_params_ = content::ContextMenuParams();
+  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  AppendSettingsContextMenu();
+#if BUILDFLAG(IS_WIN)
+  AppendWindowControlsContextMenu();
+#endif  // BUILDFLAG(IS_WIN)
+
+  overflow_menu_closed_callback_ = std::move(on_closed);
+  // In Views the menu is anchored below the button, aligned to its right edge
+  // (mirrored automatically in RTL). The native macOS menu ignores the anchor
+  // position: when opened by a mouse click it opens at the click location,
+  // like a right-click menu, and otherwise (e.g. keyboard activation) at the
+  // center of the anchor rect. Pass the button's bottom leading corner so the
+  // keyboard case opens below the button.
+  gfx::Rect anchor_rect = anchor_screen_rect;
+#if BUILDFLAG(IS_MAC)
+  anchor_rect =
+      gfx::Rect(base::i18n::IsRTL() ? anchor_screen_rect.bottom_right()
+                                    : anchor_screen_rect.bottom_left(),
+                gfx::Size());
+#endif  // BUILDFLAG(IS_MAC)
+  RunMenu(host_widget, anchor_rect, views::MenuAnchorPosition::kTopRight,
+          source_type);
 }
 
 void OmniboxEverywhereContextMenuController::ShowContextMenu(
@@ -136,6 +185,7 @@ void OmniboxEverywhereContextMenuController::ShowContextMenu(
     ReleaseRunner();
   }
   ResetModels();
+  RunOverflowMenuClosedCallback();
 
   last_params_ = params;
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -159,6 +209,18 @@ void OmniboxEverywhereContextMenuController::ShowContextMenu(
     return;
   }
 
+  gfx::Point screen_point(params.x, params.y);
+  views::View::ConvertPointToScreen(host_widget->GetContentsView(),
+                                    &screen_point);
+  RunMenu(host_widget, gfx::Rect(screen_point, gfx::Size()),
+          views::MenuAnchorPosition::kTopLeft, params.source_type);
+}
+
+void OmniboxEverywhereContextMenuController::RunMenu(
+    views::Widget* host_widget,
+    const gfx::Rect& anchor_screen_rect,
+    views::MenuAnchorPosition anchor_position,
+    ui::mojom::MenuSourceType source_type) {
   is_open_ = true;
   auto on_closed_callback =
       base::BindRepeating(&OmniboxEverywhereContextMenuController::OnMenuClosed,
@@ -173,20 +235,22 @@ void OmniboxEverywhereContextMenuController::ShowContextMenu(
         on_closed_callback);
   }
 
-  gfx::Point screen_point(params.x, params.y);
-  views::View::ConvertPointToScreen(host_widget->GetContentsView(),
-                                    &screen_point);
-
-  context_menu_runner_->RunMenuAt(
-      host_widget, nullptr, gfx::Rect(screen_point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, params.source_type);
+  context_menu_runner_->RunMenuAt(host_widget, nullptr, anchor_screen_rect,
+                                  anchor_position, source_type);
 }
 
 void OmniboxEverywhereContextMenuController::OnMenuClosed() {
   is_open_ = false;
   ReleaseRunner();
   ResetModels();
+  RunOverflowMenuClosedCallback();
   delegate_->OnContextMenuClosed();
+}
+
+void OmniboxEverywhereContextMenuController::RunOverflowMenuClosedCallback() {
+  if (overflow_menu_closed_callback_) {
+    std::move(overflow_menu_closed_callback_).Run();
+  }
 }
 
 // The runner and models are deleted asynchronously because this may be reached
