@@ -21,12 +21,6 @@ enum class TTCJournalFilter {
 // in the TTC prototype UI.
 @protocol TTCMutator <NSObject>
 
-// Starts an end-to-end voice session.
-- (void)startSession;
-
-// Gracefully terminates the active voice session.
-- (void)stopSession;
-
 // Notifies the mutator that the UI has appeared, triggering state hydration.
 - (void)viewWillAppear;
 

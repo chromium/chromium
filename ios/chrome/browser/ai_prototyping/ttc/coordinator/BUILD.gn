@@ -8,6 +8,8 @@ source_set("coordinator") {
     "ttc_coordinator.mm",
     "ttc_mediator.h",
     "ttc_mediator.mm",
+    "ttc_voice_plate_mediator.h",
+    "ttc_voice_plate_mediator.mm",
   ]
   deps = [
     "//base",
@@ -28,7 +30,10 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_mediator_unittest.mm" ]
+  sources = [
+    "ttc_mediator_unittest.mm",
+    "ttc_voice_plate_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",

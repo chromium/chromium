@@ -8,6 +8,8 @@ source_set("ui") {
     "ttc_mutator.h",
     "ttc_view_controller.h",
     "ttc_view_controller.mm",
+    "ttc_voice_plate_consumer.h",
+    "ttc_voice_plate_mutator.h",
   ]
   deps = [
     "//base",

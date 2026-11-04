@@ -7,28 +7,22 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/strings/to_string.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
-#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
-class TTCMediatorTest : public PlatformTest {
+class TtcMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -50,238 +44,17 @@ class TTCMediatorTest : public PlatformTest {
   }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<TTCKeyedService> ttc_service_ = nullptr;
   TTCMediator* mediator_ = nil;
-  id mock_consumer_ = nil;
+  id<TTCConsumer> mock_consumer_ = nil;
 };
-
-// Tests that attaching a consumer pushes initial session state and 0.0 RMS
-// energy.
-TEST_F(TTCMediatorTest, TestSetConsumerPushesInitialState) {
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-
-  mediator_.consumer = mock_consumer_;
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that attaching a consumer when a session is already live hydrates
-// with listening state.
-TEST_F(TTCMediatorTest, TestSetConsumerReflectsExistingActiveSession) {
-  ttc_service_->StartSession();
-  TtcSessionController* session_controller = ttc_service_->session_controller();
-  ASSERT_TRUE(session_controller != nullptr);
-  session_controller->OnConversationInitialized();
-
-  TTCMediator* live_mediator =
-      [[TTCMediator alloc] initWithTTCService:ttc_service_];
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kListening]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-
-  live_mediator.consumer = mock_consumer_;
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  [live_mediator disconnect];
-}
-
-// Tests that starting a voice session transitions the consumer to connecting
-// state via the session controller and starts the session on the service.
-TEST_F(TTCMediatorTest, TestStartSessionDrivesTTCService) {
-  mediator_.consumer = mock_consumer_;
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kConnecting]);
-
-  [mediator_ startSession];
-
-  EXPECT_TRUE(ttc_service_->is_session_active());
-  ASSERT_TRUE(ttc_service_->session_controller() != nullptr);
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that starting a session when the service is null transitions the
-// consumer to error state.
-TEST_F(TTCMediatorTest, TestStartSessionFailsWhenServiceUnavailable) {
-  TTCMediator* null_service_mediator =
-      [[TTCMediator alloc] initWithTTCService:nullptr];
-  null_service_mediator.consumer = mock_consumer_;
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kError]);
-  OCMExpect([mock_consumer_ didEncounterError:@"TTC service is unavailable"]);
-
-  [null_service_mediator startSession];
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-  [null_service_mediator disconnect];
-}
-
-// Tests that stopping a voice session ends the active session on the service
-// and resets the consumer state via session lifecycle completion.
-TEST_F(TTCMediatorTest, TestStopSessionDrivesTTCService) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  ASSERT_TRUE(ttc_service_->is_session_active());
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-
-  [mediator_ stopSession];
-
-  EXPECT_FALSE(ttc_service_->is_session_active());
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that lifecycle transitions dispatched by the active session controller
-// update the consumer appropriately.
-TEST_F(TTCMediatorTest, TestSessionLifecycleUpdatesConsumer) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  TtcSessionController* session_controller = ttc_service_->session_controller();
-  ASSERT_TRUE(session_controller != nullptr);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kListening]);
-  session_controller->OnConversationInitialized();
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  session_controller->StopSession();
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that audio level updates from the session controller are forwarded to
-// the consumer when the session is in listening state.
-TEST_F(TTCMediatorTest, TestSessionAudioLevelUpdatesConsumerWhenListening) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  TtcSessionController* session_controller = ttc_service_->session_controller();
-  ASSERT_TRUE(session_controller != nullptr);
-
-  session_controller->OnConversationInitialized();
-
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.65f]);
-  session_controller->OnAudioEnergyUpdated(0.65f);
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that audio level updates from the session controller are ignored when
-// the session is not in listening state.
-TEST_F(TTCMediatorTest, TestSessionAudioLevelIgnoredWhenNotListening) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  TtcSessionController* session_controller = ttc_service_->session_controller();
-  ASSERT_TRUE(session_controller != nullptr);
-
-  // Still in kConnecting (initializing) state; audio updates should be ignored.
-  [[mock_consumer_ reject] setMicEnergyLevel:0.65f];
-  session_controller->OnAudioEnergyUpdated(0.65f);
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that session errors dispatched by the session controller transition the
-// consumer to error state and display the error description.
-TEST_F(TTCMediatorTest, TestSessionErrorUpdatesConsumer) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  TtcSessionController* session_controller = ttc_service_->session_controller();
-  ASSERT_TRUE(session_controller != nullptr);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kError]);
-  OCMExpect([mock_consumer_
-      didEncounterError:base::SysUTF8ToNSString(base::ToString(
-                            ttc::ErrorCode::kInternalBackendError))]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  [[mock_consumer_ reject] setSessionState:TTCSessionUIState::kIdle];
-
-  session_controller->OnConversationError(
-      ttc::ErrorCode::kInternalBackendError);
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that terminating the session directly on the service notifies the
-// mediator and resets the consumer.
-TEST_F(TTCMediatorTest, TestExternalSessionTerminationUpdatesConsumer) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  ASSERT_TRUE(ttc_service_->is_session_active());
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-
-  ttc_service_->EndSession();
-
-  EXPECT_FALSE(ttc_service_->is_session_active());
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that starting a new session succeeds after the previous session
-// controller finishes on its own (e.g. via `StopSession`).
-TEST_F(TTCMediatorTest, TestStartNewSessionAfterControllerFinishes) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  ASSERT_NE(ttc_service_->session_controller(), nullptr);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-  ttc_service_->session_controller()->StopSession();
-  EXPECT_FALSE(ttc_service_->is_session_active());
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kConnecting]);
-  [mediator_ startSession];
-  EXPECT_TRUE(ttc_service_->is_session_active());
-  ASSERT_NE(ttc_service_->session_controller(), nullptr);
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kListening]);
-  ttc_service_->session_controller()->OnConversationInitialized();
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
-
-// Tests that calling disconnect detaches the consumer and observers while
-// the underlying profile session continues running.
-TEST_F(TTCMediatorTest, TestDisconnectDoesNotEndServiceSession) {
-  mediator_.consumer = mock_consumer_;
-
-  [mediator_ startSession];
-  ASSERT_TRUE(ttc_service_->is_session_active());
-
-  [mediator_ disconnect];
-
-  // The session must persist independently of the UI mediator.
-  EXPECT_TRUE(ttc_service_->is_session_active());
-  EXPECT_TRUE(mediator_.consumer == nil);
-}
-
-// Tests that calling viewWillAppear triggers complete hydration of consumer.
-TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
-  mediator_.consumer = mock_consumer_;
-
-  OCMExpect([mock_consumer_ setSessionState:TTCSessionUIState::kIdle]);
-  OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
-
-  [mediator_ viewWillAppear];
-
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
 
 // Tests journal hydration, detailed mode toggle, component filtering, in-place
 // updates, and clearing.
-TEST_F(TTCMediatorTest, TestJournalHydrationFilteringAndClear) {
+TEST_F(TtcMediatorTest, JournalHydrationFilteringAndClear) {
   ttc_service_->journal().Log(
       TTCJournalComponent::kSession, "TtcSessionLifecycle",
       TTCJournalDetailsBuilder().SetSummary("Session live").Build());
@@ -327,6 +100,45 @@ TEST_F(TTCMediatorTest, TestJournalHydrationFilteringAndClear) {
   OCMExpect([mock_consumer_ setJournalLines:@[]]);
   [mediator_ clearJournal];
   EXPECT_TRUE(ttc_service_->journal().entries().empty());
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that calling `viewWillAppear` triggers hydration of the consumer.
+TEST_F(TtcMediatorTest, ViewWillAppearHydratesConsumer) {
+  mediator_.consumer = mock_consumer_;
+
+  ttc_service_->journal().Log(
+      TTCJournalComponent::kSession, "TtcSessionLifecycle",
+      TTCJournalDetailsBuilder().SetSummary("Session live").Build());
+
+  OCMExpect([mock_consumer_ setJournalLines:@[ @"Session live" ]]);
+
+  [mediator_ viewWillAppear];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
+// Tests that calling `disconnect` detaches the consumer and stops forwarding
+// journal entry additions, updates, and clear events.
+TEST_F(TtcMediatorTest, DisconnectStopsForwardingJournalEvents) {
+  uint64_t entry_id = ttc_service_->journal().Log(
+      TTCJournalComponent::kSession, "TtcSessionLifecycle",
+      TTCJournalDetailsBuilder().SetSummary("Session live").Build());
+  OCMExpect([mock_consumer_ setJournalLines:@[ @"Session live" ]]);
+  mediator_.consumer = mock_consumer_;
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  [mediator_ disconnect];
+
+  OCMReject([mock_consumer_ appendJournalLine:[OCMArg any]]);
+  OCMReject([mock_consumer_ setJournalLines:[OCMArg any]]);
+
+  ttc_service_->journal().Log(TTCJournalComponent::kSession,
+                              "After disconnect");
+  ttc_service_->journal().UpdateEntry(
+      entry_id, TTCJournalDetailsBuilder().SetSummary("Updated").Build());
+  ttc_service_->journal().Clear();
+
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 

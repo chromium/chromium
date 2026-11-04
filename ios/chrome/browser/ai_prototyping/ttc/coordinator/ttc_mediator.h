@@ -12,11 +12,11 @@
 class TTCKeyedService;
 @protocol TTCConsumer;
 
-// Mediator driving the TTC UI by bridging `TTCKeyedService` and
-// active `TtcSessionController` events to the consumer.
+// Mediator driving the TTC Session Journal UI by bridging `TTCKeyedService`
+// journal events to the consumer.
 @interface TTCMediator : NSObject <TTCMutator>
 
-// Consumer receiving UI updates from the mediator.
+// Consumer receiving journal updates from the mediator.
 @property(nonatomic, weak) id<TTCConsumer> consumer;
 
 // Designated initializer injecting the profile's TTC keyed service.
@@ -25,8 +25,7 @@ class TTCKeyedService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects active observations and cleans up references. Does not terminate
-// the underlying profile session.
+// Disconnects active observations and cleans up references.
 - (void)disconnect;
 
 @end

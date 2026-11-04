@@ -8,6 +8,8 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_mutator.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_consumer.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -228,7 +230,7 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
   // No-op for TTC audio session.
 }
 
-#pragma mark - TTCConsumer
+#pragma mark - TTCVoicePlateConsumer
 
 - (void)setSessionState:(TTCSessionUIState)state {
   _currentState = state;
@@ -262,10 +264,12 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
   [_energyLevelMeter setProgress:rms animated:YES];
 }
 
-- (void)didEncounterError:(NSString*)errorMessage {
+- (void)showErrorMessage:(NSString*)errorMessage {
   _statusLabel.text = errorMessage ?: kStatusLabelErrorText;
   _statusLabel.textColor = [UIColor colorNamed:kRedColor];
 }
+
+#pragma mark - TTCConsumer
 
 - (void)setJournalLines:(NSArray<NSString*>*)lines {
   [_journalLines removeAllObjects];
@@ -288,11 +292,11 @@ TTCJournalFilter JournalFilterForSegmentIndex(NSInteger index) {
 - (void)micButtonTapped:(UIButton*)sender {
   if (_currentState != TTCSessionUIState::kIdle &&
       _currentState != TTCSessionUIState::kError) {
-    [self.ttcMutator stopSession];
+    [self.voicePlateMutator stopSession];
     return;
   }
 
-  [self.ttcMutator startSession];
+  [self.voicePlateMutator startSession];
 }
 
 - (void)detailsJournalButtonTapped:(UIButton*)sender {

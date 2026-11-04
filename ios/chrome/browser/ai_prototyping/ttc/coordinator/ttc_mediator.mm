@@ -4,43 +4,17 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
-#import <memory>
 #import <optional>
 
 #import "base/callback_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/strings/to_string.h"
-#import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer_bridge.h"
-#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 
 namespace {
-
-// Error message displayed when the TTC service is unavailable.
-NSString* const kServiceUnavailableError = @"TTC service is unavailable";
-
-// Default error message displayed when a session error occurs without a
-// specific description.
-NSString* const kDefaultSessionError = @"Session error occurred";
-
-// Converts a `TTCSessionLifecycle` to the corresponding `TTCSessionUIState`.
-TTCSessionUIState SessionUIStateForLifecycle(TTCSessionLifecycle lifecycle) {
-  switch (lifecycle) {
-    case TTCSessionLifecycle::kInitializing:
-      return TTCSessionUIState::kConnecting;
-    case TTCSessionLifecycle::kLive:
-      return TTCSessionUIState::kListening;
-    case TTCSessionLifecycle::kFinished:
-      return TTCSessionUIState::kIdle;
-  }
-}
 
 // Converts a `TTCJournalFilter` to an optional `TTCJournalComponent`.
 std::optional<TTCJournalComponent> JournalComponentForFilter(
@@ -63,18 +37,9 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 
 }  // namespace
 
-@interface TTCMediator () <TTCSessionControllerObserver>
-@end
-
 @implementation TTCMediator {
-  // Current voice session lifecycle state (Idle, Connecting, Listening, Error).
-  TTCSessionUIState _currentState;
-
   // TTC keyed service for the profile.
   raw_ptr<TTCKeyedService> _ttcService;
-
-  // Subscription observing state changes in TTCKeyedService.
-  base::CallbackListSubscription _stateChangeSubscription;
 
   // Subscription observing entries added to TTCJournal.
   base::CallbackListSubscription _journalEntryAddedSubscription;
@@ -91,13 +56,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   // Whether the journal displays full detailed telemetry (`YES`) or simplified
   // human-readable lines. Defaults to NO.
   BOOL _journalDetailedMode;
-
-  // Bridge observing `TtcSessionController`.
-  std::unique_ptr<TtcSessionControllerObserverBridge>
-      _sessionControllerObserverBridge;
-
-  // Weak reference to the currently observed session controller.
-  base::WeakPtr<TtcSessionController> _observedSessionController;
 }
 
 #pragma mark - Initialization
@@ -105,17 +63,10 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 - (instancetype)initWithTTCService:(TTCKeyedService*)ttcService {
   self = [super init];
   if (self) {
-    _currentState = TTCSessionUIState::kIdle;
     _ttcService = ttcService;
     _journalDetailedMode = NO;
-    _sessionControllerObserverBridge =
-        std::make_unique<TtcSessionControllerObserverBridge>(self);
     if (_ttcService) {
       __weak TTCMediator* weakSelf = self;
-      _stateChangeSubscription = _ttcService->RegisterStateChangedCallback(
-          base::BindRepeating(^(TTCServiceState state) {
-            [weakSelf handleServiceStateChanged:state];
-          }));
       _journalEntryAddedSubscription =
           _ttcService->journal().AddEntryAddedListener(
               base::BindRepeating(^(const TTCJournalEntry& entry) {
@@ -130,7 +81,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
           _ttcService->journal().AddClearedListener(base::BindRepeating(^{
             [weakSelf handleJournalCleared];
           }));
-      [self startObservingSessionControllerIfNeeded];
     }
   }
   return self;
@@ -146,28 +96,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 }
 
 #pragma mark - TTCMutator
-
-- (void)startSession {
-  if (!_ttcService || !_ttcService->IsEnabled()) {
-    _currentState = TTCSessionUIState::kError;
-    [self.consumer setSessionState:_currentState];
-    [self.consumer didEncounterError:kServiceUnavailableError];
-    return;
-  }
-
-  if (_observedSessionController || _ttcService->is_session_active()) {
-    return;
-  }
-
-  _ttcService->StartSession();
-  [self startObservingSessionControllerIfNeeded];
-}
-
-- (void)stopSession {
-  if (_ttcService && _ttcService->is_session_active()) {
-    _ttcService->EndSession();
-  }
-}
 
 - (void)viewWillAppear {
   [self hydrateConsumer];
@@ -189,44 +117,9 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
-#pragma mark - TTCSessionControllerObserver
-
-- (void)sessionController:(TtcSessionController*)controller
-       didChangeLifecycle:(TTCSessionLifecycle)lifecycle {
-  if (lifecycle == TTCSessionLifecycle::kFinished) {
-    [self stopObservingSessionControllerIfNeeded];
-    if (_currentState == TTCSessionUIState::kError) {
-      [self.consumer setMicEnergyLevel:0.0f];
-      return;
-    }
-  }
-  [self updateConsumerForLifecycle:lifecycle];
-}
-
-- (void)sessionController:(TtcSessionController*)controller
-      didUpdateAudioLevel:(float)audioLevel {
-  if (_currentState != TTCSessionUIState::kListening) {
-    return;
-  }
-  [self.consumer setMicEnergyLevel:audioLevel];
-}
-
-- (void)sessionController:(TtcSessionController*)controller
-         didFailWithError:(ttc::ErrorCode)error {
-  _currentState = TTCSessionUIState::kError;
-  [self.consumer setSessionState:_currentState];
-  NSString* errorMessage = base::SysUTF8ToNSString(base::ToString(error));
-  [self.consumer didEncounterError:errorMessage.length > 0
-                                       ? errorMessage
-                                       : kDefaultSessionError];
-}
-
 #pragma mark - Public
 
 - (void)disconnect {
-  [self stopObservingSessionControllerIfNeeded];
-  _sessionControllerObserverBridge.reset();
-  _stateChangeSubscription = {};
   _journalEntryAddedSubscription = {};
   _journalEntryUpdatedSubscription = {};
   _journalClearedSubscription = {};
@@ -235,51 +128,6 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
 }
 
 #pragma mark - Private
-
-// Starts observing the active session controller if not already observing.
-- (void)startObservingSessionControllerIfNeeded {
-  if (_observedSessionController || !_ttcService ||
-      !_ttcService->session_controller() || !_sessionControllerObserverBridge) {
-    return;
-  }
-  _observedSessionController = _ttcService->session_controller()->GetWeakPtr();
-  _observedSessionController->AddObserver(
-      _sessionControllerObserverBridge.get());
-  [self updateConsumerForLifecycle:_observedSessionController->lifecycle()];
-}
-
-// Stops observing the active session controller if currently observing.
-- (void)stopObservingSessionControllerIfNeeded {
-  if (_observedSessionController && _sessionControllerObserverBridge) {
-    _observedSessionController->RemoveObserver(
-        _sessionControllerObserverBridge.get());
-  }
-  _observedSessionController.reset();
-}
-
-// Updates `_currentState` and notifies the consumer based on the session
-// controller lifecycle.
-- (void)updateConsumerForLifecycle:(TTCSessionLifecycle)lifecycle {
-  _currentState = SessionUIStateForLifecycle(lifecycle);
-  [self.consumer setSessionState:_currentState];
-  if (_currentState == TTCSessionUIState::kIdle) {
-    [self.consumer setMicEnergyLevel:0.0f];
-  }
-}
-
-// Handles service state changes dispatched by `TTCKeyedService`.
-- (void)handleServiceStateChanged:(TTCServiceState)state {
-  if (state == TTCServiceState::kSessionActive) {
-    [self startObservingSessionControllerIfNeeded];
-  } else if (state == TTCServiceState::kSessionInactive) {
-    [self stopObservingSessionControllerIfNeeded];
-    if (_currentState != TTCSessionUIState::kError) {
-      _currentState = TTCSessionUIState::kIdle;
-      [self.consumer setSessionState:TTCSessionUIState::kIdle];
-      [self.consumer setMicEnergyLevel:0.0f];
-    }
-  }
-}
 
 // Formats a single `TTCJournalEntry` according to `_journalDetailedMode`,
 // returning `nil` if the entry should be omitted in simplified mode.
@@ -335,13 +183,11 @@ std::optional<TTCJournalComponent> JournalComponentForFilter(
   return lines;
 }
 
-// Hydrates the consumer with current state and resets audio energy.
+// Hydrates the consumer with current journal lines.
 - (void)hydrateConsumer {
   if (!self.consumer) {
     return;
   }
-  [self.consumer setSessionState:_currentState];
-  [self.consumer setMicEnergyLevel:0.0f];
   [self.consumer setJournalLines:[self formattedJournalLines]];
 }
 
