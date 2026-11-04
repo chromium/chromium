@@ -19995,6 +19995,7 @@
                         "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
+                        "TopChromeWebUISharedRenderer",
                         "WebUIBackForwardButton",
                         "WebUIBundledCodeCache",
                         "WebUIBypassMojoConnections",
