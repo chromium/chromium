@@ -119,12 +119,22 @@ export class GraduationTakeoutUi extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      authStatus: {
+        type: Number,
+        value: AuthStatus.IN_PROGRESS,
+      },
+
+      isWebviewLoading: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   declare private showLoadingScreen: boolean;
-  authStatus: AuthStatus = AuthStatus.IN_PROGRESS;
-  isWebviewLoading: boolean = false;
+  declare authStatus: AuthStatus;
+  declare isWebviewLoading: boolean;
   declare takeoutFlowCompleted: boolean;
   private webview: chrome.webviewTag.WebView|null = null;
   private webviewReloadHelper: WebviewReloadHelper = new WebviewReloadHelper();
