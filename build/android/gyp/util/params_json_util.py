@@ -517,7 +517,7 @@ class ParamsJson(dict):
             _collect_public_deps(deps),
             restrict_to_resource_types=self.is_resource_type(),
         )
-        return DepsList(deps, sealed=True)
+        return DepsList(dict.fromkeys(deps), sealed=True)
 
     @functools.cache
     def processor_deps(self):
