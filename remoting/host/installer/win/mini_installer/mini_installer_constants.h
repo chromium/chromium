@@ -11,7 +11,8 @@ namespace remoting::installer {
 inline constexpr wchar_t kSetupBinaryName[] = L"remoting_setup.exe";
 
 // PE resource name and type for the LZMA/7z payload archive embedded in
-// `remoting_mini_installer.exe`.
+// `remoting_mini_installer.exe`. Must match `_ARCHIVE_RESOURCE_NAME` and
+// `_ARCHIVE_RESOURCE_TYPE` in `create_remoting_installer_archive.py`.
 inline constexpr wchar_t kArchiveResourceName[] = L"REMOTING.7Z";
 inline constexpr wchar_t kArchiveResourceType[] = L"B7";
 

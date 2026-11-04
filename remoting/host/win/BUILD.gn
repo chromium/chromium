@@ -17,6 +17,12 @@ group("all") {
            ":remoting_console",
            "//remoting/host/installer/win/setup:remoting_setup",
          ] + remoting_win_host_binary_deps
+
+  if (!is_component_build) {
+    deps += [
+      "//remoting/host/installer/win/mini_installer:remoting_mini_installer",
+    ]
+  }
 }
 
 # Reference this manifest to indicate that a process is per-monitor DPI aware.

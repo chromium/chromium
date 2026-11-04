@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
+import("//remoting/host/installer/win/host_payload_files.gni")
+
 assert(is_win)
 
 source_set("lib") {
@@ -27,4 +30,69 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+}
+
+# `remoting_mini_installer` is only built in non-component builds because the
+# self-extracting installer archive does not package component runtime DLLs.
+if (!is_component_build) {
+  _packed_files_rc_file = "$target_gen_dir/packed_files.rc"
+  _output_archive = "$target_gen_dir/remoting.7z"
+  _lzma_exec = "//third_party/lzma_sdk/bin/host_platform/7za"
+  if (host_os == "win") {
+    _lzma_exec += ".exe"
+  }
+
+  action("remoting_mini_installer_archive") {
+    script = "create_remoting_installer_archive.py"
+
+    deps = remoting_win_host_payload_deps +
+           [ "//remoting/host/installer/win/setup:remoting_setup" ]
+
+    _payload_files = [ "$root_out_dir/remoting_setup.exe" ] +
+                     remoting_win_host_payload_inputs
+    inputs = [ _lzma_exec ] + _payload_files
+
+    outputs = [
+      _output_archive,
+      _packed_files_rc_file,
+    ]
+
+    args = [
+      "--lzma-exec",
+      rebase_path(_lzma_exec, root_build_dir),
+      "--staging-dir",
+      rebase_path("$target_gen_dir/staging", root_build_dir),
+      "--output-archive",
+      rebase_path(_output_archive, root_build_dir),
+      "--resource-file-path",
+      rebase_path(_packed_files_rc_file, root_build_dir),
+    ]
+
+    if (!is_official_build) {
+      args += [ "--fast-archive-compression" ]
+    }
+
+    args += [ "--input-files" ] + rebase_path(_payload_files, root_build_dir)
+  }
+
+  executable("remoting_mini_installer") {
+    sources = [
+      "mini_installer_main.cc",
+      _packed_files_rc_file,
+    ]
+
+    configs += [ "//build/config/win:windowed" ]
+
+    if (!is_asan) {
+      ldflags = [ "/DEPENDENTLOADFLAG:0x800" ]
+    }
+
+    deps = [
+      ":lib",
+      ":remoting_mini_installer_archive",
+      "//base",
+      "//remoting/base:logging",
+      "//remoting/host/win:elevated_exe_manifest",
+    ]
+  }
 }

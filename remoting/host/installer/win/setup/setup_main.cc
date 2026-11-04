@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "base/at_exit.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/installer/win/setup/setup_runner.h"
@@ -13,6 +14,10 @@ int WINAPI wWinMain(HINSTANCE instance,
                     HINSTANCE prev_instance,
                     LPWSTR command_line,
                     int show_command) {
+#if !defined(COMPONENT_BUILD)
+  CHECK(::SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32));
+#endif
+
   base::AtExitManager exit_manager;
   base::CommandLine::Init(0, nullptr);
   remoting::InitHostLogging();

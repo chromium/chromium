@@ -73,6 +73,11 @@ remoting_win_host_binaries = [
 # Canonical list of payload file names installed into the Chrome Remote Desktop
 # installation directory on Windows.
 #
+# Note: All entries must be flat basenames (no subdirectories). Both the native
+# installer archive (`remoting.7z`) and the installation directory use a flat
+# layout; `create_remoting_installer_archive.py` stages files by basename and
+# rejects duplicate basenames.
+#
 # Shared by:
 # 1. //remoting/host/installer/win/BUILD.gn (remoting_me2me_host_archive):
 #    Stages payload files into the WiX MSI installer archive.
