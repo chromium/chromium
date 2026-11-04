@@ -271,6 +271,15 @@ void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
 }
 
 const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
+  const LayoutResult* result = LayoutInternal();
+  if (result->Status() == LayoutResult::kNeedsEarlierBreak) {
+    return RelayoutAndBreakEarlier<GridLanesLayoutAlgorithm>(
+        *result->GetEarlyBreak(), &column_early_breaks_);
+  }
+  return result;
+}
+
+const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
   HeapVector<Member<LayoutBox>> oof_children;
   const auto& node = Node();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
@@ -397,8 +406,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     }
 
     intrinsic_block_size_ = border_scrollbar_padding.block_start;
-    PlaceGridLanesItemsForFragmentation(grid_lanes, *grid_layout_subtree,
-                                        &total_intrinsic_block_size);
+    if (PlaceGridLanesItemsForFragmentation(grid_lanes, *grid_layout_subtree,
+                                            &total_intrinsic_block_size) ==
+        BreakStatus::kNeedsEarlierBreak) {
+      return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
+    }
 
     if (grid_lanes.empty() && node.HasLineIfEmpty()) {
       intrinsic_block_size_ =
@@ -1027,7 +1039,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   }
 }
 
-void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
+BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     GridLanesDataVector& grid_lanes,
     const GridLayoutSubtree& layout_subtree,
     LayoutUnit* total_intrinsic_block_size) {
@@ -1050,22 +1062,24 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
           : GridLanesItemIterator::kPostorder,
       GridLanesItemIterator::kFragmentation, is_columns);
   Vector<bool> has_inflow_child_break_inside_lane(grid_lanes.size(), false);
-
+  Vector<bool> has_processed_item_in_lane(grid_lanes.size(), false);
   // Break info for each column in this fragment. Only tracked for column
   // grid-lanes containers.
   HeapVector<ColumnBreakInfo> column_break_info;
+  bool needs_earlier_break = false;
   if (is_columns) {
     // `column_intrinsic_block_size` starts at `LayoutUnit::Min()` so that a
     // column with nothing laid out in this fragment yet never pushes a spanner
     // down.
     column_break_info = HeapVector<ColumnBreakInfo>(
         grid_lanes.size(), ColumnBreakInfo(LayoutUnit::Min()));
+    column_early_breaks_.resize(grid_lanes.size());
   }
 
   const LayoutUnit stacking_axis_gap =
       StackingAxisGap(Style(), grid_lanes_available_size_);
 
-  // TODO(almaher): Properly handle break rules for columns and rows.
+  // TODO(almaher): Properly handle break rules for rows.
 
   LayoutUnit previously_consumed_block_size;
   LayoutUnit offset_in_stitched_container;
@@ -1125,8 +1139,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     // may span more than one lane. As a result, we need to wait until we later
     // have the row offset to determine when to skip to the next fragment.
     if (is_columns) {
-      // TODO(almaher): Columns will eventually require extra logic here for
-      // early breaks.
       if (HasBreakInsideInSpannedLanes(lane_span,
                                        has_inflow_child_break_inside_lane)) {
         // A lane this item spans has content that resumes in a later
@@ -1147,11 +1159,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     // it to select the corresponding child from `layout_subtree`.
     const GridLayoutSubtree* child_layout_subtree = nullptr;
 
-    // TODO(almaher): Support logic for a previous break before.
-    //
     // TODO(almaher): We will need to add logic here for row expansion once row
     // rule break support is implemented.
 
+    const GridLanesItemPlacementData& grid_lanes_placement_data =
+        *grid_lanes_item->grid_lanes_placement_data;
     LogicalOffset offset = grid_lanes_item->PlacementData().offset;
     if (IsBreakInside(item_break_token)) {
       offset.block_offset = BorderScrollbarPadding().block_start;
@@ -1194,7 +1206,52 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       // TODO(almaher): Further adjustments will eventually be needed for rows.
     }
 
-    // TODO(almaher): Additional logic will be needed here for early breaks.
+    // Only forced tokens guarantee that a break has already been honored.
+    // Unforced break-before tokens may only defer an item.
+    const bool is_resuming_forced_break =
+        item_break_token && item_break_token->IsForcedBreak();
+    if (is_columns && is_resuming_forced_break) {
+      // Forced breaks preserve the item's start margin in the next fragment.
+      const LayoutUnit block_start =
+          BorderScrollbarPadding().block_start +
+          grid_lanes_placement_data.margin_block_start;
+      SetItemOffsetAdjustmentInSpannedLanes(
+          lane_span,
+          grid_lanes[grid_lane_idx].item_offset_adjustment + block_start -
+              offset.block_offset,
+          grid_lanes);
+      offset.block_offset = block_start;
+    }
+
+    const LayoutUnit item_offset_adjustment =
+        is_columns ? grid_lanes[grid_lane_idx].item_offset_adjustment
+                   : LayoutUnit();
+
+    const EarlyBreak* item_early_break = early_break_;
+    if (is_columns && additional_early_breaks_) {
+      item_early_break = (*additional_early_breaks_)[grid_lane_idx];
+    }
+
+    auto BreakBeforeItem = [&]() {
+      MarkBreakInsideInSpannedLanes(lane_span,
+                                    has_inflow_child_break_inside_lane);
+      if (fragmentainer_space != kIndefiniteSize) {
+        const LayoutUnit adjustment =
+            item_offset_adjustment + fragmentainer_space - offset.block_offset;
+        SetItemOffsetAdjustmentInSpannedLanes(lane_span, adjustment,
+                                              grid_lanes);
+        intrinsic_block_size_ =
+            std::max(intrinsic_block_size_, fragmentainer_space);
+      }
+    };
+
+    if (is_columns && item_early_break &&
+        IsEarlyBreakTarget(*item_early_break, container_builder_, item.node)) {
+      container_builder_.AddBreakBeforeChild(item.node, kBreakAppealPerfect,
+                                             /*is_forced_break=*/false);
+      BreakBeforeItem();
+      continue;
+    }
 
     // TODO(almaher): We will likely need logic here similar to grid for
     // `cross_size_adjustments_`.
@@ -1259,27 +1316,46 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       }
     }
 
-    // TODO(almaher): Make early-breaks work.
     FragmentationLayoutInput fragmentation =
-        GetFragmentationLayoutInputForChild(item.node, item_break_token);
+        ::blink::GetFragmentationLayoutInputForChild(
+            item.node, item_break_token, item_early_break, container_builder_);
     const LayoutResult* layout_result =
         item.node.Layout(child_space, fragmentation);
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
-    // TODO(almaher): Handle break status, container separation calculation, and
-    // `BreakBeforeChildIfNeeded`.
-    //
-    // TODO(almaher): For columns, use each lane's `ColumnBreakInfo` to track
-    // break-after and early breaks, and to consume the rest of the
-    // fragmentainer on a forced break.
+    if (is_columns) {
+      ColumnBreakInfo& break_info = column_break_info[grid_lane_idx];
+      container_builder_.SetPreviousBreakAfter(break_info.break_after);
+      if (!item_early_break) {
+        bool has_container_separation =
+            !IsBreakInside(item_break_token) &&
+            offset.block_offset > BorderScrollbarPadding().block_start;
+        has_container_separation |= has_processed_item_in_lane[grid_lane_idx];
+        const BreakStatus status = ::blink::BreakBeforeChildIfNeeded(
+            item.node, *layout_result,
+            FragmentainerOffsetForChildren() + offset.block_offset,
+            FragmentainerCapacityForChildren(),
+            has_container_separation && !is_resuming_forced_break,
+            &container_builder_, /*is_row_item=*/false, &break_info);
+        if (status == BreakStatus::kNeedsEarlierBreak) {
+          CHECK(break_info.early_break);
+          needs_earlier_break = true;
+          column_early_breaks_[grid_lane_idx] = break_info.early_break;
+          MarkBreakInsideInSpannedLanes(lane_span,
+                                        has_inflow_child_break_inside_lane);
+          continue;
+        }
+        if (status == BreakStatus::kBrokeBefore) {
+          BreakBeforeItem();
+          continue;
+        }
+      }
+    }
 
     const auto& physical_fragment =
         To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
-
-    const GridLanesItemPlacementData& grid_lanes_placement_data =
-        *grid_lanes_item->grid_lanes_placement_data;
 
     const bool is_at_block_end =
         !physical_fragment.GetBreakToken() ||
@@ -1344,13 +1420,17 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         current_column_break_info.column_intrinsic_block_size =
             std::max(item_block_end,
                      current_column_break_info.column_intrinsic_block_size);
+        has_processed_item_in_lane[lane_idx] = true;
       }
     }
 
     container_builder_.AddResult(*layout_result, offset);
     previous_grid_lane_idx = grid_lane_idx;
 
-    // TODO(almaher): Break after tracking for columns needed similar to flex.
+    if (is_columns) {
+      column_break_info[grid_lane_idx].break_after =
+          container_builder_.PreviousBreakAfter();
+    }
 
     // TODO(almaher): Baseline accumulation logic should happen here.
 
@@ -1370,7 +1450,15 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     }
   }
 
-  // TODO(almaher): Trigger early break if needed.
+  if (needs_earlier_break) {
+    for (const EarlyBreak* breakpoint : column_early_breaks_) {
+      if (breakpoint) {
+        container_builder_.SetEarlyBreak(breakpoint);
+        return BreakStatus::kNeedsEarlierBreak;
+      }
+    }
+    NOTREACHED();
+  }
 
   // TODO(almaher): Relayout for stretched items if needed. Important
   // for row expansion, but also for expansion for items stretched in
@@ -1417,7 +1505,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
                intrinsic_block_size_ + previously_consumed_block_size +
                    BorderScrollbarPadding().block_end);
 
-  // TODO(almaher): Eventually return the break status here.
+  return BreakStatus::kContinue;
 }
 
 void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(

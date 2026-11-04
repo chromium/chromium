@@ -117,6 +117,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     kFinalPlacement,
   };
 
+  const LayoutResult* LayoutInternal();
+
   // Builds the grid-lanes sizing tree, runs track sizing (including any
   // intrinsic repeat passes), and baseline alignment. Grid items are moved out
   // via the `grid_items` parameter. `opt_oof_children` is an optional vector of
@@ -183,7 +185,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // `total_intrinsic_block_size` is the intrinsic block size of the complete,
   // unfragmented container; it is updated if column items expand as a result of
   // fragmentation.
-  void PlaceGridLanesItemsForFragmentation(
+  BreakStatus PlaceGridLanesItemsForFragmentation(
       GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
       LayoutUnit* total_intrinsic_block_size);
@@ -469,6 +471,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   std::optional<LayoutUnit> contain_intrinsic_block_size_;
   LayoutUnit intrinsic_block_size_;
   LayoutUnit stacking_axis_size_;
+  HeapVector<Member<EarlyBreak>> column_early_breaks_;
 
   LogicalSize grid_lanes_available_size_;
   LogicalSize grid_lanes_min_available_size_;
