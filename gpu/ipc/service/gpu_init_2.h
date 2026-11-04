@@ -98,13 +98,14 @@ class GPU_IPC_SERVICE_EXPORT GpuInit2 : public GpuInit {
   void SetSkiaBackendType();
   void RecordUMA();
 
-  // InitializeAndStartSandbox steps helper functions.
+  // Helper functions for the steps of InitializeAndStartSandbox(). Some are
+  // also used by InitializeInProcess().
   void RecordStartupCrashKeys(InitState& state);
   bool CollectBasicInfoAndComputeFeatures(InitState& state);
   void ConfigureGpuSelection();
   void StartWatchdogAndMaybeSandboxEarly(InitState& state);
   bool InitializeGLBindingsAndDisplay(InitState& state);
-  void SelectCommandDecoder(InitState& state);
+  void SelectCommandDecoder();
   bool FinalizeFeaturesWithContextInfo(InitState& state);
   bool ResolveGrContextType(InitState& state);
   bool InitializeVulkanIfNeeded();

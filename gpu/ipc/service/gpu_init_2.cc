@@ -283,7 +283,9 @@ struct GpuInit2::InitState {
 
   base::CommandLine* command_line = nullptr;
 
-  // True for InitializeInProcess(), where there is no sandbox.
+  // True for InitializeInProcess(), where there is no sandbox. In-process,
+  // most failed initialization steps are only logged instead of aborting
+  // initialization, and crash keys are not set.
   const bool in_process;
 };
 
@@ -382,7 +384,7 @@ bool GpuInit2::InitializeAndStartSandbox(
   if (!InitializeGLBindingsAndDisplay(state)) {
     return false;
   }
-  SelectCommandDecoder(state);
+  SelectCommandDecoder();
   if (!FinalizeFeaturesWithContextInfo(state)) {
     return false;
   }
@@ -571,82 +573,12 @@ void GpuInit2::InitializeInProcess(base::CommandLine* command_line,
   if (!InitializeGLBindingsAndDisplay(state)) {
     return;
   }
-  state.gl_disabled =
-      gl::GetGLImplementation() == gl::kGLImplementationDisabled;
-
-  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
-
-#if BUILDFLAG(IS_WIN)
-  if (!state.gl_disabled && !gl_use_warp_) {
-    CollectContextGraphicsInfo(&gpu_info_);
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, nullptr);
-    gl_use_warp_ = gpu_init_internal::EnableWarpIfNeeded(
-        command_line, gpu_feature_info_,
-        gpu_preferences_.disable_software_rasterizer, false);
-    if (gl_use_warp_ && !ReinitializeGLWithWarp(state)) {
-      return;
-    }
+  if (!FinalizeFeaturesWithContextInfo(state)) {
+    return;
   }
-#else
-  if (!state.gl_disabled) {
-    CollectContextGraphicsInfo(&gpu_info_);
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, nullptr);
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  if (!state.gl_disabled) {
-    if (!gpu_feature_info_.disabled_extensions.empty()) {
-      gl::init::SetDisabledExtensionsPlatform(
-          gpu_feature_info_.disabled_extensions);
-    }
-    if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
-            state.gl_display)) {
-      VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
-    }
-    default_offscreen_surface_ =
-        gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
-    if (!default_offscreen_surface_) {
-      VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
-    }
-  }
-
+  // Failures are only logged in-process, so this always succeeds.
+  CHECK(FinalizeGLInitialization(state));
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
-
-  if (!state.gl_disabled) {
-    if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
-      VLOG(1) << "gpu::CollectGpuExtraInfo failed";
-    }
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Driver may create a compatibility profile context when collect graphics
-  // information on Linux platform. Try to collect graphics information
-  // based on core profile context after disabling platform extensions.
-  if (!state.gl_disabled) {
-    CollectContextGraphicsInfo(&gpu_info_);
-    gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
-                                              command_line, nullptr);
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_WIN)
-  if (gl_use_warp_) {
-    AdjustInfoToWarp();
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  if (state.gl_disabled) {
-    // GL is disabled in display compositor mode, typically due to repeated GPU
-    // crashes. Disable WebNN to ensure stability in this state.
-    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
-        kGpuFeatureStatusDisabled;
-  }
-
-#if BUILDFLAG(IS_OZONE)
-  gpu_init_internal::QueryNativePixmapSupport(gpu_feature_info_);
-#endif  // BUILDFLAG(IS_OZONE)
 
   // We try to fall back to a valid GrContextType after GpuFeatureInfo is
   // computed.
@@ -798,7 +730,9 @@ bool GpuInit2::InitializeGLBindingsAndDisplay(InitState& state) {
     VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
     return false;
   }
-  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+  state.gl_disabled =
+      gl::GetGLImplementation() == gl::kGLImplementationDisabled;
+  if (!state.gl_disabled) {
     state.gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/false, gl::GpuPreference::kDefault);
     if (!state.gl_display) {
@@ -824,12 +758,10 @@ bool GpuInit2::InitializeGLBindingsAndDisplay(InitState& state) {
   return true;
 }
 
-void GpuInit2::SelectCommandDecoder(InitState& state) {
-  auto impl = gl::GetGLImplementationParts();
-  state.gl_disabled = impl == gl::kGLImplementationDisabled;
-
+void GpuInit2::SelectCommandDecoder() {
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
-  bool is_swangle = impl == gl::ANGLEImplementation::kSwiftShader;
+  bool is_swangle =
+      gl::GetGLImplementationParts() == gl::ANGLEImplementation::kSwiftShader;
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
   // Using SwANGLE forces the passthrough command decoder.
@@ -856,10 +788,14 @@ bool GpuInit2::FinalizeFeaturesWithContextInfo(InitState& state) {
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!CollectGraphicsInfo(&gpu_info_)) {
     VLOG(1) << "gpu::CollectGraphicsInfo failed";
-    return false;
+    if (!state.in_process) {
+      return false;
+    }
   }
 
-  SetKeysForCrashLogging(gpu_info_);
+  if (!state.in_process) {
+    SetKeysForCrashLogging(gpu_info_);
+  }
   gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                             state.command_line, nullptr);
 #if BUILDFLAG(IS_WIN)
@@ -955,7 +891,9 @@ bool GpuInit2::FinalizeGLInitialization(InitState& state) {
   if (!state.gl_disabled) {
     if (!CollectGpuExtraInfo(&gpu_extra_info_, gpu_preferences_)) {
       VLOG(1) << "gpu::CollectGpuExtraInfo failed";
-      return false;
+      if (!state.in_process) {
+        return false;
+      }
     }
 
     if (!gpu_feature_info_.disabled_extensions.empty()) {
@@ -965,13 +903,17 @@ bool GpuInit2::FinalizeGLInitialization(InitState& state) {
     if (!gl::init::InitializeExtensionSettingsOneOffPlatform(
             state.gl_display)) {
       VLOG(1) << "gl::init::InitializeExtensionSettingsOneOffPlatform failed";
-      return false;
+      if (!state.in_process) {
+        return false;
+      }
     }
     default_offscreen_surface_ =
         gl::init::CreateOffscreenGLSurface(state.gl_display, gfx::Size());
     if (!default_offscreen_surface_) {
       VLOG(1) << "gl::init::CreateOffscreenGLSurface failed";
-      return false;
+      if (!state.in_process) {
+        return false;
+      }
     }
   }
 
@@ -980,10 +922,12 @@ bool GpuInit2::FinalizeGLInitialization(InitState& state) {
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
   if (!state.gl_disabled) {
-    if (!CollectGraphicsInfo(&gpu_info_)) {
+    if (!CollectGraphicsInfo(&gpu_info_) && !state.in_process) {
       return false;
     }
-    SetKeysForCrashLogging(gpu_info_);
+    if (!state.in_process) {
+      SetKeysForCrashLogging(gpu_info_);
+    }
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               state.command_line, nullptr);
   }
@@ -1005,6 +949,7 @@ bool GpuInit2::FinalizeGLInitialization(InitState& state) {
         kGpuFeatureStatusDisabled;
   }
 
+  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
   return true;
 }
 
@@ -1021,7 +966,6 @@ void GpuInit2::ApplyFeatureStatusToPreferences() {
 }
 
 void GpuInit2::FinalizeWatchdog(InitState& state) {
-  gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
   if (state.gl_disabled) {
     state.watchdog.Destroy();
   } else if (state.watchdog.enabled() && kDelayGpuWatchdogStart) {
