@@ -1294,8 +1294,6 @@ void AddFileManagerFeatureStrings(
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_LOCAL_IMAGE_SEARCH",
             ash::features::IsFilesLocalImageSearchEnabled());
-  dict->Set("FILES_TRASH_DRIVE_ENABLED",
-            base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
 
   dict->Set("GUEST_OS", true);
 

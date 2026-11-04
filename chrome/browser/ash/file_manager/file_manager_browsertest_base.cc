@@ -2363,12 +2363,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  if (options.enable_drive_trash) {
-    enabled_features.push_back(ash::features::kFilesTrashDrive);
-  } else {
-    disabled_features.push_back(ash::features::kFilesTrashDrive);
-  }
-
   if (options.enable_dlp_files_restriction) {
     enabled_features.push_back(
         ash::features::kDataLeakPreventionFilesRestriction);

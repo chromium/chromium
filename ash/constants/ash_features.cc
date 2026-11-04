@@ -665,9 +665,6 @@ BASE_FEATURE(kFilesMaterializedViews, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable background cleanup for old files in Trash.
 BASE_FEATURE(kFilesTrashAutoCleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable files app trash for Drive.
-BASE_FEATURE(kFilesTrashDrive, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Fix manual ip address persistence on managed device with 2 ethernet ports.
 BASE_FEATURE(kFixStaticIpForTwoManagedEthPorts,
              base::FEATURE_ENABLED_BY_DEFAULT);

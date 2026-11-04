@@ -7939,10 +7939,6 @@ inline constexpr char kFilesTrashAutoCleanupName[] = "Trash auto cleanup";
 inline constexpr char kFilesTrashAutoCleanupDescription[] =
     "Enable background cleanup for old files in Trash.";
 
-inline constexpr char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
-inline constexpr char kFilesTrashDriveDescription[] =
-    "Enable trash for Drive volume in Files App.";
-
 inline constexpr char kFixStaticIpForTwoManagedEthPortsName[] =
     "Fix static ip on managed device with two ethernet ports.";
 inline constexpr char kFixStaticIpForTwoManagedEthPortsDescription[] =

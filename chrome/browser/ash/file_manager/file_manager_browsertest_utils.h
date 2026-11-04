@@ -79,8 +79,6 @@ struct TestCase {
 
   TestCase& EnableFilesPolicyNewUX();
 
-  TestCase& EnableDriveTrash();
-
   TestCase& EnableArcVm();
 
   TestCase& EnableFileTransferConnector();

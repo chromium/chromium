@@ -1473,9 +1473,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashDeleteFromTrashOriginallyFromMyFiles")
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
-        TestCase("trashDeleteFromTrashOriginallyFromDrive")
-            .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"})
-            .EnableDriveTrash(),
         TestCase("trashNoTasksInTrashRoot"),
         TestCase("trashDoubleClickOnFileInTrashRootShowsDialog"),
         TestCase("trashDragDropRootAcceptsEntries"),

@@ -4,11 +4,8 @@
 
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -79,19 +76,6 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(Profile* profile) {
           util::GetMyFilesFolderForProfile(profile),
           /*prefix_path=*/
           util::GetDownloadsFolderForProfile(profile).BaseName()));
-
-  if (base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive)) {
-    auto* integration_service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-    if (integration_service) {
-      enabled_trash_locations.try_emplace(
-          integration_service->GetMountPointPath(),
-          TrashLocation(
-              /*supplied_relative_folder_path=*/base::FilePath(".Trash-1000"),
-              /*supplied_mount_point_path=*/integration_service
-                  ->GetMountPointPath()));
-    }
-  }
 
   return enabled_trash_locations;
 }

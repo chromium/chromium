@@ -453,33 +453,6 @@ export async function trashDeleteFromTrash() {
 }
 
 /**
- * Delete files (move them into trash) then permanently delete.
- */
-export async function trashDeleteFromTrashOriginallyFromDrive() {
-  const appId = await remoteCall.setupAndWaitUntilReady(
-      RootPath.DRIVE, [], [ENTRIES.hello]);
-
-  // Select hello.txt.
-  await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="hello.txt"]');
-
-  // Delete item and wait for it to be removed (no dialog).
-  await remoteCall.clickTrashButton(appId);
-  await remoteCall.waitForElementLost(
-      appId, '#file-list [file-name="hello.txt"]');
-
-  // Navigate to /Trash and ensure the file is shown.
-  const directoryTree = await DirectoryTreePageObject.create(appId);
-  await directoryTree.navigateToPath('/Trash');
-  await remoteCall.waitAndClickElement(
-      appId, '#file-list [file-name="hello.txt"]');
-
-  // Confirm the permanent deletion of the file does not say 'forever'.
-  await clickDeleteButton(appId);
-  await confirmPermanentDeletion(appId, 'Delete');
-}
-
-/**
  * When selecting items whilst in the trash root, no files tasks should be
  * available.
  */

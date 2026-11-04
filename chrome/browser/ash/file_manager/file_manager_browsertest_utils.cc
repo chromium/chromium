@@ -116,11 +116,6 @@ TestCase& TestCase::EnableFilesPolicyNewUX() {
   return *this;
 }
 
-TestCase& TestCase::EnableDriveTrash() {
-  options.enable_drive_trash = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableArcVm() {
   options.enable_arc_vm = true;
   return *this;
@@ -247,10 +242,6 @@ std::string TestCase::GetFullName() const {
 
   if (options.photos_documents_provider) {
     full_name += "_PhotosDocumentsProvider";
-  }
-
-  if (options.enable_drive_trash) {
-    full_name += "_DriveTrash";
   }
 
   if (options.file_transfer_connector_report_only) {
