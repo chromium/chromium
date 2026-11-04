@@ -176,7 +176,6 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
             _accessPoint);
         break;
       }
-      case SigninCoordinatorResultSuccess:
       case SigninCoordinatorUINotAvailable:
         NOTREACHED();
     }

@@ -196,7 +196,6 @@
         base::RecordAction(
             base::UserMetricsAction("Signin_BottomSheet_ClosedByInterrupt"));
         break;
-      case SigninCoordinatorResultSuccess:
       case SigninCoordinatorUINotAvailable:
         // ConsistencyPromoSigninCoordinator presents its child coordinators
         // directly and does not use `ShowSigninCommand`.

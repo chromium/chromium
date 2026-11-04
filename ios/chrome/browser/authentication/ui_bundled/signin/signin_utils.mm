@@ -164,18 +164,6 @@ void AllBrowsersSignedOut(signin::SignoutCompletion completion,
   std::move(completion).Run(new_scene_state);
 }
 
-// Checks that `result` is valid, i.e. either it contains a non-nil identity
-// value or a non-success cancellation/failure reason
-// (`SigninCoordinatorResult`).
-void CheckSigninCoordinatorResultOrIdentity(
-    SigninCoordinatorResultOrIdentity result) {
-  if (result.has_value()) {
-    CHECK(result.value());
-  } else {
-    CHECK_NE(result.error(), SigninCoordinatorResultSuccess);
-  }
-}
-
 }  // namespace
 
 #pragma mark - Public
@@ -635,36 +623,6 @@ Browser* GetRegularBrowser(Browser* browser) {
   }
   return browser->GetSceneState()
       .browserProviderInterface.mainBrowserProvider.browser;
-}
-
-void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
-                                             id<SystemIdentity> identity) {
-  if (result == SigninCoordinatorResultSuccess) {
-    CHECK(identity);
-  } else {
-    CHECK(!identity);
-  }
-}
-
-SigninCoordinatorResult
-SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-    SigninCoordinatorResultOrIdentity result) {
-  CheckSigninCoordinatorResultOrIdentity(result);
-  if (result.has_value()) {
-    return SigninCoordinatorResultSuccess;
-  }
-  return result.error();
-}
-
-SigninCoordinatorResultOrIdentity
-SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
-    SigninCoordinatorResult result,
-    id<SystemIdentity> identity) {
-  CheckSigninCoordinatorResultAndIdentity(result, identity);
-  if (result == SigninCoordinatorResultSuccess) {
-    return identity;
-  }
-  return base::unexpected(result);
 }
 
 }  // namespace signin

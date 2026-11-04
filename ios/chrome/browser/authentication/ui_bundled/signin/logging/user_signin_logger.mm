@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
-#import "base/notreached.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -66,9 +65,6 @@ using signin_metrics::PromoAction;
     case SigninCoordinatorUINotAvailable: {
       RecordAction(UserMetricsAction("Signin_Abort_Signin_UINotAvailable"));
       break;
-    }
-    case SigninCoordinatorResultSuccess: {
-      NOTREACHED();
     }
   }
 }

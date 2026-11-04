@@ -346,7 +346,6 @@
     case SigninCoordinatorProfileSwitch:
       [self runCompletionWithSigninResult:std::move(result)];
       break;
-    case SigninCoordinatorResultSuccess:
     case SigninCoordinatorUINotAvailable:
       // InstantSigninCoordinator presents its child coordinators directly and
       // does not use `ShowSigninCommand`.

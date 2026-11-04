@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/notreached.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/version_info/version_info.h"
@@ -115,9 +114,6 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
       // TODO(crbug.com/40622384): Add metric for when the sign-in has been
       // interrupted.
       break;
-    }
-    case SigninCoordinatorResultSuccess: {
-      NOTREACHED();
     }
   }
 }

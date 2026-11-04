@@ -192,31 +192,6 @@ bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state);
 // Returns the regular browser.
 Browser* GetRegularBrowser(Browser* browser);
 
-// Checks that `identity` is nil if and only if `result` is not
-// `SigninCoordinatorResultSuccess`.
-void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
-                                             id<SystemIdentity> identity);
-
-// Converts `result` to the legacy `SigninCoordinatorResult` enum value.
-// Returns `SigninCoordinatorResultSuccess` if `result` contains an identity,
-// or the underlying error code otherwise.
-// TODO(crbug.com/552435229): Remove once SigninCoordinatorResultSuccess is
-// removed.
-SigninCoordinatorResult
-SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-    SigninCoordinatorResultOrIdentity result);
-
-// Converts the legacy (`result`, `identity`) pair into
-// `SigninCoordinatorResultOrIdentity`.
-// `identity` must be non-nil if and only if `result` is
-// `SigninCoordinatorResultSuccess`.
-// TODO(crbug.com/552435229): Remove once SigninCoordinatorResultSuccess is
-// removed.
-SigninCoordinatorResultOrIdentity
-SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
-    SigninCoordinatorResult result,
-    id<SystemIdentity> identity);
-
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_UTILS_H_

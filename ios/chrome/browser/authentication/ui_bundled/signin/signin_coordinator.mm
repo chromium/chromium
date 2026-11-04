@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -418,14 +417,6 @@ using signin_metrics::PromoAction;
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
   signinCompletion(self, std::move(signinResult));
-}
-
-- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                   completionIdentity:(id<SystemIdentity>)completionIdentity {
-  [self
-      runCompletionWithSigninResult:
-          signin::SigninCoordinatorResultOrIdentityFromSigninCoordinatorResult(
-              signinResult, completionIdentity)];
 }
 
 #pragma mark - BuggyAuthenticationViewOwner

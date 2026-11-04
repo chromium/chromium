@@ -13,7 +13,7 @@
 @class SigninCoordinator;
 @protocol SystemIdentity;
 
-// Sign-in result returned Sign-in result.
+// Reason why sign-in did not return a signed-in identity.
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been canceled by the user or by another reason.
   SigninCoordinatorResultCanceledByUser,
@@ -21,8 +21,6 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // was terminated.
   // Sign-in might have finished or not.
   SigninCoordinatorResultInterrupted,
-  // Sign-in has been done, the user has explicitly accepted sign-in.
-  SigninCoordinatorResultSuccess,
   // Sign-in did not complete because it is disabled. This can happen if
   // enterprise policies are updated after sign-in is started.
   SigninCoordinatorResultDisabled,

@@ -17,12 +17,6 @@
 - (void)runCompletionWithSigninResult:
     (SigninCoordinatorResultOrIdentity)signinResult NS_REQUIRES_SUPER;
 
-// Legacy helper until all subclasses migrate to the overload above.
-// TODO(crbug.com/552435229): Remove once all subclasses are migrated.
-- (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                   completionIdentity:(id<SystemIdentity>)completionIdentity
-    NS_REQUIRES_SUPER;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_COORDINATOR_PROTECTED_H_

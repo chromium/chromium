@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -201,7 +200,6 @@ HistorySyncResultToSigninCoordinatorResultOrIdentity(
       case SigninCoordinatorResultCanceledByUser:
         _currentStep = SignInHistorySyncStep::kCompleted;
         break;
-      case SigninCoordinatorResultSuccess:
       case SigninCoordinatorUINotAvailable:
         // SigninAndHistorySyncController presents its child coordinators
         // directly and does not use `ShowSigninCommand`.
