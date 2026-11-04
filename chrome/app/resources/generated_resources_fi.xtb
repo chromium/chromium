@@ -934,6 +934,7 @@
 <translation id="1703666494654169921">Älä salli sivustojen käyttää virtuaalitodellisuuslaitteita tai ‑dataa</translation>
 <translation id="1704097193565924901">Muuta alkukirjain isoksi</translation>
 <translation id="1704230497453185209">Älä salli sivustojen toistaa ääntä</translation>
+<translation id="170494114379308411">Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ‑dataasi<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ei tarkasteta eikä käytetä generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä.</translation>
 <translation id="170658918174941828">Chrome-versiosi, käyttöjärjestelmäsi versio, Cast-asetuksesi,
     peilautuvat suoritustilastosi ja viestintäkanaviesi diagnostiikkalokit lähetetään
     yllä mainitsemiesi tietojen lisäksi. Tätä palautetta käytetään ongelmien
@@ -1167,6 +1168,7 @@
 <translation id="1881445033931614352">Näppäimistön asettelu</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Asia}other{# asiaa}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Gemini-historia</translation>
 <translation id="1884340228047885921">Tämänhetkinen näkyvyysasetus on jotkin yhteystiedot</translation>
 <translation id="1884705339276589024">Muuta Linux-levyn kokoa</translation>
 <translation id="1885066963699478692">XML-tiedostot, joita käytetään käytäntöjen asettamiseen.</translation>
@@ -1183,7 +1185,6 @@
 <translation id="1892453608039100484">1. Klikkaa <ph name="BUTTON_LABEL" /> alta
 2. Klikkaa Windowsin asetuksista <ph name="BUTTON_2" /></translation>
 <translation id="1895658205118569222">Sulkeminen</translation>
-<translation id="1896353439080510710">Keskustelut tarkastetaan ja niitä käytetään Googlen tekoälyn kehittämiseen. Gemini on tekoäly ja voi tehdä virheitä. Voit <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />ylläpitää toimintaa<ph name="END_LINK_MANAGE_ACTIVITY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Käytä vahvaa salasanaa</translation>
 <translation id="1897860317037652061">Skannaus epäonnistui</translation>
 <translation id="1898804291554630487">Kysy tästä sivusta</translation>
@@ -1239,7 +1240,6 @@
 <translation id="1929774028758671973">Kontaktit voivat jakaa sinulle sisältöä ollessaan lähistöllä. Sinua pyydetään hyväksymään jakamispyynnöt. Jakamista ei tarvitse hyväksyä laitteilla, jotka ovat kirjautuneena tilille <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Ei asennettuja osia.</translation>
 <translation id="1932125073382155239">Varmuuskopioidaanko sisältö?</translation>
-<translation id="1933070475689690969">Gemini-sovellustoiminta</translation>
 <translation id="1933489278505808700">Lukeminen ja muuttaminen sallittu</translation>
 <translation id="1935303383381416800">Sijainnin tarkastelu sallittu</translation>
 <translation id="193565226207940518">Tukityökalu</translation>
@@ -1636,6 +1636,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2246549592927364792">Käytetäänkö Googlen kuvaselityksiä?</translation>
 <translation id="2247738527273549923">Organisaatiosi ylläpitää laitettasi</translation>
 <translation id="2247870315273396641">Äänen esikuuntelu</translation>
+<translation id="2247960558975094922">Gemini-historia</translation>
 <translation id="224835741840550119">Siivoa laite</translation>
 <translation id="2249111429176737533">Avaa välilehtiin jaetussa ikkunassa</translation>
 <translation id="2249605167705922988">esim. 1–5, 8, 11–13</translation>
@@ -2268,7 +2269,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2727712005121231835">Todellinen koko</translation>
 <translation id="2729310339366257582">Tiivistä välilehdet</translation>
 <translation id="2729577602370119849">Käytä ja ylläpidä tulostimia helposti</translation>
-<translation id="2729940704980595903">Katsele ja hallitse Gemini-sovellustoimintaa</translation>
 <translation id="2730550884708194161">Tietoa työprofiileista</translation>
 <translation id="2730596696987224099">Valitse oma</translation>
 <translation id="2730647855013151888">Sisällytä kaikki henkilökohtaiset tiedot</translation>
@@ -2306,7 +2306,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Tarkista kielioppi oikeinkirjoituksen yhteydessä</translation>
 <translation id="2750020734439919571">Lisää Chrome-sovelluksen asetuksia ja lupia</translation>
-<translation id="275010360476017464">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, ääni tallennetaan Gemini-sovellustoimintaan (jos se on päällä)</translation>
 <translation id="2750602041558385535">Vahvistamaton lataus estetty</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> muuta</translation>
 <translation id="2751454300227269244">Liikuta suutasi oikealle</translation>
@@ -2696,6 +2695,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3030772324014024606">Muokkaa</translation>
 <translation id="3030795534674718505">Saa käyttää sinusta tallentamiaan tietoja</translation>
 <translation id="3030967311408872958">Auringonlaskusta sen nousuun</translation>
+<translation id="3030970046240311592">Katsele ja ylläpidä Gemini-historiaa</translation>
 <translation id="3031417829280473749">Agentti X</translation>
 <translation id="3031532026314193077">Klikkaa kakkospainikkeella käyttämällä kosketuslevyä ja näppäimistöä</translation>
 <translation id="3031557471081358569">Valitse tuotavat kohteet:</translation>
@@ -3219,7 +3219,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="343578350365773421">Paperi lopussa</translation>
 <translation id="3435896845095436175">Ota käyttöön</translation>
 <translation id="3436118221454753036">Kysy tekoälyltä ‑tila</translation>
-<translation id="3437072258256045988">Gemini-sovellustoiminnan hallinta</translation>
 <translation id="3437397693214267762">Katso Outlook-kalenteri ja SharePoint- ja OneDrive-tiedostot</translation>
 <translation id="3437494162908353428">DevToolsit eivät ole sallittuja tälle URL-osoitteelle.</translation>
 <translation id="3437498061222607130">Olet kirjautunut Hakuun tilillä <ph name="USER_EMAIL" /></translation>
@@ -4150,6 +4149,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4107793386654579933">Valitse pikanäppäin toiminnolla: <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Siirrä ikkuna käyttäjälle <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Palauta varoitus</translation>
+<translation id="4110984310437592352">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, audio tallennetaan Gemini-historiaan (jos se on päällä).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Laajennukset ja taidot</translation>
 <translation id="4113743276555482284">Tiedoston salasana</translation>
@@ -4240,6 +4240,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="419427585139779713">Kirjoita tavu kerrallaan</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
+<translation id="4196632390211257612">Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ‑dataasi<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ei tarkasteta eikä käytetä generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille.</translation>
 <translation id="4198268995694216131">Lisää sivustoja</translation>
 <translation id="4200609364258658652">Kopio&amp;i videon yksittäiskehys</translation>
 <translation id="4200689466366162458">Muokatut sanat</translation>
@@ -4842,6 +4843,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4665035764476941598">Klikkaa tästä, jos haluat palauttaa muut välilehdet</translation>
 <translation id="4665446389743427678">Kaikki data, jonka <ph name="SITE" /> tallentaa, poistetaan.</translation>
 <translation id="4666472247053585787">Katso puhelimesi ilmoitukset (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="4666483368282673356">Ylläpidä Gemini-historiaa</translation>
 <translation id="4666911709726371538">Lisää sovelluksia</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN-koodissa voi olla vain numeroita</translation>
@@ -5315,6 +5317,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5012523644916800014">Muokkaa salasanoja ja avainkoodeja</translation>
 <translation id="501394389332262641">Virta vähissä ‑ääni</translation>
 <translation id="5014286001996333986">Korvataanko nykyinen ryhmä vai luodaanko uusi?</translation>
+<translation id="5014385104640320445">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, audio tallennetaan Gemini-historiaan (jos se on päällä). Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="5015344424288992913">Jäsennetään välityspalvelinta...</translation>
 <translation id="5016305686459575361">Kun yhdistät puhelimesi, seuraavat asiat onnistuvat:</translation>
 <translation id="5016491575926936899">Voit lähettää tekstiviestejä tietokoneelta, jakaa internetyhteyden, vastata keskusteluilmoituksiin ja avata lukituksen (<ph name="DEVICE_TYPE" />) puhelimella.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -5690,7 +5693,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5298315677001348398">Haluatko jatkaa ja antaa ohjelmiston tehdä muutoksia laitteeseesi?</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Katso ja ylläpidä välilehtiryhmiä</translation>
-<translation id="5300667117276823109">Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ‑dataasi<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ei tarkasteta eikä käytetä generatiivisten tekoälymallien parantamiseen. Gemini on tekoäly ja voi tehdä virheitä.</translation>
 <translation id="5301398529256275325">Kokeile esimerkiksi pyytää "tiivistä tämä sivu" tai kysy oma kysymys.</translation>
 <translation id="5301954838959518834">Selvä</translation>
 <translation id="5302032366299160685">Odota, että tiedosto avautuu, ennen kuin yrität uudelleen</translation>
@@ -6846,7 +6848,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="62229737360959019">Myös chatista tai jaetusta välilehdestä avatut välilehdet jaetaan Geminille. Live-tilassa vain nykyinen välilehti jaetaan oletuksena.</translation>
 <translation id="622484624075952240">Alas</translation>
 <translation id="622537739776246443">Profiili poistetaan</translation>
-<translation id="622568138962270592">Gemini-sovellustoiminta</translation>
 <translation id="6226777517901268232">Yksityinen avaintiedosto (valinnainen)</translation>
 <translation id="6227280783235722609">laajennus</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini lopetti tehtävän käsittelyn</translation>
@@ -8003,6 +8004,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="710224247908684995">Laajennus poisti Selaussuojan käytöstä</translation>
 <translation id="7102832101143475489">Pyyntö aikakatkaistiin</translation>
 <translation id="7103944802169726298">PC ja striimauslaite samassa Wi-Fi-verkossa</translation>
+<translation id="7104134653119992646">Keskustelut tarkastetaan ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-jäsenyys</translation>
 <translation id="7107609441453408294">Toista sama audio kaikista kaiuttimista</translation>
 <translation id="7108338896283013870">Piilota</translation>
@@ -8382,7 +8384,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7395774987022469191">Koko näyttö</translation>
 <translation id="7396017167185131589">Jaetut kansiot näkyvät täällä</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> käynnistyy tietokoneen käynnistyksen yhteydessä ja on käynnissä taustalla vielä kaikkien <ph name="PRODUCT_NAME" /> -ikkunoiden sulkemisen jälkeen.</translation>
-<translation id="7398815534290329738">Keskustelut tarkastetaan ja niitä käytetään Googlen tekoälyn kehittämiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille. Voit <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />ylläpitää toimintaa<ph name="END_LINK_MANAGE_ACTIVITY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Muokkaa synkronointia</translation>
 <translation id="7399616692258236448">Sijaintipyynnöt estetään automaattisesti kaikilla muilla paitsi sallituilla sivustoilla</translation>
 <translation id="7399802613464275309">Turvatarkistus</translation>
@@ -8896,7 +8897,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7777624210360383048">Pikanäppäin <ph name="SHORTCUT" />: <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Avaa kirjanmerkkien hallinta</translation>
 <translation id="7779840061887151693">näyttö</translation>
-<translation id="7780716468751073938">Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ‑dataasi<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ei tarkasteta eikä käytetä generatiivisten tekoälymallien parantamiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille.</translation>
 <translation id="7780992949171378848">Lähetä sivustoille pyyntö olla käyttämättä dataasi</translation>
 <translation id="7782102568078991263">Ei enää ehdotuksia Googlelta</translation>
 <translation id="7782717250816686129">Tallenna kirjautumisnäytölle pysyvää dataa ja lisää kirjautumistiedot käyttökertaan.</translation>
@@ -9035,6 +9035,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7903925330883316394">Apuohjelma: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Avaa kirjanmerkkien hallinta</translation>
+<translation id="7904508617992122201">Keskustelut tarkastetaan ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Aseta Linux-portit muiden verkossasi olevien laitteiden saataville.</translation>
 <translation id="7907312522152480478">Vahvista henkilöllisyytesi ja synkronoi historia ja välilehdet, jotta voit käyttää välilehtiä muilta laitteilta. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="7907502219904644296">Muuta pääsyoikeuksia</translation>
@@ -10428,7 +10429,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8945274638472141382">Kuvakkeen koko</translation>
 <translation id="8945508919180478719">Studiotyylinen mikrofoni</translation>
 <translation id="8946954897220903437">Tiivistä kaikki pyynnöt osoitepalkissa</translation>
-<translation id="8946996840522387154">Keskustele Geminin kanssa mikrofonin avulla. Kun puhut Geminille, ääni tallennetaan Gemini-sovellustoimintaan (jos se on päällä). Dataasi ei käytetä generatiivisten tekoälymallien kehittämiseen.</translation>
 <translation id="894763922177556086">Hyvä</translation>
 <translation id="895054485242522631">Sivustot saavat käyttää liiketunnistimia</translation>
 <translation id="8951465597020890363">Haluatko silti poistua Guest Modesta?</translation>

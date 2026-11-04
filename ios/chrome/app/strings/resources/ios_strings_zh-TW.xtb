@@ -392,7 +392,6 @@
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
 <translation id="2140913838150159519">固定分頁</translation>
 <translation id="2147127444698817042">僅適用於 iPhone</translation>
-<translation id="2148326276832455306">我們會查看及使用對話內容來改良 Google AI。你可以<ph name="BEGIN_LINK" />管理活動記錄<ph name="END_LINK" />，包括位置資訊。<ph name="BEGIN_LINK" />進一步瞭解可用選項<ph name="END_LINK" />。</translation>
 <translation id="2148799636999124959">使用已儲存的密碼快速登入網站和應用程式。</translation>
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
@@ -458,7 +457,6 @@
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">無防護</translation>
 <translation id="233375395665273385">刪除並登出</translation>
-<translation id="2340966584724330791">Google 會收集你與 Gemini 的對話和分享內容 (例如檔案、影片、螢幕畫面和相片)，還會收集你的意見回饋、透過 Gemini 瀏覽的網站資訊、產品使用情形和位置資訊 (包括裝置的大概位置、IP 位址，或 Google 帳戶中的住家/公司地址)。</translation>
 <translation id="2350463587705616331">深褐色背景</translation>
 <translation id="2351097562818989364">您的翻譯設定已重設。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{你可以將 {DOMAIN_ONE} 的密碼儲存到 Google 帳戶 ({EMAIL})。}=2{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存到 Google 帳戶 ({EMAIL})。}=3{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})。}other{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})。}}</translation>
@@ -742,7 +740,6 @@
 <translation id="3265736395246760288">在已同步的任一裝置上快速登入。</translation>
 <translation id="3268166994745151153">這表示你目前的進度將會遺失</translation>
 <translation id="3272527697863656322">取消</translation>
-<translation id="3272955648592358996">你的資料有助於提升 Google AI 品質</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
 <translation id="327455571215090823">自動填入更聰明，隱私安全有保障</translation>
 <translation id="3277021493514034324">已複製網站網址</translation>
@@ -919,7 +916,6 @@
 <translation id="3888863481921783344">系統會使用這些資料向你顯示活動的可能邀請對象。</translation>
 <translation id="3891414008432200754">價格</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
-<translation id="3892695492576181257">這項設定開啟時，你的活動記錄會保存在 Gemini 系列應用程式活動記錄 18 個月，你可視需要將保留期限變更為 3 或 36 個月。Google 會在人工審查員的協助下，使用你的活動記錄開發及改良服務 (包括 Gemini 模型)，以及保護 Google、使用者和一般大眾。服務供應商審查的資料會與你的帳戶解除連結，並保留 3 年。</translation>
 <translation id="3893858854379998374">如要將書籤儲存到帳戶，請刪除未使用的書籤</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3904270275864974753">編輯輪轉介面</translation>
@@ -1430,7 +1426,6 @@
 <translation id="5447973833955560753">備援密碼</translation>
 <translation id="5448623529214315261">已儲存的相片 <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">使用高強度密碼</translation>
-<translation id="5453088693079603292">系統會收集哪些活動記錄</translation>
 <translation id="5454211924362324495">如果不希望他人使用你的密碼，請<ph name="BEGIN_LINK" />前往 <ph name="WEBSITE" /> 變更密碼<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">加入搜尋字詞</translation>
 <translation id="5457226814769348910">開啟離線版本</translation>
@@ -1544,7 +1539,6 @@
 <translation id="5801568494490449797">偏好設定</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
-<translation id="58081802114142635">活動記錄有助於提升 Google AI 服務品質</translation>
 <translation id="5817176759448082654">密碼安全檢查</translation>
 <translation id="5818161931099046557">前往 Google 帳戶編輯</translation>
 <translation id="5819208479324046259">由「<ph name="MANAGER" />」管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -1593,7 +1587,6 @@
 <translation id="5971459446352190251">QR code 搜尋</translation>
 <translation id="5971872012779224351">{count,plural, =1{已刪除 1 個書籤}other{已刪除 {count} 個書籤}}</translation>
 <translation id="5972844218283131174">全部取消選取</translation>
-<translation id="597482816780655631">Gemini 是 AI，有時可能會出錯，包括提供錯誤的人物資訊。部分內容可能不適合所有人。我們會查看及使用對話內容來改良 Google AI。<ph name="BEGIN_LINK" />瞭解可用選項<ph name="END_LINK" />。適用《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />隱私權聲明<ph name="END_LINK" />》。</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5977976211062815271">在這部裝置上</translation>
 <translation id="5986043348928676121">繼續</translation>
@@ -1820,7 +1813,6 @@
 <translation id="6609890790934458793">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和 <ph name="THIRD_WEBSITE" /> 的密碼，但不會刪除你的帳戶。</translation>
 <translation id="661266467055912436">可為你和所有網路使用者提供更完善的安全防護。</translation>
 <translation id="6612912757320004438">允許分頁通知…</translation>
-<translation id="6613372200395638275">為了提供個人化協助，Gemini 會與「地圖」和「航班/機票」等其他 Google 服務共用你的某些資料 (例如部分對話內容、位置資訊和其他相關資訊)。即使你之後刪除 Gemini 系列應用程式活動記錄，這些服務可能還是會使用這類資訊來提升品質。詳情請參閱 <ph name="BEGIN_LINK" />Gemini 系列應用程式隱私權專區<ph name="END_LINK" />。</translation>
 <translation id="6617761071025228250">清除文字</translation>
 <translation id="6619015782482868078">水藍色主題</translation>
 <translation id="6620279676667515405">取消</translation>
@@ -1980,7 +1972,6 @@
 <translation id="7091023926159231962">{count,plural, =1{無法匯入 {count} 組密碼}other{無法匯入 {count} 組密碼}}</translation>
 <translation id="7095110968493193530">儲存到 <ph name="EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="7097046145876891318">輕觸網址列的「價格記錄」，即可查看價格變化情形</translation>
-<translation id="7098554251807199977">你與 Gemini 的對話及 <ph name="BEGIN_LINK" />Google Workspace 資料<ph name="END_LINK" />都不會受到審查，也不會用於改良生成式 AI 模型。</translation>
 <translation id="7102005569666697658">下載中… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">「選單」→「設定」→「付款方式」</translation>
 <translation id="7108338896283013870">隱藏</translation>
@@ -2176,7 +2167,7 @@
 <translation id="7719038820139380048">登入即可接收依個人興趣建議的內容。</translation>
 <translation id="7720901330179380635">使用「<ph name="SEARCH_ENGINE" />」進行搜尋</translation>
 <translation id="7724085059277147439">{count,plural, =1{這個項目已儲存到 Google 帳戶 ({email})}other{這些項目已儲存到 Google 帳戶 ({email})}}</translation>
-<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步處理分頁和歷史記錄。</translation>
+<translation id="7729458878441927652">如要查看其他裝置上的分頁，請同步分頁和歷史記錄。</translation>
 <translation id="7730020510075123961">否，合併資料</translation>
 <translation id="7730937523779541003">已套用專注模式新分頁</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />。僅在這部裝置上。</translation>
@@ -2421,7 +2412,6 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8443986842926457191">網址包含的字元數超過 2048 個</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
-<translation id="8461708300275916315">如果你未滿 18 歲：</translation>
 <translation id="8473815223723723001">使用 Gemini 編輯圖片</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474378002946546633">允許通知</translation>
@@ -2501,7 +2491,6 @@
 <translation id="8672733398999596205">全部啟用</translation>
 <translation id="8674716540979958118">你有密碼外洩。</translation>
 <translation id="8679900250380464358">加入閱讀清單</translation>
-<translation id="8680643216091361291">「<ph name="BEGIN_LINK" />保留活動記錄<ph name="END_LINK" />」設定預設為關閉。這項設定關閉時，Google 會保留對話內容 3 天，用於確保 Gemini 系列應用程式正常運作、維護應用程式安全，並根據你的意見回饋修正問題。你可以開啟「保留活動記錄」，協助我們提升 Google AI 品質，使人人受惠。</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="868648444055742370">「<ph name="SITE_DOMAIN" />」無法存取麥克風</translation>
 <translation id="8690752723634292147">確認刪除</translation>
@@ -2559,7 +2548,6 @@
 <translation id="882557203579758546">在網頁中搜尋…</translation>
 <translation id="8829809207373502270">這個密碼金鑰已失效，目前已從 <ph name="WEBSITE" /> 刪除，很快就會從密碼管理工具中刪除。<ph name="BEGIN_LINK" />關於密碼金鑰<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>
-<translation id="8831871601813227635">適用《<ph name="BEGIN_LINK" />條款<ph name="END_LINK" />》、《<ph name="BEGIN_LINK" />韓國定位條款<ph name="END_LINK" />》和《<ph name="BEGIN_LINK" />隱私權聲明<ph name="END_LINK" />》。我們會查看及使用對話內容來改良 Google AI。Gemini 是 AI，有時可能會出錯，包括提供錯誤的人物資訊。部分內容可能不適合所有人。你可以<ph name="BEGIN_LINK" />管理活動記錄<ph name="END_LINK" />，包括位置資訊。<ph name="BEGIN_LINK" />進一步瞭解你的選擇<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">依發布者排序</translation>
 <translation id="884351711508006491">資訊已儲存在裝置上。</translation>
 <translation id="8844136307393039959">你追蹤的產品降價了</translation>

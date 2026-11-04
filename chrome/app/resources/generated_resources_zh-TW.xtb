@@ -933,6 +933,7 @@
 <translation id="1703666494654169921">禁止網站使用虛擬實境裝置或資料</translation>
 <translation id="1704097193565924901">大小寫設定</translation>
 <translation id="1704230497453185209">禁止網站播放音效</translation>
+<translation id="170494114379308411">您與 Gemini 的對話和 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 資料<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />都不會受到審查，也不會用於訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。</translation>
 <translation id="170658918174941828">除了你選擇提交的以上資訊外，你的 Chrome 版本、作業系統版本、Cast 設定、鏡像成效統計資料和通訊頻道診斷記錄也會一併提交。我們會使用你提交的意見回饋來診斷問題並協助改善功能。其中無論是你明確提交還是不慎提交的個人資訊，一律會依隱私權政策規定受到妥善保護。提交意見回饋即表示你同意 Google 將你提供的意見回饋用於改善任何 Google 產品或服務。</translation>
 <translation id="17081583771848899">啟動鍵 + Alt + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="170825127491242914">儲存到雲端儲存空間</translation>
@@ -1158,6 +1159,7 @@
 <translation id="1881445033931614352">鍵盤配置</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{項目}other{# 個項目}}</translation>
 <translation id="188177382966899059">深度搜尋</translation>
+<translation id="1883018549404920116">Gemini 記錄</translation>
 <translation id="1884340228047885921">目前的瀏覽權限設為「部分聯絡人」</translation>
 <translation id="1884705339276589024">調整 Linux 磁碟大小</translation>
 <translation id="1885066963699478692">用於設定政策的 XML 檔案。</translation>
@@ -1174,7 +1176,6 @@
 <translation id="1892453608039100484">1. 請按下方「<ph name="BUTTON_LABEL" />」按鈕
 2. 在 Windows 設定中，點選「<ph name="BUTTON_2" />」</translation>
 <translation id="1895658205118569222">關閉</translation>
-<translation id="1896353439080510710">我們會查看及使用對話內容來改良 Google AI。Gemini 是 AI，可能會出錯。你可以<ph name="BEGIN_LINK_MANAGE_ACTIVITY" />管理活動記錄<ph name="END_LINK_MANAGE_ACTIVITY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">使用高強度密碼</translation>
 <translation id="1897860317037652061">掃描失敗</translation>
 <translation id="1898804291554630487">詢問這個網頁的內容</translation>
@@ -1230,7 +1231,6 @@
 <translation id="1929774028758671973">附近的聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
 <translation id="1931152874660185993">未安裝任何元件。</translation>
 <translation id="1932125073382155239">要備份資料嗎？</translation>
-<translation id="1933070475689690969">Gemini 系列應用程式活動記錄</translation>
 <translation id="1933489278505808700">可以讀取及變更</translation>
 <translation id="1935303383381416800">允許以下網站查看你的位置資訊</translation>
 <translation id="193565226207940518">Support Tool</translation>
@@ -1627,6 +1627,7 @@
 <translation id="2246549592927364792">要取得 Google 提供的圖片說明嗎？</translation>
 <translation id="2247738527273549923">這部裝置是由貴機構管理</translation>
 <translation id="2247870315273396641">預先聆聽語音</translation>
+<translation id="2247960558975094922">Gemini 記錄</translation>
 <translation id="224835741840550119">清理裝置</translation>
 <translation id="2249111429176737533">在分頁視窗中開啟</translation>
 <translation id="2249605167705922988">例如：1-5、8、11-13</translation>
@@ -2256,7 +2257,6 @@
 <translation id="2727712005121231835">實際大小</translation>
 <translation id="2729310339366257582">收合分頁</translation>
 <translation id="2729577602370119849">輕鬆存取及管理印表機</translation>
-<translation id="2729940704980595903">查看及管理 Gemini 系列應用程式活動記錄</translation>
 <translation id="2730550884708194161">關於工作設定檔</translation>
 <translation id="2730596696987224099">自行選擇</translation>
 <translation id="2730647855013151888">加入所有個人資訊</translation>
@@ -2294,7 +2294,6 @@
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
 <translation id="2750020734439919571">更多 Chrome 應用程式設定和權限</translation>
-<translation id="275010360476017464">使用麥克風與 Gemini 對話。與 Gemini 對話時，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)</translation>
 <translation id="2750602041558385535">已封鎖未經驗證的下載內容</translation>
 <translation id="2751320815618312249">和另外 <ph name="NUM" /> 個</translation>
 <translation id="2751454300227269244">將嘴角向右移</translation>
@@ -2684,6 +2683,7 @@
 <translation id="3030772324014024606">編輯</translation>
 <translation id="3030795534674718505">允許使用與你相關的既有資訊</translation>
 <translation id="3030967311408872958">日落到日出</translation>
+<translation id="3030970046240311592">查看及管理 Gemini 記錄</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031532026314193077">使用觸控板和鍵盤按一下滑鼠右鍵</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
@@ -3204,7 +3204,6 @@
 <translation id="343578350365773421">紙張已用盡</translation>
 <translation id="3435896845095436175">啟用</translation>
 <translation id="3436118221454753036">問問 AI 模式</translation>
-<translation id="3437072258256045988">管理 Gemini 系列應用程式活動記錄</translation>
 <translation id="3437397693214267762">查看 Outlook 行事曆、SharePoint 和 OneDrive 檔案</translation>
 <translation id="3437494162908353428">開發人員工具不適用於這個網址。</translation>
 <translation id="3437498061222607130">你已使用 <ph name="USER_EMAIL" /> 帳戶登入 Google 搜尋</translation>
@@ -4137,6 +4136,7 @@
 <translation id="4107793386654579933">選取「<ph name="ACTION_NAME" />」動作的快速鍵</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">取消忽略警告</translation>
+<translation id="4110984310437592352">使用麥克風與 Gemini 對話。與 Gemini 對話時，音訊內容會儲存到 Gemini 記錄 (如果已開啟這項設定)。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
 <translation id="4112282889480354965">擴充功能和技能</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
@@ -4227,6 +4227,7 @@
 <translation id="419427585139779713">一次輸入一個音節</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">繼續先前進度</translation>
+<translation id="4196632390211257612">您與 Gemini 的對話和 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 資料<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />都不會受到審查，也不會用於訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。部分內容可能不適合所有人。</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
@@ -4826,6 +4827,7 @@
 <translation id="4665035764476941598">按這裡即可找回其他分頁</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都將遭到刪除。</translation>
 <translation id="4666472247053585787">在 <ph name="DEVICE_TYPE" /> 上查看手機的通知</translation>
+<translation id="4666483368282673356">管理 Gemini 記錄</translation>
 <translation id="4666911709726371538">更多應用程式</translation>
 <translation id="4668929960204016307">、</translation>
 <translation id="4668936527507421457">只能在 PIN 碼中使用數字</translation>
@@ -5298,6 +5300,7 @@
 <translation id="5012523644916800014">管理密碼和密碼金鑰</translation>
 <translation id="501394389332262641">低電量音效</translation>
 <translation id="5014286001996333986">要取代或建立新群組？</translation>
+<translation id="5014385104640320445">使用麥克風與 Gemini 對話。對話過程中，音訊內容會儲存到 Gemini 記錄 (如果已開啟這項設定)。你的資料不會用於改良生成式 AI 模型。</translation>
 <translation id="5015344424288992913">正在解析 proxy...</translation>
 <translation id="5016305686459575361">連結手機後，你可以：</translation>
 <translation id="5016491575926936899">你可以從電腦傳送訊息、分享網際網路連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -5672,7 +5675,6 @@
 <translation id="5298315677001348398">要繼續操作並允許這個軟體對裝置進行變更嗎？</translation>
 <translation id="5299109548848736476">不追蹤</translation>
 <translation id="5299558715747014286">查看及管理分頁群組</translation>
-<translation id="5300667117276823109">你與 Gemini 的對話及 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 資料<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />都不會受到審查，也不會用於改良生成式 AI 模型。Gemini 是 AI，可能會出錯。</translation>
 <translation id="5301398529256275325">你可以說「請提供這個頁面的重點摘要」，或是提出自己的問題。</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5302032366299160685">請等待檔案開啟後再試一次</translation>
@@ -6825,7 +6827,6 @@
 <translation id="62229737360959019">從對話或已分享分頁開啟的分頁，也會分享給 Gemini。在 Live 模式下，預設只會分享目前的分頁。</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="622537739776246443">系統將會刪除設定檔</translation>
-<translation id="622568138962270592">Gemini 系列應用程式活動記錄</translation>
 <translation id="6226777517901268232">私密金鑰檔案 (選填)</translation>
 <translation id="6227280783235722609">擴充功能</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />：Gemini 已停止處理這項任務</translation>
@@ -7982,6 +7983,7 @@
 <translation id="710224247908684995">某個擴充功能已將安全瀏覽功能關閉</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="7103944802169726298">電腦和投放裝置連上同一個 Wi-Fi 網路</translation>
+<translation id="7104134653119992646">我們會查看及使用對話內容來訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />。Google 會員</translation>
 <translation id="7107609441453408294">透過所有揚聲器播放相同的音訊</translation>
 <translation id="7108338896283013870">隱藏</translation>
@@ -8360,7 +8362,6 @@
 <translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾會顯示在這裡</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後仍會在背景繼續執行。</translation>
-<translation id="7398815534290329738">我們會查看及使用對話內容來改良 Google AI。Gemini 是 AI，可能會出錯。部分內容可能不適合所有人。你可以<ph name="BEGIN_LINK_MANAGE_ACTIVITY" />管理活動記錄<ph name="END_LINK_MANAGE_ACTIVITY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">自訂同步項目</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
@@ -8874,7 +8875,6 @@
 <translation id="7777624210360383048">「<ph name="EXTENSION_NAME" />」的快速鍵 <ph name="SHORTCUT" /></translation>
 <translation id="777852709704682967">開啟書籤管理員(&amp;O)</translation>
 <translation id="7779840061887151693">螢幕</translation>
-<translation id="7780716468751073938">你與 Gemini 的對話及 <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace 資料<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />都不會受到審查，也不會用於改良生成式 AI 模型。Gemini 是 AI，可能會出錯。部分內容可能不適合所有人。</translation>
 <translation id="7780992949171378848">針對使用你資料的方式，向網站傳送「選擇停用」要求</translation>
 <translation id="7782102568078991263">沒有更多來自 Google 的建議</translation>
 <translation id="7782717250816686129">儲存登入畫面中的永久資料，並在工作階段中置入憑證。</translation>
@@ -9013,6 +9013,7 @@
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">片假名</translation>
 <translation id="7904492297081735975">開啟書籤管理員(&amp;O)</translation>
+<translation id="7904508617992122201">我們會查看及使用對話內容來訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。部分內容可能不適合所有人。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">將 Linux 連接埠提供給網路上的其他裝置使用。</translation>
 <translation id="7907312522152480478">如要取得其他裝置上的分頁，請驗證身分並同步處理歷史記錄和分頁。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="7907502219904644296">變更存取權</translation>
@@ -10406,7 +10407,6 @@
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8945508919180478719">錄音室級麥克風</translation>
 <translation id="8946954897220903437">將所有要求收合到網址列</translation>
-<translation id="8946996840522387154">使用麥克風與 Gemini 對話。與 Gemini 對話時，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)。你的資料不會用於改良生成式 AI 模型。</translation>
 <translation id="894763922177556086">良好</translation>
 <translation id="895054485242522631">網站可以使用動作感應器</translation>
 <translation id="8951465597020890363">仍然要結束訪客模式嗎？</translation>

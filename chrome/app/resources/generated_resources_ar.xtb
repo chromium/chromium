@@ -934,6 +934,7 @@
 <translation id="1703666494654169921">عدم السماح للمواقع الإلكترونية باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
 <translation id="1704097193565924901">تحويل الأحرف الأولى إلى أحرف كبيرة</translation>
 <translation id="1704230497453185209">عدم السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
+<translation id="170494114379308411">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />بياناتك على Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ولن تُستخدَم لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً.</translation>
 <translation id="170658918174941828">‏سيتم إرسال إصدار Chrome وإصدار نظام التشغيل وإعدادات Google Cast وإحصاءات أداء النسخ المطابق وسجلات تشخيص قناة الاتصال بالإضافة إلى أي معلومات تختار تضمينها أعلاه. ويتم استخدام ملاحظاتك هذه لتشخيص المشاكل والمساعدة في تحسين الميزة. وستتم حماية أي معلومات شخصية ترسلها، سواء بشكل صريح أو بدون قصد، بموجب سياسات الخصوصية التي نلتزم بها. ومن خلال إرسال هذه الملاحظات، فإنّك توافق على أنّه يجوز لشركة Google استخدام الملاحظات التي تقدّمها لتحسين أي منتج أو خدمة من Google.</translation>
 <translation id="17081583771848899">‏مشغّل التطبيقات + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">التخزين في السحابة الإلكترونية</translation>
@@ -1160,6 +1161,7 @@
 <translation id="1881445033931614352">تنسيق لوحة المفاتيح</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{عنصر واحد}zero{# عناصر}two{عنصران}few{# عناصر}many{# عنصرًا}other{# عنصر}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">‏سجلّ Gemini</translation>
 <translation id="1884340228047885921">الإعداد الحالي لمستوى ظهور الجهاز هو "بعض جهات الاتصال".</translation>
 <translation id="1884705339276589024">‏تغيير حجم قرص نظام التشغيل Linux</translation>
 <translation id="1885066963699478692">‏ملفات XML المُستخدَمة حاليًا لضبط السياسات</translation>
@@ -1176,7 +1178,6 @@
 <translation id="1892453608039100484">‏‫1. انقر على <ph name="BUTTON_LABEL" /> أدناه
 ‫2. انقر على <ph name="BUTTON_2" /> في إعدادات Windows</translation>
 <translation id="1895658205118569222">إيقاف التشغيل</translation>
-<translation id="1896353439080510710">‏يتم استخدام المحادثات ومراجعتها لتحسين ذكاء Google الاصطناعي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. يمكنك <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />إدارة نشاطك<ph name="END_LINK_MANAGE_ACTIVITY" />، بما في ذلك المعلومات حول موقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">ننصحك باستخدام كلمة مرور قوية.</translation>
 <translation id="1897860317037652061">تعذَّر إجراء عملية الفحص.</translation>
 <translation id="1898804291554630487">طرح سؤال حول هذه الصفحة</translation>
@@ -1232,7 +1233,6 @@
 <translation id="1929774028758671973">يمكن لجهات الاتصال المشاركة معك عندما تكون قريبة من جهازك. ستُطلَب منك الموافقة على هذه الطلبات. لن تحتاج إلى الموافقة على مشاركة المحتوى بين الأجهزة التي تم تسجيل الدخول إلى <ph name="USER_EMAIL" /> عليها.</translation>
 <translation id="1931152874660185993">لم يتم تثبيت أي مكونات.</translation>
 <translation id="1932125073382155239">الاحتفاظ بنسخة احتياطية من بياناتك؟</translation>
-<translation id="1933070475689690969">‏نشاطك على "تطبيقات Gemini"</translation>
 <translation id="1933489278505808700">إضافة مسموح لها بقراءة محتوى الموقع الإلكتروني وتغييره</translation>
 <translation id="1935303383381416800">المواقع الإلكترونية التي يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="193565226207940518">أداة الدعم</translation>
@@ -1630,6 +1630,7 @@
 <translation id="2246549592927364792">‏هل تريد الحصول على أوصاف الصور من Google؟</translation>
 <translation id="2247738527273549923">تتولّى مؤسستك إدارة جهازك.</translation>
 <translation id="2247870315273396641">معاينة الصوت</translation>
+<translation id="2247960558975094922">‏سجلّ Gemini</translation>
 <translation id="224835741840550119">تنظيف الجهاز</translation>
 <translation id="2249111429176737533">فتح كنافذة ذات علامة تبويب</translation>
 <translation id="2249605167705922988">مثال: 1-5، 8، 11-13</translation>
@@ -2259,7 +2260,6 @@
 <translation id="2727712005121231835">الحجم الفعلي</translation>
 <translation id="2729310339366257582">تصغير علامات التبويب</translation>
 <translation id="2729577602370119849">يمكنك الوصول إلى الطابعات وإدارتها بسهولة.</translation>
-<translation id="2729940704980595903">‏يتيح هذا الرابط عرض نشاطك على تطبيقات Gemini وإدارته</translation>
 <translation id="2730550884708194161">لمحة عن ملفات العمل</translation>
 <translation id="2730596696987224099">الاختيار الذاتي</translation>
 <translation id="2730647855013151888">تضمين جميع المعلومات الشخصية</translation>
@@ -2297,7 +2297,6 @@
 <translation id="2749836841884031656">‏شريحة SIM</translation>
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
 <translation id="2750020734439919571">‏المزيد من إعدادات وأذونات تطبيق Chrome</translation>
-<translation id="275010360476017464">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم تخزين الصوت في "نشاطك على تطبيقات Gemini" (إذا كان مفعّلاً).</translation>
 <translation id="2750602041558385535">تم حظر عملية تنزيل لم يتم التحقّق منها.</translation>
 <translation id="2751320815618312249">‫+ <ph name="NUM" /></translation>
 <translation id="2751454300227269244">تحريك الفم لليمين</translation>
@@ -2687,6 +2686,7 @@
 <translation id="3030772324014024606">تعديل</translation>
 <translation id="3030795534674718505">المواقع الإلكترونية التي يُسمَح لها باستخدام المعلومات التي تم حفظها بشأنك</translation>
 <translation id="3030967311408872958">من غروب الشمس إلى شروقها</translation>
+<translation id="3030970046240311592">‏يتيح لك هذا الرابط عرض سجلّ Gemini وإدارته</translation>
 <translation id="3031417829280473749">‏الوكيل X</translation>
 <translation id="3031532026314193077">استخدام لوحة اللمس ولوحة المفاتيح للنقر بزر الماوس الأيمن</translation>
 <translation id="3031557471081358569">اختيار العناصر المراد استيرادها:</translation>
@@ -3210,7 +3210,6 @@
 <translation id="343578350365773421">نفد الورق</translation>
 <translation id="3435896845095436175">تفعيل الإضافات</translation>
 <translation id="3436118221454753036">‏اسأل في "وضع AI"</translation>
-<translation id="3437072258256045988">‏إدارة نشاطك على "تطبيقات Gemini"</translation>
 <translation id="3437397693214267762">‏الاطّلاع على ملفات "تقويم Outlook"‏ (Outlook Calendar) وSharePoint وOneDrive</translation>
 <translation id="3437494162908353428">‏لا يُسمح باستخدام "أدوات مطوري البرامج" على عنوان URL هذا.</translation>
 <translation id="3437498061222607130">‏لقد سجّلت الدخول إلى "بحث Google" باستخدام الحساب <ph name="USER_EMAIL" /></translation>
@@ -4142,6 +4141,7 @@
 <translation id="4107793386654579933">اختيار اختصار للإجراء "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">نقل النافذة إلى <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">استعادة التحذير</translation>
+<translation id="4110984310437592352">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم حفظ الصوت في سجلّ Gemini (إذا كان مفعّلاً).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
 <translation id="4112282889480354965">الإضافات والمهارات</translation>
 <translation id="4113743276555482284">كلمة مرور الملف</translation>
@@ -4232,6 +4232,7 @@
 <translation id="419427585139779713">إدخال مقطع تلو الآخر</translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4195814663415092787">المتابعة من حيث توقفت</translation>
+<translation id="4196632390211257612">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />بياناتك على Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ولن تُستخدَم لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. وقد يكون بعض المحتوى غير مناسب للجميع.</translation>
 <translation id="4198268995694216131">المواقع الإلكترونية الإضافية</translation>
 <translation id="4200609364258658652">نس&amp;خ إطار الفيديو</translation>
 <translation id="4200689466366162458">كلمات مخصصة</translation>
@@ -4834,6 +4835,7 @@
 <translation id="4665035764476941598">يُرجى النقر هنا لاستعادة علامات التبويب الأخرى</translation>
 <translation id="4665446389743427678">سيتم حذف جميع البيانات المُخزَّنة من خلال <ph name="SITE" />.</translation>
 <translation id="4666472247053585787">استخدام <ph name="DEVICE_TYPE" /> في الاطّلاع على الإشعارات من هاتفك</translation>
+<translation id="4666483368282673356">‏إدارة سجلّ Gemini</translation>
 <translation id="4666911709726371538">المزيد من التطبيقات</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4668936527507421457">يجب أن يستخدم رقم التعريف الشخصي أرقامًا فقط</translation>
@@ -5307,6 +5309,7 @@
 <translation id="5012523644916800014">إدارة كلمات المرور ومفاتيح المرور</translation>
 <translation id="501394389332262641">صوت انخفاض مستوى شحن البطارية</translation>
 <translation id="5014286001996333986">استبدال المجموعة أو إنشاء مجموعة جديدة؟</translation>
+<translation id="5014385104640320445">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم حفظ الصوت في سجلّ Gemini (إذا كان مفعّلاً). ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="5015344424288992913">إثبات هوية الخادم الوسيط...</translation>
 <translation id="5016305686459575361">من خلال توصيل هاتفك، يمكنك إجراء ما يلي:</translation>
 <translation id="5016491575926936899">يمكنك إرسال رسائل نصية من جهاز الكمبيوتر ومشاركة اتصالك بالإنترنت والرد على إشعارات المحادثات وفتح قفل جهاز <ph name="DEVICE_TYPE" /> باستخدام هاتفك.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -5682,7 +5685,6 @@
 <translation id="5298315677001348398">هل تريد المتابعة والسماح لهذا البرنامج بإجراء تغييرات على جهازك؟</translation>
 <translation id="5299109548848736476">عدم التعقب</translation>
 <translation id="5299558715747014286">عرض مجموعات علامات التبويب وإدارتها</translation>
-<translation id="5300667117276823109">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />بياناتك على Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ولن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي. Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً.</translation>
 <translation id="5301398529256275325">جرِّب طلبات مثل "تلخيص هذه الصفحة" أو اطرح سؤالك الخاص.</translation>
 <translation id="5301954838959518834">حسنًا</translation>
 <translation id="5302032366299160685">يُرجى الانتظار إلى أن يتم فتحه قبل إعادة المحاولة</translation>
@@ -6838,7 +6840,6 @@
 <translation id="62229737360959019">‏تتم أيضًا مشاركة علامات التبويب المفتوحة من محادثة أو المشترَكة مع Gemini. وفي وضع Live، تتم تلقائيًا مشاركة علامة التبويب الحالية فقط.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="622537739776246443">سيتم حذف الملف الشخصي</translation>
-<translation id="622568138962270592">‏نشاطك على تطبيقات Gemini</translation>
 <translation id="6226777517901268232">ملف مفتاح خاص (اختياري)</translation>
 <translation id="6227280783235722609">إضافة</translation>
 <translation id="6228999859806946695">‏"<ph name="TASK_TITLE" />": توقّف Gemini عن تنفيذ هذه المَهمة</translation>
@@ -8003,6 +8004,7 @@
 <translation id="710224247908684995">أوقفت إحدى الإضافات ميزة "التصفُّح الآمن".</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
 <translation id="7103944802169726298">‏جهاز الكمبيوتر الشخصي وجهاز البث متصلان بشبكة Wi-Fi واحدة</translation>
+<translation id="7104134653119992646">‏تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. يمكنك <ph name="BEGIN_LINK_MANAGE_HISTORY" />إدارة سجلّك<ph name="END_LINK_MANAGE_HISTORY" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846">‏‫"<ph name="PROFILE_NAME" />". اشتراك Google</translation>
 <translation id="7107609441453408294">تشغيل الصوت نفسه من خلال جميع مكبِّرات الصوت</translation>
 <translation id="7108338896283013870">إخفاء</translation>
@@ -8383,7 +8385,6 @@
 <translation id="7395774987022469191">الشاشة بكاملها</translation>
 <translation id="7396017167185131589">ستظهر المجلدات المشتركة هنا.</translation>
 <translation id="7396845648024431313">سيتم تشغيل <ph name="APP_NAME" /> عند بدء تشغيل النظام وسيستمر تشغيله في الخلفية حتى بعد إغلاق كل نوافذ <ph name="PRODUCT_NAME" /> الأخرى.</translation>
-<translation id="7398815534290329738">‏يتم استخدام المحادثات ومراجعتها لتحسين ذكاء Google الاصطناعي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. قد يكون بعض المحتوى غير مناسب للجميع. يمكنك <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />إدارة نشاطك<ph name="END_LINK_MANAGE_ACTIVITY" />، بما في ذلك المعلومات حول موقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">تخصيص المزامنة</translation>
 <translation id="7399616692258236448">يتم تلقائيًا منع جميع المواقع الإلكترونية من رصد الموقع الجغرافي باستثناء تلك المواقع التي تسمح لها بذلك.</translation>
 <translation id="7399802613464275309">التحقّق من الأمان</translation>
@@ -8896,7 +8897,6 @@
 <translation id="7777624210360383048">الاختصار <ph name="SHORTCUT" /> للإضافة <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">‫&amp;فتح "مدير الإشارات"</translation>
 <translation id="7779840061887151693">العرض</translation>
-<translation id="7780716468751073938">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />بياناتك على Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ولن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي. Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. وقد يكون بعض المحتوى غير مناسب للجميع.</translation>
 <translation id="7780992949171378848">إرسال طلب إلى المواقع الإلكترونية لإيقاف استخدام بياناتك</translation>
 <translation id="7782102568078991263">‏ليس هناك المزيد من الاقتراحات من Google</translation>
 <translation id="7782717250816686129">يمكنك تخزين البيانات الثابتة في شاشة تسجيل الدخول وإدخال بيانات الاعتماد في الجلسة.</translation>
@@ -9035,6 +9035,7 @@
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">كاتاكانا</translation>
 <translation id="7904492297081735975">فتح "مدير الإشارات"</translation>
+<translation id="7904508617992122201">‏تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. وقد يكون بعض المحتوى غير مناسب للجميع. يمكنك <ph name="BEGIN_LINK_MANAGE_HISTORY" />إدارة سجلّك<ph name="END_LINK_MANAGE_HISTORY" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">‏اجعل منافذ نظام التشغيل Linux متاحة لأجهزة أخرى على الشبكة.</translation>
 <translation id="7907312522152480478">‏للحصول على علامات التبويب من أجهزتك الأخرى، يجب تأكيد هويتك ومزامنة السجلّ وعلامات التبويب. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="7907502219904644296">تغيير إذن الوصول</translation>
@@ -10429,7 +10430,6 @@
 <translation id="8945274638472141382">حجم الرمز</translation>
 <translation id="8945508919180478719">ميكروفون بنمط الاستوديو</translation>
 <translation id="8946954897220903437">تصغير كل الطلبات في شريط العناوين</translation>
-<translation id="8946996840522387154">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم تخزين الصوت في "نشاطك على تطبيقات Gemini" (إذا كان مفعّلاً). ولن تُستخدَم بياناتك لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="894763922177556086">جيدة</translation>
 <translation id="895054485242522631">السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
 <translation id="8951465597020890363">هل تريد الخروج من وضع الضيف على أي حال؟</translation>

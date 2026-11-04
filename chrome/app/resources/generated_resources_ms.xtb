@@ -934,6 +934,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
 <translation id="1704097193565924901">Menggunakan huruf besar</translation>
 <translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
+<translation id="170494114379308411">Perbualan anda dengan Gemini atau <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> anda tidak akan disemak atau digunakan untuk melatih model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan.</translation>
 <translation id="170658918174941828">Versi Chrome, versi sistem pengendalian, tetapan Cast,
     statistik prestasi pencerminan dan log diagnostik saluran komunikasi anda
     akan diserahkan sebagai tambahan kepada sebarang maklumat yang anda pilih
@@ -1168,6 +1169,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1881445033931614352">Reka letak papan kekunci</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}other{# item}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Sejarah Gemini</translation>
 <translation id="1884340228047885921">Tetapan keterlihatan semasa ialah sesetengah kenalan</translation>
 <translation id="1884705339276589024">Ubah saiz cakera Linux</translation>
 <translation id="1885066963699478692">Fail XML yang sedang digunakan untuk menetapkan dasar.</translation>
@@ -1184,7 +1186,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1892453608039100484">1. Klik <ph name="BUTTON_LABEL" /> di bawah
 2. Klik <ph name="BUTTON_2" /> dalam tetapan Windows anda</translation>
 <translation id="1895658205118569222">Tutup</translation>
-<translation id="1896353439080510710">Sembang disemak dan akan digunakan untuk meningkatkan Google AI. Gemini ialah AI dan mungkin melakukan kesilapan. Anda boleh <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />mengurus aktiviti anda<ph name="END_LINK_MANAGE_ACTIVITY" />, termasuk maklumat tentang lokasi anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Gunakan kata laluan yang kukuh</translation>
 <translation id="1897860317037652061">Imbasan gagal</translation>
 <translation id="1898804291554630487">Tanya tentang halaman ini</translation>
@@ -1240,7 +1241,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1929774028758671973">Kenalan boleh berkongsi dengan anda apabila mereka berada berdekatan. Anda akan diminta untuk meluluskan permintaan ini. Anda tidak perlu meluluskan permintaan perkongsian antara peranti yang dilog masuk ke <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Tiada komponen dipasang.</translation>
 <translation id="1932125073382155239">Sandarkan Item Anda?</translation>
-<translation id="1933070475689690969">Aktiviti Apl Gemini</translation>
 <translation id="1933489278505808700">Dibenarkan untuk membaca &amp; menukar</translation>
 <translation id="1935303383381416800">Dibenarkan untuk melihat lokasi anda</translation>
 <translation id="193565226207940518">Alat Sokongan</translation>
@@ -1637,6 +1637,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2246549592927364792">Dapatkan perihalan imej daripada Google?</translation>
 <translation id="2247738527273549923">Peranti anda diurus oleh organisasi anda</translation>
 <translation id="2247870315273396641">Pratonton suara</translation>
+<translation id="2247960558975094922">Sejarah Gemini</translation>
 <translation id="224835741840550119">Bersihkan peranti anda</translation>
 <translation id="2249111429176737533">Buka sebagai tetingkap bertab</translation>
 <translation id="2249605167705922988">cth. 1-5, 8, 11-13</translation>
@@ -2269,7 +2270,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2727712005121231835">Saiz Sebenar</translation>
 <translation id="2729310339366257582">Kuncupkan tab</translation>
 <translation id="2729577602370119849">Akses dan urus pencetak dengan mudah</translation>
-<translation id="2729940704980595903">Lihat dan urus aktiviti Apl Gemini anda</translation>
 <translation id="2730550884708194161">Perihal profil kerja</translation>
 <translation id="2730596696987224099">Pilih Milik Sendiri</translation>
 <translation id="2730647855013151888">Sertakan semua maklumat peribadi</translation>
@@ -2307,7 +2307,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Periksa Tatabahasa Dengan Ejaan</translation>
 <translation id="2750020734439919571">Lagi tetapan dan kebenaran apl Chrome</translation>
-<translation id="275010360476017464">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan).</translation>
 <translation id="2750602041558385535">Muat turun yang tidak disahkan disekat</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> lagi</translation>
 <translation id="2751454300227269244">Gerakkan mulut anda ke kanan</translation>
@@ -2697,6 +2696,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3030772324014024606">Edit</translation>
 <translation id="3030795534674718505">Dibenarkan menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="3030967311408872958">Matahari terbenam hingga terbit</translation>
+<translation id="3030970046240311592">Lihat dan urus sejarah Gemini anda</translation>
 <translation id="3031417829280473749">Ejen X</translation>
 <translation id="3031532026314193077">Gunakan pad sentuh dan papan kekunci untuk klik kanan</translation>
 <translation id="3031557471081358569">Pilih item untuk mengimport:</translation>
@@ -3220,7 +3220,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="343578350365773421">Kehabisan kertas</translation>
 <translation id="3435896845095436175">Dayakan</translation>
 <translation id="3436118221454753036">Tanya Mod AI</translation>
-<translation id="3437072258256045988">Urus aktiviti Apl Gemini anda</translation>
 <translation id="3437397693214267762">Lihat Kalendar Outlook serta fail SharePoint dan OneDrive anda</translation>
 <translation id="3437494162908353428">Alatan Pembangun tidak dibenarkan untuk URL ini.</translation>
 <translation id="3437498061222607130">Anda telah log masuk ke Search dengan akaun <ph name="USER_EMAIL" /> anda</translation>
@@ -4154,6 +4153,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4107793386654579933">Pilih pintasan untuk tindakan <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Alihkan tetingkap ke <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Pulihkan amaran</translation>
+<translation id="4110984310437592352">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Sejarah Gemini (jika dihidupkan).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
 <translation id="4112282889480354965">Sambungan dan Kemahiran</translation>
 <translation id="4113743276555482284">Kata laluan fail</translation>
@@ -4244,6 +4244,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="419427585139779713">Masukkan satu suku kata pada satu-satu masa</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4195814663415092787">Sambung semula dari tempat anda berhenti</translation>
+<translation id="4196632390211257612">Perbualan anda dengan Gemini atau <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> anda tidak akan disemak atau digunakan untuk melatih model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang.</translation>
 <translation id="4198268995694216131">Laman tambahan</translation>
 <translation id="4200609364258658652">Salin bingkai video</translation>
 <translation id="4200689466366162458">Perkataan tersuai</translation>
@@ -4846,6 +4847,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4665035764476941598">Klik di sini untuk mengembalikan tab anda yang lain</translation>
 <translation id="4665446389743427678">Semua data yang disimpan oleh <ph name="SITE" /> akan dipadamkan.</translation>
 <translation id="4666472247053585787">Lihat pemberitahuan daripada telefon pada <ph name="DEVICE_TYPE" /> anda</translation>
+<translation id="4666483368282673356">Urus sejarah Gemini anda</translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN mestilah menggunakan nombor sahaja</translation>
@@ -5319,6 +5321,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5012523644916800014">Urus kata laluan dan kunci laluan</translation>
 <translation id="501394389332262641">Bunyi bateri rendah</translation>
 <translation id="5014286001996333986">Gantikan atau buat kumpulan baharu?</translation>
+<translation id="5014385104640320445">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Sejarah Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="5015344424288992913">Menyelesaikan proksi...</translation>
 <translation id="5016305686459575361">Dengan menyambungkan telefon anda, anda boleh:</translation>
 <translation id="5016491575926936899">Anda boleh menghantar mesej teks daripada komputer, berkongsi sambungan Internet, membalas pemberitahuan perbualan dan membuka kunci <ph name="DEVICE_TYPE" /> menggunakan telefon anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -5694,7 +5697,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5298315677001348398">Anda mahu meneruskan dan membenarkan perisian ini membuat perubahan pada peranti anda?</translation>
 <translation id="5299109548848736476">Jangan Kesan</translation>
 <translation id="5299558715747014286">Lihat dan urus kumpulan tab anda</translation>
-<translation id="5300667117276823109">Perbualan anda dengan Gemini atau <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> anda tidak akan disemak atau digunakan untuk meningkatkan model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan.</translation>
 <translation id="5301398529256275325">Cuba minta perkara seperti “ringkaskan halaman ini” atau pertanyaan anda sendiri.</translation>
 <translation id="5301954838959518834">OK, faham</translation>
 <translation id="5302032366299160685">Tunggu fail dibuka sebelum mencuba lagi</translation>
@@ -6850,7 +6852,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="62229737360959019">Tab yang dibuka daripada sembang atau tab perkongsian turut dikongsi dengan Gemini. Dalam mod Langsung, hanya tab semasa dikongsi secara lalai.</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="622537739776246443">Profil akan dipadamkan</translation>
-<translation id="622568138962270592">Aktiviti Apl Gemini</translation>
 <translation id="6226777517901268232">Fail kunci peribadi (pilihan)</translation>
 <translation id="6227280783235722609">sambungan</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini berhenti mengusahakan tugasan ini</translation>
@@ -8007,6 +8008,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="710224247908684995">Sambungan mematikan Penyemakan Imbas Selamat</translation>
 <translation id="7102832101143475489">Permintaan telah tamat masa</translation>
 <translation id="7103944802169726298">PC dan peranti cast pada rangkaian Wi-Fi yang sama</translation>
+<translation id="7104134653119992646">Sembang disemak dan digunakan untuk melatih model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan. Anda boleh <ph name="BEGIN_LINK_MANAGE_HISTORY" />mengurus sejarah anda<ph name="END_LINK_MANAGE_HISTORY" />, termasuk maklumat tentang lokasi anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Keahlian Google</translation>
 <translation id="7107609441453408294">Mainkan audio yang sama melalui semua pembesar suara</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
@@ -8386,7 +8388,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7395774987022469191">Seluruh skrin</translation>
 <translation id="7396017167185131589">Folder dikongsi akan dipaparkan di sini</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> akan melancarkan permulaan sistem dan terus dijalankan di latar belakang walaupun sebaik sahaja anda menutup semua tetingkap <ph name="PRODUCT_NAME" /> lain.</translation>
-<translation id="7398815534290329738">Sembang disemak dan akan digunakan untuk meningkatkan Google AI. Gemini ialah AI dan mungkin melakukan kesilapan. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Anda boleh <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />mengurus aktiviti anda<ph name="END_LINK_MANAGE_ACTIVITY" />, termasuk maklumat tentang lokasi anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Sesuaikan penyegerakan</translation>
 <translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
@@ -8900,7 +8901,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7777624210360383048">Pintasan <ph name="SHORTCUT" /> untuk <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Buka Pengurus Penanda Halaman</translation>
 <translation id="7779840061887151693">paparan</translation>
-<translation id="7780716468751073938">Perbualan anda dengan Gemini atau <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> anda tidak akan disemak atau digunakan untuk meningkatkan model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang.</translation>
 <translation id="7780992949171378848">Hantar permintaan tarik diri kepada laman berkenaan dengan penggunaan data anda</translation>
 <translation id="7782102568078991263">Tiada lagi cadangan daripada Google</translation>
 <translation id="7782717250816686129">Simpan data berulang pada skrin log masuk dan masukkan bukti kelayakan ke dalam sesi.</translation>
@@ -9039,6 +9039,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7903925330883316394">Utiliti: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Buka pengurus penanda halaman</translation>
+<translation id="7904508617992122201">Sembang disemak dan digunakan untuk melatih model AI generatif. Gemini ialah AI dan mungkin melakukan kesilapan. Sesetengah kandungan mungkin hanya sesuai untuk sesetengah orang. Anda boleh <ph name="BEGIN_LINK_MANAGE_HISTORY" />mengurus sejarah anda<ph name="END_LINK_MANAGE_HISTORY" />, termasuk maklumat tentang lokasi anda. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui perihal pilihan anda dengan lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Jadikan port Linux tersedia kepada peranti lain pada rangkaian anda.</translation>
 <translation id="7907312522152480478">Untuk mendapatkan tab anda daripada peranti anda yang lain, sahkan identiti anda dan segerakkan sejarah serta tab anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="7907502219904644296">Tukar akses</translation>
@@ -10433,7 +10434,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8945274638472141382">Saiz ikon</translation>
 <translation id="8945508919180478719">Mikrofon gaya studio</translation>
 <translation id="8946954897220903437">Kuncupkan semua permintaan dalam bar alamat</translation>
-<translation id="8946996840522387154">Gunakan mikrofon anda untuk bersembang dengan Gemini. Apabila anda bercakap dengan Gemini, audio akan disimpan dalam Aktiviti Apl Gemini (jika dihidupkan). Data anda tidak digunakan untuk meningkatkan model AI generatif.</translation>
 <translation id="894763922177556086">Bagus</translation>
 <translation id="895054485242522631">Tapak boleh menggunakan penderia gerakan</translation>
 <translation id="8951465597020890363">Keluar daripada mod tetamu juga?</translation>

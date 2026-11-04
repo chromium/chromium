@@ -101,6 +101,7 @@
 <translation id="1291506870746876680">Mare-reset sa naka-off ang mga pahintulot sa <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> kapag umalis ka sa site na ito.</translation>
 <translation id="1293491796138057740">Ise-save ang iyong impormasyon sa Google Wallet para sa <ph name="USER_EMAIL" />. Puwede mo itong gamitin sa lahat ng produkto ng Google para mas mabilis na mapunan ang mga form.</translation>
 <translation id="1293556467332435079">Mga File</translation>
+<translation id="1294703224699789269">Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Mga Tuntunin ng Lokasyon sa Korea<ph name="END_LINK" />, at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />. Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong history<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296581780163690620">I-download ang file? (<ph name="FILE_SIZE" />)</translation>
 <translation id="1300812261204968311">Natapos na ang "Maghanap gamit ang AI Mode"!</translation>
@@ -385,6 +386,7 @@
 <translation id="2104436223719117661">Mga trending na paghahanap</translation>
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2117650889962717098">Panatilihing pribado ang iyong pag-browse sa pamamagitan ng paglipat sa Incognito mode</translation>
+<translation id="2119126821484134587">Para makapagbigay ng iniangkop na tulong, sine-share ng Gemini ang ilan sa iyong data (tulad ng mga bahagi ng mga chat mo, lokasyon, at iba pang nauugnay na impormasyon) sa iba pang serbisyo ng Google, tulad ng Maps at Flights. Posibleng gamitin ng mga serbisyong ito ang impormasyong iyon para humusay, kahit na i-delete mo ang iyong history sa Mga Gemini App sa ibang pagkakataon. Matuto pa sa <ph name="BEGIN_LINK" />Hub ng Privacy ng Mga Gemini App<ph name="END_LINK" />.</translation>
 <translation id="2119636449201577317">Buksan sa…</translation>
 <translation id="2119962645034852864">Hindi available ang ilang serbisyo para sa iyong account</translation>
 <translation id="2120553909046681540">In-off ng iyong organisasyon ang pribadong pag-browse.</translation>
@@ -392,7 +394,6 @@
 <translation id="2139867232736819575">Maghanap para sa Text na Kinopya Mo</translation>
 <translation id="2140913838150159519">Mag-pin ng tab</translation>
 <translation id="2147127444698817042">Available lang sa iPhone</translation>
-<translation id="2148326276832455306">Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong aktibidad<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">Mabilis na mag-sign in sa mga site at app gamit ang iyong mga naka-save na password.</translation>
 <translation id="2149968176347646218">Hindi secure ang koneksyon</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
@@ -458,7 +459,6 @@
 <translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Walang proteksyon</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
-<translation id="2340966584724330791">Kinokolekta ng Google ang iyong mga chat at ang sine-share mo sa Gemini (tulad ng mga file, video, screen, at larawan). Kinokolekta rin nito ang iyong feedback, impormasyon mula sa mga website na pinupuntahan mo gamit ang Gemini, paggamit ng produkto, at impormasyon sa lokasyon (kasama ang general na lokasyon ng iyong device, IP address, o mga address ng Tahanan o Trabaho sa Google Account mo).</translation>
 <translation id="2350463587705616331">Sepia na kulay ng background</translation>
 <translation id="2351097562818989364">Na-reset ang iyong mga setting sa pag-translate.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Puwede mong i-save ang iyong password para sa {DOMAIN_ONE} sa Google Account mo na {EMAIL}.}=2{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE} at {DOMAIN_TWO} sa Google Account mo na {EMAIL}.}=3{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}one{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}other{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}}</translation>
@@ -671,6 +671,7 @@
 <translation id="3038136505713492417">I-verify na ikaw ito para magamit ang iyong mga passkey sa device na ito</translation>
 <translation id="3039671569659952257">Tanggalin ang folder</translation>
 <translation id="3041835740069544003">Makaka-detect at mapupunan na ng Chrome ang higit pang form gamit ang mas matalinong pag-unawa sa form. Para magawa ito, puwedeng iproseso ang content ng page at mga URL sa isang pribadong space sa cloud. Pamahalaan sa mga setting.</translation>
+<translation id="3042118633250374317">Ginagamit ng Google ang iyong history para ibigay ang mga serbisyo nito, protektahan ang Google, mga user nito, at ang publiko, at i-develop at pahusayin ang mga serbisyo nito sa tulong ng mga taong tagasuri. Huwag magsama ng impormasyong ayaw mong masuri o magamit.</translation>
 <translation id="3050988301648974170">Buksan ang Password Checkup</translation>
 <translation id="3053332585453689122">Ipapadala sa Ligtas na Pag-browse sa Google ang mga URL na binibisita mo at maliit na sample ng content ng page, mga download, aktibidad ng extension, at impormasyon ng system para suriin kung mapaminsala ang mga ito.</translation>
 <translation id="3055102495753300780">Storage ng impormasyon</translation>
@@ -742,7 +743,6 @@
 <translation id="3265736395246760288">Mas mabilis na mag-sign in mula sa alinman sa iyong mga naka-sync na device.</translation>
 <translation id="3268166994745151153">Ibig sabihin, mawawala ang kasalukuyan mong progress</translation>
 <translation id="3272527697863656322">Kanselahin</translation>
-<translation id="3272955648592358996">Pinapahusay ng iyong data ang Google AI</translation>
 <translation id="3273510436356991673">I-customize ang iyong home screen</translation>
 <translation id="327455571215090823">Mas smart na autofill, pinapanatiling pribado</translation>
 <translation id="3277021493514034324">Nakopya ang address ng site</translation>
@@ -919,7 +919,6 @@
 <translation id="3888863481921783344">Gagamitin ito para ipakita sa iyo ang mga posibleng inimbitahan sa event mo.</translation>
 <translation id="3891414008432200754">Presyo</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
-<translation id="3892695492576181257">Kapag naka-on ito, sine-save ang iyong aktibidad sa Aktibidad sa Mga Gemini App nang 18 buwan, na puwede mong gawing 3 o 36 na buwan. Ginagamit ng Google ang iyong aktibidad para ma-develop at mapahusay ang mga serbisyo nito (kabilang ang mga Gemini model), at maprotektahan ang Google, mga user nito, at ang publiko sa tulong ng mga taong tagasuri. Ang data na sinuri ng mga service provider ay dinidiskonekta sa iyong account at sine-save sa loob ng 3 taon.</translation>
 <translation id="3893858854379998374">Para mag-save ng mga bookmark sa iyong account, i-delete ang mga hindi mo ginagamit na bookmark</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">I-edit ang carousel</translation>
@@ -1114,6 +1113,7 @@
 <translation id="4488754974567924717">Ipapaalam namin sa iyo kung nakompromiso ang mga password mo</translation>
 <translation id="4489536976005181779">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin sa account mo na {email}}one{Naidagdag ang mga page sa iyong listahan ng babasahin sa account mo na {email}}other{Naidagdag ang mga page sa iyong listahan ng babasahin sa account mo na {email}}}</translation>
 <translation id="4493604894403585654">Naka-sign in ka bilang si <ph name="USER_EMAIL" /> Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
+<translation id="4495251723189610737">Ise-save ang mga chat mo sa iyong History sa Gemini. Kasama sa history ang iyong audio, mga video at screenshare sa Gemini Live, kung ano ang sine-share mo sa Gemini (tulad ng mga prompt, <ph name="BEGIN_LINK" />upload<ph name="END_LINK" />, at <ph name="BEGIN_LINK" />screen<ph name="END_LINK" />), mga sagot ng Gemini, mga gawain at tool call, feedback, impormasyon mula sa mga website na binibisita mo gamit ang Gemini, data ng paggamit ng produkto, general na lokasyon ng iyong device, IP address, at mga address ng Tirahan o Trabaho sa Google Account mo. Puwede rin itong magsama ng data mula sa mga app na ikokonekta mo sa Gemini.</translation>
 <translation id="4502423230170890588">Alisin sa device na ito</translation>
 <translation id="4508486880075514067">I-expand sa Full screen</translation>
 <translation id="4508750114462689118">Isara ang promo sa pag-sign in</translation>
@@ -1202,6 +1202,7 @@
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4764612367328936189">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4769198578611055647">Tinutulungan kang i-access ang mga naka-save na passkey sa anumang device</translation>
+<translation id="476946043193006313">Nakakatulong ang iyong aktibidad na sanayin ang generative AI</translation>
 <translation id="4782952780741793211">Code sa pagkumpirma:</translation>
 <translation id="4787847736989526091"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" /></translation>
 <translation id="478808905805139173">Buksan sa Incognito?</translation>
@@ -1218,6 +1219,7 @@
 <translation id="4808744395915275922">Mga Update</translation>
 <translation id="4813345808229079766">Pagkonekta</translation>
 <translation id="4821595350501541683">Isinara ang mga tab at na-delete ang data mula sa pag-browse</translation>
+<translation id="4821645169621230110">Paano ginagamit ang iyong history</translation>
 <translation id="4823322556950229674">Puwede mong pindutin nang matagal para ilipat ang address bar at button na bumalik sa ibaba</translation>
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
@@ -1245,6 +1247,7 @@
 <translation id="4877597489778380935">Ipaalala sa akin sa ibang pagkakataon</translation>
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="4883766694719903356">Grid ng Tab na Incognito</translation>
+<translation id="4884205780547482830">Nakakatulong ang iyong data na sanayin ang generative AI</translation>
 <translation id="4884937942297374058">Naka-off ang pinaigting na proteksyon</translation>
 <translation id="4887391901725877182">Closed Captioning</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
@@ -1430,7 +1433,6 @@
 <translation id="5447973833955560753">Password sa pag-recover</translation>
 <translation id="5448623529214315261">Na-save na larawan <ph name="INDEX" />.</translation>
 <translation id="5452354193031718372">Gumamit ng malakas na password:</translation>
-<translation id="5453088693079603292">Anong aktibidad ang kinokolekta</translation>
 <translation id="5454211924362324495">Para mapigilan ang ibang tao na gamitin ang iyong password, <ph name="BEGIN_LINK" />palitan ito sa <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Idagdag sa paghahanap mo</translation>
 <translation id="5457226814769348910">Buksan sa Offline Version</translation>
@@ -1544,7 +1546,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5801568494490449797">Mga Kagustuhan</translation>
 <translation id="5803566855766646066">Sigurado ka bang gusto mong i-discard ang bagong card na ito?</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
-<translation id="58081802114142635">Pinapahusay ng iyong aktibidad ang Google AI</translation>
 <translation id="5817176759448082654">Password Checkup</translation>
 <translation id="5818161931099046557">I-edit sa Google Account</translation>
 <translation id="5819208479324046259">Pinapamahalaan ng <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -1593,7 +1594,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5971459446352190251">Paghahanap ng QR code</translation>
 <translation id="5971872012779224351">{count,plural, =1{Na-delete ang 1 bookmark}one{Na-delete ang {count} bookmark}other{Na-delete ang {count} na bookmark}}</translation>
 <translation id="5972844218283131174">I-deselect lahat</translation>
-<translation id="597482816780655631">AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. <ph name="BEGIN_LINK" />Matuto tungkol sa iyong mga pagpipilian<ph name="END_LINK" />. Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />.</translation>
 <translation id="5976160379964388480">Iba Pa</translation>
 <translation id="5977976211062815271">Sa device na ito</translation>
 <translation id="5986043348928676121">Susunod</translation>
@@ -1728,6 +1728,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6347953390226388422">{count,plural, =1{Made-delete ang address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}one{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}other{Made-delete ang mga address na ito sa iyong Google Account (<ph name="USER_EMAIL" />) at sa device na ito.}}</translation>
 <translation id="634878792104344809">I-sync ang iyong password, history, at higit pa sa lahat ng device mo</translation>
 <translation id="6350745006329795504">Pamahalaan ang iyong mga device</translation>
+<translation id="6351000590398820964">AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. <ph name="BEGIN_LINK" />Matuto tungkol sa iyong mga pagpipilian<ph name="END_LINK" />. Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" /> at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />.</translation>
 <translation id="6351147166808964033">Pumasok sa tab switcher</translation>
 <translation id="63519665078626091">Para gamitin ang Web Inspector, kumonekta sa Safari sa iyong computer gamit ang isang cable at i-access ang iyong iPad mula sa menu ng Mag-develop. Puwede mong i-enable ang menu ng mag-develop sa seksyong Advanced ng mga setting ng Safari sa iyong computer.</translation>
 <translation id="6354695695659930684">Pinupunan ang password</translation>
@@ -1820,7 +1821,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6609890790934458793">Made-delete ang mga password para sa <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, at <ph name="THIRD_WEBSITE" />. Hindi made-delete ang iyong mga account.</translation>
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6612912757320004438">Payagan ang Mga Notification sa Mga Tab…</translation>
-<translation id="6613372200395638275">Para makapagbigay ng iniangkop na tulong, sine-share ng Gemini ang ilan sa iyong data (tulad ng mga bahagi ng mga chat mo, lokasyon, at iba pang nauugnay na impormasyon) sa iba pang serbisyo ng Google, tulad ng Maps at Flights. Posibleng gamitin ng mga serbisyong ito ang impormasyong iyon para humusay, kahit na i-delete mo ang iyong aktibidad sa Mga Gemini App sa ibang pagkakataon. Matuto pa sa <ph name="BEGIN_LINK" />Hub ng Privacy ng Mga Gemini App<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">I-clear ang text</translation>
 <translation id="6619015782482868078">Aqua na tema</translation>
 <translation id="6620279676667515405">Kanselahin</translation>
@@ -1896,6 +1896,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6830728435402077660">Hindi secure</translation>
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>
+<translation id="6843744036364481304">Anong history ng chat ang sine-save</translation>
 <translation id="6844773122575789617">I-on ang AI Mode</translation>
 <translation id="6851516051005285358">Hilingin ang Site sa Desktop</translation>
 <translation id="6857446173140146664">I-delete ang Background</translation>
@@ -1980,7 +1981,6 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7091023926159231962">{count,plural, =1{Hindi ma-import ang {count} password}one{Hindi ma-import ang {count} password}other{Hindi ma-import ang {count} na password}}</translation>
 <translation id="7095110968493193530">Sa Google Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Sa address bar, i-tap ang history ng presyo para makita ang mga pagbabago sa presyo sa paglipas ng panahon</translation>
-<translation id="7098554251807199977">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK" />data mo sa Google Workspace<ph name="END_LINK" /> para mapahusay ang mga generative AI model.</translation>
 <translation id="7102005569666697658">Dina-download… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Mga Setting → Mga paraan ng pagbabayad</translation>
 <translation id="7108338896283013870">Itago</translation>
@@ -2021,6 +2021,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7223134495231529579">I-save sa Mga Download</translation>
 <translation id="722339453342442311">Suriin ngayon</translation>
 <translation id="7227235818314667565">Pamahalaan ang Pag-share</translation>
+<translation id="7232376892719594461">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK" />data mo sa Google Workspace<ph name="END_LINK" /> para magsanay ng mga generative AI model.</translation>
 <translation id="7233006041370588369">Pumili ng password na pupunan</translation>
 <translation id="7238074332967840767">Kaligtasan</translation>
 <translation id="723874023660911012">Lumipat ng Profile</translation>
@@ -2421,7 +2422,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8439758443371991593">I-hide ang Idagdag sa Listahan ng Babasahin</translation>
 <translation id="8443986842926457191">Mahigit 2048 character ang URL</translation>
 <translation id="8449869326050867919">Na-share ang password</translation>
-<translation id="8461708300275916315">Kung wala ka pang 18 taong gulang</translation>
 <translation id="8473815223723723001">I-edit ang Larawan gamit ang Gemini</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
 <translation id="8474378002946546633">Payagan ang mga notification</translation>
@@ -2501,7 +2501,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8672733398999596205">I-enable Lahat</translation>
 <translation id="8674716540979958118">Mayroon kang mga nakompromisong password.</translation>
 <translation id="8679900250380464358">Idagdag sa Listahan ng Babasahin</translation>
-<translation id="8680643216091361291">Naka-off bilang default ang iyong setting na <ph name="BEGIN_LINK" />Panatilihin ang Aktibidad<ph name="END_LINK" />. Kapag naka-off ito, sine-save ng Google ang mga chat mo sa loob ng 3 araw. Ginagamit nito ang mga iyon para paganahin nang tama ang Mga Gemini App, tumulong na panatilihing ligtas ang mga iyon, at gamitin ang iyong feedback para mag-ayos ng mga problema. Puwede mong i-on ang Panatilihin ang Aktibidad para tumulong na pahusayin ang Google AI para sa lahat.</translation>
 <translation id="8680787084697685621">Wala sa panahon ang mga detalye sa pag-sign-in sa account.</translation>
 <translation id="868648444055742370">Hindi pinapayagan ang "<ph name="SITE_DOMAIN" />" na i-access ang iyong mikropono</translation>
 <translation id="8690752723634292147">Kumpirmahin ang pag-delete</translation>
@@ -2533,7 +2532,9 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8746155870861185046">Ibahagi ang naka-highlight</translation>
 <translation id="8748678031495824833">Buksan ang mga AI tool sa page</translation>
 <translation id="8750037785291841318">Makikita mo rito ang iyong mga tab</translation>
+<translation id="8751126814549746156">Awtomatikong nade-delete ang iyong history pagkalipas ng 18 buwan. Puwede mong baguhin ang panahong ito sa Mga Setting. Ihihiwalay sa iyong account ang mga chat na sinuri ng mga service provider at papanatilihin ang mga ito nang hanggang 3 taon. Puwede mong <ph name="BEGIN_LINK" />i-off<ph name="END_LINK" /> ang iyong setting ng History anumang oras.</translation>
 <translation id="8756969031206844760">I-update ang password?</translation>
+<translation id="8762190205387442931">Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong history<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="8763613688786959833">Pumunta sa Huling Tab</translation>
 <translation id="8766790350274092814">Made-delete ang mga password para sa <ph name="WEBSITE" /> at <ph name="SECOND_WEBSITE" />. Hindi made-delete ang iyong mga account.</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>
@@ -2559,7 +2560,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="882557203579758546">Hanapin sa Page…</translation>
 <translation id="8829809207373502270">Hindi na gumagana ang passkey na ito. Na-delete ito sa <ph name="WEBSITE" /> at malapit na itong i-delete dito. <ph name="BEGIN_LINK" />Tungkol sa mga passkey<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Isara ang lahat ng hindi aktibo</translation>
-<translation id="8831871601813227635">Nalalapat ang aming <ph name="BEGIN_LINK" />Mga Tuntunin<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Mga Tuntunin ng Lokasyon sa Korea<ph name="END_LINK" />, at <ph name="BEGIN_LINK" />Notification ng Privacy<ph name="END_LINK" />. Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. AI ang Gemini at puwede itong magkamali, kasama ang tungkol sa mga tao. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK" />pamahalaan ang iyong aktibidad<ph name="END_LINK" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Pagbukud-bukurin ayon sa publisher</translation>
 <translation id="884351711508006491">Sine-save sa iyong device ang impormasyon mo.</translation>
 <translation id="8844136307393039959">Pagbaba ng presyo sa iyong tracked product</translation>
@@ -2580,6 +2580,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8893208530912252670">Mga Video</translation>
 <translation id="890009681345348416">40+ password ang na-autofill</translation>
 <translation id="8900845556227858314">Browser App</translation>
+<translation id="8903042868629070803">Kung 18 taong gulang pataas ka, ginagamit din ng Google ang iyong history para <ph name="BEGIN_LINK" />magsanay ng mga generative AI model<ph name="END_LINK" />. Puwede mo itong <ph name="BEGIN_LINK" />i-off<ph name="END_LINK" /> para sa mga chat sa hinaharap anumang oras.</translation>
 <translation id="890565330728586731">Bumalik</translation>
 <translation id="8907722425137681851">Hanapin sa page…</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>

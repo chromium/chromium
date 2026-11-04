@@ -934,6 +934,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1703666494654169921">Usiruhusu tovuti zitumie data au vifaa vya uhalisia pepe</translation>
 <translation id="1704097193565924901">Weka herufi ya kwanza iwe kubwa</translation>
 <translation id="1704230497453185209">Usiruhusu tovuti zicheze sauti</translation>
+<translation id="170494114379308411">Mazungumzo yako na Gemini wala <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data yako kwenye Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> havitahakikiwa au kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea.</translation>
 <translation id="170658918174941828">Toleo lako la Chrome, toleo la mfumo wa uendeshaji, mipangilio ya Google Cast,
     takwimu za utendaji wa kipengele cha kuakisi na kumbukumbu za uchunguzi wa vituo vya
     mawasiliano zitawasilishwa pamoja na maelezo yoyote utakayochagua
@@ -1167,6 +1168,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1881445033931614352">Muundo wa kibodi</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Kipengee}other{Vipengee #}}</translation>
 <translation id="188177382966899059">Utafutaji wa Kina</translation>
+<translation id="1883018549404920116">Historia ya Gemini</translation>
 <translation id="1884340228047885921">Mipangilio ya sasa ya uonekanaji ni 'baadhi ya anwani'</translation>
 <translation id="1884705339276589024">Badilisha ukubwa wa diski ya Linux</translation>
 <translation id="1885066963699478692">Faili za XML zinazotumika kupangilia sera.</translation>
@@ -1183,7 +1185,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1892453608039100484">1. Bofya <ph name="BUTTON_LABEL" /> hapa chini
 2. Bofya <ph name="BUTTON_2" /> katika mipangilio yako ya Windows</translation>
 <translation id="1895658205118569222">Funga</translation>
-<translation id="1896353439080510710">Magumzo huhakikiwa na kutumiwa kuboresha Akiliunde ya Google. Gemini ni AI na inaweza kukosea. Unaweza <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />kudhibiti shughuli zako<ph name="END_LINK_MANAGE_ACTIVITY" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Tumia nenosiri thabiti</translation>
 <translation id="1897860317037652061">Imeshindwa kuchanganua</translation>
 <translation id="1898804291554630487">Uliza swali kuhusu ukurasa huu</translation>
@@ -1239,7 +1240,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1929774028758671973">Unaowasiliana nao wanaweza kushiriki nawe wakiwa karibu. Utaombwa uidhinishe maombi haya. Kwa vifaa ambavyo umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />, hutahitaji kuidhinisha kushirikiwa kwa maudhui kutoka kwenye vifaa hivyo.</translation>
 <translation id="1931152874660185993">Hakuna vipengele vilivyosakinishwa.</translation>
 <translation id="1932125073382155239">Ungependa Kuhifadhi Nakala za Vipengee Vyako?</translation>
-<translation id="1933070475689690969">Shughuli kwenye Programu za Gemini</translation>
 <translation id="1933489278505808700">Kiendelezi kimeruhusiwa kusoma na kubadilisha</translation>
 <translation id="1935303383381416800">Zinazoruhusiwa kuona mahali ulipo</translation>
 <translation id="193565226207940518">Zana ya Usaidizi</translation>
@@ -1636,6 +1636,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2246549592927364792">Ungependa kupata ufafanuzi wa picha kutoka Google?</translation>
 <translation id="2247738527273549923">Kifaa chako kinadhibitiwa na shirika lako</translation>
 <translation id="2247870315273396641">Sehemu ya kukagua sauti</translation>
+<translation id="2247960558975094922">Historia ya Gemini</translation>
 <translation id="224835741840550119">Safisha kifaa chako</translation>
 <translation id="2249111429176737533">Fungua kama dirisha lenye vichupo</translation>
 <translation id="2249605167705922988">k.m. 1-5, 8, 11-13</translation>
@@ -2268,7 +2269,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2727712005121231835">Ukubwa Halisi</translation>
 <translation id="2729310339366257582">Kunja vichupo</translation>
 <translation id="2729577602370119849">Fikia na udhibiti printa kwa urahisi</translation>
-<translation id="2729940704980595903">Angalia na udhibiti shughuli zako kwenye Programu za Gemini</translation>
 <translation id="2730550884708194161">Kuhusu wasifu wa kazini</translation>
 <translation id="2730596696987224099">Chagua Lako Mwenyewe</translation>
 <translation id="2730647855013151888">Jumuisha taarifa binafsi zote</translation>
@@ -2306,7 +2306,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kagua Sarufi Pamoja na Tahajia</translation>
 <translation id="2750020734439919571">Mipangilio na ruhusa zaidi za programu ya Chrome</translation>
-<translation id="275010360476017464">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Shughuli kwenye Programu za Gemini (ikiwa umeiwasha).</translation>
 <translation id="2750602041558385535">Kipakuliwa ambacho hakijathibitishwa kimezuiwa</translation>
 <translation id="2751320815618312249">na <ph name="NUM" /> zaidi</translation>
 <translation id="2751454300227269244">Sogeza kinywa chako kulia</translation>
@@ -2696,6 +2695,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3030772324014024606">Hariri</translation>
 <translation id="3030795534674718505">Imeruhusiwa kutumia taarifa ambazo imehifadhi kukuhusu</translation>
 <translation id="3030967311408872958">Machweo hadi mapambazuko</translation>
+<translation id="3030970046240311592">Angalia na udhibiti historia yako kwenye Gemini</translation>
 <translation id="3031417829280473749">Wakala X</translation>
 <translation id="3031532026314193077">Tumia padi ya kugusa na kibodi ili kubofya kulia</translation>
 <translation id="3031557471081358569">Chagua vitu vya kuleta:</translation>
@@ -3219,7 +3219,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="343578350365773421">Karatasi zimeisha</translation>
 <translation id="3435896845095436175">Washa</translation>
 <translation id="3436118221454753036">Uliza Modi ya AI</translation>
-<translation id="3437072258256045988">Dhibiti shughuli zako kwenye Programu za Gemini</translation>
 <translation id="3437397693214267762">Angalia Kalenda yako ya Outlook na faili za SharePoint na OneDrive</translation>
 <translation id="3437494162908353428">Zana za Wasanidi Programu haziruhusiwi kwenye URL hii.</translation>
 <translation id="3437498061222607130">Umeingia katika huduma ya Tafuta ukitumia akaunti yako ya <ph name="USER_EMAIL" /></translation>
@@ -4151,6 +4150,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4107793386654579933">Chagua njia ya mkato kwa kitendo cha <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Hamisha dirisha hadi kwa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Rejesha onyo</translation>
+<translation id="4110984310437592352">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Historia kwenye Gemini (ikiwa umeiwasha).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (haipo mtandaoni)</translation>
 <translation id="4112282889480354965">Viendelezi na Ujuzi</translation>
 <translation id="4113743276555482284">Nenosiri la faili</translation>
@@ -4241,6 +4241,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="419427585139779713">Weka silabi moja kwa wakati mmoja</translation>
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4195814663415092787">Endelea kutoka ulipoachia</translation>
+<translation id="4196632390211257612">Mazungumzo yako na Gemini wala <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data yako kwenye Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> havitahakikiwa au kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Huenda baadhi ya maudhui yasifae kwa kila mtu.</translation>
 <translation id="4198268995694216131">Tovuti za ziada</translation>
 <translation id="4200609364258658652">Nakili fremu ya video</translation>
 <translation id="4200689466366162458">Maneno maalum</translation>
@@ -4843,6 +4844,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4665035764476941598">Bofya hapa ili urejeshe vichupo vyako vingine</translation>
 <translation id="4665446389743427678">Hatua hii itafuta data yote inayohifadhiwa na <ph name="SITE" />.</translation>
 <translation id="4666472247053585787">Angalia arifa za simu yako kupitia kwenye <ph name="DEVICE_TYPE" /> yako</translation>
+<translation id="4666483368282673356">Dhibiti historia yako kwenye Gemini</translation>
 <translation id="4666911709726371538">Programu zaidi</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Ni lazima PIN iwe namba pekee</translation>
@@ -5316,6 +5318,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5012523644916800014">Dhibiti manenosiri na funguo za siri</translation>
 <translation id="501394389332262641">Sauti ya kuashiria kuwa chaji ya betri imepungua</translation>
 <translation id="5014286001996333986">Ungependa kubadilisha au kuanzisha kikundi kipya?</translation>
+<translation id="5014385104640320445">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Historia kwenye Gemini (ikiwa umeiwasha). Data yako haitumiwi kuboresha mifumo ya AI zalishi.</translation>
 <translation id="5015344424288992913">Inatafuta seva mbadala...</translation>
 <translation id="5016305686459575361">Kwa kuunganisha simu yako, unaweza:</translation>
 <translation id="5016491575926936899">Unaweza kutuma SMS kwenye kompyuta yako, kushiriki muunganisho wako wa intaneti, kujibu arifa za mazungumzo na kufungua <ph name="DEVICE_TYPE" /> yako kwa kutumia simu yako.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -5691,7 +5694,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5298315677001348398">Je, ungependa kuendelea na kuruhusu programu hii ifanye mabadiliko kwenye kifaa chako?</translation>
 <translation id="5299109548848736476">Usifuatilie</translation>
 <translation id="5299558715747014286">Angalia na udhibiti vikundi vya vichupo vyako</translation>
-<translation id="5300667117276823109">Mazungumzo yako na Gemini wala <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data yako kwenye Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> havitahakikiwa au kutumiwa kuboresha mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea.</translation>
 <translation id="5301398529256275325">Jaribu kuuliza mambo kama vile "andaa muhtasari wa ukurasa huu" au uulize swali lako mwenyewe.</translation>
 <translation id="5301954838959518834">Sawa, nimeelewa</translation>
 <translation id="5302032366299160685">Subiri faili ifunguliwe kabla ujaribu tena</translation>
@@ -6847,7 +6849,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="62229737360959019">Vichupo ulivyofungua kwenye gumzo au kichupo cha pamoja pia vinaruhusiwa kufikiwa na Gemini. Katika hali ya Live, kichupo unachotumia sasa pekee ndicho kinachoruhusiwa kufikiwa kwa chaguomsingi.</translation>
 <translation id="622484624075952240">Chini</translation>
 <translation id="622537739776246443">Wasifu utafutwa</translation>
-<translation id="622568138962270592">Shughuli kwenye Programu za Gemini</translation>
 <translation id="6226777517901268232">Faili ya ufunguo binafsi (hiari)</translation>
 <translation id="6227280783235722609">kiendelezi</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini imeacha kushughulikia jukumu hili</translation>
@@ -7944,7 +7945,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7055152154916055070">Imezuiwa kuelekeza kwingine:</translation>
 <translation id="7056418393177503237">{0,plural, =1{Dirisha fiche}other{Umefungua madirisha # fiche}}</translation>
 <translation id="7056526158851679338">Na Ukague Vifaa</translation>
-<translation id="7057567173736333354">Elezea picha yako</translation>
+<translation id="7057567173736333354">Eleza unavyotaka picha iwe</translation>
 <translation id="7058024590501568315">Mtandao uliofichwa</translation>
 <translation id="7058325593717863084">Tuma Maoni Kuhusu Ukanda wa Vichupo</translation>
 <translation id="7059858479264779982">Weka kwenye uzinduzi otomatiki</translation>
@@ -8004,6 +8005,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="710224247908684995">Kiendelezi kimezima kipengele cha Kuvinjari Salama</translation>
 <translation id="7102832101143475489">Muda wa ombi umekwisha</translation>
 <translation id="7103944802169726298">Kompyuta binafsi na kifaa kinachotuma maudhui vimeunganishwa kwenye mtandao mmoja wa Wi-Fi</translation>
+<translation id="7104134653119992646">Magumzo huhakikiwa na kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Unaweza <ph name="BEGIN_LINK_MANAGE_HISTORY" />kudhibiti historia yako<ph name="END_LINK_MANAGE_HISTORY" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Uanachama wa Google</translation>
 <translation id="7107609441453408294">Cheza aina moja ya maudhui ya sauti kwenye spika zote</translation>
 <translation id="7108338896283013870">Ficha</translation>
@@ -8383,7 +8385,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7395774987022469191">Skrini nzima</translation>
 <translation id="7396017167185131589">Folda za pamoja zitaonekana hapa</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> itazinduliwa katika kuanzishwa kwa mfumo na iendelee kuendeshwa katika mandharinyuma hata pindi tu umefunga madirisha mengine <ph name="PRODUCT_NAME" /> yote.</translation>
-<translation id="7398815534290329738">Magumzo huhakikiwa na kutumiwa kuboresha Akiliunde ya Google. Gemini ni AI na inaweza kukosea. Huenda baadhi ya maudhui yasifae kwa kila mtu. Unaweza <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />kudhibiti shughuli zako<ph name="END_LINK_MANAGE_ACTIVITY" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Weka mapendeleo ya usawazishaji</translation>
 <translation id="7399616692258236448">Maombi ya kufikia data ya mahali ulipo yanazuiwa kiotomatiki kwenye tovuti zote isipokuwa zile unazoruhusu</translation>
 <translation id="7399802613464275309">Angalizo la Usalama</translation>
@@ -8897,7 +8898,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7777624210360383048">Njia ya mkato ya <ph name="SHORTCUT" /> ya <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Fungua Kidhibiti cha Alamisho</translation>
 <translation id="7779840061887151693">skrini</translation>
-<translation id="7780716468751073938">Mazungumzo yako na Gemini wala <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data yako kwenye Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> havitahakikiwa au kutumiwa kuboresha mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Huenda baadhi ya maudhui yasifae kwa kila mtu.</translation>
 <translation id="7780992949171378848">Tuma ombi la kujiondoa kwenye tovuti kuhusu matumizi ya data yako</translation>
 <translation id="7782102568078991263">Hakuna mapendekezo zaidi kutoka katika Google</translation>
 <translation id="7782717250816686129">Ihifadhi data inayotumika mara kwa mara kwenye skrini ya kuingia na iweke maelezo ya kitambulisho katika kipindi.</translation>
@@ -9036,6 +9036,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7903925330883316394">Kitumizi: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Kikatakana</translation>
 <translation id="7904492297081735975">&amp;Fungua kidhibiti cha alamisho</translation>
+<translation id="7904508617992122201">Magumzo huhakikiwa na kutumiwa kufunza mifumo ya AI zalishi. Gemini ni AI na inaweza kukosea. Huenda baadhi ya maudhui yasifae kwa kila mtu. Unaweza <ph name="BEGIN_LINK_MANAGE_HISTORY" />kudhibiti historia yako<ph name="END_LINK_MANAGE_HISTORY" />, ikiwa ni pamoja na maelezo kuhusu mahali ulipo. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi kuhusu chaguo ulizo nazo<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Fanya milango ya Linux ipatikane kwenye vifaa vingine katika mtandao wako.</translation>
 <translation id="7907312522152480478">Ili upate vichupo vyako kwenye vifaa vyako vingine, thibitisha kuwa ni wewe kisha usawazishe historia na vichupo vyako. Unaweza kuacha kusawazisha wakati wowote katika mipangilio. Google inaweza kuwekea mapendeleo huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="7907502219904644296">Badilisha ufikiaji</translation>
@@ -10429,7 +10430,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="8945274638472141382">Ukubwa wa aikoni</translation>
 <translation id="8945508919180478719">Maikrofoni yenye madoido ya studio</translation>
 <translation id="8946954897220903437">Kunja maombi yote kwenye sehemu ya anwani</translation>
-<translation id="8946996840522387154">Tumia maikrofoni yako kupiga gumzo na Gemini. Unapozungumza na Gemini, sauti huhifadhiwa katika Shughuli kwenye Programu za Gemini (ikiwa umeiwasha). Data yako haitumiwi kuboresha mifumo ya AI zalishi.</translation>
 <translation id="894763922177556086">Mzuri</translation>
 <translation id="895054485242522631">Tovuti zinaweza kutumia vitambuzi vya mwendo</translation>
 <translation id="8951465597020890363">Ungependa kufunga matumizi ya wageni?</translation>

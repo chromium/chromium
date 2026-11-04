@@ -934,6 +934,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
 <translation id="1704097193565924901">Gjør forbokstavene store</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
+<translation id="170494114379308411">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />dataene dine i Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> gjennomgås eller brukes til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil.</translation>
 <translation id="170658918174941828">Chrome-versjonen, operativsystemversjonen, Cast-innstillingene,
     statistikken for speilingsytelsen og diagnostikkloggene for kommunikasjonskanalen
     din sendes inn, i tillegg til eventuell informasjon du velger å ta med ovenfor. Denne tilbakemeldingen brukes for å diagnostisere problemer og
@@ -1165,6 +1166,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1881445033931614352">Tastaturoppsett</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# elementer}}</translation>
 <translation id="188177382966899059">Dypsøk</translation>
+<translation id="1883018549404920116">Gemini-logg</translation>
 <translation id="1884340228047885921">Den gjeldende synlighetsinnstillingen er noen kontakter</translation>
 <translation id="1884705339276589024">Endre størrelsen på Linux-disken</translation>
 <translation id="1885066963699478692">XML-filene som brukes til å angi reglene.</translation>
@@ -1181,7 +1183,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1892453608039100484">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
 2. Klikk på <ph name="BUTTON_2" /> i Windows-innstillingene</translation>
 <translation id="1895658205118569222">Avslutning</translation>
-<translation id="1896353439080510710">Chatter gjennomgås og brukes for å forbedre AI fra Google. Gemini er AI og kan gjøre feil. Du kan <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />administrere aktiviteten din<ph name="END_LINK_MANAGE_ACTIVITY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Bruk dette sterke passordet</translation>
 <translation id="1897860317037652061">Skanningen mislyktes</translation>
 <translation id="1898804291554630487">Spør om denne siden</translation>
@@ -1237,7 +1238,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1929774028758671973">Kontakter kan dele med deg når de er i nærheten. Du blir bedt om å godkjenne disse forespørslene. Du trenger ikke å godkjenne deling mellom enheter som er logget på <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Ingen komponenter er installert.</translation>
 <translation id="1932125073382155239">Vil du sikkerhetskopiere tingene dine?</translation>
-<translation id="1933070475689690969">Aktivitet i Gemini-apper</translation>
 <translation id="1933489278505808700">Har tillatelse til å lese og endre</translation>
 <translation id="1935303383381416800">Nettsteder som har lov til å se posisjonen din</translation>
 <translation id="193565226207940518">Støtteverktøy</translation>
@@ -1634,6 +1634,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2246549592927364792">Vil du få bildebeskrivelser fra Google?</translation>
 <translation id="2247738527273549923">Enheten administreres av organisasjonen din</translation>
 <translation id="2247870315273396641">Stemmeforhåndsvisning</translation>
+<translation id="2247960558975094922">Gemini-logg</translation>
 <translation id="224835741840550119">Rens enheten din</translation>
 <translation id="2249111429176737533">Åpne som vindu med faner</translation>
 <translation id="2249605167705922988">f.eks. 1–5, 8, 11–13</translation>
@@ -2266,7 +2267,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2727712005121231835">Faktisk størrelse</translation>
 <translation id="2729310339366257582">Skjul faner</translation>
 <translation id="2729577602370119849">Bruk og administrer skrivere enkelt</translation>
-<translation id="2729940704980595903">Se og administrer aktiviteten din i Gemini-apper</translation>
 <translation id="2730550884708194161">Om jobbprofiler</translation>
 <translation id="2730596696987224099">Velg ditt eget</translation>
 <translation id="2730647855013151888">Inkluder alle personopplysninger</translation>
@@ -2304,7 +2304,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2749836841884031656">SIM-kort</translation>
 <translation id="2749881179542288782">Kontroller·grammatikk·og·staving</translation>
 <translation id="2750020734439919571">Flere innstillinger og tillatelser for Chrome-apper</translation>
-<translation id="275010360476017464">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på).</translation>
 <translation id="2750602041558385535">En ubekreftet nedlasting ble blokkert</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> til</translation>
 <translation id="2751454300227269244">Beveg munnen til høyre</translation>
@@ -2694,6 +2693,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3030772324014024606">Rediger</translation>
 <translation id="3030795534674718505">Nettsteder som kan bruke informasjon de har lagret om deg</translation>
 <translation id="3030967311408872958">Solnedgang til soloppgang</translation>
+<translation id="3030970046240311592">Se og administrer Gemini-loggen</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Bruk styreflaten og tastaturet til å høyreklikke</translation>
 <translation id="3031557471081358569">Velg elementer som skal importeres:</translation>
@@ -3217,7 +3217,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="343578350365773421">Tom for papir</translation>
 <translation id="3435896845095436175">Aktivér</translation>
 <translation id="3436118221454753036">Spør AI-modus</translation>
-<translation id="3437072258256045988">Administrer aktiviteten din i Gemini-apper</translation>
 <translation id="3437397693214267762">Se Outlook-kalenderen og SharePoint- og OneDrive-filene dine</translation>
 <translation id="3437494162908353428">Utviklerverktøy er ikke tillatt for denne nettadressen.</translation>
 <translation id="3437498061222607130">Du er logget på Søk med kontoen <ph name="USER_EMAIL" /></translation>
@@ -4149,6 +4148,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4107793386654579933">Velg en hurtigtast for <ph name="ACTION_NAME" />-handlingen</translation>
 <translation id="4109135793348361820">Flytt vinduet til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Gjenopprett varsel</translation>
+<translation id="4110984310437592352">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Gemini-loggen (hvis den er slått på).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (uten nett)</translation>
 <translation id="4112282889480354965">Utvidelser og ferdigheter</translation>
 <translation id="4113743276555482284">Filpassord</translation>
@@ -4239,6 +4239,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="419427585139779713">Skriv én stavelse om gangen</translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4195814663415092787">Fortsett der du slapp</translation>
+<translation id="4196632390211257612">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />dataene dine i Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> gjennomgås eller brukes til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle.</translation>
 <translation id="4198268995694216131">Flere nettsteder</translation>
 <translation id="4200609364258658652">Kop&amp;ier videorammen</translation>
 <translation id="4200689466366162458">Egendefinerte ord</translation>
@@ -4841,6 +4842,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4665035764476941598">Klikk her for å få tilbake de andre fanene</translation>
 <translation id="4665446389743427678">Alle data som lagres av <ph name="SITE" />, blir slettet.</translation>
 <translation id="4666472247053585787">Se varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Administrer Gemini-loggen</translation>
 <translation id="4666911709726371538">Flere apper</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN-koden kan bare inneholde tall</translation>
@@ -5313,6 +5315,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5012523644916800014">Administrer passord og passnøkler</translation>
 <translation id="501394389332262641">Lyd for lavt batterinivå</translation>
 <translation id="5014286001996333986">Vil du erstatte eller opprette en ny gruppe?</translation>
+<translation id="5014385104640320445">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Gemini-loggen (hvis den er slått på). Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="5015344424288992913">Konverterer proxy ...</translation>
 <translation id="5016305686459575361">Når du kobler til telefonen, kan du gjøre følgende:</translation>
 <translation id="5016491575926936899">Du kan sende tekstmeldinger fra datamaskinen, dele internettilkoblingen, svare på samtalevarsler og låse opp <ph name="DEVICE_TYPE" /> med telefonen.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -5687,7 +5690,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5298315677001348398">Vil du fortsette og tillate at denne programvaren gjør endringer på enheten din?</translation>
 <translation id="5299109548848736476">Ingen sporing</translation>
 <translation id="5299558715747014286">se og administrere fanegruppene dine</translation>
-<translation id="5300667117276823109">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />dataene dine i Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> gjennomgås eller brukes til å forbedre generative AI-modeller. Gemini er AI og kan gjøre feil.</translation>
 <translation id="5301398529256275325">Prøv å spørre om ting som «oppsummer denne siden» eller stille spørsmål selv.</translation>
 <translation id="5301954838959518834">Greit</translation>
 <translation id="5302032366299160685">Vent til filen er åpnet, før du prøver igjen</translation>
@@ -6842,7 +6844,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="62229737360959019">Faner som åpnes fra en chat eller en delt fane, deles også med Gemini. I Live-modus er det bare den aktive fanen som deles som standard.</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="622537739776246443">Profilen blir slettet</translation>
-<translation id="622568138962270592">Aktivitet i Gemini-apper</translation>
 <translation id="6226777517901268232">Privat nøkkelfil (valgfritt)</translation>
 <translation id="6227280783235722609">utvidelse</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini har sluttet å jobbe med denne oppgaven</translation>
@@ -7999,6 +8000,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="710224247908684995">En utvidelse har slått av Safe Browsing</translation>
 <translation id="7102832101143475489">Forespørselen ble tidsavbrutt</translation>
 <translation id="7103944802169726298">PC og Cast-enhet på samme wifi-nettverk</translation>
+<translation id="7104134653119992646">Chatter blir gjennomgått og brukt til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-abonnement</translation>
 <translation id="7107609441453408294">Spill av den samme lyden på alle høyttalere</translation>
 <translation id="7108338896283013870">Skjul</translation>
@@ -8378,7 +8380,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7395774987022469191">Hele skjermen</translation>
 <translation id="7396017167185131589">Delte mapper vises her</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> starter ved systemoppstart, og fortsetter å kjøre i bakgrunnen selv når du har lukket alle andre vinduer for <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Chatter gjennomgås og brukes for å forbedre AI fra Google. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle. Du kan <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />administrere aktiviteten din<ph name="END_LINK_MANAGE_ACTIVITY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Tilpass synkronisering</translation>
 <translation id="7399616692258236448">Posisjonsforespørsler blokkeres automatisk for alle nettsteder unntatt dem du tillater</translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
@@ -8892,7 +8893,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7777624210360383048">Snarvei <ph name="SHORTCUT" /> for <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Åpne bokmerkebehandlingen</translation>
 <translation id="7779840061887151693">skjerm</translation>
-<translation id="7780716468751073938">Verken samtalene dine med Gemini eller <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />dataene dine i Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> gjennomgås eller brukes til å forbedre generative AI-modeller. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle.</translation>
 <translation id="7780992949171378848">Send en forespørsel om bortvelging til nettsteder angående bruk av dataene dine</translation>
 <translation id="7782102568078991263">Google har ikke flere forslag</translation>
 <translation id="7782717250816686129">Lagre vedvarende data på påloggingsskjermen, og bruk legitimasjon i økten.</translation>
@@ -9031,6 +9031,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Åpne bokmerkebehandlingen</translation>
+<translation id="7904508617992122201">Chatter blir gjennomgått og brukt til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Gjør Linux-porter tilgjengelige for andre enheter på nettverket.</translation>
 <translation id="7907312522152480478">For å få fanene dine fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="7907502219904644296">Endre tilgangen</translation>
@@ -10424,7 +10425,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8945274638472141382">Ikonstørrelse</translation>
 <translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="8946954897220903437">Skjul alle forespørsler i adressefeltet</translation>
-<translation id="8946996840522387154">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på). Dataene dine brukes ikke til å forbedre generative AI-modeller.</translation>
 <translation id="894763922177556086">God</translation>
 <translation id="895054485242522631">Nettsteder kan bruke bevegelsessensorer</translation>
 <translation id="8951465597020890363">Vil du avslutte gjestemodus likevel?</translation>

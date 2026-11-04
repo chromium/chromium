@@ -933,6 +933,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
 <translation id="1704097193565924901">En majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à faire jouer des sons</translation>
+<translation id="170494114379308411">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper.</translation>
 <translation id="170658918174941828">Nous recevrons la version de Chrome, la version de votre système d'exploitation, les paramètres de diffusion, les statistiques des performances de duplication d'écran et les journaux des diagnostics de votre canal de communication ainsi que toute autre information que vous choisirez d'inclure ci-dessus. Vos commentaires nous servent à diagnostiquer les problèmes et à améliorer la fonctionnalité. Les renseignements personnels que vous nous envoyez, de manière explicite ou accessoire, sont protégés conformément à nos politiques de confidentialité. En nous envoyant ces commentaires, vous acceptez que Google les utilise pour améliorer ses produits ou ses services.</translation>
 <translation id="17081583771848899">lanceur+alt+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Enregistrer dans l'espace de stockage infonuagique</translation>
@@ -1158,6 +1159,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1881445033931614352">Disposition du clavier</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Élément}one{# élément}other{# éléments}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Historique Gemini</translation>
 <translation id="1884340228047885921">Le paramètre de visibilité actuelle est réglé à quelques contacts</translation>
 <translation id="1884705339276589024">Redimensionner le disque Linux</translation>
 <translation id="1885066963699478692">Fichiers XML qui sont utilisés pour définir les politiques.</translation>
@@ -1174,7 +1176,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1892453608039100484">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous.
 2. Cliquez sur <ph name="BUTTON_2" /> dans vos paramètres Windows.</translation>
 <translation id="1895658205118569222">Arrêt</translation>
-<translation id="1896353439080510710">Les clavardages sont examinés et utilisés pour améliorer l'IA de Google. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />gérer votre activité<ph name="END_LINK_MANAGE_ACTIVITY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Utiliser un mot de passe fort</translation>
 <translation id="1897860317037652061">Échec de l'analyse</translation>
 <translation id="1898804291554630487">Poser une question à propos de cette page</translation>
@@ -1230,7 +1231,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1929774028758671973">Vos contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Vous serez invité à approuver ces requêtes. Vous n'aurez pas besoin d'approuver le partage entre les appareils connectés au compte <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Aucun composant installé</translation>
 <translation id="1932125073382155239">Sauvegarder vos données?</translation>
-<translation id="1933070475689690969">Activité dans les applis Gemini</translation>
 <translation id="1933489278505808700">Autorisé à lire et à modifier</translation>
 <translation id="1935303383381416800">Autorisés à consulter votre position</translation>
 <translation id="193565226207940518">Outil d'assistance</translation>
@@ -1627,6 +1627,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2246549592927364792">Télécharger les descriptions d'image de Google?</translation>
 <translation id="2247738527273549923">Votre appareil est géré par votre organisation</translation>
 <translation id="2247870315273396641">Aperçu de la voix</translation>
+<translation id="2247960558975094922">Historique Gemini</translation>
 <translation id="224835741840550119">Désinfectez votre appareil</translation>
 <translation id="2249111429176737533">Ouvrir en tant que fenêtre à onglets</translation>
 <translation id="2249605167705922988">par exemple : 1-5, 8 ou 11-13</translation>
@@ -2257,7 +2258,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2727712005121231835">Taille réelle</translation>
 <translation id="2729310339366257582">Réduire les onglets</translation>
 <translation id="2729577602370119849">Accédez aux imprimantes et gérez-les facilement</translation>
-<translation id="2729940704980595903">Affichez et gérez votre activité dans les applis Gemini</translation>
 <translation id="2730550884708194161">À propos des profils professionnels</translation>
 <translation id="2730596696987224099">Choisir votre propre mot de passe</translation>
 <translation id="2730647855013151888">Inclure tous les renseignements personnels</translation>
@@ -2295,7 +2295,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2749836841884031656">Carte SIM</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
 <translation id="2750020734439919571">Plus de paramètres et d'autorisations pour l'application Chrome</translation>
-<translation id="275010360476017464">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'activité dans les applis Gemini (si ce paramètre est activé).</translation>
 <translation id="2750602041558385535">Téléchargement non vérifié bloqué</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> autres</translation>
 <translation id="2751454300227269244">Bougez votre bouche vers la droite</translation>
@@ -2686,6 +2685,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3030772324014024606">Édition</translation>
 <translation id="3030795534674718505">Autorisé à utiliser les informations enregistrées à votre sujet</translation>
 <translation id="3030967311408872958">Du coucher au lever du soleil</translation>
+<translation id="3030970046240311592">Affichez et gérez votre historique Gemini</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Utilisez le pavé tactile et le clavier pour faire un clic droit</translation>
 <translation id="3031557471081358569">Sélectionnez les éléments à importer :</translation>
@@ -3209,7 +3209,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="343578350365773421">À court de papier</translation>
 <translation id="3435896845095436175">Activer</translation>
 <translation id="3436118221454753036">Mode Demander à l'IA</translation>
-<translation id="3437072258256045988">Gérez votre activité dans les applis Gemini</translation>
 <translation id="3437397693214267762">Consultez votre calendrier Outlook et vos fichiers SharePoint et OneDrive</translation>
 <translation id="3437494162908353428">Les outils pour les développeurs ne sont pas autorisés pour cette URL.</translation>
 <translation id="3437498061222607130">Vous êtes connecté à Recherche avec votre compte <ph name="USER_EMAIL" /></translation>
@@ -4143,6 +4142,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4107793386654579933">Sélectionner un raccourci pour l'action <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers le bureau de <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
+<translation id="4110984310437592352">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'historique Gemini (si ce paramètre est activé).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors ligne)</translation>
 <translation id="4112282889480354965">Extensions et compétences</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
@@ -4233,6 +4233,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="419427585139779713">Entrer une syllabe à la fois</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre vos activités en ligne là où vous vous étiez arrêté</translation>
+<translation id="4196632390211257612">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde.</translation>
 <translation id="4198268995694216131">Sites supplémentaires</translation>
 <translation id="4200609364258658652">Cop&amp;amp;ier l'image vidéo</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
@@ -4835,6 +4836,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4665035764476941598">Cliquez ici pour faire réapparaître vos autres onglets</translation>
 <translation id="4665446389743427678">Toutes les données stockées par <ph name="SITE" /> seront supprimées.</translation>
 <translation id="4666472247053585787">Voir les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Gérez votre historique Gemini</translation>
 <translation id="4666911709726371538">Autres applications</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Le NIP doit être composé uniquement de chiffres</translation>
@@ -5307,6 +5309,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5012523644916800014">Gérer les mots de passe et les clés d'accès</translation>
 <translation id="501394389332262641">Son de pile faible</translation>
 <translation id="5014286001996333986">Remplacer ou créer un groupe?</translation>
+<translation id="5014385104640320445">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'historique Gemini (si ce paramètre est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="5015344424288992913">Résolution du mandataire...</translation>
 <translation id="5016305686459575361">En connectant votre téléphone, vous pouvez :</translation>
 <translation id="5016491575926936899">Vous pouvez envoyer des messages texte à partir de votre ordinateur, partager votre connexion Internet, répondre à une notification de conversation et déverrouiller votre <ph name="DEVICE_TYPE" /> au moyen de votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -5681,7 +5684,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5298315677001348398">Voulez-vous continuer et autoriser ce logiciel à apporter des modifications à votre appareil?</translation>
 <translation id="5299109548848736476">Ne pas faire le suivi</translation>
 <translation id="5299558715747014286">Afficher et gérer vos groupes d'onglets</translation>
-<translation id="5300667117276823109">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour améliorer les modèles d'IA générative. Gemini est une IA et peut se tromper.</translation>
 <translation id="5301398529256275325">Essayez de poser des questions comme « résumer cette page » ou votre propre question.</translation>
 <translation id="5301954838959518834">J'ai compris.</translation>
 <translation id="5302032366299160685">Attendez que le fichier s'ouvre avant de réessayer</translation>
@@ -6837,7 +6839,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="62229737360959019">Les onglets ouverts à partir d'un clavardage ou d'un onglet partagé sont également partagés avec Gemini. En mode Live, seul l'onglet actuel est partagé par défaut.</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="622537739776246443">Ce profil sera supprimé</translation>
-<translation id="622568138962270592">Activité dans les applis Gemini</translation>
 <translation id="6226777517901268232">Fichier de clé privée (facultatif)</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" /> : Gemini a cessé de travailler sur cette tâche</translation>
@@ -7995,6 +7996,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="710224247908684995">Une extension a désactivé la Navigation sécurisée</translation>
 <translation id="7102832101143475489">Le délai de traitement de la demande a expiré</translation>
 <translation id="7103944802169726298">Le PC et l'appareil de diffusion sont connectés au même réseau Wi-Fi</translation>
+<translation id="7104134653119992646">Les clavardages sont examinés et utilisés pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Abonnement à Google</translation>
 <translation id="7107609441453408294">Faire jouer le même audio sur tous les haut-parleurs</translation>
 <translation id="7108338896283013870">Masquer</translation>
@@ -8374,7 +8376,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7395774987022469191">Plein écran</translation>
 <translation id="7396017167185131589">Les dossiers partagés s'afficheront ici</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sera lancé au démarrage du système et continuera de s'exécuter en arrière-plan, même si toutes les fenêtres de <ph name="PRODUCT_NAME" /> sont fermées.</translation>
-<translation id="7398815534290329738">Les clavardages sont examinés et utilisés pour améliorer l'IA de Google. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde. Vous pouvez <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />gérer votre activité<ph name="END_LINK_MANAGE_ACTIVITY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Personnaliser la synchronisation</translation>
 <translation id="7399616692258236448">Les demandes de localisation sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="7399802613464275309">Vérification de sécurité</translation>
@@ -8888,7 +8889,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7777624210360383048">Raccourci <ph name="SHORTCUT" /> pour <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Ouvrir le gestionnaire de favoris</translation>
 <translation id="7779840061887151693">affichage</translation>
-<translation id="7780716468751073938">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />données Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ne seront pas examinées ni utilisées pour améliorer les modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde.</translation>
 <translation id="7780992949171378848">Envoyer une demande de désinscription aux sites concernant l'utilisation de vos données</translation>
 <translation id="7782102568078991263">Aucune autre suggestion de Google</translation>
 <translation id="7782717250816686129">Stocker les données persistantes à l'écran de connexion et insérer les authentifiants dans la session.</translation>
@@ -9027,6 +9027,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">katakana</translation>
 <translation id="7904492297081735975">&amp;Ouvrir le gestionnaire de favoris</translation>
+<translation id="7904508617992122201">Les clavardages sont examinés et utilisés pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Rendez les ports Linux accessibles aux autres appareils sur votre réseau.</translation>
 <translation id="7907312522152480478">Pour obtenir vos onglets à partir de vos autres appareils, confirmez qu'il s'agit bien de vous et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907502219904644296">Modifier l'accès</translation>
@@ -10419,7 +10420,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8945274638472141382">Taille de l'icône</translation>
 <translation id="8945508919180478719">Micro de type studio</translation>
 <translation id="8946954897220903437">Réduire toutes les requêtes dans la barre d'adresse</translation>
-<translation id="8946996840522387154">Utilisez votre microphone pour discuter avec Gemini. Lorsque vous parlez à Gemini, le contenu audio est stocké dans l'activité dans les applis Gemini (si ce paramètre est activé). Vos données ne sont pas utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="894763922177556086">Bonne</translation>
 <translation id="895054485242522631">Les sites peuvent utiliser des capteurs de mouvement</translation>
 <translation id="8951465597020890363">Quitter le mode Invité quand même?</translation>

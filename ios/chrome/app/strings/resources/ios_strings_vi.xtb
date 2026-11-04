@@ -392,7 +392,6 @@
 <translation id="2139867232736819575">Tìm kiếm văn bản bạn đã sao chép</translation>
 <translation id="2140913838150159519">Ghim thẻ</translation>
 <translation id="2147127444698817042">Chỉ có trên iPhone</translation>
-<translation id="2148326276832455306">Các cuộc trò chuyện được đánh giá và dùng để cải thiện AI của Google. Bạn có thể <ph name="BEGIN_LINK" />quản lý hoạt động của mình<ph name="END_LINK" />, bao gồm cả thông tin về vị trí của bạn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về những lựa chọn dành cho bạn<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Đăng nhập nhanh vào các trang web và ứng dụng bằng mật khẩu đã lưu.</translation>
 <translation id="2149968176347646218">Đường kết nối không an toàn</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
@@ -458,7 +457,6 @@
 <translation id="2327445548174191329">Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2330607597130465898">Chế độ không bảo vệ</translation>
 <translation id="233375395665273385">Xoá và đăng xuất</translation>
-<translation id="2340966584724330791">Google thu thập nội dung trò chuyện của bạn và những gì bạn chia sẻ với Gemini (như tệp, video, màn hình và ảnh). Gemini cũng thu thập ý kiến phản hồi của bạn, thông tin trên các trang web bạn truy cập qua Gemini, việc sử dụng sản phẩm và thông tin vị trí (bao gồm cả vị trí khái quát của thiết bị, địa chỉ IP, địa chỉ nhà riêng hoặc địa chỉ nơi làm việc của bạn trong Tài khoản Google).</translation>
 <translation id="2350463587705616331">Màu nền nâu đỏ</translation>
 <translation id="2351097562818989364">Đã đặt lại cài đặt dịch của bạn.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Bạn có thể lưu mật khẩu cho {DOMAIN_ONE} vào Tài khoản Google {EMAIL} của bạn.}=2{Bạn có thể lưu mật khẩu cho {DOMAIN_ONE} và {DOMAIN_TWO} vào Tài khoản Google {EMAIL} của bạn.}=3{Bạn có thể lưu mật khẩu cho {DOMAIN_ONE}, {DOMAIN_TWO} và {OTHER_DOMAINS_COUNT} khác vào Tài khoản Google {EMAIL} của bạn.}other{Bạn có thể lưu mật khẩu cho {DOMAIN_ONE}, {DOMAIN_TWO} và {OTHER_DOMAINS_COUNT} khác vào Tài khoản Google {EMAIL} của bạn.}}</translation>
@@ -742,7 +740,6 @@
 <translation id="3265736395246760288">Đăng nhập nhanh hơn trên mọi thiết bị đã đồng bộ hoá.</translation>
 <translation id="3268166994745151153">Nếu chuyển đổi hồ sơ, bạn sẽ mất tiến trình hiện tại</translation>
 <translation id="3272527697863656322">Huỷ</translation>
-<translation id="3272955648592358996">Dữ liệu của bạn giúp cải thiện AI của Google</translation>
 <translation id="3273510436356991673">Tuỳ chỉnh màn hình chính của bạn</translation>
 <translation id="327455571215090823">Tính năng tự động điền thông minh hơn, đảm bảo riêng tư</translation>
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
@@ -919,7 +916,6 @@
 <translation id="3888863481921783344">Thông tin này sẽ được dùng để cho bạn biết những người bạn có thể mời tham gia sự kiện.</translation>
 <translation id="3891414008432200754">Giá</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
-<translation id="3892695492576181257">Khi chế độ này bật, dữ liệu hoạt động của bạn sẽ được lưu trong phần Hoạt động trên Các ứng dụng Gemini trong 18 tháng. Bạn có thể thay đổi thành 3 hoặc 36 tháng. Google sử dụng dữ liệu hoạt động của bạn để phát triển và cải thiện các dịch vụ của Google (bao gồm cả những mô hình Gemini), cũng như để bảo vệ Google, người dùng và cộng đồng với sự trợ giúp của những nhân viên đánh giá. Những dữ liệu mà các nhà cung cấp dịch vụ xem xét sẽ không liên kết với tài khoản của bạn và được lưu trong 3 năm.</translation>
 <translation id="3893858854379998374">Để lưu dấu trang vào tài khoản của bạn, hãy xoá những dấu trang không dùng đến</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3904270275864974753">Chỉnh sửa băng chuyền</translation>
@@ -1430,7 +1426,6 @@
 <translation id="5447973833955560753">Mật khẩu khôi phục</translation>
 <translation id="5448623529214315261">Ảnh đã lưu <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Dùng mật khẩu mạnh:</translation>
-<translation id="5453088693079603292">Dữ liệu hoạt động được thu thập</translation>
 <translation id="5454211924362324495">Để ngăn người khác sử dụng mật khẩu của bạn, <ph name="BEGIN_LINK" />hãy đổi mật khẩu trên <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Thêm vào nội dung tìm kiếm</translation>
 <translation id="5457226814769348910">Mở phiên bản ngoại tuyến</translation>
@@ -1544,7 +1539,6 @@
 <translation id="5801568494490449797">Tùy chọn</translation>
 <translation id="5803566855766646066">Bạn có chắc chắn muốn hủy thẻ mới này không?</translation>
 <translation id="5804241973901381774">Quyền</translation>
-<translation id="58081802114142635">Hoạt động của bạn giúp cải thiện AI của Google</translation>
 <translation id="5817176759448082654">Kiểm tra mật khẩu</translation>
 <translation id="5818161931099046557">Chỉnh sửa trong Tài khoản Google</translation>
 <translation id="5819208479324046259">Do <ph name="MANAGER" /> quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1593,7 +1587,6 @@
 <translation id="5971459446352190251">Tìm kiếm mã QR</translation>
 <translation id="5971872012779224351">{count,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá {count} dấu trang}}</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
-<translation id="597482816780655631">Gemini là AI và có thể mắc sai sót, kể cả sai sót về con người. Một số nội dung có thể không phù hợp với một số người. Các cuộc trò chuyện được đánh giá và dùng để cải thiện AI của Google. <ph name="BEGIN_LINK" />Tìm hiểu về các lựa chọn dành cho bạn<ph name="END_LINK" />. Áp dụng <ph name="BEGIN_LINK" />Điều khoản<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư<ph name="END_LINK" /> của chúng tôi.</translation>
 <translation id="5976160379964388480">Khác</translation>
 <translation id="5977976211062815271">Trên thiết bị này</translation>
 <translation id="5986043348928676121">Tiếp theo</translation>
@@ -1820,7 +1813,6 @@
 <translation id="6609890790934458793">Mật khẩu của <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> và <ph name="THIRD_WEBSITE" /> sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6612912757320004438">Cho phép nhận thông báo về thẻ…</translation>
-<translation id="6613372200395638275">Để cung cấp sự trợ giúp phù hợp, Gemini sẽ chia sẻ một số dữ liệu của bạn (như một phần nội dung trò chuyện, vị trí và các thông tin liên quan khác) với các dịch vụ khác của Google, chẳng hạn như Maps và Chuyến bay. Các dịch vụ này có thể dùng những thông tin đó để cải tiến tính năng, kể cả khi sau đó bạn xoá hoạt động của mình trên Các ứng dụng Gemini. Vui lòng tìm hiểu thêm trong <ph name="BEGIN_LINK" />Trung tâm quyền riêng tư của Các ứng dụng Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Xoá văn bản</translation>
 <translation id="6619015782482868078">Giao diện màu xanh lơ</translation>
 <translation id="6620279676667515405">Huỷ</translation>
@@ -1980,7 +1972,6 @@
 <translation id="7091023926159231962">{count,plural, =1{Không nhập được {count} mật khẩu}other{Không nhập được {count} mật khẩu}}</translation>
 <translation id="7095110968493193530">Vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Trong thanh địa chỉ, hãy nhấn vào giá theo thời gian để xem các mức giá thay đổi theo thời gian</translation>
-<translation id="7098554251807199977">Các cuộc trò chuyện của bạn với Gemini cũng như <ph name="BEGIN_LINK" />dữ liệu của bạn trên Google Workspace<ph name="END_LINK" /> sẽ không được xem xét hoặc sử dụng để cải thiện các mô hình AI tạo sinh.</translation>
 <translation id="7102005569666697658">Đang tải xuống… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Trình đơn → Cài đặt → Phương thức thanh toán</translation>
 <translation id="7108338896283013870">Ẩn</translation>
@@ -2421,7 +2412,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8439758443371991593">Ẩn tuỳ chọn Thêm vào danh sách đọc</translation>
 <translation id="8443986842926457191">URL dài hơn 2048 ký tự.</translation>
 <translation id="8449869326050867919">Đã chia sẻ mật khẩu</translation>
-<translation id="8461708300275916315">Nếu bạn dưới 18 tuổi</translation>
 <translation id="8473815223723723001">Chỉnh sửa hình ảnh bằng Gemini</translation>
 <translation id="8473863474539038330">Địa chỉ và thông tin khác</translation>
 <translation id="8474378002946546633">Cho phép thông báo</translation>
@@ -2501,7 +2491,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8672733398999596205">Bật tất cả</translation>
 <translation id="8674716540979958118">Bạn có mật khẩu bị lộ.</translation>
 <translation id="8679900250380464358">Thêm vào Danh sách đọc</translation>
-<translation id="8680643216091361291">Chế độ <ph name="BEGIN_LINK" />Lưu giữ hoạt động<ph name="END_LINK" /> đang tắt theo mặc định. Khi chế độ này tắt, Google sẽ lưu nội dung trò chuyện của bạn trong 3 ngày. Google sử dụng nội dung trò chuyện nêu trên để đảm bảo Các ứng dụng Gemini hoạt động đúng cách, bảo vệ an toàn cho các ứng dụng này và sử dụng ý kiến phản hồi của bạn để khắc phục sự cố. Bạn có thể bật chế độ Lưu giữ hoạt động để giúp cải thiện AI của Google cho mọi người.</translation>
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
 <translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào micrô</translation>
 <translation id="8690752723634292147">Xác nhận xoá</translation>
@@ -2559,7 +2548,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="882557203579758546">Tìm trong trang…</translation>
 <translation id="8829809207373502270">Khoá truy cập này không còn hoạt động nữa. Khoá đã bị xoá khỏi <ph name="WEBSITE" /> và sẽ sớm bị xoá khỏi đây. <ph name="BEGIN_LINK" />Giới thiệu về khoá truy cập<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Đóng tất cả các thẻ không hoạt động</translation>
-<translation id="8831871601813227635">Áp dụng <ph name="BEGIN_LINK" />Điều khoản<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Điều khoản dịch vụ vị trí ở Hàn Quốc<ph name="END_LINK" /> và <ph name="BEGIN_LINK" />Thông báo về quyền riêng tư<ph name="END_LINK" /> của chúng tôi. Các cuộc trò chuyện được đánh giá và dùng để cải thiện AI của Google. Gemini là AI và có thể mắc sai sót, kể cả sai sót về con người. Một số nội dung có thể không phù hợp với một số người. Bạn có thể <ph name="BEGIN_LINK" />quản lý dữ liệu hoạt động của mình<ph name="END_LINK" />, bao gồm cả thông tin về vị trí của bạn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các lựa chọn dành cho bạn<ph name="END_LINK" /></translation>
 <translation id="8837654851594567190">Sắp xếp theo nhà xuất bản</translation>
 <translation id="884351711508006491">Thông tin sẽ được lưu vào thiết bị của bạn.</translation>
 <translation id="8844136307393039959">Sản phẩm bạn theo dõi đang giảm giá</translation>

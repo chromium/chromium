@@ -842,7 +842,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8394720698884623075">Les URL sont vérifiées d'après une liste de sites dangereux stockée dans Chrome</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{La mise à jour de Chrome est terminée. Elle sera disponible dès que vous relancerez le navigateur. Vos onglets actuels s'ouvriront alors de nouveau. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="8403038600646341038">Logo Chrome sur un écran d'ordinateur.</translation>
-<translation id="8406687098231754303">Vous pouvez utiliser le bouton "Recherche Google dans le panneau latéral" situé dans la barre d'outils pour rouvrir la Recherche Google dans le panneau latéral afin de poser des questions pendant que vous naviguez</translation>
+<translation id="8406687098231754303">Vous pouvez utiliser le bouton "Recherche Google dans le panneau latéral" situé dans la barre d'outils pour rouvrir la Recherche Google dans le panneau latéral afin de poser des questions pendant que vous naviguez</translation>
 <translation id="8418845734693287262">Impossible de synchroniser vos données dans Chrome OS, car les informations de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="842386925677997438">Outils de sécurité de Chrome</translation>
 <translation id="8425765582779547329">Pour te protéger en ligne avec les choix de ton parent, connecte-toi à Chrome</translation>
@@ -862,7 +862,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8533056045953418157">Définir Google Chrome comme visionneuse de PDF par défaut</translation>
 <translation id="854593887324189900">Rechercher cette image avec Google Lens</translation>
 <translation id="8555465886620020932">Erreur du service : <ph name="SERVICE_ERROR" />.</translation>
-<translation id="8564408666201523086">Opération réussie ! Avec la Recherche Google dans le panneau latéral, vous pouvez désormais facilement poser des questions tout en naviguant</translation>
+<translation id="8564408666201523086">Bravo ! Avec la Recherche Google dans le panneau latéral, vous pouvez désormais facilement poser des questions tout en naviguant</translation>
 <translation id="856656450041460113">Rechercher dans la liste des langues</translation>
 <translation id="8568499811906962479">Vous pouvez épingler le panneau de la Recherche Google pour poser des questions pendant que vous naviguez</translation>
 <translation id="8575047640889685742">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>

@@ -529,6 +529,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5940385492829620908">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chrome.</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
+<translation id="5944731887996253728">Chrome sa zaktualizuje, keď sa nebude používať obrazovka</translation>
 <translation id="5947104538377036631">Odkaz na Chrome</translation>
 <translation id="5960071705175224773">Vaše nastavenia zmenila neznáma aplikácia</translation>
 <translation id="5980111191913430208">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chrome odporúča ich inštaláciu iba zo zdroja <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
@@ -831,6 +832,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8367950957770994118">Rýchle otvárajte Gemini v Chrome, kedykoľvek ho potrebujete</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="8370748943308169953">QR kód na prihlásenie do Chromu ako <ph name="USER_NAME" /></translation>
+<translation id="8374507495134902558"><ph name="IMPORTANT_UPDATE" /> je pripravená. Prehliadač Chrome môžete teraz znova spustiť alebo nastaviť, aby sa aktualizoval, keď bude obrazovka nabudúce zapnutá a nepoužívaná <ph name="IDLE_DURATION" />.</translation>
 <translation id="8376752431516546391">Bočný panel Vyhľadávania Google</translation>
 <translation id="8377158135256176353">Prepnúť Gemini v Chrome Canary</translation>
 <translation id="8380754585531979907">Pomocou klávesnice môžete prechádzať medzi Gemini v Chrome a otvorenou kartou.</translation>
@@ -874,6 +876,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome.</translation>
 <translation id="8689408573494410517">Tlačidlo pre Vyhľadávanie Google na bočnom paneli, ktoré sa nachádza na paneli s nástrojmi, má novú ikonu. Kliknutím naň môžete pri prehliadaní pomocou Vyhľadávania Google na bočnom paneli klásť otázky.</translation>
+<translation id="8699232386626916686">Aktualizujte si Chrome kvôli zachovaniu zabezpečenia</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8712767363896337380">Takmer aktualizované. Dokončite aktualizáciu opätovným spustením Chromu.</translation>
 <translation id="8717554232729236539">Používateľ <ph name="EXISTING_USER" /> je už prihlásený. Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do Chromu profile účtom <ph name="USER_EMAIL_ADDRESS" />. Získate aj čitateľský zoznam a ďalšie položky zo zariadenia <ph name="DEVICE" />.</translation>

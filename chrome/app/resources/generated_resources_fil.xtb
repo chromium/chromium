@@ -934,6 +934,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1703666494654169921">Huwag payagan ang mga site na gumamit ng mga virtual reality device o data</translation>
 <translation id="1704097193565924901">I-capitalize</translation>
 <translation id="1704230497453185209">Huwag payagan ang mga site na mag-play ng tunog</translation>
+<translation id="170494114379308411">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data mo sa Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> para magsanay ng mga generative AI model. AI ang Gemini at puwede itong magkamali.</translation>
 <translation id="170658918174941828">Ang iyong bersyon ng Chrome, bersyon ng operating system, mga setting ng Cast,
     stats ng performance ng pag-mirror, at diagnostic log ng channel ng pakikipag-ugnayan
     ay isusumite bilang karagdagan sa anumang impormasyong pinili mong
@@ -1168,6 +1169,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1881445033931614352">Layout ng keyboard</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Item}one{# item}other{# na item}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">History sa Gemini</translation>
 <translation id="1884340228047885921">Ang kasalukuyang setting ng visibility ay ilang contact</translation>
 <translation id="1884705339276589024">I-resize ang Linux disk</translation>
 <translation id="1885066963699478692">Mga XML file na ginagamit para itakda ang mga patakaran.</translation>
@@ -1184,7 +1186,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1892453608039100484">1. I-click ang <ph name="BUTTON_LABEL" /> sa ibaba
 2. I-click ang <ph name="BUTTON_2" /> sa iyong mga setting ng Windows</translation>
 <translation id="1895658205118569222">Shutdown</translation>
-<translation id="1896353439080510710">Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. AI ang Gemini at puwede itong magkamali. Puwede mong <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />pamahalaan ang iyong aktibidad<ph name="END_LINK_MANAGE_ACTIVITY" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Gumamit ng malakas na password</translation>
 <translation id="1897860317037652061">Hindi na-scan</translation>
 <translation id="1898804291554630487">Magtanong tungkol sa page na ito</translation>
@@ -1240,7 +1241,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1929774028758671973">Makakapag-share sa iyo ang mga contact kapag malapit sila. Ipapaapruba sa iyo ang mga kahilingang ito. Hindi mo kakailanganing aprubahan ang pag-share sa pagitan ng mga device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Walang naka-install na mga bahagi.</translation>
 <translation id="1932125073382155239">I-back Up ang Iyong Mga Bagay-bagay?</translation>
-<translation id="1933070475689690969">Aktibidad sa Mga Gemini App</translation>
 <translation id="1933489278505808700">Pinapayagang basahin at baguhin</translation>
 <translation id="1935303383381416800">Pinapayagang makita ang iyong lokasyon</translation>
 <translation id="193565226207940518">Tool sa Suporta</translation>
@@ -1637,6 +1637,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2246549592927364792">Kumuha ng mga paglalarawan ng larawan mula sa Google?</translation>
 <translation id="2247738527273549923">Pinapamahalaan ng iyong organisasyon ang device mo</translation>
 <translation id="2247870315273396641">Preview ng boses</translation>
+<translation id="2247960558975094922">History sa Gemini</translation>
 <translation id="224835741840550119">I-sanitize ang iyong device</translation>
 <translation id="2249111429176737533">Buksan bilang naka-tab na window</translation>
 <translation id="2249605167705922988">hal. 1-5, 8, 11-13</translation>
@@ -2269,7 +2270,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2727712005121231835">Actual Size</translation>
 <translation id="2729310339366257582">I-collapse ang mga tab</translation>
 <translation id="2729577602370119849">Madaling ma-access at mapamahalaan ang mga printer</translation>
-<translation id="2729940704980595903">Tingnan at pamahalaan ang iyong aktibidad sa Mga Gemini App</translation>
 <translation id="2730550884708194161">Tungkol sa mga profile sa trabaho</translation>
 <translation id="2730596696987224099">Pumili ng Sarili Mo</translation>
 <translation id="2730647855013151888">Isama ang lahat ng personal na impormasyon</translation>
@@ -2307,7 +2307,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
 <translation id="2750020734439919571">Higit pang setting at pahintulot ng Chrome app</translation>
-<translation id="275010360476017464">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito).</translation>
 <translation id="2750602041558385535">Na-block ang hindi na-verify na pag-download</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> pa</translation>
 <translation id="2751454300227269244">Ngumuso pakanan</translation>
@@ -2697,6 +2696,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3030772324014024606">Edit</translation>
 <translation id="3030795534674718505">Pinapayagang gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="3030967311408872958">Paglubog ng araw hanggang pagsikat ng araw</translation>
+<translation id="3030970046240311592">Tingnan at pamahalaan ang iyong history sa Gemini</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Gumamit ng touchpad at keyboard para mag-right click</translation>
 <translation id="3031557471081358569">Pumili ng mga item na ii-import:</translation>
@@ -3220,7 +3220,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="343578350365773421">Wala nang papel</translation>
 <translation id="3435896845095436175">I-enable</translation>
 <translation id="3436118221454753036">Ask AI Mode</translation>
-<translation id="3437072258256045988">Pamahalaan ang iyong aktibidad sa Mga Gemini App</translation>
 <translation id="3437397693214267762">Tingnan ang iyong Outlook Calendar at mga SharePoint at OneDrive file</translation>
 <translation id="3437494162908353428">Hindi pinapayagan ang DevTools para sa URL na ito.</translation>
 <translation id="3437498061222607130">Naka-sign in ka sa Search gamit ang iyong <ph name="USER_EMAIL" /> account</translation>
@@ -4154,6 +4153,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4107793386654579933">Pumili ng shortcut para sa aksyong <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Ilipat ang window sa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">I-restore ang babala</translation>
+<translation id="4110984310437592352">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, sine-save ang audio sa History sa Gemini (kung naka-on ito).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Mga Extension at Skill</translation>
 <translation id="4113743276555482284">Password ng file</translation>
@@ -4244,6 +4244,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="419427585139779713">Maglagay ng paisa-isang pantig</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4195814663415092787">Magpatuloy kung saan ka tumigil</translation>
+<translation id="4196632390211257612">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data mo sa Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> para magsanay ng mga generative AI model. AI ang Gemini at puwede itong magkamali. Posibleng hindi naaangkop para sa lahat ang ilang content.</translation>
 <translation id="4198268995694216131">Mga karagdagang site</translation>
 <translation id="4200609364258658652">Kop&amp;yahin ang video frame</translation>
 <translation id="4200689466366162458">Mga custom na salita</translation>
@@ -4846,6 +4847,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4665035764476941598">Mag-click dito para ibalik ang iba mo pang tab</translation>
 <translation id="4665446389743427678">Ide-delete ang lahat ng data na naka-store sa <ph name="SITE" />.</translation>
 <translation id="4666472247053585787">Tingnan ang mga notification mula sa iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
+<translation id="4666483368282673356">Pamahalaan ang iyong history sa Gemini</translation>
 <translation id="4666911709726371538">Higit pang app</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Dapat ay mga numero lang ang gamitin sa PIN</translation>
@@ -5319,6 +5321,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5012523644916800014">Pamahalaan ang mga password at passkey</translation>
 <translation id="501394389332262641">Tunog na paubos na ang baterya</translation>
 <translation id="5014286001996333986">Palitan o gumawa ng bagong grupo?</translation>
+<translation id="5014385104640320445">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, sine-save ang audio sa History sa Gemini (kung naka-on ito). Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="5015344424288992913">Nilulutas ang proxy...</translation>
 <translation id="5016305686459575361">Sa pamamagitan ng pagkonekta ng iyong telepono, magagawa mo ang sumusunod:</translation>
 <translation id="5016491575926936899">Magagawa mong mag-text mula sa iyong computer, ibahagi ang koneksyon mo sa internet, sumagot sa mga notification sa pag-uusap, at i-unlock ang iyong <ph name="DEVICE_TYPE" /> gamit ang telepono mo.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -5694,7 +5697,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5298315677001348398">Gusto mo bang magpatuloy at payagan ang software na ito na gumawa ng mga pagbabago sa iyong device?</translation>
 <translation id="5299109548848736476">Huwag Subaybayan</translation>
 <translation id="5299558715747014286">Tingnan at pamahalaan ang iyong mga grupo ng tab</translation>
-<translation id="5300667117276823109">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data mo sa Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> para mapahusay ang mga generative AI model. AI ang Gemini at puwede itong magkamali.</translation>
 <translation id="5301398529256275325">Subukang humiling ng mga bagay tulad ng “ibuod ang page na ito” o magtanong.</translation>
 <translation id="5301954838959518834">OK, nakuha ko</translation>
 <translation id="5302032366299160685">Hintaying bumukas ang file bago subukan ulit</translation>
@@ -6850,7 +6852,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="62229737360959019">Shine-share din sa Gemini ang mga tab na binuksan mula sa chat o naka-share na tab. Sa Live mode, ang kasalukuyang tab lang ang shine-share bilang default.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="622537739776246443">Ide-delete ang profile</translation>
-<translation id="622568138962270592">Aktibidad sa Mga Gemini App</translation>
 <translation id="6226777517901268232">Pribadong key file (opsyonal)</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Huminto ang Gemini sa paggawa sa gawaing ito</translation>
@@ -8009,6 +8010,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="710224247908684995">Na-off ng isang extension ang Ligtas na Pag-browse</translation>
 <translation id="7102832101143475489">Nag-time out ang kahilingan</translation>
 <translation id="7103944802169726298">Nasa iisang Wi-Fi network ang PC at casting device</translation>
+<translation id="7104134653119992646">Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. AI ang Gemini at puwede itong magkamali. Puwede mong <ph name="BEGIN_LINK_MANAGE_HISTORY" />pamahalaan ang iyong history<ph name="END_LINK_MANAGE_HISTORY" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Membership sa Google</translation>
 <translation id="7107609441453408294">I-play ang iisang audio sa lahat ng speaker</translation>
 <translation id="7108338896283013870">Itago</translation>
@@ -8388,7 +8390,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7395774987022469191">Buong screen</translation>
 <translation id="7396017167185131589">Lalabas dito ang mga nakabahaging folder</translation>
 <translation id="7396845648024431313">Ilulunsad ang <ph name="APP_NAME" /> sa system startup at patuloy na paganahin sa background kahit na sa sandaling maisara mo ang lahat ng ibang mga window ng <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Sinusuri at ginagamit ang mga chat para mapahusay ang Google AI. AI ang Gemini at puwede itong magkamali. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />pamahalaan ang iyong aktibidad<ph name="END_LINK_MANAGE_ACTIVITY" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">I-customize ang pag-sync</translation>
 <translation id="7399616692258236448">Awtomatikong naka-block ang mga request sa lokasyon para sa lahat ng site maliban sa mga pinapayagan mo</translation>
 <translation id="7399802613464275309">Pagsusuri sa Kaligtasan</translation>
@@ -8902,7 +8903,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7777624210360383048">Shortcut na <ph name="SHORTCUT" /> para sa <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Buksan ang Manager ng Bookmark</translation>
 <translation id="7779840061887151693">display</translation>
-<translation id="7780716468751073938">Hindi susuriin o gagamitin ang iyong mga pag-uusap sa Gemini o ang <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />data mo sa Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> para mapahusay ang mga generative AI model. AI ang Gemini at puwede itong magkamali. Posibleng hindi naaangkop para sa lahat ang ilang content.</translation>
 <translation id="7780992949171378848">Magpadala ng request sa pag-opt out sa mga site kaugnay ng paggamit ng iyong data</translation>
 <translation id="7782102568078991263">Wala nang mga suhestiyon mula sa Google</translation>
 <translation id="7782717250816686129">I-store ang mga persistent data sa screen sa pag-log in at ilagay ang mga kredensyal sa session.</translation>
@@ -9041,6 +9041,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Buksan ang manager ng bookmark</translation>
+<translation id="7904508617992122201">Sinusuri at ginagamit ang mga chat para sanayin ang mga generative AI model. AI ang Gemini at puwede itong magkamali. Posibleng hindi naaangkop para sa lahat ang ilang content. Puwede mong <ph name="BEGIN_LINK_MANAGE_HISTORY" />pamahalaan ang iyong history<ph name="END_LINK_MANAGE_HISTORY" />, kasama ang impormasyon tungkol sa lokasyon mo. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa tungkol sa iyong mga pagpipilian<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Gawing available ang mga port ng Linux sa iba pang device na nasa iyong network.</translation>
 <translation id="7907312522152480478">Para makuha ang iyong mga tab mula sa iba mo pang device, i-verify na ikaw ito at i-sync ang iyong history at mga tab. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7907502219904644296">Baguhin ang access</translation>
@@ -10436,7 +10437,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="8945274638472141382">Laki ng icon</translation>
 <translation id="8945508919180478719">Studio-style na mikropono</translation>
 <translation id="8946954897220903437">I-collapse ang lahat ng request sa address bar</translation>
-<translation id="8946996840522387154">Gamitin ang iyong mikropono para makipag-chat sa Gemini. Kapag nakikipag-usap ka sa Gemini, naso-store ang audio sa Aktibidad sa Mga Gemini App (kung naka-on ito). Hindi ginagamit ang iyong data para pahusayin ang mga generative AI model.</translation>
 <translation id="894763922177556086">Malakas</translation>
 <translation id="895054485242522631">Puwedeng gumamit ng mga sensor ng paggalaw ang mga site</translation>
 <translation id="8951465597020890363">Lumabas pa rin sa guest mode?</translation>

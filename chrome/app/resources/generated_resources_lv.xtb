@@ -933,6 +933,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1703666494654169921">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīces vai datus</translation>
 <translation id="1704097193565924901">Sākt katru vārdu ar lielo burtu</translation>
 <translation id="1704230497453185209">Neļaut vietnēm atskaņot skaņu</translation>
+<translation id="170494114379308411">Netiks pārskatītas ne jūsu sarunas ar Gemini, ne jūsu <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace dati<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />, kā arī šīs sarunas un dati netiks izmantoti ģeneratīvā MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas.</translation>
 <translation id="170658918174941828">Papildus informācijai, ko esat jau norādījis, tiks iesniegti arī dati par izmantoto pārlūka Chrome versiju, operētājsistēmas versiju, Cast iestatījumiem, spoguļošanas veiktspējas statistika, kā arī saziņas kanālu diagnostikas žurnāli. Iesniegtās atsauksmes tiek izmantotas, lai diagnosticētu problēmas un uzlabotu funkcijas darbību. Jebkāda personas informācija, kas iesniegta tieši vai papildus, tiks aizsargāta saskaņā ar mūsu konfidencialitātes politikām. Iesniedzot atsauksmes, jūs piekrītat, ka Google drīkst tās izmantot, lai uzlabotu jebkuru Google produktu vai pakalpojumu.</translation>
 <translation id="17081583771848899">palaidēja taustiņš + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Saglabāt mākoņa krātuvē</translation>
@@ -1158,6 +1159,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1881445033931614352">Tastatūras izkārtojums</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Vienums}zero{# vienumu}one{# vienums}other{# vienumi}}</translation>
 <translation id="188177382966899059">Dziļā meklēšana</translation>
+<translation id="1883018549404920116">Gemini vēsture</translation>
 <translation id="1884340228047885921">Pašreizējais redzamības iestatījums ir “Dažas kontaktpersonas”.</translation>
 <translation id="1884705339276589024">Linux diska lieluma mainīšana</translation>
 <translation id="1885066963699478692">XML faili, kas tiek izmantoti politiku iestatīšanai.</translation>
@@ -1174,7 +1176,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1892453608039100484">1. Noklikšķiniet uz tālāk redzamās pogas <ph name="BUTTON_LABEL" />.
 2. Windows iestatījumos noklikšķiniet uz <ph name="BUTTON_2" />.</translation>
 <translation id="1895658205118569222">Izslēgšana</translation>
-<translation id="1896353439080510710">Tērzēšanas sarunas tiek pārskatītas un izmantotas Google MI uzlabošanai. Gemini ir MI un var pieļaut kļūdas. Varat <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />pārvaldīt savas darbības<ph name="END_LINK_MANAGE_ACTIVITY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1897120393475391208">Izmantojiet drošu paroli</translation>
 <translation id="1897860317037652061">Pārbaude neizdevās</translation>
 <translation id="1898804291554630487">Jautājiet par šo lapu</translation>
@@ -1230,7 +1231,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1929774028758671973">Kontaktpersonas var kopīgot saturu ar jums, kad atrodas tuvumā. Jums tiks lūgts apstiprināt šos pieprasījumus. Jums nebūs jāapstiprina kopīgošana starp ierīcēm, kurās ir veikta pierakstīšanās kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Nav instalēts neviens komponents.</translation>
 <translation id="1932125073382155239">Vai dublēt jūsu saturu?</translation>
-<translation id="1933070475689690969">Gemini Apps darbības</translation>
 <translation id="1933489278505808700">Drīkst lasīt un mainīt</translation>
 <translation id="1935303383381416800">Drīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="193565226207940518">Atbalsta rīks</translation>
@@ -1627,6 +1627,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2246549592927364792">Vai vēlaties iegūt attēlu aprakstus no Google?</translation>
 <translation id="2247738527273549923">Šo ierīci pārvalda jūsu organizācija.</translation>
 <translation id="2247870315273396641">Balss priekšskatījums</translation>
+<translation id="2247960558975094922">Gemini vēsture</translation>
 <translation id="224835741840550119">Ierīces tīrīšana</translation>
 <translation id="2249111429176737533">Atvērt kā logu ar cilnēm</translation>
 <translation id="2249605167705922988">piem., 1-5, 8, 11-13</translation>
@@ -2256,7 +2257,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2727712005121231835">Faktiskais izmērs</translation>
 <translation id="2729310339366257582">Sakļaut cilnes</translation>
 <translation id="2729577602370119849">Ērta piekļuve printeriem un to pārvaldība</translation>
-<translation id="2729940704980595903">Skatiet un pārvaldiet savas Gemini Apps darbības.</translation>
 <translation id="2730550884708194161">Par darba profiliem</translation>
 <translation id="2730596696987224099">Izvēlēties savu paroli</translation>
 <translation id="2730647855013151888">Iekļaut visu personas informāciju</translation>
@@ -2294,7 +2294,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Pārbaudīt gramatiku un pareizrakstību</translation>
 <translation id="2750020734439919571">Citi Chrome lietotņu iestatījumi un atļaujas</translation>
-<translation id="275010360476017464">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts sadaļā “Gemini Apps darbības” (ja šis iestatījums ir ieslēgts).</translation>
 <translation id="2750602041558385535">Bloķēta neverificēta lejupielāde</translation>
 <translation id="2751320815618312249">un vēl <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Pakustiniet lūpas pa labi</translation>
@@ -2684,6 +2683,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3030772324014024606">Rediģēšana</translation>
 <translation id="3030795534674718505">Atļauts izmantot par jums saglabāto informāciju</translation>
 <translation id="3030967311408872958">No saulrieta līdz saullēktam</translation>
+<translation id="3030970046240311592">Skatiet un pārvaldiet savu Gemini vēsturi.</translation>
 <translation id="3031417829280473749">Aģente X</translation>
 <translation id="3031532026314193077">Izmantojiet skārienpaliktni un tastatūru, lai simulētu klikšķi ar peles labo pogu</translation>
 <translation id="3031557471081358569">Izvēlieties importējamos vienumus:</translation>
@@ -3205,7 +3205,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="343578350365773421">Beidzies papīrs</translation>
 <translation id="3435896845095436175">Iespējot</translation>
 <translation id="3436118221454753036">Jautāt MI režīmam</translation>
-<translation id="3437072258256045988">Pārvaldiet Gemini Apps darbības</translation>
 <translation id="3437397693214267762">Skatiet savu Outlook kalendāru un SharePoint un OneDrive failus</translation>
 <translation id="3437494162908353428">Šim URL nav atļauti izstrādātāja rīki.</translation>
 <translation id="3437498061222607130">Jūs esat pierakstījies pakalpojumā Meklēšana, izmantojot savu kontu <ph name="USER_EMAIL" />.</translation>
@@ -4139,6 +4138,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4107793386654579933">Atlasiet īsinājumtaustiņu darbībai <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Pārvietot logu uz šī lietotāja darbvirsmu: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
+<translation id="4110984310437592352">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts Gemini vēsturē (ja šis iestatījums ir ieslēgts).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
 <translation id="4112282889480354965">Paplašinājumi un prasmes</translation>
 <translation id="4113743276555482284">Faila parole</translation>
@@ -4229,6 +4229,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="419427585139779713">Ievade pa vienai zilbei</translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4195814663415092787">Atsākt darbu no vietas, kur to beidzu</translation>
+<translation id="4196632390211257612">Netiks pārskatītas ne jūsu sarunas ar Gemini, ne jūsu <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace dati<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />, kā arī šīs sarunas un dati netiks izmantoti ģeneratīvā MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas. Noteikts saturs var nebūt piemērots visiem.</translation>
 <translation id="4198268995694216131">Citas vietnes</translation>
 <translation id="4200609364258658652">Kop&amp;ēt video kadru</translation>
 <translation id="4200689466366162458">Pielāgotie vārdi</translation>
@@ -4831,6 +4832,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4665035764476941598">Noklikšķiniet šeit, lai atkal tiktu rādītas pārējās cilnes.</translation>
 <translation id="4665446389743427678">Tiks izdzēsti visi vietnes <ph name="SITE" /> saglabātie dati.</translation>
 <translation id="4666472247053585787">Tālruņa paziņojumu skatīšana otrā ierīcē (<ph name="DEVICE_TYPE" />)</translation>
+<translation id="4666483368282673356">Pārvaldīt Gemini vēsturi</translation>
 <translation id="4666911709726371538">Citas lietotnes</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN kodā drīkst būt tikai cipari.</translation>
@@ -5304,6 +5306,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5012523644916800014">Pārvaldīt paroles un piekļuves atslēgas</translation>
 <translation id="501394389332262641">Zema akumulatora uzlādes līmeņa signāls</translation>
 <translation id="5014286001996333986">Vai aizstāt vai izveidot jaunu grupu?</translation>
+<translation id="5014385104640320445">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts Gemini vēsturē (ja šis iestatījums ir ieslēgts). Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="5015344424288992913">Risina starpniekserveri...</translation>
 <translation id="5016305686459575361">Izveidojot savienojumu ar tālruni, jums ir pieejamas tālāk norādītās iespējas.</translation>
 <translation id="5016491575926936899">Varat sūtīt īsziņas no datora, koplietot interneta savienojumu, atbildēt uz sarunu paziņojumiem un atbloķēt savu <ph name="DEVICE_TYPE" /> ierīci ar tālruni.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -5678,7 +5681,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5298315677001348398">Vai vēlaties turpināt, atļaujot šai programmatūrai veikt izmaiņas jūsu ierīcē?</translation>
 <translation id="5299109548848736476">Nesekot</translation>
 <translation id="5299558715747014286">Skatīt un pārvaldīt jūsu ciļņu grupas</translation>
-<translation id="5300667117276823109">Netiks pārskatītas ne jūsu sarunas ar Gemini, ne jūsu <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace dati<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />, un šīs sarunas un dati netiks izmantoti ģeneratīvā MI modeļu uzlabošanai. Gemini ir MI un var pieļaut kļūdas.</translation>
 <translation id="5301398529256275325">Varat izmēģināt tādas komandas kā “Apkopot šo lapu” vai uzdot savu jautājumu.</translation>
 <translation id="5301954838959518834">Labi, sapratu</translation>
 <translation id="5302032366299160685">Pirms mēģināt vēlreiz, uzgaidiet, līdz fails tiks atvērts.</translation>
@@ -6831,7 +6833,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="62229737360959019">Ar Gemini tiek kopīgotas arī cilnes, kas atvērtas no tērzēšanas sarunas vai kopīgotas cilnes. Režīmā “Live” pēc noklusējuma tiek kopīgota tikai pašreizējā cilne.</translation>
 <translation id="622484624075952240">Lejup</translation>
 <translation id="622537739776246443">Profiles tiks dzēsts</translation>
-<translation id="622568138962270592">Gemini Apps darbības</translation>
 <translation id="6226777517901268232">Privātās atslēgas fails (neobligāti)</translation>
 <translation id="6227280783235722609">paplašinājums</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini pārtrauca darbu pie šī uzdevuma</translation>
@@ -7992,6 +7993,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="710224247908684995">Paplašinājums izslēdza funkciju Droša pārlūkošana.</translation>
 <translation id="7102832101143475489">Iestājās pieprasījuma noildze.</translation>
 <translation id="7103944802169726298">Dators un apraides ierīce ir vienā Wi-Fi tīklā</translation>
+<translation id="7104134653119992646">Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvo MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas. Varat <ph name="BEGIN_LINK_MANAGE_HISTORY" />pārvaldīt savu vēsturi<ph name="END_LINK_MANAGE_HISTORY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google abonements</translation>
 <translation id="7107609441453408294">Atskaņot to pašu audio saturu visos skaļruņos</translation>
 <translation id="7108338896283013870">Slēpt</translation>
@@ -8371,7 +8373,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7395774987022469191">Viss ekrāns</translation>
 <translation id="7396017167185131589">Šeit būs redzamas kopīgotās mapes.</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> tiks startēta pie sistēmas startēšanas un turpinās darboties fonā arī tad, ja aizvērsiet visus citus <ph name="PRODUCT_NAME" /> logus.</translation>
-<translation id="7398815534290329738">Tērzēšanas sarunas tiek pārskatītas un izmantotas Google MI uzlabošanai. Gemini ir MI un var pieļaut kļūdas. Noteikts saturs var nebūt piemērots visiem. Varat <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />pārvaldīt savas darbības<ph name="END_LINK_MANAGE_ACTIVITY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7399045143794278225">Pielāgot sinhronizāciju</translation>
 <translation id="7399616692258236448">Atrašanās vietu pieprasījumi tiek automātiski bloķēti visās vietnēs, izņemot tās, kurās atļāvāt to rādīšanu.</translation>
 <translation id="7399802613464275309">Drošības pārbaude</translation>
@@ -8885,7 +8886,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7777624210360383048">Paplašinājuma <ph name="EXTENSION_NAME" /> saīsne <ph name="SHORTCUT" /></translation>
 <translation id="777852709704682967">&amp;Atvērt grāmatzīmju pārvaldnieku</translation>
 <translation id="7779840061887151693">displejs</translation>
-<translation id="7780716468751073938">Netiks pārskatītas ne jūsu sarunas ar Gemini, ne jūsu <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace dati<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />, un šīs sarunas un dati netiks izmantoti ģeneratīvā MI modeļu uzlabošanai. Gemini ir MI un var pieļaut kļūdas. Noteikts saturs var nebūt piemērots visiem.</translation>
 <translation id="7780992949171378848">Sūtīt atteikšanās pieprasījumu vietnēm saistībā ar jūsu datu izmantošanu</translation>
 <translation id="7782102568078991263">Vairāk ieteikumu no Google nav pieejams</translation>
 <translation id="7782717250816686129">Glabājiet pastāvīgos datus pieteikšanās ekrānā un ievadiet akreditācijas datus sesijā.</translation>
@@ -9024,6 +9024,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7903925330883316394">Utilīta: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Atvērt grāmatzīmju pārvaldnieku</translation>
+<translation id="7904508617992122201">Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvo MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas. Noteikts saturs var nebūt piemērots visiem. Varat <ph name="BEGIN_LINK_MANAGE_HISTORY" />pārvaldīt savu vēsturi<ph name="END_LINK_MANAGE_HISTORY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7904526211178107182">Padariet Linux portus pieejamus citām ierīcēm jūsu tīklā.</translation>
 <translation id="7907312522152480478">Lai iegūtu cilnes no citām savām ierīcēm, verificējiet savu identitāti un sinhronizējiet vēsturi un cilnes. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="7907502219904644296">Mainīt piekļuvi</translation>
@@ -10417,7 +10418,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="8945274638472141382">Ikonu lielums</translation>
 <translation id="8945508919180478719">Studijas stila mikrofons</translation>
 <translation id="8946954897220903437">Sakļaut visus pieprasījumus adreses joslā</translation>
-<translation id="8946996840522387154">Izmantojiet mikrofonu, lai tērzētu ar Gemini. Kad runājat ar Gemini, audio tiek saglabāts sadaļā “Gemini Apps darbības” (ja šis iestatījums ir ieslēgts). Jūsu dati netiek izmantoti ģeneratīvo MI modeļu uzlabošanai.</translation>
 <translation id="894763922177556086">labs</translation>
 <translation id="895054485242522631">Atļaut vietnēm izmantot kustību sensorus</translation>
 <translation id="8951465597020890363">Vai tik un tā iziet no viesa režīma?</translation>

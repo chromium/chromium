@@ -52,7 +52,7 @@
 <translation id="1080116354587839789">Ajuster à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1082026381988252344">Faire défiler le contenu de l'onglet partagé et faire un zoom dessus</translation>
-<translation id="1083351079082239441">Consultez les actions clés que Gemini a effectuées en naviguant pour vous</translation>
+<translation id="1083351079082239441">Consultez les principales actions que Gemini a effectuées pendant qu'il naviguait pour vous</translation>
 <translation id="108859316315249327">Réessayer</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
 <translation id="1090629319939036170">Menu RV</translation>
@@ -920,7 +920,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="251033673027346551">Accédez à Google Wallet pour gérer les <ph name="BEGIN_LINK" />préférences concernant les données et la confidentialité<ph name="END_LINK" />.</translation>
 <translation id="2512101340618156538">Non autorisé (par défaut)</translation>
 <translation id="2512413427717747692">Bouton pour choisir Chrome comme navigateur par défaut ; appuyez sur Entrée pour définir Chrome comme navigateur par défaut dans les réglages iOS</translation>
-<translation id="2513217232843681817">Votre compte Google peut inclure d'autres types d'historiques de navigation sur <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, comme des visites automatiques dans votre <ph name="BEGIN_LINK_GAA" />Activité dans les applications Gemini<ph name="END_LINK_GAA" /></translation>
+<translation id="2513217232843681817">Votre compte Google peut inclure d'autres types d'historiques de navigation sur <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, comme les visites de navigation automatique dans votre <ph name="BEGIN_LINK_GAA" />Activité dans les applications Gemini<ph name="END_LINK_GAA" /></translation>
 <translation id="2515629240566999685">Vérifiez le signal dans votre zone.</translation>
 <translation id="2518584823165598232">Cette carte n'est pas disponible, veuillez contacter l'établissement émetteur.</translation>
 <translation id="2521385132275182522">Agrafe en bas à droite</translation>
@@ -1390,7 +1390,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3324687287337751929">4 x 6 pouces</translation>
 <translation id="3325568918769906282">dans l'ordre décroissant</translation>
 <translation id="3325662270238538525">Accès récents à des fichiers et modifications apportées, y compris les noms de fichiers, les empreintes numériques du contenu des fichiers, la source des téléchargements et les métadonnées</translation>
-<translation id="3326857361043236066">Actions clés de Gemini lors de la navigation</translation>
+<translation id="3326857361043236066">Actions principales de Gemini pendant la navigation</translation>
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Non éligible pour la carte virtuelle</translation>
 <translation id="3338095232262050444">Sécurisé</translation>
@@ -2027,7 +2027,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 avec chiffrement RSA</translation>
 <translation id="4336913590841287350">Cette règle n'est pas encore prise en charge en tant que règle relative aux utilisateurs sur iOS.</translation>
-<translation id="4338516934178140574">Dans l'historique Chrome, vous pouvez voir les actions clés que Gemini a effectuées tout en naviguant pour vous</translation>
+<translation id="4338516934178140574">Dans l'historique Chrome, vous pouvez voir les principales actions que Gemini a effectuées pendant qu'il naviguait pour vous</translation>
 <translation id="4340575312453649552">Cette annonce a utilisé trop de ressources pour votre appareil. Par conséquent, Chrome l'a supprimée.</translation>
 <translation id="4340810192899866471">Importer à partir d'un fichier JSON</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise. Selon la règle définie, seules les extensions hébergées par le Chrome Web Store peuvent y être installées. L'URL de mise à jour du Chrome Web Store est "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -2403,7 +2403,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4994095017621319069">1 groupe d'onglets n'est plus disponible</translation>
 <translation id="4995474875135717171">Modifié le :</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour gérer Site Search et votre moteur de recherche par défaut</translation>
-<translation id="4996709766489151157">Coordonnées renseignées</translation>
+<translation id="4996709766489151157">Renseignement des coordonnées</translation>
 <translation id="4998950033665438990">Simple face</translation>
 <translation id="5000497292978544380">Mode IA de la recherche Google</translation>
 <translation id="5001338033791319371">Pour quitter le plein écran et voir le téléchargement, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
@@ -2423,7 +2423,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5019293549442035120">Vous pouvez utiliser les adresses enregistrées dans les produits Google. Celle-ci sera enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="5019819206251569004">capteurs de mouvement et de luminosité</translation>
 <translation id="5019952743397118625">La règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est définie. La règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne contrôlera plus la disponibilité du mode développeur sur la page des extensions.</translation>
-<translation id="502075697789439404">Fichier téléchargé</translation>
+<translation id="502075697789439404">Téléchargement du fichier</translation>
 <translation id="5020862932518041900">Si vous sélectionnez ou ignorez une suggestion, Chrome s'adaptera pour vous proposer uniquement des contenus pertinents</translation>
 <translation id="5021500396464456616">Contactez la personne qui vous a envoyé ce lien</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
@@ -3448,7 +3448,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6721164594124191969">Étiquettes (brillantes)</translation>
 <translation id="6726832600570791992">(émulation 32 bits)</translation>
 <translation id="6727094998759448074">SRA4</translation>
-<translation id="672853333773293432">Connecté avec le compte</translation>
+<translation id="672853333773293432">Connexion au compte</translation>
 <translation id="6732087373923685049">la caméra</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="6740851646645036700">Vous avez atteint votre limite d'aide à l'écriture pour l'instant. Réessayez plus tard.</translation>
@@ -3867,7 +3867,7 @@ Informations supplémentaires :
 <translation id="7425037327577270384">Aide-moi à écrire</translation>
 <translation id="7426745633088095666">Onglets partagés</translation>
 <translation id="7429429656042611765">Executive</translation>
-<translation id="7430649113830485349">Examiner les actions clés</translation>
+<translation id="7430649113830485349">Voir les actions</translation>
 <translation id="7432774160230062882">Validez votre identité afin que Chromium puisse insérer vos infos de paiement.</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
 <translation id="7441627299479586546">Objet de la règle incorrect.</translation>
@@ -4397,7 +4397,7 @@ Informations supplémentaires :
 <translation id="8298399736867690281">Carte enregistrée sur l'appareil uniquement</translation>
 <translation id="8300302621078931927">Enregistrez votre pièce d'identité de manière sécurisée dans Google Wallet</translation>
 <translation id="8301894345671534559">Saisissez le code</translation>
-<translation id="830342764194666561">Paramètres du site modifiés</translation>
+<translation id="830342764194666561">Modification des paramètres du site</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="830868413617744215">Bêta</translation>
 <translation id="8310477433309274098">Sans frais, à partir de 0 % de TAEG</translation>
@@ -4552,7 +4552,7 @@ Informations supplémentaires :
 <translation id="8577192028579836704">Prix habituel pour toutes les options : <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Carte virtuelle non disponible</translation>
 <translation id="8579000896558714521">Remplacement du clavier</translation>
-<translation id="8579561564816585231">Connecté à l'aide d'un service Google, comme le Gestionnaire de mots de passe</translation>
+<translation id="8579561564816585231">Connexion à l'aide d'un service Google, comme le Gestionnaire de mots de passe</translation>
 <translation id="8581064022803799721">Cette page est enregistrée dans <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Saisir num tél</translation>
 <translation id="8587100480629037893">Suivi des mains non autorisé</translation>

@@ -934,6 +934,7 @@
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
 <translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
+<translation id="170494114379308411">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای آموزش دادن مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند.</translation>
 <translation id="170658918174941828">‏نسخه Chrome، نسخه سیستم‌عامل، تنظیمات Cast،
     آمار عملکرد بازتاب، و گزارش‌های عیب‌یابی
     کانال ارتباطی به‌همراه اطلاعاتی که
@@ -1167,6 +1168,7 @@
 <translation id="1881445033931614352">جانمایی صفحه‌کلید</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{مورد}one{# مورد}other{# مورد}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">‏سابقه Gemini</translation>
 <translation id="1884340228047885921">تنظیم رؤیت‌پذیری کنونی «برخی از مخاطبین» است</translation>
 <translation id="1884705339276589024">‏تغییر اندازه دیسک Linux</translation>
 <translation id="1885066963699478692">‏فایل‌های XML که برای تنظیم خط‌مشی‌ها استفاده می‌شوند.</translation>
@@ -1183,7 +1185,6 @@
 <translation id="1892453608039100484">‏‫۱. روی <ph name="BUTTON_LABEL" /> در زیر کلیک کنید
 ‫۲. روی <ph name="BUTTON_2" /> در تنظیمات Windows کلیک کنید</translation>
 <translation id="1895658205118569222">بسته شدن</translation>
-<translation id="1896353439080510710">‏گپ‌ها بازبینی می‌شود و از آن برای بهبود «هوشواره Google» استفاده می‌شود. ‫Gemini هوشواره است و ممکن است اشتباه کند. امکان <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />مدیریت فعالیت‌ها<ph name="END_LINK_MANAGE_ACTIVITY" />،ازجمله اطلاعات مربوط به مکان، برای شما فراهم است. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1897120393475391208">از گذرواژه قوی استفاده کنید</translation>
 <translation id="1897860317037652061">اسکن انجام نشد</translation>
 <translation id="1898804291554630487">پرسش درباره این صفحه</translation>
@@ -1239,7 +1240,6 @@
 <translation id="1929774028758671973">وقتی مخاطبین در نزدیکی‌تان باشند می‌توانند با شما هم‌رسانی کنند. از شما خواسته می‌شود این درخواست‌ها را تأیید کنید. برای هم‌رسانی بین دستگاه‌هایی که به سیستم <ph name="USER_EMAIL" /> وارد شده‌اند نیازی به تأیید ندارید.</translation>
 <translation id="1931152874660185993">هیچ مؤلفه‌ای نصب نیست.</translation>
 <translation id="1932125073382155239">از اطلاعات شما پشتیبان‌گیری شود؟</translation>
-<translation id="1933070475689690969">‏فعالیت برنامه‌های Gemini</translation>
 <translation id="1933489278505808700">اجازه دارد بخواند و تغییر دهد</translation>
 <translation id="1935303383381416800">اجازه دارد مکانتان را ببیند</translation>
 <translation id="193565226207940518">ابزار پشتیبانی</translation>
@@ -1636,6 +1636,7 @@
 <translation id="2246549592927364792">‏توضیحات تصویر از Google دریافت شود؟</translation>
 <translation id="2247738527273549923">دستگاهتان را سازمانتان مدیریت می‌کند.</translation>
 <translation id="2247870315273396641">پیش‌دید کردن صدا</translation>
+<translation id="2247960558975094922">‏سابقه Gemini</translation>
 <translation id="224835741840550119">پاک‌سازی دستگاه</translation>
 <translation id="2249111429176737533">باز کردن به‌عنوان پنجره برگه‌دار</translation>
 <translation id="2249605167705922988">برای مثال 5-1، 8، 13-11</translation>
@@ -2268,7 +2269,6 @@
 <translation id="2727712005121231835">اندازه واقعی</translation>
 <translation id="2729310339366257582">جمع کردن زبانه‌ها</translation>
 <translation id="2729577602370119849">دسترسی و مدیریت آسان چاپگرها</translation>
-<translation id="2729940704980595903">‏مشاهده و مدیریت فعالیت «برنامه‌های Gemini»</translation>
 <translation id="2730550884708194161">درباره نمایه‌های کاری</translation>
 <translation id="2730596696987224099">انتخاب گذرواژه خود</translation>
 <translation id="2730647855013151888">اضافه کردن همه اطلاعات شخصی</translation>
@@ -2306,7 +2306,6 @@
 <translation id="2749836841884031656">سیم‌کارت</translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
 <translation id="2750020734439919571">‏دیگر تنظیمات و اجازه‌های برنامه Chrome</translation>
-<translation id="275010360476017464">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی با Gemini صحبت می‌کنید، صدا در «فعالیت برنامه‌های Gemini» (درصورت فعال بودن) ذخیره می‌شود.</translation>
 <translation id="2750602041558385535">بارگیری تأییدنشده مسدود است</translation>
 <translation id="2751320815618312249">‫+ <ph name="NUM" /> مورد دیگر</translation>
 <translation id="2751454300227269244">حرکت دادن دهان به‌سمت راست</translation>
@@ -2696,6 +2695,7 @@
 <translation id="3030772324014024606">ویرایش</translation>
 <translation id="3030795534674718505">اجازه دارد از اطلاعاتی که درباره شما ذخیره کرده است استفاده کند</translation>
 <translation id="3030967311408872958">غروب تا طلوع</translation>
+<translation id="3030970046240311592">‏مشاهده و مدیریت سابقه Gemini</translation>
 <translation id="3031417829280473749">‏مأمور X</translation>
 <translation id="3031532026314193077">استفاده از صفحه لمسی و صفحه‌کلید برای کلیک راست</translation>
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
@@ -3219,7 +3219,6 @@
 <translation id="343578350365773421">کاغذ تمام شده است</translation>
 <translation id="3435896845095436175">فعال کردن</translation>
 <translation id="3436118221454753036">از «حالت هوشواره‌ای» بپرسید</translation>
-<translation id="3437072258256045988">‏مدیریت «فعالیت برنامه‌های Gemini»</translation>
 <translation id="3437397693214267762">‏دیدن Outlook Calendar و SharePoint و فایل‌های OneDrive</translation>
 <translation id="3437494162908353428">‏‫DevTools برای این نشانی وب مجاز نیست.</translation>
 <translation id="3437498061222607130">با حساب <ph name="USER_EMAIL" /> به سیستم «جستجو» وارد شده‌اید</translation>
@@ -4153,6 +4152,7 @@
 <translation id="4107793386654579933">انتخاب میان‌بر برای کنش <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">انتقال پنجره به <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">بازیابی هشدار</translation>
+<translation id="4110984310437592352">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی که با Gemini صحبت می‌کنید، صدا در «سابقه Gemini» (درصورت فعال بودن) ذخیره می‌شود.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
 <translation id="4112282889480354965">افزونه‌ها و مهارت‌ها</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
@@ -4243,6 +4243,7 @@
 <translation id="419427585139779713">هر بار یک هجا وارد می‌شود</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
+<translation id="4196632390211257612">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای آموزش دادن مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد.</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
 <translation id="4200609364258658652">کپی کردن فریم ویدیو</translation>
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
@@ -4845,6 +4846,7 @@
 <translation id="4665035764476941598">برای برگرداندن سایر زبانه‌ها، اینجا کلیک کنید</translation>
 <translation id="4665446389743427678">همه داده‌های ذخیره‌شده توسط <ph name="SITE" /> حذف خواهد شد.</translation>
 <translation id="4666472247053585787">مشاهده اعلان‌های تلفن در <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">‏مدیریت سابقه Gemini</translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4668936527507421457">پین باید فقط حاوی اعداد باشد</translation>
@@ -5318,6 +5320,7 @@
 <translation id="5012523644916800014">مدیریت گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="501394389332262641">صدای ضعیف بودن باتری</translation>
 <translation id="5014286001996333986">جایگزین شود یا گروه جدیدی ایجاد شود؟</translation>
+<translation id="5014385104640320445">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی که با Gemini صحبت می‌کنید، صدا در «سابقه Gemini» (درصورت فعال بودن) ذخیره می‌شود. از داده‌هایتان برای بهبود دادن مدل هوشواره‌ای زایا استفاده نمی‌شود.</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
 <translation id="5016305686459575361">با متصل کردن تلفنتان، می‌توانید:</translation>
 <translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5693,7 +5696,6 @@
 <translation id="5298315677001348398">آیا می‌خواهید ادامه دهید و به این نرم‌افزار اجازه دهید در دستگاهتان تغییرات ایجاد کند؟</translation>
 <translation id="5299109548848736476">ردیابی نشدن</translation>
 <translation id="5299558715747014286">مشاهده و مدیریت گروه‌های زبانه</translation>
-<translation id="5300667117276823109">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند.</translation>
 <translation id="5301398529256275325">چیزی مثل «خلاطه کردن این صفحه» یا سؤال خودتان را بپرسید.</translation>
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
 <translation id="5302032366299160685">قبل‌از تلاش مجدد صبر کنید تا فایل باز شود</translation>
@@ -6849,7 +6851,6 @@
 <translation id="62229737360959019">‏زبانه‌هایی که از گپ یا زبانه هم‌رسانی‌شده باز می‌شوند نیز با Gemini هم‌رسانی می‌شوند. در حالت «زنده»، فقط زبانه فعلی به‌طور پیش‌فرض هم‌رسانی می‌شود.</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
 <translation id="622537739776246443">نمایه حذف خواهد شد</translation>
-<translation id="622568138962270592">‏فعالیت برنامه‌های Gemini</translation>
 <translation id="6226777517901268232">فایل کلید خصوصی (اختیاری)</translation>
 <translation id="6227280783235722609">افزونه</translation>
 <translation id="6228999859806946695">‏‫<ph name="TASK_TITLE" />: Gemini کار روی این تکلیف را متوقف کرد</translation>
@@ -8008,6 +8009,7 @@
 <translation id="710224247908684995">یکی از افزونه‌ها «مرور ایمن» را خاموش کرده است</translation>
 <translation id="7102832101143475489">درنگ درخواست تمام شد</translation>
 <translation id="7103944802169726298">‏رایانه و دستگاه پخش در شبکه Wi-Fi یکسانی هستند</translation>
+<translation id="7104134653119992646">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای آموزش مدل هوشواره‌ای زایا استفاده می‌شود. Gemini هوشواره است و ممکن است اشتباه کند. می‌توانید <ph name="BEGIN_LINK_MANAGE_HISTORY" />سابقه‌تان را مدیریت کنید<ph name="END_LINK_MANAGE_HISTORY" />، ازجمله اطلاعات مربوط به مکانتان را. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846">‏‫<ph name="PROFILE_NAME" />. عضویت Google</translation>
 <translation id="7107609441453408294">پخش یک صدا ازطریق همه بلندگوها</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
@@ -8387,7 +8389,6 @@
 <translation id="7395774987022469191">کل صفحه‌نمایش</translation>
 <translation id="7396017167185131589">پوشه‌های هم‌رسانی‌شده اینجا ظاهر خواهند شد</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> در هنگام راه‌اندازی سیستم شروع به کار می‌کند و در پس‌زمینه همچنان فعال خواهد بود، حتی زمانی که تمام پنجره‌های دیگر <ph name="PRODUCT_NAME" /> را ببندید.</translation>
-<translation id="7398815534290329738">‏گپ‌ها بازبینی می‌شود و از آن برای بهبود «هوشواره Google» استفاده می‌شود. ‫Gemini هوشواره است و ممکن است اشتباه کند. برخی‌از محتوا ممکن است برای همه مناسب نباشد. امکان <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />مدیریت فعالیت‌ها<ph name="END_LINK_MANAGE_ACTIVITY" />،ازجمله اطلاعات مربوط به مکان، برای شما فراهم است. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7399045143794278225">سفارشی کردن همگام‌سازی</translation>
 <translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7399802613464275309">بررسی ایمنی</translation>
@@ -8901,7 +8902,6 @@
 <translation id="7777624210360383048">میان‌بر <ph name="SHORTCUT" /> برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;باز کردن «مدیر نشانک‌ها»</translation>
 <translation id="7779840061887151693">نمایشگر</translation>
-<translation id="7780716468751073938">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد.</translation>
 <translation id="7780992949171378848">ارسال کردن درخواست انصراف به سایت‌ها درباره استفاده از داده‌های شما</translation>
 <translation id="7782102568078991263">‏پیشنهاد دیگری از Google وجود ندارد</translation>
 <translation id="7782717250816686129">داده‌های دائمی در صفحه ورود به سیستم ذخیره شود و اطلاعات کاربری در جلسه تزریق شود.</translation>
@@ -9040,6 +9040,7 @@
 <translation id="7903925330883316394">ابزار کمکی: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">کاتاکانا</translation>
 <translation id="7904492297081735975">&amp;باز کردن «مدیر نشانک»</translation>
+<translation id="7904508617992122201">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای آموزش مدل هوشواره‌ای زایا استفاده می‌شود. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد. می‌توانید <ph name="BEGIN_LINK_MANAGE_HISTORY" />سابقه‌تان را مدیریت کنید<ph name="END_LINK_MANAGE_HISTORY" />، ازجمله اطلاعات مربوط به مکانتان را. <ph name="BEGIN_LINK_LEARN_MORE" />درباره انتخاب‌هایتان بیشتر بدانید<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7904526211178107182">‏درگاه‌های Linux را در دسترس دستگاه‌های دیگری که در شبکه‌تان موجود هستند قرار دهید.</translation>
 <translation id="7907312522152480478">‏برای این‌که به زبانه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، هویتتان را درستی‌سنجی کنید و سابقه و زبانه‌ها را همگام‌سازی کنید. هر زمان که بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="7907502219904644296">تغییر دسترسی</translation>
@@ -10433,7 +10434,6 @@
 <translation id="8945274638472141382">اندازه نماد</translation>
 <translation id="8945508919180478719">میکروفون استودیویی</translation>
 <translation id="8946954897220903437">جمع کردن همه درخواست‌ها در نوار نشانی</translation>
-<translation id="8946996840522387154">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی با Gemini صحبت می‌کنید، صدا در «فعالیت برنامه‌های Gemini» (درصورت فعال بودن) ذخیره می‌شود. از داده‌هایتان برای بهبود دادن مدل‌های هوش مصنوعی زایا استفاده نمی‌شود.</translation>
 <translation id="894763922177556086">خوب</translation>
 <translation id="895054485242522631">اجازه دادن به سایت‌ها برای استفاده از حسگرهای حرکتی</translation>
 <translation id="8951465597020890363">درهرصورت از حالت مهمان خارج می‌شوید؟</translation>

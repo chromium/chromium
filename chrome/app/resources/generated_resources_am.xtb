@@ -933,6 +933,7 @@
 <translation id="1703666494654169921">ጣቢያዎች ምናባዊ የእውነተኛ መሣሪያዎችን ወይም መረጃዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="1704097193565924901">ዐብይ ፊደል አድርግ</translation>
 <translation id="1704230497453185209">ጣቢያዎች ድምፅ እንዲጫወቱ አይፍቀዱ</translation>
+<translation id="170494114379308411">ከGemini ጋር የሚኖሩዎት ውይይቶችም ሆኑ የእርስዎ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />የGoogle Workspace ውሂብ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ አይውሉም። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል።</translation>
 <translation id="170658918174941828">የእርስዎ የChrome ስሪት፣ የስርዓተ ክወና ስሪት፣ የCast ቅንብሮች፣
 የማንጸባረቅ አፈጻጸም ስታቲስቲክስ እና የግንኙነት ሰርጥ ምርመራ 
 ምዝግብ ማስታወሻዎች ከላይ ለማካተት ከመረጡት ማንኛውም መረጃ በተጨማሪነት ይገባሉ።
@@ -1165,6 +1166,7 @@
 <translation id="1881445033931614352">የቁልፍ ሰሌዳ አቀማመጥ</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ንጥል}one{# ንጥሎች}other{# ንጥሎች}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">የGemini ታሪክ</translation>
 <translation id="1884340228047885921">አሁን ያለው የታይነት ቅንብር አንዳንድ እውቂያዎች ነው</translation>
 <translation id="1884705339276589024">የLinux ዲስክ መጠንን ቀይር</translation>
 <translation id="1885066963699478692">መመሪያዎቹን ለማቀናበር ሥራ ላይ የሚውሉ የXML ፋይሎች።</translation>
@@ -1181,7 +1183,6 @@
 <translation id="1892453608039100484">1. ከታች <ph name="BUTTON_LABEL" /> ጠቅ ያድርጉ
 2. በWindows ቅንብሮችዎ ውስጥ <ph name="BUTTON_2" /> ላይ ጠቅ ያድርጉ</translation>
 <translation id="1895658205118569222">አጥፋ</translation>
-<translation id="1896353439080510710">ውይይቶች ይገመገማሉ እና Google ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። ስለ አካባቢዎ መረጃን ጨምሮ <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />እንቅስቃሴዎን ማስተዳደር<ph name="END_LINK_MANAGE_ACTIVITY" /> ይችላሉ። <ph name="BEGIN_LINK_LEARN_MORE" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">ጠንካራ የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="1897860317037652061">ቅኝት አልተሳካም</translation>
 <translation id="1898804291554630487">ስለ እዚህ ገፅ ይጠይቁ</translation>
@@ -1237,7 +1238,6 @@
 <translation id="1929774028758671973">ዕውቂያዎች በአቅራቢያዎ ሲሆኑ ሊያጋሩዎት ይችላሉ። እነዚህን ጥያቄዎች እንዲያጸድቁ ይጠየቃሉ። ወደ <ph name="USER_EMAIL" /> በገቡ መሣሪያዎች መካከል ማጋራትን ማጽደቅ አያስፈልግዎትም።</translation>
 <translation id="1931152874660185993">ምንም አካላት አልተጫኑም።</translation>
 <translation id="1932125073382155239">ለእርስዎ ነገሮች ምትኬ ይቀመጥ?</translation>
-<translation id="1933070475689690969">የGemini መተግበሪያ እንቅስቃሴ</translation>
 <translation id="1933489278505808700">ለማንበብ እና ለመለወጥ ተፈቅዷል</translation>
 <translation id="1935303383381416800">አካባቢዎን ለማየት ተፈቅዷል</translation>
 <translation id="193565226207940518">የድጋፍ መሣሪያ</translation>
@@ -1634,6 +1634,7 @@
 <translation id="2246549592927364792">የምስል ዝርዝሮችን ከGoogle ይገኝ?</translation>
 <translation id="2247738527273549923">የእርስዎ መሣሳያ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
 <translation id="2247870315273396641">የድምፅ ቅድመ-ዕይታ</translation>
+<translation id="2247960558975094922">የGemini ታሪክ</translation>
 <translation id="224835741840550119">መሣሪያዎን ያፅዱ</translation>
 <translation id="2249111429176737533">እንደ በትር የተከፈተ መስኮት ተከፍቷል</translation>
 <translation id="2249605167705922988">ለምሳሌ፦ 1-5፣ 8፣ 11-13</translation>
@@ -2264,7 +2265,6 @@
 <translation id="2727712005121231835">ትክክለኛ መጠን</translation>
 <translation id="2729310339366257582">ትሮችን ሰብስብ</translation>
 <translation id="2729577602370119849">ማተሚያዎችን በቀላሉ ይድረሱ እና ያስተዳድሩ</translation>
-<translation id="2729940704980595903">የእርስዎን የGemini መተግበሪያ እንቅስቃሴ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="2730550884708194161">ስለ የሥራ መገለጫዎች</translation>
 <translation id="2730596696987224099">የራስዎን ይምረጡ</translation>
 <translation id="2730647855013151888">ሁሉንም የግል መረጃ ያካትቱ</translation>
@@ -2302,7 +2302,6 @@
 <translation id="2749836841884031656">ሲም</translation>
 <translation id="2749881179542288782">ሰዋሰው እና ሆሄ አርም</translation>
 <translation id="2750020734439919571">ተጨማሪ የChrome መተግበሪያ ቅንብሮች እና ፈቃዶች</translation>
-<translation id="275010360476017464">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል።</translation>
 <translation id="2750602041558385535">ያለተረጋገጠ ውርድ ታግዷል</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> ተጨማሪ</translation>
 <translation id="2751454300227269244">አፍዎን ወደ ቀኝ ያንቀሳቅሱ</translation>
@@ -2692,6 +2691,7 @@
 <translation id="3030772324014024606">አርትዕ</translation>
 <translation id="3030795534674718505">ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ተፈቅዷል</translation>
 <translation id="3030967311408872958">ፀሐይ ከወጣችበት ጊዜ ጀምሮ እስክትጠልቅ ድረስ</translation>
+<translation id="3030970046240311592">የGemini ታሪክዎን ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">የቀኝ ጠቅታ ለማድረግ የመዳሰሻ ሰሌዳን እና የቁልፍ ሰሌዳን ይጠቀሙ</translation>
 <translation id="3031557471081358569">ከውጪ ለማስመጣት ንጥሎችን ምረጥ፦</translation>
@@ -3215,7 +3215,6 @@
 <translation id="343578350365773421">ወረቀት ጨርሷል</translation>
 <translation id="3435896845095436175">አንቃ</translation>
 <translation id="3436118221454753036">የሰው ሠራሽ አስተውሎት ሁነታን ይጠይቁ</translation>
-<translation id="3437072258256045988">የGemini መተግበሪያዎች እንቅስቃሴዎን ያስተዳደሩ</translation>
 <translation id="3437397693214267762">የእርስዎን Outlook ቀን መቁጠሪያ እና Sharepoint እና OneDrive ፋይሎች ይመልከቱ</translation>
 <translation id="3437494162908353428">DevTools ለዚህ ዩአርኤል አይፈቀዱም።</translation>
 <translation id="3437498061222607130">በ<ph name="USER_EMAIL" /> መለያዎ ወደ ፍለጋ ገብተዋል</translation>
@@ -4147,6 +4146,7 @@
 <translation id="4107793386654579933">ለ<ph name="ACTION_NAME" /> እርምጃ አቋራጭ ይምረጡ</translation>
 <translation id="4109135793348361820">መስኮት ወደ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ውሰድ</translation>
 <translation id="4110485659976215879">ማስጠንቀቂያን ወደነበረበት መልስ</translation>
+<translation id="4110984310437592352">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini ታሪክ (ከበራ) ውስጥ ይቀመጣል።</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጭ)</translation>
 <translation id="4112282889480354965">ቅጥያዎች እና ክህሎቶች</translation>
 <translation id="4113743276555482284">የፋይል የይለፍ ቃል</translation>
@@ -4237,6 +4237,7 @@
 <translation id="419427585139779713">በአንድ ጊዜ አንድ ክፍለ-ቃል ያስገቡ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4195814663415092787">ካቆምክበት ቀጥል</translation>
+<translation id="4196632390211257612">ከGemini ጋር የሚኖሩዎት ውይይቶችም ሆኑ የእርስዎ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />የGoogle Workspace ውሂብ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ አይውሉም። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል።</translation>
 <translation id="4198268995694216131">ተጨማሪ ጣቢያዎች</translation>
 <translation id="4200609364258658652">የቪዲዮ ፍሬም ቅ&amp;ዳ</translation>
 <translation id="4200689466366162458">ብጁ ቃላት</translation>
@@ -4839,6 +4840,7 @@
 <translation id="4665035764476941598">ሌሎች ትሮችዎን መልሰው ለማምጣት እዚህ ጠቅ ያድርጉ</translation>
 <translation id="4665446389743427678">በ<ph name="SITE" /> የተከማቸ ሁሉም ውሂብ ይሰረዛል።</translation>
 <translation id="4666472247053585787">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ከእርስዎ ስልክ ማሳወቂያዎችን ይመልከቱ</translation>
+<translation id="4666483368282673356">የGemini ታሪክዎን ያስተዳድሩ</translation>
 <translation id="4666911709726371538">ተጨማሪ መተግበሪያዎች</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">ፒን ቁጥሮችን ብቻ መጠቀም አለበት</translation>
@@ -5312,6 +5314,7 @@
 <translation id="5012523644916800014">የይለፍ ቃላትን እና የይለፍ ቁልፎችን አስተዳድር</translation>
 <translation id="501394389332262641">የዝቅተኛ ባትሪ ድምፅ</translation>
 <translation id="5014286001996333986">ይተካ ወይም አዲስ ቡድን ይፈጠር?</translation>
+<translation id="5014385104640320445">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini ታሪክ (ከበራ) ውስጥ ይቀመጣል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="5015344424288992913">ለproxy መፍትሄ በመፈለግ ላይ…</translation>
 <translation id="5016305686459575361">ስልክዎን በማገናኘት የሚከተሉትን ማድረግ ይችላሉ፡-</translation>
 <translation id="5016491575926936899">ከኮምፒዩተርዎ ሆነው መልዕክትን መላክ፣ የበይነመረብ ግንኙነትዎን ማጋራት፣ ለውይይት ማሳወቂያዎች መልስ መስጠት እና የእርስዎን <ph name="DEVICE_TYPE" /> በስልክዎ መክፈት ይችላሉ።<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -5687,7 +5690,6 @@
 <translation id="5298315677001348398">መቀጠል እና ይህ ሶፍትዌር በመሳሪያዎ ላይ ለውጦችን እንዲያደርግ መፍቀድ ይፈልጋሉ?</translation>
 <translation id="5299109548848736476">አትከታተል</translation>
 <translation id="5299558715747014286">የእርስዎን የትር ቡድኖችን ይመልከቱ እና ያቀናብሩ</translation>
-<translation id="5300667117276823109">ከGemini ጋር የሚኖሩዎት ውይይቶች ወይም የእርስዎ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />የGoogle Workspace ውሂብ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውሉም። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስህተቶችን ሊሠራ ይችላል።</translation>
 <translation id="5301398529256275325">እንደ «ይህን ገፅ አጠቃልል» ያሉ ነገሮችን ወይም የራስዎን ጥያቄ መጠየቅ ይሞክሩ።</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
 <translation id="5302032366299160685">እንደገና ከመሞከርዎ በፊት ፋይሉ እስኪከፈት ድረስ ይጠብቁ</translation>
@@ -6843,7 +6845,6 @@
 <translation id="62229737360959019">እንዲሁም ከውይይት ወይም ከተጋራ ትር ላይ የተከፈቱ ትሮች ለGemini ይጋራሉ። Live ሁነታ ውስጥ በነባሪ የሚጋራው የአሁኑ ትር ብቻ ነው።</translation>
 <translation id="622484624075952240">ታች</translation>
 <translation id="622537739776246443">መገለጫ ይሰረዛል</translation>
-<translation id="622568138962270592">የGemini መተግበሪያ እንቅስቃሴ</translation>
 <translation id="6226777517901268232">የግል ቁልፍ ፋይል (ከተፈለገ)</translation>
 <translation id="6227280783235722609">ቅጥያ</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />፦ Gemini በዚህ ተግባር ላይ መሥራት አቁሟል</translation>
@@ -8002,6 +8003,7 @@
 <translation id="710224247908684995">አንድ ቅጥያ ደህንነቱ የተጠበቀ አሰሳን አጥፍቷል</translation>
 <translation id="7102832101143475489">ጥያቄው ጊዜውን ጨርሷል</translation>
 <translation id="7103944802169726298">በተመሳሳይ የWi-Fi አውታረ መረብ ላይ ያሉ ፒሲ እና cast ማድረጊያ መሣሪያዎች</translation>
+<translation id="7104134653119992646">ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። ስለ አካባቢዎ የሆነ መረጃን ጨምሮ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ታሪክዎን ማስተዳደር<ph name="END_LINK_MANAGE_HISTORY" /> ይችላሉ። <ph name="BEGIN_LINK_LEARN_MORE" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />። የGoogle አባልነት</translation>
 <translation id="7107609441453408294">ተመሳሳዩን ኦዲዮ በሁሉም ድምፅ ማውጫዎች በኩል አጫውት</translation>
 <translation id="7108338896283013870">ደብቅ</translation>
@@ -8381,7 +8383,6 @@
 <translation id="7395774987022469191">መላው ማያ ገፅ</translation>
 <translation id="7396017167185131589">የተጋሩ አቃፊዎች እዚህ ይታያሉ</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ስርዓት በሚነሳበት ጊዜ ይጀመርና ሁሉንም የሌሎች <ph name="PRODUCT_NAME" /> መስኮቶችን ከዘጉ በኋላም እንኳ በጀርባ ውስጥ መሄዱን ይቀጥላል።</translation>
-<translation id="7398815534290329738">ውይይቶች ይገመገማሉ እና Google ሰው ሠራሽ አስተውሎትን ለማሻሻል ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ስለ አካባቢዎ መረጃን ጨምሮ <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />እንቅስቃሴዎን ማስተዳደር<ph name="END_LINK_MANAGE_ACTIVITY" /> ይችላሉ። <ph name="BEGIN_LINK_LEARN_MORE" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">ስምረትን አብጅ</translation>
 <translation id="7399616692258236448">እርስዎ ከፈቀዱላቸው ውጭ ለሁሉም ጣቢያዎች የአካባቢ ጥያቄዎች በራስ-ሰር ይታገዳሉ</translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
@@ -8895,7 +8896,6 @@
 <translation id="7777624210360383048">አቋራጭ <ph name="SHORTCUT" /> ለ<ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;የዕልባት አቀናባሪን ክፈት</translation>
 <translation id="7779840061887151693">ማሳያ</translation>
-<translation id="7780716468751073938">ከGemini ጋር የሚኖሩዎት ውይይቶች ወይም የእርስዎ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />የGoogle Workspace ውሂብ<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> አይገመገሙም ወይም ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውሉም። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስህተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል።</translation>
 <translation id="7780992949171378848">የውሂብዎን አጠቃቀም በተመለከተ ለጣቢያዎች መርጠው የመውጣት ጥያቄ ይላኩ</translation>
 <translation id="7782102568078991263">ከGoogle ተጨማሪ የጥቆማ አስተያየቶች የሉም</translation>
 <translation id="7782717250816686129">በመለያ መግቢያ ማያ ገፅ ላይ ቀጣይነት ያለው ውሂብን ያከማቹ እና ምስክረነቶችን ወደ ክፍለ ጊዜው ያስገቡ።</translation>
@@ -9034,6 +9034,7 @@
 <translation id="7903925330883316394">ፍጆታ፦ <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">ካታካና</translation>
 <translation id="7904492297081735975">እና የዕልባት አቀናባሪን ይክፈቱ</translation>
+<translation id="7904508617992122201">ውይይቶች ይገመገማሉ እና ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሰልጠን ጥቅም ላይ ይውላሉ። Gemini ሰው ሠራሽ አስተውሎት ነው እና ስሕተቶችን ሊሠራ ይችላል። አንዳንድ ይዘት ለሁሉም ሰው ተስማሚ ላይሆን ይችላል። ስለ አካባቢዎ የሆነ መረጃን ጨምሮ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ታሪክዎን ማስተዳደር<ph name="END_LINK_MANAGE_HISTORY" /> ይችላሉ። <ph name="BEGIN_LINK_LEARN_MORE" />ስለ ምርጫዎችዎ የበለጠ ይወቁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">በአውታረ መረብዎ ላይ የLinux ወደቦች ለሌሎች መሣሪያዎች የሚገኙ ያድርጓቸው።</translation>
 <translation id="7907312522152480478">ትሮችዎን ከሌሎች መሣሪያዎችዎ ለማግኘት፣ እርስዎ መሆንዎን ያረጋግጡ እና የእርስዎን ታሪክ እና ትሮች ያስምሩ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማስመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="7907502219904644296">መዳረሻ ለውጥ</translation>
@@ -10432,7 +10433,6 @@ nil</translation>
 <translation id="8945274638472141382">የአዶ መጠን</translation>
 <translation id="8945508919180478719">የስቱዲዮ-ቅጥ ማይክሮፎን</translation>
 <translation id="8946954897220903437">በአድራሻ አሞሌው ውስጥ ያሉትን ሁሉንም ጥያቄዎች ሰብስብ</translation>
-<translation id="8946996840522387154">ከGemini ጋር ለመወያየት የእርስዎን ማይክሮፎን ይጠቀሙ። ከGemini ጋር ሲነጋገሩ ኦዲዮ የGemini መተግበሪያ እንቅስቃሴ (ከበራ) ውስጥ ይከማቻል። ውሂብዎ ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ጥቅም ላይ አይውልም።</translation>
 <translation id="894763922177556086">ጥሩ</translation>
 <translation id="895054485242522631">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን መጠቀም ይችላሉ</translation>
 <translation id="8951465597020890363">የሆነው ሆኖ ከእንግዳ ሁነታ ይወጣ?</translation>

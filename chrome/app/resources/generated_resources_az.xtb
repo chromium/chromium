@@ -933,6 +933,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1703666494654169921">Saytlara virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verməyin</translation>
 <translation id="1704097193565924901">Baş hərfi böyük yazın</translation>
 <translation id="1704230497453185209">Saytlara səs oxutmaq icazəsi verməyin</translation>
+<translation id="170494114379308411">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace datanız<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini öyrətmək üçün istifadə olunmayacaq. Gemini Sİ-dir və səhvə yola verə bilər.</translation>
 <translation id="170658918174941828">Chrome versiyanız, əməliyyat sistemi versiyanız, Yayım ayarları, əks etdirmə məhsuldarlığı statistikaları və kommunikasiya kanalının diaqnostika qeydləri yuxarıda daxil etmək üçün seçdiyiniz istənilən məlumata əlavə olaraq göndəriləcək. Bu rəy problemləri müəyyən etmək və funksiyanı təkmilləşdirməyə yardım etmək üçün istifadə edilir. Göndərdiyiniz istənilən şəxsi məlumat, açıq şəkildə və ya təsadüfi məxfilik siyasətimizə əsasən qorunacaq. Bu rəyi təqdim etməklə, Google'un verdiyiniz rəyi istənilən Google məhsulu və ya xidmətini təkmilləşdirmək üçün istifadə edə biləcəyi ilə razılaşırsınız.</translation>
 <translation id="17081583771848899">başladıcı + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Bulud yaddaşında yadda saxlayın</translation>
@@ -1158,6 +1159,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1881445033931614352">Klaviatura düzəni</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# element}}</translation>
 <translation id="188177382966899059">Dərin axtarış</translation>
+<translation id="1883018549404920116">Gemini tarixçəsi</translation>
 <translation id="1884340228047885921">Cari görünmə ayarı "bəzi kontaktlar" olaraq ayarlanıb</translation>
 <translation id="1884705339276589024">Linux diskinin ölçüsünü dəyişin</translation>
 <translation id="1885066963699478692">Siyasətləri ayarlamaq üçün istifadə olunan XML faylları.</translation>
@@ -1174,7 +1176,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1892453608039100484">1. Aşağıdakı <ph name="BUTTON_LABEL" /> düyməsinə klikləyin
 2. Windows ayarlarında <ph name="BUTTON_2" /> seçiminə klikləyin</translation>
 <translation id="1895658205118569222">Söndürün</translation>
-<translation id="1896353439080510710">Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. Gemini AI-dır və səhv edə bilər. Məkan məlumatı da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />fəaliyyəti idarə edə<ph name="END_LINK_MANAGE_ACTIVITY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimlər haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Güclü paroldan istifadə edin</translation>
 <translation id="1897860317037652061">Skanlanmadı</translation>
 <translation id="1898804291554630487">Bu səhifə haqqında soruşun</translation>
@@ -1230,7 +1231,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1929774028758671973">Kontaktlar yaxında olduqda sizinlə paylaşım edə bilər. Bu sorğuları təsdiq etməlisiniz. <ph name="USER_EMAIL" /> hesabına daxil olmuş cihazlar arasında paylaşımı təsdiqləməli deyilsiniz.</translation>
 <translation id="1931152874660185993">Heç bir komponent quraşdırılmayıb.</translation>
 <translation id="1932125073382155239">Elementləriniz yedəklənsin?</translation>
-<translation id="1933070475689690969">Gemini tətbiq fəaliyyəti</translation>
 <translation id="1933489278505808700">Oxumağa və dəyişməyə icazə verilir</translation>
 <translation id="1935303383381416800">Məkanınıza baxmaq icazəsi verilib</translation>
 <translation id="193565226207940518">Dəstək aləti</translation>
@@ -1627,6 +1627,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2246549592927364792">Google'dan şəkil təsvirləri əldə etmək istəyirsiniz?</translation>
 <translation id="2247738527273549923">Cihazınız təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="2247870315273396641">Səs önizləməsi</translation>
+<translation id="2247960558975094922">Gemini tarixçəsi</translation>
 <translation id="224835741840550119">Cihazı təmizləyin</translation>
 <translation id="2249111429176737533">Tab şəklində pəncərə olaraq açın</translation>
 <translation id="2249605167705922988">məsələn, 1-5, 8, 11-13</translation>
@@ -2259,7 +2260,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2727712005121231835">Aktual Ölçü</translation>
 <translation id="2729310339366257582">Tabları yığcamlaşdırın</translation>
 <translation id="2729577602370119849">Printerlərə asanlıqla daxil olub, idarə edin</translation>
-<translation id="2729940704980595903">Gemini Tətbiq fəaliyyətinizə baxın və onu idarə edin</translation>
 <translation id="2730550884708194161">İş profilləri haqqında</translation>
 <translation id="2730596696987224099">Özünüz seçin</translation>
 <translation id="2730647855013151888">Bütün şəxsi məlumatları daxil edin</translation>
@@ -2297,7 +2297,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
 <translation id="2750020734439919571">Chrome tətbiqi üzrə digər ayar və icazələr</translation>
-<translation id="275010360476017464">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə).</translation>
 <translation id="2750602041558385535">Doğrulanmamış endirmə bloklandı</translation>
 <translation id="2751320815618312249">Daha + <ph name="NUM" /> tab</translation>
 <translation id="2751454300227269244">Mausu sağa hərəkət etdirin</translation>
@@ -2687,6 +2686,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3030772324014024606">Redaktə edin</translation>
 <translation id="3030795534674718505">Haqqınızda yadda saxlanılan məlumatdan istifadə icazəsi verilib</translation>
 <translation id="3030967311408872958">Qürubdan şəfəq vaxtına kimi</translation>
+<translation id="3030970046240311592">Gemini tarixçənizə baxın və idarə edin</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Sağ düymə ilə klikləmək üçün taçped və klaviatura istifadə edin</translation>
 <translation id="3031557471081358569">İmport etmək üçün element seçin:</translation>
@@ -3210,7 +3210,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="343578350365773421">Kağız bitdi</translation>
 <translation id="3435896845095436175">Aktivləşdirin</translation>
 <translation id="3436118221454753036">Sİ-dən soruşun rejimi</translation>
-<translation id="3437072258256045988">Gemini tətbiq fəaliyyətinizi idarə edin</translation>
 <translation id="3437397693214267762">Outlook Calendar, habelə SharePoint və OneDrive fayllarınıza baxın</translation>
 <translation id="3437494162908353428">Bu URL üçün DevTools-a icazə verilmir.</translation>
 <translation id="3437498061222607130"><ph name="USER_EMAIL" /> hesabınızla Axtarışa daxil olmusunuz</translation>
@@ -4142,6 +4141,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> əməliyyatı üçün qısayol seçin</translation>
 <translation id="4109135793348361820">Pəncərəni <ph name="USER_NAME" /> istifadəçisinə daşıyın (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
+<translation id="4110984310437592352">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini tarixçəsində yadda saxlanılır (aktivdirsə).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
 <translation id="4112282889480354965">Artırmalar və bacarıqlar</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
@@ -4232,6 +4232,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="419427585139779713">Hər dəfə bir heca daxil edin</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4195814663415092787">Qaldığınız yerdən davam edin</translation>
+<translation id="4196632390211257612">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace datanız<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini öyrətmək üçün istifadə olunmayacaq. Gemini Sİ-dir və səhvə yola verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər.</translation>
 <translation id="4198268995694216131">Əlavə saytlar</translation>
 <translation id="4200609364258658652">Videoçərçivəni kopyalayın</translation>
 <translation id="4200689466366162458">Fərdi sözlər</translation>
@@ -4834,6 +4835,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4665035764476941598">Digər tabları geri qaytarmaq üçün bura klikləyin</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> tərəfindən saxlanılan bütün data silinəcək.</translation>
 <translation id="4666472247053585787"><ph name="DEVICE_TYPE" /> cihazında telefonunuzdan gələn bildirişlərə baxın</translation>
+<translation id="4666483368282673356">Gemini tarixçənizi idarə edin</translation>
 <translation id="4666911709726371538">Daha çox tətbiq</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN yalnız rəqəmlərdən ibarət olmalıdır</translation>
@@ -5307,6 +5309,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5012523644916800014">Parolları və giriş açarlarını idarə edin</translation>
 <translation id="501394389332262641">Aşağı batareya səsi</translation>
 <translation id="5014286001996333986">Əvəz edilsin, yoxsa yeni qrup yaradılsın?</translation>
+<translation id="5014385104640320445">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini tarixçəsində yadda saxlanılır (aktivdirsə). Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir.</translation>
 <translation id="5015344424288992913">Proksi həll olunur...</translation>
 <translation id="5016305686459575361">Telefonu qoşaraq aşağıdakıları edə bilərsiniz:</translation>
 <translation id="5016491575926936899">Kompüterdən mesaj yaza, internet bağlantısını paylaşa, söhbət bildirişinə cavab yaza və <ph name="DEVICE_TYPE" /> cihazını telefonunuz ilə kiliddən çıxara bilərsiniz.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -5682,7 +5685,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5298315677001348398">Davam edərək bu proqram təminatının cihazınıza dəyişikliklər etməsinə icazə vermək istəyirsiniz?</translation>
 <translation id="5299109548848736476">İzləməyin</translation>
 <translation id="5299558715747014286">Tab qruplarınıza baxın və onları idarə edin</translation>
-<translation id="5300667117276823109">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace datanız<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini təkmilləşdirmək üçün istifadə olunmayacaq. Gemini Sİ-dir və səhvə yola verə bilər.</translation>
 <translation id="5301398529256275325">"Bu səhifəni ümumiləşdirin" kimi əmrlər verin və ya öz sualınızı soruşun.</translation>
 <translation id="5301954838959518834">Ok, anladım</translation>
 <translation id="5302032366299160685">Yenidən cəhd etməzdən əvvəl faylın açılmasını gözləyin</translation>
@@ -6838,7 +6840,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="62229737360959019">Söhbətdən və ya paylaşılan tabdan açılan tablar da Gemini ilə paylaşılır. Canlı rejimdə defolt olaraq yalnız cari tab paylaşılır.</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="622537739776246443">Profil silinəcək</translation>
-<translation id="622568138962270592">Gemini Tətbiq Fəaliyyəti</translation>
 <translation id="6226777517901268232">Xüsusi açar faylı (istəyə bağlı)</translation>
 <translation id="6227280783235722609">artırma</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini bu tapşırıq üzərində işləməyi dayandırdı</translation>
@@ -7994,6 +7995,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="710224247908684995">Artırma Güvənli Baxışı deaktiv edib</translation>
 <translation id="7102832101143475489">Sorğunun vaxtı bitib</translation>
 <translation id="7103944802169726298">Kompüter və yayım cihazı eyni Wi-Fi şəbəkəsində</translation>
+<translation id="7104134653119992646">Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Gemini Sİ-dir və səhvə yola verə bilər. Məkanınız haqqında məlumat da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_HISTORY" />tarixçənizi idarə edə<ph name="END_LINK_MANAGE_HISTORY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimlər haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google üzvlüyü</translation>
 <translation id="7107609441453408294">Eyni audionu bütün spikerlər vasitsəilə oxudun</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
@@ -8373,7 +8375,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7395774987022469191">Bütün ekran</translation>
 <translation id="7396017167185131589">Paylaşılan qovluqlar burada görünəcək</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> sistem startapı başladacaq və hətta bütün digər <ph name="PRODUCT_NAME" /> pəncərələrini bağlayan kimi  arxa fonda işlətməyə davam edəcək.</translation>
-<translation id="7398815534290329738">Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. Gemini AI-dır və səhv edə bilər. Müəyyən kontent hər kəs üçün uyğun olmaya bilər. Məkan məlumatı da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />fəaliyyəti idarə edə<ph name="END_LINK_MANAGE_ACTIVITY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimlər haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Sinxronlaşdırmanı fərdiləşdirin</translation>
 <translation id="7399616692258236448">İcazə verilənlərdən başqa bütün saytlar üçün məkan sorğuları avtomatik bloklanır</translation>
 <translation id="7399802613464275309">Təhlükəsizlik Yoxlanışı</translation>
@@ -8887,7 +8888,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> üçün <ph name="SHORTCUT" /> qısayolu</translation>
 <translation id="777852709704682967">&amp;Əlfəcin Menecerini açın</translation>
 <translation id="7779840061887151693">displey</translation>
-<translation id="7780716468751073938">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace datanız<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini təkmilləşdirmək üçün istifadə olunmayacaq. Gemini Sİ-dir və səhvə yola verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər.</translation>
 <translation id="7780992949171378848">Datanızın istifadəsi ilə bağlı saytlara imtina sorğusu göndərin</translation>
 <translation id="7782102568078991263">Google'dan daha təklif yoxdur</translation>
 <translation id="7782717250816686129">Daimi datanı giriş ekranında saxlayıb kredensialları sessiyaya daxil edin.</translation>
@@ -9026,6 +9026,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7903925330883316394">Utilit: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Əlfəcin menecerini açın</translation>
+<translation id="7904508617992122201">Çatlar nəzərdən keçirilir və generativ Sİ modellərini öyrətmək üçün istifadə olunur. Gemini Sİ-dir və səhvə yola verə bilər. Bəzi kontentlər hər kəs üçün uyğun olmaya bilər. Məkanınız haqqında məlumat da daxil olmaqla <ph name="BEGIN_LINK_MANAGE_HISTORY" />tarixçənizi idarə edə<ph name="END_LINK_MANAGE_HISTORY" /> bilərsiniz. <ph name="BEGIN_LINK_LEARN_MORE" />Seçimlər haqqında ətraflı məlumat əldə edin<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Linux portlarını şəbəkənizdə digər cihazlar üçün əlçatan edin.</translation>
 <translation id="7907312522152480478">Digər cihazlarınızdakı tablara giriş əldə etmək üçün kimliyinizi doğrulayın, habelə tarixçənizi və tablarınızı sinxronlaşdırın. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="7907502219904644296">Girişi dəyişin</translation>
@@ -10417,7 +10418,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8945274638472141382">İkona ölçüsü</translation>
 <translation id="8945508919180478719">Studio üslublu mikrofon</translation>
 <translation id="8946954897220903437">Ünvan panelindəki bütün sorğuları yığcamlaşdırın</translation>
-<translation id="8946996840522387154">Gemini ilə söhbət etmək üçün mikrofondan istifadə edin. Gemini ilə danışdığınız zaman audio Gemini Tətbiq Fəaliyyətində saxlanılır (aktivdirsə). Datanız generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir.</translation>
 <translation id="894763922177556086">Yaxşı</translation>
 <translation id="895054485242522631">Saytlar hərəkət sensorlarından istifadə edə bilər</translation>
 <translation id="8951465597020890363">İstənilən halda qonaq rejimindən çıxılsın?</translation>

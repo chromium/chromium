@@ -933,6 +933,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
 <translation id="1704097193565924901">Kapitalizo</translation>
 <translation id="1704230497453185209">Mos lejo që sajtet të luajnë tinguj</translation>
+<translation id="170494114379308411">Bisedat e tua me Gemini dhe <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />të dhënat e tua të Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nuk do të shqyrtohen dhe nuk do të përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime.</translation>
 <translation id="170658918174941828">Versioni yt i Chrome, versioni i sistemit operativ, cilësimet e Cast, statistikat e rendimentit të pasqyrimit dhe regjistrat e diagnostikimit të kanalit të komunikimit do të dërgohen bashkë me çdo informacion që zgjedh të përfshish më sipër. Ky koment përdoret për diagnostikimin e problemeve dhe për të ndihmuar në përmirësimin e veçorisë. Çdo informacion personal që dorëzon, me pajtimin tënd apo jo, do të mbrohet në përputhje me politikat tona të privatësisë. Duke e dorëzuar këtë koment, ti pranon që Google të mund ta përdorë komentin e dhënë për të përmirësuar çdo produkt ose shërbim të Google.</translation>
 <translation id="17081583771848899">nisësi + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Ruaj te hapësira ruajtëse në renë kompjuterike</translation>
@@ -1158,6 +1159,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1881445033931614352">Struktura e tastierës</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Artikull}other{# artikuj}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">Historiku i Gemini</translation>
 <translation id="1884340228047885921">Cilësimi aktual i dukshmërisë është "Disa kontakte"</translation>
 <translation id="1884705339276589024">Ndrysho madhësinë e diskut të Linux</translation>
 <translation id="1885066963699478692">Skedarët XML që po përdoren për të caktuar politikat.</translation>
@@ -1173,7 +1175,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1892341345406963517">Përshëndetje <ph name="PARENT_NAME" /></translation>
 <translation id="1892453608039100484">1. Kliko <ph name="BUTTON_LABEL" /> më poshtë Kliko <ph name="BUTTON_2" /> te cilësimet e Windows</translation>
 <translation id="1895658205118569222">Mbyllja</translation>
-<translation id="1896353439080510710">Bisedat shqyrtohen dhe përdoren për të përmirësuar IA-në e Google. Gemini është IA dhe mund të bëjë gabime. Mund të <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />menaxhosh aktivitetin tënd<ph name="END_LINK_MANAGE_ACTIVITY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Përdor një fjalëkalim i fortë</translation>
 <translation id="1897860317037652061">Skanimi dështoi</translation>
 <translation id="1898804291554630487">Pyet rreth kësaj faqeje</translation>
@@ -1229,7 +1230,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1929774028758671973">Kontaktet mund të ndajnë me ty kur janë në afërsi. Do të të kërkohet t'i miratosh këto kërkesa. Nuk do të të duhet të miratosh ndarjen mes pajisjeve ku është kryer identifikimi me <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Nuk ka asnjë përbërës të instaluar.</translation>
 <translation id="1932125073382155239">Të rezervohen gjërat e tua?</translation>
-<translation id="1933070475689690969">Aktiviteti i aplikacioneve Gemini</translation>
 <translation id="1933489278505808700">Lejohet të lexojë dhe të ndryshojë</translation>
 <translation id="1935303383381416800">Lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="193565226207940518">Vegla e mbështetjes</translation>
@@ -1626,6 +1626,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2246549592927364792">Të merren përshkrimet e imazhit nga Google?</translation>
 <translation id="2247738527273549923">Pajisja menaxhohet nga organizata jote</translation>
 <translation id="2247870315273396641">Shqyrtimi i zërit</translation>
+<translation id="2247960558975094922">Historiku i Gemini</translation>
 <translation id="224835741840550119">Pastro pajisjen tënde</translation>
 <translation id="2249111429176737533">Hape si dritare me skeda</translation>
 <translation id="2249605167705922988">p.sh. 1-5, 8, 11-13</translation>
@@ -2256,7 +2257,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2727712005121231835">Madhësia aktuale</translation>
 <translation id="2729310339366257582">Palos skedat</translation>
 <translation id="2729577602370119849">Qasu dhe menaxho me lehtësi printerët</translation>
-<translation id="2729940704980595903">Shiko dhe menaxho aktivitetin tënd të aplikacioneve Gemini</translation>
 <translation id="2730550884708194161">Rreth profileve të punës</translation>
 <translation id="2730596696987224099">Zgjidh tëndin</translation>
 <translation id="2730647855013151888">Përfshi të gjitha informacionet personale</translation>
@@ -2294,7 +2294,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kontrollo gramatikën me drejtshkrimin</translation>
 <translation id="2750020734439919571">Cilësime dhe leje të tjera të aplikacionit të Chrome</translation>
-<translation id="275010360476017464">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është i aktivizuar).</translation>
 <translation id="2750602041558385535">Shkarkimi i paverifikuar u bllokua</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> të tjera</translation>
 <translation id="2751454300227269244">Lëviz gojën djathtas</translation>
@@ -2684,6 +2683,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3030772324014024606">Modifiko</translation>
 <translation id="3030795534674718505">Lejohet që të përdorin informacionet që ka ruajtur në lidhje me ty</translation>
 <translation id="3030967311408872958">Nga perëndimi në agim</translation>
+<translation id="3030970046240311592">Shiko dhe menaxho historikun tënd të Gemini</translation>
 <translation id="3031417829280473749">Agjenti X</translation>
 <translation id="3031532026314193077">Përdor bllokun me prekje dhe tastierën për të klikuar me butonin djathtas</translation>
 <translation id="3031557471081358569">Përzgjidh artikujt për të importuar:</translation>
@@ -3207,7 +3207,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="343578350365773421">Nuk ka letër</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
 <translation id="3436118221454753036">Pyet "Modalitetin e IA-së"</translation>
-<translation id="3437072258256045988">Menaxho aktivitetin e aplikacioneve Gemini</translation>
 <translation id="3437397693214267762">Shiko "Kalendarin e Outlook" dhe skedarët e SharePoint dhe OneDrive</translation>
 <translation id="3437494162908353428">DevTools nuk lejohen për këtë URL.</translation>
 <translation id="3437498061222607130">Je i identifikuar në "Kërko" me llogarinë tënde <ph name="USER_EMAIL" /></translation>
@@ -4141,6 +4140,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4107793386654579933">Zgjidh një shkurtore për veprimin "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">Lëvize dritaren te <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Rikthe paralajmërimin</translation>
+<translation id="4110984310437592352">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Historikun e Gemini" (nëse është i aktivizuar).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Shtesat dhe aftësitë</translation>
 <translation id="4113743276555482284">Fjalëkalimi i skedarit</translation>
@@ -4231,6 +4231,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="419427585139779713">Fut rrokjet një nga një</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
+<translation id="4196632390211257612">Bisedat e tua me Gemini dhe <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />të dhënat e tua të Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nuk do të shqyrtohen dhe nuk do të përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë.</translation>
 <translation id="4198268995694216131">Sajte të tjera</translation>
 <translation id="4200609364258658652">Kopj&amp;o kuadrin e videos</translation>
 <translation id="4200689466366162458">Fjalët e personalizuara</translation>
@@ -4833,6 +4834,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4665035764476941598">Kliko këtu për të kthyer përsëri skedat e tjera</translation>
 <translation id="4665446389743427678">Të gjitha të dhënat e ruajtura nga <ph name="SITE" /> do të fshihen.</translation>
 <translation id="4666472247053585787">Shiko njoftimet nga telefoni yt në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Menaxho historikun tënd të Gemini</translation>
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Kodi PIN duhet të përdorë vetëm numra</translation>
@@ -5305,6 +5307,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5012523644916800014">Menaxho fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="501394389332262641">Tingulli i nivelit të ulët të baterisë</translation>
 <translation id="5014286001996333986">Të zëvendësohet apo të krijohet një grup i ri?</translation>
+<translation id="5014385104640320445">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Historikun e Gemini" (nëse është i aktivizuar). Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="5015344424288992913">Po zgjidh përfaqësuesin...</translation>
 <translation id="5016305686459575361">Duke lidhur telefonin, mund të bësh sa më poshtë:</translation>
 <translation id="5016491575926936899">Mund të dërgosh mesazhe me tekst nga kompjuteri yt, të ndash lidhjen tënde të internetit, t'u përgjigjesh njoftimeve të bisedës dhe ta shkyçësh <ph name="DEVICE_TYPE" /> me telefonin tënd.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -5679,7 +5682,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5298315677001348398">Dëshiron që të vazhdosh dhe ta lejosh këtë softuer që të bëjë ndryshime në pajisjen tënde?</translation>
 <translation id="5299109548848736476">Mos gjurmo</translation>
 <translation id="5299558715747014286">Shiko dhe menaxho grupet e skedave</translation>
-<translation id="5300667117276823109">As bisedat e tua me Gemini dhe as <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />të dhënat e tua të Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nuk do të shqyrtohen apo përdoren për të përmirësuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime.</translation>
 <translation id="5301398529256275325">Provo të kërkosh gjëra të tilla si "përmblidh këtë faqe" ose bëj pyetjen tënde.</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
 <translation id="5302032366299160685">Prit që skedari të hapet para se të provosh përsëri</translation>
@@ -6835,7 +6837,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="62229737360959019">Skedat e hapura nga një bisedë ose një skedë e ndarë ndahen gjithashtu me Gemini. Në modalitetin Live, vetëm skeda aktuale ndahet si parazgjedhje.</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="622537739776246443">Profili do të fshihet</translation>
-<translation id="622568138962270592">Aktiviteti i aplikacioneve Gemini</translation>
 <translation id="6226777517901268232">Skedari i çelësit privat (opsionale)</translation>
 <translation id="6227280783235722609">shtesë</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini ndaloi së punuari për këtë detyrë</translation>
@@ -7991,6 +7992,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="710224247908684995">Një shtesë e ka çaktivizuar "Shfletimin e sigurt"</translation>
 <translation id="7102832101143475489">Kërkesa skadoi</translation>
 <translation id="7103944802169726298">Kompjuteri dhe pajisja e transmetimit në të njëjtin rrjet Wi-Fi</translation>
+<translation id="7104134653119992646">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Anëtarësimi në Google</translation>
 <translation id="7107609441453408294">Luaj të njëjtën audio në të gjithë altoparlantët</translation>
 <translation id="7108338896283013870">Fshih</translation>
@@ -8370,7 +8372,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7395774987022469191">Ekrani i plotë</translation>
 <translation id="7396017167185131589">Dosjet e ndara do të shfaqen këtu</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> do të nisë pas fillimit të sistemit dhe do të vazhdojë të funksionojë në sfond edhe nëse i mbyll të gjitha dritaret e tjera <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Bisedat shqyrtohen dhe përdoren për të përmirësuar IA-në e Google. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë. Mund të <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />menaxhosh aktivitetin tënd<ph name="END_LINK_MANAGE_ACTIVITY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Personalizo sinkronizimin</translation>
 <translation id="7399616692258236448">Kërkesat për vendndodhjen bllokohen automatikisht për të gjitha sajtet, përveçse për ato që lejon ti</translation>
 <translation id="7399802613464275309">Kontrolli i sigurisë</translation>
@@ -8884,7 +8885,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7777624210360383048">Shkurtorja <ph name="SHORTCUT" /> për <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Hap "Menaxherin e faqeshënuesve"</translation>
 <translation id="7779840061887151693">ekrani</translation>
-<translation id="7780716468751073938">As bisedat e tua me Gemini dhe as <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />të dhënat e tua të Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> nuk do të shqyrtohen apo përdoren për të përmirësuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë.</translation>
 <translation id="7780992949171378848">Dërgo një kërkesë për tërheqje te sajtet në lidhje me përdorimin e të dhënave të tua</translation>
 <translation id="7782102568078991263">Nuk ka më sugjerime nga Google</translation>
 <translation id="7782717250816686129">Ruaj të dhënat e përhershme në ekranin e identifikimit dhe injekto kredencialet në sesion.</translation>
@@ -9023,6 +9023,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7903925330883316394">Softueri ndihmës: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Hap menaxherin e faqeshënuesve</translation>
+<translation id="7904508617992122201">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Ofroji portat e Linux për pajisjet e tjera në rrjetin tënd.</translation>
 <translation id="7907312522152480478">Për të marrë skedat nga pajisjet e tua të tjera, verifiko që je ti dhe sinkronizo historikun dhe skedat e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7907502219904644296">Ndrysho qasjen</translation>
@@ -10416,7 +10417,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8945274638472141382">Madhësia e ikonës</translation>
 <translation id="8945508919180478719">Mikrofon i stilit të studios</translation>
 <translation id="8946954897220903437">Palos të gjitha kërkesat në shiritin e adresave</translation>
-<translation id="8946996840522387154">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është i aktivizuar). Të dhënat e tua nuk përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="894763922177556086">E mirë</translation>
 <translation id="895054485242522631">Sajtet mund të përdorin sensorët e lëvizjes</translation>
 <translation id="8951465597020890363">Dëshiron të dalësh gjithsesi nga modaliteti "vizitor"?</translation>

@@ -684,6 +684,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1523279371236772909">Im letzten Monat angesehen</translation>
 <translation id="1523978563989812243">Text-zu-Sprache-Engines</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
+<translation id="1524903662136734524">Aus Google Drive hinzufügen</translation>
 <translation id="1525740877599838384">Zur Standortbestimmung nur WLAN nutzen</translation>
 <translation id="1526274304859009691">Melde dich an, um auf deine Erweiterungen und weitere Daten von <ph name="DEVICE" /> zuzugreifen</translation>
 <translation id="1526560967942511387">Unbenanntes Dokument</translation>
@@ -1173,7 +1174,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1892453608039100484">1. Klicke unten auf <ph name="BUTTON_LABEL" />
 2. Klicke in den Windows-Einstellungen auf <ph name="BUTTON_2" /></translation>
 <translation id="1895658205118569222">Herunterfahren</translation>
-<translation id="1896353439080510710">Chats werden geprüft und zur Verbesserung von Google AI verwendet. Gemini ist eine KI und kann Fehler machen. Du kannst deine <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />Aktivitäten verwalten<ph name="END_LINK_MANAGE_ACTIVITY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Starkes Passwort verwenden</translation>
 <translation id="1897860317037652061">Fehler beim Scannen</translation>
 <translation id="1898804291554630487">Fragen zu dieser Seite stellen</translation>
@@ -1229,7 +1229,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1929774028758671973">Deine Kontakte können etwas mit dir teilen, wenn sie sich in der Nähe befinden. Du musst diese Anfragen bestätigen. Für Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, musst du das Teilen nicht genehmigen.</translation>
 <translation id="1931152874660185993">Keine Komponenten installiert</translation>
 <translation id="1932125073382155239">Daten sichern?</translation>
-<translation id="1933070475689690969">Aktivitäten in Gemini-Apps</translation>
 <translation id="1933489278505808700">Lesen und Ändern genehmigt</translation>
 <translation id="1935303383381416800">Dürfen meine Standortdaten abrufen</translation>
 <translation id="193565226207940518">Supporttool</translation>
@@ -2255,7 +2254,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2727712005121231835">Originalgröße</translation>
 <translation id="2729310339366257582">Tabs minimieren</translation>
 <translation id="2729577602370119849">Einfach auf deine Drucker zugreifen und diese verwalten</translation>
-<translation id="2729940704980595903">Aktivitätsverlauf in Gemini-Apps ansehen und verwalten</translation>
 <translation id="2730550884708194161">Informationen zu Arbeitsprofilen</translation>
 <translation id="2730596696987224099">Eigenes wählen</translation>
 <translation id="2730647855013151888">Alle personenbezogenen Daten einbeziehen</translation>
@@ -2293,7 +2291,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Grammatik zusammen mit Rechtschreibung prüfen</translation>
 <translation id="2750020734439919571">Weitere Einstellungen und Berechtigungen für die Chrome App</translation>
-<translation id="275010360476017464">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Aktivitätsverlauf in Gemini-Apps gespeichert (sofern aktiviert).</translation>
 <translation id="2750602041558385535">Ungeprüfter Download blockiert</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> weitere</translation>
 <translation id="2751454300227269244">Mund nach rechts bewegen</translation>
@@ -2690,6 +2687,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3032204772252313646">Automatische Untertitel</translation>
 <translation id="3032272345862007156">Zuletzt generiertes KI-Design <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">„Bitte nicht stören“ aktiviert</translation>
+<translation id="3034219227076811559">Google Suche in Chrome</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
 <translation id="3036602651971781493">Websites dürfen einen Dienst für den Schutz von Inhalten verwenden, um urheberrechtlich geschützte Inhalte wiederzugeben oder zu prüfen, welchen Browser du verwendest</translation>
 <translation id="3036907164806060573">Traum</translation>
@@ -3203,9 +3201,9 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="343578350365773421">Kein Papier mehr</translation>
 <translation id="3435896845095436175">Aktivieren</translation>
 <translation id="3436118221454753036">Im KI-Modus fragen</translation>
-<translation id="3437072258256045988">Aktivitäten in Gemini-Apps verwalten</translation>
 <translation id="3437397693214267762">Outlook-Kalender sowie SharePoint- und OneDrive-Dateien aufrufen</translation>
 <translation id="3437494162908353428">Entwicklertools sind für diese URL nicht zulässig.</translation>
+<translation id="3437498061222607130">Du bist mit deinem Konto „<ph name="USER_EMAIL" />“ in der Google Suche angemeldet</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> immer Zugriff auf dein Mikrofon gestatten</translation>
 <translation id="3439970425423980614">PDF-Vorschau wird geöffnet...</translation>
@@ -5034,6 +5032,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4823484602432206655">Nutzer- und Geräteeinstellungen lesen und ändern</translation>
 <translation id="4824037980212326045">Linux-Sicherung und ‑Wiederherstellung</translation>
 <translation id="4824263260587281352">Tastenkombination „<ph name="KEY_COMBINATION" />“ ändern</translation>
+<translation id="4824320026281030716">Google-Konto: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4824958205181053313">Synchronisierung abbrechen?</translation>
 <translation id="4825462365587146530">Weitere Informationen zum Chrome Root Store erhältst du auf einem neuen Tab.</translation>
 <translation id="4825532258163983651">Passkey kann nicht gelöscht werden</translation>
@@ -5673,7 +5672,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5298315677001348398">Möchtest du fortfahren und dieser Software erlauben, Änderungen an deinem Gerät vorzunehmen?</translation>
 <translation id="5299109548848736476">Do Not Track</translation>
 <translation id="5299558715747014286">Tabgruppen ansehen und verwalten</translation>
-<translation id="5300667117276823109">Deine Unterhaltungen mit Gemini und deine <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-Daten<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> werden nicht überprüft und auch nicht verwendet, um generative KI-Modelle zu optimieren. Gemini ist eine KI und kann Fehler machen.</translation>
 <translation id="5301398529256275325">Du kannst z. B. sagen „Fasse diese Seite zusammen“ oder eine Frage stellen.</translation>
 <translation id="5301954838959518834">Ok</translation>
 <translation id="5302032366299160685">Warte, ob sich die Datei öffnet, bevor du es noch einmal versuchst</translation>
@@ -6824,7 +6822,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="62229737360959019">Über einen Chat oder einen geteilten Tab geöffnete Tabs werden ebenfalls mit Gemini geteilt. Im Gemini Live-Modus wird standardmäßig nur der aktuelle Tab geteilt.</translation>
 <translation id="622484624075952240">Abwärts</translation>
 <translation id="622537739776246443">Profil wird gelöscht</translation>
-<translation id="622568138962270592">Aktivitäten in Gemini-Apps</translation>
 <translation id="6226777517901268232">Datei mit privatem Schlüssel (optional)</translation>
 <translation id="6227280783235722609">Erweiterung</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini arbeitet nicht mehr an dieser Aufgabe</translation>
@@ -7892,6 +7889,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7030304022046916278">Sendet URLs an Safe Browsing, um sie zu prüfen</translation>
 <translation id="7030695672997239647">Klicke mit der rechten Maustaste auf einen Tab, wähle „Tab zu Gruppe hinzufügen“ aus und klicke dann auf „Neue Gruppe“</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
+<translation id="7032334023419126809">Google-Konto: <ph name="USER_EMAIL" /></translation>
 <translation id="7033616203784997570">Du darfst höchstens 62 Zeichen eingeben</translation>
 <translation id="7033731598469029604">Automatisches Browsen</translation>
 <translation id="70356134210715500">Passkeys verwenden</translation>
@@ -8358,7 +8356,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7395774987022469191">Gesamter Bildschirm</translation>
 <translation id="7396017167185131589">Freigegebene Ordner erscheinen hier</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> wird beim Systemstart gestartet und auch dann weiter im Hintergrund ausgeführt, wenn du alle anderen <ph name="PRODUCT_NAME" />-Fenster geschlossen hast.</translation>
-<translation id="7398815534290329738">Chats werden geprüft und zur Verbesserung von Google AI verwendet. Gemini ist eine KI und kann Fehler machen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deine <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />Aktivitäten verwalten<ph name="END_LINK_MANAGE_ACTIVITY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Synchronisierung anpassen</translation>
 <translation id="7399616692258236448">Standortanfragen werden automatisch für alle Websites blockiert, außer für diejenigen, die du zulässt</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
@@ -8872,7 +8869,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7777624210360383048">Tastenkombination <ph name="SHORTCUT" /> für <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Lesezeichenmanager öffnen</translation>
 <translation id="7779840061887151693">Display</translation>
-<translation id="7780716468751073938">Deine Unterhaltungen mit Gemini und deine <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace-Daten<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> werden nicht überprüft und auch nicht verwendet, um generative KI-Modelle zu optimieren. Gemini ist eine KI und kann Fehler machen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet.</translation>
 <translation id="7780992949171378848">Anfrage zur Ablehnung der Datennutzung an Websites senden</translation>
 <translation id="7782102568078991263">Keine weiteren Vorschläge von Google</translation>
 <translation id="7782717250816686129">Vom Nutzer auf dem Anmeldebildschirm angegebene Daten speichern und mit anderen Erweiterungen in der Nutzersitzung teilen.</translation>
@@ -9423,6 +9419,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8199300056570174101">Netzwerk(dienst) und Geräteeigenschaften</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8202827109322349110">Im Basiseditor öffnen</translation>
+<translation id="8203105157044679380">Google-Suchfeld</translation>
 <translation id="8203152941016626022">Nearby Share-Gerätename</translation>
 <translation id="8203732864715032075">Messages sendet Benachrichtigungen und merkt sich diesen Computer. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8203795194971602413">Rechtsklick</translation>
@@ -10235,6 +10232,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8818152010000655963">Hintergrund</translation>
 <translation id="8818988764764862764">Fenster nach links verschoben</translation>
 <translation id="8819510664278523111">Die Geräte-EID lautet <ph name="EID_NUMBER" />, die Geräte-IMEI <ph name="IMEI_NUMBER" /> und die Geräte-Seriennummer <ph name="SERIAL_NUMBER" />. Diese Nummern können zur Aktivierung des Diensts verwendet werden.</translation>
+<translation id="8819762137851963556">Cursor finden</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8821045908425223359">IP-Adresse automatisch konfigurieren</translation>
 <translation id="8821206216942230957">Mit deinem Konto hast du keinen Zugriff auf Gemini in Chrome</translation>
@@ -10400,7 +10398,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8945274638472141382">Symbolgröße</translation>
 <translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="8946954897220903437">Alle Anfragen in der Adressleiste minimieren</translation>
-<translation id="8946996840522387154">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Aktivitätsverlauf in Gemini-Apps gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="894763922177556086">Gut</translation>
 <translation id="895054485242522631">Websites dürfen Bewegungssensoren verwenden</translation>
 <translation id="8951465597020890363">Gastmodus trotzdem beenden?</translation>

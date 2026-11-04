@@ -934,6 +934,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
 <translation id="1704097193565924901">Veliko početno slovo</translation>
 <translation id="1704230497453185209">Nemoj dozvoliti web lokacijama reproduciranje zvuka</translation>
+<translation id="170494114379308411">Razgovori s Geminijem i <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />podaci Google Workspacea<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> se neće pregledati ni koristiti za obuku generativnih AI modela. Gemini je AI i može pogriješiti.</translation>
 <translation id="170658918174941828">Osim informacija koje odaberete iznad, poslat će se i podaci o verziji vašeg Chromea, verziji operativnog sistema, postavke Cast-a, statistika o performansama preslikavanja i zapisnici dijagnostike komunikacijskih kanala. Ove povratne informacije se koriste za dijagnosticiranje problema i
     pomažu u poboljšanju funkcije. Sve lične informacije koje pošaljete,
     bilo izričito ili slučajno, bit će zaštićene
@@ -1165,6 +1166,7 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1881445033931614352">Raspored tastature</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="188177382966899059">Dubinsko pretraživanje</translation>
+<translation id="1883018549404920116">Historija u Geminiju</translation>
 <translation id="1884340228047885921">Trenutna postavka vidljivosti je Određeni kontakti</translation>
 <translation id="1884705339276589024">Promjena veličine Linux diska</translation>
 <translation id="1885066963699478692">XML fajlovi koji se koriste za postavljanje pravila.</translation>
@@ -1181,7 +1183,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1892453608039100484">1. Kliknite na <ph name="BUTTON_LABEL" /> u nastavku
 2. Kliknite na <ph name="BUTTON_2" /> u postavkama Windowsa</translation>
 <translation id="1895658205118569222">Isključivanje</translation>
-<translation id="1896353439080510710">Chatovi se pregledaju i koriste za poboljšavanje Google AI-ja. Gemini je AI i može pogriješiti. Možete <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />upravljati aktivnošću<ph name="END_LINK_MANAGE_ACTIVITY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Koristite jaku lozinku</translation>
 <translation id="1897860317037652061">Skeniranje nije uspjelo</translation>
 <translation id="1898804291554630487">Pitajte o ovoj stranici</translation>
@@ -1237,7 +1238,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1929774028758671973">Kontakti mogu dijeliti s vama kada su u blizini. Od vas će se tražiti da odobrite ove zahtjeve. Nećete morati odobravati dijeljenje između uređaja koji su prijavljeni na račun <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Nijedna komponenta nije instalirana.</translation>
 <translation id="1932125073382155239">Napraviti sigurnosnu kopiju stvari?</translation>
-<translation id="1933070475689690969">Aktivnost u aplikacijama Gemini</translation>
 <translation id="1933489278505808700">Dozvoljeno je čitati i mijenjati</translation>
 <translation id="1935303383381416800">Dozvoljen je pregled vaše lokacije</translation>
 <translation id="193565226207940518">Alat za podršku</translation>
@@ -1634,6 +1634,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2246549592927364792">Preuzeti opis slike s Googlea?</translation>
 <translation id="2247738527273549923">Ovim uređajem upravlja vaša organizacija</translation>
 <translation id="2247870315273396641">Pregled glasa</translation>
+<translation id="2247960558975094922">Historija u Geminiju</translation>
 <translation id="224835741840550119">Očistite uređaj</translation>
 <translation id="2249111429176737533">Otvori kao prozor s karticama</translation>
 <translation id="2249605167705922988">npr. 1-5, 8, 11-13</translation>
@@ -2266,7 +2267,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2727712005121231835">Stvarna veličina</translation>
 <translation id="2729310339366257582">Sužavanje kartica</translation>
 <translation id="2729577602370119849">Lako pristupajte štampačima i upravljajte njima</translation>
-<translation id="2729940704980595903">Pregledajte Aktivnost u aplikacijama Gemini i upravljajte njome</translation>
 <translation id="2730550884708194161">O radnim profilima</translation>
 <translation id="2730596696987224099">Odaberite vlastitu</translation>
 <translation id="2730647855013151888">Uključite sve lične informacije</translation>
@@ -2304,7 +2304,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Provjera gramatike i pravopisa</translation>
 <translation id="2750020734439919571">Više postavki i odobrenja za aplikaciju Chrome</translation>
-<translation id="275010360476017464">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u Aktivnosti u aplikacijama Gemini (ako je uključeno).</translation>
 <translation id="2750602041558385535">Nepotvrđeno preuzimanje je blokirano</translation>
 <translation id="2751320815618312249">i još <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Pomicanje usta udesno</translation>
@@ -2694,6 +2693,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3030772324014024606">Uređivanje</translation>
 <translation id="3030795534674718505">Smije koristiti sačuvane informacije o vama</translation>
 <translation id="3030967311408872958">Od sutona do svitanja</translation>
+<translation id="3030970046240311592">Pregledajte historiju u Geminiju i upravljajte njome</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Koristi dodirnu podlogu i tastaturu za desni klik</translation>
 <translation id="3031557471081358569">Odaberite stavke za uvoz:</translation>
@@ -3217,7 +3217,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="343578350365773421">Nema papira</translation>
 <translation id="3435896845095436175">Omogući</translation>
 <translation id="3436118221454753036">Pitajte AI način rada</translation>
-<translation id="3437072258256045988">Upravljajte Aktivnošću u aplikacijama Gemini</translation>
 <translation id="3437397693214267762">Pogledajte Outlook Calendar te SharePoint i OneDrive fajlove</translation>
 <translation id="3437494162908353428">Alati za programere nisu dozvoljeni za ovaj URL.</translation>
 <translation id="3437498061222607130">Prijavljeni ste u Pretraživanje putem računa <ph name="USER_EMAIL" /> računa</translation>
@@ -4151,6 +4150,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4107793386654579933">Odabir prečice za radnju "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">Premjesti prozor korisniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Vrati upozorenje</translation>
+<translation id="4110984310437592352">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u historiji u Geminiju (ako je uključeno).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (van mreže)</translation>
 <translation id="4112282889480354965">Ekstenzije i vještine</translation>
 <translation id="4113743276555482284">Lozinka fajla</translation>
@@ -4241,6 +4241,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="419427585139779713">Unesite slog po slog</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4195814663415092787">Nastavite gdje ste stali</translation>
+<translation id="4196632390211257612">Razgovori s Geminijem i <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />podaci Google Workspacea<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> se neće pregledati ni koristiti za obuku generativnih AI modela. Gemini je AI i može pogriješiti. Određeni sadržaj možda nije primjeren za sve.</translation>
 <translation id="4198268995694216131">Dodatne web lokacije</translation>
 <translation id="4200609364258658652">Kop&amp;iraj kadar videozapisa</translation>
 <translation id="4200689466366162458">Prilagođene riječi</translation>
@@ -4843,6 +4844,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4665035764476941598">Kliknite ovdje da vratite druge kartice</translation>
 <translation id="4665446389743427678">Svi podaci koje pohrani web lokacija <ph name="SITE" /> će biti izbrisani.</translation>
 <translation id="4666472247053585787">Pregledajte obavještenja s telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Upravljajte historijom u Geminiju</translation>
 <translation id="4666911709726371538">Više aplikacija</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">Za PIN se smiju unijeti samo cifre</translation>
@@ -5316,6 +5318,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5012523644916800014">Upravljajte lozinkama i pristupnim ključevima</translation>
 <translation id="501394389332262641">Zvučno upozorenje za slabu bateriju</translation>
 <translation id="5014286001996333986">Zamijeniti ili kreirati novu grupu?</translation>
+<translation id="5014385104640320445">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u historiji u Geminiju (ako je uključeno). Vaši podaci se ne koriste za poboljšavanje generativnih AI modela.</translation>
 <translation id="5015344424288992913">Rješavanje problema s proksi serverom...</translation>
 <translation id="5016305686459575361">Ako povežete telefon, moći ćete učiniti sljedeće:</translation>
 <translation id="5016491575926936899">Možete slati SMS-ove sa svog računara, dijeliti internetsku vezu, odgovarati na obavještenja o razgovoru i telefonom otključati uređaj <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -5691,7 +5694,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5298315677001348398">Želite li nastaviti i dozvoliti ovom softveru da vrši izmjene na uređaju?</translation>
 <translation id="5299109548848736476">Bez praćenja</translation>
 <translation id="5299558715747014286">Pregledajte grupe kartica i upravljajte njima</translation>
-<translation id="5300667117276823109">Razgovori s Geminijem i <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />podaci Google Workspacea<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> se neće pregledati ni koristiti za poboljšavanje generativnih AI modela. Gemini je AI i može pogriješiti.</translation>
 <translation id="5301398529256275325">Pokušajte pitati npr., "sažmi ovu stranicu" ili postavite vlastito pitanje.</translation>
 <translation id="5301954838959518834">Uredu, razumijem</translation>
 <translation id="5302032366299160685">Prije ponovnog pokušaja pričekajte dok se fajl ne otvori</translation>
@@ -6847,7 +6849,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="62229737360959019">Kartice otvorene iz chata ili dijeljene kartice se također dijele s Geminijem. U načinu rada uživo prema zadanim postavkama dijeli se samo trenutna kartica.</translation>
 <translation id="622484624075952240">Dolje</translation>
 <translation id="622537739776246443">Profil će biti izbrisan</translation>
-<translation id="622568138962270592">Aktivnost u aplikacijama Gemini</translation>
 <translation id="6226777517901268232">Fajl s privatnim ključem (nije obavezno)</translation>
 <translation id="6227280783235722609">ekstenzija</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini je prestao raditi na zadatku</translation>
@@ -8008,6 +8009,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="710224247908684995">Ekstenzija je isključila Sigurno pregledanje</translation>
 <translation id="7102832101143475489">Zahtjev je istekao.</translation>
 <translation id="7103944802169726298">Računar i uređaj za emitiranje na istoj WiFi mreži</translation>
+<translation id="7104134653119992646">Chatovi se pregledaju i koriste za obuku generativnih AI modela. Gemini je AI i može pogriješiti. Možete <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljati historijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Pretplata na Google</translation>
 <translation id="7107609441453408294">Reproduciraj isti zvuk na svim zvučnicima</translation>
 <translation id="7108338896283013870">Sakrij</translation>
@@ -8387,7 +8389,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7395774987022469191">Cijeli ekran</translation>
 <translation id="7396017167185131589">Dijeljeni folderi će se pojaviti ovdje</translation>
 <translation id="7396845648024431313">Aplikacija <ph name="APP_NAME" /> će se pokrenuti pri pokretanju sistema i nastavit će raditi u pozadini čak i nakon što zatvorite sve druge prozore proizvoda <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Chatovi se pregledaju i koriste za poboljšavanje Google AI-ja. Gemini je AI i može pogriješiti. Određeni sadržaj možda nije primjeren za sve. Možete <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />upravljati aktivnošću<ph name="END_LINK_MANAGE_ACTIVITY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Prilagodi sinhronizaciju</translation>
 <translation id="7399616692258236448">Zahtjevi za lokaciju se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
@@ -8901,7 +8902,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7777624210360383048">Prečica <ph name="SHORTCUT" /> za ekstenziju <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Otvori Upravitelj oznaka</translation>
 <translation id="7779840061887151693">ekran</translation>
-<translation id="7780716468751073938">Razgovori s Geminijem i <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />podaci Google Workspacea<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> se neće pregledati ni koristiti za poboljšavanje generativnih AI modela. Gemini je AI i može pogriješiti. Određeni sadržaj možda nije primjeren za sve.</translation>
 <translation id="7780992949171378848">Slanje zahtjeva za isključivanje web lokacijama u vezi s korištenjem podataka</translation>
 <translation id="7782102568078991263">Google nema više prijedloga</translation>
 <translation id="7782717250816686129">Pohrani trajne podatke na ekranu za prijavu i ubaci akreditive u sesiju.</translation>
@@ -9040,6 +9040,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Otvori upravitelj oznaka</translation>
+<translation id="7904508617992122201">Chatovi se pregledaju i koriste za obuku generativnih AI modela. Gemini je AI i može pogriješiti. Određeni sadržaj možda nije primjeren za sve. Možete <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljati historijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Učinite Linux priključke dostupnim drugim uređajima na vašoj mreži.</translation>
 <translation id="7907312522152480478">Da dobijete kartice s drugih uređaja, potvrdite identitet i sinhronizirajte historiju i kartice. Sinhronizaciju možete zaustaviti bilo kada u postavkama. Google će možda personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="7907502219904644296">Promijenite pristup</translation>
@@ -10433,7 +10434,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="8945274638472141382">Veličina ikona</translation>
 <translation id="8945508919180478719">Studijski mikrofon</translation>
 <translation id="8946954897220903437">Suzi sve zahtjeve u traci za adresu</translation>
-<translation id="8946996840522387154">Koristite mikrofon da chatate s Geminijem. Kada razgovarate s Geminijem, zvuk se pohranjuje u Aktivnosti u aplikacijama Gemini (ako je uključeno). Vaši podaci se ne koriste za poboljšavanje generativnih AI modela.</translation>
 <translation id="894763922177556086">Dobra</translation>
 <translation id="895054485242522631">Web lokacije mogu koristiti senzore kretanja</translation>
 <translation id="8951465597020890363">Ipak napustiti način rada za gosta?</translation>

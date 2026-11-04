@@ -933,6 +933,7 @@
 <translation id="1703666494654169921">Запретить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="1704097193565924901">Заменить первую букву на прописную</translation>
 <translation id="1704230497453185209">Запретить сайтам воспроизводить звук</translation>
+<translation id="170494114379308411">Ваши чаты с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для обучения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться.</translation>
 <translation id="170658918174941828">Помимо данных, указанных выше, в Google будут отправлены версия операционной системы и браузера Chrome, настройки Google Cast, возможные проблемы при трансляции и журналы диагностики подключения. Такие сведения помогут выявить неполадки и улучшить эту функцию. Любые персональные данные, предоставленные вами намеренно или случайно, будут обрабатываться в соответствии с нашей Политикой конфиденциальности. Отправляя отзыв, вы соглашаетесь с тем, что Google может использовать его в работе над своими продуктами или сервисами.</translation>
 <translation id="17081583771848899">Клавиша панели запуска + Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Сохранить в облаке</translation>
@@ -1158,6 +1159,7 @@
 <translation id="1881445033931614352">Раскладка клавиатуры</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">История Gemini</translation>
 <translation id="1884340228047885921">Ваше устройство могут обнаруживать некоторые пользователи из списка контактов</translation>
 <translation id="1884705339276589024">Изменение размера диска Linux</translation>
 <translation id="1885066963699478692">XML-файлы, которые используются для настройки правил.</translation>
@@ -1174,7 +1176,6 @@
 <translation id="1892453608039100484">1. Нажмите кнопку "<ph name="BUTTON_LABEL" />" ниже.
 2. Нажмите "<ph name="BUTTON_2" />" в настройках Windows.</translation>
 <translation id="1895658205118569222">Завершение работы</translation>
-<translation id="1896353439080510710">Мы проверяем чаты и используем их, чтобы улучшать ИИ от Google. Gemini — это ИИ. Он может ошибаться. Вы можете <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />управлять историей действий<ph name="END_LINK_MANAGE_ACTIVITY" />, в том числе данными о местоположении. Узнайте, <ph name="BEGIN_LINK_LEARN_MORE" />какие настройки вам доступны<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1897120393475391208">Использовать надежный пароль</translation>
 <translation id="1897860317037652061">Не удалось выполнить сканирование.</translation>
 <translation id="1898804291554630487">Спросить об этой странице</translation>
@@ -1230,7 +1231,6 @@
 <translation id="1929774028758671973">Ваши контакты поблизости могут обмениваться с вами контентом. Вам нужно будет каждый раз одобрять запросы на отправку данных. Вам не нужно будет давать разрешение на обмен контентом между устройствами, на которых выполнен вход в аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Компоненты не установлены.</translation>
 <translation id="1932125073382155239">Создавать для вас резервные копии?</translation>
-<translation id="1933070475689690969">История действий в приложениях Gemini</translation>
 <translation id="1933489278505808700">Чтение и изменение разрешены</translation>
 <translation id="1935303383381416800">Разрешить сайтам определять ваше местоположение</translation>
 <translation id="193565226207940518">Инструмент поддержки</translation>
@@ -1627,6 +1627,7 @@
 <translation id="2246549592927364792">Получать от Google описания изображений?</translation>
 <translation id="2247738527273549923">Этим устройством управляет ваша организация.</translation>
 <translation id="2247870315273396641">Предварительное прослушивание голоса</translation>
+<translation id="2247960558975094922">История Gemini</translation>
 <translation id="224835741840550119">Очистка устройства</translation>
 <translation id="2249111429176737533">Открыть в окне с вкладками</translation>
 <translation id="2249605167705922988">Например: 1–5, 8, 11–13</translation>
@@ -2256,7 +2257,6 @@
 <translation id="2727712005121231835">Фактический размер</translation>
 <translation id="2729310339366257582">Свернуть вкладки</translation>
 <translation id="2729577602370119849">Быстрый доступ к принтерам и управление ими</translation>
-<translation id="2729940704980595903">Просмотр и управление историей действий в приложениях Gemini</translation>
 <translation id="2730550884708194161">О рабочем профиле</translation>
 <translation id="2730596696987224099">Создать свой пароль</translation>
 <translation id="2730647855013151888">Включить всю личную информацию</translation>
@@ -2294,7 +2294,6 @@
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
 <translation id="2750020734439919571">Дополнительные настройки и разрешения приложений Chrome</translation>
-<translation id="275010360476017464">Используйте микрофон, чтобы общаться с Gemini. Записи разговоров с ним будут сохраняться в истории действий в приложениях Gemini (если она включена).</translation>
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
 <translation id="2751320815618312249">и ещё <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Сдвиньте губы вправо</translation>
@@ -2684,6 +2683,7 @@
 <translation id="3030772324014024606">Правка</translation>
 <translation id="3030795534674718505">Сайты, которым разрешено использовать сохраненную информацию о вас</translation>
 <translation id="3030967311408872958">От заката до рассвета</translation>
+<translation id="3030970046240311592">Просмотр истории Gemini и управление ею</translation>
 <translation id="3031417829280473749">Секретный агент</translation>
 <translation id="3031532026314193077">Использовать сенсорную панель и клавиатуру для имитации нажатия правой кнопки мыши</translation>
 <translation id="3031557471081358569">Выберите элементы для импорта:</translation>
@@ -3207,7 +3207,6 @@
 <translation id="343578350365773421">Закончилась бумага</translation>
 <translation id="3435896845095436175">Включить</translation>
 <translation id="3436118221454753036">Спросите в режиме ИИ</translation>
-<translation id="3437072258256045988">Управлять историей действий в приложениях Gemini</translation>
 <translation id="3437397693214267762">Добавьте сюда календарь Outlook и файлы из SharePoint и OneDrive</translation>
 <translation id="3437494162908353428">Для этого URL инструменты разработчика запрещены.</translation>
 <translation id="3437498061222607130">Вы вошли в Поиск с аккаунтом <ph name="USER_EMAIL" />.</translation>
@@ -4141,6 +4140,7 @@
 <translation id="4107793386654579933">Выберите сочетание клавиш для действия "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
+<translation id="4110984310437592352">Используйте микрофон, чтобы общаться с Gemini. Записи разговоров с Gemini будут сохраняться в истории Gemini (если она включена).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4112282889480354965">Расширения и навыки</translation>
 <translation id="4113743276555482284">Пароль файла</translation>
@@ -4231,6 +4231,7 @@
 <translation id="419427585139779713">Вводить по слогам</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
+<translation id="4196632390211257612">Ваши чаты с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для обучения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться. Некоторый контент может не подходить для определенных пользователей.</translation>
 <translation id="4198268995694216131">Другие сайты</translation>
 <translation id="4200609364258658652">&amp;Копировать кадр видео</translation>
 <translation id="4200689466366162458">Специальные слова</translation>
@@ -4833,6 +4834,7 @@
 <translation id="4665035764476941598">Нажмите здесь, чтобы вернуть другие вкладки</translation>
 <translation id="4665446389743427678">Все данные, хранящиеся на сайте <ph name="SITE" />, будут удалены.</translation>
 <translation id="4666472247053585787">Просматривайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Управление историей Gemini</translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN-код должен содержать только цифры.</translation>
@@ -5305,6 +5307,7 @@
 <translation id="5012523644916800014">Управление паролями и ключами доступа</translation>
 <translation id="501394389332262641">Звук низкого заряда батареи</translation>
 <translation id="5014286001996333986">Создать новую группу вкладок или заменить существующую?</translation>
+<translation id="5014385104640320445">Используйте микрофон, чтобы общаться с Gemini. Записи разговоров с Gemini будут сохраняться в истории Gemini (если она включена). Ваши данные не используются для улучшения моделей генеративного ИИ.</translation>
 <translation id="5015344424288992913">Определение прокси-сервера...</translation>
 <translation id="5016305686459575361">Подключив телефон, вы получите доступ к следующим функциям:</translation>
 <translation id="5016491575926936899">Вы сможете отправлять с компьютера SMS, пользоваться на нем подключением к мобильному интернету и отвечать на сообщения в чатах. Также можно будет разблокировать <ph name="DEVICE_TYPE" /> с помощью телефона.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5680,7 +5683,6 @@
 <translation id="5298315677001348398">Хотите продолжить и разрешить этому ПО вносить изменения на устройстве?</translation>
 <translation id="5299109548848736476">Запрет отслеживания</translation>
 <translation id="5299558715747014286">Просмотр групп вкладок и управление ими</translation>
-<translation id="5300667117276823109">Ваши разговоры с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для улучшения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться.</translation>
 <translation id="5301398529256275325">Вы можете задать свой вопрос или, например, попросить составить краткий пересказ страницы.</translation>
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302032366299160685">Подождите, пока он откроется.</translation>
@@ -6836,7 +6838,6 @@
 <translation id="62229737360959019">Вкладки, которые вы открываете из чата или с вкладки, которой поделились, также доступны Gemini. В режиме Live по умолчанию показывается только текущая вкладка.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="622537739776246443">Профиль будет удален</translation>
-<translation id="622568138962270592">История действий в приложениях Gemini</translation>
 <translation id="6226777517901268232">Файл секретного ключа (необязательно)</translation>
 <translation id="6227280783235722609">расширение</translation>
 <translation id="6228999859806946695">Gemini больше не выполняет задачу "<ph name="TASK_TITLE" />".</translation>
@@ -7999,6 +8000,7 @@
 <translation id="710224247908684995">Расширение отключило Безопасный просмотр.</translation>
 <translation id="7102832101143475489">Время, отведенное на обработку запроса, истекло.</translation>
 <translation id="7103944802169726298">Устройство для трансляции и ПК подключены к одной и той же сети Wi-Fi</translation>
+<translation id="7104134653119992646">Чаты проверяются специалистами и используются для обучения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться. Вы можете <ph name="BEGIN_LINK_MANAGE_HISTORY" />управлять историей<ph name="END_LINK_MANAGE_HISTORY" />, в том числе данными о местоположении. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее о доступных вам настройках<ph name="END_LINK_LEARN_MORE" />…</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Подписка Google</translation>
 <translation id="7107609441453408294">Воспроизводить одинаковый звук через все динамики</translation>
 <translation id="7108338896283013870">Скрыть</translation>
@@ -8378,7 +8380,6 @@
 <translation id="7395774987022469191">Весь экран</translation>
 <translation id="7396017167185131589">Здесь будут появляться общие папки.</translation>
 <translation id="7396845648024431313">Приложение <ph name="APP_NAME" /> будет запущено при старте системы и продолжит работу в фоновом режиме даже после закрытия всех окон <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Мы проверяем чаты и используем их, чтобы улучшать ИИ от Google. Gemini — это ИИ. Он может ошибаться. Некоторый контент может не подходить для определенных пользователей. Вы можете <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />управлять историей действий<ph name="END_LINK_MANAGE_ACTIVITY" />, в том числе данными о местоположении. Узнайте, <ph name="BEGIN_LINK_LEARN_MORE" />какие настройки вам доступны<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7399045143794278225">Настроить синхронизацию</translation>
 <translation id="7399616692258236448">Запросы местоположения от всех сайтов блокируются автоматически – кроме тех, которым вы дали разрешение.</translation>
 <translation id="7399802613464275309">Проверка безопасности</translation>
@@ -8891,7 +8892,6 @@
 <translation id="7777624210360383048">Сочетание клавиш <ph name="SHORTCUT" /> для расширения "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="777852709704682967">&amp;Открыть менеджер закладок</translation>
 <translation id="7779840061887151693">дисплей</translation>
-<translation id="7780716468751073938">Ваши разговоры с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данные Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> не будут проверяться или использоваться для улучшения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться. Некоторый контент может не подходить для определенных пользователей.</translation>
 <translation id="7780992949171378848">Отправлять сайтам запрос на отказ от использования ваших данных</translation>
 <translation id="7782102568078991263">Подсказок от Google больше нет</translation>
 <translation id="7782717250816686129">Хранить неизменные данные на экране входа и вводить учетные данные в начале сеанса.</translation>
@@ -9030,6 +9030,7 @@
 <translation id="7903925330883316394">Утилита: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7904492297081735975">&amp;Открыть менеджер закладок</translation>
+<translation id="7904508617992122201">Чаты проверяются специалистами и используются для обучения моделей генеративного ИИ. Gemini — это ИИ. Он может ошибаться. Некоторый контент может не подходить для определенных пользователей. Вы можете <ph name="BEGIN_LINK_MANAGE_HISTORY" />управлять историей<ph name="END_LINK_MANAGE_HISTORY" />, в том числе данными о местоположении. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее о доступных вам настройках<ph name="END_LINK_LEARN_MORE" />…</translation>
 <translation id="7904526211178107182">Предоставьте устройствам в вашей сети доступ к портам Linux.</translation>
 <translation id="7907312522152480478">Чтобы стали доступны вкладки с других ваших устройств, подтвердите личность и синхронизируйте историю и вкладки. Синхронизацию можно в любой момент отключить в настройках. На основе вашей истории Google может персонализировать Поиск и другие сервисы.</translation>
 <translation id="7907502219904644296">Настроить доступ</translation>
@@ -10423,7 +10424,6 @@
 <translation id="8945274638472141382">Размер значков</translation>
 <translation id="8945508919180478719">Студийный микрофон</translation>
 <translation id="8946954897220903437">Свернуть все запросы в адресной строке</translation>
-<translation id="8946996840522387154">Используйте микрофон, чтобы общаться с Gemini. Записи разговоров с ним будут сохраняться в истории действий в приложениях Gemini (если она включена). Эти данные не используются для улучшения моделей генеративного ИИ.</translation>
 <translation id="894763922177556086">высокое</translation>
 <translation id="895054485242522631">Разрешить сайтам использовать датчики движения</translation>
 <translation id="8951465597020890363">Все равно выйти из гостевого режима?</translation>

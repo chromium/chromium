@@ -933,6 +933,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
 <translation id="1704097193565924901">Veľkosť písmen</translation>
 <translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
+<translation id="170494114379308411">Vaše konverzácie s Gemini ani <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />údaje v službe Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> sa nebudú kontrolovať ani používať na cvičenie modelov generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby.</translation>
 <translation id="170658918174941828">Okrem všetkých údajov, ktoré vyberiete vyššie, budú odoslané aj tieto údaje: verzia prehliadača Chrome, verzia operačného systému, nastavenia prenosu, štatistiky výkonnosti zrkadlenia a diagnostické denníky komunikačného kanála. Túto spätnú väzbu použijeme pri diagnostike problémov a zlepšovaní funkcií. Všetky úmyselne alebo náhodne odoslané osobné údaje budú chránené v súlade s našimi pravidlami ochrany súkromia. Odoslaním tejto spätnej väzby súhlasíte s tým, že Google môže pomocou poskytnutej spätnej väzby zlepšovať akékoľvek produkty alebo služby Googlu.</translation>
 <translation id="17081583771848899">Spúšťač + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">Uložiť do cloudového priestoru</translation>
@@ -1158,6 +1159,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1881445033931614352">Rozloženie klávesnice</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Položka}few{# položky}many{# items}other{# položiek}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">História Gemini</translation>
 <translation id="1884340228047885921">Aktuálne nastavenie viditeľnosti je Niektoré kontakty</translation>
 <translation id="1884705339276589024">Zmena veľkosti disku Linux</translation>
 <translation id="1885066963699478692">Súbory XML, pomocou ktorých sú nastavené pravidlá.</translation>
@@ -1174,7 +1176,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1892453608039100484">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.
 2. V nastaveniach systému Windows kliknite na <ph name="BUTTON_2" />.</translation>
 <translation id="1895658205118569222">Vypnúť</translation>
-<translation id="1896353439080510710">Čety sa kontrolujú a slúžia na zlepšovanie umelej inteligencie od Googlu. Gemini je umelá inteligencia a môže robiť chyby. Svoju aktivitu vrátane informácií o polohe <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />môžete spravovať<ph name="END_LINK_MANAGE_ACTIVITY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie o vašich možnostiach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Použiť silné heslo</translation>
 <translation id="1897860317037652061">Nepodarilo sa skontrolovať</translation>
 <translation id="1898804291554630487">Spýtajte sa na túto stránku</translation>
@@ -1230,7 +1231,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1929774028758671973">Kontakty s vami môžu zdieľať obsah, keď sú nablízku. Budú sa vám zobrazovať výzvy na schválenie týchto žiadostí. Zdieľanie obsahu medzi zariadeniami, ktoré sú prihlásené do účtu <ph name="USER_EMAIL" />, nemusíte schvaľovať.</translation>
 <translation id="1931152874660185993">Nie sú nainštalované žiadne komponenty.</translation>
 <translation id="1932125073382155239">Chcete zálohovať svoj obsah?</translation>
-<translation id="1933070475689690969">Aktivita v aplikáciách Gemini</translation>
 <translation id="1933489278505808700">Môže čítať a meniť</translation>
 <translation id="1935303383381416800">Môže zobrazovať vašu polohu</translation>
 <translation id="193565226207940518">Nástroj podpory</translation>
@@ -1627,6 +1627,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2246549592927364792">Chcete získavať opisy obrázkov od Googlu?</translation>
 <translation id="2247738527273549923">Zariadenie spravuje vaša organizácia</translation>
 <translation id="2247870315273396641">Ukážka hlasu</translation>
+<translation id="2247960558975094922">História Gemini</translation>
 <translation id="224835741840550119">Vyčistite si zariadenie</translation>
 <translation id="2249111429176737533">Otvoriť ako okno s kartami</translation>
 <translation id="2249605167705922988">napr. 1-5, 8, 11-13</translation>
@@ -2256,7 +2257,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2727712005121231835">Skutočná veľkosť</translation>
 <translation id="2729310339366257582">Zbaliť karty</translation>
 <translation id="2729577602370119849">Jednoduchý prístup k tlačiarňam a ich správa</translation>
-<translation id="2729940704980595903">Zobrazenie a správa aktivity v aplikáciách Gemini</translation>
 <translation id="2730550884708194161">Pracovné profily</translation>
 <translation id="2730596696987224099">Vybrať vlastné</translation>
 <translation id="2730647855013151888">Zahrnúť všetky osobné údaje</translation>
@@ -2294,7 +2294,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Skontrolovať gramatiku s pravopisom</translation>
 <translation id="2750020734439919571">Ďalšie nastavenia a povolenia aplikácie Chrome</translation>
-<translation id="275010360476017464">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá).</translation>
 <translation id="2750602041558385535">Neoverené sťahovanie bolo zablokované</translation>
 <translation id="2751320815618312249">a ešte <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Pohnite ústami doprava</translation>
@@ -2684,6 +2683,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3030772324014024606">Upraviť</translation>
 <translation id="3030795534674718505">Web má povolené používať informácie, ktoré o vás uložil</translation>
 <translation id="3030967311408872958">Od západu do východu slnka</translation>
+<translation id="3030970046240311592">Zobrazenie a správa histórie Gemini</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Kliknutie pravým tlačidlom pomocou touchpadu a klávesnice</translation>
 <translation id="3031557471081358569">Vyberte položky na import:</translation>
@@ -3207,7 +3207,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="343578350365773421">Minul sa papier</translation>
 <translation id="3435896845095436175">Aktivovať</translation>
 <translation id="3436118221454753036">Spýtať sa režimu umelej inteligencie</translation>
-<translation id="3437072258256045988">Spravujte svoju aktivitu v aplikáciách Gemini</translation>
 <translation id="3437397693214267762">Zobrazte si Kalendár programu Outlook a súbory SharePoint a OneDrive</translation>
 <translation id="3437494162908353428">Nástroje pre vývojárov nie sú pre túto webovú adresu povolené.</translation>
 <translation id="3437498061222607130">Do Vyhľadávania ste sa prihlásili účtom <ph name="USER_EMAIL" /></translation>
@@ -4141,6 +4140,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4107793386654579933">Vyberte skratku pre akciu <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Presunúť okno k používateľovi <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Obnoviť varovanie</translation>
+<translation id="4110984310437592352">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do histórie Gemini (ak je zapnutá).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4112282889480354965">Rozšírenia a zručnosti</translation>
 <translation id="4113743276555482284">Heslo súboru</translation>
@@ -4231,6 +4231,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="419427585139779713">Zadávanie po jednej slabike</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4195814663415092787">Pokračujte tam, kde ste prestali</translation>
+<translation id="4196632390211257612">Vaše konverzácie s Gemini ani <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />údaje v službe Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> sa nebudú kontrolovať ani používať na cvičenie modelov generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby. Niektorý obsah nemusí byť vhodný pre všetkých.</translation>
 <translation id="4198268995694216131">Ďalšie weby</translation>
 <translation id="4200609364258658652">Kopírovať snímku videa</translation>
 <translation id="4200689466366162458">Vlastné slová</translation>
@@ -4833,6 +4834,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4665035764476941598">Kliknutím tu vrátite späť ostatné karty</translation>
 <translation id="4665446389743427678">Odstránia sa všetky údaje, ktoré uložil web <ph name="SITE" />.</translation>
 <translation id="4666472247053585787">Zobrazte si upozornenia z telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
+<translation id="4666483368282673356">Spravovať históriu Gemini</translation>
 <translation id="4666911709726371538">Ďalšie aplikácie</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PIN môže obsahovať iba číslice</translation>
@@ -5305,6 +5307,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5012523644916800014">Spravovať heslá a prístupové kľúče</translation>
 <translation id="501394389332262641">Zvuková signalizácia nízkeho stavu batérie</translation>
 <translation id="5014286001996333986">Chcete nahradiť alebo vytvoriť novú skupinu?</translation>
+<translation id="5014385104640320445">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do histórie Gemini (ak je zapnutá). Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="5015344424288992913">Určenie proxy...</translation>
 <translation id="5016305686459575361">Po pripojení telefónu budete mať k dispozícii:</translation>
 <translation id="5016491575926936899">Môžete odosielať textové správy z počítača, zdieľať internetové pripojenie, odpovedať na upozornenia na konverzácie a odomykať telefónom zariadenie <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -5679,7 +5682,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5298315677001348398">Chcete pokračovať a povoliť tomuto softvéru vykonávať zmeny vo vašom zariadení?</translation>
 <translation id="5299109548848736476">Nesledovať</translation>
 <translation id="5299558715747014286">Zobrazovať a spravovať skupiny kariet</translation>
-<translation id="5300667117276823109">Vaše konverzácie s Gemini a <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />údaje v službe Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> sa nebudú kontrolovať ani používať na zlepšovanie modelov generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby.</translation>
 <translation id="5301398529256275325">Skúste napríklad požiadať „zhrň túto stránku“ alebo položte vlastnú otázku.</translation>
 <translation id="5301954838959518834">Dobre</translation>
 <translation id="5302032366299160685">Počkajte, kým sa súbor otvorí, a potom to skúste znova</translation>
@@ -6003,6 +6005,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5558129378926964177">Priblíž&amp;iť</translation>
 <translation id="5558594314398017686">Predvolené nastavenie operačného systému (ak je k dispozícii)</translation>
 <translation id="5559311991468302423">Odstrániť adresu</translation>
+<translation id="5559646482656763170">Aktualizovať, keď sa nepoužíva</translation>
 <translation id="555968128798542113">Tento web môže ovládať a preprogramovávať vaše zariadenia MIDI</translation>
 <translation id="5559768063688681413">Žiadne uložené tlačiarne</translation>
 <translation id="55601339223879446">Úprava ohraničenia pracovnej plochy obrazovky</translation>
@@ -6504,6 +6507,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť v novom okne}few{Otvoriť všetky ({COUNT}) v novom okne}many{Otvoriť všetky ({COUNT}) v novom okne}other{Otvoriť všetky ({COUNT}) v novom okne}}</translation>
 <translation id="5964247741333118902">Vložený obsah</translation>
 <translation id="5965607173855879702">Odstraňujú sa údaje…</translation>
+<translation id="5966067139745999860">Položka <ph name="SHORTCUT_TITLE" /> bola presunutá na pozíciu <ph name="SHORTCUT_POSITION" /> z <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Dáta webov sa odstránia zo zariadenia, keď zavriete všetky okná</translation>
 <translation id="5968022600320704045">Žiadne výsledky vyhľadávania</translation>
 <translation id="5968400720580217226">Režim AI</translation>
@@ -6833,7 +6837,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="62229737360959019">S Gemini sa zdieľajú aj karty otvorené v čete alebo na zdieľanej karte. V režime Live sa predvolene zdieľa iba aktuálna karta.</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="622537739776246443">Profil bude odstránený</translation>
-<translation id="622568138962270592">Aktivita v aplikáciách Gemini</translation>
 <translation id="6226777517901268232">Súkromný kľúč (nepovinné)</translation>
 <translation id="6227280783235722609">rozšírenie</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini prestal pracovať na tejto úlohe</translation>
@@ -7169,6 +7172,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> nedokáže skontrolovať, či boli vaše heslá odhalené pri porušení ochrany údajov. Skontrolujte internetové pripojenie.</translation>
 <translation id="648927581764831596">Nie je k dispozícii</translation>
 <translation id="6490471652906364588">Zariadenie USB-C (port vpravo)</translation>
+<translation id="6491890991754498129">Otvoriť v &amp;aplikácii…</translation>
 <translation id="649396225532207613">Tento súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
 <translation id="6493991254603208962">Zníženie jasu</translation>
 <translation id="6494327278868541139">Zobraziť podrobnosti o rozšírenej ochrane</translation>
@@ -7993,6 +7997,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="710224247908684995">Rozšírenie vyplo Bezpečné prehliadanie</translation>
 <translation id="7102832101143475489">Platnosť žiadosti vypršala</translation>
 <translation id="7103944802169726298">Počítač a zariadenie na prenos pripojené k rovnakej sieti Wi‐Fi</translation>
+<translation id="7104134653119992646">Čety sa kontrolujú a cvičia sa pomocou nich modely generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby. Svoju históriu vrátane informácií o polohe <ph name="BEGIN_LINK_MANAGE_HISTORY" />môžete spravovať<ph name="END_LINK_MANAGE_HISTORY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie o vašich možnostiach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />, členstvo na Googli</translation>
 <translation id="7107609441453408294">Prehrávať rovnaký zvuk vo všetkých reproduktoroch</translation>
 <translation id="7108338896283013870">Skryť</translation>
@@ -8372,7 +8377,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7395774987022469191">Celá obrazovka</translation>
 <translation id="7396017167185131589">Tu sa zobrazia zdieľané priečinky</translation>
 <translation id="7396845648024431313">Aplikácia <ph name="APP_NAME" /> sa spustí pri spustení systému a bude fungovať na pozadí aj po zatvorení všetkých okien programu <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Čety sa kontrolujú a slúžia na zlepšovanie umelej inteligencie od Googlu. Gemini je umelá inteligencia a môže robiť chyby. Určitý obsah nemusí byť vhodný pre všetkých. Svoju aktivitu vrátane informácií o polohe <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />môžete spravovať<ph name="END_LINK_MANAGE_ACTIVITY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie o vašich možnostiach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Prispôsobiť synchronizáciu</translation>
 <translation id="7399616692258236448">Žiadosti o polohu sú automaticky blokované pre všetky weby okrem tých, ktoré povolíte</translation>
 <translation id="7399802613464275309">Kontrola bezpečnosti</translation>
@@ -8885,7 +8889,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7777624210360383048">Odkaz <ph name="SHORTCUT" /> na rozšírenie <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Otvoriť správcu záložiek</translation>
 <translation id="7779840061887151693">obrazovka</translation>
-<translation id="7780716468751073938">Vaše konverzácie s Gemini a <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />údaje v službe Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> sa nebudú kontrolovať ani používať na zlepšovanie modelov generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby. Niektorý obsah nemusí byť vhodný pre všetkých.</translation>
 <translation id="7780992949171378848">Odosielanie žiadostí webom o odhlásenie z používania vašich údajov</translation>
 <translation id="7782102568078991263">Žiadne ďalšie návrhy od spoločnosti Google</translation>
 <translation id="7782717250816686129">Uchovávať trvalé údaje na prihlasovacej obrazovke a vkladať prihlasovacie údaje do relácie.</translation>
@@ -9024,6 +9027,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7903925330883316394">Pomôcka: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7904492297081735975">&amp;Otvoriť správcu záložiek</translation>
+<translation id="7904508617992122201">Čety sa kontrolujú a cvičia sa pomocou nich modely generatívnej umelej inteligencie. Gemini je umelá inteligencia a môže robiť chyby. Niektorý obsah nemusí byť vhodný pre všetkých. Svoju históriu vrátane informácií o polohe <ph name="BEGIN_LINK_MANAGE_HISTORY" />môžete spravovať<ph name="END_LINK_MANAGE_HISTORY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie o vašich možnostiach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Sprístupnite porty Linux ďalším zariadeniam vo vašej sieti.</translation>
 <translation id="7907312522152480478">Ak chcete získať karty zo svojich ostatných zariadení, overte svoju totožnosť a synchronizujte históriu aj karty. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="7907502219904644296">Zmeniť prístup</translation>
@@ -10045,6 +10049,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8666268818656583275">Klávesy F budú odteraz fungovať ako systémové klávesy horného radu</translation>
 <translation id="8666321716757704924">Povolenia pre <ph name="WEBSITE" /> boli znova udelené</translation>
 <translation id="8667261224612332309">Máte heslá, ktoré sa dajú zlepšiť</translation>
+<translation id="8667543835349994431">Otvoriť v &amp;aplikácii…</translation>
 <translation id="8668378421690365723">Vaše zariadenie už nemusí fungovať správne a môže dochádzať k problémom so zabezpečením a výkonom.</translation>
 <translation id="8669284339312441707">Teplejšie</translation>
 <translation id="8670537393737592796">Ak sa sem chcete rýchlo vrátiť, nainštalujte si aplikáciu <ph name="APP_NAME" /> kliknutím na tlačidlo inštalácie</translation>
@@ -10153,6 +10158,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8738418093147087440">Vyhľadávanie podľa krajín, jazyka alebo názvov vstupu</translation>
 <translation id="8741944563400125534">Sprievodca nastavením ovládania prepínačmi</translation>
 <translation id="8743357966416354615">Spravované vývojové prostredie (<ph name="GENERAL_NAME" />)</translation>
+<translation id="8743685468297625220">Chcete radšej prejsť na <ph name="URL" />?</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8744913471985800082">Pred aktualizáciou skontrolujte zmenu webovej adresy a uistite sa, či vám vyhovuje.</translation>
 <translation id="8745034592125932220">Nemôže ukladať údaje do vášho zariadenia</translation>
@@ -10415,7 +10421,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8945274638472141382">Veľkosť ikony</translation>
 <translation id="8945508919180478719">Štúdiový mikrofón</translation>
 <translation id="8946954897220903437">Zbaliť všetky požiadavky v paneli s adresou</translation>
-<translation id="8946996840522387154">Četujte s Gemini pomocou mikrofónu. Keď hovoríte s Gemini, zvuk sa ukladá do aktivity v aplikáciách Gemini (ak je zapnutá). Pomocou vašich údajov sa nezlepšujú modely generatívnej umelej inteligencie.</translation>
 <translation id="894763922177556086">Dobré</translation>
 <translation id="895054485242522631">Weby môžu používať senzory pohybu</translation>
 <translation id="8951465597020890363">Chcete aj napriek tomu ukončiť režim pre hostí?</translation>

@@ -934,6 +934,7 @@
 <translation id="1703666494654169921">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ କିମ୍ବା ଡାଟା ବ୍ୟବହାର କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="1704097193565924901">କ୍ୟାପିଟାଲାଇଜ କରନ୍ତୁ</translation>
 <translation id="1704230497453185209">ସାଉଣ୍ଡ ଚଲାଇବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
+<translation id="170494114379308411">Gemini ସହ ଆପଣଙ୍କ ବାର୍ତ୍ତାଳାପ କିମ୍ବା ଆପଣଙ୍କ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ଡାଟା<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />କୁ ରିଭ୍ୟୁ କରାଯିବ ନାହିଁ କିମ୍ବା ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନିଂ ଦେବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ।</translation>
 <translation id="170658918174941828">ଆପଣ ବାଛିଥିବା ଉପରୋକ୍ତ ଯେ କୌଣସି ସୂଚନା ସାମିଲ କରିବା ସହିତ ଆପଣଙ୍କ Chromeର ସଂସ୍କରଣ, ଅପରେଟିଂ ସିଷ୍ଟମର ସଂସ୍କରଣ, Cast ସେଟିଂସ, ମିରରିଂ ପରଫରମାନ୍ସର ପରିସଂଖ୍ଯାନ ଏବଂ କମ୍ୟୁନିକେସନ ଚେନେଲ ଡାଏଗ୍ନୋଷ୍ଟିକ ଲଗଗୁଡ଼ିକ ଦାଖଲ କରାଯିବ। ଏହି ମତାମତ ସମସ୍ୟାଗୁଡ଼ିକର ନିରୂପଣ କରିବାକୁ ଏବଂ ଫିଚରକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଏ। ଆପଣ ସ୍ପଷ୍ଟ ଭାବେ କିମ୍ବା ଆକସ୍ମିକ ଭାବେ ଦାଖଲ କରିଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତିଗତ ସୂଚନାକୁ ଆମର ଗୋପନୀୟତା ନୀତି ଅନୁସାରେ ସୁରକ୍ଷିତ ରଖାଯିବ। ଏହି ମତାମତ ଦାଖଲ କରି, ଯେ କୌଣସି Google ପ୍ରଡକ୍ଟ କିମ୍ବା ସେବାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣ ପ୍ରଦାନ କରିଥିବା ମତାମତକୁ Google ବ୍ୟବହାର କରିପାରେ ବୋଲି ଆପଣ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="17081583771848899">ଲଞ୍ଚର + alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="170825127491242914">କ୍ଲାଉଡ ଷ୍ଟୋରେଜରେ ସେଭ କରନ୍ତୁ</translation>
@@ -1159,6 +1160,7 @@
 <translation id="1881445033931614352">କୀବୋର୍ଡ ଲେଆଉଟ୍</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{ଆଇଟମ୍}other{#ଟି ଆଇଟମ୍}}</translation>
 <translation id="188177382966899059">ଡିପ ସର୍ଚ୍ଚ</translation>
+<translation id="1883018549404920116">Gemini ଇତିହାସ</translation>
 <translation id="1884340228047885921">ବର୍ତ୍ତମାନର ଭିଜିବିଲିଟୀ ସେଟିଂସ୍ ହେଉଛି କିଛି ଯୋଗାଯୋଗ</translation>
 <translation id="1884705339276589024">Linux ଡିସ୍କର ଆକାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1885066963699478692">ନୀତିଗୁଡ଼ିକୁ ସେଟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଉଥିବା XML ଫାଇଲଗୁଡ଼ିକ।</translation>
@@ -1175,7 +1177,6 @@
 <translation id="1892453608039100484">1. ତଳେ <ph name="BUTTON_LABEL" />ରେ କ୍ଲିକ କରନ୍ତୁ
 2. ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BUTTON_2" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="1895658205118569222">ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="1896353439080510710">Google AIକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରି ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା ସମେତ ଆପଣ <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_ACTIVITY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ବିକଳ୍ପଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">ଜଟିଳ ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1897860317037652061">ସ୍କାନ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1898804291554630487">ଏହି ପୃଷ୍ଠା ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
@@ -1231,7 +1232,6 @@
 <translation id="1929774028758671973">ଆଖପାଖରେ ଥିବା ସମୟରେ ଯୋଗାଯୋଗଗୁଡ଼ିକ ଆପଣଙ୍କ ସହିତ ସେୟାର କରିପାରିବେ। ଆପଣଙ୍କୁ ଏହି ଅନୁରୋଧଗୁଡ଼ିକୁ ଅନୁମୋଦନ କରିବା ପାଇଁ କୁହାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ ଇନ କରିଥିବା ଡିଭାଇସଗୁଡ଼ିକ ମଧ୍ୟରେ ସେୟାର କରିବା ପାଇଁ ଆପଣଙ୍କୁ ଅନୁମୋଦନ କରିବାର ଆବଶ୍ୟକତା ନାହିଁ।</translation>
 <translation id="1931152874660185993">କୌଣସି କମ୍ପୋନେଣ୍ଟ ଇନ୍‌ଷ୍ଟଲ୍ ହୋଇନାହିଁ।</translation>
 <translation id="1932125073382155239">ଆପଣଙ୍କ ଷ୍ଟଫର ବେକଅପ ନେବେ?</translation>
-<translation id="1933070475689690969">Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="1933489278505808700">ପଢ଼ିବା ଓ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1935303383381416800">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="193565226207940518">ସହାୟତା ଟୁଲ</translation>
@@ -1628,6 +1628,7 @@
 <translation id="2246549592927364792">Googleରୁ ଛବିର ବର୍ଣ୍ଣନା ପ୍ରାପ୍ତ କରିବେ?</translation>
 <translation id="2247738527273549923">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="2247870315273396641">ଭଏସର ପ୍ରିଭ୍ୟୁ</translation>
+<translation id="2247960558975094922">Gemini ଇତିହାସ</translation>
 <translation id="224835741840550119">ଆପଣଙ୍କ ଡିଭାଇସକୁ ସାନିଟାଇଜ କରନ୍ତୁ</translation>
 <translation id="2249111429176737533">ଟାବ୍ କରାଯାଇଥିବା ୱିଣ୍ଡୋ ଭାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="2249605167705922988">ଉ.ଦା. 1-5, 8, 11-13</translation>
@@ -2258,7 +2259,6 @@
 <translation id="2727712005121231835">ପ୍ରକୃତ ଆକାର</translation>
 <translation id="2729310339366257582">ଟାବଗୁଡ଼ିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="2729577602370119849">ପ୍ରିଣ୍ଟରଗୁଡ଼ିକୁ ସହଜରେ ଆକ୍ସେସ କରି ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="2729940704980595903">ଆପଣଙ୍କ Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ ଭ୍ୟୁ କରି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2730550884708194161">ୱାର୍କ ପ୍ରୋଫାଇଲ ବିଷୟରେ</translation>
 <translation id="2730596696987224099">ଆପଣ ନିଜେ ବାଛନ୍ତୁ</translation>
 <translation id="2730647855013151888">ସମସ୍ତ ବ୍ୟକ୍ତିଗତ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
@@ -2296,7 +2296,6 @@
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ବନାନ ସହିତ ବ୍ୟାକରଣର ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2750020734439919571">ଅଧିକ Chrome ଆପ ସେଟିଂସ ଏବଂ ଅନୁମତି</translation>
-<translation id="275010360476017464">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପରେ ଅଡିଓ ଷ୍ଟୋର ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)।</translation>
 <translation id="2750602041558385535">ଯାଞ୍ଚ ହୋଇନଥିବା ଡାଉନଲୋଡକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="2751320815618312249">+ <ph name="NUM" /> ଅଧିକ</translation>
 <translation id="2751454300227269244">ଆପଣଙ୍କ ପାଟିକୁ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -2686,6 +2685,7 @@
 <translation id="3030772324014024606">ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="3030795534674718505">ଆପଣଙ୍କ ବିଷୟରେ ତାହା ସେଭ କରିଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="3030967311408872958">ସୂର୍ଯ୍ୟାସ୍ତରୁ ସୂର୍ଯ୍ୟୋଦୟ</translation>
+<translation id="3030970046240311592">ଆପଣଙ୍କ Gemini ଇତିହାସକୁ ଭ୍ୟୁ କରି ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3031417829280473749">ଏଜେଣ୍ଟ X</translation>
 <translation id="3031532026314193077">ଡାହାଣ-କ୍ଲିକ କରିବା ପାଇଁ ଟଚପେଡ ଏବଂ କୀବୋର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3031557471081358569">ଆମଦାନି କରିବା ଲାଗି ଆଇଟମଗୁଡିକ ଚୟନ କରନ୍ତୁ:</translation>
@@ -3209,7 +3209,6 @@
 <translation id="343578350365773421">ପେପର୍‍ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="3435896845095436175">ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3436118221454753036">AI ମୋଡକୁ ପଚାରନ୍ତୁ</translation>
-<translation id="3437072258256045988">ଆପଣଙ୍କ Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3437397693214267762">ଆପଣଙ୍କର Outlook Calendar ଏବଂ SharePoint ଓ OneDrive ଫାଇଲ ଦେଖନ୍ତୁ</translation>
 <translation id="3437494162908353428">ଏହି URL ପାଇଁ DevToolsକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ।</translation>
 <translation id="3437498061222607130">ଆପଣ ଆପଣଙ୍କ <ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ Searchରେ ସାଇନ ଇନ କରିଛନ୍ତି</translation>
@@ -4142,6 +4141,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> କାର୍ଯ୍ୟ ପାଇଁ ଏକ ସର୍ଟକଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)କୁ ୱିଣ୍ଡୋ ନିଅନ୍ତୁ</translation>
 <translation id="4110485659976215879">ଚେତାବନୀକୁ ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
+<translation id="4110984310437592352">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଇତିହାସରେ ଅଡିଓ ସେଭ ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)।</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ଅଫ୍‌ଲାଇନ୍)</translation>
 <translation id="4112282889480354965">ଏକ୍ସଟେନସନ ଏବଂ ସ୍କିଲ</translation>
 <translation id="4113743276555482284">ଫାଇଲ ପାସୱାର୍ଡ</translation>
@@ -4232,6 +4232,7 @@
 <translation id="419427585139779713">ଥରକେ ଗୋଟିଏ ଶବ୍ଦାଂଶ ଇନପୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="4195814663415092787">ଆପଣ ଯେଉଁଠାରୁ ଛାଡ଼ିଥିଲେ ସେହିଠାରୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
+<translation id="4196632390211257612">Gemini ସହ ଆପଣଙ୍କ ବାର୍ତ୍ତାଳାପ କିମ୍ବା ଆପଣଙ୍କ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ଡାଟା<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />କୁ ରିଭ୍ୟୁ କରାଯିବ ନାହିଁ କିମ୍ବା ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନିଂ ଦେବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ।</translation>
 <translation id="4198268995694216131">ଅତିରିକ୍ତ ସାଇଟ</translation>
 <translation id="4200609364258658652">କପି&amp; ଭିଡିଓ ଫ୍ରେମ</translation>
 <translation id="4200689466366162458">କଷ୍ଟମ୍ ଶଦ୍ଦ</translation>
@@ -4834,6 +4835,7 @@
 <translation id="4665035764476941598">ଆପଣଙ୍କର ଅନ୍ୟ ଟାବକୁ ଫେରାଇ ଆଣିବା ପାଇଁ ଏଠାରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ଦ୍ୱାରା ଷ୍ଟୋର୍‌ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍‌ କରାଯିବ।</translation>
 <translation id="4666472247053585787">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣଙ୍କର ଫୋନରୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
+<translation id="4666483368282673356">ଆପଣଙ୍କ Gemini ଇତିହାସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="4666911709726371538">ଅଧିକ ଆପ୍</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">PINରେ କେବଳ ନମ୍ବରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯିବା ଆବଶ୍ୟକ</translation>
@@ -5306,6 +5308,7 @@
 <translation id="5012523644916800014">ପାସୱାର୍ଡ ଏବଂ ପାସକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="501394389332262641">କମ ବେଟେରୀ ସାଉଣ୍ଡ</translation>
 <translation id="5014286001996333986">ପରିବର୍ତ୍ତନ କରିବେ କିମ୍ବା ନୂଆ ଗ୍ରୁପ ତିଆରି କରିବେ?</translation>
+<translation id="5014385104640320445">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଇତିହାସରେ ଅଡିଓ ସେଭ ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)। ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡାଟାକୁ ବ୍ୟବହାର କରାଯାଏ ନାହିଁ।</translation>
 <translation id="5015344424288992913">ପ୍ରକ୍ସି ନିର୍ଦ୍ଦିଷ୍ଟକରଣ...</translation>
 <translation id="5016305686459575361">ଆପଣଙ୍କ ଫୋନ କନେକ୍ଟ କରି ଆପଣ ଏସବୁ କରିପାରିବେ:</translation>
 <translation id="5016491575926936899">ଆପଣ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରୁ ଟେକ୍ସଟ ମେସେଜ ପଠାଇପାରିବେ, ଆପଣଙ୍କର ଇଣ୍ଟରନେଟ ସଂଯୋଗ ସେୟାର କରିପାରିବେ, ବାର୍ତ୍ତାଳାପ ବିଜ୍ଞପ୍ତିର ପ୍ରତ୍ୟୁତ୍ତର ଦେଇପାରିବେ ଏବଂ ଆପଣଙ୍କ ଫୋନ ମାଧ୍ୟମରେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ଅନଲକ କରିପାରିବେ।<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
@@ -5681,7 +5684,6 @@
 <translation id="5298315677001348398">ଆପଣ ଜାରି ରଖି ଆପଣଙ୍କ ଡିଭାଇସରେ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏହି ସଫ୍ଟୱେରକୁ ଅନୁମତି ଦେବା ପାଇଁ ଚାହାଁନ୍ତି?</translation>
 <translation id="5299109548848736476">ଟ୍ରାକ୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="5299558715747014286">ଆପଣଙ୍କ ଟାବ୍ ଗୋଷ୍ଠୀଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ ଓ ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="5300667117276823109">Gemini ସହ ଆପଣଙ୍କ ବାର୍ତ୍ତାଳାପ କିମ୍ବା ଆପଣଙ୍କ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ଡାଟା<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />କୁ ରିଭ୍ୟୁ କରାଯିବ ନାହିଁ କିମ୍ବା ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ।</translation>
 <translation id="5301398529256275325">“ଏହି ପୃଷ୍ଠାର ସାରାଂଶ ତିଆରି କର” ପରି ବିଷୟଗୁଡ଼ିକ କିମ୍ବା ଆପଣଙ୍କ ନିଜର ପ୍ରଶ୍ନ ପଚାରି ଦେଖନ୍ତୁ।</translation>
 <translation id="5301954838959518834">ଠିକ୍ ଅଛି, ବୁଝିଗଲି</translation>
 <translation id="5302032366299160685">ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ ଫାଇଲ ଖୋଲିବାକୁ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
@@ -6834,7 +6836,6 @@
 <translation id="62229737360959019">ଏକ ଚାଟ କିମ୍ବା ଏକ ସେୟାର ହୋଇଥିବା ଟାବରୁ ଖୋଲାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ ମଧ୍ୟ Gemini ସହ ସେୟାର କରାଯାଏ। ଲାଇଭ ମୋଡରେ, କେବଳ ବର୍ତ୍ତମାନର ଟାବ ଡିଫଲ୍ଟ ଭାବେ ସେୟାର ହୋଇଥାଏ।</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
 <translation id="622537739776246443">ପ୍ରୋଫାଇଲ୍ ଡିଲିଟ୍ କରିଦିଆଯିବ</translation>
-<translation id="622568138962270592">Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="6226777517901268232">ବ୍ୟକ୍ତିଗତ କୀ' ଫାଇଲ୍ (ଇଛାଧୀନ)</translation>
 <translation id="6227280783235722609">ଏକ୍ସଟେନସନ୍</translation>
 <translation id="6228999859806946695"><ph name="TASK_TITLE" />: Gemini ଏହି ଟାସ୍କରେ କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି</translation>
@@ -7992,6 +7993,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="710224247908684995">ଏକ ଏକ୍ସଟେନସନ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="7102832101143475489">ଅନୁରୋଧର ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
 <translation id="7103944802169726298">PC ଏବଂ କାଷ୍ଟିଂ ଡିଭାଇସ ସମାନ ୱାଇ-ଫାଇ ନେଟୱାର୍କରେ ଅଛି</translation>
+<translation id="7104134653119992646">ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ ଏବଂ ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା ସମେତ ଆପଣ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ଆପଣଙ୍କ ଇତିହାସକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_HISTORY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ବିକଳ୍ପଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />। Google ସଦସ୍ୟତା</translation>
 <translation id="7107609441453408294">ସମସ୍ତ ସ୍ପିକରରେ ସମାନ ଅଡିଓ ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="7108338896283013870">ଲୁଚାନ୍ତୁ</translation>
@@ -8371,7 +8373,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7395774987022469191">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
 <translation id="7396017167185131589">ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ସିଷ୍ଟମ୍‍ ଆରମ୍ଭରେ ଲଞ୍ଚ ହେବ ଏବଂ ଆପଣ ଅନ୍ୟ ସମସ୍ତ <ph name="PRODUCT_NAME" /> ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରିବା ପରେ ମଧ୍ୟ ପୃଷ୍ଠଭୂମିରେ ଚାଲିବା ଜାରି ରହିବ।</translation>
-<translation id="7398815534290329738">Google AIକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ କରି ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ। ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା ସମେତ ଆପଣ <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_ACTIVITY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ବିକଳ୍ପଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">ସିଙ୍କକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="7399616692258236448">ଆପଣ ଅନୁମତି ଦେଇଥିବା ସାଇଟଗୁଡ଼ିକ ବ୍ୟତୀତ ସମସ୍ତ ସାଇଟ ପାଇଁ ଲୋକେସନ ଅନୁରୋଧ ସ୍ୱତଃ ବ୍ଲକ ହୋଇଥାଏ</translation>
 <translation id="7399802613464275309">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
@@ -8885,7 +8886,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> ପାଇଁ <ph name="SHORTCUT" /> ସର୍ଟକଟ</translation>
 <translation id="777852709704682967">&amp;ବୁକମାର୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
 <translation id="7779840061887151693">ଡିସପ୍ଲେ</translation>
-<translation id="7780716468751073938">Gemini ସହ ଆପଣଙ୍କ ବାର୍ତ୍ତାଳାପ କିମ୍ବା ଆପଣଙ୍କ <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace ଡାଟା<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" />କୁ ରିଭ୍ୟୁ କରାଯିବ ନାହିଁ କିମ୍ବା ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯିବ ନାହିଁ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ।</translation>
 <translation id="7780992949171378848">ଆପଣଙ୍କ ଡାଟାର ବ୍ୟବହାର ସମ୍ବନ୍ଧରେ ସାଇଟଗୁଡ଼ିକୁ ଏକ ଅପ୍ଟ-ଆଉଟ ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
 <translation id="7782102568078991263">Googleରୁ ଆଉ ଅଧିକ ପରାମର୍ଶ ମିଳିବ ନାହିଁ</translation>
 <translation id="7782717250816686129">ଲଗ୍‌ଇନ୍ ସ୍କ୍ରିନ୍‌ରେ ନିୟମିତ ଡାଟା ଷ୍ଟୋର୍ କରନ୍ତୁ ଏବଂ ସେସନ୍‌କୁ କ୍ରେଡେନ୍‌ସିଆଲ୍‌ଗୁଡ଼ିକ ଇନ୍‌ଜେକ୍ଟ କରନ୍ତୁ।</translation>
@@ -9024,6 +9024,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7903925330883316394">ଉପଯୋଗିତାଗୁଡିକ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">କାଟାକାନା</translation>
 <translation id="7904492297081735975">&amp;ବୁକମାର୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
+<translation id="7904508617992122201">ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଟ୍ରେନ କରିବା ପାଇଁ ଚାଟଗୁଡ଼ିକୁ ରିଭ୍ୟୁ ଏବଂ ବ୍ୟବହାର କରାଯାଏ। Gemini ହେଉଛି AI ଏବଂ ଏହା ଭୁଲ କରିପାରେ। କିଛି ବିଷୟବସ୍ତୁ ସମସ୍ତଙ୍କ ପାଇଁ ଉପଯୁକ୍ତ ହୋଇନପାରେ। ଆପଣଙ୍କ ଲୋକେସନ ବିଷୟରେ ସୂଚନା ସମେତ ଆପଣ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ଆପଣଙ୍କ ଇତିହାସକୁ ପରିଚାଳନା<ph name="END_LINK_MANAGE_HISTORY" /> କରିପାରିବେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଆପଣଙ୍କ ବିକଳ୍ପଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">ଆପଣଙ୍କ ନେଟୱାର୍କରେ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ Linux ପୋର୍ଟଗୁଡ଼ିକ ଉପଲବ୍ଧ କରାନ୍ତୁ।</translation>
 <translation id="7907312522152480478">ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ପାଇବାକୁ, ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଇତିହାସ ଏବଂ ଟାବଗୁଡ଼ିକୁ ସିଙ୍କ କରନ୍ତୁ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସର୍ଭିସକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="7907502219904644296">ଆକ୍ସେସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -10416,7 +10417,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8945274638472141382">ଆଇକନର ଆକାର</translation>
 <translation id="8945508919180478719">ଷ୍ଟୁଡିଓ-ଷ୍ଟାଇଲ ମାଇକ</translation>
 <translation id="8946954897220903437">ଠିକଣା ବାରରେ ଥିବା ସମସ୍ତ ଅନୁରୋଧକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
-<translation id="8946996840522387154">Gemini ସହ ଚାଟ କରିବାକୁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ Gemini ସହ କଥା ହେବା ସମୟରେ, Gemini ଆପ୍ସ କାର୍ଯ୍ୟକଳାପରେ ଅଡିଓ ଷ୍ଟୋର ହୋଇଥାଏ (ଯଦି ଏହା ଚାଲୁ ଥାଏ)। ଜେନେରେଟିଭ AI ମଡେଲଗୁଡ଼ିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡାଟାକୁ ବ୍ୟବହାର କରାଯାଏ ନାହିଁ।</translation>
 <translation id="894763922177556086">ଭଲ</translation>
 <translation id="895054485242522631">ସାଇଟଗୁଡ଼ିକ ମୋସନ୍ ସେନ୍ସର୍ ବ୍ୟବହାର କରିପାରିବ</translation>
 <translation id="8951465597020890363">ଯେ କୌଣସି ମତେ ଅତିଥି ମୋଡ୍‌ରୁ ବାହାରିବେ?</translation>

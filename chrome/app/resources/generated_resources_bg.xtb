@@ -934,6 +934,7 @@
 <translation id="1703666494654169921">Да не се разрешава на сайтовете да използват устройствата и данните за виртуална реалност</translation>
 <translation id="1704097193565924901">Изписване с главна първа буква</translation>
 <translation id="1704230497453185209">Да не се разрешава на сайтовете да възпроизвеждат звук</translation>
+<translation id="170494114379308411">Разговорите ви с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данните ви в Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> няма да се преглеждат, нито ще се използват за обучение на моделите на генеративен AI. Gemini е AI и може да допуска грешки.</translation>
 <translation id="170658918174941828">Версията на Chrome и на операционната ви система, настройките на Cast,
 статистическите данни за ефективността при дублиране и регистрационните файлове за
 диагностика на канала за комуникация ще бъдат изпратени заедно с информацията, която изберете
@@ -1167,6 +1168,7 @@
 <translation id="1881445033931614352">Клавиатурна подредба</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Елемент}other{# елемента}}</translation>
 <translation id="188177382966899059">Deep Search</translation>
+<translation id="1883018549404920116">История в Gemini</translation>
 <translation id="1884340228047885921">Текущата настройка за видимост е „Някои контакти“</translation>
 <translation id="1884705339276589024">Преоразмеряване на диска на Linux</translation>
 <translation id="1885066963699478692">XML файловете, чрез които се задават правилата.</translation>
@@ -1183,7 +1185,6 @@
 <translation id="1892453608039100484">1. Кликнете върху „<ph name="BUTTON_LABEL" />“ по-долу.
 2. Кликнете върху „<ph name="BUTTON_2" />“ в настройките на Windows.</translation>
 <translation id="1895658205118569222">Изключване</translation>
-<translation id="1896353439080510710">Разговорите се преглеждат и използват за подобряване на AI на Google. Gemini е AI и може да допуска грешки. Можете <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />да управлявате активността си<ph name="END_LINK_MANAGE_ACTIVITY" />, включително информацията за местоположението си. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече за възможностите си за избор<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Използване на надеждна парола</translation>
 <translation id="1897860317037652061">Сканирането не бе успешно</translation>
 <translation id="1898804291554630487">Задайте въпрос за тази страница</translation>
@@ -1239,7 +1240,6 @@
 <translation id="1929774028758671973">Контактите могат да споделят с вас, когато са в близост. Ще трябва да одобрявате съответните заявки. Няма да се налага да одобрявате заявките за споделяне между устройствата, на които сте влезли в профила <ph name="USER_EMAIL" />.</translation>
 <translation id="1931152874660185993">Няма инсталирани компоненти.</translation>
 <translation id="1932125073382155239">Да се създадат ли резервни копия на нещата ви?</translation>
-<translation id="1933070475689690969">Активност в приложенията Gemini</translation>
 <translation id="1933489278505808700">Има разрешение да чете и променя</translation>
 <translation id="1935303383381416800">Сайтове с разрешение за преглед на местоположението ви</translation>
 <translation id="193565226207940518">Инструмент за поддръжка</translation>
@@ -1636,6 +1636,7 @@
 <translation id="2246549592927364792">Да се изтеглят ли от Google описания за изображенията?</translation>
 <translation id="2247738527273549923">Устройството ви се управлява от организацията ви</translation>
 <translation id="2247870315273396641">Предварителен преглед на гласа</translation>
+<translation id="2247960558975094922">История в Gemini</translation>
 <translation id="224835741840550119">Почистване на устройството ви</translation>
 <translation id="2249111429176737533">Отваряне като прозорец с раздели</translation>
 <translation id="2249605167705922988">напр. 1-5, 8, 11-13</translation>
@@ -2268,7 +2269,6 @@
 <translation id="2727712005121231835">Действителен размер</translation>
 <translation id="2729310339366257582">Свиване на разделите</translation>
 <translation id="2729577602370119849">Лесно осъществявайте достъп до принтерите и ги управлявайте</translation>
-<translation id="2729940704980595903">Преглед и управление на активността ви в приложенията Gemini</translation>
 <translation id="2730550884708194161">Всичко за служебните потребителски профили</translation>
 <translation id="2730596696987224099">Изберете сами</translation>
 <translation id="2730647855013151888">Включване на цялата лична информация</translation>
@@ -2306,7 +2306,6 @@
 <translation id="2749836841884031656">SIM карта</translation>
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
 <translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
-<translation id="275010360476017464">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се съхранява в активността в приложенията Gemini (ако опцията е включена).</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
 <translation id="2751320815618312249">+ още <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Преместване на устните надясно</translation>
@@ -2696,6 +2695,7 @@
 <translation id="3030772324014024606">Редактиране</translation>
 <translation id="3030795534674718505">Разрешено е използването на информация, която сайтовете са запазили за вас</translation>
 <translation id="3030967311408872958">От залез до изгрев</translation>
+<translation id="3030970046240311592">Преглед и управление на историята ви в Gemini</translation>
 <translation id="3031417829280473749">Агент „X“</translation>
 <translation id="3031532026314193077">Използване на сензорния панел и клавиатурата за кликване с десния бутон</translation>
 <translation id="3031557471081358569">Изберете елементи за импортиране:</translation>
@@ -3219,7 +3219,6 @@
 <translation id="343578350365773421">Няма хартия</translation>
 <translation id="3435896845095436175">Активиране</translation>
 <translation id="3436118221454753036">Режим „Попитайте AI“</translation>
-<translation id="3437072258256045988">Управление на активността ви в приложенията Gemini</translation>
 <translation id="3437397693214267762">Преглед на календара ви в Outlook и на файловете ви в SharePoint и OneDrive</translation>
 <translation id="3437494162908353428">Инструментите DevTools не са разрешени за този URL адрес.</translation>
 <translation id="3437498061222607130">Влезли сте в Търсене с профила си <ph name="USER_EMAIL" /></translation>
@@ -4153,6 +4152,7 @@
 <translation id="4107793386654579933">Изберете клавишна комбинация за действието „<ph name="ACTION_NAME" />“</translation>
 <translation id="4109135793348361820">Преместване на прозореца към <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
+<translation id="4110984310437592352">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се запазва в историята в Gemini (ако опцията е включена).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4112282889480354965">Разширения и умения</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
@@ -4243,6 +4243,7 @@
 <translation id="419427585139779713">Въвеждане сричка по сричка</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
+<translation id="4196632390211257612">Разговорите ви с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данните ви в Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> няма да се преглеждат, нито ще се използват за обучение на моделите на генеративен AI. Gemini е AI и може да допуска грешки. Част от съдържанието може да не е подходящо за всички.</translation>
 <translation id="4198268995694216131">Допълнителни сайтове</translation>
 <translation id="4200609364258658652">Копиран&amp;е на кадъра от видеоклипа</translation>
 <translation id="4200689466366162458">Персонализирани думи</translation>
@@ -4845,6 +4846,7 @@
 <translation id="4665035764476941598">Кликнете тук, за да върнете другите си раздели</translation>
 <translation id="4665446389743427678">Всички данни, съхранявани от <ph name="SITE" />, ще бъдат изтрити.</translation>
 <translation id="4666472247053585787">Преглеждайте на устройството си <ph name="DEVICE_TYPE" /> известия от телефона си</translation>
+<translation id="4666483368282673356">Управление на историята ви в Gemini</translation>
 <translation id="4666911709726371538">Още приложения</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4668936527507421457">ПИН кодът трябва да съдържа само цифри</translation>
@@ -5318,6 +5320,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5012523644916800014">Управление на паролите и кодовете за достъп</translation>
 <translation id="501394389332262641">Звук за изтощена батерия</translation>
 <translation id="5014286001996333986">Да се замени ли съществуващата група или да се създаде нова?</translation>
+<translation id="5014385104640320445">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се запазва в историята в Gemini (ако опцията е включена). Данните ви не се използват за подобряване на моделите на генеративен AI.</translation>
 <translation id="5015344424288992913">Получава се разрешение от прокси сървъра...</translation>
 <translation id="5016305686459575361">След като свържете телефона си, са възможни следните неща:</translation>
 <translation id="5016491575926936899">Можете да изпращате SMS съобщения от компютъра си, да споделяте връзката си с интернет, да отговаряте на известия за разговори и да отключвате своя <ph name="DEVICE_TYPE" /> с телефона си.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -5693,7 +5696,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5298315677001348398">Искате ли да продължите и да разрешите на този софтуер да извършва промени на устройството ви?</translation>
 <translation id="5299109548848736476">Заявка „Do Not Track“</translation>
 <translation id="5299558715747014286">Преглежда и управлява групите ви с раздели</translation>
-<translation id="5300667117276823109">Разговорите ви с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данните ви в Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> няма да се преглеждат, нито ще се използват за подобряване на моделите на генеративния AI. Gemini е AI и може да допуска грешки.</translation>
 <translation id="5301398529256275325">Опитайте да поискате нещо, като например „обобщи тази страница“, или задайте свой собствен въпрос.</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
 <translation id="5302032366299160685">Изчакайте файлът да се отвори, преди да опитате отново</translation>
@@ -6850,7 +6852,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="62229737360959019">Разделите, отворени от разговор или споделен раздел, също се споделят с Gemini. В режим Live по подразбиране се споделя само текущият раздел.</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="622537739776246443">Потребителският профил ще бъде изтрит</translation>
-<translation id="622568138962270592">Активност в приложенията Gemini</translation>
 <translation id="6226777517901268232">Файл с частен ключ (незадължително)</translation>
 <translation id="6227280783235722609">разширение</translation>
 <translation id="6228999859806946695">„<ph name="TASK_TITLE" />“: Gemini спря да работи по тази задача</translation>
@@ -8007,6 +8008,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="710224247908684995">Разширение е изключило Безопасно сърфиране</translation>
 <translation id="7102832101143475489">Времето за изчакване на заявката изтече</translation>
 <translation id="7103944802169726298">Компютърът и устройството за предаване са в една и съща Wi-Fi мрежа</translation>
+<translation id="7104134653119992646">Разговорите се преглеждат и използват за обучение на моделите на генеративен AI. Gemini е AI и може да допуска грешки. Можете <ph name="BEGIN_LINK_MANAGE_HISTORY" />да управлявате историята си<ph name="END_LINK_MANAGE_HISTORY" />, включително информацията за местоположението си. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече за възможностите си за избор<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Членство в Google</translation>
 <translation id="7107609441453408294">Възпроизвеждане на един и същ звук през всички високоговорители</translation>
 <translation id="7108338896283013870">Скриване</translation>
@@ -8386,7 +8388,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7395774987022469191">Цял екран</translation>
 <translation id="7396017167185131589">Споделените папки ще се показват тук</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
-<translation id="7398815534290329738">Разговорите се преглеждат и използват за подобряване на AI на Google. Gemini е AI и може да допуска грешки. Част от съдържанието може да не е подходящо за всички. Можете <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />да управлявате активността си<ph name="END_LINK_MANAGE_ACTIVITY" />, включително информацията за местоположението си. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече за възможностите си за избор<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7399045143794278225">Персонализиране на синхронизирането</translation>
 <translation id="7399616692258236448">Заявките за местоположение се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
@@ -8900,7 +8901,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7777624210360383048">Пряк път <ph name="SHORTCUT" /> за <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;Отваряне на диспечера на отметките</translation>
 <translation id="7779840061887151693">екран</translation>
-<translation id="7780716468751073938">Разговорите ви с Gemini и <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />данните ви в Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> няма да се преглеждат, нито ще се използват за подобряване на моделите на генеративния AI. Gemini е AI и може да допуска грешки. Част от съдържанието може да не е подходящо за всички.</translation>
 <translation id="7780992949171378848">Изпращане на заявка за отказ до сайтовете относно използването на данните ви</translation>
 <translation id="7782102568078991263">Няма повече предложения от Google</translation>
 <translation id="7782717250816686129">Съхраняване на устойчивите данни на екрана за вход и инжектиране на идентификационните данни в сесията.</translation>
@@ -9039,6 +9039,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7903925330883316394">Помощен процес: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">катакана</translation>
 <translation id="7904492297081735975">&amp;Отваряне на диспечера на отметките</translation>
+<translation id="7904508617992122201">Разговорите се преглеждат и използват за обучение на моделите на генеративен AI. Gemini е AI и може да допуска грешки. Част от съдържанието може да не е подходящо за всички. Можете <ph name="BEGIN_LINK_MANAGE_HISTORY" />да управлявате историята си<ph name="END_LINK_MANAGE_HISTORY" />, включително информацията за местоположението си. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече за възможностите си за избор<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7904526211178107182">Портовете в Linux да бъдат достъпни за други устройства в мрежата ви.</translation>
 <translation id="7907312522152480478">За да получите разделите от другите си устройства, потвърдете, че сте вие, и синхронизирайте историята и разделите си. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="7907502219904644296">Промяна на достъпа</translation>
@@ -10432,7 +10433,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8945274638472141382">Размер на иконите</translation>
 <translation id="8945508919180478719">Студиен микрофон</translation>
 <translation id="8946954897220903437">Свиване на всички заявки в адресната лента</translation>
-<translation id="8946996840522387154">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се съхранява в активността в приложенията Gemini (ако опцията е включена). Данните ви не се използват за подобряване на моделите на генеративен AI.</translation>
 <translation id="894763922177556086">добра</translation>
 <translation id="895054485242522631">Сайтовете могат да използват сензорите за движение</translation>
 <translation id="8951465597020890363">Да се излезе ли от режима на гост въпреки това?</translation>
