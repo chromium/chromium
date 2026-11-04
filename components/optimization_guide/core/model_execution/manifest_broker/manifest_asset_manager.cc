@@ -53,9 +53,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(5));
 
 namespace {
-// TTL for disk space evaluation result.
-constexpr base::TimeDelta kDiskSpaceFreshnessThreshold = base::Seconds(10);
-
 // Delay to give consumers time to unload the model before it's deleted.
 constexpr base::TimeDelta kUninstallDelay = base::Seconds(1);
 
@@ -298,34 +295,6 @@ void ManifestAssetManager::AssetLedger::RemoveContext(
   update->Remove(public_key);
 }
 
-ManifestAssetManager::DiskSpaceStatus::DiskSpaceStatus() = default;
-ManifestAssetManager::DiskSpaceStatus::~DiskSpaceStatus() = default;
-
-void ManifestAssetManager::DiskSpaceStatus::Update(
-    std::optional<base::ByteSize> free_space) {
-  free_space_ = free_space;
-  last_evaluated_ = base::Time::Now();
-}
-
-bool ManifestAssetManager::DiskSpaceStatus::IsFresh() const {
-  return free_space_.has_value() &&
-         (base::Time::Now() - last_evaluated_) < kDiskSpaceFreshnessThreshold;
-}
-
-bool ManifestAssetManager::DiskSpaceStatus::IsSufficientForOnDemandInstall()
-    const {
-  return free_space_.has_value() &&
-         features::IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-             free_space_.value());
-}
-
-bool ManifestAssetManager::DiskSpaceStatus::IsSufficientForBackgroundInstall()
-    const {
-  return free_space_.has_value() &&
-         features::IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
-             free_space_.value());
-}
-
 ManifestAssetManager::ManifestAssetManager(
     PrefService& local_state,
     UsageTracker& usage_tracker,
@@ -336,7 +305,8 @@ ManifestAssetManager::ManifestAssetManager(
       usage_tracker_(usage_tracker),
       delegate_(delegate),
       component_update_service_(component_update_service),
-      ledger_(local_state) {
+      ledger_(local_state),
+      disk_space_status_(delegate) {
   // Load persistent state from the ledger immediately on startup.
   ledger_.Load();
 
@@ -557,14 +527,12 @@ void ManifestAssetManager::OnOrphanedAssetsFound(
   }
 }
 
-void ManifestAssetManager::OnDiskSpaceEvaluated(
-    std::optional<base::ByteSize> free_space) {
+void ManifestAssetManager::OnDiskSpaceEvaluated() {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::OnDiskSpaceEvaluated",
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  disk_space_status_.Update(free_space);
-  factory_->UpdateFreeDiskSpace(free_space);
+  factory_->UpdateFreeDiskSpace(disk_space_status_.free_space());
   UpdateRegistrations();
 }
 
@@ -695,9 +663,11 @@ void ManifestAssetManager::UpdateRegistrations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!disk_space_status_.IsFresh()) {
     // Don't do anything yet, just refresh the disk space status.
-    delegate_->GetFreeDiskSpace(
-        base::BindOnce(&ManifestAssetManager::OnDiskSpaceEvaluated,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (!disk_space_status_.IsEvaluationPending()) {
+      disk_space_status_.EnsureEvaluated(
+          base::BindOnce(&ManifestAssetManager::OnDiskSpaceEvaluated,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
     return;
   }
 
