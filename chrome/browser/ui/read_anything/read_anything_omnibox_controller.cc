@@ -115,6 +115,7 @@ void ReadAnythingOmniboxController::OnReadingModePresenterChanged() {
   if (read_anything_controller->GetPresentationState() ==
           ReadAnythingController::PresentationState::kInactive &&
       last_close_reason_ == ReadAnythingCloseReason::kClosedByUser) {
+    entry_point_shown_time_ = base::TimeTicks::Now();
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/true, tab_);
   }
@@ -146,7 +147,7 @@ void ReadAnythingOmniboxController::OnDiscardContents(
   StopTimers();
   was_last_checked_page_distillable_ = false;
   was_page_checked_ = false;
-  candidate_check_triggered_time_ms_ = base::TimeTicks();
+  entry_point_shown_time_ = base::TimeTicks();
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
@@ -157,6 +158,7 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
   was_last_checked_page_distillable_ = false;
   was_page_checked_ = false;
   if (IsIrrelevant()) {
+    entry_point_shown_time_ = base::TimeTicks();
     return;
   }
 
@@ -164,6 +166,7 @@ void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {
   // The entry point re-shows after RM is closed, but it wasn't ignored if it
   // was used on this page.
   UpdateIgnored(GetCurrentPageActionState().showing && !was_triggered);
+  entry_point_shown_time_ = base::TimeTicks();
   DebounceCheckSuggestion();
 }
 
@@ -178,7 +181,6 @@ void ReadAnythingOmniboxController::DebounceCheckSuggestion() {
     return;
   }
 
-  candidate_check_triggered_time_ms_ = base::TimeTicks::Now();
   if (!check_suggestion_debouncer_) {
     check_suggestion_debouncer_ = std::make_unique<base::OneShotTimer>();
   }
@@ -227,6 +229,11 @@ void ReadAnythingOmniboxController::UpdateVisibility(bool should_show) {
     return;
   }
 
+  // Start the ignored timer when shown so page load and suggestion check
+  // latency don't count toward it.
+  if (should_show) {
+    entry_point_shown_time_ = base::TimeTicks::Now();
+  }
   read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
       should_show, tab_,
       base::BindOnce(&ReadAnythingOmniboxController::OnShowPromoResult,
@@ -244,16 +251,15 @@ void ReadAnythingOmniboxController::UpdateIgnored(bool is_showing) {
   }
 
   // Indicate that the omnibox entrypoint was ignored if it's still showing when
-  // the page changes or tab closes, and the user was on the previous page for a
-  // non-trivial amount of time. Without this time check, the omnibox would be
-  // snoozed if the user is quickly clicking through links without reading them,
-  // so they aren't truly ignoring the Reading mode entrypoint.
-  base::TimeDelta time_on_previous_page =
-      candidate_check_triggered_time_ms_.is_null()
+  // the page changes or tab closes, and it was showing for a non-trivial amount
+  // of time. Without this time check, the omnibox would be snoozed if the user
+  // is quickly clicking through links without reading them, so they aren't
+  // truly ignoring the Reading mode entrypoint.
+  base::TimeDelta time_shown =
+      entry_point_shown_time_.is_null()
           ? base::Milliseconds(0)
-          : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
-  if (time_on_previous_page.InMilliseconds() >
-      kTimeOnPreviousPageBeforeIgnored) {
+          : base::TimeTicks::Now() - entry_point_shown_time_;
+  if (time_shown.InMilliseconds() > kTimeOnPreviousPageBeforeIgnored) {
     read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
         tab_->GetBrowserWindowInterface());
   }

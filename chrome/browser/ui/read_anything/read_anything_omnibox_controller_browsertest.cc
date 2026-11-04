@@ -314,6 +314,22 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingOmniboxControllerBrowserTest,
+    PrimaryPageChanged_DoesNotCountTimeBeforeEntryPointShownAsDwellTime) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  ExpectPageActionStateImmediate(false);
+
+  // Mimic a long delay before the entry point is shown, e.g. a slow page load.
+  MockLongDwellTime();
+  WaitForPageActionShowing(true);
+
+  // The entry point was only briefly shown, so it wasn't ignored.
+  EXPECT_TRUE(NavigateToURL(browser(), GURL("https://www.youtube.com")));
+  EXPECT_EQ(GetOmniboxIgnoredCount(), 0);
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
                        PrimaryPageChangedWithIphShowing_LogsNotOpenedAfterIph) {
   base::HistogramTester histogram_tester;
