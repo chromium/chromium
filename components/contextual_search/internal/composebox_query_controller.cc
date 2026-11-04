@@ -765,11 +765,6 @@ void ComposeboxQueryController::CreateSearchUrl(
         {kVoiceSearchQueryParameterKey, "1"});
   }
 
-  bool send_upload_type =
-      base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksSendContextualInputUploadType) &&
-      contextual_tasks::kSendContextualInputUploadTypeInSearchUrl.Get() &&
-      is_aim_search;
   if (is_aim_search) {
     // For AIM queries, add the added inputs param to the request url params,
     // regardless of if any of the context was a Lens upload.
@@ -807,7 +802,7 @@ void ComposeboxQueryController::CreateSearchUrl(
   if (should_create_multimodal_url && cluster_info_.has_value()) {
     std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
         CreateContextualInputs(search_url_request_info->file_tokens,
-                               send_upload_type);
+                               /*send_upload_type=*/is_aim_search);
     const FileInfo* last_active_lens_file = nullptr;
     bool has_image_upload = false;
     bool has_drive_id = false;
@@ -929,7 +924,7 @@ void ComposeboxQueryController::CreateSearchUrl(
           (!suppress_lns_surface_param_if_no_image_ || has_image_upload);
       std::string lns_surface =
           should_send_lns_surface ? kLnsSurfaceParameterValue : std::string();
-      if (contextual_inputs->inputs_size() == 1 && !send_upload_type &&
+      if (contextual_inputs->inputs_size() == 1 && !is_aim_search &&
           !has_drive_id) {
         bool is_raw_file = last_active_lens_file->request_id->media_type() ==
                            lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE;
@@ -938,20 +933,14 @@ void ComposeboxQueryController::CreateSearchUrl(
             lens::TRANSLATE_CHIP;
         std::unique_ptr<lens::LensOverlayRequestId> request_id = nullptr;
         if (!is_translate) {
-          if (is_aim_search) {
-            request_id = std::make_unique<lens::LensOverlayRequestId>(
-                *last_active_lens_file->request_id);
-          } else {
-            request_id =
-                is_raw_file
-                    ? request_id_generator_.GetNextRequestId(
-                          lens::RequestIdUpdateMode::kSearchUrl,
-                          last_active_lens_file->request_id->mime_type(),
-                          lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE)
-                    : request_id_generator_.GetNextRequestId(
-                          lens::RequestIdUpdateMode::kSearchUrl,
-                          context_media_type);
-          }
+          request_id =
+              is_raw_file ? request_id_generator_.GetNextRequestId(
+                                lens::RequestIdUpdateMode::kSearchUrl,
+                                last_active_lens_file->request_id->mime_type(),
+                                lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE)
+                          : request_id_generator_.GetNextRequestId(
+                                lens::RequestIdUpdateMode::kSearchUrl,
+                                context_media_type);
         }
 
         // Cache the generated Search URL request ID and ensure it preserves
@@ -1093,16 +1082,10 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
                 lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN) {
               query_data->set_visual_input_type(visual_input_type);
             }
-            if (base::FeatureList::IsEnabled(
-                    contextual_tasks::
-                        kContextualTasksSendContextualInputUploadType) &&
-                contextual_tasks::kSendContextualInputUploadTypeInAimRequest
-                    .Get()) {
-              if (file_info->input_data &&
-                  file_info->input_data->upload_type.has_value()) {
-                query_data->set_contextual_input_upload_type(
-                    *file_info->input_data->upload_type);
-              }
+            if (file_info->input_data &&
+                file_info->input_data->upload_type.has_value()) {
+              query_data->set_contextual_input_upload_type(
+                  *file_info->input_data->upload_type);
             }
             return query_data;
           };
@@ -1788,10 +1771,9 @@ ComposeboxQueryController::CreateSuggestInputs(
       base::FeatureList::IsEnabled(
           omnibox::kSuggestRequestSendsMultifileCgiParam) &&
       attached_context_tokens.size() > 1) {
-    bool send_upload_type = base::FeatureList::IsEnabled(
-        contextual_tasks::kContextualTasksSendContextualInputUploadType);
     std::unique_ptr<lens::LensOverlayContextualInputs> contextual_inputs =
-        CreateContextualInputs(attached_context_tokens, send_upload_type);
+        CreateContextualInputs(attached_context_tokens,
+                               /*send_upload_type=*/true);
     if (contextual_inputs->inputs_size() > 0) {
       std::string serialized_contextual_inputs;
       if (contextual_inputs->SerializeToString(&serialized_contextual_inputs)) {

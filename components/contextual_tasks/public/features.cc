@@ -302,9 +302,6 @@ BASE_FEATURE(kEnableNotifyZeroStateRenderedCapability,
 BASE_FEATURE(kContextualTasksSendFullVersionListEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kContextualTasksSendContextualInputUploadType,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kContextualTasksUrlRedirectToAimUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -716,13 +713,6 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
 
 const base::FeatureParam<int> kMinQueryWords{
     &kContextualTasksContext, "ContextualTasksContextMinQueryWords", 3};
-
-const base::FeatureParam<bool> kSendContextualInputUploadTypeInSearchUrl{
-    &kContextualTasksSendContextualInputUploadType, "send_in_search_url", true};
-
-const base::FeatureParam<bool> kSendContextualInputUploadTypeInAimRequest{
-    &kContextualTasksSendContextualInputUploadType, "send_in_aim_request",
-    true};
 
 // Enables tab auto-chip for contextual tasks.
 const base::FeatureParam<bool> kContextualTasksTabAutoSuggestionChipEnabled(
