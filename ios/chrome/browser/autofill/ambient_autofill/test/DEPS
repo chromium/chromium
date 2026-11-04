@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+components/personal_context/core",
+  # keep-sorted end
+]

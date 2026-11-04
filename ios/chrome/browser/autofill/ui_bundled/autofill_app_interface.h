@@ -176,6 +176,14 @@ enum CreditCardSaveManagerObserverEvent : int {
 // cached before the timeout.
 + (BOOL)waitForFormToBeCachedInMainFrame;
 
+// Waits until a form is cached in the main frame's `AutofillManager` and server
+// predictions (including `kAutofillOverridePredictions`) have been applied to
+// all cached forms. Use this instead of `+waitForFormToBeCachedInMainFrame`
+// when field types depend on asynchronous `OnLoadedServerPredictions` rather
+// than local heuristics. Returns `YES` if server predictions are received
+// before the timeout.
++ (BOOL)waitForServerPredictionsInMainFrame;
+
 // Sets the network connection type to `offline` (CONNECTION_NONE) or resets it.
 + (void)setNetworkConnectionOffline:(BOOL)offline;
 
@@ -201,6 +209,23 @@ enum CreditCardSaveManagerObserverEvent : int {
 
 // Saves a Passport entity with type kServerWallet and returns its GUID.
 + (NSString*)saveServerWalletPassportEntity;
+
+// Marks the Personal Context passport prefetch as pending with a presence
+// signal so that focusing a passport field displays the loading suggestion.
++ (void)startPersonalContextPassportPrefetch;
+
+// Saves a masked Passport entity with type `kPersonalContext` (Sian), caches
+// its unmasked counterpart for filling, and completes any pending prefetch.
+// Returns `YES` if the entity was saved successfully, or `NO` otherwise.
++ (BOOL)savePersonalContextPassportEntity;
+
+// Clears any Personal Context passport entity and resets its prefetch state.
++ (void)clearPersonalContextPassportEntity;
+
+// Returns the obfuscated representation of `value` with `visibleSuffixLength`
+// trailing characters visible.
++ (NSString*)obfuscatedValue:(NSString*)value
+         visibleSuffixLength:(NSUInteger)visibleSuffixLength;
 
 // Saves a Vehicle entity with test data. Returns YES if the entity was saved.
 + (BOOL)saveVehicleEntity;

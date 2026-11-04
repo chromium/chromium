@@ -5,10 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_AUTOFILL_AI_PERSONAL_CONTEXT_ACCESS_MANAGER_IMPL_TEST_API_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl.h"
 
 namespace autofill {
@@ -20,6 +24,17 @@ class AutofillAiPersonalContextAccessManagerImplTestApi {
       : manager_(*manager) {}
 
   void ResetStateForType(EntityType type) { manager_->ResetStateForType(type); }
+
+  void SetTypeStatus(
+      EntityType type,
+      AutofillAiPersonalContextAccessManager::RequestStatus status) {
+    manager_->SetTypeStatus(type, status);
+  }
+
+  void NotifyPrefetchStatusObservers(
+      std::optional<base::span<const EntityInstance>> entities) {
+    manager_->NotifyPrefetchStatusObservers(entities);
+  }
 
   void CacheUnmaskedSpiiEntity(EntityInstance entity) {
     manager_->CacheUnmaskedSpiiEntity(std::move(entity));
