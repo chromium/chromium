@@ -4707,6 +4707,24 @@
             ]
         }
     ],
+    "ClientIdBackupCorrectnessFix": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledClientSide",
+                    "enable_features": [
+                        "ClientIdBackupCorrectnessFix"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionBypassTiers": [
         {
             "platforms": [
