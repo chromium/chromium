@@ -11,6 +11,10 @@
 
 @protocol TTCVoicePlateMutator;
 
+// Accessibility identifiers for `TTCVoicePlateView` subviews.
+extern NSString* const kTTCVoicePlateCloseButtonAccessibilityIdentifier;
+extern NSString* const kTTCVoicePlatePlayPauseButtonAccessibilityIdentifier;
+
 // Reusable compact voice plate capsule view conforming to
 // `TTCVoicePlateConsumer`.
 @interface TTCVoicePlateView : UIView <TTCVoicePlateConsumer>

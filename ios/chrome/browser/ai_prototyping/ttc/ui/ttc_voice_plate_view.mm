@@ -5,20 +5,42 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_view.h"
 
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_consumer.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_voice_plate_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_waveform_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+NSString* const kTTCVoicePlateCloseButtonAccessibilityIdentifier =
+    @"TTCVoicePlateCloseButtonAccessibilityIdentifier";
+NSString* const kTTCVoicePlatePlayPauseButtonAccessibilityIdentifier =
+    @"TTCVoicePlatePlayPauseButtonAccessibilityIdentifier";
+
 namespace {
 
-// Layout and dimension constants for the central frosted-glass waveform pill.
+// Layout and dimension constants for the 3-element separated voice plate bar:
+// [ 48x48 Play/Pause circle ] --14pt-- [ 136x56 Waveform pill ] --14pt-- [
+// 48x48 Close circle ]
 constexpr CGFloat kCenterPillWidth = 136.0;
 constexpr CGFloat kCenterPillHeight = 56.0;
 constexpr CGFloat kCenterPillCornerRadius = 28.0;
+constexpr CGFloat kCircleButtonSize = 48.0;
+constexpr CGFloat kCircleButtonCornerRadius = 24.0;
+constexpr CGFloat kControlBarSpacing = 14.0;
+constexpr CGFloat kActionSymbolPointSize = 18.0;
 constexpr float kVoicePlateShadowOpacity = 0.12f;
 constexpr CGFloat kVoicePlateShadowRadius = 8.0;
 constexpr CGFloat kVoicePlateShadowOffsetY = 2.0;
 constexpr CGFloat kBorderHairlineWidth = 0.5;
+constexpr CGFloat kCloseButtonBackgroundAlpha = 0.18;
+constexpr CGFloat kCloseButtonBorderAlpha = 0.35;
+constexpr CGFloat kDisabledButtonAlpha = 0.45;
+
+// UI strings.
+NSString* const kCloseSessionAccessibilityLabel = @"Close session";
+NSString* const kPauseSessionAccessibilityLabel = @"Pause session";
+NSString* const kResumeSessionAccessibilityLabel = @"Resume session";
+NSString* const kStartSessionAccessibilityLabel = @"Start session";
 
 }  // namespace
 
@@ -27,6 +49,8 @@ constexpr CGFloat kBorderHairlineWidth = 0.5;
   BOOL _isMicMuted;
 
   UIVisualEffectView* _blurEffectView;
+  UIButton* _playPauseButton;
+  UIButton* _closeButton;
   TTCWaveformView* _waveformView;
 }
 
@@ -36,6 +60,31 @@ constexpr CGFloat kBorderHairlineWidth = 0.5;
   self = [super initWithFrame:frame];
   if (self) {
     _currentState = TTCSessionUIState::kIdle;
+
+    // Left circular Session Pause/Resume button.
+    _playPauseButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _playPauseButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _playPauseButton.layer.cornerRadius = kCircleButtonCornerRadius;
+    _playPauseButton.layer.masksToBounds = YES;
+    _playPauseButton.accessibilityIdentifier =
+        kTTCVoicePlatePlayPauseButtonAccessibilityIdentifier;
+    [_playPauseButton addTarget:self
+                         action:@selector(playPauseButtonTapped:)
+               forControlEvents:UIControlEventTouchUpInside];
+
+    // Right circular Session Start (Play) / Stop (Close) button.
+    _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _closeButton.layer.cornerRadius = kCircleButtonCornerRadius;
+    _closeButton.layer.masksToBounds = YES;
+    _closeButton.accessibilityIdentifier =
+        kTTCVoicePlateCloseButtonAccessibilityIdentifier;
+    [_closeButton addTarget:self
+                     action:@selector(closeButtonTapped:)
+           forControlEvents:UIControlEventTouchUpInside];
+
+    AddSquareConstraints(_playPauseButton, kCircleButtonSize);
+    AddSquareConstraints(_closeButton, kCircleButtonSize);
 
     // Center waveform visualization view inside the frosted-glass pill.
     _waveformView = [[TTCWaveformView alloc] init];
@@ -68,15 +117,26 @@ constexpr CGFloat kBorderHairlineWidth = 0.5;
     [pillContainer addSubview:_blurEffectView];
     AddSameConstraints(_blurEffectView, pillContainer);
 
-    [self addSubview:pillContainer];
-    AddSameConstraints(pillContainer, self);
-
     AddSizeConstraints(pillContainer,
                        CGSizeMake(kCenterPillWidth, kCenterPillHeight));
     AddSameCenterConstraints(_waveformView, _blurEffectView.contentView);
 
+    // Horizontal control row: [ Play/Pause Circle ] [ Center Pill ] [ Close
+    // Circle ].
+    UIStackView* controlsStack =
+        [[UIStackView alloc] initWithArrangedSubviews:@[
+          _playPauseButton, pillContainer, _closeButton
+        ]];
+    controlsStack.translatesAutoresizingMaskIntoConstraints = NO;
+    controlsStack.axis = UILayoutConstraintAxisHorizontal;
+    controlsStack.alignment = UIStackViewAlignmentCenter;
+    controlsStack.spacing = kControlBarSpacing;
+
     [self registerForTraitChanges:@[ [UITraitUserInterfaceStyle class] ]
                        withAction:@selector(updateBorderColors)];
+
+    [self addSubview:controlsStack];
+    AddSameConstraints(controlsStack, self);
 
     [self updateControlsForState:_currentState];
   }
@@ -112,24 +172,108 @@ constexpr CGFloat kBorderHairlineWidth = 0.5;
   // Implemented in follow-up error chip slice.
 }
 
+#pragma mark - Actions
+
+- (void)playPauseButtonTapped:(UIButton*)sender {
+  [self.mutator toggleMicMuted];
+}
+
+- (void)closeButtonTapped:(UIButton*)sender {
+  switch (_currentState) {
+    case TTCSessionUIState::kIdle:
+    case TTCSessionUIState::kError:
+      [self.mutator startSession];
+      break;
+    case TTCSessionUIState::kConnecting:
+    case TTCSessionUIState::kListening:
+      [self.mutator stopSession];
+      break;
+  }
+}
+
 #pragma mark - Private UI Helpers
 
-// Updates the waveform state for `state`.
+// Updates the waveform state, pause/resume button, and session button for
+// `state`.
 - (void)updateControlsForState:(TTCSessionUIState)state {
   switch (state) {
     case TTCSessionUIState::kIdle:
     case TTCSessionUIState::kError:
       _waveformView.state = TTCWaveformState::kDots;
+      [self configurePlayPauseButtonEnabled:NO isPaused:NO];
+      [self configureSessionButtonForActiveSession:NO];
       break;
 
     case TTCSessionUIState::kConnecting:
       _waveformView.state = TTCWaveformState::kProcessing;
+      [self configurePlayPauseButtonEnabled:NO isPaused:NO];
+      [self configureSessionButtonForActiveSession:YES];
       break;
 
     case TTCSessionUIState::kListening:
       _waveformView.state =
           _isMicMuted ? TTCWaveformState::kDots : TTCWaveformState::kListening;
+      [self configurePlayPauseButtonEnabled:YES isPaused:_isMicMuted];
+      [self configureSessionButtonForActiveSession:YES];
       break;
+  }
+}
+
+// Configures `_playPauseButton` interactivity, icon, accessibility label, and
+// surface styling for `enabled` and `isPaused`.
+- (void)configurePlayPauseButtonEnabled:(BOOL)enabled isPaused:(BOOL)isPaused {
+  _playPauseButton.enabled = enabled;
+  _playPauseButton.alpha = enabled ? 1.0 : kDisabledButtonAlpha;
+  _playPauseButton.accessibilityLabel = isPaused
+                                            ? kResumeSessionAccessibilityLabel
+                                            : kPauseSessionAccessibilityLabel;
+  Symbol symbol = isPaused ? SymbolMicrophoneSlash : SymbolMicrophoneFill;
+  [_playPauseButton setImage:SymbolWithPointSize(symbol, kActionSymbolPointSize)
+                    forState:UIControlStateNormal];
+  if (isPaused) {
+    _playPauseButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+    _playPauseButton.tintColor = [UIColor colorNamed:kSolidButtonTextColor];
+    _playPauseButton.layer.borderWidth = 0.0;
+    _playPauseButton.layer.borderColor = nil;
+  } else {
+    _playPauseButton.backgroundColor =
+        [UIColor colorNamed:kTertiaryBackgroundColor];
+    _playPauseButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+    _playPauseButton.layer.borderWidth = kBorderHairlineWidth;
+    _playPauseButton.layer.borderColor =
+        [[UIColor colorNamed:kSeparatorColor]
+            resolvedColorWithTraitCollection:self.traitCollection]
+            .CGColor;
+  }
+}
+
+// Configures `_closeButton` (right session button) as a red Close button when
+// `isSessionActive` is YES, or an accent-blue Play (Start session) button when
+// `isSessionActive` is NO.
+- (void)configureSessionButtonForActiveSession:(BOOL)isSessionActive {
+  if (isSessionActive) {
+    UIColor* redColor = [UIColor colorNamed:kRedColor];
+    _closeButton.accessibilityLabel = kCloseSessionAccessibilityLabel;
+    [_closeButton
+        setImage:SymbolWithPointSize(SymbolXMark, kActionSymbolPointSize)
+        forState:UIControlStateNormal];
+    _closeButton.backgroundColor =
+        [redColor colorWithAlphaComponent:kCloseButtonBackgroundAlpha];
+    _closeButton.tintColor = redColor;
+    _closeButton.layer.borderWidth = kBorderHairlineWidth;
+    _closeButton.layer.borderColor =
+        [[redColor colorWithAlphaComponent:kCloseButtonBorderAlpha]
+            resolvedColorWithTraitCollection:self.traitCollection]
+            .CGColor;
+  } else {
+    _closeButton.accessibilityLabel = kStartSessionAccessibilityLabel;
+    [_closeButton
+        setImage:SymbolWithPointSize(SymbolPlayFill, kActionSymbolPointSize)
+        forState:UIControlStateNormal];
+    _closeButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+    _closeButton.tintColor = [UIColor colorNamed:kSolidButtonTextColor];
+    _closeButton.layer.borderWidth = 0.0;
+    _closeButton.layer.borderColor = nil;
   }
 }
 
@@ -139,6 +283,19 @@ constexpr CGFloat kBorderHairlineWidth = 0.5;
       [[UIColor colorNamed:kSeparatorColor]
           resolvedColorWithTraitCollection:self.traitCollection]
           .CGColor;
+  if (_closeButton.layer.borderWidth > 0.0) {
+    _closeButton.layer.borderColor =
+        [[[UIColor colorNamed:kRedColor]
+             colorWithAlphaComponent:kCloseButtonBorderAlpha]
+            resolvedColorWithTraitCollection:self.traitCollection]
+            .CGColor;
+  }
+  if (_playPauseButton.layer.borderWidth > 0.0) {
+    _playPauseButton.layer.borderColor =
+        [[UIColor colorNamed:kSeparatorColor]
+            resolvedColorWithTraitCollection:self.traitCollection]
+            .CGColor;
+  }
 }
 
 @end
