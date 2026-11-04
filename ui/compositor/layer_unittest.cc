@@ -2283,8 +2283,9 @@ TEST_P(LayerWithRealCompositorTest, MAYBE_BackgroundInvert) {
                                               kPixelLocationNotInL1.y()));
 }
 
-// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
-#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 debug builds. Re-enable this
+// test.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
 #define MAYBE_BackgroundBlur DISABLED_BackgroundBlur
 #else
 #define MAYBE_BackgroundBlur BackgroundBlur
@@ -2339,8 +2340,9 @@ TEST_P(LayerWithRealCompositorTest, MAYBE_BackgroundBlur) {
   EXPECT_TRUE(MatchesPNGFile(bitmap, ref_img2, fuzzy_comparator));
 }
 
-// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 builds. Re-enable this test.
-#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/40280155): Flaky on fuchsia-arm64 debug builds. Re-enable this
+// test.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
 #define MAYBE_BackgroundBlurChangeDeviceScale \
   DISABLED_BackgroundBlurChangeDeviceScale
 #else
