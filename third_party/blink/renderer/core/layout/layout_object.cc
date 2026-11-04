@@ -786,7 +786,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
                    DynamicTo<LayoutTextCombine>(SlowLastChild())) {
       last_child->AddChild(new_child);
     } else {
-      children->AppendChildNode(
+      children->InsertChildNode(
           this, LayoutTextCombine::CreateAnonymous(To<LayoutText>(new_child)));
     }
   } else {

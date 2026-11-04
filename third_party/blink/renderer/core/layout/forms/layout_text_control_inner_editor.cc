@@ -88,7 +88,7 @@ void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
   auto* anonymous = LayoutBlockFlow::CreateAnonymous(GetDocument(), Style());
   LayoutBlockFlow::AddChild(anonymous, before_parent);
   before_parent->MoveChildrenTo(anonymous, before_parent->FirstChild(),
-                                before_child, /* full_remove_insert */ true);
+                                before_child);
   anonymous->AddChild(new_child);
 }
 

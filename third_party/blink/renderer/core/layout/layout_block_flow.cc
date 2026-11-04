@@ -109,7 +109,7 @@ void ReparentSubsequentFloatingOrOutOfFlow(LayoutBlockFlow* from,
                                            LayoutObject* next) {
   while (next && next->IsFloatingOrOutOfFlowPositioned()) {
     LayoutObject* sibling = next->NextSibling();
-    from->MoveChildTo(to, next, nullptr, true);
+    from->MoveChildTo(to, next);
     next = sibling;
   }
 }
@@ -119,7 +119,7 @@ void ReparentPrecedingFloatingOrOutOfFlow(LayoutBlockFlow* from,
                                           LayoutObject* prev) {
   while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
     LayoutObject* sibling = prev->NextSibling();
-    from->MoveChildTo(to, prev, to->FirstChild(), true);
+    from->MoveChildTo(to, prev, to->FirstChild());
     prev = sibling;
   }
 }
@@ -289,7 +289,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
     LayoutObject* next_sibling = NextSibling();
     // Invoking RemoveChild may destroy `parent_block_flow`.
     parent_block_flow->Children()->RemoveChildNode(parent_block_flow, this);
-    MoveAllChildrenTo(parent_block_flow, next_sibling, true);
+    MoveAllChildrenTo(parent_block_flow, next_sibling);
     Destroy();
   }
 }
@@ -328,8 +328,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
         // `next_block_flow` might be a non-anonymous block-flow for InsertHTML
         // TestRendering.
         if (next_block_flow->IsAnonymous()) {
-          MoveAllChildrenTo(next_block_flow, next_block_flow->FirstChild(),
-                            /* full_remove_insert */ true);
+          MoveAllChildrenTo(next_block_flow, next_block_flow->FirstChild());
         }
       }
     }
@@ -397,7 +396,7 @@ void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
   LayoutObject* next_sibling = child->NextSibling();
   Children()->RemoveChildNode(this, child);
   SetChildrenInline(child->ChildrenInline());
-  child->MoveAllChildrenTo(this, next_sibling, true);
+  child->MoveAllChildrenTo(this, next_sibling);
   child->Destroy();
 }
 
@@ -525,8 +524,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
 
     LayoutBlock* block = CreateAnonymousChild();
     Children()->InsertChildNode(this, block, inline_run_start);
-    MoveChildrenTo(block, inline_run_start, child,
-                   /*full_remove_insert=*/true);
+    MoveChildrenTo(block, inline_run_start, child);
   }
 
 #if DCHECK_IS_ON()

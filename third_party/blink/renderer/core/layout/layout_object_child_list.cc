@@ -89,10 +89,8 @@ void LayoutObjectChildList::DestroyLeftoverChildren() {
   }
 }
 
-LayoutObject* LayoutObjectChildList::RemoveChildNode(
-    LayoutObject* owner,
-    LayoutObject* old_child,
-    bool notify_layout_object) {
+LayoutObject* LayoutObjectChildList::RemoveChildNode(LayoutObject* owner,
+                                                     LayoutObject* old_child) {
   DCHECK_EQ(old_child->Parent(), owner);
   DCHECK_EQ(this, owner->VirtualChildren());
 
@@ -100,7 +98,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   // child got yanked or that a positioned child got yanked). We also issue
   // paint invalidations, so that the area exposed when the child disappears
   // gets paint invalidated properly.
-  if (notify_layout_object && old_child->EverHadLayout()) {
+  if (old_child->EverHadLayout()) {
     old_child->SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kRemovedFromLayout);
     if (old_child->IsOutOfFlowPositioned() || old_child->IsColumnSpanAll()) {
@@ -109,9 +107,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   }
   InvalidatePaintOnRemoval(*old_child);
 
-  if (notify_layout_object) {
-    old_child->WillBeRemovedFromTree();
-  }
+  old_child->WillBeRemovedFromTree();
 
   if (old_child->IsInLayoutNGInlineFormattingContext()) {
     owner->SetChildNeedsCollectInlines();
@@ -147,8 +143,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
 DISABLE_CFI_PERF
 void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
                                             LayoutObject* new_child,
-                                            LayoutObject* before_child,
-                                            bool notify_layout_object) {
+                                            LayoutObject* before_child) {
   DCHECK(!new_child->Parent());
   DCHECK_EQ(this, owner->VirtualChildren());
   DCHECK(!owner->IsLayoutBlockFlow() ||
@@ -189,16 +184,11 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
     last_child_ = new_child;
   }
 
-  // Run LayoutNG invalidations outside of |InsertedIntoTree| because it needs
-  // to run regardless of |notify_layout_object|. |notify_layout_object| is an
-  // optimization to skip notifications when moving within the same tree.
   if (new_child->IsInLayoutNGInlineFormattingContext()) {
     InvalidateInlineItems(new_child);
   }
 
-  if (notify_layout_object) {
-    new_child->InsertedIntoTree();
-  }
+  new_child->InsertedIntoTree();
 
   if (owner->IsInLayoutNGInlineFormattingContext() ||
       (owner->EverHadLayout() && owner->ChildrenInline())) {

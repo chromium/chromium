@@ -46,18 +46,10 @@ class LayoutObjectChildList {
 
   void DestroyLeftoverChildren();
 
-  LayoutObject* RemoveChildNode(LayoutObject* owner,
-                                LayoutObject*,
-                                bool notify_layout_object = true);
+  LayoutObject* RemoveChildNode(LayoutObject* owner, LayoutObject*);
   void InsertChildNode(LayoutObject* owner,
                        LayoutObject* new_child,
-                       LayoutObject* before_child,
-                       bool notify_layout_object = true);
-  void AppendChildNode(LayoutObject* owner,
-                       LayoutObject* new_child,
-                       bool notify_layout_object = true) {
-    InsertChildNode(owner, new_child, nullptr, notify_layout_object);
-  }
+                       LayoutObject* before_child = nullptr);
 
  private:
   void InvalidatePaintOnRemoval(LayoutObject& old_child);

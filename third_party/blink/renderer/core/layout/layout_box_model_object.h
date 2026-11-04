@@ -281,48 +281,23 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
  public:
   // These functions are only used internally to manipulate the layout tree
   // structure via remove/insert/appendChildNode.
-  // Since they are typically called only to move objects around within
-  // anonymous blocks (which only have layers in the case of column spans), the
-  // default for `full_remove_insert` is false rather than true.
   void MoveChildTo(LayoutBoxModelObject* to_box_model_object,
                    LayoutObject* child,
-                   LayoutObject* before_child,
-                   bool full_remove_insert);
-  void MoveChildTo(LayoutBoxModelObject* to_box_model_object,
-                   LayoutObject* child,
-                   bool full_remove_insert) {
-    NOT_DESTROYED();
-    MoveChildTo(to_box_model_object, child, nullptr, full_remove_insert);
-  }
+                   LayoutObject* before_child = nullptr);
   void MoveAllChildrenTo(LayoutBoxModelObject* to_box_model_object,
-                         bool full_remove_insert) {
+                         LayoutObject* before_child = nullptr) {
     NOT_DESTROYED();
-    MoveAllChildrenTo(to_box_model_object, nullptr, full_remove_insert);
-  }
-  void MoveAllChildrenTo(LayoutBoxModelObject* to_box_model_object,
-                         LayoutObject* before_child,
-                         bool full_remove_insert) {
-    NOT_DESTROYED();
-    MoveChildrenTo(to_box_model_object, SlowFirstChild(), nullptr, before_child,
-                   full_remove_insert);
+    MoveChildrenTo(to_box_model_object, SlowFirstChild(), nullptr,
+                   before_child);
   }
   // Move all of the kids from `start_child` up to but excluding `end_child`. 0
   // can be passed as the `end_child` to denote that all the kids from
   // `start_child` onwards should be moved. Nothing happens if start_child ==
   // end_child.
-  void MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
-                      LayoutObject* start_child,
-                      LayoutObject* end_child,
-                      bool full_remove_insert) {
-    NOT_DESTROYED();
-    MoveChildrenTo(to_box_model_object, start_child, end_child, nullptr,
-                   full_remove_insert);
-  }
   virtual void MoveChildrenTo(LayoutBoxModelObject* to_box_model_object,
                               LayoutObject* start_child,
                               LayoutObject* end_child,
-                              LayoutObject* before_child,
-                              bool full_remove_insert);
+                              LayoutObject* before_child = nullptr);
 
   LayoutObject* SplitAnonymousBoxesAroundChild(LayoutObject* before_child);
   virtual LayoutBox* CreateAnonymousBoxToSplit(

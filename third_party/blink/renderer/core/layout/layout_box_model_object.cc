@@ -995,23 +995,21 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
 void LayoutBoxModelObject::MoveChildTo(
     LayoutBoxModelObject* to_box_model_object,
     LayoutObject* child,
-    LayoutObject* before_child,
-    bool full_remove_insert) {
+    LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK_EQ(this, child->Parent());
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
 
-  if (full_remove_insert && (to_box_model_object->IsLayoutBlock() ||
-                             to_box_model_object->IsLayoutInline())) {
+  if (to_box_model_object->IsLayoutBlock() ||
+      to_box_model_object->IsLayoutInline()) {
     // Takes care of adding the new child correctly if toBlock and fromBlock
     // have different kind of children (block vs inline).
     to_box_model_object->AddChild(
         VirtualChildren()->RemoveChildNode(this, child), before_child);
   } else {
     to_box_model_object->VirtualChildren()->InsertChildNode(
-        to_box_model_object,
-        VirtualChildren()->RemoveChildNode(this, child, full_remove_insert),
-        before_child, full_remove_insert);
+        to_box_model_object, VirtualChildren()->RemoveChildNode(this, child),
+        before_child);
   }
 }
 
@@ -1019,15 +1017,14 @@ void LayoutBoxModelObject::MoveChildrenTo(
     LayoutBoxModelObject* to_box_model_object,
     LayoutObject* start_child,
     LayoutObject* end_child,
-    LayoutObject* before_child,
-    bool full_remove_insert) {
+    LayoutObject* before_child) {
   NOT_DESTROYED();
 
   DCHECK(!before_child || to_box_model_object == before_child->Parent());
   for (LayoutObject* child = start_child; child && child != end_child;) {
     // Save our next sibling as moveChildTo will clear it.
     LayoutObject* next_sibling = child->NextSibling();
-    MoveChildTo(to_box_model_object, child, before_child, full_remove_insert);
+    MoveChildTo(to_box_model_object, child, before_child);
     child = next_sibling;
   }
 }
@@ -1052,7 +1049,7 @@ LayoutObject* LayoutBoxModelObject::SplitAnonymousBoxesAroundChild(
       MarkBoxForRelayoutAfterSplit(parent_box);
       parent_box->VirtualChildren()->InsertChildNode(
           parent_box, post_box, box_to_split->NextSibling());
-      box_to_split->MoveChildrenTo(post_box, before_child, nullptr, true);
+      box_to_split->MoveChildrenTo(post_box, before_child, nullptr);
 
       LayoutObject* child = post_box->SlowFirstChild();
       DCHECK(child);
@@ -1111,7 +1108,7 @@ void LayoutBoxModelObject::AttemptToMerge(LayoutBoxModelObject* prev,
 
   // Shift all the children of `next` into `prev`, and destroy the
   // (now empty) sibling.
-  next->MoveAllChildrenTo(prev, true);
+  next->MoveAllChildrenTo(prev);
   next->Destroy();
 
   // We now need to recurse, as there may be multiple levels of anonymous
