@@ -53,6 +53,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onPageInitialized',
       'onPerformanceInterventionButtonClicked',
       'onToolbarDropFile',
+      'onToolbarDropText',
+      'onToolbarDropUrl',
       'setAvatarButtonFocused',
       'setAvatarButtonHovered',
       'setAvatarButtonIphPromoShowing',
@@ -177,6 +179,14 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onToolbarDropFile(dropPosition: PointF) {
     this.methodCalled('onToolbarDropFile', dropPosition);
+  }
+
+  onToolbarDropText(text: string) {
+    this.methodCalled('onToolbarDropText', text);
+  }
+
+  onToolbarDropUrl(url: Url) {
+    this.methodCalled('onToolbarDropUrl', url);
   }
 
   showAvatarMenu() {

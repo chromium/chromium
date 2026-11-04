@@ -36,8 +36,8 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter,
   void BackButtonHovered() override;
   void CreateNewSplitTab() override;
   void NavigateHome(ui::mojom::WindowOpenDisposition disposition) override;
-  void Navigate(const GURL& url) override;
-  void NavigateText(const std::string& text) override;
+  void NavigateToDroppedUrl(const GURL& url) override;
+  void NavigateToDroppedText(const std::string& text) override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;
 
  private:

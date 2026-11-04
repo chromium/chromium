@@ -250,7 +250,8 @@ class WebUIToolbarInternalWebView : public views::WebView {
     //
     // Security is still maintained because accidental drops in the empty
     // toolbar area are intercepted and safely discarded by
-    // `BrowserControlsAdapterImpl::NavigateText`, and drops into the Omnibox
+    // `BrowserControlsAdapterImpl::NavigateToDroppedText`, and drops into the
+    // Omnibox
     // are sanitized by `WebUIReadOnlyOmnibox::OnDropText`.
     return true;
   }
@@ -1559,7 +1560,19 @@ void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
     return;
   }
   if (browser_controls_adapter_) {
-    browser_controls_adapter_->NavigateText(text);
+    browser_controls_adapter_->NavigateToDroppedText(text);
+  }
+}
+
+void WebUIToolbarWebView::OnToolbarDropUrl(const GURL& url) {
+  if (browser_controls_adapter_) {
+    browser_controls_adapter_->NavigateToDroppedUrl(url);
+  }
+}
+
+void WebUIToolbarWebView::OnToolbarDropText(const std::string& text) {
+  if (browser_controls_adapter_) {
+    browser_controls_adapter_->NavigateToDroppedText(text);
   }
 }
 

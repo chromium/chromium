@@ -176,18 +176,6 @@ BrowserControlsService::NavigateHomeResult BrowserControlsService::NavigateHome(
   return std::monostate();
 }
 
-BrowserControlsService::NavigateResult BrowserControlsService::Navigate(
-    const GURL& url) {
-  browser_adapter_->Navigate(url);
-  return std::monostate();
-}
-
-BrowserControlsService::NavigateTextResult BrowserControlsService::NavigateText(
-    const std::string& text) {
-  browser_adapter_->NavigateText(text);
-  return std::monostate();
-}
-
 void BrowserControlsService::SetDelegate(
     BrowserControlsServiceDelegate* delegate) {
   delegate_ = delegate;

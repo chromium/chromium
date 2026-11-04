@@ -77,65 +77,65 @@ MATCHER(HasNoInitiator, "") {
   return !arg.initiator_origin.has_value();
 }
 
-TEST_F(BrowserControlsAdapterImplTest, NavigateText_HTTPAllowed) {
+TEST_F(BrowserControlsAdapterImplTest, NavigateToDroppedText_HTTPAllowed) {
   GURL expected_url("https://www.example.com/");
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(expected_url), _));
-  adapter_->NavigateText("https://www.example.com/");
+  adapter_->NavigateToDroppedText("https://www.example.com/");
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       NavigateText_PrivilegedSchemeBlockedOnRendererDrag) {
+       NavigateToDroppedText_PrivilegedSchemeBlockedOnRendererDrag) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->NavigateText("chrome://settings");
+  adapter_->NavigateToDroppedText("chrome://settings");
 }
 
 // The adapter trusts the drag state as recorded. ChromeOS treating every drag
 // as renderer-originated (b/256022714) happens earlier, in
 // `PreHandleDragUpdate`, which these tests bypass.
 TEST_F(BrowserControlsAdapterImplTest,
-       NavigateText_PrivilegedSchemeWhenDragNotRendererTainted) {
+       NavigateToDroppedText_PrivilegedSchemeWhenDragNotRendererTainted) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(false);
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
-  adapter_->NavigateText("chrome://settings");
+  adapter_->NavigateToDroppedText("chrome://settings");
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       Navigate_PrivilegedSchemeWhenDragNotRendererTainted) {
+       NavigateToDroppedUrl_PrivilegedSchemeWhenDragNotRendererTainted) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(false);
   EXPECT_CALL(browser_window_interface_,
               OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
-  adapter_->Navigate(GURL("chrome://settings"));
+  adapter_->NavigateToDroppedUrl(GURL("chrome://settings"));
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       Navigate_PrivilegedSchemeIgnoredOnRendererDrag) {
+       NavigateToDroppedUrl_PrivilegedSchemeIgnoredOnRendererDrag) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->Navigate(GURL("chrome://settings"));
+  adapter_->NavigateToDroppedUrl(GURL("chrome://settings"));
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       Navigate_IgnoredWhenUnfilteredDragUrlIsJavaScript) {
+       NavigateToDroppedUrl_IgnoredWhenUnfilteredDragUrlIsJavaScript) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_has_javascript_url(true);
   EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
-  adapter_->Navigate(GURL("about:blank#blocked"));
+  adapter_->NavigateToDroppedUrl(GURL("about:blank#blocked"));
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       Navigate_RendererDragHasOpaqueInitiator) {
+       NavigateToDroppedUrl_RendererDragHasOpaqueInitiator) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(true);
@@ -144,11 +144,11 @@ TEST_F(BrowserControlsAdapterImplTest,
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
               _));
-  adapter_->Navigate(url);
+  adapter_->NavigateToDroppedUrl(url);
 }
 
 TEST_F(BrowserControlsAdapterImplTest,
-       NavigateText_RendererDragHasOpaqueInitiator) {
+       NavigateToDroppedText_RendererDragHasOpaqueInitiator) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(true);
@@ -157,10 +157,11 @@ TEST_F(BrowserControlsAdapterImplTest,
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
               _));
-  adapter_->NavigateText(url.spec());
+  adapter_->NavigateToDroppedText(url.spec());
 }
 
-TEST_F(BrowserControlsAdapterImplTest, Navigate_OsDragHasNoInitiator) {
+TEST_F(BrowserControlsAdapterImplTest,
+       NavigateToDroppedUrl_OsDragHasNoInitiator) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(false);
@@ -168,7 +169,7 @@ TEST_F(BrowserControlsAdapterImplTest, Navigate_OsDragHasNoInitiator) {
   EXPECT_CALL(
       browser_window_interface_,
       OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasNoInitiator()), _));
-  adapter_->Navigate(url);
+  adapter_->NavigateToDroppedUrl(url);
 }
 
 }  // namespace

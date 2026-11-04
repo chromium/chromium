@@ -8,7 +8,7 @@ import {browserProxyFactory} from 'chrome://resources/cr_components/help_bubble/
 import type {HelpBubbleHandlerInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TrackedElementIdentifier} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -17,23 +17,8 @@ import type {FocusRequestListener, ToolbarAppElement, ToolbarStateListener} from
 
 import {TestToolbarBrowserProxy as BaseTestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 
-class TestBrowserControlsHandler extends TestBrowserProxy {
-  constructor() {
-    super(['navigate']);
-  }
-
-  navigate(url: any, disposition: any) {
-    this.methodCalled('navigate', url, disposition);
-  }
-}
-
 class TestToolbarBrowserProxy extends BaseTestToolbarBrowserProxy {
   private listener_: ToolbarStateListener|null = null;
-
-  constructor() {
-    super();
-    this.browserControlsHandler = new TestBrowserControlsHandler();
-  }
 
   override addToolbarStateListener(listener: ToolbarStateListener) {
     this.methodCalled('addToolbarStateListener', listener);
@@ -1242,5 +1227,100 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     assertFalse(!!app.shadowRoot.querySelector('avatar-button'));
+  });
+
+  // Dispatches a drop of `dataTransfer` on the empty toolbar area.
+  async function dropOnToolbar(dataTransfer: DataTransfer) {
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+    app.dispatchEvent(new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      clientX: 10,
+      clientY: 20,
+      dataTransfer,
+    }));
+  }
+
+  test('DropUrlOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData(
+        'text/uri-list', 'https://example.com/\nhttps://other.com/');
+    dataTransfer.setData('text/plain', 'some text');
+    await dropOnToolbar(dataTransfer);
+
+    assertEquals(
+        'https://example.com/',
+        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropUrl'));
+  });
+
+  // A type can be present with empty data, e.g. a leading newline.
+  test('DropEmptyUrlOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '\nhttps://example.com/');
+    await dropOnToolbar(dataTransfer);
+    await microtasksFinished();
+
+    assertEquals(
+        0, browserProxy.toolbarUIHandler.getCallCount('onToolbarDropUrl'));
+  });
+
+  // `text/uri-list` separates URLs with CRLF.
+  test('DropUrlListWithCrlfOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData(
+        'text/uri-list', 'https://example.com/\r\nhttps://other.com/');
+    await dropOnToolbar(dataTransfer);
+
+    assertEquals(
+        'https://example.com/',
+        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropUrl'));
+  });
+
+  test('DropUrlListWithCrlfOnHomeButton', async () => {
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await microtasksFinished();
+
+    const homeButton = app.shadowRoot.querySelector<HTMLElement>('home-button');
+    assertTrue(!!homeButton);
+    const button = homeButton.shadowRoot!.querySelector('#button');
+    assertTrue(!!button);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData(
+        'text/uri-list', 'https://example.com/\r\nhttps://other.com/');
+    button.dispatchEvent(new DragEvent('drop', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      dataTransfer,
+    }));
+
+    assertEquals(
+        'https://example.com/',
+        await browserProxy.toolbarUIHandler.whenCalled('onHomeButtonDropUrl'));
+  });
+
+  test('DropTextOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'some text');
+    await dropOnToolbar(dataTransfer);
+
+    assertEquals(
+        'some text',
+        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropText'));
+  });
+
+  test('DropFileOnToolbar', async () => {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(new File(['contents'], 'file.txt'));
+    await dropOnToolbar(dataTransfer);
+
+    assertDeepEquals(
+        {x: 10, y: 20},
+        await browserProxy.toolbarUIHandler.whenCalled('onToolbarDropFile'));
   });
 });

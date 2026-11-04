@@ -42,11 +42,6 @@ class ToyBrowser {
     return received_commands_;
   }
 
-  const std::vector<GURL>& received_urls() const { return received_urls_; }
-  const std::vector<std::string>& received_navigate_texts() const {
-    return received_navigate_texts_;
-  }
-
   // Noop if the pin state doesn't change.
   void PinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
   void UnpinButton(toolbar_ui_api::mojom::ToolbarButtonType type);
@@ -57,8 +52,6 @@ class ToyBrowser {
  private:
   friend class ToyBrowserControlsAdapter;
   std::vector<ToyBrowserCommand> received_commands_;
-  std::vector<GURL> received_urls_;
-  std::vector<std::string> received_navigate_texts_;
   // True when split tab is created. This state currently sticks, with no way
   // to unset it.
   bool is_split_tab_ = false;

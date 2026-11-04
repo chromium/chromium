@@ -88,7 +88,7 @@ void BrowserControlsAdapterImpl::NavigateHome(
   command_updater_->ExecuteCommandWithDisposition(IDC_HOME, disposition);
 }
 
-void BrowserControlsAdapterImpl::Navigate(const GURL& url) {
+void BrowserControlsAdapterImpl::NavigateToDroppedUrl(const GURL& url) {
   const bool drag_has_javascript_url = GetDragHasJavaScriptUrlAndReset();
   const bool drag_originated_from_renderer =
       GetDragOriginatedFromRendererAndReset();
@@ -109,7 +109,8 @@ void BrowserControlsAdapterImpl::Navigate(const GURL& url) {
   OpenDroppedUrl(url, drag_originated_from_renderer);
 }
 
-void BrowserControlsAdapterImpl::NavigateText(const std::string& text) {
+void BrowserControlsAdapterImpl::NavigateToDroppedText(
+    const std::string& text) {
   // Text drops are checked by the scheme of the classified URL below, so the
   // unfiltered drag URL state is only cleared here so that it does not leak
   // into a later call.

@@ -288,6 +288,8 @@ class WebUIToolbarWebView
   void OnHomeButtonDropUrl(const GURL& url) override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnHomeButtonDropText(const std::string& text) override;
+  void OnToolbarDropUrl(const GURL& url) override;
+  void OnToolbarDropText(const std::string& text) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action) override;

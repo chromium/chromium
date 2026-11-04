@@ -73,13 +73,4 @@ interface BrowserControlsService {
   // Navigates to the user's home page.
   NavigateHome(array<EventDispositionFlag> click_flags)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-
-  // Navigates the current tab to `url`.
-  Navigate(url.mojom.Url url)
-      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
-
-  // Navigates the current tab to the query URL if `text` is a search query,
-  // or `text` itself if it is a valid URL.
-  NavigateText(string text)
-      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };

@@ -210,6 +210,14 @@ interface ToolbarUIService {
   // on the home button.
   OnHomeButtonDropText(string text);
 
+  // Navigates the current tab to `url` dropped on the toolbar.
+  OnToolbarDropUrl(url.mojom.Url url);
+
+  // Called when plain text (`text/plain` without `text/uri-list`) is dropped
+  // on the toolbar. Navigates the current tab to the query URL if `text` is a
+  // search query, or to `text` itself if it is a valid URL.
+  OnToolbarDropText(string text);
+
   // Navigates the current tab to the currently dragged file at `drop_position`.
   OnToolbarDropFile(gfx.mojom.PointF drop_position);
 

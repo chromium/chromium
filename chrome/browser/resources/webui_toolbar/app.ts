@@ -930,9 +930,11 @@ export class ToolbarAppElement extends AppElementBase {
     }
 
     if (e.dataTransfer.types.includes('text/uri-list')) {
-      const url = e.dataTransfer.getData('text/uri-list');
+      // A type can be present with empty data, e.g. setData(type, '').
+      const url =
+          e.dataTransfer.getData('text/uri-list').split('\n')[0]?.trim();
       if (url) {
-        this.browserProxy_.browserControlsHandler.navigate(url.split('\n')[0]!);
+        this.browserProxy_.toolbarUIHandler.onToolbarDropUrl(url);
       }
     } else if (e.dataTransfer.types.includes('Files')) {
       this.browserProxy_.toolbarUIHandler.onToolbarDropFile(
@@ -940,7 +942,7 @@ export class ToolbarAppElement extends AppElementBase {
     } else if (e.dataTransfer.types.includes('text/plain')) {
       const text = e.dataTransfer.getData('text/plain');
       if (text) {
-        this.browserProxy_.browserControlsHandler.navigateText(text);
+        this.browserProxy_.toolbarUIHandler.onToolbarDropText(text);
       }
     }
   }

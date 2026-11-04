@@ -113,7 +113,8 @@ export class HomeButtonElement extends HomeButtonElementBase {
       this.browserProxy_.toolbarUIHandler.onHomeButtonDropFile({x: e.clientX, y: e.clientY});
     } else if (e.dataTransfer.types.includes('text/uri-list')) {
       // A type can be present with empty data, e.g. setData(type, '').
-      const url = e.dataTransfer.getData('text/uri-list').split('\n')[0]!;
+      const url =
+          e.dataTransfer.getData('text/uri-list').split('\n')[0]?.trim();
       if (url) {
         this.browserProxy_.toolbarUIHandler.onHomeButtonDropUrl(url);
       }

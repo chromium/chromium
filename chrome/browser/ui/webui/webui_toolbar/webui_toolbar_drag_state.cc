@@ -28,8 +28,8 @@ bool WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
 
   // Clear the drag state immediately after reading to ensure that the
   // "renderer-tainted" drag state does not persist and pollute subsequent
-  // generic non-drag navigations (e.g. if the WebUI triggers
-  // Navigate/NavigateText outside a drag transaction).
+  // generic non-drag navigations (e.g. if the WebUI reports a drop outside a
+  // drag transaction).
   bool val = drag_state->drag_originated_from_renderer();
   drag_state->set_drag_originated_from_renderer(false);
   return val;
