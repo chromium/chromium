@@ -7996,6 +7996,11 @@ crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.ht
 # DCHECK starting simultaneous outer + inner transitions with snapshot capture
 crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Pass Timeout ]
 
+# Scoped view transitions on child-restricted elements aren't supported yet
+crbug.com/561596305 external/wpt/css/css-view-transitions/scoped/scope-mathml-root.html [ Failure ]
+crbug.com/561596305 external/wpt/css/css-view-transitions/scoped/scope-replaced-elements.html [ Failure ]
+crbug.com/561596305 external/wpt/css/css-view-transitions/scoped/scope-svg-root.html [ Failure ]
+
 # Gardener 2025-06-06
 
 # Gardener 2025-06-10

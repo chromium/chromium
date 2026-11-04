@@ -7289,6 +7289,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionScopedChildRestrictedElements",
+      status: "test",
+    },
+    {
       // Kill switch. Doesn't generate the ::view-transition pseudo-element
       // tree when capturing the outgoing document of a cross-document view
       // transition, since the animation runs on the new document. This avoids
