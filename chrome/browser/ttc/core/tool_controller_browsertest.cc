@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ttc/core/tool_controller.h"
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -50,11 +49,8 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ttc/core/session_controller.h"
-#include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/actor/core/actor_features.h"
@@ -89,10 +85,7 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
-#include "base/android/device_info.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -104,6 +97,7 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"  // nogncheck
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
@@ -2270,13 +2264,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
-  // Window tools are only offered in desktop windowing environments.
-#if BUILDFLAG(IS_ANDROID)
-  const bool window_tools_supported = base::android::device_info::is_desktop();
-#else
-  const bool window_tools_supported = true;
-#endif
-
   static constexpr actor::ToolIdSet kExpectedToolIds = {
       actor::ToolId::kOpenUrl,          actor::ToolId::kPerformSearch,
       actor::ToolId::kGoBack,           actor::ToolId::kGoForward,
@@ -2288,20 +2275,14 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       actor::ToolId::kOpenKnownPage,    actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
   };
-  actor::ToolIdSet expected_tool_ids = kExpectedToolIds;
-  if (window_tools_supported) {
-    expected_tool_ids.Put(actor::ToolId::kCreateWindow);
-  }
 
   std::vector<const actor::ToolDefinition*> expected_tools =
-      actor_service->tool_registry().GetToolsByIds(expected_tool_ids);
-  ASSERT_EQ(expected_tools.size(), expected_tool_ids.size());
+      actor_service->tool_registry().GetToolsByIds(kExpectedToolIds);
+  ASSERT_EQ(expected_tools.size(), kExpectedToolIds.size());
 
-  // click_element, set_text, select_option, scroll_page, get_screenshot, and
-  // close_window where window tools are supported.
-  const size_t num_legacy_tools = window_tools_supported ? 6 : 5;
+  constexpr size_t kNumLegacyTools = 5;
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), expected_tools.size() + num_legacy_tools);
+  ASSERT_EQ(tools.size(), expected_tools.size() + kNumLegacyTools);
 
   // Verify the tool definitions queried from `actor::ToolRegistry`.
   for (size_t i = 0; i < expected_tools.size(); ++i) {
@@ -2445,19 +2426,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   EXPECT_EQ(get_screenshot.verbalization,
             ToolDefinition::Verbalization::kSilentAction);
   EXPECT_TRUE(get_screenshot.parameters_json_schema.empty());
-
-  if (window_tools_supported) {
-    const ToolDefinition& close_window = tools[expected_tools.size() + 5];
-    EXPECT_EQ(close_window.name,
-              actor::CloseWindowToolRequest::kModelFacingName);
-    EXPECT_FALSE(close_window.description.empty());
-    EXPECT_EQ(close_window.behavior, ToolDefinition::Behavior::kBlocking);
-    EXPECT_EQ(close_window.verbalization,
-              ToolDefinition::Verbalization::kSilentAction);
-    // TTC closes the window containing the tracked tab, so unlike the registry
-    // definition this one takes no window_id.
-    EXPECT_TRUE(close_window.parameters_json_schema.empty());
-  }
 }
 
 // The session's actor task is started with the session and stopped when it
@@ -2567,120 +2535,6 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-// Window management tools, which TTC offers only in desktop windowing
-// environments. On Android, that's desktop mode, which this fixture forces.
-class ToolControllerWindowToolsBrowserTest : public ToolControllerBrowserTest {
- public:
-  void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    // Opening a second window needs Chrome's multi-instance support, which
-    // MultiWindowUtils only enables on Android R and later; below that,
-    // creating a window asserts in Java. Desktop mode only exists on much newer
-    // Android, so forcing it here on an older emulator isn't a real
-    // configuration.
-    if (base::android::android_info::sdk_int() <
-        base::android::android_info::SDK_VERSION_R) {
-      GTEST_SKIP() << "Multiple windows require Android R+";
-    }
-#endif
-    ToolControllerBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ToolControllerBrowserTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_ANDROID)
-    // Opening a second window launches ChromeTabbedActivity, which would show
-    // the first-run experience instead of a browser window.
-    command_line->AppendSwitch("disable-fre");
-#endif
-  }
-
-  void SetUpOnMainThread() override {
-    ToolControllerBrowserTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_ANDROID)
-    base::android::device_info::set_is_desktop_for_testing(true);
-#endif
-  }
-
-  void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_ANDROID)
-    base::android::device_info::reset_is_desktop_for_testing();
-#endif
-    ToolControllerBrowserTest::TearDownOnMainThread();
-  }
-
- protected:
-  // Waits until `window` is the most recently activated window. Activation is
-  // asynchronous in the OS on Android.
-  void WaitForLastActiveWindow(BrowserWindowInterface* window) {
-    ASSERT_TRUE(base::test::RunUntil([window]() {
-      return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == window;
-    }));
-  }
-
-  // Waits until the session's tracked tab is in `window`.
-  void WaitForTrackedTabInWindow(BrowserWindowInterface* window) {
-    auto* session_controller =
-        static_cast<SessionControllerImpl*>(ttc_service().session_controller());
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      content::WebContents* contents =
-          session_controller->GetVoiceFocusedWebContents();
-      tabs::TabInterface* tab =
-          contents ? tabs::TabInterface::MaybeGetFromContents(contents)
-                   : nullptr;
-      return tab && tab->GetBrowserWindowInterface() == window;
-    }));
-  }
-
-  ToolResponse CallTool(std::string_view name) {
-    base::test::TestFuture<ToolResponse> future;
-    ToolRequest tool_request;
-    tool_request.name = std::string(name);
-    ttc_service().session_controller()->ProcessToolCall(std::move(tool_request),
-                                                        future.GetCallback());
-    return future.Take();
-  }
-};
-
-// create_window opens a window that becomes active, and close_window then
-// closes it, since the session's tracked tab follows the active window.
-IN_PROC_BROWSER_TEST_F(ToolControllerWindowToolsBrowserTest,
-                       CreateAndCloseWindow) {
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      embedded_https_test_server().GetURL("example.com", "/title1.html")));
-  ttc_service().StartSession();
-  ASSERT_TRUE(ttc_service().session_controller());
-
-  BrowserWindowInterface* initial_window =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  ASSERT_TRUE(initial_window);
-  const std::vector<BrowserWindowInterface*> initial_windows =
-      GetAllBrowserWindowInterfaces();
-
-  EXPECT_TRUE(CallTool(actor::CreateWindowToolRequest::kModelFacingName).Ok());
-  std::vector<BrowserWindowInterface*> windows =
-      GetAllBrowserWindowInterfaces();
-  ASSERT_EQ(windows.size(), initial_windows.size() + 1);
-  std::erase_if(windows, [&](BrowserWindowInterface* window) {
-    return std::ranges::contains(initial_windows, window);
-  });
-  ASSERT_EQ(windows.size(), 1u);
-  BrowserWindowInterface* new_window = windows[0];
-  // The tool finishes on the window's activation event; the last-active
-  // bookkeeping can trail it slightly on desktop.
-  WaitForLastActiveWindow(new_window);
-  // The session's tracked tab follows the active window, though on Android it
-  // may still be binding to the new window's tab model.
-  WaitForTrackedTabInWindow(new_window);
-
-  // close_window closes the window containing the tracked tab, i.e. the new
-  // window.
-  EXPECT_TRUE(CallTool(actor::CloseWindowToolRequest::kModelFacingName).Ok());
-  EXPECT_EQ(GetAllBrowserWindowInterfaces(), initial_windows);
-  WaitForLastActiveWindow(initial_window);
-}
 
 }  // namespace
 
