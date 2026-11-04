@@ -52,7 +52,7 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
  public:
   explicit V8ArrayBufferPayload(v8::Local<v8::ArrayBuffer> array_buffer)
       : array_buffer_(array_buffer) {
-    CHECK(!array_buffer_.IsEmpty());
+    CHECK(!array_buffer.IsEmpty());
   }
 
   // Although resize *may* be supported, it's not needed to be handled for JS to
@@ -61,23 +61,24 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   size_t GetMaxByteLength() const override { return GetLength(); }
 
-  size_t GetLength() const override { return array_buffer_->ByteLength(); }
+  size_t GetLength() const override {
+    return array_buffer_.span().size_bytes();
+  }
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return UNSAFE_TODO(
-        base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
-                   array_buffer_->ByteLength()));
+    return array_buffer_.span();
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
-    CHECK_GE(dest.size(), array_buffer_->ByteLength());
-    UNSAFE_TODO(memcpy(dest.data(), array_buffer_->Data(),
-                       array_buffer_->ByteLength()));
+    base::span<const uint8_t> source = array_buffer_.span();
+    dest.copy_prefix_from(source.first(std::min(source.size(), dest.size())));
   }
 
  private:
-  v8::Local<v8::ArrayBuffer> array_buffer_;
+  // Use gin::ArrayBuffer as a wrapper around the backing store, since it is
+  // allowed to hold the shared_ptr to the backing store.
+  const gin::ArrayBuffer array_buffer_;
 };
 
 v8::Local<v8::Context> GetScriptContext(blink::WebLocalFrame* web_frame,
