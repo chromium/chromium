@@ -29,18 +29,18 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "hotseat_widget.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/background.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -401,6 +401,49 @@ class HotseatWindowTargeter : public aura::WindowTargeter {
 
 }  // namespace
 
+class TranslucentBackgroundView : public views::View {
+  METADATA_HEADER(TranslucentBackgroundView, views::View)
+
+ public:
+  TranslucentBackgroundView() {
+    SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    layer()->SetName("HotseatWidget:TranslucentBackground");
+
+    decoration_ = SystemDecoration::CreateForView(
+        this, SystemDecoration::ShadowType::kElevation12,
+        SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  }
+  TranslucentBackgroundView(const TranslucentBackgroundView&) = delete;
+  TranslucentBackgroundView& operator=(const TranslucentBackgroundView&) =
+      delete;
+  ~TranslucentBackgroundView() override = default;
+
+  SystemDecoration* decoration() { return decoration_.get(); }
+
+  void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners) {
+    if (layer()->rounded_corner_radii() == rounded_corners) {
+      return;
+    }
+    layer()->SetRoundedCornerRadius(rounded_corners);
+    decoration_->SetRoundedCorners(rounded_corners);
+  }
+
+  // views::View:
+  void OnLayerBoundsChanged(const gfx::Rect& old_bounds,
+                            ui::PropertyChangeReason reason) override {
+    views::View::OnLayerBoundsChanged(old_bounds, reason);
+    if (reason == ui::PropertyChangeReason::FROM_ANIMATION && decoration_) {
+      decoration_->SetContentBounds(layer()->bounds());
+    }
+  }
+
+ private:
+  std::unique_ptr<SystemDecoration> decoration_;
+};
+
+BEGIN_METADATA(TranslucentBackgroundView)
+END_METADATA
+
 class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
                                   public views::WidgetDelegateView,
                                   public views::ViewTargeterDelegate {
@@ -439,10 +482,6 @@ class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
   // Updates the hotseat background.
   void UpdateTranslucentBackground();
 
-  // Updates the highlight border rounded corner radius or the type according to
-  // the visibility of shadow.
-  void UpdateHighlightBorder(bool update_corner_radius);
-
   // Returns the target background color for the hotseat.
   SkColor GetBackgroundColor();
 
@@ -477,7 +516,7 @@ class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
   }
 
   // A background layer that may be visible depending on HotseatState.
-  raw_ptr<views::View> translucent_background_ = nullptr;
+  raw_ptr<TranslucentBackgroundView> translucent_background_ = nullptr;
   raw_ptr<HotseatWidget> hotseat_widget_ = nullptr;  // unowned.
   // Blur is disabled during animations to improve performance.
   int blur_lock_ = 0;
@@ -485,11 +524,6 @@ class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
   // The most recent color that the |translucent_background_| has been animated
   // to.
   SkColor target_color_ = SK_ColorTRANSPARENT;
-
-  std::unique_ptr<SystemDecoration> shadow_;
-
-  // The type of highlight border.
-  views::HighlightBorder::Type border_type_;
 };
 
 HotseatWidgetDelegateView::~HotseatWidgetDelegateView() = default;
@@ -506,73 +540,29 @@ void HotseatWidgetDelegateView::Init(ScrollableShelfView* scrollable_shelf_view,
   auto* background_container_view =
       AddChildViewAt(std::make_unique<views::View>(), 0);
   background_container_view->SetEnabled(false);
-  translucent_background_ =
-      background_container_view->AddChildView(std::make_unique<views::View>());
-  translucent_background_->SetPaintToLayer();
-  translucent_background_->layer()->SetFillsBoundsOpaquely(false);
-  translucent_background_->layer()->SetName(
-      "HotseatWidget:TranslucentBackground");
-
-  // Create a shadow and stack at the bottom.
-  shadow_ =
-      SystemDecoration::Create(SystemDecoration::ShadowType::kElevation12);
-  auto* parent_layer = translucent_background_->layer()->parent();
-  auto* shadow_layer = shadow_->GetLayer();
-  parent_layer->Add(shadow_layer);
-  parent_layer->StackAtBottom(shadow_layer);
-
-  // Make shadow observe the widget theme change.
-  shadow_->ObserveColorProviderSource(hotseat_widget);
+  translucent_background_ = background_container_view->AddChildView(
+      std::make_unique<TranslucentBackgroundView>());
 }
 
 void HotseatWidgetDelegateView::UpdateTranslucentBackground() {
-  // Update highlight border after updating the visibility of shadow.
-  absl::Cleanup update_highlight_border = [this] {
-    UpdateHighlightBorder(
-        /*update_corner_radius=*/false);
-  };
-
   if (!HotseatWidget::ShouldShowHotseatBackground()) {
     translucent_background_->SetVisible(false);
     SetBackgroundBlur(false);
-    shadow_->GetLayer()->SetVisible(false);
     return;
   }
 
   DCHECK(GetScrollableShelfView());
+
+  // Hide the shadow when home launcher is showing in tablet mode, but keep the
+  // highlight border.
+  const bool show_shadow =
+      hotseat_widget_->state() != HotseatState::kShownHomeLauncher;
+  translucent_background_->decoration()->SetShadow(
+      show_shadow ? SystemDecoration::ShadowType::kElevation12
+                  : SystemDecoration::ShadowType::kNone);
+
   SetTranslucentBackground(
       GetScrollableShelfView()->GetHotseatBackgroundBounds());
-
-  // Hide the shadow when home launcher is showing in tablet mode.
-  if (hotseat_widget_->state() == HotseatState::kShownHomeLauncher) {
-    shadow_->GetLayer()->SetVisible(false);
-    return;
-  }
-
-  // Update the shadow content bounds and corner radius.
-  shadow_->GetLayer()->SetVisible(true);
-  gfx::Rect background_bounds = translucent_background_->bounds();
-  shadow_->SetRoundedCorners(
-      gfx::RoundedCornersF(background_bounds.height() / 2.0f));
-  shadow_->SetContentBounds(background_bounds);
-}
-
-void HotseatWidgetDelegateView::UpdateHighlightBorder(
-    bool update_corner_radius) {
-  views::HighlightBorder::Type border_type =
-      shadow_->GetLayer()->visible()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorderNoShadow;
-
-  if (translucent_background_->GetBorder() && !update_corner_radius &&
-      border_type_ == border_type) {
-    return;
-  }
-
-  const float radius = hotseat_widget_->GetHotseatSize() / 2.0f;
-  border_type_ = border_type;
-  auto border = std::make_unique<views::HighlightBorder>(radius, border_type_);
-  translucent_background_->SetBorder(std::move(border));
 }
 
 SkColor HotseatWidgetDelegateView::GetBackgroundColor() {
@@ -607,8 +597,8 @@ void HotseatWidgetDelegateView::SetTranslucentBackground(
     ui::ScopedLayerAnimationSettings color_animation_setter(animator);
     DoScopedAnimationSetting(&color_animation_setter);
     target_color_ = background_color;
-    translucent_background_->SetBackground(
-        views::CreateSolidBackground(target_color_));
+    translucent_background_->layer()->AsSolidColor()->SetColor(
+        SkColor4f::FromColor(target_color_));
   }
 
   // Animate the bounds change if there's a change of width (for instance when
@@ -625,12 +615,7 @@ void HotseatWidgetDelegateView::SetTranslucentBackground(
   }
 
   const float radius = hotseat_widget_->GetHotseatSize() / 2.0f;
-  gfx::RoundedCornersF rounded_corners = {radius, radius, radius, radius};
-  if (translucent_background_->layer()->rounded_corner_radii() !=
-      rounded_corners) {
-    translucent_background_->layer()->SetRoundedCornerRadius(rounded_corners);
-    UpdateHighlightBorder(/*update_corner_radius=*/true);
-  }
+  translucent_background_->SetRoundedCorners(gfx::RoundedCornersF(radius));
 
   const gfx::Rect mirrored_bounds = GetMirroredRect(background_bounds);
   if (translucent_background_->layer()->GetTargetBounds() != mirrored_bounds)

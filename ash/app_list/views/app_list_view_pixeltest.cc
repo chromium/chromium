@@ -333,7 +333,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("tablet_launcher_basics"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 22 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 23 : 3,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -355,7 +355,7 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("tablet_launcher_top_gradient_zone"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 20 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 21 : 3,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -377,7 +377,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("tablet_launcher_bottom_gradient_zone"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 22 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 23 : 3,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
@@ -399,7 +399,7 @@ TEST_P(AppListViewTabletPixelTest, GeminiButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("tablet_launcher_gemini_button"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetAppListTestHelper()->GetAppsContainerView()));
 }
 
