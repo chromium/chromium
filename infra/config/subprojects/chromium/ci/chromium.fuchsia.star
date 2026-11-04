@@ -225,7 +225,7 @@ ci.builder(
         mixins = [
             "fuchsia-large-device-spec",
             "isolate_profile_data",
-            "linux-jammy",
+            "linux-ubuntu",
             "no_ssd",
             targets.mixin(
                 swarming = targets.swarming(
@@ -331,7 +331,7 @@ ci.builder(
         mixins = [
             "fuchsia-large-device-spec",
             "isolate_profile_data",
-            "linux-jammy",
+            "linux-ubuntu",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {

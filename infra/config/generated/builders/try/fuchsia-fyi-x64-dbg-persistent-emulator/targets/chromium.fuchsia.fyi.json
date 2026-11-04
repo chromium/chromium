@@ -22,7 +22,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [
@@ -54,7 +54,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [
@@ -86,7 +86,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [
@@ -118,7 +118,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [
@@ -150,7 +150,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [
@@ -182,7 +182,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chromium.tests.fuchsia"
           },
           "named_caches": [

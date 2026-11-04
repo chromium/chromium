@@ -21,7 +21,7 @@
         "swarming": {
           "dimensions": {
             "kvm": "1",
-            "os": "Ubuntu-22.04"
+            "os": "Ubuntu"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8

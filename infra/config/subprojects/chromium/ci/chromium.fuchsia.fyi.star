@@ -208,7 +208,7 @@ ci.builder(
         targets = "fuchsia_standard_passthrough_tests",
         mixins = [
             "fuchsia-orchestrate",
-            "linux-jammy",
+            "linux-ubuntu",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
@@ -315,7 +315,7 @@ ci.builder(
         mixins = [
             "fuchsia-persistent-emulator",
             "fuchsia-orchestrate",
-            "linux-jammy",
+            "linux-ubuntu",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
@@ -388,7 +388,7 @@ ci.builder(
             "fuchsia-large-device-spec",
             "fuchsia-orchestrate",
             "isolate_profile_data",
-            "linux-jammy",
+            "linux-ubuntu",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {

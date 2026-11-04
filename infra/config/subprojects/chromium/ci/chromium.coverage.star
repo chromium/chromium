@@ -892,7 +892,7 @@ nightly_coverage_builder(
             "fuchsia-code-coverage",
             "fuchsia-large-device-spec",
             "isolate_profile_data",
-            "linux-jammy",
+            "linux-ubuntu",
         ],
         per_test_modifications = {
             "base_unittests": targets.mixin(

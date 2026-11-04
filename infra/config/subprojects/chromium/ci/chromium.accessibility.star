@@ -75,7 +75,7 @@ ci.builder(
         additional_compile_targets = "content_browsertests",
         mixins = [
             "fuchsia-large-device-spec",
-            "linux-jammy",
+            "linux-ubuntu",
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
