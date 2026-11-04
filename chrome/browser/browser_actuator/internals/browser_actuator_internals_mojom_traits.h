@@ -13,9 +13,20 @@
 #include "base/time/time.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom-shared.h"
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
+#include "components/browser_actuator/internal/transport/transport_message_observer.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
+
+template <>
+struct EnumTraits<browser_actuator_internals::mojom::DownstreamDeliveryStatus,
+                  browser_actuator::transport::DownstreamDeliveryStatus> {
+  static browser_actuator_internals::mojom::DownstreamDeliveryStatus ToMojom(
+      browser_actuator::transport::DownstreamDeliveryStatus input);
+  static std::optional<browser_actuator::transport::DownstreamDeliveryStatus>
+  FromMojom(browser_actuator_internals::mojom::DownstreamDeliveryStatus input);
+};
 
 template <>
 struct StructTraits<browser_actuator_internals::mojom::RecordedEventDataView,
@@ -37,6 +48,15 @@ struct StructTraits<browser_actuator_internals::mojom::RecordedEventDataView,
   static bool message_truncated(
       const browser_actuator::transport::SessionEventSnapshot& e) {
     return e.message_truncated;
+  }
+  static int32_t http_response_code(
+      const browser_actuator::transport::SessionEventSnapshot& e) {
+    return e.http_response_code;
+  }
+  static browser_actuator::transport::DownstreamDeliveryStatus
+  downstream_status(
+      const browser_actuator::transport::SessionEventSnapshot& e) {
+    return e.downstream_status;
   }
 
   static bool Read(

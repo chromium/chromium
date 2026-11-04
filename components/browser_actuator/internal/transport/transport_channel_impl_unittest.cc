@@ -870,18 +870,24 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
 class RecordingMessageObserver : public TransportMessageObserver {
  public:
   void OnDownstreamMessage(std::string_view session_id,
-                           const ActuatorDownstreamMessage& message) override {
+                           const ActuatorDownstreamMessage& message,
+                           DownstreamDeliveryStatus status) override {
     received_downstream.emplace_back(std::string(session_id), message);
+    received_downstream_status.push_back(status);
   }
 
   void OnUpstreamMessage(std::string_view session_id,
-                         const ActuatorUpstreamMessage& message) override {
+                         const ActuatorUpstreamMessage& message,
+                         int http_response_code) override {
     received.emplace_back(std::string(session_id), message);
+    received_http_response_codes.push_back(http_response_code);
   }
 
   std::vector<std::pair<std::string, ActuatorDownstreamMessage>>
       received_downstream;
+  std::vector<DownstreamDeliveryStatus> received_downstream_status;
   std::vector<std::pair<std::string, ActuatorUpstreamMessage>> received;
+  std::vector<int> received_http_response_codes;
 };
 
 TEST_F(TransportChannelImplTest,
@@ -901,11 +907,15 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(observer.received_downstream[0].first, "s1");
   EXPECT_EQ(observer.received_downstream[0].second.SerializeAsString(),
             response.actuator_downstream_message().SerializeAsString());
+  ASSERT_EQ(observer.received_downstream_status.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status[0],
+            DownstreamDeliveryStatus::kSuccess);
   EXPECT_TRUE(observer.received.empty());
 
   // A duplicate is dropped by the session before dispatch and not reported.
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   EXPECT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status.size(), 1u);
 }
 
 TEST_F(TransportChannelImplTest,
@@ -945,6 +955,8 @@ TEST_F(TransportChannelImplTest,
       request.ParseFromString(network::GetUploadData(pending->request)));
   EXPECT_EQ(request.actuator_upstream_message().SerializeAsString(),
             observed.SerializeAsString());
+  ASSERT_EQ(observer.received_http_response_codes.size(), 1u);
+  EXPECT_EQ(observer.received_http_response_codes[0], 0);
 }
 
 TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
@@ -993,12 +1005,20 @@ TEST_F(TransportChannelImplTest,
 
 TEST_F(TransportChannelImplTest,
        BufferFullTriggersStreamReconnectAndReplaysMissingGap) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
   // Create the session (triggering initial connect) and dispatch sequence 1 to
   // advance `last_seen_sequence_number` to 1.
   GetSessionRegistryImpl()->CreateSession("s1");
   fake_client_->Dispatch(SerializedDownstream("s1", 1));
   EXPECT_EQ(fake_client_->connect_count(), 1);
   EXPECT_EQ(fake_client_->disconnect_count(), 0);
+  ASSERT_EQ(observer.received_downstream.size(), 1u);
+  EXPECT_EQ(observer.received_downstream_status[0],
+            DownstreamDeliveryStatus::kSuccess);
 
   // Fill the reorder buffer with sequences 3..18 while sequence 2 is missing.
   for (size_t i = 0;
@@ -1013,9 +1033,13 @@ TEST_F(TransportChannelImplTest,
     ASSERT_EQ(body.sessions_size(), 1);
     EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
   }
+  // Sequences 3..18 are buffered, so they have not yet been delivered or
+  // notified.
+  EXPECT_EQ(observer.received_downstream.size(), 1u);
 
   // One more out-of-order message overflows the buffer and triggers a stream
   // reconnect so the server replays from `last_seen_sequence_number == 1`.
+  // The dropped message is notified to observers with kFailure.
   const int64_t overflow_seq = static_cast<int64_t>(
       DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 3);
   fake_client_->Dispatch(SerializedDownstream("s1", overflow_seq));
@@ -1026,9 +1050,14 @@ TEST_F(TransportChannelImplTest,
     ASSERT_EQ(body.sessions_size(), 1);
     EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 1);
   }
+  ASSERT_EQ(observer.received_downstream.size(), 2u);
+  EXPECT_EQ(observer.received_downstream[1].second.sequence_number(),
+            overflow_seq);
+  EXPECT_EQ(observer.received_downstream_status[1],
+            DownstreamDeliveryStatus::kFailure);
 
   // When the server replays missing sequence 2, the retained buffered messages
-  // (3..18) drain contiguously.
+  // (3..18) drain contiguously with kSuccess.
   fake_client_->Dispatch(SerializedDownstream("s1", 2));
   {
     WatchSessionsRequest body = ResumeBody();
@@ -1037,6 +1066,10 @@ TEST_F(TransportChannelImplTest,
               static_cast<int64_t>(
                   DownstreamMessageSequencer::kDefaultMaxBufferedMessages + 2));
   }
+  // Initial 1 + dropped overflow 1 + replayed sequence 2 + buffered 16 = 19
+  EXPECT_EQ(observer.received_downstream.size(), 19u);
+  EXPECT_EQ(observer.received_downstream_status[2],
+            DownstreamDeliveryStatus::kSuccess);
 }
 
 TEST_F(TransportChannelImplTest,

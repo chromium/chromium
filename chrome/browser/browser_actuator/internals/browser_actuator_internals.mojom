@@ -15,6 +15,17 @@ enum MessageDirection {
   kUpstream,
 };
 
+// Delivery or connection status of a downstream message.
+enum DownstreamDeliveryStatus {
+  // Unknown or unspecified delivery status.
+  kUnknown,
+  // Successfully delivered to the handler (indicates envelope dispatch to the
+  // session).
+  kSuccess,
+  // Failed to deliver or dropped.
+  kFailure,
+};
+
 // One recorded transport message. Sent from the browser process to the
 // trusted chrome://browser-actuator-internals WebUI renderer.
 struct RecordedEvent {
@@ -30,6 +41,13 @@ struct RecordedEvent {
   // True when `message` was cut. The text is then incomplete and is not
   // valid JSON. The page shows it as-is with a "truncated" marker.
   bool message_truncated;
+  // The HTTP response status code for upstream messages (e.g. 200, 403).
+  // 0 if not applicable or unknown.
+  int32 http_response_code = 0;
+  // The delivery or connection status for downstream messages.
+  // kUnknown if not applicable (e.g. for upstream messages).
+  DownstreamDeliveryStatus downstream_status =
+      DownstreamDeliveryStatus.kUnknown;
 };
 
 // One active or closed transport session.

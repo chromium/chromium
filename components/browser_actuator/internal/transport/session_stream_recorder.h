@@ -71,6 +71,11 @@ struct SessionEventSnapshot {
   std::string message;
   // True when `message` was cut to the byte limit.
   bool message_truncated = false;
+  // The HTTP response status code for upstream messages.
+  int http_response_code = 0;
+  // The delivery or connection status for downstream messages.
+  DownstreamDeliveryStatus downstream_status =
+      DownstreamDeliveryStatus::kUnknown;
 };
 // LINT.ThenChange(//chrome/browser/browser_actuator/internals/browser_actuator_internals_mojom_traits.cc)
 
@@ -106,6 +111,9 @@ class SessionStreamRecorder {
   struct Entry {
     base::TimeTicks timestamp;
     std::variant<ActuatorDownstreamMessage, ActuatorUpstreamMessage> message;
+    int http_response_code = 0;
+    DownstreamDeliveryStatus downstream_status =
+        DownstreamDeliveryStatus::kUnknown;
 
     // Serializes this entry for diagnostic dumps. The message body is
     // serialized by the generated `ToValue()` from //components/proto_extras,
@@ -117,10 +125,11 @@ class SessionStreamRecorder {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnDownstreamMessage(base::TimeTicks timestamp,
-                                     const ActuatorDownstreamMessage& message) {
-    }
+                                     const ActuatorDownstreamMessage& message,
+                                     DownstreamDeliveryStatus status);
     virtual void OnUpstreamMessage(base::TimeTicks timestamp,
-                                   const ActuatorUpstreamMessage& message) {}
+                                   const ActuatorUpstreamMessage& message,
+                                   int http_response_code);
   };
 
   explicit SessionStreamRecorder(std::string_view session_id);
@@ -130,8 +139,21 @@ class SessionStreamRecorder {
   SessionStreamRecorder& operator=(const SessionStreamRecorder&) = delete;
 
   // Direct recording methods:
-  void RecordDownstreamMessage(ActuatorDownstreamMessage message);
-  void RecordUpstreamMessage(ActuatorUpstreamMessage message);
+  void RecordDownstreamMessage(ActuatorDownstreamMessage message,
+                               DownstreamDeliveryStatus status);
+
+  // Records an upstream message. Operates in two phases: initially called with
+  // `http_response_code = 0` when the message is dispatched to the transport
+  // client, followed by an in-place update with the response status code upon
+  // completion.
+  void RecordUpstreamMessage(ActuatorUpstreamMessage message,
+                             int http_response_code);
+
+  // Updates the HTTP response code of a previously recorded pending upstream
+  // entry matching `client_sequence_number`. Returns true if a matching
+  // pending entry was found and updated.
+  bool UpdateUpstreamResponseCode(int64_t client_sequence_number,
+                                  int http_response_code);
 
   // Observer management:
   void AddObserver(Observer* observer);
@@ -180,9 +202,11 @@ class SessionStreamRecorderFactory : public TransportSessionRegistry::Observer,
 
   // TransportMessageObserver implementation:
   void OnDownstreamMessage(std::string_view session_id,
-                           const ActuatorDownstreamMessage& message) override;
+                           const ActuatorDownstreamMessage& message,
+                           DownstreamDeliveryStatus status) override;
   void OnUpstreamMessage(std::string_view session_id,
-                         const ActuatorUpstreamMessage& message) override;
+                         const ActuatorUpstreamMessage& message,
+                         int http_response_code) override;
 
   // Exports all tracked sessions' metadata and history as a structured
   // dictionary.

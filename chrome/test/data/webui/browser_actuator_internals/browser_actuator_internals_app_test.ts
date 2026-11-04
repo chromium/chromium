@@ -5,7 +5,7 @@
 import 'chrome://browser-actuator-internals/app.js';
 
 import type {BrowserActuatorInternalsAppElement} from 'chrome://browser-actuator-internals/app.js';
-import {browserProxyFactory, MessageDirection} from 'chrome://browser-actuator-internals/browser_actuator_internals.mojom-webui.js';
+import {browserProxyFactory, DownstreamDeliveryStatus, MessageDirection} from 'chrome://browser-actuator-internals/browser_actuator_internals.mojom-webui.js';
 import type {RecordedEvent, SessionSummary} from 'chrome://browser-actuator-internals/browser_actuator_internals.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -19,6 +19,8 @@ function makeEvent(overrides: Partial<RecordedEvent> = {}): RecordedEvent {
     payloadTypes: ['payload.TypeA'],
     message: '{}',
     messageTruncated: false,
+    httpResponseCode: 0,
+    downstreamStatus: DownstreamDeliveryStatus.kUnknown,
     ...overrides,
   };
 }

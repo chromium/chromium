@@ -1,4 +1,5 @@
 include_rules = [
   # The internals page is the only consumer of recorded session history.
   "+components/browser_actuator/internal/transport/session_stream_recorder.h",
+  "+components/browser_actuator/internal/transport/transport_message_observer.h",
 ]

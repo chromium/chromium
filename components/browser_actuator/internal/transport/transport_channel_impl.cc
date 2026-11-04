@@ -20,6 +20,7 @@
 #include "components/browser_actuator/internal/transport/resume_body_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/transport_handler_factory_registry_impl.h"
+#include "components/browser_actuator/internal/transport/transport_message_observer.h"
 #include "components/browser_actuator/internal/transport/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport/transport_session_registry_impl.h"
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
@@ -35,8 +36,16 @@ TransportChannelImpl::TransportChannelImpl(
   handler_registry_ = std::make_unique<TransportHandlerFactoryRegistryImpl>();
   session_registry_ = std::make_unique<TransportSessionRegistryImpl>(
       weak_ptr_factory_.GetWeakPtr(),
-      base::BindRepeating(&TransportChannelImpl::NotifyDownstreamMessage,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          [](base::WeakPtr<TransportChannelImpl> self,
+             std::string_view session_id,
+             const ActuatorDownstreamMessage& message) {
+            if (self) {
+              self->NotifyDownstreamMessage(session_id, message,
+                                            DownstreamDeliveryStatus::kSuccess);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
   session_registry_->AddObserver(this);
 
   control_handler_factory_ = std::make_unique<ControlTransportHandlerFactory>(
@@ -160,6 +169,10 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
   }
 
   const int64_t sequence_number = downstream->sequence_number();
+  std::optional<ActuatorDownstreamMessage> dropped_copy;
+  if (!observers_.empty()) {
+    dropped_copy = *downstream;
+  }
   base::expected<void, DownstreamMessageSequencer::Error> result =
       session->ProcessDownstreamMessage(std::move(*downstream));
   if (!result.has_value()) {
@@ -169,6 +182,10 @@ void TransportChannelImpl::OnStreamMessage(const std::string& message) {
                  << session->GetSessionId()
                  << "; reconnecting stream to request replay from "
                  << session->last_seen_sequence_number();
+        if (dropped_copy.has_value()) {
+          NotifyDownstreamMessage(session->GetSessionId(), *dropped_copy,
+                                  DownstreamDeliveryStatus::kFailure);
+        }
         ReconnectStream();
         break;
       case DownstreamMessageSequencer::Error::kInvalidSequenceNumber:
@@ -245,15 +262,17 @@ void TransportChannelImpl::SendUpstreamMessage(
               std::string(session_id)));
 
   observers_.Notify(&TransportMessageObserver::OnUpstreamMessage,
-                    std::string_view(upstream.session_id()), upstream);
+                    std::string_view(upstream.session_id()), upstream,
+                    /*http_response_code=*/0);
 }
 
 void TransportChannelImpl::NotifyDownstreamMessage(
     std::string_view session_id,
-    const ActuatorDownstreamMessage& message) {
+    const ActuatorDownstreamMessage& message,
+    DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.Notify(&TransportMessageObserver::OnDownstreamMessage, session_id,
-                    message);
+                    message, status);
 }
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {

@@ -4,14 +4,53 @@
 
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_mojom_traits.h"
 
+#include <optional>
+
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
 namespace mojo {
 
+using browser_actuator::transport::DownstreamDeliveryStatus;
 using browser_actuator::transport::SessionEventSnapshot;
 using browser_actuator::transport::SessionSnapshot;
 using browser_actuator_internals::mojom::MessageDirection;
+
+// static
+browser_actuator_internals::mojom::DownstreamDeliveryStatus
+EnumTraits<browser_actuator_internals::mojom::DownstreamDeliveryStatus,
+           DownstreamDeliveryStatus>::ToMojom(DownstreamDeliveryStatus input) {
+  switch (input) {
+    case DownstreamDeliveryStatus::kUnknown:
+      return browser_actuator_internals::mojom::DownstreamDeliveryStatus::
+          kUnknown;
+    case DownstreamDeliveryStatus::kSuccess:
+      return browser_actuator_internals::mojom::DownstreamDeliveryStatus::
+          kSuccess;
+    case DownstreamDeliveryStatus::kFailure:
+      return browser_actuator_internals::mojom::DownstreamDeliveryStatus::
+          kFailure;
+  }
+  NOTREACHED();
+}
+
+// static
+std::optional<DownstreamDeliveryStatus>
+EnumTraits<browser_actuator_internals::mojom::DownstreamDeliveryStatus,
+           DownstreamDeliveryStatus>::
+    FromMojom(
+        browser_actuator_internals::mojom::DownstreamDeliveryStatus input) {
+  switch (input) {
+    case browser_actuator_internals::mojom::DownstreamDeliveryStatus::kUnknown:
+      return DownstreamDeliveryStatus::kUnknown;
+    case browser_actuator_internals::mojom::DownstreamDeliveryStatus::kSuccess:
+      return DownstreamDeliveryStatus::kSuccess;
+    case browser_actuator_internals::mojom::DownstreamDeliveryStatus::kFailure:
+      return DownstreamDeliveryStatus::kFailure;
+  }
+  return std::nullopt;
+}
 
 // static
 MessageDirection
@@ -29,11 +68,13 @@ bool StructTraits<browser_actuator_internals::mojom::RecordedEventDataView,
   MessageDirection direction;
   if (!data.ReadTimestamp(&out->timestamp) || !data.ReadDirection(&direction) ||
       !data.ReadPayloadTypes(&out->payload_types) ||
-      !data.ReadMessage(&out->message)) {
+      !data.ReadMessage(&out->message) ||
+      !data.ReadDownstreamStatus(&out->downstream_status)) {
     return false;
   }
   out->is_downstream = direction == MessageDirection::kDownstream;
   out->message_truncated = data.message_truncated();
+  out->http_response_code = data.http_response_code();
   return true;
 }
 

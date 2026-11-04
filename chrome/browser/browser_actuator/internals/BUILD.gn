@@ -20,6 +20,10 @@ mojom("mojo_bindings") {
           mojom = "browser_actuator_internals.mojom.SessionSummary"
           cpp = "::browser_actuator::transport::SessionSnapshot"
         },
+        {
+          mojom = "browser_actuator_internals.mojom.DownstreamDeliveryStatus"
+          cpp = "::browser_actuator::transport::DownstreamDeliveryStatus"
+        },
       ]
       traits_headers = [ "browser_actuator_internals_mojom_traits.h" ]
       traits_sources = [ "browser_actuator_internals_mojom_traits.cc" ]

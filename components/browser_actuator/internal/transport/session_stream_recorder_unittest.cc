@@ -50,21 +50,28 @@ class FakeTransportSession : public TransportSession {
 class TestObserver : public SessionStreamRecorder::Observer {
  public:
   void OnDownstreamMessage(base::TimeTicks timestamp,
-                           const ActuatorDownstreamMessage& message) override {
+                           const ActuatorDownstreamMessage& message,
+                           DownstreamDeliveryStatus status) override {
     downstream_count++;
     last_downstream_seq = message.sequence_number();
+    last_downstream_status = status;
   }
 
   void OnUpstreamMessage(base::TimeTicks timestamp,
-                         const ActuatorUpstreamMessage& message) override {
+                         const ActuatorUpstreamMessage& message,
+                         int http_response_code) override {
     upstream_count++;
     last_upstream_seq = message.client_sequence_number();
+    last_http_response_code = http_response_code;
   }
 
   size_t downstream_count = 0;
   size_t upstream_count = 0;
   int64_t last_downstream_seq = 0;
   int64_t last_upstream_seq = 0;
+  DownstreamDeliveryStatus last_downstream_status =
+      DownstreamDeliveryStatus::kUnknown;
+  int last_http_response_code = 0;
 };
 
 class DefaultObserver : public SessionStreamRecorder::Observer {};
@@ -87,7 +94,8 @@ TEST(SessionStreamRecorderTest, RecordsDownstreamMessage) {
   downstream.set_session_id("session_123");
   downstream.set_sequence_number(5);
 
-  recorder.RecordDownstreamMessage(downstream);
+  recorder.RecordDownstreamMessage(downstream,
+                                   DownstreamDeliveryStatus::kSuccess);
 
   EXPECT_EQ(recorder.metadata().total_downstream_messages, 1u);
   EXPECT_EQ(recorder.metadata().total_upstream_messages, 0u);
@@ -107,7 +115,7 @@ TEST(SessionStreamRecorderTest, RecordsUpstreamMessage) {
   upstream.set_session_id("session_123");
   upstream.set_client_sequence_number(10);
 
-  recorder.RecordUpstreamMessage(upstream);
+  recorder.RecordUpstreamMessage(upstream, 200);
 
   EXPECT_EQ(recorder.metadata().total_downstream_messages, 0u);
   EXPECT_EQ(recorder.metadata().total_upstream_messages, 1u);
@@ -119,6 +127,42 @@ TEST(SessionStreamRecorderTest, RecordsUpstreamMessage) {
   EXPECT_EQ(
       std::get<ActuatorUpstreamMessage>(entry.message).client_sequence_number(),
       10);
+  EXPECT_EQ(entry.http_response_code, 200);
+}
+
+TEST(SessionStreamRecorderTest, UpdatesUpstreamMessageResponseCodeInPlace) {
+  SessionStreamRecorder recorder("session_123");
+  TestObserver observer;
+  recorder.AddObserver(&observer);
+
+  ActuatorUpstreamMessage upstream;
+  upstream.set_session_id("session_123");
+  upstream.set_client_sequence_number(10);
+
+  // Phase 1: Record initial pending upstream message with status 0.
+  recorder.RecordUpstreamMessage(upstream, 0);
+
+  EXPECT_EQ(recorder.metadata().total_upstream_messages, 1u);
+  ASSERT_EQ(recorder.entries().size(), 1u);
+  EXPECT_EQ(recorder.entries().front().http_response_code, 0);
+  EXPECT_EQ(observer.upstream_count, 1u);
+  EXPECT_EQ(observer.last_upstream_seq, 10);
+  EXPECT_EQ(observer.last_http_response_code, 0);
+
+  // Phase 2: Update HTTP response code in place to 200.
+  EXPECT_TRUE(recorder.UpdateUpstreamResponseCode(10, 200));
+
+  EXPECT_EQ(recorder.metadata().total_upstream_messages, 1u);
+  ASSERT_EQ(recorder.entries().size(), 1u);
+  EXPECT_EQ(recorder.entries().front().http_response_code, 200);
+  EXPECT_EQ(observer.upstream_count, 2u);
+  EXPECT_EQ(observer.last_upstream_seq, 10);
+  EXPECT_EQ(observer.last_http_response_code, 200);
+
+  // Attempting to update an unknown sequence number returns false.
+  EXPECT_FALSE(recorder.UpdateUpstreamResponseCode(99, 200));
+
+  recorder.RemoveObserver(&observer);
 }
 
 TEST(SessionStreamRecorderTest, PreservesChronologicalOrderAcrossDirections) {
@@ -126,15 +170,15 @@ TEST(SessionStreamRecorderTest, PreservesChronologicalOrderAcrossDirections) {
 
   ActuatorDownstreamMessage d1;
   d1.set_sequence_number(1);
-  recorder.RecordDownstreamMessage(d1);
+  recorder.RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage u1;
   u1.set_client_sequence_number(2);
-  recorder.RecordUpstreamMessage(u1);
+  recorder.RecordUpstreamMessage(u1, 200);
 
   ActuatorDownstreamMessage d2;
   d2.set_sequence_number(3);
-  recorder.RecordDownstreamMessage(d2);
+  recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
   const auto& entries = recorder.entries();
   ASSERT_EQ(entries.size(), 3u);
@@ -165,23 +209,26 @@ TEST(SessionStreamRecorderTest, NotifiesObservers) {
 
   ActuatorDownstreamMessage d;
   d.set_sequence_number(1);
-  recorder.RecordDownstreamMessage(d);
+  recorder.RecordDownstreamMessage(d, DownstreamDeliveryStatus::kSuccess);
 
   EXPECT_EQ(observer.downstream_count, 1u);
   EXPECT_EQ(observer.last_downstream_seq, 1);
+  EXPECT_EQ(observer.last_downstream_status,
+            DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage u;
   u.set_client_sequence_number(2);
-  recorder.RecordUpstreamMessage(u);
+  recorder.RecordUpstreamMessage(u, 200);
 
   EXPECT_EQ(observer.upstream_count, 1u);
   EXPECT_EQ(observer.last_upstream_seq, 2);
+  EXPECT_EQ(observer.last_http_response_code, 200);
 
   recorder.RemoveObserver(&observer);
 
   ActuatorDownstreamMessage d2;
   d2.set_sequence_number(3);
-  recorder.RecordDownstreamMessage(d2);
+  recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
   EXPECT_EQ(observer.downstream_count, 1u);
 }
@@ -192,10 +239,11 @@ TEST(SessionStreamRecorderTest, ObserverDefaultMethodsDoNothing) {
   recorder.AddObserver(&observer);
 
   ActuatorDownstreamMessage downstream;
-  recorder.RecordDownstreamMessage(downstream);
+  recorder.RecordDownstreamMessage(downstream,
+                                   DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage upstream;
-  recorder.RecordUpstreamMessage(upstream);
+  recorder.RecordUpstreamMessage(upstream, 200);
 
   recorder.RemoveObserver(&observer);
 }
@@ -250,13 +298,15 @@ TEST(SessionStreamRecorderFactoryTest, RecordsEnvelopesInArrivalOrder) {
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   wake.add_typed_payloads()->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
-  factory.OnDownstreamMessage("session_1", wake);
+  factory.OnDownstreamMessage("session_1", wake,
+                              DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage ack;
   ack.set_session_id("session_1");
   ack.set_client_sequence_number(1);
   ack.set_responding_to_sequence_number(0);
-  factory.OnUpstreamMessage("session_1", ack);
+  factory.OnUpstreamMessage("session_1", ack, 0);
+  factory.OnUpstreamMessage("session_1", ack, 200);
 
   SessionStreamRecorder* recorder =
       factory.GetActiveRecorderForTesting("session_1");
@@ -288,12 +338,14 @@ TEST(SessionStreamRecorderFactoryTest,
 
   ActuatorDownstreamMessage message;
   message.set_session_id("session_1");
-  factory.OnDownstreamMessage("session_1", message);
+  factory.OnDownstreamMessage("session_1", message,
+                              DownstreamDeliveryStatus::kSuccess);
   EXPECT_TRUE(factory.ExportAllSessionsAsValue().FindList("sessions")->empty());
 
   factory.OnSessionRegistered(&session);
   factory.OnSessionRemoved("session_1");
-  factory.OnDownstreamMessage("session_1", message);
+  factory.OnDownstreamMessage("session_1", message,
+                              DownstreamDeliveryStatus::kSuccess);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -310,7 +362,8 @@ TEST(SessionStreamRecorderFactoryTest,
   factory.OnSessionRegistered(&session);
   ActuatorDownstreamMessage message;
   message.set_session_id("session_1");
-  factory.OnDownstreamMessage("session_1", message);
+  factory.OnDownstreamMessage("session_1", message,
+                              DownstreamDeliveryStatus::kSuccess);
   factory.OnSessionRemoved("session_1");
 
   factory.OnSessionRegistered(&session);
@@ -382,25 +435,25 @@ TEST(SessionStreamRecorderFactoryTest, ExportAllSessionsAsJson) {
   d1.set_sequence_number(1);
   d1.add_typed_payloads()->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
-  r1->RecordDownstreamMessage(d1);
+  r1->RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage u1;
   u1.set_session_id("session_1");
   u1.set_client_sequence_number(2);
-  r1->RecordUpstreamMessage(u1);
+  r1->RecordUpstreamMessage(u1, 200);
 
   ActuatorDownstreamMessage d2;
   d2.set_session_id("session_2");
   d2.set_sequence_number(5);
   d2.add_typed_payloads()->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
-  r2->RecordDownstreamMessage(d2);
+  r2->RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage u2;
   u2.set_session_id("session_2");
   u2.set_client_sequence_number(10);
   u2.set_responding_to_sequence_number(5);
-  r2->RecordUpstreamMessage(u2);
+  r2->RecordUpstreamMessage(u2, 200);
   r2->MarkSessionClosed();
 
   std::string json_str = factory.ExportAllSessionsAsJson();
@@ -515,7 +568,8 @@ TEST(SessionStreamRecorderFactoryTest, RetainsRemovedSessionsForDump) {
   ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_temp");
   downstream.set_sequence_number(42);
-  factory.OnDownstreamMessage("session_temp", downstream);
+  factory.OnDownstreamMessage("session_temp", downstream,
+                              DownstreamDeliveryStatus::kSuccess);
   factory.OnSessionRemoved("session_temp");
 
   EXPECT_EQ(factory.GetActiveRecordersCountForTesting(), 0u);
@@ -544,9 +598,39 @@ TEST(SessionStreamRecorderFactoryTest, RetainsRemovedSessionsForDump) {
   EXPECT_EQ(*message->FindString("sequence_number"), "42");
 }
 
-// The message body is serialized by the generated `ToValue()` rather than by a
-// hand-written list of fields, so fields that no caller explicitly asked for
-// still end up in the dump.
+TEST(SessionStreamRecorderTest,
+     EntryToValueSerializesDownstreamStatusAsString) {
+  SessionStreamRecorder recorder("session_123");
+
+  ActuatorDownstreamMessage d1;
+  d1.set_session_id("session_123");
+  d1.set_sequence_number(1);
+  recorder.RecordDownstreamMessage(d1, DownstreamDeliveryStatus::kSuccess);
+
+  ActuatorDownstreamMessage d2;
+  d2.set_session_id("session_123");
+  d2.set_sequence_number(2);
+  recorder.RecordDownstreamMessage(d2, DownstreamDeliveryStatus::kFailure);
+
+  ActuatorDownstreamMessage d3;
+  d3.set_session_id("session_123");
+  d3.set_sequence_number(3);
+  recorder.RecordDownstreamMessage(d3, DownstreamDeliveryStatus::kUnknown);
+
+  ASSERT_EQ(recorder.entries().size(), 3u);
+
+  base::DictValue v1 = recorder.entries()[0].ToValue();
+  EXPECT_EQ(*v1.FindString("downstream_status"), "Success");
+
+  base::DictValue v2 = recorder.entries()[1].ToValue();
+  EXPECT_EQ(*v2.FindString("downstream_status"), "Failure");
+
+  base::DictValue v3 = recorder.entries()[2].ToValue();
+  EXPECT_EQ(*v3.FindString("downstream_status"), "Unknown");
+}
+
+// The message body is serialized by the generated `ToValue()` automatically,
+// so fields that no caller explicitly asked for still end up in the dump.
 TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
   SessionStreamRecorderFactory factory;
   FakeTransportSession session("session_1");
@@ -560,7 +644,7 @@ TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
   auto* capabilities = upstream.mutable_capabilities();
   capabilities->set_chrome_major_version_number(140);
   capabilities->add_supported_features("feature_a");
-  recorder->RecordUpstreamMessage(upstream);
+  recorder->RecordUpstreamMessage(upstream, 200);
 
   ActuatorDownstreamMessage downstream;
   downstream.set_session_id("session_1");
@@ -574,7 +658,8 @@ TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
   typed_payload->mutable_proto_payload()->set_type_url(
       "type.googleapis.com/browser_actuator.ControlCommand");
   typed_payload->mutable_proto_payload()->set_value(serialized_command);
-  recorder->RecordDownstreamMessage(downstream);
+  recorder->RecordDownstreamMessage(downstream,
+                                    DownstreamDeliveryStatus::kSuccess);
 
   base::DictValue dump = factory.ExportAllSessionsAsValue();
   const base::ListValue* events =
@@ -629,12 +714,14 @@ TEST(SessionStreamRecorderFactoryTest, RoutesUpstreamMessageBySessionId) {
   ActuatorUpstreamMessage u2;
   u2.set_session_id("session_2");
   u2.set_client_sequence_number(11);
-  factory.OnUpstreamMessage("session_2", u2);
+  factory.OnUpstreamMessage("session_2", u2, 0);
+  factory.OnUpstreamMessage("session_2", u2, 200);
 
   ActuatorUpstreamMessage u1;
   u1.set_session_id("session_1");
   u1.set_client_sequence_number(22);
-  factory.OnUpstreamMessage("session_1", u1);
+  factory.OnUpstreamMessage("session_1", u1, 0);
+  factory.OnUpstreamMessage("session_1", u1, 200);
 
   EXPECT_EQ(r1->metadata().total_upstream_messages, 1u);
   ASSERT_EQ(r1->entries().size(), 1u);
@@ -661,7 +748,8 @@ TEST(SessionStreamRecorderFactoryTest,
   ActuatorUpstreamMessage u_unknown;
   u_unknown.set_session_id("unknown_session");
   u_unknown.set_client_sequence_number(1);
-  factory.OnUpstreamMessage("unknown_session", u_unknown);
+  factory.OnUpstreamMessage("unknown_session", u_unknown, 0);
+  factory.OnUpstreamMessage("unknown_session", u_unknown, 200);
 
   // Removing session_1 closes it and moves it to the retained recorders.
   factory.OnSessionRegistered(&session1);
@@ -670,7 +758,8 @@ TEST(SessionStreamRecorderFactoryTest,
   ActuatorUpstreamMessage u_closed;
   u_closed.set_session_id("session_1");
   u_closed.set_client_sequence_number(2);
-  factory.OnUpstreamMessage("session_1", u_closed);
+  factory.OnUpstreamMessage("session_1", u_closed, 0);
+  factory.OnUpstreamMessage("session_1", u_closed, 200);
 
   base::DictValue dump = factory.ExportAllSessionsAsValue();
   const base::ListValue* sessions = dump.FindList("sessions");
@@ -737,7 +826,8 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsCapsEvents) {
     ActuatorDownstreamMessage msg;
     msg.set_session_id("session_1");
     msg.set_sequence_number(i);
-    recorder->RecordDownstreamMessage(std::move(msg));
+    recorder->RecordDownstreamMessage(std::move(msg),
+                                      DownstreamDeliveryStatus::kSuccess);
   }
 
   std::vector<SessionSnapshot> sessions =
@@ -759,7 +849,8 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsKeepsNewestEvents) {
     ActuatorDownstreamMessage msg;
     msg.set_session_id("session_1");
     msg.set_sequence_number(i);
-    recorder->RecordDownstreamMessage(std::move(msg));
+    recorder->RecordDownstreamMessage(std::move(msg),
+                                      DownstreamDeliveryStatus::kSuccess);
   }
 
   std::vector<SessionSnapshot> sessions =
@@ -793,7 +884,8 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsTruncatesLargeMessages) {
   typed_payload->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
   typed_payload->mutable_proto_payload()->set_value(std::string(500, 'x'));
-  recorder->RecordDownstreamMessage(std::move(msg));
+  recorder->RecordDownstreamMessage(std::move(msg),
+                                    DownstreamDeliveryStatus::kSuccess);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/50);
@@ -841,7 +933,8 @@ TEST(SessionStreamRecorderFactoryTest,
 
   ActuatorDownstreamMessage msg;
   msg.set_session_id("session_1");
-  recorder->RecordDownstreamMessage(std::move(msg));
+  recorder->RecordDownstreamMessage(std::move(msg),
+                                    DownstreamDeliveryStatus::kSuccess);
 
   task_environment.FastForwardBy(base::Seconds(5));
   factory.OnSessionRemoved(session.GetSessionId());  // Closes the session.
@@ -876,7 +969,8 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* p4 = downstream.add_typed_payloads();
   p4->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
-  recorder->RecordDownstreamMessage(std::move(downstream));
+  recorder->RecordDownstreamMessage(std::move(downstream),
+                                    DownstreamDeliveryStatus::kSuccess);
 
   ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
@@ -888,7 +982,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION);
   auto* up4 = upstream.add_typed_payloads();
   up4->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
-  recorder->RecordUpstreamMessage(std::move(upstream));
+  recorder->RecordUpstreamMessage(std::move(upstream), 200);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -914,7 +1008,8 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   ActuatorUpstreamMessage upstream;
   upstream.set_session_id("session_1");
   upstream.set_client_sequence_number(42);
-  factory.OnUpstreamMessage("session_1", upstream);
+  factory.OnUpstreamMessage("session_1", upstream, 0);
+  factory.OnUpstreamMessage("session_1", upstream, 200);
 
   std::vector<SessionSnapshot> sessions =
       factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
@@ -922,6 +1017,7 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
   EXPECT_EQ(sessions[0].total_upstream_messages, 1u);
   ASSERT_EQ(sessions[0].events.size(), 1u);
   EXPECT_FALSE(sessions[0].events[0].is_downstream);
+  EXPECT_EQ(sessions[0].events[0].http_response_code, 200);
 }
 
 }  // namespace

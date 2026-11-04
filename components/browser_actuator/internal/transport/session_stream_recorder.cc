@@ -5,6 +5,7 @@
 #include "components/browser_actuator/internal/transport/session_stream_recorder.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,6 +98,8 @@ SessionEventSnapshot BuildEventSnapshot(
   event.timestamp = ToWallTime(metadata, entry.timestamp);
   event.is_downstream =
       std::holds_alternative<ActuatorDownstreamMessage>(entry.message);
+  event.http_response_code = entry.http_response_code;
+  event.downstream_status = entry.downstream_status;
 
   std::visit(
       [&event](const auto& msg) {
@@ -163,6 +167,16 @@ base::DictValue SessionMetadata::ToValue() const {
   return dict;
 }
 
+void SessionStreamRecorder::Observer::OnDownstreamMessage(
+    base::TimeTicks timestamp,
+    const ActuatorDownstreamMessage& message,
+    DownstreamDeliveryStatus status) {}
+
+void SessionStreamRecorder::Observer::OnUpstreamMessage(
+    base::TimeTicks timestamp,
+    const ActuatorUpstreamMessage& message,
+    int http_response_code) {}
+
 base::DictValue SessionStreamRecorder::Entry::ToValue() const {
   base::DictValue dict;
   dict.Set("timestamp_ticks", timestamp.since_origin().InMicrosecondsF());
@@ -170,10 +184,23 @@ base::DictValue SessionStreamRecorder::Entry::ToValue() const {
           std::get_if<ActuatorDownstreamMessage>(&message)) {
     dict.Set("direction", "Downstream");
     dict.Set("message", browser_actuator::ToValue(*downstream));
+    switch (downstream_status) {
+      case DownstreamDeliveryStatus::kSuccess:
+        dict.Set("downstream_status", "Success");
+        break;
+      case DownstreamDeliveryStatus::kFailure:
+        dict.Set("downstream_status", "Failure");
+        break;
+      case DownstreamDeliveryStatus::kUnknown:
+      default:
+        dict.Set("downstream_status", "Unknown");
+        break;
+    }
   } else {
     dict.Set("direction", "Upstream");
     dict.Set("message", browser_actuator::ToValue(
                             std::get<ActuatorUpstreamMessage>(message)));
+    dict.Set("http_response_code", http_response_code);
   }
   return dict;
 }
@@ -194,34 +221,59 @@ SessionStreamRecorder::~SessionStreamRecorder() {
 }
 
 void SessionStreamRecorder::RecordDownstreamMessage(
-    ActuatorDownstreamMessage message) {
+    ActuatorDownstreamMessage message,
+    DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.total_downstream_messages++;
   base::TimeTicks now = base::TimeTicks::Now();
   entries_.push_back(Entry{
       .timestamp = now,
       .message = std::move(message),
+      .downstream_status = status,
   });
   const auto& recorded_message =
       std::get<ActuatorDownstreamMessage>(entries_.back().message);
   for (auto& observer : observers_) {
-    observer.OnDownstreamMessage(now, recorded_message);
+    observer.OnDownstreamMessage(now, recorded_message, status);
   }
 }
 
+bool SessionStreamRecorder::UpdateUpstreamResponseCode(
+    int64_t client_sequence_number,
+    int http_response_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (Entry& entry : base::Reversed(entries_)) {
+    if (std::holds_alternative<ActuatorUpstreamMessage>(entry.message)) {
+      const auto& upstream = std::get<ActuatorUpstreamMessage>(entry.message);
+      if (upstream.client_sequence_number() == client_sequence_number &&
+          entry.http_response_code == 0) {
+        entry.http_response_code = http_response_code;
+        for (auto& observer : observers_) {
+          observer.OnUpstreamMessage(entry.timestamp, upstream,
+                                     http_response_code);
+        }
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void SessionStreamRecorder::RecordUpstreamMessage(
-    ActuatorUpstreamMessage message) {
+    ActuatorUpstreamMessage message,
+    int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.total_upstream_messages++;
   base::TimeTicks now = base::TimeTicks::Now();
   entries_.push_back(Entry{
       .timestamp = now,
       .message = std::move(message),
+      .http_response_code = http_response_code,
   });
   const auto& recorded_message =
       std::get<ActuatorUpstreamMessage>(entries_.back().message);
   for (auto& observer : observers_) {
-    observer.OnUpstreamMessage(now, recorded_message);
+    observer.OnUpstreamMessage(now, recorded_message, http_response_code);
   }
 }
 
@@ -287,20 +339,36 @@ void SessionStreamRecorderFactory::OnSessionRemoved(
 
 void SessionStreamRecorderFactory::OnDownstreamMessage(
     std::string_view session_id,
-    const ActuatorDownstreamMessage& message) {
+    const ActuatorDownstreamMessage& message,
+    DownstreamDeliveryStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
-    recorder->RecordDownstreamMessage(message);
+    recorder->RecordDownstreamMessage(message, status);
   }
   // No active recorder for this session (unknown or already closed). Drop it.
 }
 
 void SessionStreamRecorderFactory::OnUpstreamMessage(
     std::string_view session_id,
-    const ActuatorUpstreamMessage& message) {
+    const ActuatorUpstreamMessage& message,
+    int http_response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (http_response_code != 0) {
+    if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
+      recorder->UpdateUpstreamResponseCode(message.client_sequence_number(),
+                                           http_response_code);
+      return;
+    }
+    auto it = std::ranges::find(retained_recorders_, session_id,
+                                &SessionStreamRecorder::session_id);
+    if (it != retained_recorders_.end()) {
+      (*it)->UpdateUpstreamResponseCode(message.client_sequence_number(),
+                                        http_response_code);
+    }
+    return;
+  }
   if (SessionStreamRecorder* recorder = FindActiveRecorder(session_id)) {
-    recorder->RecordUpstreamMessage(message);
+    recorder->RecordUpstreamMessage(message, /*http_response_code=*/0);
   }
   // No active recorder for this session (unknown or already closed). Drop it.
 }

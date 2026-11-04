@@ -26,21 +26,65 @@ transport::SessionEventSnapshot MakeEvent(bool is_downstream) {
   event.payload_types = {"Control", "Unspecified"};
   event.message = R"({"session_id":"s1"})";
   event.message_truncated = true;
+  event.http_response_code = is_downstream ? 0 : 200;
+  event.downstream_status = is_downstream
+                                ? transport::DownstreamDeliveryStatus::kSuccess
+                                : transport::DownstreamDeliveryStatus::kUnknown;
   return event;
 }
 
 TEST(BrowserActuatorInternalsMojomTraitsTest, RecordedEventRoundTrip) {
-  for (bool is_downstream : {true, false}) {
-    transport::SessionEventSnapshot input = MakeEvent(is_downstream);
+  // Test upstream round-trips with pending status (0), success, error, and -1.
+  for (int http_code : {0, 200, 500, -1}) {
+    transport::SessionEventSnapshot input = MakeEvent(/*is_downstream=*/false);
+    input.http_response_code = http_code;
     transport::SessionEventSnapshot output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RecordedEvent>(
         input, output));
     EXPECT_EQ(output.timestamp, input.timestamp);
-    EXPECT_EQ(output.is_downstream, is_downstream);
+    EXPECT_FALSE(output.is_downstream);
     EXPECT_THAT(output.payload_types,
                 testing::ElementsAre("Control", "Unspecified"));
     EXPECT_EQ(output.message, input.message);
     EXPECT_TRUE(output.message_truncated);
+    EXPECT_EQ(output.http_response_code, http_code);
+    EXPECT_EQ(output.downstream_status,
+              transport::DownstreamDeliveryStatus::kUnknown);
+  }
+
+  // Test downstream round-trips with kUnknown, kSuccess, and kFailure.
+  for (auto status : {transport::DownstreamDeliveryStatus::kUnknown,
+                      transport::DownstreamDeliveryStatus::kSuccess,
+                      transport::DownstreamDeliveryStatus::kFailure}) {
+    transport::SessionEventSnapshot input = MakeEvent(/*is_downstream=*/true);
+    input.downstream_status = status;
+    transport::SessionEventSnapshot output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::RecordedEvent>(
+        input, output));
+    EXPECT_EQ(output.timestamp, input.timestamp);
+    EXPECT_TRUE(output.is_downstream);
+    EXPECT_THAT(output.payload_types,
+                testing::ElementsAre("Control", "Unspecified"));
+    EXPECT_EQ(output.message, input.message);
+    EXPECT_TRUE(output.message_truncated);
+    EXPECT_EQ(output.http_response_code, 0);
+    EXPECT_EQ(output.downstream_status, status);
+  }
+}
+
+TEST(BrowserActuatorInternalsMojomTraitsTest,
+     DownstreamDeliveryStatusEnumTraits) {
+  for (auto status : {transport::DownstreamDeliveryStatus::kUnknown,
+                      transport::DownstreamDeliveryStatus::kSuccess,
+                      transport::DownstreamDeliveryStatus::kFailure}) {
+    auto mojom_status =
+        mojo::EnumTraits<mojom::DownstreamDeliveryStatus,
+                         transport::DownstreamDeliveryStatus>::ToMojom(status);
+    auto round_trip = mojo::EnumTraits<
+        mojom::DownstreamDeliveryStatus,
+        transport::DownstreamDeliveryStatus>::FromMojom(mojom_status);
+    ASSERT_TRUE(round_trip.has_value());
+    EXPECT_EQ(*round_trip, status);
   }
 }
 
