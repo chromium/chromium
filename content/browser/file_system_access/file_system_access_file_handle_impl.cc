@@ -133,6 +133,18 @@ bool HasWritePermission(const base::FilePath& path) {
 // already exists. Must be called on a sequence which allows blocking.
 base::File::Error CreateCowSwapFile(const storage::FileSystemURL& source_url,
                                     const storage::FileSystemURL& swap_url) {
+  // `clonefile()` operates directly on raw paths and follows symlinks when
+  // `flags` is 0, whereas `LocalFileUtil` hides symlinks by mapping them to
+  // `FILE_ERROR_NOT_FOUND`. Reject symlinks on `source_url` as not found, and
+  // treat a symlink (including a dangling symlink) at `swap_url` as an
+  // existing file so swap creation advances to the next candidate swap name
+  // instead of creating the clone at the symlink's target.
+  if (base::IsLink(source_url.path())) {
+    return base::File::Error::FILE_ERROR_NOT_FOUND;
+  }
+  if (base::IsLink(swap_url.path())) {
+    return base::File::Error::FILE_ERROR_EXISTS;
+  }
   return clonefile(source_url.path().value().c_str(),
                    swap_url.path().value().c_str(),
                    /*flags=*/0) == 0

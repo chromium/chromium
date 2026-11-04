@@ -1522,6 +1522,65 @@ TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, HandleCloneFailure) {
   EXPECT_TRUE(writer_remote.is_valid());
   EXPECT_EQ(GetCloneFileResult(handle_), CloneFileResult::kAttemptedAndAborted);
 }
+
+TEST_F(FileSystemAccessFileHandleSwapFileCloningTest,
+       HandleDanglingSymlinkSwapFile) {
+  const base::FilePath swap_path = dir_.GetPath().AppendASCII("test.crswap");
+  const base::FilePath symlink_target =
+      dir_.GetPath().AppendASCII("symlink_target");
+  ASSERT_TRUE(base::CreateSymbolicLink(symlink_target, swap_path));
+  ASSERT_FALSE(base::PathExists(symlink_target));
+
+  // A dangling symlink at `test.crswap` passes `FileExists` as NOT_FOUND
+  // because `LocalFileUtil` hides symlinks, so `CreateCowSwapFile` must reject
+  // the symlink rather than letting `clonefile()` follow it and create
+  // `symlink_target`, and advance to `test.1.crswap`.
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/true,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+  EXPECT_EQ(result->status, FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(writer_remote.is_valid());
+  EXPECT_EQ(GetCloneFileResult(handle_),
+            CloneFileResult::kAttemptedAndCompletedAsExpected);
+  EXPECT_FALSE(base::PathExists(symlink_target));
+  EXPECT_TRUE(base::IsLink(swap_path));
+  EXPECT_TRUE(base::PathExists(dir_.GetPath().AppendASCII("test.1.crswap")));
+}
+
+TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, SymlinkSourceFileFails) {
+  const base::FilePath other_path = dir_.GetPath().AppendASCII("other");
+  ASSERT_TRUE(base::WriteFile(other_path, "secret"));
+  ASSERT_TRUE(base::DeleteFile(test_file_url_.path()));
+  ASSERT_TRUE(base::CreateSymbolicLink(other_path, test_file_url_.path()));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/true,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future.GetCallback());
+  blink::mojom::FileSystemAccessErrorPtr result;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> writer_remote;
+  std::tie(result, writer_remote) = future.Take();
+  EXPECT_EQ(result->status, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(result->file_error, base::File::FILE_ERROR_NOT_FOUND);
+  EXPECT_FALSE(writer_remote.is_valid());
+  EXPECT_EQ(handle_->get_swap_file_clone_result_for_testing(),
+            base::File::Error::FILE_ERROR_NOT_FOUND);
+  EXPECT_FALSE(base::PathExists(dir_.GetPath().AppendASCII("test.crswap")));
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 struct MovePermissionsTestCase {
