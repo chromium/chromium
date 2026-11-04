@@ -92,6 +92,19 @@ public class TrustedVaultClient {
         Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo);
 
         /**
+         * Returns whether the security domain is empty for the given account.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise which indicates completion and represents whether the security domain
+         *     is empty.
+         */
+        // TODO(crbug.com/540854648): Remove the default implementation once downstream
+        // GmsTrustedVaultClientBackend implements this method.
+        default Promise<Boolean> getIsSecurityDomainEmpty(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
+
+        /**
          * Registers a new trusted recovery method that can be used to retrieve keys, usually for
          * the purpose of resolving a recoverability-degraded case.
          *

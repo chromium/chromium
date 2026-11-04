@@ -728,6 +728,7 @@ if (_is_default_toolchain) {
       "//components/paint_preview/common/mojom:mojom_java",
       "//components/paint_preview/player/android:java",
       "//components/password_manager/core/browser:password_manager_java_enums",
+      "//components/password_manager/core/browser/ode:java",
       "//components/payments/content/android:java",
       "//components/payments/content/android:service_impl_java",
       "//components/payments/content/android:service_java",
