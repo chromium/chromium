@@ -73,11 +73,7 @@ void DisplayScheduler::BeginFrameObserver::OnBeginFrameSourcePausedChanged(
 
 bool DisplayScheduler::BeginFrameObserver::OnBeginFrameDerivedImpl(
     const BeginFrameArgs& args) {
-  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
-    return true;
-  } else {
-    return scheduler_->OnBeginFrame(args);
-  }
+  return true;
 }
 
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
@@ -110,9 +106,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       hint_session_factory_(hint_session_factory),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       decider_(use_platform_preferred_deadlines_) {
-  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
-    begin_frame_source_->SetSchedulerClient(this);
-  }
+  begin_frame_source_->SetSchedulerClient(this);
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
@@ -124,9 +118,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
 }
 
 DisplayScheduler::~DisplayScheduler() {
-  if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
-    begin_frame_source_->SetSchedulerClient(nullptr);
-  }
+  begin_frame_source_->SetSchedulerClient(nullptr);
   // It is possible for DisplayScheduler to be destroyed while there's an
   // in-flight swap. So always mark the gpu as not busy during destruction.
   begin_frame_source_->SetIsGpuBusy(false);
@@ -586,12 +578,10 @@ void DisplayScheduler::StartObservingBeginFrames() {
     begin_frame_source_->AddObserver(&begin_frame_observer_);
     // TODO(crbug.com/40900977): Some tests still have reliance on Missed
     // begin frames. We should update the test helpers.
-    if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
-      auto args = begin_frame_observer_.LastUsedBeginFrameArgs();
-      if (args.IsValid() && args.type == BeginFrameArgs::MISSED &&
-          args.frame_time > current_begin_frame_args_.frame_time) {
-        OnBeginFrame(begin_frame_observer_.LastUsedBeginFrameArgs());
-      }
+    auto args = begin_frame_observer_.LastUsedBeginFrameArgs();
+    if (args.IsValid() && args.type == BeginFrameArgs::MISSED &&
+        args.frame_time > current_begin_frame_args_.frame_time) {
+      OnBeginFrame(begin_frame_observer_.LastUsedBeginFrameArgs());
     }
     observing_begin_frame_source_ = true;
   }

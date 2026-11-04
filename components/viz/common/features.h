@@ -187,7 +187,6 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 // TODO(crbug.com/40893974): Remove once this has shipped to stable.
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kNoUndrawnFrameThrottleWhileEmbedderWaits);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplaySchedulerAsClient);
 
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderPassBackingLogicalBounds);
 
