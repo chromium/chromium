@@ -20,6 +20,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
@@ -68,7 +69,6 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -100,49 +100,6 @@ void InitScrollContentsAnimationSettings(
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   CHECK(event.IsGestureEvent());
   return event.AsGestureEvent()->details().bounding_box();
-}
-
-// Sets up background for the desk bar. There could be 3 cases:
-//   1) desk button bar
-//      A separate view will be used as background for animation purpose.
-//   2) overview bar with forest
-//      No background.
-//   3) overview bar without forest
-//      The bar itself serves as the background.
-void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
-  const bool type_is_desk_button =
-      bar_view->type() == DeskBarViewBase::Type::kDeskButton;
-
-  auto* view = type_is_desk_button ? bar_view->background_view() : bar_view;
-  view->SetPaintToLayer();
-
-  auto* layer = view->layer();
-  layer->SetFillsBoundsOpaquely(false);
-  layer->SetName("DeskBarViewBase:Background");
-
-  if (!type_is_desk_button) {
-    // Forest feature needs a transparent desks bar background. Still needs the
-    // view layer to perform animations.
-    return;
-  }
-
-  if (chromeos::features::IsSystemBlurEnabled()) {
-    layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
-    layer->SetBackdropFilterQuality(StyleUtil::kBackgroundBlurQuality);
-  }
-
-  const int corner_radius = type_is_desk_button
-                                ? kDeskBarCornerRadiusOverviewDeskButton
-                                : kDeskBarCornerRadiusOverview;
-  view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
-
-  const ui::ColorId background_color_id =
-      chromeos::features::IsSystemBlurEnabled()
-          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-          : cros_tokens::kCrosSysSystemOnBaseOpaque;
-  view->SetBackground(views::CreateSolidBackground(background_color_id));
 }
 
 }  // namespace
@@ -204,6 +161,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       new_bounds.Offset(current_bounds.width() - preferred_bounds.width(), 0);
     }
     bar_view_->background_view_->SetBoundsRect(new_bounds);
+    bar_view_->decoration_->SetContentBounds(
+        bar_view_->background_view_->GetLocalBounds());
   }
 
   // Layout the label which is shown below the desk icon button when the button
@@ -768,7 +727,7 @@ DeskBarViewBase::DeskBarViewBase(
     background_view_ = AddChildView(std::make_unique<views::View>());
   }
 
-  MaybeSetupBackgroundView(this);
+  MaybeSetupBackgroundView();
 
   contents_view_ = AddChildView(std::make_unique<views::View>());
 
@@ -803,6 +762,48 @@ DeskBarViewBase::~DeskBarViewBase() {
   if (drag_view_) {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
   }
+}
+
+void DeskBarViewBase::MaybeSetupBackgroundView() {
+  const bool type_is_desk_button = type_ == Type::kDeskButton;
+
+  if (!type_is_desk_button) {
+    SetPaintToLayer();
+    auto* bar_layer = layer();
+    bar_layer->SetFillsBoundsOpaquely(false);
+    bar_layer->SetName("DeskBarViewBase:Background");
+    // Forest feature needs a transparent desks bar background. Still needs the
+    // view layer to perform animations.
+    return;
+  }
+
+  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+
+  auto* background_layer = background_view_->layer();
+  background_layer->SetName("DeskBarViewBase:Background");
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    background_layer->SetBackgroundBlur(StyleUtil::kBackgroundBlurSigma);
+    background_layer->SetBackdropFilterQuality(
+        StyleUtil::kBackgroundBlurQuality);
+  }
+
+  const gfx::RoundedCornersF rounded_corners(
+      kDeskBarCornerRadiusOverviewDeskButton);
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
+  background_view_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      background_color_id, rounded_corners));
+
+  // Parent the decoration directly under `background_layer` so it inherits
+  // scale transform animations applied during desk creation and removal.
+  decoration_ = SystemDecoration::Create(
+      SystemDecoration::ShadowType::kNone,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(rounded_corners);
+  background_layer->Add(decoration_->GetLayer());
 }
 
 // static
@@ -900,6 +901,18 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
                                              wm::ANIMATE_NONE);
   return widget;
+}
+
+void DeskBarViewBase::AddedToWidget() {
+  if (decoration_) {
+    decoration_->ObserveColorProviderSource(GetWidget());
+  }
+}
+
+void DeskBarViewBase::RemovedFromWidget() {
+  if (decoration_) {
+    decoration_->ObserveColorProviderSource(nullptr);
+  }
 }
 
 void DeskBarViewBase::Layout(PassKey) {

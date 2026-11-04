@@ -46,7 +46,6 @@ constexpr int kDeskBarScrollViewMinimumHorizontalPaddingOverview = 32;
 constexpr int kDeskBarScrollViewMinimumHorizontalPaddingDeskButton = 16;
 
 // The corner radius of the desk bar.
-constexpr float kDeskBarCornerRadiusOverview = 0.f;
 constexpr float kDeskBarCornerRadiusOverviewDeskButton = 16.f;
 
 constexpr int kDeskBarScrollButtonWidth = 36;

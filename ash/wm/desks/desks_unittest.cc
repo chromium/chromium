@@ -44,6 +44,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/color_util.h"
+#include "ash/style/system_decoration.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
@@ -11369,6 +11370,40 @@ TEST_P(DeskButtonTest, DeskSwitchButtonContextMenu) {
       CloseDeskBar();
     }
   }
+}
+
+TEST_P(DeskButtonTest, DeskBarBackgroundDecoration) {
+  ClickDeskButton();
+  auto* desk_bar_view =
+      DesksController::Get()->desk_bar_controller()->GetDeskBarView(
+          Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(desk_bar_view);
+  views::test::RunScheduledLayout(desk_bar_view);
+
+  views::View* background_view = desk_bar_view->background_view();
+  ASSERT_TRUE(background_view);
+  ASSERT_TRUE(background_view->layer());
+  EXPECT_EQ(ui::LAYER_SOLID_COLOR, background_view->layer()->type());
+
+  SystemDecoration* decoration = desk_bar_view->decoration_for_testing();
+  ASSERT_TRUE(decoration);
+  EXPECT_FALSE(decoration->HasShadow());
+  EXPECT_TRUE(decoration->HasHighlightBorder());
+  EXPECT_TRUE(decoration->GetHighlightBorderValueForTesting().has_value());
+  EXPECT_EQ(background_view->GetLocalBounds(), decoration->GetContentBounds());
+  EXPECT_EQ(background_view->layer(), decoration->GetLayer()->parent());
+
+  // Adding a desk animates `background_view->layer()` with a scale transform;
+  // `decoration->GetLayer()` is parented under it so it inherits the transform
+  // and tracks the updated content bounds.
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  LeftClickOn(desk_bar_view->new_desk_button());
+  views::test::RunScheduledLayout(desk_bar_view);
+  EXPECT_FALSE(background_view->layer()->transform().IsIdentity());
+  EXPECT_EQ(background_view->layer(), decoration->GetLayer()->parent());
+  EXPECT_EQ(background_view->GetLocalBounds(), decoration->GetContentBounds());
+  background_view->layer()->GetAnimator()->StopAnimating();
 }
 
 // Tests that metrics are being recorded when a desk animation screenshot is
