@@ -483,8 +483,9 @@ TEST_F(
 
   // Also verify that if two distinct WebSocket endpoints from the same process
   // both attach with a resolved `ProcessTree` (e.g. from the endpoint cache),
-  // they do not merge into a single endpoint entry and both detach cleanly by
-  // endpoint.
+  // they do not merge into a single endpoint entry, are deduplicated by
+  // `(transport_type, leaf_pid)` in `BuildEventInitiatorInfo()`, and both
+  // detach cleanly by endpoint.
   tracker->buffer().OnExternalActorAttached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1,
       MakeProcessTree(2000, 1000));
@@ -492,11 +493,27 @@ TEST_F(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2,
       MakeProcessTree(2000, 1000));
   ASSERT_EQ(2u, tracker->buffer().GetExternalActorsForTesting().size());
+  {
+    std::optional<EventInitiatorInfo> initiator =
+        TabCdpActorTracker::GetEventInitiatorInfo(web_contents());
+    ASSERT_TRUE(initiator.has_value());
+    ASSERT_EQ(1, initiator->external_process_info().external_processes_size());
+    EXPECT_EQ(2000, initiator->external_process_info()
+                        .external_processes(0)
+                        .process_nodes(0)
+                        .process_id());
+  }
   tracker->buffer().OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1);
+  task_environment()->FastForwardBy(base::Seconds(10));
   tracker->buffer().OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2);
-  task_environment()->FastForwardBy(base::Seconds(30));
+  // 25s after `ep1` detached (15s after `ep2` detached), `ep2` is still within
+  // its 30s TTL even after `ep1` expires at 30s.
+  task_environment()->FastForwardBy(base::Seconds(25));
+  EXPECT_TRUE(
+      TabCdpActorTracker::GetEventInitiatorInfo(web_contents()).has_value());
+  task_environment()->FastForwardBy(base::Seconds(5));
   EXPECT_EQ(std::nullopt,
             TabCdpActorTracker::GetEventInitiatorInfo(web_contents()));
 }

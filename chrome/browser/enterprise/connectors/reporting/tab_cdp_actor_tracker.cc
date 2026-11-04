@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
@@ -188,7 +189,13 @@ CdpActorBuffer::BuildEventInitiatorInfo() {
   if (!external_actors_.empty()) {
     chrome::cros::reporting::proto::EventInitiatorInfo initiator;
     auto* external_process_info = initiator.mutable_external_process_info();
+    base::flat_set<std::pair<TransportType, base::ProcessId>> seen_processes;
     for (const ExternalActorEntry& entry : external_actors_) {
+      if (entry.leaf_pid != base::kNullProcessId &&
+          !seen_processes.insert({entry.transport_type, entry.leaf_pid})
+               .second) {
+        continue;
+      }
       auto* external_process = external_process_info->add_external_processes();
       external_process->set_transport_type(entry.transport_type);
       for (const ProcessNode& node : entry.process_tree.process_nodes) {

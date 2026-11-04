@@ -110,12 +110,13 @@ class CdpActorBuffer {
   void OnDevToolsUiAttached();
   void OnDevToolsUiDetached();
 
-  // Lazily prunes expired detached entries and builds `EventInitiatorInfo`.
-  // External CDP actors (`PIPE` / `WEBSOCKET`) take precedence over built-in
-  // DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`) because `EventInitiatorInfo.actor`
-  // is a `oneof`. Returns `std::nullopt` if no external actor is currently
-  // attached or within the post-detach TTL window and no DevTools UI session is
-  // active.
+  // Lazily prunes expired detached entries and builds `EventInitiatorInfo`,
+  // deduplicating resolved external actors that share the same
+  // `(transport_type, leaf_pid)`. External CDP actors (`PIPE` / `WEBSOCKET`)
+  // take precedence over built-in DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`)
+  // because `EventInitiatorInfo.actor` is a `oneof`. Returns `std::nullopt` if
+  // no external actor is currently attached or within the post-detach TTL
+  // window and no DevTools UI session is active.
   std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
   BuildEventInitiatorInfo();
 
