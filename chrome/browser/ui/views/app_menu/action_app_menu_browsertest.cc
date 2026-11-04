@@ -418,7 +418,10 @@ INSTANTIATE_TEST_SUITE_P(
                     SynonymSearchCase{u"wallet", kActionShowPaymentMethods},
                     SynonymSearchCase{u"zip", kActionShowContactInfo},
                     SynonymSearchCase{u"yesterday", kActionShowHistory},
-                    SynonymSearchCase{u"star", kActionBookmarkThisTab}));
+                    SynonymSearchCase{u"star", kActionBookmarkThisTab},
+                    SynonymSearchCase{u"locate", kActionFind},
+                    SynonymSearchCase{
+                        u"adblock", kActionExtensionsSubmenuManageExtensions}));
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Profile-management and import actions are not shown in the app menu on

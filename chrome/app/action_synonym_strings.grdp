@@ -77,6 +77,30 @@
   <message name="IDS_ACTION_SYNONYMS_SIDE_PANEL_SHOW_READING_LIST" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show reading list') that users might type in the Chrome menu search bar to find the 'Show reading list' action, which opens the reading list in the side panel. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     articles, offline, queue, backlog, sidebar, mode
   </message>
+  <!-- kActionExtensionsSubmenuManageExtensions: "Manage extensions". -->
+  <message name="IDS_ACTION_SYNONYMS_MANAGE_EXTENSIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage extensions') that users might type in the Chrome menu search bar to find the 'Manage extensions' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    plugins, developer, tools, blocks, adblock, safety, customize, widgets
+  </message>
+  <!-- kActionExtensionsSubmenuVisitChromeWebStore: "Visit Chrome Web Store". -->
+  <message name="IDS_ACTION_SYNONYMS_VISIT_CHROME_WEB_STORE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Visit Chrome Web Store') that users might type in the Chrome menu search bar to find the 'Visit Chrome Web Store' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    plugins, themes, install, extensions, customization, manage
+  </message>
+  <!-- kActionFind: "Find...". -->
+  <message name="IDS_ACTION_SYNONYMS_FIND" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Find') that users might type in the Chrome menu search bar to find the 'Find' action, which searches for text on the current page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    search, look, page, text, string, replace, editor, locate
+  </message>
+  <!-- kActionSavePage: "Save page as...". -->
+  <message name="IDS_ACTION_SYNONYMS_SAVE_PAGE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Save page as') that users might type in the Chrome menu search bar to find the 'Save page as' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    file, download, offline, PDF, HTML, document
+  </message>
+  <!-- kActionInstallPwa: "Install <app name>" (title is the current site's app name). -->
+  <message name="IDS_ACTION_SYNONYMS_INSTALL_PWA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Install [app name]') that users might type in the Chrome menu search bar to find the action that installs the current site as an app. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    app, desktop, offline, launch, install, standalone
+  </message>
+  <!-- kActionCreateShortcut: "Create shortcut...". -->
+  <message name="IDS_ACTION_SYNONYMS_CREATE_SHORTCUT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Create shortcut') that users might type in the Chrome menu search bar to find the 'Create shortcut' action, which adds a desktop or launcher shortcut to the current site. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    link, desktop, icon, bookmark, homescreen, drive, home, launch
+  </message>
   <!-- kActionSendTabToSelf: "Send to your device". -->
   <message name="IDS_ACTION_SYNONYMS_SEND_TAB_TO_SELF" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Send to your device') that users might type in the Chrome menu search bar to find the 'Send to your device' action, which sends the current page to another of the user's signed-in devices. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     share, mobile, device, chromebook, pixel, sync history, transfer, phone, tablet
