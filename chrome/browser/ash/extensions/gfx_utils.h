@@ -34,15 +34,10 @@ bool GetEquivalentInstalledArcApps(content::BrowserContext* context,
                                    const std::string& extension_id,
                                    absl::flat_hash_set<std::string>* arc_apps);
 
-// Returns the equivalent app IDs that have been installed to the
-// Playstore app (identified by |arc_package_name|).
-const std::vector<std::string> GetEquivalentInstalledAppIds(
-    const std::string& arc_package_name);
-
 // Returns the equivalent Chrome extensions that have been installed to the
 // Playstore app (identified by |arc_package_name|). Returns an empty vector if
 // there is no such Chrome extension.
-const std::vector<std::string> GetEquivalentInstalledExtensions(
+std::vector<std::string> GetEquivalentInstalledExtensions(
     content::BrowserContext* context,
     const std::string& arc_package_name);
 

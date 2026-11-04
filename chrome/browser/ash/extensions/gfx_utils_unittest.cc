@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_extension_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -180,6 +181,37 @@ TEST_F(DualBadgeMapTest, ArcAppToExtensionMapTest) {
   extension_ids = extensions::util::GetEquivalentInstalledExtensions(
       profile(), kGmailArcPackage);
   EXPECT_TRUE(0 == extension_ids.size());
+}
+
+TEST_F(DualBadgeMapTest, ConsolidatedArcPackageMapTest) {
+  constexpr char kPlayMusicArcPackage[] = "com.google.android.music";
+  constexpr char kPlayMusicArcActivity[] =
+      "com.google.android.music.MusicActivity";
+  constexpr const char* kPlayMusicExtensionIds[] = {
+      extension_misc::kGooglePlayMusicAppId,
+      "onbhgdmifjebcabplolilidlpgeknifi",
+      "fahmaaghhglfmonjliepjlchgpgfmobi",
+  };
+
+  AddArcPackage(CreateArcPackage(kPlayMusicArcPackage));
+  AddArcApp(CreateArcApp("music", kPlayMusicArcPackage, kPlayMusicArcActivity));
+
+  for (const char* id : kPlayMusicExtensionIds) {
+    AddExtension(CreateExtension(id).get());
+    EXPECT_TRUE(extensions::util::HasEquivalentInstalledArcApp(profile(), id));
+  }
+
+  std::vector<std::string> extension_ids =
+      extensions::util::GetEquivalentInstalledExtensions(profile(),
+                                                         kPlayMusicArcPackage);
+  EXPECT_EQ(3u, extension_ids.size());
+  for (const char* id : kPlayMusicExtensionIds) {
+    EXPECT_TRUE(std::ranges::contains(extension_ids, id));
+  }
+
+  EXPECT_TRUE(extensions::util::GetEquivalentInstalledExtensions(
+                  profile(), "unknown.package.name")
+                  .empty());
 }
 
 }  // namespace extensions

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_extension_constants.h"
-#include "base/containers/flat_map.h"
-#include "base/lazy_instance.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,118 +33,169 @@ namespace {
 // The badge map between |arc_package_name| and |extension_id|. Note the mapping
 // from |extension_id| to |arc_package_name| is unique, but the mapping from
 // |arc_package_name| to |extension_id| is not.
-const struct {
-  const char* arc_package_name;
-  const char* extension_id;
-} kDualBadgeMap[] = {
-    // Google Keep
-    {"com.google.android.keep", "hmjkmjkepdijhoojdojkdfohbdgmmhki"},
-    {"com.google.android.keep", "dondgdlndnpianbklfnehgdhkickdjck"},
-    // GMail
-    {"com.google.android.gm", extension_misc::kGmailAppId},
-    {"com.google.android.gm", "bjdhhokmhgelphffoafoejjmlfblpdha"},
-    // Google Drive
-    {"com.google.android.apps.docs", extension_misc::kGoogleDriveAppId},
-    {"com.google.android.apps.docs", "mdhnphfgagkpdhndljccoackjjhghlif"},
-    // Google Maps
-    {"com.google.android.apps.maps", "lneaknkopdijkpnocmklfnjbeapigfbh"},
-    // Calculator
-    {"com.google.android.calculator", "joodangkbfjnajiiifokapkpmhfnpleo"},
-    // Google Calendar
-    {"com.google.android.calendar", "ejjicmeblgpmajnghnpcppodonldlgfn"},
-    {"com.google.android.calendar", "fpgfohogebplgnamlafljlcidjedbdeb"},
-    // Google Docs
-    {"com.google.android.apps.docs.editors.docs",
-     extension_misc::kGoogleDocsAppId},
-    {"com.google.android.apps.docs.editors.docs",
-     "npnjdccdffhdndcbeappiamcehbhjibf"},
-    // Google Slides
-    {"com.google.android.apps.docs.editors.slides",
-     extension_misc::kGoogleSlidesAppId},
-    {"com.google.android.apps.docs.editors.slides",
-     "hdmobeajeoanbanmdlabnbnlopepchip"},
-    // Google Sheets
-    {"com.google.android.apps.docs.editors.sheets",
-     extension_misc::kGoogleSheetsAppId},
-    {"com.google.android.apps.docs.editors.sheets",
-     "nifkmgcdokhkjghdlgflonppnefddien"},
-    // YouTube
-    {"com.google.android.youtube", extension_misc::kYoutubeAppId},
-    {"com.google.android.youtube", "pbdihpaifchmclcmkfdgffnnpfbobefh"},
-    // Google Play Books
-    {"com.google.android.apps.books", extension_misc::kGooglePlayBooksAppId},
-    // Google+
-    {"com.google.android.apps.plus", "dlppkpafhbajpcmmoheippocdidnckmm"},
-    {"com.google.android.apps.plus", "fgjnkhlabjcaajddbaenilcmpcidahll"},
-    // Google Play Movies & TV
-    {"com.google.android.videos", extension_misc::kGooglePlayMoviesAppId},
-    {"com.google.android.videos", "amfoiggnkefambnaaphodjdmdooiinna"},
-    // Google Play Music
-    {"com.google.android.music", extension_misc::kGooglePlayMusicAppId},
-    {"com.google.android.music", "onbhgdmifjebcabplolilidlpgeknifi"},
-    // Google Now
-    {"com.google.android.launcher", "mnfadmojomeniojkkikjpgjaegolkbpb"},
-    // Google Photos
-    {"com.google.android.apps.photos", "hcglmfcclpfgljeaiahehebeoaiicbko"},
-    {"com.google.android.apps.photos", "efjnaogkjbogokcnohkmnjdojkikgobo"},
-    {"com.google.android.apps.photos", "ifpkhncdnjfipfjlhfidljjffdgklanh"},
-    // Google Classroom
-    {"com.google.android.apps.classroom", "mfhehppjhmmnlfbbopchdfldgimhfhfk"},
-    // Google Hangouts
-    {"com.google.android.talk", "knipolnnllmklapflnccelgolnpehhpl"},
-    {"com.google.android.talk", "cgmlfbhkckbedohgdepgbkflommbfkep"},
-    {"com.google.android.talk", "gldgpnmcpaogjlojhhpebkbbanacoglc"},
-    // Google Play Music
-    {"com.google.android.music", "fahmaaghhglfmonjliepjlchgpgfmobi"},
-    // Google News
-    {"com.google.android.apps.genie.geniewidget",
-     "dllkocilcinkggkchnjgegijklcililc"},
-    // Used in unit tests.
-    {"fake.package.name1", "emfkafnhnpcmabnnkckkchdilgeoekbo"},
+constexpr std::string_view kGooglePlayBooksExtensionIds[] = {
+    extension_misc::kGooglePlayBooksAppId,
+};
+constexpr std::string_view kGoogleClassroomExtensionIds[] = {
+    "mfhehppjhmmnlfbbopchdfldgimhfhfk",
+};
+constexpr std::string_view kGoogleDriveExtensionIds[] = {
+    extension_misc::kGoogleDriveAppId,
+    "mdhnphfgagkpdhndljccoackjjhghlif",
+};
+constexpr std::string_view kGoogleDocsExtensionIds[] = {
+    extension_misc::kGoogleDocsAppId,
+    "npnjdccdffhdndcbeappiamcehbhjibf",
+};
+constexpr std::string_view kGoogleSheetsExtensionIds[] = {
+    extension_misc::kGoogleSheetsAppId,
+    "nifkmgcdokhkjghdlgflonppnefddien",
+};
+constexpr std::string_view kGoogleSlidesExtensionIds[] = {
+    extension_misc::kGoogleSlidesAppId,
+    "hdmobeajeoanbanmdlabnbnlopepchip",
+};
+constexpr std::string_view kGoogleNewsExtensionIds[] = {
+    "dllkocilcinkggkchnjgegijklcililc",
+};
+constexpr std::string_view kGoogleMapsExtensionIds[] = {
+    "lneaknkopdijkpnocmklfnjbeapigfbh",
+};
+constexpr std::string_view kGooglePhotosExtensionIds[] = {
+    "hcglmfcclpfgljeaiahehebeoaiicbko",
+    "efjnaogkjbogokcnohkmnjdojkikgobo",
+    "ifpkhncdnjfipfjlhfidljjffdgklanh",
+};
+constexpr std::string_view kGooglePlusExtensionIds[] = {
+    "dlppkpafhbajpcmmoheippocdidnckmm",
+    "fgjnkhlabjcaajddbaenilcmpcidahll",
+};
+constexpr std::string_view kCalculatorExtensionIds[] = {
+    "joodangkbfjnajiiifokapkpmhfnpleo",
+};
+constexpr std::string_view kGoogleCalendarExtensionIds[] = {
+    "ejjicmeblgpmajnghnpcppodonldlgfn",
+    "fpgfohogebplgnamlafljlcidjedbdeb",
+};
+constexpr std::string_view kGmailExtensionIds[] = {
+    extension_misc::kGmailAppId,
+    "bjdhhokmhgelphffoafoejjmlfblpdha",
+};
+constexpr std::string_view kGoogleKeepExtensionIds[] = {
+    "hmjkmjkepdijhoojdojkdfohbdgmmhki",
+    "dondgdlndnpianbklfnehgdhkickdjck",
+};
+constexpr std::string_view kGoogleNowExtensionIds[] = {
+    "mnfadmojomeniojkkikjpgjaegolkbpb",
+};
+constexpr std::string_view kGooglePlayMusicExtensionIds[] = {
+    extension_misc::kGooglePlayMusicAppId,
+    "onbhgdmifjebcabplolilidlpgeknifi",
+    "fahmaaghhglfmonjliepjlchgpgfmobi",
+};
+constexpr std::string_view kGoogleHangoutsExtensionIds[] = {
+    "knipolnnllmklapflnccelgolnpehhpl",
+    "cgmlfbhkckbedohgdepgbkflommbfkep",
+    "gldgpnmcpaogjlojhhpebkbbanacoglc",
+};
+constexpr std::string_view kGooglePlayMoviesExtensionIds[] = {
+    extension_misc::kGooglePlayMoviesAppId,
+    "amfoiggnkefambnaaphodjdmdooiinna",
+};
+constexpr std::string_view kYoutubeExtensionIds[] = {
+    extension_misc::kYoutubeAppId,
+    "pbdihpaifchmclcmkfdgffnnpfbobefh",
+};
+// Used in unit tests.
+constexpr std::string_view kFakePackageExtensionIds[] = {
+    "emfkafnhnpcmabnnkckkchdilgeoekbo",
 };
 
-// This class maintains the maps between the extension id and its equivalent
-// ARC package name.
-class AppDualBadgeMap {
- public:
-  using ArcAppToExtensionsMap =
-      base::flat_map<std::string, std::vector<std::string>>;
-  using ExtensionToArcAppMap = base::flat_map<std::string, std::string>;
+constexpr auto kArcAppToExtensionsMap =
+    base::MakeFixedFlatMap<std::string_view,
+                           base::span<const std::string_view>>({
+        // Google Play Books
+        {"com.google.android.apps.books", kGooglePlayBooksExtensionIds},
+        // Google Classroom
+        {"com.google.android.apps.classroom", kGoogleClassroomExtensionIds},
+        // Google Drive
+        {"com.google.android.apps.docs", kGoogleDriveExtensionIds},
+        // Google Docs
+        {"com.google.android.apps.docs.editors.docs", kGoogleDocsExtensionIds},
+        // Google Sheets
+        {"com.google.android.apps.docs.editors.sheets",
+         kGoogleSheetsExtensionIds},
+        // Google Slides
+        {"com.google.android.apps.docs.editors.slides",
+         kGoogleSlidesExtensionIds},
+        // Google News
+        {"com.google.android.apps.genie.geniewidget", kGoogleNewsExtensionIds},
+        // Google Maps
+        {"com.google.android.apps.maps", kGoogleMapsExtensionIds},
+        // Google Photos
+        {"com.google.android.apps.photos", kGooglePhotosExtensionIds},
+        // Google+
+        {"com.google.android.apps.plus", kGooglePlusExtensionIds},
+        // Calculator
+        {"com.google.android.calculator", kCalculatorExtensionIds},
+        // Google Calendar
+        {"com.google.android.calendar", kGoogleCalendarExtensionIds},
+        // GMail
+        {"com.google.android.gm", kGmailExtensionIds},
+        // Google Keep
+        {"com.google.android.keep", kGoogleKeepExtensionIds},
+        // Google Now
+        {"com.google.android.launcher", kGoogleNowExtensionIds},
+        // Google Play Music
+        {"com.google.android.music", kGooglePlayMusicExtensionIds},
+        // Google Hangouts
+        {"com.google.android.talk", kGoogleHangoutsExtensionIds},
+        // Google Play Movies & TV
+        {"com.google.android.videos", kGooglePlayMoviesExtensionIds},
+        // YouTube
+        {"com.google.android.youtube", kYoutubeExtensionIds},
+        // Used in unit tests.
+        {"fake.package.name1", kFakePackageExtensionIds},
+    });
 
-  AppDualBadgeMap() {
-    for (auto dual_badge : kDualBadgeMap) {
-      arc_app_to_extensions_map_[dual_badge.arc_package_name].push_back(
-          dual_badge.extension_id);
-      extension_to_arc_app_map_[dual_badge.extension_id] =
-          dual_badge.arc_package_name;
+consteval auto MakeExtensionToArcAppMap() {
+  constexpr size_t kTotalExtensions = [] {
+    size_t count = 0;
+    for (const auto& [arc_package, extensions] : kArcAppToExtensionsMap) {
+      count += extensions.size();
+    }
+    return count;
+  }();
+  std::pair<std::string_view, std::string_view> entries[kTotalExtensions];
+  base::span entries_span(entries);
+  size_t i = 0;
+  for (const auto& [arc_package, extensions] : kArcAppToExtensionsMap) {
+    for (std::string_view extension_id : extensions) {
+      entries_span[i++] = {extension_id, arc_package};
     }
   }
+  return base::MakeFixedFlatMap(std::move(entries));
+}
 
-  AppDualBadgeMap(const AppDualBadgeMap&) = delete;
-  AppDualBadgeMap& operator=(const AppDualBadgeMap&) = delete;
+constexpr auto kExtensionToArcAppMap = MakeExtensionToArcAppMap();
 
-  std::vector<std::string> GetExtensionIdsForArcPackageName(
-      std::string arc_package_name) {
-    const auto iter = arc_app_to_extensions_map_.find(arc_package_name);
-    if (iter == arc_app_to_extensions_map_.end())
-      return std::vector<std::string>();
-    return iter->second;
+constexpr base::span<const std::string_view> GetExtensionIdsForArcPackageName(
+    std::string_view arc_package_name) {
+  const auto iter = kArcAppToExtensionsMap.find(arc_package_name);
+  if (iter == kArcAppToExtensionsMap.end()) {
+    return {};
   }
+  return iter->second;
+}
 
-  std::string GetArcPackageNameFromExtensionId(std::string extension_id) {
-    const auto iter = extension_to_arc_app_map_.find(extension_id);
-    if (iter == extension_to_arc_app_map_.end())
-      return std::string();
-    return iter->second;
+constexpr std::string_view GetArcPackageNameFromExtensionId(
+    std::string_view extension_id) {
+  const auto iter = kExtensionToArcAppMap.find(extension_id);
+  if (iter == kExtensionToArcAppMap.end()) {
+    return {};
   }
-
- private:
-  ArcAppToExtensionsMap arc_app_to_extensions_map_;
-  ExtensionToArcAppMap extension_to_arc_app_map_;
-};
-
-base::LazyInstance<AppDualBadgeMap>::DestructorAtExit g_dual_badge_map =
-    LAZY_INSTANCE_INITIALIZER;
+  return iter->second;
+}
 
 }  // namespace
 
@@ -155,43 +210,40 @@ bool HasEquivalentInstalledArcApp(content::BrowserContext* context,
 bool GetEquivalentInstalledArcApps(content::BrowserContext* context,
                                    const std::string& extension_id,
                                    absl::flat_hash_set<std::string>* arc_apps) {
-  const std::string arc_package_name =
-      g_dual_badge_map.Get().GetArcPackageNameFromExtensionId(extension_id);
-  if (arc_package_name.empty())
+  std::string_view arc_package_name =
+      GetArcPackageNameFromExtensionId(extension_id);
+  if (arc_package_name.empty()) {
     return false;
+  }
 
   const ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
-  if (!prefs)
+  if (!prefs) {
     return false;
+  }
 
   // TODO(hidehiko): The icon is per launcher, so we should have more precise
   // check here.
   CHECK(arc_apps, base::NotFatalUntil::M160);
-  prefs->GetAppsForPackage(arc_package_name).swap(*arc_apps);
+  prefs->GetAppsForPackage(std::string(arc_package_name)).swap(*arc_apps);
   return !arc_apps->empty();
 }
 
-const std::vector<std::string> GetEquivalentInstalledAppIds(
-    const std::string& arc_package_name) {
-  return g_dual_badge_map.Get().GetExtensionIdsForArcPackageName(
-      arc_package_name);
-}
-
-const std::vector<std::string> GetEquivalentInstalledExtensions(
+std::vector<std::string> GetEquivalentInstalledExtensions(
     content::BrowserContext* context,
     const std::string& arc_package_name) {
   const ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  if (!registry)
-    return std::vector<std::string>();
+  if (!registry) {
+    return {};
+  }
 
-  std::vector<std::string> extension_ids =
-      g_dual_badge_map.Get().GetExtensionIdsForArcPackageName(arc_package_name);
-  if (extension_ids.empty())
-    return std::vector<std::string>();
-
-  std::erase_if(extension_ids, [registry](const std::string& extension_id) {
-    return !registry->GetInstalledExtension(extension_id);
-  });
+  std::vector<std::string> extension_ids;
+  for (std::string_view extension_id :
+       GetExtensionIdsForArcPackageName(arc_package_name)) {
+    std::string id(extension_id);
+    if (registry->GetInstalledExtension(id)) {
+      extension_ids.push_back(std::move(id));
+    }
+  }
   return extension_ids;
 }
 
