@@ -174,10 +174,8 @@ class AnimationFrameTimingInfo final
     return scripts_;
   }
 
-  // TODO(crbug.com/576605915): Take `scripts` by value and std::move() it in
-  // from the call sites to avoid the copy.
-  void SetScripts(const HeapVector<Member<ScriptTimingInfo>>& scripts) {
-    scripts_ = scripts;
+  void SetScripts(HeapVector<Member<ScriptTimingInfo>> scripts) {
+    scripts_ = std::move(scripts);
   }
 
   const HeapVector<Member<ConditionalMarkInfo>>& ConditionalMarks() const {

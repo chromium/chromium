@@ -213,7 +213,7 @@ AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
   }
   did_pause_ = false;
 
-  current_frame_timing_info_->SetScripts(current_scripts_);
+  current_frame_timing_info_->SetScripts(std::move(current_scripts_));
   current_frame_timing_info_->SetScriptCount(script_count_);
 
   if (!conditional_marks_.empty()) {
@@ -400,7 +400,7 @@ void AnimationFrameTimingMonitor::FinalizeCongestedMoment() {
     AnimationFrameTimingInfo* info =
         MakeGarbageCollected<AnimationFrameTimingInfo>(congestion_run_start_);
     info->SetRenderEndTime(congestion_run_end_);
-    info->SetScripts(congestion_scripts_);
+    info->SetScripts(std::move(congestion_scripts_));
     info->SetScriptCount(congestion_script_count_);
     info->SetTotalBlockingDuration(span - kCongestionThreshold);
     client_->ReportCongestedMoment(info);
@@ -532,7 +532,7 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
   AnimationFrameTimingInfo* timing_info =
       MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
   timing_info->SetRenderEndTime(end_time);
-  timing_info->SetScripts(scripts);
+  timing_info->SetScripts(std::move(scripts));
   timing_info->SetScriptCount(script_count);
   timing_info->SetTotalBlockingDuration(task_duration -
                                         kLongAnimationFrameDuration);
