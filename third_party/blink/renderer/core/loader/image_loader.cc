@@ -22,9 +22,12 @@
 
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -832,12 +835,16 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   content->RecordDecodedImageC2PA(&element_->GetDocument());
 
   CHECK(!pending_load_event_.IsActive());
+  // `blink::BindOnce` is qualified to avoid ADL ambiguity with `base::BindOnce`
+  // caused by the `base::TimeTicks` argument.
   pending_load_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      BindOnce(&ImageLoader::DispatchPendingLoadEvent, WrapPersistent(this),
-               std::make_unique<IncrementLoadEventDelayCount>(
-                   GetElement()->GetDocument())));
+      blink::BindOnce(&ImageLoader::DispatchPendingLoadEvent,
+                      WrapPersistent(this),
+                      std::make_unique<IncrementLoadEventDelayCount>(
+                          GetElement()->GetDocument()),
+                      base::TimeTicks::Now()));
 }
 
 LayoutImageResource* ImageLoader::GetLayoutImageResource() const {
@@ -977,10 +984,23 @@ bool ImageLoader::HasPendingEvent() const {
 }
 
 void ImageLoader::DispatchPendingLoadEvent(
-    std::unique_ptr<IncrementLoadEventDelayCount> count) {
+    std::unique_ptr<IncrementLoadEventDelayCount> count,
+    base::TimeTicks queue_time) {
   if (!image_content_)
     return;
   CHECK(image_complete_);
+  const base::TimeTicks dispatch_time = base::TimeTicks::Now();
+  const base::TimeDelta queue_wait_time =
+      std::max(base::TimeDelta(), dispatch_time - queue_time);
+  const bool is_data_url = image_content_->IsDataUrl();
+
+  base::UmaHistogramTimes("Blink.ImageLoader.LoadEventQueueWaitTime",
+                          queue_wait_time);
+  base::UmaHistogramTimes(
+      is_data_url ? "Blink.ImageLoader.LoadEventQueueWaitTime.DataUrl"
+                  : "Blink.ImageLoader.LoadEventQueueWaitTime.Network",
+      queue_wait_time);
+
   DispatchLoadEvent();
 
   // Checks Document's load event synchronously here for performance.

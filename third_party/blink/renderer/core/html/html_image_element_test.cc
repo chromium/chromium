@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -21,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -153,7 +157,6 @@ TEST_F(
 
 using HTMLImageElementSimTest = SimTest;
 
-
 TEST_F(HTMLImageElementSimTest, OnloadTransparentPlaceholderImage) {
   SimRequest main_resource("http://example.com/index.html", "text/html");
   LoadURL("http://example.com/index.html");
@@ -242,6 +245,88 @@ TEST_F(HTMLImageElementSimTest, ResetAnimationForBitmapImage) {
   // image's timeline.
   PaintImage final_paint_image = bitmap_image->PaintImageForCurrentFrame();
   EXPECT_EQ(final_paint_image.reset_animation_sequence_id(), initial_seq);
+}
+
+class HTMLImageElementSimMockTimeTest : public SimTest {
+ protected:
+  HTMLImageElementSimMockTimeTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(HTMLImageElementSimMockTimeTest, LoadEventQueueWaitTimeMetrics) {
+  base::HistogramTester histogram_tester;
+
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  SimRequest image_resource("http://example.com/animated-10color.gif",
+                            "image/gif");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <body>
+      <img id="data_img" width="10" height="10"
+           src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+      <img id="net_img" width="10" height="10" src="animated-10color.gif">
+    </body>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  std::optional<Vector<char>> data = test::ReadFromFile(
+      test::BlinkWebTestsImagesTestDataPath("animated-10color.gif"));
+  ASSERT_TRUE(data.has_value());
+  ASSERT_FALSE(data->empty());
+  // Completing the resource synchronously triggers ImageNotifyFinished() and
+  // queues DispatchPendingLoadEvent with the current queue timestamp.
+  image_resource.Complete(*data);
+
+  // Advance the mock clock by 20ms without running queued main-thread tasks so
+  // the pending load event experiences a deterministic 20ms queue wait time.
+  task_environment().AdvanceClock(base::Milliseconds(20));
+  test::RunPendingTasks();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Blink.ImageLoader.LoadEventQueueWaitTime.DataUrl", base::Milliseconds(0),
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Blink.ImageLoader.LoadEventQueueWaitTime.Network",
+      base::Milliseconds(20), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Blink.ImageLoader.LoadEventQueueWaitTime", base::Milliseconds(0), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Blink.ImageLoader.LoadEventQueueWaitTime", base::Milliseconds(20), 1);
+  histogram_tester.ExpectTotalCount("Blink.ImageLoader.LoadEventQueueWaitTime",
+                                    2);
+}
+
+TEST_F(HTMLImageElementSimMockTimeTest,
+       LoadEventQueueWaitTimeMetrics_ErrorDoesNotRecord) {
+  base::HistogramTester histogram_tester;
+
+  SimRequest main_resource("http://example.com/index.html", "text/html");
+  SimRequest broken_image("http://example.com/broken.gif", "image/gif");
+  LoadURL("http://example.com/index.html");
+  main_resource.Complete(R"(
+    <body>
+      <img id="broken_img" width="10" height="10" src="broken.gif">
+    </body>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Completing an image resource with an empty body fails in
+  // ImageResource::Finish() and triggers ImageNotifyFinished() on the error
+  // path without queueing a load event.
+  broken_image.Complete();
+  task_environment().AdvanceClock(base::Milliseconds(20));
+  test::RunPendingTasks();
+
+  histogram_tester.ExpectTotalCount("Blink.ImageLoader.LoadEventQueueWaitTime",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ImageLoader.LoadEventQueueWaitTime.DataUrl", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.ImageLoader.LoadEventQueueWaitTime.Network", 0);
 }
 
 class HTMLImageElementUseCounterTest : public HTMLImageElementTest {

@@ -3668,6 +3668,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ImageLoader.LoadEventQueueWaitTime{SourceType}"
+    units="ms" expires_after="2027-04-29">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the main-thread task queue wait time between when an image resource
+    finishes loading in ImageLoader::ImageNotifyFinished (when the load event
+    task is posted) and when ImageLoader::DispatchPendingLoadEvent starts
+    executing on the main thread, for {SourceType}. Recorded each time an image
+    load event is about to be dispatched.
+  </summary>
+  <token key="SourceType">
+    <variant name="" summary="all images"/>
+    <variant name=".DataUrl" summary="data: URL images"/>
+    <variant name=".Network"
+        summary="non-data: URL images (including network, cache hits, blob:,
+                 etc.)"/>
+  </token>
+</histogram>
+
 <histogram
     name="Blink.ImplCompositorCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">

@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IMAGE_LOADER_H_
 
 #include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -35,6 +36,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+namespace base {
+class TimeTicks;
+}  // namespace base
 
 namespace blink {
 
@@ -188,7 +193,11 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   bool HasPendingEvent() const;
 
-  void DispatchPendingLoadEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
+  // Executed asynchronously on `TaskType::kDOMManipulation` after
+  // `ImageNotifyFinished` queues the load event at `queue_time`.
+  void DispatchPendingLoadEvent(
+      std::unique_ptr<IncrementLoadEventDelayCount> count,
+      base::TimeTicks queue_time);
   void DispatchPendingErrorEvent(std::unique_ptr<IncrementLoadEventDelayCount>);
 
   LayoutImageResource* GetLayoutImageResource() const;
