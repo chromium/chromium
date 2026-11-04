@@ -4941,7 +4941,7 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test(
-     'EnterKeyWithVirtualFocusOnContextualEntrypointOpensContextMenu',
+     'EnterOrSpaceKeyWithVirtualFocusOnContextualEntrypointOpensContextMenu',
      async () => {
        loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
        searchbox.virtualFocusEnabled = true;
@@ -4955,12 +4955,20 @@ suite('OmniboxPopupSearchboxTest', function() {
        });
        await microtasksFinished();
 
-       await searchbox.handleKeyNavigation(
-           new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
-       await microtasksFinished();
+       for (const key of ['Enter', ' ']) {
+         handler.resetResolver('showContextMenu');
+         await searchbox.handleKeyNavigation(
+             new KeyboardEvent('keydown', {key, cancelable: true}));
+         await microtasksFinished();
 
-       assertEquals(1, handler.getCallCount('showContextMenu'));
-       assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+         assertEquals(1, handler.getCallCount('showContextMenu'));
+         const point = await handler.whenCalled('showContextMenu');
+         const entrypointButton = searchbox.getContextualEntrypointButton();
+         assertTrue(!!entrypointButton);
+         assertDeepEquals(entrypointButton.getAnchorPoint(), point);
+         assertEquals(
+             0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+       }
      });
 
  test('EnterKeyWithVirtualFocusOnLensSearchIconOpensLensSearch', async () => {

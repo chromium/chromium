@@ -6,6 +6,7 @@ import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -102,7 +103,18 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
     }
   }
 
-  showContextMenu(point: {x: number, y: number} = {x: 0, y: 0}) {
+  getAnchorPoint(): {x: number, y: number} {
+    const entrypoint =
+        this.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
+            'cr-composebox-contextual-entrypoint-button');
+    assert(entrypoint);
+    return entrypoint.getAnchorPoint();
+  }
+
+  showContextMenu(point?: {x: number, y: number}) {
+    if (!point) {
+      point = this.getAnchorPoint();
+    }
     this.isMenuOpen_ = true;
     this.classList.add('menu-open');
     this.browserProxy_.handler.showContextMenu(point);
@@ -111,7 +123,7 @@ export class OmniboxPopupContextualEntrypointButtonElement extends
   protected onContextMenuEntrypointClick_(
       e: CustomEvent<{x: number, y: number}>) {
     e.preventDefault();
-    this.showContextMenu({x: e.detail?.x ?? 0, y: e.detail?.y ?? 0});
+    this.showContextMenu(e.detail);
   }
 
   private onShow_() {

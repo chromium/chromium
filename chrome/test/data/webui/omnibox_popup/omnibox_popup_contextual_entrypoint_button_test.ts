@@ -61,6 +61,14 @@ suite('OmniboxPopupContextualEntrypointButtonTest', () => {
     assertTrue(element.classList.contains('menu-open'));
   });
 
+  test('showContextMenuUsesAnchorPointWhenNoPointProvided', async () => {
+    element.showContextMenu();
+    assertEquals(1, handler.getCallCount('showContextMenu'));
+    const point = await handler.whenCalled('showContextMenu');
+    assertDeepEquals(element.getAnchorPoint(), point);
+    assertTrue(element.classList.contains('menu-open'));
+  });
+
   test('OnShowBlurBehavior', async () => {
     element.focus();
     await microtasksFinished();

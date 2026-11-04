@@ -43,6 +43,8 @@ suite('ContextualEntrypointButton', () => {
     // Assert.
     const event = await eventPromise;
     assertTrue(!!event);
+    assertDeepEquals(
+        entrypointButton.getAnchorPoint(), (event as CustomEvent).detail);
   });
 
   test('hides description when window is narrow', async () => {

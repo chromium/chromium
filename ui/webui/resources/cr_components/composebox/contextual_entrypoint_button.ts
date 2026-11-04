@@ -162,19 +162,24 @@ export class ContextualEntrypointButtonElement extends
     return this.entrypointAriaLabel_ || this.i18n('addContextTitle');
   }
 
+  getAnchorPoint(): {x: number, y: number} {
+    const entrypoint =
+        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assert(entrypoint);
+    const rect = entrypoint.getBoundingClientRect();
+    return {
+      x: Math.round(rect.left),
+      y: Math.round(rect.bottom),
+    };
+  }
+
   protected onEntrypointClick_(e: Event) {
     e.stopPropagation();
 
     const metricName =
         'ContextualSearch.ContextMenuEntry.Clicked.' + this.metricsSource_;
     recordBoolean(metricName, true);
-    const entrypoint =
-        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
-    assert(entrypoint);
-    this.fire('context-menu-entrypoint-click', {
-      x: entrypoint.getBoundingClientRect().left,
-      y: entrypoint.getBoundingClientRect().bottom,
-    });
+    this.fire('context-menu-entrypoint-click', this.getAnchorPoint());
   }
 
   protected onEntrypointPointerenter_() {
