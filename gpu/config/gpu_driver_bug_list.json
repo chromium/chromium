@@ -3547,6 +3547,19 @@
       "features": [
         "disable_d3d11_video_decoder_shared_handle"
       ]
+    },
+    {
+      "id": 508,
+      "description": "Limits the number of simultaneous accelerated video decoders to 10 on MTK8173.",
+      "os": {
+        "type": "chromeos"
+      },
+      "cr_bugs": [1109312],
+      "gl_vendor": "Imagination.*",
+      "gl_renderer": "PowerVR.*",
+      "features": [
+        "max_num_hw_video_decoders_10"
+      ]
     }
   ]
 }
