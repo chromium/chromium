@@ -503,8 +503,15 @@ component("skia") {
   all_dependent_configs = [ ":skia_config" ]
 
   deps += [
+    ":rust_bmp_ffi",
     ":rust_common_ffi",
+    ":rust_common_ffi_cpp",
+    ":rust_exif_ffi",
+    ":rust_icc_ffi",
+    ":rust_ico_ffi",
+    ":rust_jpeg_ffi",
     ":rust_png_ffi",
+    ":rust_png_ffi_cpp",
     ":skcms",
     ":skia_opts",
     ":skia_switches",
@@ -520,11 +527,11 @@ component("skia") {
   }
   public_deps = [
     ":buildflags",
-    ":rust_bmp_ffi",
-    ":rust_exif_ffi",
-    ":rust_icc_ffi",
-    ":rust_ico_ffi",
-    ":rust_jpeg_ffi",
+    ":rust_bmp_ffi_cpp",
+    ":rust_exif_ffi_cpp",
+    ":rust_icc_ffi_cpp",
+    ":rust_ico_ffi_cpp",
+    ":rust_jpeg_ffi_cpp",
     ":skia_core_and_effects",
     ":skia_core_public_headers",
   ]
@@ -663,7 +670,6 @@ cargo_crate("rust_common_ffi") {
   crate_root = skia_rust_common_ffi_crate_root
   sources = skia_rust_common_ffi_rs_srcs
   cxx_bindings = skia_rust_common_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_common_ffi_cpp" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [
     ":skia_config",
@@ -696,7 +702,6 @@ rust_static_library("rust_png_ffi") {
   crate_root = skia_codec_rust_png_ffi_crate_root
   sources = skia_codec_rust_png_ffi_rs_srcs
   cxx_bindings = skia_codec_rust_png_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_png_ffi_cpp" ]
   deps = [
     ":rust_common_ffi",
     "//third_party/rust/png/v0_18:lib",
@@ -726,7 +731,6 @@ rust_static_library("rust_bmp_ffi") {
   crate_root = skia_codec_rust_bmp_ffi_crate_root
   sources = skia_codec_rust_bmp_ffi_rs_srcs
   cxx_bindings = skia_codec_rust_bmp_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_bmp_ffi_cpp" ]
   deps = [
     ":rust_common_ffi",
     "//third_party/rust/image/v0_25:lib",
@@ -774,7 +778,6 @@ rust_static_library("rust_ico_ffi") {
   crate_root = skia_codec_rust_ico_ffi_crate_root
   sources = skia_codec_rust_ico_ffi_rs_srcs
   cxx_bindings = skia_codec_rust_ico_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_ico_ffi_cpp" ]
   deps = [
     ":rust_common_ffi",
     "//third_party/rust/image/v0_25:lib",
@@ -804,9 +807,10 @@ source_set("rust_ico_ffi_cpp") {
   # embedded images, so it needs their generated cxx bridge headers and
   # C++ glue code.
   deps = [
-    ":rust_bmp_ffi",
+    ":rust_bmp_ffi_cpp",
     ":rust_ico_ffi_cxx_generated_gen",
-    ":rust_png_ffi",
+    ":rust_png_ffi_cpp",
+    ":rust_png_ffi_cxx_generated_gen",
   ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
@@ -824,7 +828,6 @@ rust_static_library("rust_jpeg_ffi") {
   crate_root = skia_codec_rust_jpeg_ffi_crate_root
   sources = skia_codec_rust_jpeg_ffi_rs_srcs
   cxx_bindings = skia_codec_rust_jpeg_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_jpeg_ffi_cpp" ]
   deps = [
     ":rust_common_ffi",
     "//third_party/rust/jpeg_encoder/v0_7:lib",
@@ -877,7 +880,6 @@ rust_static_library("rust_icc_ffi") {
   crate_root = skia_rust_icc_ffi_crate_root
   sources = skia_rust_icc_ffi_rs_srcs
   cxx_bindings = skia_rust_icc_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_icc_ffi_cpp" ]
   deps = [
     ":rust_common_ffi",
     "//third_party/rust/moxcms/v0_8:lib",
@@ -919,7 +921,6 @@ rust_static_library("rust_exif_ffi") {
   crate_root = skia_rust_exif_ffi_crate_root
   sources = skia_rust_exif_ffi_rs_srcs
   cxx_bindings = skia_rust_exif_ffi_cxx_bridge_srcs
-  public_deps = [ ":rust_exif_ffi_cpp" ]
   deps = [ ":rust_common_ffi" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
