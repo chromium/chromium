@@ -36,6 +36,26 @@ suite('TopToolbarTest', () => {
   let proxy: TestContextualTasksBrowserProxy;
   let toolbarProxy: TestToolbarBrowserProxy;
 
+  // Ignore OS-level window blur/resize events (e.g. from parallel browser_tests
+  // windows stealing focus or asynchronous host window layout) so open menus do
+  // not close mid-test. Synthetic events (`!e.isTrusted`) dispatched by focus
+  // loss tests still propagate normally.
+  function stopTrustedWindowEvent(e: Event) {
+    if (e.isTrusted) {
+      e.stopImmediatePropagation();
+    }
+  }
+
+  suiteSetup(() => {
+    window.addEventListener('blur', stopTrustedWindowEvent, true);
+    window.addEventListener('resize', stopTrustedWindowEvent, true);
+  });
+
+  suiteTeardown(() => {
+    window.removeEventListener('blur', stopTrustedWindowEvent, true);
+    window.removeEventListener('resize', stopTrustedWindowEvent, true);
+  });
+
   setup(() => {
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
@@ -99,13 +119,14 @@ suite('TopToolbarTest', () => {
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
        suite.skip :
        suite)('Expand button enabled', () => {
-    setup(() => {
+    setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
       loadTimeData.overrideValues({expandButtonEnabled: true});
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
+      await microtasksFinished();
     });
 
     test('shows correct logo', () => {
@@ -730,7 +751,7 @@ suite('TopToolbarTest', () => {
   });
 
   suite('Expand button and menu for lens flows disabled', () => {
-    setup(() => {
+    setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
       loadTimeData.overrideValues({
@@ -743,6 +764,7 @@ suite('TopToolbarTest', () => {
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
+      await microtasksFinished();
     });
 
     const isPhone = loadTimeData.getBoolean('isSmallDeviceFormFactor');
@@ -864,7 +886,7 @@ suite('TopToolbarTest', () => {
   (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
        suite.skip :
        suite)('Menu for lens flows only', () => {
-    setup(() => {
+    setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
       loadTimeData.overrideValues({
@@ -876,6 +898,7 @@ suite('TopToolbarTest', () => {
 
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
+      await microtasksFinished();
     });
 
     test('hides overflow menu button on ai page, shown for lens', async () => {
@@ -1246,7 +1269,8 @@ suite('TopToolbarTest', () => {
     test('forwards permission chip delegate calls to service', async () => {
       topToolbar.permissionDashboardState = {
         indicatorChip: createFakeChip(),
-        requestChip: createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+        requestChip: createFakeChip(
+            {isVisible: true, isFullyCollapsed: true, iconName: 'kMicIcon'}),
         isDividerVisible: false,
       };
       await microtasksFinished();

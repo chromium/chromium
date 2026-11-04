@@ -705,13 +705,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 // TODO(crbug.com/565086795): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PostMessageHandler DISABLED_PostMessageHandler
-#define MAYBE_TopToolbarTest DISABLED_TopToolbarTest
 #define MAYBE_OverflowMenu DISABLED_OverflowMenu
 #define MAYBE_Toolbar DISABLED_Toolbar
 #define MAYBE_OnboardingTooltip DISABLED_OnboardingTooltip
 #else
 #define MAYBE_PostMessageHandler PostMessageHandler
-#define MAYBE_TopToolbarTest TopToolbarTest
 #define MAYBE_OverflowMenu OverflowMenu
 #define MAYBE_Toolbar Toolbar
 #define MAYBE_OnboardingTooltip OnboardingTooltip
@@ -720,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_PostMessageHandler) {
   RunTest("contextual_tasks/post_message_handler_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_TopToolbarTest) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TopToolbarTest) {
   RunTest("contextual_tasks/top_toolbar_test.js", "mocha.run();");
 }
 
