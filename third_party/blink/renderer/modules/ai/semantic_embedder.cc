@@ -20,7 +20,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_semantic_embedder_task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_semanticembedderinputorstringsequence_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_semanticembedderinput_string.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -195,6 +197,85 @@ class CreateSemanticEmbedderClient
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
+// One in-flight embed() call. Resolves the promise with the browser's reply,
+// or rejects it with the signal's reason when the page aborts; the browser is
+// then asked to drop the request so the model does not run it.
+class EmbedRequest final : public GarbageCollected<EmbedRequest> {
+ public:
+  EmbedRequest(ScriptPromiseResolver<SemanticEmbedderResult>* resolver,
+               SemanticEmbedder* embedder,
+               uint64_t request_id,
+               AbortSignal* signal)
+      : resolver_(resolver),
+        embedder_(embedder),
+        request_id_(request_id),
+        signal_(signal) {
+    if (signal_) {
+      CHECK(!signal_->aborted());
+      abort_handle_ = signal_->AddAlgorithm(
+          BindOnce(&EmbedRequest::OnAborted, WrapWeakPersistent(this)));
+    }
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(resolver_);
+    visitor->Trace(embedder_);
+    visitor->Trace(signal_);
+    visitor->Trace(abort_handle_);
+  }
+
+  void OnResult(mojom::blink::SemanticEmbedderResultPtr result) {
+    RemoveAbortAlgorithm();
+    // Counts against the cap until the browser answers, even if aborted.
+    embedder_->OnEmbedRequestSettled();
+    if (aborted_) {
+      // The promise was already rejected with the abort reason.
+      return;
+    }
+    if (!result) {
+      resolver_->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                        kExceptionMessageSessionDestroyed);
+      return;
+    }
+
+    auto* embedder_result = SemanticEmbedderResult::Create();
+
+    HeapVector<Member<ContentEmbedding>> embeddings;
+    embeddings.ReserveInitialCapacity(result->embeddings.size());
+    for (const auto& embedding : result->embeddings) {
+      auto* content_embedding = ContentEmbedding::Create();
+      content_embedding->setValues(NotShared<DOMFloat32Array>(
+          DOMFloat32Array::Create(embedding->values)));
+      embeddings.push_back(content_embedding);
+    }
+    embedder_result->setEmbeddings(embeddings);
+
+    resolver_->Resolve(embedder_result);
+  }
+
+ private:
+  void OnAborted() {
+    aborted_ = true;
+    RemoveAbortAlgorithm();
+    embedder_->CancelEmbed(request_id_);
+    resolver_->Reject(signal_->reason(resolver_->GetScriptState()));
+  }
+
+  void RemoveAbortAlgorithm() {
+    if (abort_handle_) {
+      signal_->RemoveAlgorithm(abort_handle_);
+      abort_handle_ = nullptr;
+    }
+  }
+
+  Member<ScriptPromiseResolver<SemanticEmbedderResult>> resolver_;
+  Member<SemanticEmbedder> embedder_;
+  const uint64_t request_id_;
+  Member<AbortSignal> signal_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
+  bool aborted_ = false;
+};
+
 }  // namespace
 
 SemanticEmbedder::SemanticEmbedder(
@@ -299,6 +380,12 @@ ScriptPromise<SemanticEmbedderResult> SemanticEmbedder::embed(
     ThrowInvalidContextException(exception_state);
     return ScriptPromise<SemanticEmbedderResult>();
   }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return ScriptPromise<SemanticEmbedderResult>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<SemanticEmbedderResult>>(
           script_state);
@@ -337,36 +424,37 @@ ScriptPromise<SemanticEmbedderResult> SemanticEmbedder::embed(
     return promise;
   }
 
+  // Caps how many embed() calls one embedder can have in flight.
+  if (in_flight_embed_requests_ >= kMaxInFlightEmbedRequests) {
+    QuotaExceededError::Reject(
+        resolver,
+        "Too many embed() calls are in flight for this embedder; wait for "
+        "earlier ones to settle.");
+    return promise;
+  }
+  in_flight_embed_requests_++;
+
+  const uint64_t request_id = ++next_request_id_;
+  auto* request =
+      MakeGarbageCollected<EmbedRequest>(resolver, this, request_id, signal);
+  // If the pipe closes before the reply arrives, the wrapped callback runs
+  // with a null result and the promise is rejected.
   embedder_remote_->Embed(
-      inputs, EmbedOptionsToMojo(options),
+      request_id, inputs, EmbedOptionsToMojo(options),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          BindOnce(
-              [](ScriptPromiseResolver<SemanticEmbedderResult>* resolver,
-                 mojom::blink::SemanticEmbedderResultPtr result) {
-                if (!result) {
-                  resolver->RejectWithDOMException(
-                      DOMExceptionCode::kInvalidStateError,
-                      kExceptionMessageSessionDestroyed);
-                  return;
-                }
-
-                auto* embedder_result = SemanticEmbedderResult::Create();
-
-                HeapVector<Member<ContentEmbedding>> embeddings;
-                embeddings.ReserveInitialCapacity(result->embeddings.size());
-                for (const auto& embedding : result->embeddings) {
-                  auto* content_embedding = ContentEmbedding::Create();
-                  content_embedding->setValues(NotShared<DOMFloat32Array>(
-                      DOMFloat32Array::Create(embedding->values)));
-                  embeddings.push_back(content_embedding);
-                }
-                embedder_result->setEmbeddings(embeddings);
-
-                resolver->Resolve(embedder_result);
-              },
-              WrapPersistent(resolver)),
-          nullptr));
+          BindOnce(&EmbedRequest::OnResult, WrapPersistent(request)), nullptr));
   return promise;
+}
+
+void SemanticEmbedder::OnEmbedRequestSettled() {
+  CHECK_GT(in_flight_embed_requests_, 0);
+  in_flight_embed_requests_--;
+}
+
+void SemanticEmbedder::CancelEmbed(uint64_t request_id) {
+  if (embedder_remote_.is_bound()) {
+    embedder_remote_->CancelEmbed(request_id);
+  }
 }
 
 void SemanticEmbedder::destroy(ScriptState* script_state,

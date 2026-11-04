@@ -149,6 +149,7 @@ source_set("unit_tests") {
       "ai_proofreader_unittest.cc",
       "ai_rewriter_unittest.cc",
       "ai_semantic_embedder_service_launcher_unittest.cc",
+      "ai_semantic_embedder_unittest.cc",
       "ai_writer_unittest.cc",
       "decision_model_prompt_builder_unittest.cc",
       "decision_model_schema_compiler_unittest.cc",

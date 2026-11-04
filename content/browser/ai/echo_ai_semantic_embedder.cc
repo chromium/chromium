@@ -13,6 +13,7 @@ EchoAISemanticEmbedder::EchoAISemanticEmbedder() = default;
 EchoAISemanticEmbedder::~EchoAISemanticEmbedder() = default;
 
 void EchoAISemanticEmbedder::Embed(
+    uint64_t request_id,
     const std::vector<std::string>& inputs,
     blink::mojom::AISemanticEmbedderEmbedOptionsPtr options,
     EmbedCallback callback) {
@@ -25,6 +26,10 @@ void EchoAISemanticEmbedder::Embed(
     result->embeddings.push_back(std::move(content_embedding));
   }
   std::move(callback).Run(std::move(result));
+}
+
+void EchoAISemanticEmbedder::CancelEmbed(uint64_t request_id) {
+  // Embed() replies synchronously, so there is never anything to cancel.
 }
 
 }  // namespace content

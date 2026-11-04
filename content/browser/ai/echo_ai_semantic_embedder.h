@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_AI_ECHO_AI_SEMANTIC_EMBEDDER_H_
 #define CONTENT_BROWSER_AI_ECHO_AI_SEMANTIC_EMBEDDER_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -20,9 +21,11 @@ class EchoAISemanticEmbedder : public blink::mojom::AISemanticEmbedder {
   ~EchoAISemanticEmbedder() override;
 
   // blink::mojom::AISemanticEmbedder:
-  void Embed(const std::vector<std::string>& inputs,
+  void Embed(uint64_t request_id,
+             const std::vector<std::string>& inputs,
              blink::mojom::AISemanticEmbedderEmbedOptionsPtr options,
              EmbedCallback callback) override;
+  void CancelEmbed(uint64_t request_id) override;
 };
 
 }  // namespace content

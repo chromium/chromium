@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_SEMANTIC_EMBEDDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_SEMANTIC_EMBEDDER_H_
 
+#include <cstdint>
+
 #include "third_party/blink/public/mojom/ai/ai_semantic_embedder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -57,9 +59,21 @@ class MODULES_EXPORT SemanticEmbedder final : public ScriptWrappable,
 
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
+  // Asks the browser to drop the in-flight embed() call `request_id` (an id
+  // handed out by embed()). Called when its AbortSignal fires.
+  void CancelEmbed(uint64_t request_id);
+  // Called once per embed() call when the browser replies or the pipe closes.
+  void OnEmbedRequestSettled();
+
+  // embed() calls beyond this many in flight reject with QuotaExceededError.
+  static constexpr int kMaxInFlightEmbedRequests = 32;
+
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AISemanticEmbedder> embedder_remote_;
+  // Ids for embed() calls, unique per embedder.
+  uint64_t next_request_id_ = 0;
+  int in_flight_embed_requests_ = 0;
 };
 
 }  // namespace blink

@@ -40,9 +40,20 @@ interface AISemanticEmbedder {
   // Embeds strings and returns an array of 1:1 mapped float arrays.
   // `inputs` must not be empty. The renderer guarantees this, and sending an
   // empty input will result in a BadMessage error.
-  // A null return result signifies a fatal error (like a model crash) or
-  // session destruction.
-  Embed(array<string> inputs, AISemanticEmbedderEmbedOptions? options)
+  // A null return result signifies a fatal error (like a model crash),
+  // session destruction, or a request cancelled with CancelEmbed().
+  // `request_id` is chosen by the renderer and must be unique among this
+  // embedder's requests that have not been replied to yet, cancelled or not;
+  // reusing one is a bad message.
+  Embed(uint64 request_id,
+        array<string> inputs,
+        AISemanticEmbedderEmbedOptions? options)
       => (SemanticEmbedderResult? result);
+
+  // Asks the browser to stop the Embed() request with `request_id`. A request
+  // that has not started is dropped; a running one may stop early or finish.
+  // A dropped or stopped request replies null. No-op for unknown or finished
+  // ids.
+  CancelEmbed(uint64 request_id);
 };
 
