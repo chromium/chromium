@@ -57,6 +57,11 @@ class IOSTrustedVaultClient : public trusted_vault::TrustedVaultClient {
       const std::vector<uint8_t>& public_key,
       int method_type_hint,
       base::OnceCallback<void(bool)> callback) override;
+  void CanEnroll(const CoreAccountInfo& account_info,
+                 base::OnceCallback<void(bool)> callback) override;
+  void Enroll(const CoreAccountInfo& account_info,
+              base::OnceCallback<void(const std::vector<uint8_t>&, int)>
+                  callback) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Not copyable or movable

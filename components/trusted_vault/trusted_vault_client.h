@@ -152,6 +152,24 @@ class TrustedVaultClient {
                                         int method_type_hint,
                                         base::OnceCallback<void(bool)> cb) = 0;
 
+  // Asynchronously checks whether `account_info` can be enrolled in
+  // the security domain without user interaction (e.g., for kChromeSync,
+  // whether the security domain is in the pre-enrolled state and a
+  // pre-generated Gaia password public key is available on the server).
+  // Resolves with `false` if the user is already enrolled.
+  virtual void CanEnroll(const CoreAccountInfo& account_info,
+                         base::OnceCallback<void(bool)> cb) = 0;
+
+  // Asynchronously enrolls `account_info` into the security domain (e.g., for
+  // kChromeSync, registers the user's Gaia password public key as a recovery
+  // factor and rotates the shared key from the constant key to a newly
+  // generated key). On success, `cb` is invoked with the new shared key and
+  // new key version; on failure (or if the user was already enrolled), `cb` is
+  // invoked with an empty vector and -1.
+  virtual void Enroll(
+      const CoreAccountInfo& account_info,
+      base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) = 0;
+
   // Clears all data associated with |account_info|. Doesn't remove account from
   // storage.
   virtual void ClearLocalDataForAccount(

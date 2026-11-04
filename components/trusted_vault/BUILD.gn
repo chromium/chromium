@@ -179,6 +179,7 @@ static_library("test_support") {
   deps = [
     "//components/signin/public/identity_manager",
     "//components/trusted_vault/proto",
+    "//crypto",
     "//testing/gmock",
   ]
 

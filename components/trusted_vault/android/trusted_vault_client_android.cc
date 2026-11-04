@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -270,6 +271,23 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
 void TrustedVaultClientAndroid::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
   // Not relevant for Android implementation.
+}
+
+void TrustedVaultClientAndroid::CanEnroll(const CoreAccountInfo& account_info,
+                                          base::OnceCallback<void(bool)> cb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/579292011): Implement for Android.
+  NOTIMPLEMENTED();
+  std::move(cb).Run(false);
+}
+
+void TrustedVaultClientAndroid::Enroll(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/579292011): Implement for Android.
+  NOTIMPLEMENTED();
+  std::move(cb).Run(std::vector<uint8_t>(), -1);
 }
 
 TrustedVaultClientAndroid::RequestId

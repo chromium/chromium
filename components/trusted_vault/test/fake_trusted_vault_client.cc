@@ -17,8 +17,15 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "crypto/random.h"
 
 namespace trusted_vault {
+
+namespace {
+
+constexpr size_t kSharedKeyLength = 32;
+
+}  // namespace
 
 FakeTrustedVaultClient::CachedKeysPerUser::CachedKeysPerUser() = default;
 FakeTrustedVaultClient::CachedKeysPerUser::~CachedKeysPerUser() = default;
@@ -241,6 +248,32 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
     // May be a false positive, but observers should handle this well.
     observer.OnTrustedVaultRecoverabilityChanged();
   }
+}
+
+void FakeTrustedVaultClient::CanEnroll(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(can_enroll_);
+}
+
+void FakeTrustedVaultClient::Enroll(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback) {
+  if (!enroll_success_) {
+    std::move(callback).Run(std::vector<uint8_t>(), -1);
+    return;
+  }
+  const std::vector<uint8_t> new_shared_key =
+      crypto::RandBytesAsVector(kSharedKeyLength);
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[account_info.gaia];
+  cached_keys.keys.push_back(new_shared_key);
+  cached_keys.marked_as_stale = false;
+  const int new_key_version = static_cast<int>(cached_keys.keys.size());
+  server_.StoreKeysOnServer(account_info.gaia, cached_keys.keys);
+  for (auto& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged(/*trigger=*/std::nullopt);
+  }
+  std::move(callback).Run(new_shared_key, new_key_version);
 }
 
 void FakeTrustedVaultClient::ClearLocalDataForAccount(

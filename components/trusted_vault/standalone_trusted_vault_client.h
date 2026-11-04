@@ -60,6 +60,11 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceCallback<void(bool)> cb) override;
+  void CanEnroll(const CoreAccountInfo& account_info,
+                 base::OnceCallback<void(bool)> cb) override;
+  void Enroll(
+      const CoreAccountInfo& account_info,
+      base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Notifications routed from StandaloneTrustedVaultFrontend on the UI thread.
