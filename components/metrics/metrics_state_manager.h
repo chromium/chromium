@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "build/build_config.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/cloned_install_detector.h"
@@ -221,6 +222,7 @@ class MetricsStateManager final {
                            ProvisionalClientId_PersistedAcrossFirstRuns);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, ResetBackup);
   FRIEND_TEST_ALL_PREFIXES(MetricsStateManagerTest, ResetMetricsIDs);
+  friend class MetricsStateManagerTest;
   friend class ::metrics_services_manager::MetricsServicesManager;
 
   // Designates which entropy source was returned from this class.
@@ -256,6 +258,25 @@ class MetricsStateManager final {
     kMaxValue = kClientIdFromExternalDeprecated,
   };
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ClientIdBackupFixMethod)
+  enum class ClientIdBackupFixMethod {
+    // Recorded when an invalid or non-canonical backup is overwritten with the
+    // valid lowercase client ID from Local State.
+    kFromLocalState = 0,
+    // Recorded when an invalid or non-canonical backup is cleared because Local
+    // State does not hold a valid lowercase client ID.
+    kClearBackup = 1,
+    // Recorded when Local State has no client ID and no valid backup exists, so
+    // a newly created or promoted client ID is written to backup.
+    kBackupNewlyCreated = 2,
+    kMaxValue = kBackupNewlyCreated,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/uma/enums.xml:ClientIdBackupFixMethod)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+
   // Creates the MetricsStateManager with the given |local_state|. Uses
   // |enabled_state_provider| to query whether there is consent for metrics
   // reporting, and if it is enabled. Clients should instead use Create(), which
@@ -282,6 +303,13 @@ class MetricsStateManager final {
 
   // Loads the client info via |load_client_info_|.
   std::unique_ptr<ClientInfo> LoadClientInfo();
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+  // Checks the client info backup once per session (after FeatureList is
+  // initialized) and repairs it if it contains an invalid or non-canonical
+  // (e.g. uppercase) client ID.
+  void MaybeRepairClientInfoBackup();
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 
   // Gets the limited entropy randomization source. For clients that only use
   // the low entropy source (e.g. Android Webview), this will return the empty
@@ -374,6 +402,12 @@ class MetricsStateManager final {
   // used only during startup. On Android WebLayer, Android WebView, and iOS,
   // the visibility is unknown at this point in startup.
   const StartupVisibility startup_visibility_;
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+  // Whether `MaybeRepairClientInfoBackup()` has already checked the backup in
+  // this session.
+  bool client_info_backup_checked_ = false;
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 
   // Force enables the creation of a provisional client ID on first run even if
   // this is not a Chrome-branded build. Used for testing.

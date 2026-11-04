@@ -12,8 +12,10 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_data_validation.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -123,6 +126,10 @@ class MetricsStateManagerTest : public testing::Test {
   int client_info_load_count_ = 0;
 
  protected:
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+  using ClientIdBackupFixMethod = MetricsStateManager::ClientIdBackupFixMethod;
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+
   TestingPrefServiceSimple prefs_;
 
   // Last ClientInfo stored by the MetricsStateManager via
@@ -241,6 +248,7 @@ TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
 
   // Set the reset pref to cause the IDs to be reset.
   prefs_.SetBoolean(prefs::kMetricsResetIds, true);
+  client_info_load_count_ = 0;
 
   // Cause the actual reset to happen.
   {
@@ -285,6 +293,7 @@ TEST_F(MetricsStateManagerTest, ForceClientIdCreation) {
   prefs_.SetInt64(prefs::kInstallDate, kFakeInstallationDate);
 
   {
+    base::HistogramTester histogram_tester;
     std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
 
     // client_id shouldn't be auto-generated if metrics reporting is not
@@ -309,6 +318,13 @@ TEST_F(MetricsStateManagerTest, ForceClientIdCreation) {
               kFakeInstallationDate);
     EXPECT_EQ(prefs_.GetInt64(prefs::kMetricsReportingEnabledTimestamp),
               stored_client_info_backup_->reporting_enabled_date);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+    histogram_tester.ExpectUniqueSample(
+        "UMA.ClientIdBackupFixMethod",
+        ClientIdBackupFixMethod::kBackupNewlyCreated, 1);
+#else
+    histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
+#endif
   }
 }
 
@@ -446,19 +462,27 @@ TEST_F(MetricsStateManagerTest, LoadPrefs) {
     state_manager->ForceClientIdCreation();
     EXPECT_FALSE(stored_client_info_backup_);
     EXPECT_EQ(state_manager->client_id(), client_info.client_id);
-    EXPECT_EQ(client_info_load_count_, 0);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+    const int expected_load_count =
+        base::FeatureList::IsEnabled(features::kClientIdBackupCorrectnessFix)
+            ? 1
+            : 0;
+#else
+    const int expected_load_count = 0;
+#endif
+    EXPECT_EQ(client_info_load_count_, expected_load_count);
   }
 }
 
 TEST_F(MetricsStateManagerTest, PreferPrefs) {
   ClientInfo client_info;
-  client_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEF";
+  client_info.client_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeef";
   client_info.installation_date = 1112;
   client_info.reporting_enabled_date = 2223;
   SetClientInfoPrefs(client_info);
 
   ClientInfo client_info2;
-  client_info2.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
+  client_info2.client_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
   client_info2.installation_date = 1111;
   client_info2.reporting_enabled_date = 2222;
   SetFakeClientInfoBackup(client_info2);
@@ -474,7 +498,15 @@ TEST_F(MetricsStateManagerTest, PreferPrefs) {
 
     // The backup should not be modified.
     ASSERT_FALSE(stored_client_info_backup_);
-    EXPECT_EQ(client_info_load_count_, 0);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+    const int expected_load_count =
+        base::FeatureList::IsEnabled(features::kClientIdBackupCorrectnessFix)
+            ? 1
+            : 0;
+#else
+    const int expected_load_count = 0;
+#endif
+    EXPECT_EQ(client_info_load_count_, expected_load_count);
   }
 }
 
@@ -498,6 +530,7 @@ TEST_F(MetricsStateManagerTest, RestoreBackup) {
   {
     // The backup should kick in if the client id has gone missing. It should
     // replace remaining and missing dates as well.
+    base::HistogramTester histogram_tester;
 
     EXPECT_FALSE(stored_client_info_backup_);
 
@@ -510,6 +543,7 @@ TEST_F(MetricsStateManagerTest, RestoreBackup) {
 
     EXPECT_TRUE(stored_client_info_backup_);
     EXPECT_EQ(client_info_load_count_, 1);
+    histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
   }
 }
 
@@ -758,5 +792,223 @@ TEST_F(MetricsStateManagerTest,
               RoundSecondsToHour(test_begin_time_));
   }
 }
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+TEST_F(MetricsStateManagerTest, RepairClientInfoBackup_DisabledByDefault) {
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(features::kClientIdBackupCorrectnessFix));
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "not-a-valid-uuid";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  state_manager->ForceClientIdCreation();
+
+  EXPECT_EQ(client_info_load_count_, 0);
+  EXPECT_FALSE(stored_client_info_backup_);
+  histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
+}
+
+TEST_F(MetricsStateManagerTest, RepairClientInfoBackup_FeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kClientIdBackupCorrectnessFix);
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "not-a-valid-uuid";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+  state_manager->ForceClientIdCreation();
+
+  EXPECT_EQ(client_info_load_count_, 0);
+  EXPECT_FALSE(stored_client_info_backup_);
+  histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
+}
+
+TEST_F(MetricsStateManagerTest,
+       RepairClientInfoBackup_InvalidBackupRepairedFromPrefs) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list(
+      features::kClientIdBackupCorrectnessFix);
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "not-a-valid-uuid";
+  backup_info.installation_date = 1000;
+  backup_info.reporting_enabled_date = 2000;
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+
+  ASSERT_TRUE(stored_client_info_backup_);
+  EXPECT_EQ(stored_client_info_backup_->client_id, prefs_info.client_id);
+  EXPECT_EQ(stored_client_info_backup_->installation_date,
+            prefs_info.installation_date);
+  EXPECT_EQ(stored_client_info_backup_->reporting_enabled_date,
+            prefs_info.reporting_enabled_date);
+  EXPECT_EQ(client_info_load_count_, 1);
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupFixMethod",
+                                      ClientIdBackupFixMethod::kFromLocalState,
+                                      1);
+
+  // Subsequent ForceClientIdCreation() calls in the same session should not
+  // re-check or re-write the backup.
+  stored_client_info_backup_.reset();
+  state_manager->ForceClientIdCreation();
+  EXPECT_FALSE(stored_client_info_backup_);
+  EXPECT_EQ(client_info_load_count_, 1);
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupFixMethod",
+                                      ClientIdBackupFixMethod::kFromLocalState,
+                                      1);
+}
+
+TEST_F(MetricsStateManagerTest,
+       RepairClientInfoBackup_UppercaseBackupRepairedFromPrefs) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list(
+      features::kClientIdBackupCorrectnessFix);
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+
+  ASSERT_TRUE(stored_client_info_backup_);
+  EXPECT_EQ(stored_client_info_backup_->client_id, prefs_info.client_id);
+  EXPECT_EQ(client_info_load_count_, 1);
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupFixMethod",
+                                      ClientIdBackupFixMethod::kFromLocalState,
+                                      1);
+}
+
+TEST_F(MetricsStateManagerTest,
+       RepairClientInfoBackup_InvalidBackupClearedWhenPrefsNotLowercase) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list(
+      features::kClientIdBackupCorrectnessFix);
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEF";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "not-a-valid-uuid";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+
+  ASSERT_TRUE(stored_client_info_backup_);
+  EXPECT_TRUE(stored_client_info_backup_->client_id.empty());
+  EXPECT_EQ(client_info_load_count_, 1);
+  histogram_tester.ExpectUniqueSample("UMA.ClientIdBackupFixMethod",
+                                      ClientIdBackupFixMethod::kClearBackup, 1);
+}
+
+TEST_F(MetricsStateManagerTest,
+       RepairClientInfoBackup_ValidLowercaseBackupUntouched) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list(
+      features::kClientIdBackupCorrectnessFix);
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+
+  EXPECT_FALSE(stored_client_info_backup_);
+  EXPECT_EQ(client_info_load_count_, 1);
+  histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
+}
+
+TEST_F(MetricsStateManagerTest,
+       RepairClientInfoBackup_DeferredUntilFeatureListInitialized) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList null_feature_list;
+  null_feature_list.InitWithNullFeatureAndFieldTrialLists();
+  base::FieldTrialList field_trial_list;
+  ASSERT_FALSE(base::FeatureList::GetInstance());
+
+  ClientInfo prefs_info;
+  prefs_info.client_id = "11111111-2222-3333-4444-555555555555";
+  prefs_info.installation_date = 1112;
+  prefs_info.reporting_enabled_date = 2223;
+  SetClientInfoPrefs(prefs_info);
+
+  ClientInfo backup_info;
+  backup_info.client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
+  SetFakeClientInfoBackup(backup_info);
+
+  EnableMetricsReporting();
+  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
+
+  // During early startup (before FeatureList is initialized), backup repair is
+  // deferred.
+  EXPECT_EQ(client_info_load_count_, 0);
+  EXPECT_FALSE(stored_client_info_backup_);
+  histogram_tester.ExpectTotalCount("UMA.ClientIdBackupFixMethod", 0);
+
+  {
+    base::test::ScopedFeatureList enabled_feature_list(
+        features::kClientIdBackupCorrectnessFix);
+    state_manager->ForceClientIdCreation();
+    ASSERT_TRUE(stored_client_info_backup_);
+    EXPECT_EQ(stored_client_info_backup_->client_id, prefs_info.client_id);
+    EXPECT_EQ(client_info_load_count_, 1);
+    histogram_tester.ExpectUniqueSample(
+        "UMA.ClientIdBackupFixMethod", ClientIdBackupFixMethod::kFromLocalState,
+        1);
+
+    stored_client_info_backup_.reset();
+    state_manager->ForceClientIdCreation();
+    EXPECT_FALSE(stored_client_info_backup_);
+    EXPECT_EQ(client_info_load_count_, 1);
+    histogram_tester.ExpectUniqueSample(
+        "UMA.ClientIdBackupFixMethod", ClientIdBackupFixMethod::kFromLocalState,
+        1);
+  }
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 
 }  // namespace metrics

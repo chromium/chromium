@@ -45,6 +45,8 @@ BASE_FEATURE(kConsolidateMetricsServiceLocales,
 
 BASE_FEATURE(kIOSBackgroundMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientIdBackupCorrectnessFix, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_RUNTIME_MUTABLE_FEATURE(kNoopRuntimeMutableFeatureDefaultEnabled,
                              base::FEATURE_ENABLED_BY_DEFAULT);
 

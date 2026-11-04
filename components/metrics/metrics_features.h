@@ -96,6 +96,11 @@ BASE_DECLARE_FEATURE(kNoopRuntimeMutable8);
 // Enables log rotation and uploading in the background on iOS.
 BASE_DECLARE_FEATURE(kIOSBackgroundMetrics);
 
+// Enables repairing invalid or non-canonical (e.g. uppercase) client ID backups
+// on POSIX platforms (excluding iOS) using the valid lowercase client ID from
+// Local State.
+BASE_DECLARE_FEATURE(kClientIdBackupCorrectnessFix);
+
 // Enables the no-op runtime mutable features with the FeatureList.
 void EnableNoopRuntimeMutableFeatures(base::FeatureList* feature_list);
 

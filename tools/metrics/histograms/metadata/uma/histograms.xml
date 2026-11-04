@@ -218,6 +218,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.ClientIdBackupFixMethod" enum="ClientIdBackupFixMethod"
+    expires_after="2027-09-01">
+  <owner>afie@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the method used to populate or repair the UMA client ID backup on
+    POSIX platforms (excluding iOS). Recorded when an invalid or non-canonical
+    backup is repaired from Local State or cleared, or when a newly created or
+    promoted client ID is written to backup.
+  </summary>
+</histogram>
+
 <histogram name="UMA.ClientIdBackupRecoveredWithAge" units="hours"
     expires_after="2027-02-28">
   <owner>asvitkine@chromium.org</owner>

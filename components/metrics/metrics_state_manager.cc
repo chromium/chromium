@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -36,6 +37,7 @@
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/entropy_state.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_provider.h"
@@ -382,6 +384,9 @@ void MetricsStateManager::ForceClientIdCreation() {
     if (!client_id_from_prefs.empty() && client_id_from_prefs == client_id_) {
       base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                     ClientIdSource::kClientIdMatches);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+      MaybeRepairClientInfoBackup();
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
       return;
     }
     client_id_.swap(client_id_from_prefs);
@@ -390,6 +395,9 @@ void MetricsStateManager::ForceClientIdCreation() {
   if (!client_id_.empty()) {
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdFromLocalState);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+    MaybeRepairClientInfoBackup();
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
     return;
   }
 
@@ -452,6 +460,10 @@ void MetricsStateManager::ForceClientIdCreation() {
                          base::Time::Now().ToTimeT());
 
   BackUpCurrentClientInfo();
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+  base::UmaHistogramEnumeration("UMA.ClientIdBackupFixMethod",
+                                ClientIdBackupFixMethod::kBackupNewlyCreated);
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 }
 
 const ClonedInstallDetector& MetricsStateManager::GetClonedInstallDetector()
@@ -557,6 +569,37 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
 
   return client_info;
 }
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
+void MetricsStateManager::MaybeRepairClientInfoBackup() {
+  if (client_info_backup_checked_ || metrics_ids_were_reset_) {
+    return;
+  }
+  if (!base::FeatureList::GetInstance()) {
+    return;
+  }
+  client_info_backup_checked_ = true;
+  if (!base::FeatureList::IsEnabled(features::kClientIdBackupCorrectnessFix)) {
+    return;
+  }
+
+  std::unique_ptr<ClientInfo> backup_info = load_client_info_.Run();
+  if (!backup_info ||
+      base::Uuid::ParseLowercase(backup_info->client_id).is_valid()) {
+    return;
+  }
+
+  if (base::Uuid::ParseLowercase(client_id_).is_valid()) {
+    BackUpCurrentClientInfo();
+    base::UmaHistogramEnumeration("UMA.ClientIdBackupFixMethod",
+                                  ClientIdBackupFixMethod::kFromLocalState);
+  } else {
+    store_client_info_.Run(ClientInfo());
+    base::UmaHistogramEnumeration("UMA.ClientIdBackupFixMethod",
+                                  ClientIdBackupFixMethod::kClearBackup);
+  }
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 
 std::string_view MetricsStateManager::GetLimitedEntropyRandomizationSource() {
   // No limited entropy randomization source will be generated if limited
