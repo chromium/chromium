@@ -28,6 +28,7 @@ namespace android {
 class GroupIndicatorLayer;
 class LayerTitleCache;
 class TabHandleLayer;
+class TabStripNtbWebUiHost;
 
 // A scene layer to draw one or more tab strips. Note that content tree can be
 // added as a subtree.
@@ -87,12 +88,11 @@ class TabStripSceneLayer : public SceneLayer {
                           int32_t keyboard_focus_ring_resource_id,
                           int32_t keyboard_focus_ring_color);
 
-  // Positions the layer of the WebUI new tab button (owned by the
-  // TabStripNtbWebUiHost at |native_host|) inside the tab strip. Used instead
-  // of the native new tab button when AndroidNewTabButtonTabstripWebUI is on.
-  // The region is hidden until the host's layer is available (i.e. during
-  // startup).
-  void UpdateNtbWebUi(int64_t native_host,
+  // Positions the layer of the WebUI new tab button (owned by |host|) inside
+  // the tab strip. Used instead of the native new tab button when
+  // AndroidNewTabButtonTabstripWebUI is on. The region is hidden until the
+  // host's layer is available (i.e. during startup).
+  void UpdateNtbWebUi(TabStripNtbWebUiHost* host,
                       float x,
                       float y,
                       float width,

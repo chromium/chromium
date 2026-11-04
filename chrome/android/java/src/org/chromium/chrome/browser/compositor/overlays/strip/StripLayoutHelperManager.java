@@ -28,6 +28,8 @@ import android.view.animation.Interpolator;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
@@ -1050,10 +1052,10 @@ public class StripLayoutHelperManager
 
     /**
      * Returns the pointer to the native TabStripNtbWebUiHost if the WebUI new tab button is in use,
-     * or 0 otherwise.
+     * or null otherwise.
      */
-    public long getNtbWebUiNativePtr() {
-        return mNtbWebUiCoordinator == null ? 0 : mNtbWebUiCoordinator.getNativePtr();
+    public @Nullable JniPtr<NtbWebUiCoordinator.NativeTabStripNtbWebUiHost> getNtbWebUiNativePtr() {
+        return mNtbWebUiCoordinator == null ? null : mNtbWebUiCoordinator.getNativePtr();
     }
 
     @Override

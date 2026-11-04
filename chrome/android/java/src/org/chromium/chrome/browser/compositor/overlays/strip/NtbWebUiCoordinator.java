@@ -15,7 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.TraceEvent;
@@ -46,12 +49,15 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("android")
 @NullMarked
 public class NtbWebUiCoordinator implements AccessibilityState.Listener {
+    @JniType("::android::TabStripNtbWebUiHost")
+    public interface NativeTabStripNtbWebUiHost extends JniTypeToken {}
+
     private final ControlContainer mControlContainer;
     // The WebContents' ContentView. It draws nothing (the WebUI is drawn by the tab strip scene
     // layer) and only routes touch, mouse and hover events in the WebUI region to the WebContents.
     private final @Nullable ContentView mInputView;
     private final @Nullable EventForwarder mEventForwarder;
-    private long mNativePtr;
+    private @Nullable JniUniquePtr<NativeTabStripNtbWebUiHost> mNativePtr;
     private int mWidthPx;
     private int mHeightPx;
     private boolean mStripInteractive = true;
@@ -96,7 +102,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
             int sessionId = assertNonNull(tabModel.getNativeSessionId());
             mNativePtr =
                     NtbWebUiCoordinatorJni.get().init(this, sessionId, activityCreationUptimeMs);
-            if (mNativePtr == 0) {
+            if (mNativePtr == null) {
                 mInputView = null;
                 mEventForwarder = null;
                 return;
@@ -124,8 +130,8 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
         }
     }
 
-    /** Returns the pointer to the native TabStripNtbWebUiHost, or 0 if disabled or destroyed. */
-    public long getNativePtr() {
+    /** Returns the pointer to the native TabStripNtbWebUiHost, or null if disabled or destroyed. */
+    public @Nullable JniPtr<NativeTabStripNtbWebUiHost> getNativePtr() {
         return mNativePtr;
     }
 
@@ -153,7 +159,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
      */
     public void updateBounds(
             float xDp, float yDp, float widthDp, float heightDp, float stripHeightDp) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         assert mInputView != null && mEventForwarder != null;
         DisplayMetrics metrics = mInputView.getResources().getDisplayMetrics();
         int widthPx = ViewUtils.dpToPx(metrics, widthDp);
@@ -203,18 +209,18 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
      * Sets whether the new tab button is visible (e.g. faded out during tab strip reorder mode).
      */
     public void setButtonVisible(boolean visible) {
-        if (mNativePtr == 0 || mButtonVisible == visible) return;
+        if (mNativePtr == null || mButtonVisible == visible) return;
         mButtonVisible = visible;
         NtbWebUiCoordinatorJni.get().setButtonVisible(mNativePtr, visible);
     }
 
     /** Destroys the WebUI and removes the input view. */
     public void destroy() {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         AccessibilityState.removeListener(this);
         mControlContainer.setTabStripInputView(null);
-        NtbWebUiCoordinatorJni.get().destroy(mNativePtr);
-        mNativePtr = 0;
+        mNativePtr.destroy();
+        mNativePtr = null;
     }
 
     // AccessibilityState.Listener:
@@ -226,7 +232,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
     }
 
     private void updateInputViewVisibility() {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         assert mInputView != null;
         // Accessibility for the new tab button is currently provided by the native strip, not by
         // the WebUI: StripLayoutHelper still exposes the (undrawn) native new tab button as a
@@ -246,15 +252,14 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
 
     @NativeMethods
     interface Natives {
-        long init(NtbWebUiCoordinator caller, int sessionId, long activityCreationUptimeMs);
+        @Nullable JniUniquePtr<NativeTabStripNtbWebUiHost> init(
+                NtbWebUiCoordinator caller, int sessionId, long activityCreationUptimeMs);
 
         @JniType("content::WebContents*")
-        WebContents getWebContents(long hostPtr);
+        WebContents getWebContents(JniPtr<NativeTabStripNtbWebUiHost> self);
 
-        void resize(long hostPtr, int widthPx, int heightPx);
+        void resize(JniPtr<NativeTabStripNtbWebUiHost> self, int widthPx, int heightPx);
 
-        void setButtonVisible(long hostPtr, boolean visible);
-
-        void destroy(long hostPtr);
+        void setButtonVisible(JniPtr<NativeTabStripNtbWebUiHost> self, boolean visible);
     }
 }

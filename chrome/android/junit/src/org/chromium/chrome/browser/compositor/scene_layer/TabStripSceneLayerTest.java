@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.TooltipHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorTextButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.NtbWebUiCoordinator;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -694,7 +695,9 @@ public class TabStripSceneLayerTest {
         mNewTabButton.setDrawX(100.f);
         mNewTabButton.setDrawY(3.f);
         mNewTabButton.setTouchTargetInsets(null, topPadding, null, -topPadding);
-        when(mStripLayoutHelperManager.getNtbWebUiNativePtr()).thenReturn(2L);
+        JniRawPtr<NtbWebUiCoordinator.NativeTabStripNtbWebUiHost> ntbWebUiHost =
+                JniRawPtr.createForTesting(2L);
+        when(mStripLayoutHelperManager.getNtbWebUiNativePtr()).thenReturn(ntbWebUiHost);
 
         float topPaddingPx = topPadding * DP_TO_PX;
         mTabStripSceneLayer.pushButtonsAndBackground(
@@ -711,11 +714,12 @@ public class TabStripSceneLayerTest {
         verify(mTabStripSceneMock, times(1))
                 .updateNtbWebUi(
                         mNativePtr,
-                        2L,
+                        ntbWebUiHost,
                         Math.round(touchTarget.left * DP_TO_PX),
                         Math.round(touchTarget.top * DP_TO_PX - topPaddingPx),
                         Math.round(touchTarget.width() * DP_TO_PX),
                         Math.round(touchTarget.height() * DP_TO_PX));
+        ntbWebUiHost.release();
     }
 
     @Test

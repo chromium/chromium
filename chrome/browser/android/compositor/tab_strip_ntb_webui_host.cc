@@ -28,6 +28,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/view_android.h"
 #include "ui/base/page_transition_types.h"
@@ -240,10 +241,10 @@ content::WebContents* TabStripNtbWebUiHost::GetWebContents() {
   return web_contents_.get();
 }
 
-static int64_t JNI_NtbWebUiCoordinator_Init(
-    const base::android::JavaRef<jobject>& caller,
-    int32_t session_id,
-    int64_t activity_creation_uptime_ms) {
+static jni_zero::JniUniquePtr<TabStripNtbWebUiHost>
+JNI_NtbWebUiCoordinator_Init(const base::android::JavaRef<jobject>& caller,
+                             int32_t session_id,
+                             int64_t activity_creation_uptime_ms) {
   SessionID id = SessionID::FromSerializedValue(session_id);
   CHECK(id.is_valid());
   TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(id);
@@ -252,29 +253,8 @@ static int64_t JNI_NtbWebUiCoordinator_Init(
       activity_creation_uptime_ms > 0
           ? base::TimeTicks::FromUptimeMillis(activity_creation_uptime_ms)
           : base::TimeTicks();
-  return reinterpret_cast<intptr_t>(
-      new TabStripNtbWebUiHost(tab_model, activity_creation_time, caller));
-}
-
-static content::WebContents* JNI_NtbWebUiCoordinator_GetWebContents(
-    int64_t host_ptr) {
-  return reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->GetWebContents();
-}
-
-static void JNI_NtbWebUiCoordinator_Resize(int64_t host_ptr,
-                                           int32_t width_px,
-                                           int32_t height_px) {
-  reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->Resize(width_px,
-                                                            height_px);
-}
-
-static void JNI_NtbWebUiCoordinator_SetButtonVisible(int64_t host_ptr,
-                                                     bool visible) {
-  reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr)->SetButtonVisible(visible);
-}
-
-static void JNI_NtbWebUiCoordinator_Destroy(int64_t host_ptr) {
-  delete reinterpret_cast<TabStripNtbWebUiHost*>(host_ptr);
+  return jni_zero::MakeUnique<TabStripNtbWebUiHost>(
+      tab_model, activity_creation_time, caller);
 }
 
 }  // namespace android

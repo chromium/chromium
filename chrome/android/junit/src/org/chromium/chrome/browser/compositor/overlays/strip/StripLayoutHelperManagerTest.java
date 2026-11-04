@@ -36,6 +36,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -232,6 +233,8 @@ public class StripLayoutHelperManagerTest {
     private static final int FIRST_TAB_ID = 1;
     private static final int SECOND_TAB_ID = 2;
 
+    private JniUniquePtr<NtbWebUiCoordinator.NativeTabStripNtbWebUiHost> mNtbWebUiNativePtr;
+
     @Before
     public void beforeTest() {
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
@@ -249,9 +252,12 @@ public class StripLayoutHelperManagerTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
+        mNtbWebUiNativePtr = JniUniquePtr.createForTesting(1L);
         NtbWebUiCoordinatorJni.setInstanceForTesting(mNtbWebUiCoordinatorJniMock);
-        when(mNtbWebUiCoordinatorJniMock.init(any(), anyInt(), anyLong())).thenReturn(1L);
-        when(mNtbWebUiCoordinatorJniMock.getWebContents(1L)).thenReturn(mWebContents);
+        when(mNtbWebUiCoordinatorJniMock.init(any(), anyInt(), anyLong()))
+                .thenReturn(mNtbWebUiNativePtr);
+        when(mNtbWebUiCoordinatorJniMock.getWebContents(mNtbWebUiNativePtr))
+                .thenReturn(mWebContents);
         when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
 
         mLayerTitleCacheSupplier.set(mLayerTitleCache);
@@ -281,6 +287,7 @@ public class StripLayoutHelperManagerTest {
         if (mStripLayoutHelperManager != null) {
             mStripLayoutHelperManager.destroy();
         }
+        mNtbWebUiNativePtr.destroy();
         TabStripSceneLayer.setTestFlag(false);
         CompositorAnimationHandler.setTestingMode(false);
         DeviceInfo.resetIsDesktopForTesting();
@@ -1572,13 +1579,12 @@ public class StripLayoutHelperManagerTest {
         NtbWebUiCoordinator coordinator =
                 mStripLayoutHelperManager.getNtbWebUiCoordinatorForTesting();
         verify(mNtbWebUiCoordinatorJniMock).init(eq(coordinator), eq(1), eq(0L));
-        assertEquals(1L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
+        assertEquals(mNtbWebUiNativePtr, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(1, mControlContainer.getChildCount());
         assertTrue(AccessibilityState.getListeners().contains(coordinator));
 
         mStripLayoutHelperManager.destroy();
-        verify(mNtbWebUiCoordinatorJniMock).destroy(1L);
-        assertEquals(0L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
+        assertNull(mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(0, mControlContainer.getChildCount());
         assertFalse(AccessibilityState.getListeners().contains(coordinator));
     }
@@ -1620,13 +1626,15 @@ public class StripLayoutHelperManagerTest {
         assertEquals(expectedWidthPx, inputView.getLayoutParams().width);
         assertEquals(expectedInputHeightPx, inputView.getLayoutParams().height);
         verify(mEventForwarder).setContainerViewOriginInCompositorSurface(expectedXPx, expectedYPx);
-        verify(mNtbWebUiCoordinatorJniMock).resize(1L, expectedWidthPx, expectedHeightPx);
+        verify(mNtbWebUiCoordinatorJniMock)
+                .resize(mNtbWebUiNativePtr, expectedWidthPx, expectedHeightPx);
 
         // Updating the scene tree again without changing button dimensions should not re-trigger
         // native resize.
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mResourceManager);
-        verify(mNtbWebUiCoordinatorJniMock, times(1)).resize(eq(1L), anyInt(), anyInt());
+        verify(mNtbWebUiCoordinatorJniMock, times(1))
+                .resize(eq(mNtbWebUiNativePtr), anyInt(), anyInt());
     }
 
     @Test

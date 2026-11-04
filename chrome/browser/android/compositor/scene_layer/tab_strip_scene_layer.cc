@@ -430,7 +430,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
   }
 }
 
-void TabStripSceneLayer::UpdateNtbWebUi(int64_t native_host,
+void TabStripSceneLayer::UpdateNtbWebUi(TabStripNtbWebUiHost* host,
                                         float x,
                                         float y,
                                         float width,
@@ -440,8 +440,6 @@ void TabStripSceneLayer::UpdateNtbWebUi(int64_t native_host,
   new_tab_button_background_->SetHideLayerAndSubtree(true);
   new_tab_button_keyboard_focus_ring_->SetIsDrawable(false);
 
-  TabStripNtbWebUiHost* host =
-      reinterpret_cast<TabStripNtbWebUiHost*>(native_host);
   scoped_refptr<cc::slim::Layer> webui_layer =
       host ? host->GetLayer() : nullptr;
   if (!webui_layer) {
