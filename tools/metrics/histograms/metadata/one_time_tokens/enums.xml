@@ -29,7 +29,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange(ActorOneTimeTokenFillingServiceFillOtpEvent) -->
 
 <enum name="ActorOneTimeTokenFillingServiceFillOtpEvent">
-  <int value="0" label="Start"/>
+  <int value="0" label="(Obsolete) Start"/>
   <int value="1" label="NullTab"/>
   <int value="2" label="EmptyTriggerFieldIds"/>
   <int value="3" label="ConcurrentCall"/>
@@ -47,7 +47,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange(ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
 
 <enum name="ActorOneTimeTokenFillingServiceRetrieveOtpEvent">
-  <int value="0" label="Start"/>
+  <int value="0" label="(Obsolete) Start"/>
   <int value="1" label="NullTab"/>
   <int value="2" label="NoService"/>
   <int value="3" label="SuccessCacheMatchFound"/>
@@ -95,7 +95,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange(AttemptOtpFillingEvent) -->
 
 <enum name="AttemptOtpFillingEvent">
-  <int value="0" label="StartFillingAttempt"/>
+  <int value="0" label="(Obsolete) StartFillingAttempt"/>
   <int value="1" label="WithinOptInCoolOffPeriod"/>
   <int value="2" label="OptInNullResponse"/>
   <int value="3" label="OptInErrorResponse"/>
@@ -144,7 +144,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange(GmailOtpConfirmationDialogInteraction) -->
 
 <enum name="GmailOtpConfirmationDialogInteraction">
-  <int value="0" label="ShowDialog"/>
+  <int value="0" label="(Obsolete) ShowDialog"/>
   <int value="1" label="ErrorResponse"/>
   <int value="2" label="PermissionDenied"/>
   <int value="3" label="PermissionGranted"/>
@@ -156,7 +156,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange(GmailOtpOptInCardInteraction) -->
 
 <enum name="GmailOtpOptInCardInteraction">
-  <int value="0" label="ShowCard"/>
+  <int value="0" label="(Obsolete) ShowCard"/>
   <int value="1" label="ErrorResponse"/>
   <int value="2" label="PermissionDenied"/>
   <int value="3" label="PermissionGranted"/>

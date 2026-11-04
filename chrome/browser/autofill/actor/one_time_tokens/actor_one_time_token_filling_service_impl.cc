@@ -304,8 +304,6 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     bool is_login_flow,
     base::OnceCallback<void(
         base::expected<std::string, OneTimeTokenRetrievalError>)> callback) {
-  RecordActorOneTimeTokenFillingServiceRetrieveOtp(kStart);
-
   tabs::TabInterface* tab = tab_handle.Get();
 
   if (!tab || !tab->GetContents()) {
@@ -436,7 +434,6 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
     const std::string& otp,
     base::OnceCallback<void(bool)> callback) {
   using enum ActorOneTimeTokenFillingServiceFillOtp;
-  RecordActorOneTimeTokenFillingServiceFillOtp(kStart);
   tabs::TabInterface* tab = tab_handle.Get();
 
   if (!tab || !tab->GetContents()) {

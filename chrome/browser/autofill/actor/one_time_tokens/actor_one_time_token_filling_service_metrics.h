@@ -16,7 +16,7 @@ namespace autofill {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
-  kStart = 0,
+  // kStart = 0,  // Obsolete.
   kNullTab = 1,
   kNoService = 2,
   kSuccessCacheMatchFound = 3,
@@ -56,7 +56,7 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ActorOneTimeTokenFillingServiceFillOtp {
-  kStart = 0,
+  // kStart = 0,  // Obsolete.
   kNullTab = 1,
   kEmptyTriggerFieldIds = 2,
   kConcurrentCall = 3,

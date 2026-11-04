@@ -171,9 +171,6 @@ AttemptOtpFillingTool::~AttemptOtpFillingTool() {
 }
 
 void AttemptOtpFillingTool::Validate(ToolCallback callback) {
-  RecordAttemptOtpFillingEvent(
-      AttemptOtpFillingToolEvent::kStartFillingAttempt);
-
   if (!GetMockOtpValue().empty()) {
     LogJournalEvent("AttemptOtpFillingTool::Validate",
                     JournalDetailsBuilder()
@@ -284,7 +281,6 @@ void AttemptOtpFillingTool::OnUserDataProcessingConsentFetched(
     return;
   }
 
-  RecordGmailOtpOptInCardInteraction(GmailOtpOptInCardInteraction::kShowCard);
   pending_cancellation_event_ =
       AttemptOtpFillingToolEvent::kCancelledDuringOptInCard;
   tool_delegate().RequestToShowGmailOtpOptInDialog(
@@ -651,8 +647,6 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
         JournalDetailsBuilder()
             .Add("status", "Requesting to show the confirmation dialog")
             .Build());
-    RecordGmailOtpConfirmationDialogInteraction(
-        GmailOtpConfirmationDialogInteraction::kShowDialog);
     std::string otp_code = retrieved_otp;
     pending_cancellation_event_ =
         AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog;

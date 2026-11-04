@@ -295,10 +295,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
                         /*is_login_flow=*/false, future.GetCallback());
   EXPECT_EQ(future.Get().value(), kMockOtp);
   EXPECT_EQ(gmail_otp_service().num_callbacks(), 0u);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kMockOtp, 1);
 }
@@ -319,10 +316,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_SuccessFromCache) {
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, future.GetCallback());
   EXPECT_EQ(future.Get().value(), kOtp);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);
   histogram_tester_.ExpectBucketCount(
@@ -367,10 +361,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       one_time_tokens::OneTimeTokenRetrievalError::kGmailOtpUnknown));
 
   EXPECT_EQ(future.Get().value(), kCachedOtp);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);
 }
@@ -397,10 +388,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       "sender@example.com"));
 
   EXPECT_EQ(future.Get().value(), kOtp);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessReceivedMatchFound,
       1);
@@ -427,10 +415,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
       base::unexpected(OneTimeTokenRetrievalError::kGmailOtpBackendAuthError));
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendAuthError);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kGmailOtpBackendAuthError, 1);
   histogram_tester_.ExpectBucketCount(
@@ -456,10 +441,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   gmail_otp_service().ProcessCallbacks(
       base::unexpected(OneTimeTokenRetrievalError::kUnknown));
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kUnknown);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kUnknownError, 1);
   histogram_tester_.ExpectBucketCount(
@@ -484,10 +466,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Timeout) {
   task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kSubscriptionExpired);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
   histogram_tester_.ExpectBucketCount(
@@ -545,10 +524,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_TabNull) {
                         /*trigger_field_ids=*/{},
                         /*is_login_flow=*/false, future.GetCallback());
   EXPECT_EQ(future.Get().error(), OneTimeTokenRetrievalError::kGmailOtpUnknown);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kNullTab, 1);
 }
@@ -567,10 +543,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_ServiceNull) {
                         /*is_login_flow=*/false, future.GetCallback());
   EXPECT_EQ(future.Get().error(),
             OneTimeTokenRetrievalError::kGmailOtpBackendApiNotAvailable);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kNoService, 1);
 }
@@ -596,15 +569,24 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
 
   EXPECT_EQ(future1.Get().error(),
             OneTimeTokenRetrievalError::kGmailOtpUnknown);
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 2);
+  histogram_tester_.ExpectTotalCount(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram, 0);
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 2);
   histogram_tester_.ExpectBucketCount(
       kActorOtpRetrieveOtpCallbackSupersededHistogram,
       ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 1);
+
+  // The superseded first request records no outcome. The second request gets
+  // no backend response, so it ends with a timeout once the subscription
+  // expires.
+  task_environment()->FastForwardBy(kSubscriptionTimeout + base::Seconds(1));
+  EXPECT_EQ(future2.Get().error(),
+            OneTimeTokenRetrievalError::kSubscriptionExpired);
+  histogram_tester_.ExpectUniqueSample(
+      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
+      ActorOneTimeTokenFillingServiceRetrieveOtp::kRetrievalTimeout, 1);
 }
 
 // Tests that multiple sequential `RetrieveOtp` calls supersede previous ones,
@@ -638,10 +620,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
             OneTimeTokenRetrievalError::kGmailOtpUnknown);
   EXPECT_EQ(future2.Get().value(), kOtp);
 
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
-      ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 2);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kSuccessCacheMatchFound, 1);
 }
@@ -697,10 +676,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_TabNull) {
   service().FillOtp(tabs::TabHandle(), {test::MakeFieldGlobalId()}, "123456",
                     future.GetCallback());
   EXPECT_FALSE(future.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kNullTab, 1);
 }
@@ -724,10 +700,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_AutofillManagerNull) {
                     "123456", future.GetCallback());
 
   EXPECT_FALSE(future.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kNoAutofillManager, 1);
 }
@@ -749,10 +722,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_Success) {
   // field.
   EXPECT_THAT(last_filled_values(),
               testing::Contains(testing::Pair(field_id, u"123456")));
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kSuccess, 1);
 
@@ -803,9 +773,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_ConcurrentCalls) {
 
   EXPECT_FALSE(future2.Get());
   EXPECT_TRUE(future1.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 2);
+  histogram_tester_.ExpectTotalCount(
+      kActorOneTimeTokenFillingServiceFillOtpHistogram, 2);
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kConcurrentCall, 1);
@@ -822,10 +791,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_EmptyTriggerFields) {
                     future.GetCallback());
 
   EXPECT_FALSE(future.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kEmptyTriggerFieldIds, 1);
 }
@@ -838,10 +804,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_FieldNotInCache) {
                     future.GetCallback());
 
   EXPECT_FALSE(future.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kFormStructureNotFound, 1);
 }
@@ -857,10 +820,7 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, FillOtp_NoOtpFieldsInForm) {
                     future.GetCallback());
 
   EXPECT_TRUE(future.Get());
-  histogram_tester_.ExpectBucketCount(
-      kActorOneTimeTokenFillingServiceFillOtpHistogram,
-      ActorOneTimeTokenFillingServiceFillOtp::kStart, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kActorOneTimeTokenFillingServiceFillOtpHistogram,
       ActorOneTimeTokenFillingServiceFillOtp::kSuccess, 1);
 }

@@ -19,7 +19,7 @@ namespace actor {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AttemptOtpFillingToolEvent {
-  kStartFillingAttempt = 0,
+  // kStartFillingAttempt = 0,  // Obsolete.
   kWithinOptInCoolOffPeriod = 1,
   kOptInNullResponse = 2,
   kOptInErrorResponse = 3,
@@ -66,7 +66,7 @@ enum class AttemptOtpFillingToolEvent {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GmailOtpOptInCardInteraction {
-  kShowCard = 0,
+  // kShowCard = 0,  // Obsolete.
   kErrorResponse = 1,
   kPermissionDenied = 2,
   kPermissionGranted = 3,
@@ -83,7 +83,7 @@ enum class GmailOtpOptInCardInteraction {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GmailOtpConfirmationDialogInteraction {
-  kShowDialog = 0,
+  // kShowDialog = 0,  // Obsolete.
   kErrorResponse = 1,
   kPermissionDenied = 2,
   kPermissionGranted = 3,

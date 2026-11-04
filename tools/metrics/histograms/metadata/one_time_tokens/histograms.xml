@@ -19,13 +19,12 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>trangm@google.com</owner>
   <summary>
-    Records user interactions with the Gmail OTP confirmation dialog during the
-    AttemptOtpFilling tool execution. ShowDialog is recorded when the dialog is
-    requested to be shown. Then one outcome is recorded: permission granted,
-    permission denied, an error response, or Cancelled when the tool is
-    destroyed after the dialog is requested and before a response is received
-    (e.g. the task is stopped, paused or cancelled, or the tab is closed).
-    Nothing is recorded if the tool never requests the dialog.
+    Records the user's interaction with the Gmail OTP confirmation dialog during
+    the AttemptOtpFilling tool execution: permission granted, permission denied,
+    an error response, or Cancelled when the tool is destroyed after the dialog
+    is requested and before a response is received (e.g. the task is stopped,
+    paused or cancelled, or the tab is closed). Recorded once per dialog
+    request. Nothing is recorded if the tool never requests the dialog.
   </summary>
 </histogram>
 
@@ -35,12 +34,11 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records user interactions with the Gmail OTP opt-in card during the
-    AttemptOtpFilling tool execution. ShowCard is recorded when the card is
-    requested to be shown. Then one outcome is recorded: permission granted,
-    permission denied, an error response, or Cancelled when the tool is
-    destroyed after the card is requested and before a response is received
-    (e.g. the task is stopped, paused or cancelled, or the tab is closed).
+    Records the user's interaction with the Gmail OTP opt-in card during the
+    AttemptOtpFilling tool execution: permission granted, permission denied, an
+    error response, or Cancelled when the tool is destroyed after the card is
+    requested and before a response is received (e.g. the task is stopped,
+    paused or cancelled, or the tab is closed). Recorded once per card request.
     Nothing is recorded if the tool never requests the card.
   </summary>
 </histogram>
@@ -62,13 +60,13 @@ found in the LICENSE file.
   <owner>ioanap@chromium.org</owner>
   <owner>sdrab@google.com</owner>
   <summary>
-    Records events during the execution of the AttemptOtpFilling tool by the
-    actor, such as the start of an attempt, OTP retrieval status, consent
-    checks, and whether OTP filling succeeded or failed. This metric spans
-    across the lifecycle methods Validate, TimeOfUseValidation and Invoke. The
-    CancelledDuring* buckets are recorded when the tool is destroyed (e.g. the
-    task is stopped, paused or cancelled, or the tab is closed) before the named
-    asynchronous step completes.
+    Records the terminal outcome of a single AttemptOtpFilling tool attempt by
+    the actor: success, a specific failure (e.g. OTP retrieval, consent checks
+    or filling), or the step during which the attempt was cancelled. This metric
+    spans across the lifecycle methods Validate, TimeOfUseValidation and Invoke.
+    The CancelledDuring* buckets are recorded when the tool is destroyed (e.g.
+    the task is stopped, paused or cancelled, or the tab is closed) before the
+    named asynchronous step completes. Recorded at most once per attempt.
   </summary>
 </histogram>
 
@@ -96,7 +94,7 @@ found in the LICENSE file.
     trigger field, or empty fill data), the renderer fill result (success or
     error), or Cancelled if the service is destroyed while the fill is pending
     (e.g. the actor task ends or the browser shuts down). Recorded once per
-    request; Start is additionally recorded when each request begins.
+    request.
   </summary>
 </histogram>
 
@@ -110,15 +108,13 @@ found in the LICENSE file.
     ActorOneTimeTokenFillingService: a null tab, no backend, a mock OTP, a cache
     or received match, a timeout, a sender-domain mismatch, a backend error, or
     Cancelled if the service is destroyed while the retrieval is pending (e.g.
-    the actor task ends or the browser shuts down). Recorded once per request;
-    Start is additionally recorded when each request begins. Not recorded for a
-    request that is superseded by a newer request. GmailOtpSenderDomainMismatch
-    is recorded when the subscription timed out after at least one token
-    delivered via the subscription was rejected for sender-domain mismatch.
-    Subscription delivery can include emails received up to 3 minutes before the
-    request. After an actor pause or user takeover, the AttemptOtpFilling tool
-    is destroyed but the retrieval continues, so a later match is recorded as
-    success even though no fill happens.
+    the actor task ends or the browser shuts down). Recorded once per request.
+    Not recorded for a request that is superseded by a newer request.
+    GmailOtpSenderDomainMismatch is recorded when the subscription timed out
+    after at least one token delivered via the subscription was rejected for
+    sender-domain mismatch. If the AttemptOtpFilling tool is destroyed while a
+    retrieval is pending, the retrieval continues and its outcome is still
+    recorded.
   </summary>
 </histogram>
 

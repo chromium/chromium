@@ -408,12 +408,12 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionGranted) {
   EXPECT_TRUE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
-  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
-                                      GmailOtpOptInCardInteraction::kShowCard,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpOptInCardInteractionHistogram,
       GmailOtpOptInCardInteraction::kPermissionGranted, 1);
+  // `Validate()` succeeded and the attempt continues to `Invoke()`, so no
+  // ToolInvocation outcome is recorded yet.
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 0);
 }
 
 // When the user denies permission to opt in to Gmail OTPs, the tool
@@ -435,13 +435,10 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionDenied) {
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now(),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInPermissionDenied, 1);
-  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
-                                      GmailOtpOptInCardInteraction::kShowCard,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpOptInCardInteractionHistogram,
       GmailOtpOptInCardInteraction::kPermissionDenied, 1);
 }
@@ -464,13 +461,10 @@ TEST_F(AttemptOtpFillingToolTest, Validate_OptInPermissionCallbackError) {
   EXPECT_FALSE(IsAutofillGmailOtpFillingEnabled(prefs()));
   EXPECT_EQ(base::Time::Now() - base::Days(90),
             GetAutofillGmailOtpFillingActivationDismissalTimestamp(prefs()));
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInErrorResponse, 1);
-  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
-                                      GmailOtpOptInCardInteraction::kShowCard,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpOptInCardInteractionHistogram,
       GmailOtpOptInCardInteraction::kErrorResponse, 1);
 }
@@ -515,9 +509,9 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Validate(future.GetCallback());
 
   // expect call to RequestToShowGmailOtpOptInDialog, see EXPECT_CALL above
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kStartFillingAttempt, 1);
+  // Nothing is recorded while the opt-in card is pending.
+  histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kGmailOtpOptInCardInteractionHistogram, 0);
 }
 
 // Destroying the tool while the consent fetch is pending records
@@ -566,13 +560,12 @@ TEST_F(AttemptOtpFillingToolTest, Validate_DestroyedDuringOptInCard) {
     ExpectNoCancellationRecorded(histogram_tester_);
   }
 
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kCancelledDuringOptInCard, 1);
-  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
-                                      GmailOtpOptInCardInteraction::kCancelled,
-                                      1);
-  histogram_tester_.ExpectTotalCount(kGmailOtpOptInCardInteractionHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(kGmailOtpOptInCardInteractionHistogram,
+                                       GmailOtpOptInCardInteraction::kCancelled,
+                                       1);
   base::HistogramTester::CountsMap counts_before_late_response =
       histogram_tester_.GetTotalCountsForPrefix("OneTimeTokens.");
   std::move(opt_in_callback)
@@ -727,11 +720,9 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DestroyedDuringConfirmationDialog) {
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kCancelledDuringConfirmationDialog, 1);
   histogram_tester_.ExpectTotalCount(kAttemptOtpFillingToolHistogram, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kCancelled, 1);
-  histogram_tester_.ExpectTotalCount(
-      kGmailOtpConfirmationDialogInteractionHistogram, 2);
 }
 
 // Shared by the three `Invoke_DestroyedDuringFillOtp_*` tests below, one per
@@ -1051,13 +1042,10 @@ TEST_F(AttemptOtpFillingToolTest,
   tool.Validate(future.GetCallback());
 
   EXPECT_EQ(kOtpUnableToFill, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kOptInNullResponse, 1);
-  histogram_tester_.ExpectBucketCount(kGmailOtpOptInCardInteractionHistogram,
-                                      GmailOtpOptInCardInteraction::kShowCard,
-                                      1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpOptInCardInteractionHistogram,
       GmailOtpOptInCardInteraction::kErrorResponse, 1);
 }
@@ -1358,10 +1346,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGmailOtpConfirmationDialogInteractionHistogram,
-      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
   histogram_tester_.ExpectBucketCount(kActorOtpVerifyIsActorLoginFlowHistogram,
@@ -1452,10 +1437,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Approved) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGmailOtpConfirmationDialogInteractionHistogram,
-      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionGranted, 1);
 }
@@ -1491,10 +1473,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGmailOtpConfirmationDialogInteractionHistogram,
-      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kPermissionDenied, 1);
   ExpectNoCancellationRecorded(histogram_tester_);
@@ -1527,10 +1506,7 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGmailOtpConfirmationDialogInteractionHistogram,
-      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kErrorResponse, 1);
 }
@@ -1625,10 +1601,7 @@ TEST_F(AttemptOtpFillingToolTest,
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationResponseNotValid, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGmailOtpConfirmationDialogInteractionHistogram,
-      GmailOtpConfirmationDialogInteraction::kShowDialog, 1);
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_.ExpectUniqueSample(
       kGmailOtpConfirmationDialogInteractionHistogram,
       GmailOtpConfirmationDialogInteraction::kErrorResponse, 1);
 }
