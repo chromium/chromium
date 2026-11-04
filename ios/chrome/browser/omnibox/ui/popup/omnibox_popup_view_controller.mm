@@ -1324,6 +1324,12 @@ const CGFloat kCloseButtonPadding = 16.0f;
     bottomInset += kBottomPadding;
     self.tableView.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
+    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                    kOmniboxPopupTopPadding, 0,
+                                                    kBottomPadding, 0)];
+  } else {
+    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                    0, 0, kBottomPadding, 0)];
   }
   self.tableView.contentInset = UIEdgeInsetsMake(
       kOmniboxPopupTopPadding + _additionalVerticalContentInset.top, 0,
