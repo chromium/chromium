@@ -17,3 +17,9 @@ include_rules = [
     # For shared metrics.
     "+third_party/blink/renderer/modules/vr/navigator_vr.h",
 ]
+
+specific_include_rules = {
+    "navigator_gamepad_test.cc": [
+        "+base/memory/read_only_shared_memory_region.h",
+    ],
+}

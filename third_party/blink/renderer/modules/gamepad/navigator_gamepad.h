@@ -83,7 +83,6 @@ class MODULES_EXPORT NavigatorGamepad final
   void SampleGamepads();
 
   void DidRemoveGamepadEventListeners();
-  bool StartUpdatingIfAttached();
   void SampleAndCompareGamepadState();
 
   // Dispatch gamepad events. Dispatching an event calls the event
