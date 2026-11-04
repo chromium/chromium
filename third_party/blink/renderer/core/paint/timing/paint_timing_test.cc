@@ -1067,4 +1067,63 @@ TEST_F(PaintTimingTest, PseudoElementContentImage) {
   target->remove();
 }
 
+TEST_F(PaintTimingTest, ClearPaintTimingOnWindowReuse) {
+  DetachMockClient();
+  LocalDOMWindow* initial_window = GetDocument().domWindow();
+  WindowPerformance* performance =
+      DOMWindowPerformance::performance(*initial_window);
+
+  // Paint on the initial empty document (before any navigation commits).
+  ASSERT_TRUE(GetDocument().IsInitialEmptyDocument());
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div>Initial empty document text</div>");
+  SimulateRenderingAndPresentationTime();
+
+  ASSERT_NE(performance->FirstPaintTiming(), nullptr);
+  EXPECT_EQ(
+      performance->getEntriesByType(performance_entry_names::kPaint).size(),
+      2u);
+  EXPECT_EQ(performance
+                ->getBufferedEntriesByType(
+                    performance_entry_names::kLargestContentfulPaint)
+                .size(),
+            1u);
+
+  // Install a new Document on the same LocalDOMWindow via ClearForReuse().
+  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(
+      base::byte_span_from_cstring("<!DOCTYPE html><div>Committed text</div>"));
+  GetFrame().ForceSynchronousDocumentInstall(AtomicString("text/html"), *data);
+  ASSERT_EQ(GetDocument().domWindow(), initial_window);
+  ASSERT_EQ(DOMWindowPerformance::performance(*GetDocument().domWindow()),
+            performance);
+
+  // Paint timing entries from the initial empty document should be cleared.
+  EXPECT_EQ(performance->FirstPaintTiming(), nullptr);
+  EXPECT_THAT(performance->getEntriesByType(performance_entry_names::kPaint),
+              IsEmpty());
+  EXPECT_THAT(performance->getBufferedEntriesByType(
+                  performance_entry_names::kLargestContentfulPaint),
+              IsEmpty());
+
+  // Subsequent paints on the newly installed Document should record fresh
+  // first-paint and first-contentful-paint entries without colliding with the
+  // initial empty document's entries.
+  GetPaintTiming().SetCallbackManagerForTest(
+      GetMockPaintTimingCallbackManager());
+  SimulateRenderingAndPresentationTime();
+
+  ASSERT_NE(performance->FirstPaintTiming(), nullptr);
+  PerformanceEntryVector paint_entries =
+      performance->getEntriesByType(performance_entry_names::kPaint);
+  ASSERT_EQ(paint_entries.size(), 2u);
+  EXPECT_EQ(paint_entries[0]->name(), performance_entry_names::kFirstPaint);
+  EXPECT_EQ(paint_entries[1]->name(),
+            performance_entry_names::kFirstContentfulPaint);
+  EXPECT_EQ(performance
+                ->getBufferedEntriesByType(
+                    performance_entry_names::kLargestContentfulPaint)
+                .size(),
+            1u);
+}
+
 }  // namespace blink

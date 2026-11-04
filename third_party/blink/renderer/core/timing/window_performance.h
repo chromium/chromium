@@ -88,7 +88,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Clears any metrics state that should not persist when the initially empty
   // document is cleared.
-  static void ClearForWindowReuse(LocalDOMWindow&);
+  // TODO(crbug.com/580495627): Evaluate encapsulating per-Document state on
+  // Performance / WindowPerformance so it cannot leak across LocalDOMWindow
+  // reuse.
+  void ClearForWindowReuse() override;
 
   ExecutionContext* GetExecutionContext() const override;
 

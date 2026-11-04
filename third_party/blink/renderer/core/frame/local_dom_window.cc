@@ -284,7 +284,9 @@ void LocalDOMWindow::ClearForReuse() {
   }
   document_ = nullptr;
 
-  WindowPerformance::ClearForWindowReuse(*this);
+  // TODO(crbug.com/580495627): Avoid force-allocating WindowPerformance if it
+  // hasn't been created yet.
+  DOMWindowPerformance::performance(*this)->ClearForWindowReuse();
 }
 
 void LocalDOMWindow::ResetWindowAgent(WindowAgent* agent) {

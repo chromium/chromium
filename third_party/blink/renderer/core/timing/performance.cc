@@ -1549,6 +1549,13 @@ void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {
   time_origin_ = time_origin;
 }
 
+void Performance::ClearForWindowReuse() {
+  paint_entries_timing_.clear();
+  largest_contentful_paint_buffer_.clear();
+  first_input_timing_ = nullptr;
+  navigation_timing_ = nullptr;
+}
+
 void Performance::OnDeclarativePerformanceObserverHostDisconnected() {
   is_declarative_performance_observer_disabled_for_document_ = true;
   declarative_performance_observer_host_.reset();

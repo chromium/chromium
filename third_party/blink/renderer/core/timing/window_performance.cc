@@ -1861,13 +1861,17 @@ void WindowPerformance::IterateEventTimingsByAnimationFrame(
   }
 }
 
-// static
-void WindowPerformance::ClearForWindowReuse(LocalDOMWindow& window) {
+void WindowPerformance::ClearForWindowReuse() {
   // While `WindowPerformance` is per-`LocalDOMWindow`, metrics data is
-  // typically per-`Document`. Some data (e.g. first input timestamp) can be
-  // captured and cached on the initially empty document, so we need to clear it
-  // if clearing that document so it doesn't leak to the new document.
-  GlobalPerformance::performance(window)->timing_for_reporting_ = nullptr;
+  // typically per-`Document`. Some data (e.g. first paint, first contentful
+  // paint, first input timestamp) can be captured and cached on the initially
+  // empty document, so we need to clear it if clearing that document so it
+  // doesn't leak to the new document.
+  // TODO(crbug.com/580495627): Evaluate encapsulating per-Document state on
+  // Performance / WindowPerformance so it cannot leak across LocalDOMWindow
+  // reuse.
+  Performance::ClearForWindowReuse();
+  timing_for_reporting_ = nullptr;
 }
 
 }  // namespace blink
