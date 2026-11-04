@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.components.browser_ui.widget.containment.SectionIdProvider;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -492,6 +493,9 @@ public class SettingsContainmentHelper {
         if (mDelegate.isTwoColumnSettingsVisible()) {
             controller.setHorizontalMargin(0);
         }
+        if (fragment instanceof SectionIdProvider sectionIdProvider) {
+            controller.setSectionIdProvider(sectionIdProvider);
+        }
         ContainmentItemDecoration itemDecoration = mItemDecorations.get(fragment);
         if (itemDecoration == null) {
             itemDecoration = new ContainmentItemDecoration(controller);
@@ -541,7 +545,13 @@ public class SettingsContainmentHelper {
         mainSettings.setMultiColumnSettings(
                 mDelegate.getMultiColumnSettings(),
                 new SelectionDecoration(
-                        verticalMargin, leftMargin, radius, selectedBackgroundColor));
+                        verticalMargin,
+                        leftMargin,
+                        radius,
+                        selectedBackgroundColor,
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.settings_section_bottom_margin),
+                        mainSettings));
     }
 
     private void reInflateViews(PreferenceFragmentCompat fragment) {

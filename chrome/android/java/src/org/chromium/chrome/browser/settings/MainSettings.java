@@ -21,6 +21,7 @@ import android.view.View;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.CallbackController;
@@ -75,6 +76,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.widget.containment.SectionIdProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -104,6 +106,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 SyncService.SyncStateChangedListener,
                 SigninManager.SignInStateObserver,
                 HomepageManager.HomepageStateListener,
+                SectionIdProvider,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
     private final CallbackController mCallbackController = new CallbackController();
     public static final String PREF_SEARCH_HEADER = "settings_search_header";
@@ -138,6 +141,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
+
+    /** Section of each row once headers are removed (SettingsIaReorganization only). */
+    private final Map<String, String> mSectionIdByKey = new HashMap<>();
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -547,6 +553,34 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Preference preference = getPreferenceScreen().getPreference(index);
             mAllPreferences.put(preference.getKey(), preference);
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)) {
+            groupPreferencesBySection();
+        }
+    }
+
+    /**
+     * Drops the category headers and records, for every row, the header it used to sit under.
+     * Containment then splits cards on section changes instead of on the headers.
+     */
+    private void groupPreferencesBySection() {
+        List<Preference> byOrder = new ArrayList<>(mAllPreferences.values());
+        byOrder.sort((a, b) -> Integer.compare(a.getOrder(), b.getOrder()));
+        String section = null;
+        for (Preference preference : byOrder) {
+            String key = preference.getKey();
+            if (key == null) continue;
+            if (preference instanceof PreferenceCategory) {
+                section = key;
+                removePreferenceIfPresent(key);
+                continue;
+            }
+            if (section != null) mSectionIdByKey.put(key, section);
+        }
+    }
+
+    @Override
+    public @Nullable String getSectionId(Preference preference) {
+        return mSectionIdByKey.get(preference.getKey());
     }
 
     @Override

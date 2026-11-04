@@ -75,6 +75,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItemDecoration.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentUiUtils.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentViewStyler.java",
+    "java/src/org/chromium/components/browser_ui/widget/containment/SectionIdProvider.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/DisplayStyleObserver.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/DisplayStyleObserverAdapter.java",
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/HorizontalDisplayStyle.java",

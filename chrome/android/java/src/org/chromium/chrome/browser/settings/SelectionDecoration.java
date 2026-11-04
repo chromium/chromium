@@ -23,8 +23,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.components.browser_ui.widget.containment.SectionIdProvider;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Controls the highlight of the selected main menu item. We should consider migrating this into
@@ -73,12 +75,25 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
     /** A flag to re-draw background decoration. */
     private boolean mIsDirty = true;
 
+    /** Extra space added above the first item of a section reported by the provider. */
+    private final int mSectionGapPx;
+
+    /** Splits rows into sections without category headers. */
+    private final SectionIdProvider mSectionIdProvider;
+
     SelectionDecoration(
-            int verticalMarginPx, int leftMarginPx, float radiusPx, int selectedBackgroundColor) {
+            int verticalMarginPx,
+            int leftMarginPx,
+            float radiusPx,
+            int selectedBackgroundColor,
+            int sectionGapPx,
+            SectionIdProvider sectionIdProvider) {
         mVerticalMarginPx = verticalMarginPx;
         mLeftMarginPx = leftMarginPx;
         mCornerRadii = ContainmentViewStyler.cornerRadii(radiusPx, radiusPx, radiusPx, radiusPx);
         mSelectedBackgroundColor = selectedBackgroundColor;
+        mSectionGapPx = sectionGapPx;
+        mSectionIdProvider = sectionIdProvider;
     }
 
     private static @Nullable String dedup(@Nullable String key) {
@@ -124,9 +139,27 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
 
         ViewGroup.MarginLayoutParams layoutParams =
                 (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        int topMargin = mVerticalMarginPx + (startsNewSection(view, parent) ? mSectionGapPx : 0);
         layoutParams.setMargins(
-                mLeftMarginPx, mVerticalMarginPx, layoutParams.rightMargin, mVerticalMarginPx);
+                mLeftMarginPx, topMargin, layoutParams.rightMargin, mVerticalMarginPx);
         view.setLayoutParams(layoutParams);
+    }
+
+    /** Returns whether {@code view} begins a different section than the row above it. */
+    private boolean startsNewSection(View view, RecyclerView parent) {
+        if (!(parent.getAdapter() instanceof PreferenceGroupAdapter adapter)) {
+            return false;
+        }
+
+        int position = parent.getChildAdapterPosition(view);
+        if (position == RecyclerView.NO_POSITION || position == 0) return false;
+
+        Preference current = adapter.getItem(position);
+        Preference above = adapter.getItem(position - 1);
+        if (current == null || above == null) return false;
+
+        return !Objects.equals(
+                mSectionIdProvider.getSectionId(above), mSectionIdProvider.getSectionId(current));
     }
 
     @Override

@@ -16,11 +16,13 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItem.BackgroundStyle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller that assigns styling to items in a settings screen.
@@ -50,6 +52,7 @@ public class ContainmentItemController {
     private final int mDefaultBackgroundColor;
 
     private int mHorizontalMargin;
+    private @Nullable SectionIdProvider mSectionIdProvider;
 
     /**
      * Constructor for the styling controller.
@@ -82,6 +85,14 @@ public class ContainmentItemController {
     /** Sets the horizontal margin for container items. */
     public void setHorizontalMargin(int margin) {
         mHorizontalMargin = margin;
+    }
+
+    /**
+     * Sets the provider used to split cards between sections, in addition to the existing
+     * delimiters ({@link PreferenceCategory} and non-standard {@link ContainmentItem}s).
+     */
+    public void setSectionIdProvider(SectionIdProvider provider) {
+        mSectionIdProvider = provider;
     }
 
     /**
@@ -153,8 +164,14 @@ public class ContainmentItemController {
                 (position < visiblePreferences.size() - 1)
                         ? visiblePreferences.get(position + 1)
                         : null;
-        boolean isTop = (prefAbove == null) || isCustomStyledPreference(prefAbove);
-        boolean isBottom = (prefBelow == null) || isCustomStyledPreference(prefBelow);
+        boolean isTop =
+                (prefAbove == null)
+                        || isCustomStyledPreference(prefAbove)
+                        || isInDifferentSection(currentPref, prefAbove);
+        boolean isBottom =
+                (prefBelow == null)
+                        || isCustomStyledPreference(prefBelow)
+                        || isInDifferentSection(currentPref, prefBelow);
 
         addStandardStyling(containerStyleBuilder, currentPref.getSummary() == null);
         if (currentPref instanceof ContainmentItem customStyledPreference) {
@@ -166,6 +183,18 @@ public class ContainmentItemController {
         }
         addPositionBasedStyling(containerStyleBuilder, isTop, isBottom);
         return containerStyleBuilder.build();
+    }
+
+    /**
+     * Returns whether {@code preference} is in a different section than {@code neighbor}, as
+     * reported by the {@link SectionIdProvider}. Always false when no provider is set.
+     */
+    private boolean isInDifferentSection(Preference preference, Preference neighbor) {
+        if (mSectionIdProvider == null) return false;
+
+        return !Objects.equals(
+                mSectionIdProvider.getSectionId(preference),
+                mSectionIdProvider.getSectionId(neighbor));
     }
 
     /**

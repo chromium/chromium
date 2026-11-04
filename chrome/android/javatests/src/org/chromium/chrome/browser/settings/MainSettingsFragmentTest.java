@@ -159,6 +159,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
                 + ":set_default_to_false_on_homepage_on_desktop/false")
 public class MainSettingsFragmentTest {
     private static final String SEARCH_ENGINE_SHORT_NAME = "Google";
+    private static final String ADVANCED_SECTION = "advanced_section";
 
     private static final int RENDER_TEST_REVISION = 15;
     private static final String RENDER_TEST_DESCRIPTION =
@@ -309,6 +310,39 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+    public void testSettingsIaReorganization_dropsHeadersAndGroupsRowsBySection() {
+        startSettings();
+
+        // The category headers are removed from the screen.
+        Assert.assertNull(
+                mMainSettings.findPreference(
+                        MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION));
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_BASICS_SECTION));
+        Assert.assertNull(mMainSettings.findPreference(ADVANCED_SECTION));
+
+        // Each row reports the header it used to sit under as its section id.
+        assertSectionId(
+                MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION,
+                MainSettings.PREF_GOOGLE_SERVICES);
+        assertSectionId(MainSettings.PREF_BASICS_SECTION, MainSettings.PREF_SEARCH_ENGINE);
+        assertSectionId(MainSettings.PREF_BASICS_SECTION, "privacy");
+        assertSectionId(MainSettings.PREF_BASICS_SECTION, MainSettings.PREF_AUTOFILL_AND_PASSWORDS);
+        assertSectionId(ADVANCED_SECTION, MainSettings.PREF_DOWNLOADS);
+        assertSectionId(ADVANCED_SECTION, "about_chrome");
+    }
+
+    private void assertSectionId(String expectedSectionId, String key) {
+        Preference preference = mMainSettings.findPreference(key);
+        Assert.assertNotNull("Preference should exist: " + key, preference);
+        Assert.assertEquals(
+                "Unexpected section for " + key,
+                expectedSectionId,
+                mMainSettings.getSectionId(preference));
     }
 
     @Test

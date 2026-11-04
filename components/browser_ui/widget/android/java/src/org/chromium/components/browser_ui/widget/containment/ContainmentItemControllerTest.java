@@ -257,6 +257,40 @@ public class ContainmentItemControllerTest {
         return mPreferenceStyles.get(preferenceIndex);
     }
 
+    @Test
+    public void testSectionIdProvider_splitsCardWhereSectionChanges() {
+        // Move "preference_bottom" into its own section; top/middle stay in the default one.
+        mController.setSectionIdProvider(
+                pref -> "preference_bottom".equals(pref.getKey()) ? "other" : null);
+        mPreferenceStyles = mController.generatePreferenceStyles(mVisiblePreferences);
+
+        ContainerStyle top = getPreferenceStyle("preference_top");
+        assertEquals(mDefaultRadius, top.getTopRadius(), 0);
+        assertEquals(mInnerRadius, top.getBottomRadius(), 0);
+
+        // The middle row now ends its card.
+        ContainerStyle middle = getPreferenceStyle("preference_middle");
+        assertEquals(mInnerRadius, middle.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, middle.getBottomRadius(), 0);
+        assertEquals(
+                mDefaultContainerVerticalMargin + mSectionBottomMargin, middle.getBottomMargin());
+
+        // The bottom row starts its own card.
+        ContainerStyle bottom = getPreferenceStyle("preference_bottom");
+        assertEquals(mDefaultRadius, bottom.getTopRadius(), 0);
+        assertEquals(mDefaultRadius, bottom.getBottomRadius(), 0);
+    }
+
+    @Test
+    public void testSectionIdProvider_sameSectionKeepsCard() {
+        mController.setSectionIdProvider(pref -> "same");
+        mPreferenceStyles = mController.generatePreferenceStyles(mVisiblePreferences);
+
+        ContainerStyle middle = getPreferenceStyle("preference_middle");
+        assertEquals(mInnerRadius, middle.getTopRadius(), 0);
+        assertEquals(mInnerRadius, middle.getBottomRadius(), 0);
+    }
+
     private static class CustomView extends View implements ContainmentItem {
         private final @BackgroundStyle int mStyle;
 
