@@ -244,7 +244,9 @@ public class SafetyHubLocalPasswordsModuleMediator
     }
 
     public void triggerNewCredentialFetch() {
-        mLocalPasswordsDataSource.triggerNewCredentialFetch();
+        if (!isLoading()) {
+            mLocalPasswordsDataSource.triggerNewCredentialFetch();
+        }
     }
 
     @Override

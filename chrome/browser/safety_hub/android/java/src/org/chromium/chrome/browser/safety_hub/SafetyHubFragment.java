@@ -260,16 +260,24 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onStart();
         updateAllModules();
 
+        boolean credentialFetchTriggered = false;
         for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
             // Fetch the passwords again to get the latest result.
             if (moduleMediator.getOption() == ModuleOption.ACCOUNT_PASSWORDS) {
                 ((SafetyHubAccountPasswordsModuleMediator) moduleMediator)
                         .triggerNewCredentialFetch();
-                break;
-            }
-            if (moduleMediator.getOption() == ModuleOption.LOCAL_PASSWORDS) {
+                credentialFetchTriggered = true;
+            } else if (moduleMediator.getOption() == ModuleOption.LOCAL_PASSWORDS) {
                 ((SafetyHubLocalPasswordsModuleMediator) moduleMediator)
                         .triggerNewCredentialFetch();
+                credentialFetchTriggered = true;
+            } else if (moduleMediator.getOption() == ModuleOption.UNIFIED_PASSWORDS) {
+                // The unified passwords module triggers both account and local password checks. It
+                // should not be shown together with the individual modules, so avoid re-triggering
+                // if either check was already started.
+                if (!credentialFetchTriggered) {
+                    ((SafetyHubPasswordsModuleMediator) moduleMediator).triggerNewCredentialFetch();
+                }
                 break;
             }
         }

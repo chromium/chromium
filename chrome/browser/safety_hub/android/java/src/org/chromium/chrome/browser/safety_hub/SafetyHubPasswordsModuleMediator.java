@@ -294,6 +294,13 @@ public class SafetyHubPasswordsModuleMediator
         return false;
     }
 
+    public void triggerNewCredentialFetch() {
+        if (!isLoading()) {
+            mAccountPasswordsDataSource.triggerNewCredentialFetch();
+            mLocalPasswordsDataSource.triggerNewCredentialFetch();
+        }
+    }
+
     @Override
     public void accountPasswordsStateChanged(
             @SafetyHubAccountPasswordsDataSource.ModuleType int moduleType) {

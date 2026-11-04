@@ -392,4 +392,28 @@ public class SafetyHubLocalPasswordsModuleMediatorTest {
         assertNull(mPreference.getPrimaryButtonText());
         assertNull(mPreference.getSecondaryButtonText());
     }
+
+    @Test
+    public void triggerNewCredentialFetch() {
+        verify(mDataSource, times(0)).triggerNewCredentialFetch();
+
+        mModuleMediator.triggerNewCredentialFetch();
+
+        verify(mDataSource, times(1)).triggerNewCredentialFetch();
+    }
+
+    @Test
+    public void triggerNewCredentialFetch_whileLoading() {
+        mockTriggerCheckup(true);
+
+        SafetyHubLocalPasswordsModuleMediator moduleMediator =
+                new SafetyHubLocalPasswordsModuleMediator(
+                        mPreference, mDataSource, mMediatorDelegateMock, mModuleDelegateMock);
+        moduleMediator.setUpModule();
+        verify(mDataSource, times(0)).triggerNewCredentialFetch();
+
+        moduleMediator.triggerNewCredentialFetch();
+
+        verify(mDataSource, times(0)).triggerNewCredentialFetch();
+    }
 }
