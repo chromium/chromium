@@ -3442,6 +3442,7 @@ interface WebTransport
     method close
     method constructor
     method createBidirectionalStream
+    method createSendGroup
     method createUnidirectionalStream
     method exportKeyingMaterial
     setter anticipatedConcurrentIncomingBidirectionalStreams
@@ -3478,6 +3479,18 @@ interface WebTransportReceiveStream : ReadableStream
     attribute @@toStringTag
     method constructor
     method getStats
+interface WebTransportSendGroup
+    attribute @@toStringTag
+    method constructor
+    method getStats
+interface WebTransportSendStream : WritableStream
+    attribute @@toStringTag
+    getter sendGroup
+    getter sendOrder
+    method constructor
+    method getStats
+    setter sendGroup
+    setter sendOrder
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused

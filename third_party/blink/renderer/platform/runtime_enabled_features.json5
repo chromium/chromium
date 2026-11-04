@@ -7838,8 +7838,7 @@
     },
     {
       name: "WebTransportSendGroup",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       // Note: enabling this without setting WebTransportCongestionControl to
