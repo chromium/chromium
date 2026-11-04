@@ -359,7 +359,7 @@ public class VoiceRecognitionIntentHandler {
                     }
 
                     VoiceResult topResult = results.get(0);
-                    if (!stopped && TextUtils.isEmpty(topResult.getMatch())) {
+                    if (TextUtils.isEmpty(topResult.getMatch())) {
                         recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
                         return;

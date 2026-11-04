@@ -486,23 +486,18 @@ public class VoiceRecognitionHandlerUnitTest {
     }
 
     @Test
-    public void testVoicePlate_stoppedWithEmptyTranscript_focusesEmptyOmnibox() {
+    public void testVoicePlate_stoppedWithEmptyTranscript_treatsAsCanceled() {
         mProfileSupplier.set(mProfile);
         enableVoicePlate();
         setVoiceResult(
                 /* resultCode= */ Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.0f);
         doReturn(true).when(mVoicePlateIntegration).isVoiceSearchStopped(any());
 
-        try (var watcher =
-                HistogramWatcher.newSingleRecordWatcher("Omnibox.VoiceSearch.WordCount", 0)) {
-            mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
-        }
+        mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, mOnCanceled);
 
-        verify(mOmniboxStub).beginInput(mInputCaptor.capture());
-        assertEquals("", mInputCaptor.getValue().getUserText());
-        verify(mAutocompleteController, never()).classify(any());
-        verify(mOmniboxStub, never()).loadUrlFromVoice(any());
-        verify(mOnCanceled, never()).run();
+        verify(mOnCanceled).run();
+        verify(mIntentHandler).recordVoiceSearchResult(false);
+        verifyNoInteractions(mOmniboxStub);
     }
 
     @Test

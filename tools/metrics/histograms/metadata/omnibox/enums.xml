@@ -865,6 +865,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Refused: Other or missing reason"/>
   <int value="8" label="Success (submitted)"/>
   <int value="9" label="Success (stopped)"/>
+  <int value="10" label="Aborted: Stopped with empty transcript"/>
 </enum>
 
 <!-- LINT.IfChange(VoiceSearchAction) -->

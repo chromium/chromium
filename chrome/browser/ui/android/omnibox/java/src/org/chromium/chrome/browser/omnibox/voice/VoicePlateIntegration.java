@@ -69,8 +69,8 @@ public class VoicePlateIntegration {
 
     /**
      * Returns whether the user manually stopped the Voice Plate session (tapping the Stop button),
-     * in which case the partial (or empty) transcription should populate the focused Omnibox
-     * instead of navigating directly. Overridden by the downstream implementation in //clank.
+     * in which case the partial transcription should populate the focused Omnibox instead of
+     * navigating directly. Overridden by the downstream implementation in //clank.
      *
      * @param data The result intent returned by the Voice Plate.
      */

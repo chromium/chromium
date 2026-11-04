@@ -5765,8 +5765,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records the number of whitespace-separated words in the top transcription
-    result of a completed voice search (0 when a manually stopped Voice Plate
-    session completes with an empty transcription).
+    result of a completed voice search.
 
     Recorded on Android once per completed voice search transcription.
   </summary>
