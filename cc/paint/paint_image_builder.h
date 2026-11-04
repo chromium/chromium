@@ -63,6 +63,9 @@ class CC_PAINT_EXPORT PaintImageBuilder {
                                        PaintImage::ContentId content_id) {
     DCHECK_NE(content_id, PaintImage::kInvalidContentId);
 
+    if (paint_record.has_read_back_disallowed_content()) {
+      paint_image_.is_read_back_disallowed_ = true;
+    }
     paint_image_.paint_record_ = std::move(paint_record);
     paint_image_.paint_record_rect_ = rect;
     paint_image_.content_id_ = content_id;
@@ -108,6 +111,13 @@ class CC_PAINT_EXPORT PaintImageBuilder {
   }
   PaintImageBuilder&& set_no_cache(bool no_cache) {
     paint_image_.no_cache_ = no_cache;
+    return std::move(*this);
+  }
+  // Marks whether pixel readback of this image is disallowed (e.g., cross-
+  // origin images without CORS access).
+  PaintImageBuilder&& set_is_read_back_disallowed(
+      bool is_read_back_disallowed) {
+    paint_image_.is_read_back_disallowed_ = is_read_back_disallowed;
     return std::move(*this);
   }
   PaintImageBuilder&& set_repetition_count(int count) {

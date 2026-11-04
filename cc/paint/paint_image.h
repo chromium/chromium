@@ -313,6 +313,9 @@ class CC_PAINT_EXPORT PaintImage {
   bool is_multipart() const { return is_multipart_; }
   bool is_high_bit_depth() const { return is_high_bit_depth_; }
   bool no_cache() const { return no_cache_; }
+  // Returns true if pixel readback of this image is disallowed (e.g., cross-
+  // origin images without CORS access).
+  bool is_read_back_disallowed() const { return is_read_back_disallowed_; }
   int repetition_count() const { return repetition_count_; }
   bool ShouldAnimate() const;
   AnimationSequenceId reset_animation_sequence_id() const {
@@ -487,6 +490,10 @@ class CC_PAINT_EXPORT PaintImage {
   // appears in. Used as a hint to avoid caching it downstream, but is not a
   // mandate.
   bool no_cache_ = false;
+
+  // Whether readback of this image's pixel data is disallowed (e.g., cross-
+  // origin images without CORS access).
+  bool is_read_back_disallowed_ = false;
 
   // An incrementing sequence number maintained by the painter to indicate if
   // this animation should be reset in the compositor. Incrementing this number

@@ -194,6 +194,9 @@ class CC_PAINT_EXPORT DisplayItemList
   bool has_discardable_images() const {
     return paint_op_buffer_.has_discardable_images();
   }
+  bool has_read_back_disallowed_content() const {
+    return paint_op_buffer_.has_read_back_disallowed_content();
+  }
   const gfx::ContentColorVolume& content_color_volume() const {
     return paint_op_buffer_.content_color_volume();
   }

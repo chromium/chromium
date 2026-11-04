@@ -335,6 +335,25 @@ bool PaintShader::HasDiscardableImages() const {
   }
 }
 
+bool PaintShader::HasReadBackDisallowedContent() const {
+  switch (shader_type_) {
+    case Type::kEmpty:
+    case Type::kColor:
+    case Type::kLinearGradient:
+    case Type::kRadialGradient:
+    case Type::kTwoPointConicalGradient:
+    case Type::kSweepGradient:
+    case Type::kSkSLCommand:
+      return false;
+    case Type::kImage:
+      return image_ && image_.is_read_back_disallowed();
+    case Type::kPaintRecord:
+      return record_ && record_->has_read_back_disallowed_content();
+    case Type::kShaderCount:
+      NOTREACHED();
+  }
+}
+
 void PaintShader::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   switch (shader_type_) {
@@ -493,6 +512,7 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
             .set_id(image_.stable_id())
             .set_texture_image(std::move(sk_image),
                                image_.GetContentIdForFrame(0u))
+            .set_is_read_back_disallowed(image_.is_read_back_disallowed())
             .TakePaintImage();
   }
 

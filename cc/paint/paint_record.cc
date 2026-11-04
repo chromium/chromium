@@ -32,6 +32,22 @@ PaintRecord::PaintRecord(sk_sp<PaintOpBuffer> buffer)
   CHECK(buffer_);
 }
 
+void PaintRecord::SetIsReadBackDisallowed() {
+  if (buffer_->is_read_back_disallowed()) {
+    return;
+  }
+  // `PaintRecord` copies share `buffer_` (including the process-wide
+  // `empty_buffer` singleton in `PaintRecord()`, as well as cached recordings
+  // such as display items and SVG masks), and `PaintOpBuffer` requires a
+  // unique reference to mutate.
+  if (!buffer_->unique()) {
+    auto copy = sk_make_sp<PaintOpBuffer>();
+    *copy += *buffer_;
+    buffer_ = std::move(copy);
+  }
+  buffer_->set_is_read_back_disallowed();
+}
+
 // static
 SkRect PaintRecord::GetFixedScaleBounds(const SkMatrix& ctm,
                                         const SkRect& bounds,

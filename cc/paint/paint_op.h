@@ -200,6 +200,10 @@ class CC_PAINT_EXPORT PaintOp {
   // generated images.
   static bool OpHasDiscardableImages(const PaintOp& op);
 
+  // Returns true if the op or its flags contain content whose pixel readback is
+  // disallowed.
+  static bool OpHasReadBackDisallowedContent(const PaintOp& op);
+
   // Returns true if the op contains any draw text operations.
   static bool OpHasDrawTextOps(const PaintOp& op);
 
@@ -243,6 +247,9 @@ class CC_PAINT_EXPORT PaintOp {
   bool HasDiscardableImages() const { return false; }
   bool HasDiscardableImagesFromFlags() const { return false; }
 
+  bool HasReadBackDisallowedContentIgnoringFlags() const { return false; }
+  bool HasReadBackDisallowedContentFromFlags() const { return false; }
+
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const {}
   void UnionColorVolumeFromFlagsInto(
       gfx::ContentColorVolume& color_volume) const {}
@@ -282,6 +289,7 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
 
   int CountSlowPathsFromFlags() const { return flags.getPathEffect() ? 1 : 0; }
   bool HasDiscardableImagesFromFlags() const;
+  bool HasReadBackDisallowedContentFromFlags() const;
   void UnionColorVolumeFromFlagsInto(
       gfx::ContentColorVolume& color_volume) const;
 
@@ -321,6 +329,8 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
     using super::HasEffectsPreventingLCDTextForSaveLayerAlpha; \
     using super::HasDiscardableImages;                         \
     using super::HasDiscardableImagesFromFlags;                \
+    using super::HasReadBackDisallowedContentIgnoringFlags;    \
+    using super::HasReadBackDisallowedContentFromFlags;        \
     using super::UnionColorVolumeInto;                         \
     using super::UnionColorVolumeFromFlagsInto;                \
     using super::AdditionalBytesUsed;                          \
@@ -535,6 +545,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlagsBaseInternal {
   }
   bool EqualsForTesting(const DrawImageOp& other) const;
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   PaintFlags::FilterQuality GetImageQuality() const;
   bool HasNonAAPaint() const { return false; }
@@ -580,6 +591,7 @@ class CC_PAINT_EXPORT DrawImageRectOp final
   }
   bool EqualsForTesting(const DrawImageRectOp& other) const;
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   PaintFlags::FilterQuality GetImageQuality() const;
   HAS_SERIALIZATION_FUNCTIONS();
@@ -828,6 +840,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOpBaseInternal {
   size_t AdditionalBytesUsed() const;
   size_t AdditionalOpCount() const;
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
@@ -911,6 +924,7 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final
   size_t AdditionalBytesUsed() const;
   size_t AdditionalOpCount() const;
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
@@ -978,6 +992,7 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOpBaseInternal {
   }
   bool EqualsForTesting(const DrawSkottieOp& other) const;
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
@@ -1225,6 +1240,7 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
            filters.size() <= kMaxFiltersPerLayer;
   }
   bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
+  bool HasReadBackDisallowedContentIgnoringFlags() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
   SkRect bounds;

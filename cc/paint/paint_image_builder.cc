@@ -102,6 +102,11 @@ PaintImage PaintImageBuilder::TakePaintImage() {
     paint_image_.hdr_metadata_ = merged;
   }
 
+  if (paint_image_.paint_record_ &&
+      paint_image_.paint_record_->has_read_back_disallowed_content()) {
+    paint_image_.is_read_back_disallowed_ = true;
+  }
+
   if (paint_image_.reinterpret_as_srgb_) {
     if (paint_image_.sk_image_) {
       paint_image_.sk_image_ = paint_image_.sk_image_->reinterpretColorSpace(

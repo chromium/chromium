@@ -104,6 +104,9 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   const CropRect* GetCropRect() const;
 
   bool has_discardable_images() const { return has_discardable_images_; }
+  bool has_read_back_disallowed_content() const {
+    return has_read_back_disallowed_content_;
+  }
   ImageAnalysisState image_analysis_state() const {
     return image_analysis_state_;
   }
@@ -139,7 +142,8 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
  protected:
   PaintFilter(Type type,
               const CropRect* crop_rect,
-              bool has_discardable_images);
+              bool has_discardable_images,
+              bool has_read_back_disallowed_content);
 
   const sk_sp<SkImageFilter>& cached_sk_filter() const {
     return cached_sk_filter_;
@@ -163,6 +167,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
   const Type type_;
   std::optional<CropRect> crop_rect_;
   const bool has_discardable_images_;
+  const bool has_read_back_disallowed_content_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
 };

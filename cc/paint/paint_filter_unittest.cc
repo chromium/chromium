@@ -4,7 +4,10 @@
 
 #include "cc/paint/paint_filter.h"
 
+#include <utility>
+
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op.h"
 #include "cc/test/skia_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,12 +33,18 @@ class MockImageProvider : public ImageProvider {
 };
 
 sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
-                                    bool has_discardable_images) {
+                                    bool has_discardable_images,
+                                    bool is_read_back_disallowed = false) {
   PaintImage image;
   if (has_discardable_images)
     image = CreateDiscardablePaintImage(gfx::Size(100, 100));
   else
     image = CreateNonDiscardablePaintImage(gfx::Size(100, 100));
+  if (is_read_back_disallowed) {
+    image = PaintImageBuilder::WithCopy(std::move(image))
+                .set_is_read_back_disallowed(true)
+                .TakePaintImage();
+  }
 
   auto image_filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
@@ -163,6 +172,30 @@ TEST_P(PaintFilterTest, HasDiscardableImagesYes) {
 TEST_P(PaintFilterTest, HasDiscardableImagesNo) {
   EXPECT_FALSE(
       CreateTestFilter(GetParamType(), false)->has_discardable_images())
+      << PaintFilter::TypeToString(GetParamType());
+}
+
+TEST_P(PaintFilterTest, HasReadBackDisallowedContentYes) {
+  // TurbulencePaintFilter can not embed images.
+  if (GetParamType() == PaintFilter::Type::kTurbulence) {
+    return;
+  }
+
+  auto filter = CreateTestFilter(GetParamType(), true,
+                                 /*is_read_back_disallowed=*/true);
+  EXPECT_TRUE(filter->has_read_back_disallowed_content())
+      << PaintFilter::TypeToString(GetParamType());
+
+  MockImageProvider image_provider;
+  auto snapshot_filter = filter->SnapshotWithImages(&image_provider);
+  EXPECT_TRUE(snapshot_filter->has_read_back_disallowed_content())
+      << PaintFilter::TypeToString(GetParamType());
+}
+
+TEST_P(PaintFilterTest, HasReadBackDisallowedContentNo) {
+  EXPECT_FALSE(CreateTestFilter(GetParamType(), true,
+                                /*is_read_back_disallowed=*/false)
+                   ->has_read_back_disallowed_content())
       << PaintFilter::TypeToString(GetParamType());
 }
 

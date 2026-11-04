@@ -395,6 +395,22 @@ bool OpHasDiscardableImagesImpl(const PaintOp& op) {
   }
 }
 
+bool OpHasReadBackDisallowedContentImpl(const PaintOp& op) {
+  if (op.IsPaintOpWithFlags() && static_cast<const PaintOpWithFlags&>(op)
+                                     .HasReadBackDisallowedContentFromFlags()) {
+    return true;
+  }
+  switch (op.GetType()) {
+#define M(T)                         \
+  case T::kType:                     \
+    return static_cast<const T&>(op) \
+        .HasReadBackDisallowedContentIgnoringFlags();
+
+    TYPES(M)
+#undef M
+  }
+}
+
 bool OpHasDrawTextOpsImpl(const PaintOp& op) {
   switch (op.GetType()) {
 #define M(T)     \
@@ -2434,6 +2450,11 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
 }
 
 // static
+bool PaintOp::OpHasReadBackDisallowedContent(const PaintOp& op) {
+  return OpHasReadBackDisallowedContentImpl(op);
+}
+
+// static
 bool PaintOp::OpHasDrawTextOps(const PaintOp& op) {
   return OpHasDrawTextOpsImpl(op);
 }
@@ -2451,6 +2472,10 @@ void PaintOp::DestroyThis() {
 
 bool PaintOpWithFlags::HasDiscardableImagesFromFlags() const {
   return flags.HasDiscardableImages();
+}
+
+bool PaintOpWithFlags::HasReadBackDisallowedContentFromFlags() const {
+  return flags.HasReadBackDisallowedContent();
 }
 
 void PaintOpWithFlags::UnionColorVolumeFromFlagsInto(
@@ -2525,6 +2550,10 @@ bool DrawRecordOp::HasDiscardableImages() const {
   return record.has_discardable_images();
 }
 
+bool DrawRecordOp::HasReadBackDisallowedContentIgnoringFlags() const {
+  return record.has_read_back_disallowed_content();
+}
+
 void DrawRecordOp::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   color_volume.UnionWith(record.content_color_volume());
@@ -2554,6 +2583,11 @@ bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
 
 bool DrawScrollingContentsOp::HasDiscardableImages() const {
   return display_item_list->has_discardable_images();
+}
+
+bool DrawScrollingContentsOp::HasReadBackDisallowedContentIgnoringFlags()
+    const {
+  return display_item_list->has_read_back_disallowed_content();
 }
 
 void DrawScrollingContentsOp::UnionColorVolumeInto(
@@ -2596,6 +2630,10 @@ bool DrawImageOp::HasDiscardableImages() const {
   return IsDiscardableImage(image);
 }
 
+bool DrawImageOp::HasReadBackDisallowedContentIgnoringFlags() const {
+  return image && image.is_read_back_disallowed();
+}
+
 void DrawImageOp::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   image.UnionColorVolumeInto(color_volume);
@@ -2634,6 +2672,10 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
 
 bool DrawImageRectOp::HasDiscardableImages() const {
   return IsDiscardableImage(image);
+}
+
+bool DrawImageRectOp::HasReadBackDisallowedContentIgnoringFlags() const {
+  return image && image.is_read_back_disallowed();
 }
 
 void DrawImageRectOp::UnionColorVolumeInto(
@@ -2715,6 +2757,15 @@ bool DrawSkottieOp::HasDiscardableImages() const {
   return !images.empty();
 }
 
+bool DrawSkottieOp::HasReadBackDisallowedContentIgnoringFlags() const {
+  for (const auto& [_, frame_data] : images) {
+    if (frame_data.image && frame_data.image.is_read_back_disallowed()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void DrawSkottieOp::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   for (const auto& [_, frame_data] : images) {
@@ -2786,6 +2837,18 @@ SaveLayerFiltersOp::SaveLayerFiltersOp()
     : PaintOpWithFlagsBaseInternal(kType), bounds(kUnsetRect) {}
 
 SaveLayerFiltersOp::~SaveLayerFiltersOp() = default;
+
+bool SaveLayerFiltersOp::HasReadBackDisallowedContentIgnoringFlags() const {
+  if (backdrop_filter && backdrop_filter->has_read_back_disallowed_content()) {
+    return true;
+  }
+  for (const auto& filter : filters) {
+    if (filter && filter->has_read_back_disallowed_content()) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool AreLiteOpsEnabled() {
   static const bool enabled = base::FeatureList::IsEnabled(kUseLitePaintOps);

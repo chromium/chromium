@@ -240,6 +240,11 @@ bool PaintFlags::HasDiscardableImages() const {
          (image_filter_ && image_filter_->has_discardable_images());
 }
 
+bool PaintFlags::HasReadBackDisallowedContent() const {
+  return (shader_ && shader_->HasReadBackDisallowedContent()) ||
+         (image_filter_ && image_filter_->has_read_back_disallowed_content());
+}
+
 void PaintFlags::UnionColorVolumeInto(
     gfx::ContentColorVolume& color_volume) const {
   if (shader_) {

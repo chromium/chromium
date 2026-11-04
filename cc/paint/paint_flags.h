@@ -326,6 +326,7 @@ class CC_PAINT_EXPORT PaintFlags final : public CorePaintFlags {
   bool EqualsForTesting(const PaintFlags& other) const;
 
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContent() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
 
  private:

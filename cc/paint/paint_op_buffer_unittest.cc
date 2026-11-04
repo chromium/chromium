@@ -580,6 +580,457 @@ TEST(PaintOpBufferTest, DiscardableImagesTracking_OpWithFlags) {
   EXPECT_TRUE(buffer.has_discardable_images());
 }
 
+TEST(PaintOpBufferTest, ReadBackDisallowedContentTracking) {
+  PaintImage allowed_image = CreateDiscardablePaintImage(gfx::Size(100, 100));
+  PaintImage disallowed_image = PaintImageBuilder::WithCopy(allowed_image)
+                                    .set_is_read_back_disallowed(true)
+                                    .TakePaintImage();
+
+  // Empty buffer and non-image ops do not set the bit.
+  {
+    PaintOpBuffer buffer;
+    EXPECT_FALSE(buffer.has_read_back_disallowed_content());
+    buffer.push<DrawRectOp>(SkRect::MakeWH(100, 100), PaintFlags());
+    buffer.push<DrawImageOp>(allowed_image, 0.f, 0.f);
+    EXPECT_FALSE(buffer.has_read_back_disallowed_content());
+  }
+
+  // DrawImageOp and DrawImageRectOp set the bit when disallowed.
+  {
+    PaintOpBuffer buffer;
+    buffer.push<DrawImageOp>(disallowed_image, 0.f, 0.f);
+    EXPECT_TRUE(buffer.has_read_back_disallowed_content());
+    buffer.Reset();
+    EXPECT_FALSE(buffer.has_read_back_disallowed_content());
+
+    buffer.push<DrawImageRectOp>(disallowed_image, SkRect::MakeWH(100, 100),
+                                 SkRect::MakeWH(100, 100),
+                                 SkCanvas::kFast_SrcRectConstraint);
+    EXPECT_TRUE(buffer.has_read_back_disallowed_content());
+  }
+
+  // Image and PaintRecord shaders in PaintFlags propagate the bit.
+  {
+    PaintOpBuffer buffer;
+    PaintFlags flags;
+    flags.setShader(PaintShader::MakeImage(disallowed_image, SkTileMode::kClamp,
+                                           SkTileMode::kClamp, nullptr));
+    buffer.push<DrawRectOp>(SkRect::MakeWH(100, 100), flags);
+    PaintRecord record = buffer.ReleaseAsRecord();
+    EXPECT_TRUE(record.has_read_back_disallowed_content());
+
+    PaintOpBuffer outer;
+    PaintFlags record_shader_flags;
+    record_shader_flags.setShader(PaintShader::MakePaintRecord(
+        record, SkRect::MakeWH(100, 100), SkTileMode::kClamp,
+        SkTileMode::kClamp, nullptr));
+    outer.push<DrawRectOp>(SkRect::MakeWH(100, 100), record_shader_flags);
+    EXPECT_TRUE(outer.has_read_back_disallowed_content());
+  }
+
+  // Filters in PaintFlags and SaveLayerFiltersOp propagate the bit.
+  {
+    auto filter = sk_make_sp<ImagePaintFilter>(
+        disallowed_image, SkRect::MakeWH(100, 100), SkRect::MakeWH(100, 100),
+        PaintFlags::FilterQuality::kNone);
+    PaintOpBuffer buffer;
+    PaintFlags flags;
+    flags.setImageFilter(filter);
+    buffer.push<SaveLayerOp>(SkRect::MakeWH(100, 100), flags);
+    EXPECT_TRUE(buffer.has_read_back_disallowed_content());
+
+    PaintOpBuffer layer_filters_buffer;
+    sk_sp<PaintFilter> filters[] = {filter};
+    layer_filters_buffer.push<SaveLayerFiltersOp>(filters, nullptr,
+                                                  PaintFlags());
+    EXPECT_TRUE(layer_filters_buffer.has_read_back_disallowed_content());
+  }
+
+  // PaintRecord::SetIsReadBackDisallowed(), DrawRecordOp,
+  // DeepCopyAsRecord(), and ReplaceCustomData() preserve the bit without
+  // mutating the shared empty PaintRecord singleton.
+  {
+    PaintRecord empty_record;
+    empty_record.SetIsReadBackDisallowed();
+    EXPECT_TRUE(empty_record.has_read_back_disallowed_content());
+    EXPECT_FALSE(PaintRecord().has_read_back_disallowed_content());
+
+    PaintOpBuffer vector_only;
+    vector_only.push<DrawRectOp>(SkRect::MakeWH(10, 10), PaintFlags());
+    PaintRecord disallowed_vector_record = vector_only.ReleaseAsRecord();
+    disallowed_vector_record.SetIsReadBackDisallowed();
+    PaintRecord copied_vector_record =
+        disallowed_vector_record.buffer().DeepCopyAsRecord();
+    EXPECT_TRUE(copied_vector_record.is_read_back_disallowed());
+    EXPECT_TRUE(copied_vector_record.has_read_back_disallowed_content());
+
+    PaintOpBuffer placeholder_buffer;
+    placeholder_buffer.push<CustomDataOp>(42u);
+    PaintRecord placeholder_record = placeholder_buffer.ReleaseAsRecord();
+    EXPECT_FALSE(placeholder_record.has_read_back_disallowed_content());
+
+    base::flat_map<uint32_t, PaintRecord> replacements;
+    replacements[42u] = disallowed_vector_record;
+    PaintRecord replaced = placeholder_record.ReplaceCustomData(replacements);
+    EXPECT_TRUE(replaced.has_read_back_disallowed_content());
+
+    // PaintImageBuilder::set_paint_record propagates the bit from PaintRecord
+    // and PaintImageBuilder::WithProperties preserves it.
+    PaintImage record_image =
+        PaintImageBuilder::WithDefault()
+            .set_id(PaintImage::GetNextId())
+            .set_paint_record(disallowed_vector_record, gfx::Rect(10, 10),
+                              PaintImage::GetNextContentId())
+            .TakePaintImage();
+    EXPECT_TRUE(record_image.is_read_back_disallowed());
+
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10);
+    PaintImage derived_image =
+        PaintImageBuilder::WithProperties(std::move(record_image))
+            .set_image(SkImages::RasterFromBitmap(bitmap),
+                       PaintImage::GetNextContentId())
+            .TakePaintImage();
+    EXPECT_TRUE(derived_image.is_read_back_disallowed());
+  }
+}
+
+TEST(PaintOpBufferTest, DeepCopyAsRecordStripReadBackDisallowedOps) {
+  auto make_solid_image = [](SkColor color, bool disallow_read_back) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(10, 10);
+    bitmap.eraseColor(color);
+    return PaintImageBuilder::WithDefault()
+        .set_id(PaintImage::GetNextId())
+        .set_image(SkImages::RasterFromBitmap(bitmap),
+                   PaintImage::GetNextContentId())
+        .set_is_read_back_disallowed(disallow_read_back)
+        .TakePaintImage();
+  };
+
+  PaintImage allowed_blue = make_solid_image(SK_ColorBLUE, false);
+  PaintImage disallowed_red = make_solid_image(SK_ColorRED, true);
+
+  // 1. Leaf draw ops and shaders: allowed ops are preserved, disallowed ops are
+  // omitted.
+  {
+    PaintOpBuffer buffer;
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    buffer.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10), green_flags);
+    buffer.push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+    buffer.push<DrawImageRectOp>(
+        disallowed_red, SkRect::MakeWH(10, 10), SkRect::MakeXYWH(0, 0, 10, 10),
+        SkSamplingOptions(), nullptr, SkCanvas::kFast_SrcRectConstraint);
+
+    PaintFlags disallowed_shader_flags;
+    disallowed_shader_flags.setShader(PaintShader::MakeImage(
+        disallowed_red, SkTileMode::kClamp, SkTileMode::kClamp, nullptr));
+    buffer.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                            disallowed_shader_flags);
+
+    buffer.push<DrawImageOp>(allowed_blue, 10.f, 0.f);
+
+    EXPECT_TRUE(buffer.has_read_back_disallowed_content());
+    EXPECT_TRUE(buffer.DeepCopyAsRecord().has_read_back_disallowed_content());
+
+    PaintRecord filtered =
+        buffer.DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(filtered.has_read_back_disallowed_content());
+    EXPECT_EQ(filtered.size(), 2u);
+
+    SkBitmap out;
+    out.allocN32Pixels(20, 10);
+    out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(out);
+    filtered.Playback(&canvas);
+    EXPECT_EQ(out.getColor(5, 5), SK_ColorGREEN);
+    EXPECT_EQ(out.getColor(15, 5), SK_ColorBLUE);
+  }
+
+  // 2. Nested DrawRecordOp: mixed records keep allowed ops and omit disallowed
+  // ops, whereas records explicitly marked via SetIsReadBackDisallowed
+  // (even if they already had a disallowed child op) are omitted as a unit.
+  {
+    PaintOpBuffer mixed_sub;
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    mixed_sub.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10), green_flags);
+    mixed_sub.push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+
+    PaintOpBuffer vector_disallowed_sub;
+    PaintFlags red_flags;
+    red_flags.setColor(SK_ColorRED);
+    vector_disallowed_sub.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                           red_flags);
+    PaintRecord vector_disallowed_record =
+        vector_disallowed_sub.ReleaseAsRecord();
+    vector_disallowed_record.SetIsReadBackDisallowed();
+
+    PaintOpBuffer mixed_then_disallowed_sub;
+    mixed_then_disallowed_sub.push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+    mixed_then_disallowed_sub.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10),
+                                               red_flags);
+    PaintRecord mixed_then_disallowed_record =
+        mixed_then_disallowed_sub.ReleaseAsRecord();
+    ASSERT_TRUE(
+        mixed_then_disallowed_record.has_read_back_disallowed_content());
+    mixed_then_disallowed_record.SetIsReadBackDisallowed();
+
+    PaintOpBuffer outer;
+    outer.push<DrawRecordOp>(mixed_sub.ReleaseAsRecord());
+    outer.push<DrawRecordOp>(std::move(vector_disallowed_record));
+    outer.push<DrawRecordOp>(std::move(mixed_then_disallowed_record));
+
+    PaintRecord filtered =
+        outer.DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(filtered.has_read_back_disallowed_content());
+    EXPECT_EQ(filtered.size(), 1u);
+
+    SkBitmap out;
+    out.allocN32Pixels(10, 10);
+    out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(out);
+    filtered.Playback(&canvas);
+    EXPECT_EQ(out.getColor(5, 5), SK_ColorGREEN);
+  }
+
+  // 3. Disallowed SaveLayerOp and SaveLayerFiltersOp omit their balanced
+  // SaveLayer..Restore scope (including nested Save..Restore pairs) without
+  // corrupting the outer save stack or dropping sibling ops.
+  {
+    auto disallowed_filter = sk_make_sp<ImagePaintFilter>(
+        disallowed_red, SkRect::MakeWH(10, 10), SkRect::MakeWH(10, 10),
+        PaintFlags::FilterQuality::kNone);
+
+    PaintOpBuffer buffer;
+    buffer.push<SaveOp>();
+
+    PaintFlags filter_flags;
+    filter_flags.setImageFilter(disallowed_filter);
+    buffer.push<SaveLayerOp>(SkRect::MakeWH(10, 10), filter_flags);
+    buffer.push<SaveOp>();
+    PaintFlags red_flags;
+    red_flags.setColor(SK_ColorRED);
+    buffer.push<DrawRectOp>(SkRect::MakeWH(10, 10), red_flags);
+    buffer.push<RestoreOp>();
+    buffer.push<RestoreOp>();
+
+    sk_sp<PaintFilter> filters[] = {disallowed_filter};
+    buffer.push<SaveLayerFiltersOp>(filters, /*backdrop_filter=*/nullptr,
+                                    PaintFlags());
+    buffer.push<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc);
+    buffer.push<RestoreOp>();
+
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    buffer.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10), green_flags);
+    buffer.push<RestoreOp>();
+
+    PaintRecord filtered =
+        buffer.DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(filtered.has_read_back_disallowed_content());
+    EXPECT_EQ(filtered.size(), 3u);  // SaveOp, DrawRectOp(green), RestoreOp
+
+    SkBitmap out;
+    out.allocN32Pixels(10, 10);
+    out.eraseColor(SK_ColorBLUE);
+    SkCanvas canvas(out);
+    EXPECT_EQ(canvas.getSaveCount(), 1);
+    filtered.Playback(&canvas);
+    EXPECT_EQ(canvas.getSaveCount(), 1);
+    EXPECT_EQ(out.getColor(5, 5), SK_ColorGREEN);
+  }
+
+  // 4. ReplaceCustomData with strip_read_back_disallowed_ops=true filters
+  // replacement records as well.
+  {
+    PaintOpBuffer placeholder_buffer;
+    placeholder_buffer.push<CustomDataOp>(1u);
+    placeholder_buffer.push<CustomDataOp>(2u);
+    PaintRecord placeholder_record = placeholder_buffer.ReleaseAsRecord();
+
+    PaintOpBuffer replacement1;
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    replacement1.push<DrawRectOp>(SkRect::MakeWH(10, 10), green_flags);
+    replacement1.push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+
+    PaintOpBuffer replacement2;
+    PaintFlags red_flags;
+    red_flags.setColor(SK_ColorRED);
+    replacement2.push<DrawRectOp>(SkRect::MakeWH(10, 10), red_flags);
+    PaintRecord disallowed_replacement2 = replacement2.ReleaseAsRecord();
+    disallowed_replacement2.SetIsReadBackDisallowed();
+
+    base::flat_map<uint32_t, PaintRecord> replacements;
+    replacements[1u] = replacement1.ReleaseAsRecord();
+    replacements[2u] = std::move(disallowed_replacement2);
+
+    PaintRecord replaced = placeholder_record.ReplaceCustomData(
+        replacements, /*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(replaced.has_read_back_disallowed_content());
+    EXPECT_EQ(replaced.size(), 1u);
+
+    SkBitmap out;
+    out.allocN32Pixels(10, 10);
+    out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(out);
+    replaced.Playback(&canvas);
+    EXPECT_EQ(out.getColor(5, 5), SK_ColorGREEN);
+  }
+
+  // 5. DeepCopyAsRecord(false) and ReplaceCustomData(..., false) preserve
+  // whole-record read-back disallowed state so a subsequent strip omits the
+  // entire record; and embedding a whole-record-disallowed PaintRecord in
+  // another PaintOpBuffer (including when that outer buffer is appended via
+  // operator+=) does not mark unrelated ops in the destination buffer as
+  // disallowed.
+  {
+    PaintOpBuffer disallowed_sub;
+    PaintFlags red_flags;
+    red_flags.setColor(SK_ColorRED);
+    disallowed_sub.push<DrawRectOp>(SkRect::MakeXYWH(10, 0, 10, 10), red_flags);
+    PaintRecord disallowed_record = disallowed_sub.ReleaseAsRecord();
+    disallowed_record.SetIsReadBackDisallowed();
+
+    PaintRecord unstripped_copy = disallowed_record.buffer().DeepCopyAsRecord(
+        /*strip_read_back_disallowed_ops=*/false);
+    EXPECT_TRUE(unstripped_copy.is_read_back_disallowed());
+    EXPECT_TRUE(unstripped_copy.buffer()
+                    .DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true)
+                    .empty());
+
+    PaintOpBuffer allowed_sub;
+    allowed_sub.push<DrawImageOp>(allowed_blue, 0.f, 0.f);
+    base::flat_map<uint32_t, PaintRecord> replacements;
+    replacements[99u] = allowed_sub.ReleaseAsRecord();
+
+    PaintOpBuffer disallowed_with_custom_data_buffer;
+    disallowed_with_custom_data_buffer.push<CustomDataOp>(99u);
+    disallowed_with_custom_data_buffer.push<DrawRectOp>(
+        SkRect::MakeXYWH(10, 0, 10, 10), red_flags);
+    PaintRecord disallowed_with_custom_data =
+        disallowed_with_custom_data_buffer.ReleaseAsRecord();
+    disallowed_with_custom_data.SetIsReadBackDisallowed();
+    PaintRecord unstripped_replaced =
+        disallowed_with_custom_data.ReplaceCustomData(
+            replacements, /*strip_read_back_disallowed_ops=*/false);
+    EXPECT_TRUE(unstripped_replaced.is_read_back_disallowed());
+    EXPECT_TRUE(disallowed_with_custom_data
+                    .ReplaceCustomData(replacements,
+                                       /*strip_read_back_disallowed_ops=*/true)
+                    .empty());
+    EXPECT_TRUE(unstripped_replaced.buffer()
+                    .DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true)
+                    .empty());
+
+    PaintOpBuffer sub_layer_buffer;
+    sub_layer_buffer.push<DrawRecordOp>(disallowed_record);
+    sub_layer_buffer.push<DrawImageOp>(allowed_blue, 20.f, 0.f);
+    EXPECT_TRUE(sub_layer_buffer.has_read_back_disallowed_content());
+
+    PaintOpBuffer buffer;
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    buffer.push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10), green_flags);
+    buffer += sub_layer_buffer;
+
+    EXPECT_TRUE(buffer.has_read_back_disallowed_content());
+
+    SkBitmap unstripped_out;
+    unstripped_out.allocN32Pixels(30, 10);
+    unstripped_out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas unstripped_canvas(unstripped_out);
+    buffer.Playback(&unstripped_canvas);
+    EXPECT_EQ(unstripped_out.getColor(5, 5), SK_ColorGREEN);
+    EXPECT_EQ(unstripped_out.getColor(15, 5), SK_ColorRED);
+    EXPECT_EQ(unstripped_out.getColor(25, 5), SK_ColorBLUE);
+
+    PaintRecord filtered =
+        buffer.DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(filtered.is_read_back_disallowed());
+    EXPECT_FALSE(filtered.has_read_back_disallowed_content());
+    EXPECT_EQ(filtered.size(), 2u);
+
+    SkBitmap stripped_out;
+    stripped_out.allocN32Pixels(30, 10);
+    stripped_out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas stripped_canvas(stripped_out);
+    filtered.Playback(&stripped_canvas);
+    EXPECT_EQ(stripped_out.getColor(5, 5), SK_ColorGREEN);
+    EXPECT_EQ(stripped_out.getColor(15, 5), SK_ColorTRANSPARENT);
+    EXPECT_EQ(stripped_out.getColor(25, 5), SK_ColorBLUE);
+  }
+
+  // 6. DrawScrollingContentsOp strips disallowed ops inside its DisplayItemList
+  // (omitting the DrawScrollingContentsOp entirely if nothing remains) and
+  // replaces CustomDataOp placeholders inside scrolling contents.
+  {
+    PaintFlags green_flags;
+    green_flags.setColor(SK_ColorGREEN);
+    PaintFlags red_flags;
+    red_flags.setColor(SK_ColorRED);
+
+    auto mixed_list = base::MakeRefCounted<DisplayItemList>();
+    mixed_list->StartPaint();
+    mixed_list->push<DrawRectOp>(SkRect::MakeXYWH(0, 0, 10, 10), green_flags);
+    mixed_list->push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+    mixed_list->push<CustomDataOp>(7u);
+    mixed_list->EndPaintOfUnpaired(gfx::Rect(0, 0, 20, 10));
+    mixed_list->Finalize();
+    EXPECT_TRUE(mixed_list->has_read_back_disallowed_content());
+
+    auto all_disallowed_list = base::MakeRefCounted<DisplayItemList>();
+    all_disallowed_list->StartPaint();
+    all_disallowed_list->push<DrawImageOp>(disallowed_red, 0.f, 0.f);
+    all_disallowed_list->EndPaintOfUnpaired(gfx::Rect(0, 0, 10, 10));
+    all_disallowed_list->Finalize();
+    EXPECT_TRUE(all_disallowed_list->has_read_back_disallowed_content());
+
+    PaintOpBuffer outer;
+    outer.push<DrawScrollingContentsOp>(ElementId(10), mixed_list);
+    outer.push<DrawScrollingContentsOp>(ElementId(20), all_disallowed_list);
+    EXPECT_TRUE(outer.has_read_back_disallowed_content());
+
+    PaintRecord stripped =
+        outer.DeepCopyAsRecord(/*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(stripped.has_read_back_disallowed_content());
+    EXPECT_EQ(stripped.size(), 1u);
+
+    PaintOpBuffer allowed_blue_replacement;
+    PaintFlags blue_flags;
+    blue_flags.setColor(SK_ColorBLUE);
+    allowed_blue_replacement.push<DrawRectOp>(SkRect::MakeXYWH(10, 0, 10, 10),
+                                              blue_flags);
+    allowed_blue_replacement.push<DrawImageOp>(disallowed_red, 10.f, 0.f);
+
+    PaintRecord outer_record = outer.ReleaseAsRecord();
+    base::flat_map<uint32_t, PaintRecord> replacements;
+    replacements[7u] = allowed_blue_replacement.ReleaseAsRecord();
+
+    PaintRecord replaced = outer_record.ReplaceCustomData(
+        replacements, /*strip_read_back_disallowed_ops=*/true);
+    EXPECT_FALSE(replaced.has_read_back_disallowed_content());
+    ASSERT_EQ(replaced.size(), 1u);
+    ASSERT_EQ(replaced.GetFirstOp().GetType(),
+              PaintOpType::kDrawScrollingContents);
+    const auto& scrolling_op =
+        static_cast<const DrawScrollingContentsOp&>(replaced.GetFirstOp());
+    EXPECT_EQ(scrolling_op.scroll_element_id, ElementId(10));
+    EXPECT_FALSE(
+        scrolling_op.display_item_list->has_read_back_disallowed_content());
+
+    SkBitmap out;
+    out.allocN32Pixels(20, 10);
+    out.eraseColor(SK_ColorTRANSPARENT);
+    SkCanvas canvas(out);
+    scrolling_op.display_item_list->Raster(&canvas);
+    EXPECT_EQ(out.getColor(5, 5), SK_ColorGREEN);
+    EXPECT_EQ(out.getColor(15, 5), SK_ColorBLUE);
+  }
+}
+
 TEST(PaintOpBufferTest, SlowPaths) {
   PaintOpBuffer buffer;
   EXPECT_EQ(buffer.num_slow_paths_up_to_min_for_MSAA(), 0);

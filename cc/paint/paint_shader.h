@@ -171,6 +171,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   }
 
   bool HasDiscardableImages() const;
+  bool HasReadBackDisallowedContent() const;
   void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
 
   SkMatrix GetLocalMatrix() const {
