@@ -227,7 +227,17 @@ std::optional<gfx::Size> UnboundedSurfaceWindowAura::GetMaximumSize() const {
 
 gfx::NativeCursor UnboundedSurfaceWindowAura::GetCursor(
     const gfx::Point& point) {
-  return gfx::NativeCursor();
+  // wm::CompoundEventFilter asks the window under the pointer for its cursor
+  // on every mouse enter and move. The renderer only sends a cursor when it
+  // changes, and the owner view caches the last one it received (also for its
+  // child frames, through CursorManager), so hand out that cursor rather than
+  // the default arrow. This also yields kNone while the pointer is locked.
+  if (!parent_view_) {
+    return gfx::NativeCursor();
+  }
+  // `parent_view_` is always the RenderWidgetHostViewAura given to Create().
+  return static_cast<RenderWidgetHostViewAura*>(parent_view_.get())
+      ->GetCursor(point);
 }
 
 int UnboundedSurfaceWindowAura::GetNonClientComponent(

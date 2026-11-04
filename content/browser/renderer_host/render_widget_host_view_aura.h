@@ -634,6 +634,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   void CreateDelegatedFrameHostClient();
 
+  // Returns the native window of the active unbounded surface, or null when
+  // there is no surface or it has no native window (e.g. mid-destruction).
+  aura::Window* GetUnboundedSurfaceNativeWindow() const;
+
+  // Returns true if the pointer is over `window_` or over the unbounded
+  // surface spawned by this view. The surface may live in its own root
+  // window, so it is hit-tested in that root.
+  bool IsPointerOverSelfOrUnboundedSurface() const;
+
+  // Updates the root window's cursor client if the pointer is over `window_`
+  // or the active unbounded surface spawned by this view.
   void UpdateCursorIfOverSelf();
 
   bool SynchronizeVisualProperties(
