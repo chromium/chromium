@@ -292,6 +292,29 @@ class AwBrowserContext : public content::BrowserContext,
       const std::vector<std::string>& origin_patterns);
   std::vector<std::string> GetCrossOriginIsolatedAllowList(JNIEnv* env);
 
+  // Converts string sites into SchemefulSites and calls
+  // SetSitesForEmbedderShard with the results if all are valid.
+  //
+  // Note that inputs must strictly be sites (scheme + registrable domain or
+  // host, with no subdomain or port), not arbitrary origins. What is considered
+  // a site can vary over time based on eTLDs in the Public Suffix List.
+  //
+  // `sites` must be non-empty. The sites must be in a strict canonical form.
+  //
+  // CanConfigureIsolatedSites should be queried before using this method, as
+  // this method will CHECK-fail if the conditions described there are not met.
+  //
+  // Returns empty vector iff all inputs are valid (and therefore the list was
+  // applied). Otherwise, returns a vector of invalid input sites.
+  std::vector<std::string> ConfigureIsolatedSites(
+      JNIEnv* env,
+      const std::vector<std::string>& sites);
+
+  // Returns whether ConfigureIsolatedSites can still be called on this
+  // profile; i.e., a site list has not already been set and a RenderProcessHost
+  // has not already been used.
+  bool CanConfigureIsolatedSites(JNIEnv* env) const;
+
   // Returns if an origin is allowed to use APIs that require
   // CrossOriginIsolated. Checks if the origin matches any rule set by
   // AwBrowserContext#SetCrossOriginIsolatedAllowList()

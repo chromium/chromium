@@ -45,6 +45,7 @@
 #include "base/base_paths_posix.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -96,6 +97,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
@@ -108,6 +110,7 @@
 #include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
@@ -1043,6 +1046,49 @@ std::vector<std::string> AwBrowserContext::SetCrossOriginIsolatedAllowList(
 std::vector<std::string> AwBrowserContext::GetCrossOriginIsolatedAllowList(
     JNIEnv* env) {
   return cross_origin_allow_list_matcher_->Serialize();
+}
+
+std::vector<std::string> AwBrowserContext::ConfigureIsolatedSites(
+    JNIEnv* env,
+    const std::vector<std::string>& sites) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!sites.empty());
+  std::vector<net::SchemefulSite> schemeful_sites;
+  schemeful_sites.reserve(sites.size());
+  std::vector<std::string> invalid_sites;
+  for (const std::string& site_str : sites) {
+    GURL gurl(site_str);
+    if (!gurl.is_valid()) {
+      invalid_sites.push_back(site_str);
+      continue;
+    }
+    if (!gurl.SchemeIsHTTPOrHTTPS()) {
+      invalid_sites.push_back(site_str);
+      continue;
+    }
+    url::Origin origin = url::Origin::Create(gurl);
+    if (origin.opaque()) {
+      invalid_sites.push_back(site_str);
+      continue;
+    }
+    net::SchemefulSite site(origin);
+    bool is_in_canonical_form = site.Serialize() == site_str;
+    if (!is_in_canonical_form) {
+      invalid_sites.push_back(site_str);
+      continue;
+    }
+    schemeful_sites.push_back(std::move(site));
+  }
+  if (invalid_sites.empty()) {
+    SetSitesForEmbedderShard(
+        base::flat_set<net::SchemefulSite>(std::move(schemeful_sites)));
+  }
+  return invalid_sites;
+}
+
+bool AwBrowserContext::CanConfigureIsolatedSites(JNIEnv* env) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return CanSetSitesForEmbedderShard();
 }
 
 bool AwBrowserContext::AllowCrossOriginIsolatedApis(

@@ -34,6 +34,7 @@ import org.chromium.content_public.browser.ContentViewStatics;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -543,6 +544,31 @@ public class AwBrowserContext implements BrowserContextHandle {
                 AwBrowserContextJni.get().getCrossOriginIsolatedAllowList(mNativeAwBrowserContext));
     }
 
+    @UiThread
+    public void configureIsolatedSites(@NonNull Set<String> sites) {
+        ThreadUtils.assertOnUiThread();
+        if (!canConfigureIsolatedSites()) {
+            throw new IllegalStateException(
+                    "Cannot configure isolated sites for this profile anymore.");
+        }
+        if (sites.isEmpty()) {
+            throw new IllegalArgumentException("At least one site must be provided.");
+        }
+        List<String> invalidSites =
+                AwBrowserContextJni.get().configureIsolatedSites(mNativeAwBrowserContext, sites);
+        if (!invalidSites.isEmpty()) {
+            Collections.sort(invalidSites);
+            throw new IllegalArgumentException(
+                    "Invalid site(s): " + String.join(", ", invalidSites));
+        }
+    }
+
+    @UiThread
+    public boolean canConfigureIsolatedSites() {
+        ThreadUtils.assertOnUiThread();
+        return AwBrowserContextJni.get().canConfigureIsolatedSites(mNativeAwBrowserContext);
+    }
+
     @NativeMethods
     interface Natives {
         AwBrowserContext getDefaultJava();
@@ -615,6 +641,13 @@ public class AwBrowserContext implements BrowserContextHandle {
 
         @JniType("std::vector<std::string>")
         List<String> getCrossOriginIsolatedAllowList(long nativeAwBrowserContext);
+
+        @JniType("std::vector<std::string>")
+        List<String> configureIsolatedSites(
+                long nativeAwBrowserContext,
+                @JniType("std::vector<std::string>") @NonNull Set<String> sites);
+
+        boolean canConfigureIsolatedSites(long nativeAwBrowserContext);
 
         JniRawPtr<AwHeaderInterceptorStore.Native> getHeaderInterceptorStoreFromJava(
                 long nativeAwBrowserContext);
