@@ -787,6 +787,13 @@ IN_PROC_BROWSER_TEST_P(SBSafeBrowsingServiceTest, MainFrameHitWithReferrer) {
   EXPECT_EQ(first_url, report().referrer_url());
 }
 
+IN_PROC_BROWSER_TEST_P(SBSafeBrowsingServiceTest,
+                       NavigateToUrlWithEscapedHostCharacters) {
+  const GURL url = embedded_test_server()->GetURL("a.%20b*c.co.uk", kEmptyPage);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_FALSE(ShowingInterstitialPage());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // START: These tests use SafeBrowsingService::Client to directly interact with
 // SafeBrowsingService.
