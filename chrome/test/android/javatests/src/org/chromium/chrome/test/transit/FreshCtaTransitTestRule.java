@@ -22,6 +22,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.BasePageStation;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.TabGroupSyncTestUtils;
 
 /**
  * Rule for integration tests that start a new {@link ChromeTabbedActivity} in each test case.
@@ -83,9 +84,15 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule {
         return mActivityTestRule.apply(thisStatement, description);
     }
 
-    /** Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities. */
+    /**
+     * Close all Activities, cleaning up instance and tab state of ChromeTabbedActivities and saved
+     * tab groups.
+     */
     public void closeAllWindowsAndDeleteInstanceAndTabState() {
         finishActivitiesWithCleanup(ApplicationStatus.getRunningActivities());
+        // Closing windows hides their tab groups instead of deleting them, which would leak them
+        // into later tests in the batch.
+        TabGroupSyncTestUtils.removeAllSavedGroups();
     }
 
     @Override
