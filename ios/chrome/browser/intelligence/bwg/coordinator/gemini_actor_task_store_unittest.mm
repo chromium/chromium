@@ -744,4 +744,28 @@ TEST_F(GeminiActorTaskStoreTest, DisconnectClearsInterventionDelegate) {
   EXPECT_EQ(observer_.intervention, nil);
 }
 
+// Tests that stopping the task cancels it.
+TEST_F(GeminiActorTaskStoreTest, StopTaskCancelsTask) {
+  AttachAndRegister();
+  FakeGeminiTaskStateObserver* observer = ObserveTaskState(task_id_);
+
+  [store_ stopTask];
+  actor::FlushCurrentSequence();
+
+  EXPECT_TRUE(observer.stopped);
+  EXPECT_EQ(observer.state, kCancelled);
+}
+
+// Tests that stopping the task after disconnecting is a no-op.
+TEST_F(GeminiActorTaskStoreTest, StopTaskAfterDisconnectIsNoOp) {
+  AttachAndRegister();
+  FakeGeminiTaskStateObserver* observer = ObserveTaskState(task_id_);
+
+  [store_ disconnect];
+  [store_ stopTask];
+  actor::FlushCurrentSequence();
+
+  EXPECT_FALSE(observer.stopped);
+}
+
 }  // namespace

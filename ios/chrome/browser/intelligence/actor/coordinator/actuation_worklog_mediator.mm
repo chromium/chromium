@@ -6,9 +6,7 @@
 
 #import <optional>
 
-#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
@@ -80,10 +78,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 @end
 
 @implementation ActuationWorklogMediator {
-  // Service used to stop the observed task.
-  raw_ptr<actor::ActorService> _actorService;
-  // Currently observed task ID.
-  std::optional<actor::ActorTaskId> _currentTaskId;
+  // Whether a data source is observed. Tracked separately because
+  // `_dataSource` is weak.
+  BOOL _observing;
   // Source of the worklog of the observed task.
   __weak id<ActorTaskDataSource> _dataSource;
   // Handler of the user actions on the worklog of the observed task.
@@ -96,31 +93,18 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   actor::ActorTaskState _taskState;
 }
 
-- (instancetype)initWithActorService:(actor::ActorService*)actorService {
-  self = [super init];
-  if (self) {
-    _actorService = actorService;
-    _taskState = actor::ActorTaskState::kInit;
-  }
-  return self;
-}
-
 #pragma mark - Public
 
-- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActorTaskDataSource>)dataSource
+- (void)startObservingDataSource:(id<ActorTaskDataSource>)dataSource
                    actionHandler:(id<ActorTaskActionHandler>)actionHandler {
-  if (_currentTaskId == taskID) {
+  if (_observing && _dataSource == dataSource) {
     return;
   }
   [self stopObservingTask];
-  if (!_actorService) {
-    return;
-  }
 
   // Ensure we are brought back at the init state when subscribing to a task.
   _taskState = actor::ActorTaskState::kInit;
-  _currentTaskId = taskID;
+  _observing = YES;
   _actionHandler = actionHandler;
   _dataSource = dataSource;
   // Synchronously delivers the current worklog.
@@ -128,13 +112,13 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 - (void)stopObservingTask {
-  if (!_currentTaskId) {
+  if (!_observing) {
     return;
   }
   [_dataSource removeObserver:self];
   _dataSource = nil;
   _actionHandler = nil;
-  _currentTaskId.reset();
+  _observing = NO;
   _latestEmittedTaskUpdate = nil;
   _taskTitle = nil;
   [self.consumer setActuationActive:NO];
@@ -143,7 +127,6 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 
 - (void)disconnect {
   [self stopObservingTask];
-  _actorService = nullptr;
   self.consumer = nil;
   self.suggestionsConsumer = nil;
 }
@@ -281,11 +264,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 #pragma mark - ActuationWorklogMutator
 
 - (void)stopActuation {
-  if (!_actorService || !_currentTaskId) {
-    return;
-  }
-  _actorService->StopTask(*_currentTaskId,
-                          actor::ActorTaskStoppedReason::kStoppedByUser);
+  [_actionHandler stopTask];
 }
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {

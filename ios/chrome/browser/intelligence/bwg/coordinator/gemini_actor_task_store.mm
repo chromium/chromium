@@ -400,6 +400,14 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [_observers taskDataSource:self didReplaceLastItem:item];
 }
 
+- (void)stopTask {
+  if (!_actorService) {
+    return;
+  }
+  _actorService->StopTask(_taskID,
+                          actor::ActorTaskStoppedReason::kStoppedByUser);
+}
+
 #pragma mark - Private
 
 // Resolves the pending suggestions intervention with `action` through

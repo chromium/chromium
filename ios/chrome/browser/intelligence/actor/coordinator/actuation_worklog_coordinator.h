@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTUATION_WORKLOG_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTUATION_WORKLOG_COORDINATOR_H_
 
-#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ActuationWorklogViewController;
@@ -20,16 +19,14 @@
 // The view controller displaying the actuation worklog.
 @property(nonatomic, readonly) ActuationWorklogViewController* viewController;
 
-// Starts displaying the worklog of the task identified by `taskID`, as
-// published by `dataSource`, replacing any previously observed task. The user
-// actions on the worklog are forwarded to `actionHandler`. Must be called after
-// `start`.
-- (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActorTaskDataSource>)dataSource
+// Starts displaying the worklog published by `dataSource`, replacing any
+// previously observed one. The user actions on the worklog are forwarded to
+// `actionHandler`. Must be called after `start`.
+- (void)startObservingDataSource:(id<ActorTaskDataSource>)dataSource
                    actionHandler:(id<ActorTaskActionHandler>)actionHandler;
 
-// Stops observing the current task and resets the worklog. No-op if no task is
-// observed.
+// Stops observing the current data source and resets the worklog. No-op if
+// none is observed.
 - (void)stopObservingTask;
 
 @end

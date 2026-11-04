@@ -147,8 +147,7 @@
     didStartActuationTaskWithID:(actor::ActorTaskId)taskID
                      dataSource:(id<ActorTaskDataSource>)dataSource
                   actionHandler:(id<ActorTaskActionHandler>)actionHandler {
-  [_actuationWorklogCoordinator startObservingTaskWithID:taskID
-                                              dataSource:dataSource
+  [_actuationWorklogCoordinator startObservingDataSource:dataSource
                                            actionHandler:actionHandler];
 }
 

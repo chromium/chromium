@@ -82,6 +82,9 @@
 // selectable.
 - (void)selectSuggestion:(ActorFormSuggestion*)suggestion;
 
+// Stops the task at the user's request.
+- (void)stopTask;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TASK_DATA_SOURCE_H_
