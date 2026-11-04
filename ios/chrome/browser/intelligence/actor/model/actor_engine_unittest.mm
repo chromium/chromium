@@ -51,6 +51,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 @interface EngineFakeInterventionDelegate
     : NSObject <ActorTaskInterventionDelegate>
@@ -61,6 +63,9 @@
 
 namespace actor {
 namespace {
+
+constexpr char kSourceUrl[] = "https://safe.com";
+
 // Returns the provenance attributed to tasks created by these tests.
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
@@ -599,6 +604,75 @@ TEST_F(ActorEngineTest, IsAcceptableNavigationDestination_FeatureDisabled) {
   EXPECT_TRUE(future.Get().IsOk());
 }
 
+// Tests that `AddWritableMainframeOrigins` does not populate
+// `OriginGatingCache` when `kActorOriginGating` is disabled.
+TEST_F(ActorEngineTest, AddWritableMainframeOrigins_FeatureDisabled) {
+  static constexpr char kGrantedOriginUrl[] = "https://granted.com";
+  static constexpr char kDestinationUrl[] = "https://granted.com/checkout";
+
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(kActorOriginGating);
+
+  engine_->AddWritableMainframeOrigins(
+      {url::Origin::Create(GURL(kGrantedOriginUrl))});
+
+  origin_gating::OriginGatingChecker* checker =
+      engine_->GetOriginGatingChecker();
+  ASSERT_NE(checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL(kSourceUrl), .destination = GURL(kDestinationUrl)}),
+      future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, origin_gating::DecisionSource::kNoVerdict);
+}
+
+// Tests that `ActorEngine::Act` does not pre-approve `NavigateAction` target
+// origins in `OriginGatingCache` when `kActorOriginGating` is disabled.
+TEST_F(ActorEngineTest,
+       Act_NavigateActionDoesNotPreApproveOriginWhenFeatureDisabled) {
+  static constexpr char kDestinationUrl[] =
+      "https://new-destination.com/welcome";
+  static constexpr int kMissingTabId = 99999;
+
+  base::test::ScopedFeatureList disabled_feature;
+  disabled_feature.InitAndDisableFeature(kActorOriginGating);
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url(kDestinationUrl);
+  action.mutable_navigate()->set_tab_id(kMissingTabId);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> act_future;
+  engine_->Act(std::move(actions), act_future.GetCallback());
+  ASSERT_TRUE(act_future.Wait());
+
+  origin_gating::OriginGatingChecker* checker =
+      engine_->GetOriginGatingChecker();
+  ASSERT_NE(checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      decision_future;
+  checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL(kSourceUrl), .destination = GURL(kDestinationUrl)}),
+      decision_future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = decision_future.Get<1>();
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, origin_gating::DecisionSource::kNoVerdict);
+}
+
 // Test fixture for `FailCurrentTool()`, driving a tool whose validation and
 // execution are completed by hand.
 class ActorEngineFailCurrentToolTest : public ActorEngineTest {
@@ -773,6 +847,9 @@ class ActorEngineOriginGatingTest : public ActorEngineTest {
   void TearDown() override {
     // Clear raw_ptr before ActorEngineTest::TearDown() destroys engine_.
     checker_ = nullptr;
+    // Destroy `test_browser_` before `ActorEngineTest::TearDown()` destroys
+    // `profile_`.
+    test_browser_.reset();
     // Reset the singleton to prevent safety list rules from leaking into
     // subsequent tests.
     actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
@@ -781,7 +858,48 @@ class ActorEngineOriginGatingTest : public ActorEngineTest {
   }
 
  protected:
-  raw_ptr<origin_gating::OriginGatingChecker> checker_;
+  struct ControlledTab {
+    int tab_id = 0;
+    raw_ptr<web::FakeWebState> web_state = nullptr;
+    raw_ptr<ResponseSimulatingNavigationManager> navigation_manager = nullptr;
+  };
+
+  // Lazily initializes `test_browser_` with URL loading agents, inserts an
+  // active `FakeWebState` at `current_url` backed by
+  // `ResponseSimulatingNavigationManager`, and registers it on `task_`.
+  ControlledTab AddControlledTab(const GURL& current_url) {
+    if (!test_browser_) {
+      test_browser_ = std::make_unique<TestBrowser>(profile_.get());
+      BrowserListFactory::GetForProfile(profile_.get())
+          ->AddBrowser(test_browser_.get());
+      UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser_.get());
+      UrlLoadingBrowserAgent::CreateForBrowser(test_browser_.get());
+    }
+    auto fake_web_state = std::make_unique<web::FakeWebState>();
+    web::FakeWebState* web_state_ptr = fake_web_state.get();
+    fake_web_state->SetBrowserState(profile_.get());
+    auto navigation_manager =
+        std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
+    ResponseSimulatingNavigationManager* navigation_manager_ptr =
+        navigation_manager.get();
+    fake_web_state->SetNavigationManager(std::move(navigation_manager));
+    fake_web_state->SetCurrentURL(current_url);
+    int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
+    test_browser_->GetWebStateList()->InsertWebState(
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
+    task_->AddControlledWebState(web_state_ptr);
+    return {.tab_id = tab_id,
+            .web_state = web_state_ptr,
+            .navigation_manager = navigation_manager_ptr};
+  }
+
+  // Bound to `profile_`; must be destroyed before `profile_` (and reset in
+  // `TearDown()` before `ActorEngineTest::TearDown()`).
+  std::unique_ptr<TestBrowser> test_browser_;
+  // Owned by `OriginGatingService` via `engine_`; declared after owning members
+  // and cleared in `TearDown()` before `engine_` is destroyed.
+  raw_ptr<origin_gating::OriginGatingChecker> checker_ = nullptr;
 };
 
 // Verify the checker is created and available.
@@ -943,32 +1061,11 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationBlockedByOriginGating) {
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                   mock_rules_json);
 
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
-  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
-  browser_list->AddBrowser(test_browser.get());
-  UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser.get());
-  UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
-
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
-  web::FakeWebState* web_state_ptr = fake_web_state.get();
-  fake_web_state->SetBrowserState(profile_.get());
-  auto navigation_manager =
-      std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
-  ResponseSimulatingNavigationManager* navigation_manager_ptr =
-      navigation_manager.get();
-  fake_web_state->SetNavigationManager(std::move(navigation_manager));
-  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
-  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
-  test_browser->GetWebStateList()->InsertWebState(
-      std::move(fake_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
-
-  // Attach ActorWebStatePolicyDecider to the WebState.
-  task_->AddControlledWebState(web_state_ptr);
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
 
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://malicious.com");
-  action.mutable_navigate()->set_tab_id(tab_id);
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
 
   std::vector<std::unique_ptr<ActorToolRequest>> actions;
   actions.push_back(std::make_unique<ActorToolRequest>(action));
@@ -981,13 +1078,13 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationBlockedByOriginGating) {
   EXPECT_FALSE(results[0].tool_result.IsOk());
   EXPECT_EQ(actor::mojom::ActionResultCode::kTriggeredNavigationBlocked,
             results[0].tool_result.code());
-  ASSERT_TRUE(navigation_manager_ptr->last_response_decision().has_value());
-  EXPECT_TRUE(navigation_manager_ptr->last_response_decision()
+  ASSERT_TRUE(tab.navigation_manager->last_response_decision().has_value());
+  EXPECT_TRUE(tab.navigation_manager->last_response_decision()
                   ->ShouldCancelNavigation());
 }
 
-// Test that a NavigateAction executed through ActorEngine succeeds when
-// allowed by the OriginGatingChecker.
+// Tests that a `NavigateAction` redirecting to a cross-origin destination not
+// pre-seeded in `OriginGatingCache` succeeds when allowed by the safety list.
 TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   const std::string mock_rules_json = R"json({
     "navigation_allowed": [
@@ -997,32 +1094,14 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
   actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
                                   mock_rules_json);
 
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
-  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
-  browser_list->AddBrowser(test_browser.get());
-  UrlLoadingNotifierBrowserAgent::CreateForBrowser(test_browser.get());
-  UrlLoadingBrowserAgent::CreateForBrowser(test_browser.get());
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
 
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
-  web::FakeWebState* web_state_ptr = fake_web_state.get();
-  fake_web_state->SetBrowserState(profile_.get());
-  auto fake_navigation_manager =
-      std::make_unique<ResponseSimulatingNavigationManager>(web_state_ptr);
-  ResponseSimulatingNavigationManager* fake_navigation_manager_ptr =
-      fake_navigation_manager.get();
-  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
-  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
-  int tab_id = fake_web_state->GetUniqueIdentifier().identifier();
-  test_browser->GetWebStateList()->InsertWebState(
-      std::move(fake_web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
-
-  // Attach ActorWebStatePolicyDecider to the WebState.
-  task_->AddControlledWebState(web_state_ptr);
+  tab.navigation_manager->set_simulated_response_url(
+      GURL("https://trusted.com"));
 
   optimization_guide::proto::Action action;
-  action.mutable_navigate()->set_url("https://trusted.com");
-  action.mutable_navigate()->set_tab_id(tab_id);
+  action.mutable_navigate()->set_url("https://initial.com");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
 
   std::vector<std::unique_ptr<ActorToolRequest>> actions;
   actions.push_back(std::make_unique<ActorToolRequest>(action));
@@ -1033,12 +1112,11 @@ TEST_F(ActorEngineOriginGatingTest, Act_NavigationAllowedByOriginGating) {
 
   ASSERT_EQ(1u, results.size());
   EXPECT_TRUE(results[0].tool_result.IsOk());
-  EXPECT_TRUE(fake_navigation_manager_ptr->LoadURLWithParamsWasCalled());
-  EXPECT_EQ(GURL("https://trusted.com"),
-            fake_navigation_manager_ptr->GetLastLoadURLWithParams()->url);
-  ASSERT_TRUE(
-      fake_navigation_manager_ptr->last_response_decision().has_value());
-  EXPECT_TRUE(fake_navigation_manager_ptr->last_response_decision()
+  EXPECT_TRUE(tab.navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(GURL("https://initial.com"),
+            tab.navigation_manager->GetLastLoadURLWithParams()->url);
+  ASSERT_TRUE(tab.navigation_manager->last_response_decision().has_value());
+  EXPECT_TRUE(tab.navigation_manager->last_response_decision()
                   ->ShouldAllowNavigation());
 }
 
@@ -1409,4 +1487,145 @@ TEST_F(ActorEngineOriginGatingTest,
   EXPECT_EQ(decision.attribution,
             origin_gating::DecisionSource::kEnterprisePolicy);
 }
+
+// Tests that same-origin navigation responses are allowed by
+// `DecisionSource::kAllowSameOrigin`.
+TEST_F(ActorEngineOriginGatingTest, SameOriginAllowed) {
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com/page1"),
+          .destination = GURL("https://safe.com/page2")}),
+      future.GetCallback());
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kAllowSameOrigin);
+}
+
+// Tests that uncached cross-origin navigation responses fail closed in
+// `OnNoVerdict`.
+TEST_F(ActorEngineOriginGatingTest, UncachedCrossOriginBlocked) {
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com/page1"),
+          .destination = GURL("https://uncached.com/page")}),
+      future.GetCallback());
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution, origin_gating::DecisionSource::kNoVerdict);
+}
+
+// Tests that an allowed `kPageAction` seeds `OriginGatingCache` so subsequent
+// cross-origin navigation responses back to that origin are allowed.
+TEST_F(ActorEngineOriginGatingTest,
+       PageActionSeedsCacheForCrossOriginNavigationResponse) {
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      page_action_future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::PageActionEvent{
+          .destination = GURL("https://visited.com/start"),
+          .tool = origin_gating::ClientTool(ToolType::kClick)}),
+      page_action_future.GetCallback());
+  ASSERT_TRUE(page_action_future.Get<1>().is_allowed);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      nav_future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://other.com"),
+          .destination = GURL("https://visited.com/next")}),
+      nav_future.GetCallback());
+  const origin_gating::GatingDecision& decision = nav_future.Get<1>();
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
+}
+
+// Tests that `ActorEngine::Act` pre-approves `NavigateAction` target origins in
+// `OriginGatingCache` even when the destination is not on the static safety
+// allowlist.
+TEST_F(ActorEngineOriginGatingTest,
+       Act_NavigateActionPreApprovesCrossOriginDestination) {
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://new-destination.com/welcome");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_TRUE(results[0].tool_result.IsOk());
+  ASSERT_TRUE(tab.navigation_manager->last_response_decision().has_value());
+  EXPECT_TRUE(tab.navigation_manager->last_response_decision()
+                  ->ShouldAllowNavigation());
+}
+
+// Tests that when a `NavigateAction` redirects to a different cross-origin URL
+// that was never granted, `ShouldAllowResponse` cancels the navigation and
+// fails the action with `kTriggeredNavigationBlocked`.
+TEST_F(ActorEngineOriginGatingTest,
+       Act_NavigateActionBlocksCrossOriginRedirectToUngrantedOrigin) {
+  ControlledTab tab = AddControlledTab(GURL("https://safe.com"));
+  tab.navigation_manager->set_simulated_response_url(
+      GURL("https://untrusted-redirect.com/landing"));
+
+  optimization_guide::proto::Action action;
+  action.mutable_navigate()->set_url("https://new-destination.com/welcome");
+  action.mutable_navigate()->set_tab_id(tab.tab_id);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  task_->Act(std::move(actions), "Navigating", future.GetCallback());
+  const std::vector<ActionResult>& results = future.Get();
+
+  ASSERT_EQ(1u, results.size());
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTriggeredNavigationBlocked,
+            results[0].tool_result.code());
+  ASSERT_TRUE(tab.navigation_manager->last_response_decision().has_value());
+  EXPECT_TRUE(tab.navigation_manager->last_response_decision()
+                  ->ShouldCancelNavigation());
+}
+
+// Tests that `AddWritableMainframeOrigins` grants cross-origin navigation
+// responses via `DecisionSource::kCacheWithoutUserConfirmation`.
+TEST_F(ActorEngineOriginGatingTest,
+       AddWritableMainframeOrigins_AllowsCrossOriginNavigationResponse) {
+  engine_->AddWritableMainframeOrigins(
+      {url::Origin::Create(GURL("https://granted.com"))});
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker_->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://granted.com/checkout")}),
+      future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kCacheWithoutUserConfirmation);
+}
+
 }  // namespace actor

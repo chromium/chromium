@@ -21,6 +21,8 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#import "url/origin.h"
 
 @class PageContextWrapper;
 @class PostedObserverList<ObserverType>;
@@ -83,26 +85,32 @@ class ActorService : public KeyedService {
                          const TaskSourceInfo& source_info,
                          bool allow_incognito_web_states);
 
-  // Enqueues actions for an active task with a task update string (a short
-  // blurb which tells the user what the Actor is currently doing in plain
-  // language).
+  // Enqueues `actions` for the active task identified by `task_id` with
+  // `task_update` (a short blurb telling the user what the Actor is currently
+  // doing in plain language). Grants `added_writable_mainframe_origins` as
+  // non-user-confirmed allowed mainframe navigation origins for the task before
+  // executing `actions`.
   //
-  // Actions are validated and executed sequentially. If any action fails
+  // `actions` are validated and executed sequentially. If any action fails
   // validation or execution, the sequence is aborted immediately, and
   // subsequent actions will not be run.
   //
   // `callback` runs exactly once, asynchronously, unless the service is shut
   // down first. If the task is not active or stops before the reply runs, it
-  // runs with a single `kTaskWentAway` result. If the task is still executing a
-  // previous request, it runs with a single `kExecutionEngineExistingAction`
-  // result and the request's target WebStates are not added to the task.
+  // runs with a single `mojom::ActionResultCode::kTaskWentAway` result. If the
+  // task is still executing a previous request, it runs with a single
+  // `mojom::ActionResultCode::kExecutionEngineExistingAction` result and
+  // neither the request's target WebStates nor
+  // `added_writable_mainframe_origins` are added to the task.
   // Unless the request is rejected or the task stops, `page_contexts` holds an
   // observation of the task's first live controlled WebState, if any, even if
   // an action failed.
-  void PerformActions(ActorTaskId task_id,
-                      std::vector<optimization_guide::proto::Action> actions,
-                      std::string task_update,
-                      PerformActionsCallback callback);
+  void PerformActions(
+      ActorTaskId task_id,
+      std::vector<optimization_guide::proto::Action> actions,
+      std::string task_update,
+      absl::flat_hash_set<url::Origin> added_writable_mainframe_origins,
+      PerformActionsCallback callback);
 
   // Pauses a task, cancelling in-progress actions and returning control of the
   // WebState to the user.
@@ -243,10 +251,12 @@ class ActorService : public KeyedService {
   void RunReply(base::OnceClosure reply);
 
   // Command implementations of the public methods of the same name.
-  void DoPerformActions(ActorTaskId task_id,
-                        std::vector<optimization_guide::proto::Action> actions,
-                        std::string task_update,
-                        PerformActionsCallback callback);
+  void DoPerformActions(
+      ActorTaskId task_id,
+      std::vector<optimization_guide::proto::Action> actions,
+      std::string task_update,
+      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins,
+      PerformActionsCallback callback);
   void DoInterruptTask(ActorTaskId task_id,
                        InterruptRequest request,
                        ActorTaskResultCallback<InterruptTaskResult> callback);

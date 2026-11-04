@@ -259,6 +259,9 @@ bool ActorDisablesInputDuringActuation();
 // Feature flag controlling Actor origin gating.
 BASE_DECLARE_FEATURE(kActorOriginGating);
 
+// Returns true if Actor origin gating is enabled.
+bool IsActorOriginGatingEnabled();
+
 extern const char kActorOriginGatingExplicitParam[];
 extern const char kActorOriginGatingImplicitParam[];
 

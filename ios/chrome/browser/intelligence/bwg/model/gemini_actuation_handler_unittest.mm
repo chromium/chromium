@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -1211,4 +1212,64 @@ TEST_F(GeminiActuationHandlerTest, FollowUpAfterCompletedAct_Accepted) {
             follow_up_future.Get().resultCode);
 }
 
+// Tests that `dispatchActuationRequest` parses valid non-opaque
+// `addedWritableMainframeOrigins` and grants them on the task's controlled tab.
+TEST_F(GeminiActuationHandlerTest,
+       DispatchGeminiActuationRequest_GrantsWritableMainframeOrigins) {
+  base::test::ScopedFeatureList origin_gating_feature;
+  origin_gating_feature.InitAndEnableFeature(kActorOriginGating);
+
+  fake_web_state_->SetBrowserState(profile_.get());
+  fake_web_state_->SetCurrentURL(GURL("https://safe.com"));
+
+  GeminiActuationHandler* handler = CreateHandler();
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+  ASSERT_FALSE(task_id.is_null());
+
+  optimization_guide::proto::Action action;
+  action.mutable_wait()->set_wait_time_ms(0);
+  std::string serialized;
+  action.SerializeToString(&serialized);
+  NSData* data = [NSData dataWithBytes:serialized.data()
+                                length:serialized.size()];
+  GeminiActuationRequest* request = [[GeminiActuationRequest alloc]
+               initWithActionProtos:@[ data ]
+                         taskUpdate:@"Update"
+                        yieldAction:nil
+      addedWritableMainframeOrigins:@[
+        @"https://granted.com/path", @"not a url", @"about:blank"
+      ]];
+
+  base::test::TestFuture<GeminiActuationResponse*> future;
+  [handler dispatchActuationRequest:request
+                          forTaskID:task_id
+                    completionBlock:GetCompletionBlock(future)];
+  ASSERT_NE(nil, future.Get());
+
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+
+  NSURLResponse* granted_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://granted.com/next"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      granted_future;
+  fake_web_state_->ShouldAllowResponse(granted_response, response_info,
+                                       granted_future.GetCallback());
+  EXPECT_TRUE(granted_future.Get().ShouldAllowNavigation());
+  NSURLResponse* ungranted_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://ungranted.com/next"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      ungranted_future;
+  fake_web_state_->ShouldAllowResponse(ungranted_response, response_info,
+                                       ungranted_future.GetCallback());
+  EXPECT_TRUE(ungranted_future.Get().ShouldCancelNavigation());
+
+  [handler disconnect];
+}
 }  // namespace

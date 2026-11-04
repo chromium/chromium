@@ -5,9 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_REQUEST_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_REQUEST_H_
 
+#import <optional>
+
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/web_state_id.h"
+#import "url/origin.h"
 
 namespace actor {
 
@@ -45,6 +48,11 @@ class ActorToolRequest {
   // Returns true if the current tab's URL should be checked against origin
   // gating before executing this tool.
   bool RequiresUrlCheckInCurrentTab() const;
+
+  // Returns the origin to pre-approve in `OriginGatingCache` before executing
+  // this tool, or `std::nullopt` if the tool does not grant a navigation
+  // origin.
+  std::optional<url::Origin> AssociatedOriginGrant() const;
 
  private:
   // An owned copy of the action proto.

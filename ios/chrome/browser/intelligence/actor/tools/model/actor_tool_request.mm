@@ -6,6 +6,9 @@
 
 #import <optional>
 
+#import "url/gurl.h"
+#import "url/origin.h"
+
 namespace actor {
 
 ActorToolRequest::ActorToolRequest(optimization_guide::proto::Action action)
@@ -163,5 +166,21 @@ bool ActorToolRequest::RequiresUrlCheckInCurrentTab() const {
     case ToolType::kActivateTab:
       return true;
   }
+}
+
+std::optional<url::Origin> ActorToolRequest::AssociatedOriginGrant() const {
+  if (action_.action_case() != optimization_guide::proto::Action::kNavigate ||
+      !action_.navigate().has_url()) {
+    return std::nullopt;
+  }
+  const GURL url(action_.navigate().url());
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque()) {
+    return std::nullopt;
+  }
+  return origin;
 }
 }  // namespace actor

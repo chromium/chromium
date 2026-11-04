@@ -75,8 +75,10 @@ void ResponseSimulatingNavigationManager::LoadURLWithParams(
   auto context = std::make_unique<web::FakeNavigationContext>();
   context->SetUrl(params.url);
   web_state_->OnNavigationStarted(context.get());
+  const GURL response_url = simulated_response_url_.value_or(params.url);
+  context->SetUrl(response_url);
   NSURLResponse* response =
-      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(params.url)
+      [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(response_url)
                                 MIMEType:@"text/html"
                    expectedContentLength:0
                         textEncodingName:nil];

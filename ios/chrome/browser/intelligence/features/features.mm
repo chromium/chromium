@@ -573,6 +573,10 @@ bool ActorDisablesInputDuringActuation() {
 
 BASE_FEATURE(kActorOriginGating, base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsActorOriginGatingEnabled() {
+  return base::FeatureList::IsEnabled(kActorOriginGating);
+}
+
 const char kActorOriginGatingExplicitParam[] = "gate_explicit_navigation";
 const char kActorOriginGatingImplicitParam[] = "gate_implicit_navigation";
 
@@ -589,12 +593,12 @@ BASE_FEATURE_PARAM(bool,
                    true);  // Default to true when kActorOriginGating is enabled
 
 bool IsActorOriginGatingForExplicitNavigationEnabled() {
-  return base::FeatureList::IsEnabled(kActorOriginGating) &&
+  return IsActorOriginGatingEnabled() &&
          kActorOriginGatingExplicitFeatureParam.Get();
 }
 
 bool IsActorOriginGatingForImplicitNavigationEnabled() {
-  return base::FeatureList::IsEnabled(kActorOriginGating) &&
+  return IsActorOriginGatingEnabled() &&
          kActorOriginGatingImplicitFeatureParam.Get();
 }
 

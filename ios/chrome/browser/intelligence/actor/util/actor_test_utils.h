@@ -23,8 +23,7 @@
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
-
-class GURL;
+#import "url/gurl.h"
 
 @class NSError;
 namespace web {
@@ -75,6 +74,12 @@ class ResponseSimulatingNavigationManager : public web::FakeNavigationManager {
   void LoadURLWithParams(
       const NavigationManager::WebLoadParams& params) override;
 
+  // Overrides the URL used for the simulated `NSURLResponse` (e.g. to simulate
+  // a cross-origin redirect after `OnNavigationStarted`).
+  void set_simulated_response_url(const GURL& url) {
+    simulated_response_url_ = url;
+  }
+
   // Returns the last `PolicyDecision` produced by `ShouldAllowResponse`.
   const std::optional<web::WebStatePolicyDecider::PolicyDecision>&
   last_response_decision() const {
@@ -86,6 +91,7 @@ class ResponseSimulatingNavigationManager : public web::FakeNavigationManager {
                           web::WebStatePolicyDecider::PolicyDecision decision);
 
   raw_ptr<web::FakeWebState> web_state_ = nullptr;
+  std::optional<GURL> simulated_response_url_;
   std::optional<web::WebStatePolicyDecider::PolicyDecision>
       last_response_decision_;
   base::WeakPtrFactory<ResponseSimulatingNavigationManager> weak_ptr_factory_{

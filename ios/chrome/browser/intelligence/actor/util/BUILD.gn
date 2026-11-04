@@ -17,12 +17,12 @@ source_set("test_support") {
     "//ios/web/public",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//url",
   ]
   deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/web/public/navigation",
     "//net",
-    "//url",
   ]
 }
 

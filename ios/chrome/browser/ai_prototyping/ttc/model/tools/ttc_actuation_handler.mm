@@ -390,6 +390,7 @@ void TtcActuationHandler::DispatchActuationRequest(
 
   actor_service_->PerformActions(
       task_id_, std::move(actions), request.task_update,
+      /*added_writable_mainframe_origins=*/{},
       base::BindOnce(&TtcActuationHandler::OnPerformActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), task_id_));
 }

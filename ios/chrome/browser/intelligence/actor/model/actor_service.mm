@@ -21,6 +21,7 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
@@ -44,7 +45,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #import "url/gurl.h"
+#import "url/origin.h"
 
 namespace actor {
 
@@ -68,7 +71,8 @@ mojom::ActionResultCode GetFirstFailedActionResultCode(
 void LogActionsProto(
     AggregatedJournal* journal,
     ActorTaskId task_id,
-    const std::vector<optimization_guide::proto::Action>& actions) {
+    const std::vector<optimization_guide::proto::Action>& actions,
+    const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins) {
   if (!journal) {
     return;
   }
@@ -77,6 +81,15 @@ void LogActionsProto(
   actions_proto.mutable_actions()->Reserve(actions.size());
   for (const auto& action : actions) {
     *actions_proto.add_actions() = action;
+  }
+  if (!added_writable_mainframe_origins.empty()) {
+    auto* origins_proto = actions_proto.mutable_task_metadata()
+                              ->mutable_security()
+                              ->mutable_added_writable_mainframe_origins();
+    origins_proto->Reserve(added_writable_mainframe_origins.size());
+    for (const url::Origin& origin : added_writable_mainframe_origins) {
+      origins_proto->Add(origin.Serialize());
+    }
   }
   journal->LogProto(GURL(), task_id, "PerformActions", /*details=*/{},
                     actions_proto,
@@ -204,12 +217,15 @@ void ActorService::PerformActions(
     ActorTaskId task_id,
     std::vector<optimization_guide::proto::Action> actions,
     std::string task_update,
+    absl::flat_hash_set<url::Origin> added_writable_mainframe_origins,
     PerformActionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
 
   EnqueueCommand(&ActorService::DoPerformActions, task_id, std::move(actions),
-                 std::move(task_update), std::move(callback));
+                 std::move(task_update),
+                 std::move(added_writable_mainframe_origins),
+                 std::move(callback));
 }
 
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
@@ -374,9 +390,11 @@ void ActorService::DoPerformActions(
     ActorTaskId task_id,
     std::vector<optimization_guide::proto::Action> actions,
     std::string task_update,
+    const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins,
     PerformActionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  LogActionsProto(journal_.get(), task_id, actions);
+  LogActionsProto(journal_.get(), task_id, actions,
+                  added_writable_mainframe_origins);
 
   ActorTask* task = FindActiveTask(task_id);
   if (!task) {
@@ -418,6 +436,8 @@ void ActorService::DoPerformActions(
 
   // Resolve and register target WebStates from requests before execution.
   AddControlledWebStates(task, tool_requests);
+
+  task->engine().AddWritableMainframeOrigins(added_writable_mainframe_origins);
 
   task->Act(std::move(tool_requests), task_update,
             base::BindOnce(&ActorService::OnActCompleted, weak_this_, task_id,

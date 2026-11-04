@@ -83,11 +83,11 @@ TEST_F(
   EXPECT_FALSE(future.Get());
 }
 
-// Test that cross-origin transitions require user confirmation for navigation
-// responses.
-TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
-       DoesOriginRequireUserConfirmation_CrossOrigin_RequiresConfirmation) {
-  // Navigation responses across origins require confirmation.
+// Tests that cross-origin navigation responses do not require user
+// confirmation until a sensitive-URL check is wired up.
+TEST_F(
+    ActorOriginGatingCheckerDelegateIOSTest,
+    DoesOriginRequireUserConfirmation_CrossOrigin_DoesNotRequireConfirmation) {
   base::test::TestFuture<bool> future;
   delegate_.DoesOriginRequireUserConfirmation(
       /*context=*/nullptr,
@@ -95,7 +95,7 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
           .source = GURL(kSameOriginUrl1),
           .destination = GURL(kCrossOriginUrl)}),
       future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  EXPECT_FALSE(future.Get());
 }
 
 // Test that evaluating enterprise policy returns kNoDecision and bypasses
@@ -163,8 +163,8 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
   }
 }
 
-// Test that OnNoVerdict for navigation requests fails open and bypasses the
-// cache.
+// Tests that `OnNoVerdict()` for navigation requests fails open and bypasses
+// the cache.
 TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
        OnNoVerdict_ForNavigationRequests_FailsOpenAndBypassesCache) {
   base::test::TestFuture<NoVerdictResult> future;
@@ -181,7 +181,8 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
   EXPECT_TRUE(result.bypass_cache);
 }
 
-// Test that OnNoVerdict blocks execution when user confirmation is required.
+// Tests that `OnNoVerdict()` blocks execution when user confirmation is
+// required.
 TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
        OnNoVerdict_ConfirmationRequired_BlocksExecution) {
   base::test::TestFuture<NoVerdictResult> future;
@@ -198,16 +199,34 @@ TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
   EXPECT_FALSE(result.bypass_cache);
 }
 
-// Test that OnNoVerdict allows execution when user confirmation is not
-// required.
+// Tests that `OnNoVerdict()` blocks uncached navigation responses even when
+// user confirmation is not required.
 TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
-       OnNoVerdict_ConfirmationNotRequired_AllowsExecution) {
+       OnNoVerdict_NavigationResponseWithoutConfirmation_BlocksExecution) {
   base::test::TestFuture<NoVerdictResult> future;
   delegate_.OnNoVerdict(
       /*context=*/nullptr,
       origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
           .source = GURL(kSameOriginUrl1),
           .destination = GURL(kCrossOriginUrl)}),
+      /*requires_user_confirmation=*/false, future.GetCallback());
+
+  const NoVerdictResult result = future.Get();
+  EXPECT_FALSE(result.is_allowed);
+  EXPECT_FALSE(result.did_prompt_user);
+  EXPECT_FALSE(result.bypass_cache);
+}
+
+// Tests that `OnNoVerdict()` allows page actions when user confirmation is not
+// required and seeds `OriginGatingCache` (`bypass_cache` is false).
+TEST_F(ActorOriginGatingCheckerDelegateIOSTest,
+       OnNoVerdict_PageActionWithoutConfirmation_AllowsAndSeedsCache) {
+  base::test::TestFuture<NoVerdictResult> future;
+  delegate_.OnNoVerdict(
+      /*context=*/nullptr,
+      origin_gating::GateableEvent(origin_gating::PageActionEvent{
+          .destination = GURL(kSameOriginUrl1),
+          .tool = origin_gating::ClientTool(ToolType::kClick)}),
       /*requires_user_confirmation=*/false, future.GetCallback());
 
   const NoVerdictResult result = future.Get();

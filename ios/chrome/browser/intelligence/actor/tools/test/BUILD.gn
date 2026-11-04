@@ -33,6 +33,8 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//third_party/abseil-cpp:absl",
+    "//url",
   ]
 }
 

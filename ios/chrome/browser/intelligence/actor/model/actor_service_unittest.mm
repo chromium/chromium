@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -57,6 +58,9 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 // TODO(crbug.com/556276928): Centralize fake observer across unit tests.
 @interface FakeActorServiceTaskUpdatesObserver
@@ -255,9 +259,13 @@ class ActorServiceTest : public PlatformTest {
       ActorService* service,
       ActorTaskId task_id,
       const std::vector<optimization_guide::proto::Action>& actions = {},
-      const std::string& update = "Update") {
+      const std::string& update = "Update",
+      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins =
+          {}) {
     base::test::TestFuture<PerformActionsResult> future;
-    service->PerformActions(task_id, actions, update, future.GetCallback());
+    service->PerformActions(task_id, actions, update,
+                            added_writable_mainframe_origins,
+                            future.GetCallback());
     return future.Take();
   }
 
@@ -458,7 +466,7 @@ TEST_F(ActorServiceMockTimeTest, PerformActionsObservationTimeout) {
   service->AddControlledWebState(task_id, fake_web_state.get());
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, {}, "Update", future.GetCallback());
+  service->PerformActions(task_id, {}, "Update", {}, future.GetCallback());
 
   task_environment_.FastForwardBy(base::Milliseconds(400));
   ASSERT_TRUE(HasPendingObservation(service));
@@ -493,7 +501,9 @@ TEST_F(ActorServiceMockTimeTest, ShutdownDropsActWithInProgressObservation) {
   service->AddControlledWebState(task_id, fake_web_state_ptr);
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, {}, "Update", future.GetCallback());
+  service->PerformActions(task_id, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   // Run the command, whose empty act completes and posts its completion.
   RunAlreadyPostedTasks();
   // Run the act completion, which starts the observation.
@@ -619,12 +629,14 @@ TEST_F(ActorServiceTest, PerformActionsWhileActingDoesNotAddWebStates) {
   // Untargeted, so the first request stays in flight until its tool completes.
   base::test::TestFuture<PerformActionsResult> first_future;
   service->PerformActions(task_id, {MakeSuccessfulActorAction()}, "First",
+                          /*added_writable_mainframe_origins=*/{},
                           first_future.GetCallback());
   ASSERT_FALSE(first_future.IsReady());
 
   base::test::TestFuture<PerformActionsResult> second_future;
-  service->PerformActions(task_id, {MakeSuccessfulActorAction(web_state_id)},
-                          "Second", second_future.GetCallback());
+  service->PerformActions(
+      task_id, {MakeSuccessfulActorAction(web_state_id)}, "Second",
+      /*added_writable_mainframe_origins=*/{}, second_future.GetCallback());
   EXPECT_FALSE(second_future.IsReady());
   EXPECT_EQ(nullptr, service->GetWebStateForID(web_state_id, task_id));
 
@@ -671,7 +683,7 @@ TEST_F(ActorServiceTest, PerformActionsWhileInterruptedDoesNotAddWebStates) {
 
   base::test::TestFuture<PerformActionsResult> act_future;
   service->PerformActions(task_id, {MakeSuccessfulActorAction(web_state_id)},
-                          "Act", act_future.GetCallback());
+                          "Act", {}, act_future.GetCallback());
   const PerformActionsResult& result = act_future.Get();
   ASSERT_EQ(1u, result.action_results.size());
   EXPECT_EQ(mojom::ActionResultCode::kExecutionEngineExistingAction,
@@ -790,6 +802,7 @@ TEST_F(ActorServiceTest, PerformActions_LogsActionsToJournal) {
 
   base::test::TestFuture<PerformActionsResult> future;
   service->PerformActions(invalid_task_id, actions, "Update",
+                          /*added_writable_mainframe_origins=*/{},
                           future.GetCallback());
   PerformActionsResult result = future.Take();
   ASSERT_EQ(1u, result.action_results.size());
@@ -927,7 +940,9 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, actions, "Update", future.GetCallback());
+  service->PerformActions(task_id, actions, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
 
   // Wait until the task has deferred the completion callback (i.e. started
   // observing the loading web state).
@@ -974,7 +989,9 @@ TEST_F(ActorServiceMockTimeTest,
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, actions, "Update", future.GetCallback());
+  service->PerformActions(task_id, actions, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
 
   task_environment_.FastForwardBy(base::Seconds(0));
 
@@ -1459,7 +1476,9 @@ TEST_F(ActorServiceTest, CommandsRunInCallOrder) {
   const size_t base_count = observer.states.size();
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, {}, "Update", future.GetCallback());
+  service->PerformActions(task_id, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
   ASSERT_TRUE(future.Wait());
   // The act's completion runs after the stop, so it replies `kTaskWentAway`.
@@ -1517,12 +1536,14 @@ TEST_F(ActorServiceTest, CommandsIssuedFromReplyRunInCallOrder) {
   ActorTaskId task_id = CreateTask(service);
   base::test::TestFuture<PerformActionsResult> future;
   service->PerformActions(
-      task_id, {}, "Update",
+      task_id, {}, "Update", /*added_writable_mainframe_origins=*/{},
       base::BindOnce(
           [](ActorService* service, ActorTaskId task_id,
              PerformActionsCallback callback, PerformActionsResult result) {
             service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
-            service->PerformActions(task_id, {}, "Update", std::move(callback));
+            service->PerformActions(task_id, {}, "Update",
+                                    /*added_writable_mainframe_origins=*/{},
+                                    std::move(callback));
           },
           base::Unretained(service), task_id, future.GetCallback()));
 
@@ -1541,7 +1562,9 @@ TEST_F(ActorServiceTest, CommandForUnknownTaskRepliesAfterTwoHops) {
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(kUnknownTaskId, {}, "Update", future.GetCallback());
+  service->PerformActions(kUnknownTaskId, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   RunAlreadyPostedTasks();
   EXPECT_FALSE(future.IsReady());
   RunAlreadyPostedTasks();
@@ -1558,7 +1581,9 @@ TEST_F(ActorServiceTest, ShutdownDropsQueuedCommands) {
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(kUnknownTaskId, {}, "Update", future.GetCallback());
+  service->PerformActions(kUnknownTaskId, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   service->Shutdown();
   // Drain the sequence: dropped work has no observable effect to wait on.
   FlushCurrentSequence();
@@ -1616,7 +1641,9 @@ TEST_F(ActorServiceTest, ShutdownDropsPostedReplies) {
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(kUnknownTaskId, {}, "Update", future.GetCallback());
+  service->PerformActions(kUnknownTaskId, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   // Run the command, which posts its reply.
   RunAlreadyPostedTasks();
   service->Shutdown();
@@ -1634,7 +1661,9 @@ TEST_F(ActorServiceTest, ShutdownDropsPostedActCompletion) {
 
   ActorTaskId task_id = CreateTask(service);
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, {}, "Update", future.GetCallback());
+  service->PerformActions(task_id, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   // Run the command, whose empty act completes and posts its completion.
   RunAlreadyPostedTasks();
   ASSERT_FALSE(future.IsReady());
@@ -1667,7 +1696,9 @@ TEST_F(ActorServiceTest, ActObservationCompletingSynchronouslyRepliesDirectly) {
   service->AddControlledWebState(task_id, fake_web_state_ptr);
 
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(task_id, {}, "Update", future.GetCallback());
+  service->PerformActions(task_id, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   // Run the command, whose empty act completes and posts its completion.
   RunAlreadyPostedTasks();
   EXPECT_FALSE(future.IsReady());
@@ -1686,7 +1717,9 @@ TEST_F(ActorServiceTest, ShutdownDropsCommandsIssuedAfterwards) {
 
   service->Shutdown();
   base::test::TestFuture<PerformActionsResult> future;
-  service->PerformActions(kUnknownTaskId, {}, "Update", future.GetCallback());
+  service->PerformActions(kUnknownTaskId, {}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
+                          future.GetCallback());
   // Drain the sequence: dropped work has no observable effect to wait on.
   FlushCurrentSequence();
 
@@ -2286,6 +2319,7 @@ TEST_F(ActorServiceTest, StopTaskWhileActingRepliesTaskWentAway) {
 
   base::test::TestFuture<PerformActionsResult> future;
   service->PerformActions(task_id, {MakeSuccessfulActorAction()}, "Update",
+                          /*added_writable_mainframe_origins=*/{},
                           future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
@@ -2534,6 +2568,62 @@ TEST_F(ActorServiceTest, PerformActions_RejectedWhenBlockedByEnterprisePolicy) {
   ASSERT_EQ(1u, result.action_results.size());
   EXPECT_EQ(mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy,
             result.action_results[0].tool_result.code());
+}
+
+// Tests that `PerformActions` grants `added_writable_mainframe_origins` so
+// cross-origin navigation responses to granted origins are allowed while
+// ungranted origins remain blocked.
+TEST_F(ActorServiceTest, PerformActions_GrantsWritableMainframeOrigins) {
+  base::test::ScopedFeatureList origin_gating_feature;
+  origin_gating_feature.InitAndEnableFeature(kActorOriginGating);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  ActorTaskId task_id = CreateTask(service);
+  service->AddControlledWebState(task_id, web_state_ptr);
+
+  PerformActions(service, task_id, /*actions=*/{}, "Update",
+                 {url::Origin::Create(GURL("https://granted.com"))});
+
+  const web::WebStatePolicyDecider::ResponseInfo response_info(
+      /*for_main_frame=*/true);
+
+  // Granted origin -> allowed.
+  NSURLResponse* granted_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://granted.com/page"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      granted_future;
+  web_state_ptr->ShouldAllowResponse(granted_response, response_info,
+                                     granted_future.GetCallback());
+  EXPECT_TRUE(granted_future.Get().ShouldAllowNavigation());
+
+  // Ungranted cross-origin -> blocked.
+  NSURLResponse* blocked_response = [[NSURLResponse alloc]
+                initWithURL:[NSURL URLWithString:@"https://ungranted.com/page"]
+                   MIMEType:@"text/html"
+      expectedContentLength:0
+           textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      blocked_future;
+  web_state_ptr->ShouldAllowResponse(blocked_response, response_info,
+                                     blocked_future.GetCallback());
+  EXPECT_TRUE(blocked_future.Get().ShouldCancelNavigation());
 }
 
 }  // namespace actor

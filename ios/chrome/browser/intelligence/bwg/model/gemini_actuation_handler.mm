@@ -29,6 +29,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 @interface GeminiActuationHandler () <ActorTaskUpdatesObserver>
 
@@ -360,6 +363,23 @@ void AnswerRequest(GeminiActuationHandler* handler,
     completion_block(response);
   }
 }
+// Parses serialized origin strings from `origin_strings` into valid, non-opaque
+// `url::Origin` instances.
+absl::flat_hash_set<url::Origin> ParseWritableMainframeOrigins(
+    NSArray<NSString*>* origin_strings) {
+  absl::flat_hash_set<url::Origin> origins;
+  for (NSString* origin_string in origin_strings) {
+    GURL url(base::SysNSStringToUTF8(origin_string));
+    if (!url.is_valid()) {
+      continue;
+    }
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.opaque()) {
+      origins.insert(std::move(origin));
+    }
+  }
+  return origins;
+}
 
 }  // namespace
 
@@ -575,9 +595,10 @@ void AnswerRequest(GeminiActuationHandler* handler,
                   MakePerformActionsResponse(result));
   });
 
-  _actorService->PerformActions(taskID, std::move(*actions),
-                                base::SysNSStringToUTF8(request.taskUpdate),
-                                std::move(actionsCallback));
+  _actorService->PerformActions(
+      taskID, std::move(*actions), base::SysNSStringToUTF8(request.taskUpdate),
+      ParseWritableMainframeOrigins(request.addedWritableMainframeOrigins),
+      std::move(actionsCallback));
 }
 
 // Asks the user to confirm `yieldAction.messageToUser` and answers with their

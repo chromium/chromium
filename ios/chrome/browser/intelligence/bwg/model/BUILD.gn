@@ -73,6 +73,8 @@ source_set("model") {
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//net",
+    "//third_party/abseil-cpp:absl",
+    "//url",
   ]
   public_deps = [ "//base" ]
   frameworks = [

@@ -617,6 +617,7 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
 
   actorService->PerformActions(
       task_id, actions, "Executing AI Prototyping actions",
+      /*added_writable_mainframe_origins=*/{},
       base::BindOnce(^(actor::PerformActionsResult result) {
         [weakSelf onActionsPerformed:std::move(result.action_results)
                          withActions:actions

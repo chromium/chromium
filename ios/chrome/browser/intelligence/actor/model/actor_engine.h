@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#import "url/origin.h"
 
 namespace origin_gating {
 class OriginGatingChecker;
@@ -153,6 +155,11 @@ class ActorEngine : public ToolDelegate {
 
   // Returns the OriginGatingChecker instance for gating navigation actions.
   origin_gating::OriginGatingChecker* GetOriginGatingChecker();
+
+  // Pre-approves `added_writable_mainframe_origins` as non-user-confirmed
+  // allowed main-frame navigation destinations for the task.
+  void AddWritableMainframeOrigins(
+      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
   void IsAcceptableNavigationDestination(
       const GURL& url,

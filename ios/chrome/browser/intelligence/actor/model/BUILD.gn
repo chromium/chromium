@@ -31,6 +31,8 @@ source_set("model") {
     "//components/actor/core:journal",
     "//components/sessions:session_id",
     "//ios/chrome/browser/intelligence/actor/metrics",
+    "//third_party/abseil-cpp:absl",
+    "//url",
   ]
   deps = [
     ":tab_helper",
@@ -155,6 +157,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
     "//third_party/ocmock",
     "//ui/base",
     "//url",

@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace actor {
 
@@ -137,6 +139,46 @@ TEST_F(ActorToolRequestSimpleTest, MissingTabId) {
   EXPECT_FALSE(request.RequiresUrlCheckInCurrentTab());
 }
 
+// Tests that a valid NavigateAction URL grants its origin.
+TEST_F(ActorToolRequestSimpleTest, AssociatedOriginGrant_ValidNavigateUrl) {
+  optimization_guide::proto::Action navigate_action;
+  navigate_action.mutable_navigate()->set_url("https://example.com/path?q=1");
+  ActorToolRequest navigate_request(navigate_action);
+  std::optional<url::Origin> grant = navigate_request.AssociatedOriginGrant();
+  ASSERT_TRUE(grant.has_value());
+  EXPECT_EQ(*grant, url::Origin::Create(GURL("https://example.com")));
+}
+
+// Tests that non-Navigate actions return nullopt.
+TEST_F(ActorToolRequestSimpleTest,
+       AssociatedOriginGrant_ReturnsNulloptForNonNavigateAction) {
+  optimization_guide::proto::Action click_action;
+  click_action.mutable_click()->set_tab_id(kTabId);
+
+  EXPECT_FALSE(
+      ActorToolRequest(click_action).AssociatedOriginGrant().has_value());
+}
+
+// Tests that a NavigateAction with an invalid URL string returns nullopt.
+TEST_F(ActorToolRequestSimpleTest,
+       AssociatedOriginGrant_ReturnsNulloptForInvalidUrl) {
+  optimization_guide::proto::Action invalid_url_action;
+  invalid_url_action.mutable_navigate()->set_url("not a url");
+
+  EXPECT_FALSE(
+      ActorToolRequest(invalid_url_action).AssociatedOriginGrant().has_value());
+}
+
+// Tests that a NavigateAction resulting in an opaque origin (like about:blank)
+// returns nullopt.
+TEST_F(ActorToolRequestSimpleTest,
+       AssociatedOriginGrant_ReturnsNulloptForOpaqueOrigin) {
+  optimization_guide::proto::Action opaque_url_action;
+  opaque_url_action.mutable_navigate()->set_url("about:blank");
+
+  EXPECT_FALSE(
+      ActorToolRequest(opaque_url_action).AssociatedOriginGrant().has_value());
+}
 }  // namespace
 
 }  // namespace actor
