@@ -1628,6 +1628,8 @@ TEST_F(TabStripModelTest,
       "TabGroups.Focus.PinnedTabActivatedInSession", true, 1);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.PinnedTabCountOnEntry",
+                                      1, 1);
 }
 
 TEST_F(TabStripModelTest,
@@ -1658,6 +1660,8 @@ TEST_F(TabStripModelTest,
       "TabGroups.Focus.PinnedTabActivatedInSession", false, 1);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.PinnedTabCountOnEntry",
+                                      1, 1);
 }
 
 TEST_F(TabStripModelTest,
@@ -1686,6 +1690,8 @@ TEST_F(TabStripModelTest,
       "TabGroups.Focus.PinnedTabActivatedInSession", false, 1);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.PinnedTabExistedInSession", false, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.PinnedTabCountOnEntry",
+                                      0, 1);
 }
 
 TEST_F(TabStripModelTest,
@@ -1717,6 +1723,44 @@ TEST_F(TabStripModelTest,
       "TabGroups.Focus.PinnedTabActivatedInSession", true, 1);
   histogram_tester.ExpectUniqueSample(
       "TabGroups.Focus.PinnedTabExistedInSession", true, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.PinnedTabCountOnEntry",
+                                      0, 1);
+}
+
+TEST_F(TabStripModelTest, FocusModePinnedTabCountOnEntryHistogram) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel model(&delegate, profile());
+  base::HistogramTester histogram_tester;
+
+  for (int i = 0; i < 6; ++i) {
+    model.AppendWebContents(CreateWebContents(), i == 0);
+  }
+
+  const tab_groups::TabGroupId group1 = model.AddToNewGroup({3, 4});
+  const tab_groups::TabGroupId group2 = model.AddToNewGroup({5});
+
+  // Enter focus mode with 0 pinned tabs.
+  model.EnterFocusMode(group1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.PinnedTabCountOnEntry",
+                                      0, 1);
+  model.ExitFocusMode();
+
+  // Pin 3 tabs and enter focus mode again.
+  model.SetTabPinned(0, true);
+  model.SetTabPinned(1, true);
+  model.SetTabPinned(2, true);
+
+  model.EnterFocusMode(group1);
+  histogram_tester.ExpectBucketCount("TabGroups.Focus.PinnedTabCountOnEntry", 3,
+                                     1);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.PinnedTabCountOnEntry", 2);
+
+  // Switching directly to another focused group starts a new focus session and
+  // records the current pinned tab count again.
+  model.EnterFocusMode(group2);
+  histogram_tester.ExpectBucketCount("TabGroups.Focus.PinnedTabCountOnEntry", 3,
+                                     2);
+  histogram_tester.ExpectTotalCount("TabGroups.Focus.PinnedTabCountOnEntry", 3);
 }
 
 TEST_F(TabStripModelTest, RemovingLastTabOfFocusedGroupUnsetsFocus) {

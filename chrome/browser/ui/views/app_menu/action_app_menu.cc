@@ -478,16 +478,15 @@ void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
     return;
   }
 
-  metrics_.OnWillShowSubMenu(menu->GetCommand());
+  actions::BaseAction* base_action = GetActionForMenuItem(menu);
+  metrics_.OnWillShowSubMenu(base_action);
 
   if (!menu->GetSubmenu()->GetMenuItems().empty()) {
     return;
   }
 
-  auto action_iterator = command_to_action_map_.find(menu->GetCommand());
-  if (action_iterator != command_to_action_map_.end() &&
-      action_iterator->second->HasPopulateChildActionsCallback()) {
-    PopulateMenu(menu, action_iterator->second);
+  if (base_action && base_action->HasPopulateChildActionsCallback()) {
+    PopulateMenu(menu, base_action);
   }
 }
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -319,6 +320,9 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
       views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED,
       base::BindRepeating(&TabGroupsOrganizerPageHandler::OnContextMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()));
+  tab_groups::saved_tab_groups::metrics::RecordTabGroupContextMenuAccessed(
+      tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kOrganizerPanel);
   context_menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
                                   views::MenuAnchorPosition::kTopLeft,
                                   ui::mojom::MenuSourceType::kNone);

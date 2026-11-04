@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
@@ -5299,6 +5300,94 @@ TEST_F(ActionAppMenuTest, ActionAppMenuMetricsRecordMenuHeightPercentage) {
   metrics.RecordMenuHeightPercentage(500, 0);
   metrics.RecordMenuHeightPercentage(500, -100);
   histogram_tester.ExpectTotalCount("WrenchMenu.MenuHeightPercentage", 2);
+}
+
+TEST_F(ActionAppMenuTest, TabGroupSubmenuAccessedMetrics) {
+  FaviconServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<favicon::MockFaviconService>>();
+      }));
+
+  base::HistogramTester histogram_tester;
+  auto* sync_service = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(sync_service);
+
+  base::Uuid group1_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab1(GURL("https://example.com/1"), u"Tab 1",
+                                    group1_guid, /*position=*/0);
+  sync_service->AddGroup(tab_groups::SavedTabGroup(
+      u"Group 1", tab_groups::TabGroupColorId::kBlue, {tab1},
+      /*position=*/std::nullopt, group1_guid));
+
+  base::Uuid group2_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab2(GURL("https://example.com/2"), u"Tab 2",
+                                    group2_guid, /*position=*/0);
+  sync_service->AddGroup(tab_groups::SavedTabGroup(
+      u"Group 2", tab_groups::TabGroupColorId::kRed, {tab2},
+      /*position=*/std::nullopt, group2_guid));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* tab_groups_item =
+      root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
+  ASSERT_TRUE(tab_groups_item);
+
+  // Opening the top-level "Tab groups" submenu should not record a per-group
+  // context menu access.
+  menu.WillShowMenu(tab_groups_item);
+  histogram_tester.ExpectTotalCount("TabGroups.ContextMenu.Accessed", 0);
+
+  views::SubmenuView* tab_groups_submenu = tab_groups_item->GetSubmenu();
+  ASSERT_TRUE(tab_groups_submenu);
+
+  views::MenuItemView* group1_item = nullptr;
+  views::MenuItemView* group2_item = nullptr;
+  for (views::MenuItemView* item : tab_groups_submenu->GetMenuItems()) {
+    if (item->title() == u"Group 1") {
+      group1_item = item;
+    } else if (item->title() == u"Group 2") {
+      group2_item = item;
+    }
+  }
+  ASSERT_NE(group1_item, nullptr);
+  ASSERT_NE(group2_item, nullptr);
+
+  // Opening Group 1's submenu records an access.
+  menu.WillShowMenu(group1_item);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.Accessed",
+      tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kAppMenu,
+      1);
+
+  // Opening Group 2's submenu records a second access.
+  menu.WillShowMenu(group2_item);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.Accessed",
+      tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kAppMenu,
+      2);
+
+  // Re-opening Group 1's submenu in the same menu session records a third
+  // access.
+  menu.WillShowMenu(group1_item);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.Accessed",
+      tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kAppMenu,
+      3);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }
 
 }  // namespace

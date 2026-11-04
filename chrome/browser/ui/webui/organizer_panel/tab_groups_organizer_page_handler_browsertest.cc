@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -462,10 +464,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
+  base::HistogramTester histogram_tester;
   handler_remote->ShowContextMenu(id.AsLowercaseString(),
                                   gfx::Rect(10, 20, 30, 40), base::DoNothing());
   handler_remote.FlushForTesting();
   EXPECT_TRUE(handler.IsContextMenuRunningForTesting());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.ContextMenu.Accessed",
+      tab_groups::saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kOrganizerPanel,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
@@ -488,10 +496,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
+  base::HistogramTester histogram_tester;
   handler_remote->ShowContextMenu(
       id.AsLowercaseString(), gfx::Rect(-10, -20, 30, 40), base::DoNothing());
   handler_remote.FlushForTesting();
   EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
+  histogram_tester.ExpectTotalCount("TabGroups.ContextMenu.Accessed", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,

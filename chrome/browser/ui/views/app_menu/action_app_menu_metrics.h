@@ -26,7 +26,7 @@ class ActionAppMenuMetrics {
   void OnMenuOpened();
 
   // Records metrics when a submenu is about to be shown.
-  void OnWillShowSubMenu(int command_id);
+  void OnWillShowSubMenu(actions::BaseAction* base_action);
 
   // Records metrics for a menu item represented by `base_action`, handling both
   // static ActionIds and dynamically generated submenu items (e.g. bookmarks,

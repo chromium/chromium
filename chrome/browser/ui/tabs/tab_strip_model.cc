@@ -177,10 +177,14 @@ void RecordToggleFocusGroupMetrics(bool is_unfocus,
     return;
   }
 
-  base::UmaHistogramEnumeration(
-      "TabGroups.Focus.EntryPoint",
-      is_non_group ? TabGroupFocusEntryPoint::kTabContextMenuNonGroup
-                   : TabGroupFocusEntryPoint::kTabContextMenu);
+  TabGroupFocusEntryPoint entry_point =
+      TabGroupFocusEntryPoint::kTabContextMenu;
+  if (is_non_group) {
+    entry_point = non_group_tabs_count == 1
+                      ? TabGroupFocusEntryPoint::kTabContextMenuSingleTab
+                      : TabGroupFocusEntryPoint::kTabContextMenuMultiTab;
+  }
+  base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint", entry_point);
   base::RecordAction(UserMetricsAction(is_non_group
                                            ? "TabContextMenu_FocusNonGroupTabs"
                                            : "TabContextMenu_FocusTabGroup"));
@@ -2621,7 +2625,10 @@ void TabStripModel::LogTabGroupFocusMetrics(
   if (new_focused_group.has_value()) {
     focus_mode_session_start_time_ = base::TimeTicks::Now();
     focus_mode_pinned_tab_activations_ = 0;
-    had_pinned_tabs_in_focus_session_ = (IndexOfFirstNonPinnedTab() > 0);
+    const int pinned_tabs_count = IndexOfFirstNonPinnedTab();
+    had_pinned_tabs_in_focus_session_ = (pinned_tabs_count > 0);
+    base::UmaHistogramCounts100("TabGroups.Focus.PinnedTabCountOnEntry",
+                                pinned_tabs_count);
   }
 }
 

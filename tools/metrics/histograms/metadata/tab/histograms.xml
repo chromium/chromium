@@ -992,6 +992,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.ContextMenu.Accessed"
+    enum="SavedTabGroupOpenedSubmenuDesktop" expires_after="2027-05-03">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Recorded every time a tab group context menu or submenu is opened,
+    categorized by the menu surface from which it was triggered.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.ContextMenu.EditorBubble.Action"
     enum="TabGroupEditorBubbleAction" expires_after="2027-02-04">
   <owner>kunaldaftari@google.com</owner>
@@ -1068,6 +1078,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when the user exits Tab Groups Focus Mode. Records the number of
     times a pinned tab was activated during the focus mode session.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Focus.PinnedTabCountOnEntry" units="tabs"
+    expires_after="2027-05-03">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when the user enters Tab Groups Focus Mode. Records the number of
+    pinned tabs present in the tab strip upon entry.
   </summary>
 </histogram>
 

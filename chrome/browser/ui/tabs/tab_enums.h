@@ -125,11 +125,14 @@ enum class VerticalTabStripCollapseState {
 enum class TabGroupFocusEntryPoint {
   kEditorBubble = 0,
   kTabContextMenu = 1,
-  kTabContextMenuNonGroup = 2,
+  // kTabContextMenuNonGroup = 2,  // Deprecated, split into single and multi
+  // tab.
   kBookmarksBarContextMenu = 3,
   kAppMenu = 4,
   kOrganizerPanel = 5,
-  kMaxValue = kOrganizerPanel,
+  kTabContextMenuSingleTab = 6,
+  kTabContextMenuMultiTab = 7,
+  kMaxValue = kTabContextMenuMultiTab,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusEntryPoint)
 

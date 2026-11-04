@@ -48,6 +48,12 @@ void RecordSavedTabGroupOpenedSubmenu(
                                 submenu_type);
 }
 
+void RecordTabGroupContextMenuAccessed(
+    SavedTabGroupOpenedSubmenuDesktop submenu_source) {
+  base::UmaHistogramEnumeration("TabGroups.ContextMenu.Accessed",
+                                submenu_source);
+}
+
 void RecordTabGroupContextMenuAction(
     SavedTabGroupOpenedSubmenuDesktop submenu_source,
     TabGroupMenuAction::Type action) {

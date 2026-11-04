@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -241,6 +242,9 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
     return;
   }
 
+  saved_tab_groups::metrics::RecordTabGroupContextMenuAccessed(
+      saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::kAppMenu);
+
   if (latest_group_id_ == group_id) {
     return;
   }
@@ -398,6 +402,9 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
       tabs_models_[group_id].get(),
       views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
 
+  saved_tab_groups::metrics::RecordTabGroupContextMenuAccessed(
+      saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kEverythingMenu);
   context_menu_runner_->RunMenuAt(
       widget_, /*button_controller=*/nullptr, gfx::Rect(p, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, source_type);

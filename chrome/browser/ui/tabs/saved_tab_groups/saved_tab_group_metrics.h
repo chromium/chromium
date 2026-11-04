@@ -83,6 +83,8 @@ void RecordSharedTabGroupRecallType(SharedTabGroupRecallTypeDesktop action);
 void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action);
 void RecordSavedTabGroupOpenedSubmenu(
     SavedTabGroupOpenedSubmenuDesktop submenu_type);
+void RecordTabGroupContextMenuAccessed(
+    SavedTabGroupOpenedSubmenuDesktop submenu_source);
 void RecordTabGroupContextMenuAction(
     SavedTabGroupOpenedSubmenuDesktop submenu_source,
     TabGroupMenuAction::Type action);

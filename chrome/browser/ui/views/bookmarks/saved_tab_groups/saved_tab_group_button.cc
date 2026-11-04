@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -342,6 +343,9 @@ void SavedTabGroupButton::ShowContextMenuForViewImpl(
       views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED,
       base::BindRepeating(&SavedTabGroupButton::OnContextMenuClosed,
                           base::Unretained(this)));
+  saved_tab_groups::metrics::RecordTabGroupContextMenuAccessed(
+      saved_tab_groups::metrics::SavedTabGroupOpenedSubmenuDesktop::
+          kBookmarksBar);
   context_menu_runner_->RunMenuAt(
       source->GetWidget(), button_controller(), gfx::Rect(point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, source_type);
