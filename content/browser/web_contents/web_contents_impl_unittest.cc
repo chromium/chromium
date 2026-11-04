@@ -464,6 +464,38 @@ class MockNetworkContext : public network::TestNetworkContext {
 
 }  // namespace
 
+namespace {
+
+// Returns an off-the-record BrowserContext as the user BrowserContext of any
+// frame.
+class LearningTestUserContentBrowserClient : public TestContentBrowserClient {
+ public:
+  LearningTestUserContentBrowserClient() {
+    browser_context_.set_is_off_the_record(true);
+  }
+
+  // ContentBrowserClient:
+  BrowserContext* GetUserBrowserContext(
+      RenderFrameHost& render_frame_host) override {
+    return &browser_context_;
+  }
+
+ private:
+  TestBrowserContext browser_context_;
+};
+
+}  // namespace
+
+// Tests that IME learning uses the off-the-record state of the user
+// BrowserContext, instead of that of the WebContents.
+TEST_F(WebContentsImplTest, ShouldDoLearningUsesUserBrowserContext) {
+  EXPECT_TRUE(contents()->ShouldDoLearning());
+
+  LearningTestUserContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+  EXPECT_FALSE(contents()->ShouldDoLearning());
+}
+
 TEST_F(WebContentsImplTest, SetMainFrameMimeType) {
   ASSERT_TRUE(controller().IsInitialNavigation());
   std::string mime = "text/html";
