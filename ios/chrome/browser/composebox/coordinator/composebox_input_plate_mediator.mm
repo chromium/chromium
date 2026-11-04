@@ -82,8 +82,10 @@
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/default_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -276,8 +278,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                      PageContextWrapper*,
                      base::UnguessableTokenHash>
       _pageContextWrappers;
-  // Optional factory overriding `PageContextWrapper` creation in tests.
-  PageContextWrapperFactoryCallback _pageContextWrapperFactory;
+  // Factory used to create `PageContextWrapper` instances.
+  raw_ptr<PageContextWrapperFactory> _pageContextWrapperFactory;
   std::unordered_map<base::UnguessableToken,
                      web::WebStateID,
                      base::UnguessableTokenHash>
@@ -367,6 +369,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   self = [super init];
   if (self) {
     _entrypoint = entrypoint;
+    _pageContextWrapperFactory =
+        &DefaultPageContextWrapperFactory::GetInstance();
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
     _prefService = prefService;
@@ -1288,8 +1292,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       populatePageContextFieldsAsyncWithTimeout:kPageContextTimeout];
 }
 
-// Creates a `PageContextWrapper` for `webState`, using
-// `_pageContextWrapperFactory` when set for tests. Named with the `new` prefix
+// Creates a `PageContextWrapper` for `webState` using
+// `_pageContextWrapperFactory`. Named with the `new` prefix
 // (`NS_RETURNS_RETAINED`) so ARC returns a +1 owned reference without placing
 // the wrapper in the caller's autorelease pool.
 - (PageContextWrapper*)
@@ -1298,19 +1302,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                   completionCallback:(base::OnceCallback<void(
                                           PageContextWrapperCallbackResponse)>)
                                          completionCallback {
-  if (_pageContextWrapperFactory) {
-    // `RepeatingCallback::Run` returns an autoreleased Objective-C pointer.
-    // Drain the pool so `_pageContextWrappers` is the sole owner of the
-    // wrapper and erasing its entry immediately cancels extraction.
-    @autoreleasepool {
-      return _pageContextWrapperFactory.Run(webState, config,
-                                            std::move(completionCallback));
-    }
+  // `PageContextWrapperFactory::Create` returns an autoreleased Objective-C
+  // pointer. Drain the pool so `_pageContextWrappers` is the sole owner of the
+  // wrapper and erasing its entry immediately cancels extraction.
+  @autoreleasepool {
+    return _pageContextWrapperFactory->Create(webState, config,
+                                              std::move(completionCallback));
   }
-  return [[PageContextWrapper alloc]
-        initWithWebState:webState
-                  config:config
-      completionCallback:std::move(completionCallback)];
 }
 
 // Handles the result of fetching cached page context for `webState`.
@@ -2933,8 +2931,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 #pragma mark - Testing
 
 - (void)setPageContextWrapperFactoryForTesting:
-    (PageContextWrapperFactoryCallback)factory {
-  _pageContextWrapperFactory = std::move(factory);
+    (PageContextWrapperFactory*)factory {
+  _pageContextWrapperFactory =
+      factory ? factory : &DefaultPageContextWrapperFactory::GetInstance();
 }
 
 - (BOOL)isWebStateIDRemoved:(web::WebStateID)webStateID {

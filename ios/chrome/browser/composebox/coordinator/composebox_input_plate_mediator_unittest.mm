@@ -13,6 +13,8 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -58,7 +60,10 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_factory.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -101,35 +106,6 @@
 - (void)loadURLParams:(const UrlLoadParams&)params {
   _loadedURL = params.web_params.url;
 }
-@end
-
-// Fake `PageContextWrapper` that stays in flight without running timers or
-// JavaScript extraction.
-@interface FakeComposeboxPageContextWrapper : PageContextWrapper
-@end
-
-@implementation FakeComposeboxPageContextWrapper {
-  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-      _completionCallback;
-}
-
-- (instancetype)initWithWebState:(web::WebState*)webState
-                          config:(PageContextWrapperConfig)config
-              completionCallback:
-                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
-                      completionCallback {
-  self = [super initWithWebState:webState
-                          config:config
-              completionCallback:base::DoNothing()];
-  if (self) {
-    _completionCallback = std::move(completionCallback);
-  }
-  return self;
-}
-
-- (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout {
-}
-
 @end
 
 // Mock delegate for the mediator.
@@ -368,6 +344,32 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
     bool serverSideState;
   };
 
+  // `PageContextWrapperFactory` implementation that records weak references to
+  // created `FakePageContextWrapper` instances without retaining them, so tests
+  // can verify when the mediator releases an in-flight wrapper.
+  class RecordingFakePageContextWrapperFactory final
+      : public PageContextWrapperFactory {
+   public:
+    explicit RecordingFakePageContextWrapperFactory(
+        std::vector<__weak PageContextWrapper*>& started_wrappers)
+        : started_wrappers_(started_wrappers) {}
+
+    // PageContextWrapperFactory:
+    PageContextWrapper* Create(web::WebState* web_state,
+                               PageContextWrapperConfig config,
+                               CompletionCallback completion) final {
+      FakePageContextWrapper* wrapper = [[FakePageContextWrapper alloc]
+            initWithWebState:web_state
+                      config:std::move(config)
+          completionCallback:std::move(completion)];
+      started_wrappers_->push_back(wrapper);
+      return wrapper;
+    }
+
+   private:
+    const raw_ref<std::vector<__weak PageContextWrapper*>> started_wrappers_;
+  };
+
   TemplateURLService* template_url_service() {
     return search_engines_test_environment_.template_url_service();
   }
@@ -421,25 +423,9 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   // the wrappers weakly, in creation order, in `started_page_context_wrappers_`
   // so that tests can check whether the mediator still owns them.
   void StubPageContextExtraction() {
-    page_context_wrapper_factory_ = base::BindRepeating(
-        &ComposeboxInputPlateMediatorTest::CreateFakePageContextWrapper,
-        base::Unretained(this));
+    page_context_wrapper_factory_ = &fake_page_context_wrapper_factory_;
     [mediator_
         setPageContextWrapperFactoryForTesting:page_context_wrapper_factory_];
-  }
-
-  PageContextWrapper* CreateFakePageContextWrapper(
-      web::WebState* web_state,
-      PageContextWrapperConfig config,
-      base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-          completion_callback) {
-    FakeComposeboxPageContextWrapper* wrapper =
-        [[FakeComposeboxPageContextWrapper alloc]
-              initWithWebState:web_state
-                        config:config
-            completionCallback:std::move(completion_callback)];
-    started_page_context_wrappers_.push_back(wrapper);
-    return wrapper;
   }
 
   // Returns whether the `index`-th `PageContextWrapper` recorded by
@@ -606,16 +592,18 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   std::unique_ptr<FakeWebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   TestComposeboxInputPlateConsumer* consumer_;
+  // The `PageContextWrapper`s whose extraction started, in creation order.
+  // Weak, so that they only stay alive while the mediator owns them.
+  std::vector<__weak PageContextWrapper*> started_page_context_wrappers_;
+  RecordingFakePageContextWrapperFactory fake_page_context_wrapper_factory_{
+      started_page_context_wrappers_};
+  // Factory used to stub page context extraction when non-null. See
+  // `StubPageContextExtraction()`.
+  raw_ptr<PageContextWrapperFactory> page_context_wrapper_factory_ = nullptr;
   ComposeboxInputPlateMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
   omnibox::SearchboxConfig searchbox_config_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
-  // Factory callback used to stub page context extraction. See
-  // `StubPageContextExtraction()`.
-  PageContextWrapperFactoryCallback page_context_wrapper_factory_;
-  // The `PageContextWrapper`s whose extraction started, in creation order.
-  // Weak, so that they only stay alive while the mediator owns them.
-  std::vector<__weak PageContextWrapper*> started_page_context_wrappers_;
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
