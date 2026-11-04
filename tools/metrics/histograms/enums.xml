@@ -24167,7 +24167,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Incremental"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeaderFooterRepetition) -->
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:HeaderFooterRepetition) -->
 
 <!-- LINT.IfChange(PdfAccessibilityHeadingClassifier) -->
 
@@ -24180,7 +24180,7 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Text Color"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeadingClassifier) -->
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:HeadingClassifier) -->
 
 <!-- LINT.IfChange(PdfAccessibilityListEndReason) -->
 
@@ -24196,7 +24196,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Heading"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:PdfAccessibilityListEndReason) -->
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListEndReason) -->
 
 <!-- LINT.IfChange(PdfAccessibilityListStartReason) -->
 
@@ -24207,7 +24207,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Ordered numeric marker starting above 1"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:PdfAccessibilityListStartReason) -->
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_metrics.h:PdfAccessibilityListStartReason) -->
 
 <enum name="PerformanceMonitor.UsageScenario.LongInterval">
   <int value="1" label="All Tabs Hidden Audio"/>

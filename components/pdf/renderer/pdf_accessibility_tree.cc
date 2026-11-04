@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/pdf/renderer/pdf_accessibility_metrics.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"

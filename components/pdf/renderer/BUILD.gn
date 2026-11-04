@@ -13,6 +13,7 @@ static_library("renderer") {
 
   public = [
     "internal_plugin_renderer_helpers.h",
+    "pdf_accessibility_metrics.h",
     "pdf_accessibility_tree.h",
     "pdf_ax_action_target.h",
     "pdf_view_web_plugin_client.h",
