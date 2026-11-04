@@ -296,28 +296,6 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNtp) {
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
 }
 
-// Tests that reader mode is eligible on a regular page.
-// TODO(crbug.com/579309262): this test timeout in the call to
-// WaitForAvailableReaderModeContentInWebState() but this was
-// invisible because the returned value was ignored. Now that
-// the returned value is marked as [[nodiscard]] the test fail
-// and must be disabled.
-TEST_F(ReaderModeTabHelperTest, DISABLED_ReaderModeEligibleOnRegularPage) {
-  GURL test_url("https://www.regular.com");
-  SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
-
-  LoadWebpage(web_state(), test_url);
-  WaitForPageLoadDelayAndRunUntilIdle();
-
-  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
-  reader_mode_tab_helper()->ActivateReader(
-      ReaderModeAccessPoint::kContextualChip);
-  ASSERT_TRUE(reader_mode_tab_helper()->IsActive());
-  ASSERT_TRUE(WaitForAvailableReaderModeContentInWebState(web_state()));
-  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
-}
-
 // Tests that reader mode is not eligible on pages that are not html.
 TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNonHTML) {
   GURL test_url("https://test.url/");
