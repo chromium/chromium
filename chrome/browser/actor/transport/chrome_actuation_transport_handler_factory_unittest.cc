@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -126,6 +125,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   ASSERT_TRUE(handler);
 
   proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("server-task-1");
   downstream.set_request_id("req_factory_start");
   downstream.mutable_start_task();
 
@@ -136,14 +136,15 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   EXPECT_EQ(session.sent_payload_types()[0],
             browser_actuator::transport::PayloadType::kActuation);
   const auto& upstream = session.sent_messages()[0];
+  EXPECT_EQ(upstream.task_id(), "server-task-1");
   EXPECT_EQ(upstream.request_id(), "req_factory_start");
   ASSERT_TRUE(upstream.has_start_task());
   EXPECT_EQ(upstream.start_task().status(),
             proto::StartTaskResponse::STATUS_OK);
 
-  int task_id_val = 0;
-  ASSERT_TRUE(base::StringToInt(upstream.task_id(), &task_id_val));
-  TaskId task_id(task_id_val);
+  const auto active_tasks = actor_keyed_service_->GetActiveTasks();
+  ASSERT_EQ(active_tasks.size(), 1u);
+  TaskId task_id = active_tasks.begin()->first;
   ActorTask* task = actor_keyed_service_->GetTask(task_id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->source_info().type, TaskSourceInfo::Client::kBrowserActuator);
@@ -176,6 +177,7 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
       transport_service->CreateSession("enabled_session_1");
   ASSERT_TRUE(session);
   proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("server-task-enabled");
   downstream.set_request_id("req_enabled_start");
   downstream.mutable_start_task();
   session->OnMessage(browser_actuator::transport::PayloadType::kActuation,

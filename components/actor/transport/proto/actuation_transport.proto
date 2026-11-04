@@ -15,8 +15,11 @@ import "components/optimization_guide/proto/features/common_quality_data.proto";
 // browser.
 // Next ID: 8
 message ServerToBrowserPayload {
-  // Unique task identifier, supporting multi-task multiplexing in one session.
-  // Empty on StartTaskRequest before a task is created.
+  // Server-chosen task identifier, supporting multi-task multiplexing in one
+  // session. Required on every request, including StartTaskRequest. Chrome
+  // maps it to its own task internally and rejects a StartTaskRequest with a
+  // missing task_id (STATUS_MISSING_TASK_ID) or an already active task_id
+  // (STATUS_DUPLICATE_TASK_ID).
   string task_id = 1;
 
   // Unique request correlation identifier echoed back in the corresponding
@@ -45,7 +48,7 @@ message ServerToBrowserPayload {
 // server.
 // Next ID: 8
 message BrowserToServerPayload {
-  // Unique task identifier matching the originating task.
+  // Task identifier echoed from the originating ServerToBrowserPayload.task_id.
   string task_id = 1;
 
   // Request correlation identifier matching the originating
@@ -117,6 +120,11 @@ message StartTaskResponse {
     STATUS_UNSPECIFIED = 0;
     STATUS_OK = 1;
     STATUS_TARGET_TAB_NOT_FOUND = 2;
+    // ServerToBrowserPayload.task_id was empty.
+    STATUS_MISSING_TASK_ID = 3;
+    // ServerToBrowserPayload.task_id is already in use by an active or
+    // starting task in the session.
+    STATUS_DUPLICATE_TASK_ID = 4;
   }
 
   // Outcome of the task initialization request.

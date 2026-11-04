@@ -6,13 +6,15 @@
 #define COMPONENTS_ACTOR_TRANSPORT_ACTUATION_TRANSPORT_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/transport/actuation_delegate.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/browser_actuator/public/transport/transport_handler.h"
 
 namespace browser_actuator::transport {
@@ -39,28 +41,44 @@ class ActuationTransportHandler
                  std::string_view serialized_payload) override;
 
  private:
+  // A StopTask that arrived while its StartTask was still pending.
+  struct PendingStop {
+    std::string request_id;
+    proto::StopTaskRequest request;
+  };
+
   void HandleStartTask(const std::string& request_id,
+                       const std::string& external_task_id,
                        const proto::StartTaskRequest& request);
   void OnStartTaskComplete(const std::string& request_id,
+                           const std::string& external_task_id,
                            TaskId task_id,
                            proto::StartTaskResponse response);
+  void SendStartTaskResponse(const std::string& request_id,
+                             const std::string& external_task_id,
+                             proto::StartTaskResponse response);
 
   void HandleStopTask(const std::string& request_id,
-                      std::string_view task_id_str,
+                      const std::string& task_id_str,
                       const proto::StopTaskRequest& request);
   void OnStopTaskComplete(const std::string& request_id,
                           const std::string& task_id_str,
                           bool success);
 
   void HandlePerformActions(const std::string& request_id,
-                            std::string_view task_id_str,
+                            const std::string& task_id_str,
                             const proto::PerformActionsRequest& request);
   void OnActComplete(const std::string& request_id,
                      const std::string& task_id_str,
                      proto::PerformActionsResponse response);
 
   std::unique_ptr<ActuationDelegate> delegate_;
-  base::flat_set<TaskId> active_tasks_;
+  // Maps server-owned task_id strings to Chrome-internal TaskIds for tasks
+  // started on this session.
+  base::flat_map<std::string, TaskId> active_tasks_;
+  // Server-owned task_ids whose StartTask is waiting on the delegate, mapped to
+  // the StopTask received while waiting, if any.
+  base::flat_map<std::string, std::optional<PendingStop>> pending_start_tasks_;
   base::WeakPtrFactory<ActuationTransportHandler> weak_ptr_factory_{this};
 };
 

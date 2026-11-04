@@ -21,6 +21,12 @@ namespace actor {
 namespace proto = ::chrome::aix::autobrowse::proto;
 
 // Delegate interface for executing actuation tasks and actions on the browser.
+//
+// Callbacks may run synchronously or asynchronously, but must not run after the
+// delegate is destroyed. If the delegate is destroyed while a StartTask is in
+// progress, it must not leave behind a running task whose TaskId was never
+// reported through the StartTaskCallback, because the caller has no way to stop
+// it.
 class ActuationDelegate {
  public:
   virtual ~ActuationDelegate();
