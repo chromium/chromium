@@ -1,8 +1,8 @@
 ---
 name: ios/use-import-instead-of-include
-description: 'In Objective-C++ (.mm) files under ios/ and headers consumed only by Objective-C++ translation units, use #import instead of #include for all headers, with angle brackets for system headers and quotes for repo headers'
+description: 'In Objective-C++ (.mm) files under ios/, use #import instead of #include for all headers, with angle brackets for system headers and quotes for repo headers; .cc and .h files are out of scope'
 rubric: readability
-severity: blocking
+severity: should_fix
 citations:
   - path: styleguide/objective-c/objective-c.md
     heading: '#import and #include in the `ios/` directory'
@@ -12,13 +12,12 @@ citations:
     quote: 'Repeat the standard `#include` order within this section: ```c++ #include "foo/foo.h" #include <stdint.h> #include <algorithm> #include "base/strings/utf_string_conversions.h" ```'
 ---
 
-**Rule.** In Objective-C++ (`.mm`) files under `ios/`, and in headers that are
-only consumed by Objective-C++ translation units, use the `#import` directive
-instead of `#include` for all headers. This applies to Objective-C and C++
-project headers (including Chromium components, internal headers, and Mojo
-bindings like `*.mojom.h`) as well as C and C++ standard library headers. Do not
-flag pure C++ files (`.cc`, and headers shared with cross-platform C++ code),
-which may keep `#include`. When importing C++ standard library headers, use
+**Rule.** In Objective-C++ (`.mm`) files under `ios/`, use the `#import`
+directive instead of `#include` for all headers. This applies to Objective-C and
+C++ project headers (including Chromium components, internal headers, and Mojo
+bindings like `*.mojom.h`) as well as C and C++ standard library headers. Only
+`.mm` files are in scope: do not flag `#include` in `.cc` or `.h` files, which
+may keep `#include`. When importing C++ standard library headers, use
 system-style angle brackets without `.h` (e.g., `#import <string>`, not quoted
 `#import "string.h"` or `#import "string"`). Group standard library and system
 SDK headers at the top, followed by project headers, separated by a blank line.

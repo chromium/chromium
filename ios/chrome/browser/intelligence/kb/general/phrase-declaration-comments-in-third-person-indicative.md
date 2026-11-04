@@ -1,6 +1,6 @@
 ---
 name: ios/phrase-declaration-comments-in-third-person-indicative
-description: When writing comments, use third-person indicative phrasing for declarations and protocol methods, and imperative mood for inline implementation or test steps
+description: When writing declaration doc comments for functions, methods, properties, interfaces, protocols, or categories, use third-person indicative phrasing; inline implementation and test-body comments are out of scope
 rubric: readability
 severity: should_fix
 citations:
@@ -19,12 +19,10 @@ the indicative mood (e.g., `// Checks ...`, `// Updates ...`,
 (`// Check ...`, `// Update ...`, `// Dismiss ...`, `// Set ...`). Additionally,
 avoid boilerplate command prefixes such as `Command ... to be ...` in protocol
 method comments (e.g., use `// Dismisses picture-in-picture.` instead of
-`// Command picture in picture to be dismissed.`). Conversely, when writing
-inline implementation comments or test execution steps inside a function,
-method, or unit test body, use the imperative mood (e.g., `// Open ...`,
-`// Check ...`, `// Set ...`, `// Try to modify ...`, `// Verify that ...`)
-rather than the third-person indicative mood (e.g., `// Opens ...`,
-`// Checks ...`, `// Sets ...`, `// Tries to modify ...`).
+`// Command picture in picture to be dismissed.`). This rule applies only to
+declaration doc comments. Do not flag inline implementation comments or test
+execution steps inside a function, method, or unit test body; the imperative
+mood (e.g., `// Open ...`, `// Check ...`, `// Verify that ...`) is fine there.
 
 **Why.** Chromium and Google C++ and Objective-C style guides distinguish API
 contracts from implementation steps: declaration doc comments describe what an
@@ -33,9 +31,8 @@ interface, method, or property does from the perspective of an implied subject
 implementation and test execution steps describe sequential instructions and
 actions within a function body where direct imperative phrasing ('Set the
 delegate', 'Open the page') is concise and standard. Maintaining this
-distinction prevents confusing internal execution steps with public API
-contracts and avoids awkward boilerplate command phrasing or subjectless
-third-person phrasing in step-by-step code.
+distinction keeps public API contracts consistent and avoids awkward boilerplate
+command phrasing in declaration comments.
 
 ## Examples
 
@@ -48,17 +45,7 @@ Bad:
 @end
 
 // Check if the pending sorting criteria and filter are different.
-- (void)applyPendingFilterAndSorting {
-  // Bad: Using third-person indicative mood for inline implementation steps:
-  // Sets the subtitle when the default search engine is null.
-  if (!default_search_engine) {
-    SetSubtitle(kDefaultSubtitle);
-  }
-}
-
-// Bad: Using third-person indicative mood for test action steps:
-// Opens quick delete browsing data page.
-[self openQuickDeleteBrowsingDataPage];
+- (void)applyPendingFilterAndSorting;
 ```
 
 Good:
@@ -71,14 +58,10 @@ Good:
 
 // Checks if the pending sorting criteria and filter are different.
 - (void)applyPendingFilterAndSorting {
-  // Good: Using imperative mood for inline implementation steps:
+  // Not flagged: inline implementation comments may use the imperative mood.
   // Set the subtitle when the default search engine is null.
   if (!default_search_engine) {
     SetSubtitle(kDefaultSubtitle);
   }
 }
-
-// Good: Using imperative mood for test action steps:
-// Open the Quick Delete Browsing Data page.
-[self openQuickDeleteBrowsingDataPage];
 ```

@@ -1583,7 +1583,7 @@ agentic_review {
     rules: "ios/chrome/browser/intelligence/kb/general/use-delegating-constructor-syntax.md"
   }
   capability_groups {
-    path_expression: "ios/(?:.*/)?[^/]*\\.(?:cc|h|mm)"
+    path_expression: "ios/(?:.*/)?[^/]*\\.mm"
     path_expression_exclusion: "ios/third_party/.*"
     content_patterns: "\\s*#\\s*include\\b"
     content_patterns: "\\s*#\\s*include\\s+\\\"(?:ios|components|base|mojo|ui|net|url)/"
