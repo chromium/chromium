@@ -6,9 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_handle.h"

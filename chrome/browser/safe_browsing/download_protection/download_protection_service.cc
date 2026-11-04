@@ -48,7 +48,7 @@
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/features.h"

@@ -89,7 +89,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"

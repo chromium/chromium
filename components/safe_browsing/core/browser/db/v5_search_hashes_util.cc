@@ -113,7 +113,7 @@ int GetThreatSeverity(const V5::FullHash::FullHashDetail& detail) {
   }
 }
 // LINT.ThenChange(//components/safe_browsing/core/common/proto/safebrowsingv5.proto:ThreatType,
-// //components/safe_browsing/content/browser/base_ui_manager.cc:ThreatTypeSeverity)
+// //components/safe_browsing/content/browser/interstitials/base_ui_manager.cc:ThreatTypeSeverity)
 
 bool RemoveUnmatchedFullHashes(
     V5::SearchHashesResponse* response,

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/client_report_util.h"
+#include "components/safe_browsing/content/browser/threat_details/client_report_util.h"
 
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"

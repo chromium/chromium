@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/content/browser/base_ui_manager.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 

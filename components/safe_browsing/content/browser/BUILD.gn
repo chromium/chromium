@@ -34,11 +34,11 @@ source_set("safe_browsing_service") {
 if (safe_browsing_mode > 0) {
   source_set("safe_browsing_blocking_page") {
     sources = [
-      "safe_browsing_blocking_page.cc",
-      "safe_browsing_blocking_page.h",
-      "safe_browsing_blocking_page_factory.h",
-      "ui_manager.cc",
-      "ui_manager.h",
+      "interstitials/safe_browsing_blocking_page.cc",
+      "interstitials/safe_browsing_blocking_page.h",
+      "interstitials/safe_browsing_blocking_page_factory.h",
+      "interstitials/ui_manager.cc",
+      "interstitials/ui_manager.h",
       "url_checker/safe_browsing_navigation_throttle.cc",
       "url_checker/safe_browsing_navigation_throttle.h",
     ]
@@ -67,24 +67,24 @@ if (safe_browsing_mode > 0) {
 
 source_set("browser") {
   sources = [
-    "base_blocking_page.cc",
-    "base_blocking_page.h",
-    "base_ui_manager.cc",
-    "base_ui_manager.h",
-    "client_report_util.cc",
-    "client_report_util.h",
-    "content_unsafe_resource_util.cc",
-    "content_unsafe_resource_util.h",
-    "safe_browsing_controller_client.cc",
-    "safe_browsing_controller_client.h",
+    "interstitials/base_blocking_page.cc",
+    "interstitials/base_blocking_page.h",
+    "interstitials/base_ui_manager.cc",
+    "interstitials/base_ui_manager.h",
+    "interstitials/content_unsafe_resource_util.cc",
+    "interstitials/content_unsafe_resource_util.h",
+    "interstitials/safe_browsing_controller_client.cc",
+    "interstitials/safe_browsing_controller_client.h",
     "safe_browsing_network_context.cc",
     "safe_browsing_network_context.h",
-    "threat_details.cc",
-    "threat_details.h",
-    "threat_details_cache.cc",
-    "threat_details_cache.h",
-    "threat_details_history.cc",
-    "threat_details_history.h",
+    "threat_details/client_report_util.cc",
+    "threat_details/client_report_util.h",
+    "threat_details/threat_details.cc",
+    "threat_details/threat_details.h",
+    "threat_details/threat_details_cache.cc",
+    "threat_details/threat_details_cache.h",
+    "threat_details/threat_details_history.cc",
+    "threat_details/threat_details_history.h",
     "url_checker/async_check_tracker.cc",
     "url_checker/async_check_tracker.h",
     "url_checker/browser_url_loader_throttle.cc",
@@ -156,8 +156,8 @@ source_set("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
+    "threat_details/client_report_util_unittest.cc",
     "url_checker/async_check_tracker_unittest.cc",
   ]
 
@@ -192,7 +192,7 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode > 0) {
     sources += [
-      "ui_manager_unittest.cc",
+      "interstitials/ui_manager_unittest.cc",
       "url_checker/browser_url_loader_throttle_unittest.cc",
     ]
     deps += [

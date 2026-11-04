@@ -208,7 +208,7 @@ missing_new_fields,components/policy/core/browser/signin/user_cloud_signin_restr
 missing_new_fields,components/policy/core/common/cloud/external_policy_data_fetcher.cc
 missing_new_fields,components/policy/core/common/cloud/user_info_fetcher.cc
 missing_new_fields,components/proxy_config/pref_proxy_config_tracker_impl.cc
-missing_new_fields,components/safe_browsing/content/browser/threat_details_cache.cc
+missing_new_fields,components/safe_browsing/content/browser/threat_details/threat_details_cache.cc
 missing_new_fields,components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/db/v4_update_protocol_manager.cc
 missing_new_fields,components/safe_browsing/core/browser/password_protection/password_protection_request.cc

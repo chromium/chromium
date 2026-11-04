@@ -8,8 +8,8 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("renderer") {
   if (safe_browsing_mode != 0) {
     sources = [
-      "threat_dom_details.cc",
-      "threat_dom_details.h",
+      "threat_details/threat_dom_details.cc",
+      "threat_details/threat_dom_details.h",
     ]
 
     deps = [

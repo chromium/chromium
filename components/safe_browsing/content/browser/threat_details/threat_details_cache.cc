@@ -4,7 +4,7 @@
 //
 // Implementation of the ThreatDetailsCache class.
 
-#include "components/safe_browsing/content/browser/threat_details_cache.h"
+#include "components/safe_browsing/content/browser/threat_details/threat_details_cache.h"
 
 #include <stdint.h>
 
@@ -16,7 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/threat_details/threat_details.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/obsolete/md5.h"
@@ -200,8 +200,9 @@ void ThreatDetailsCacheCollector::ReadResponse(
   std::string name, value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
     // Strip any Set-Cookie headers.
-    if (base::EqualsCaseInsensitiveASCII(name, "set-cookie"))
+    if (base::EqualsCaseInsensitiveASCII(name, "set-cookie")) {
       continue;
+    }
     ClientSafeBrowsingReportRequest::HTTPHeader* pb_header =
         pb_response->add_headers();
     pb_header->set_name(name);

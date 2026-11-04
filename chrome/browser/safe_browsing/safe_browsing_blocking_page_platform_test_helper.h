@@ -11,8 +11,8 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 
 #include <utility>
 
@@ -13,8 +13,8 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"
@@ -79,8 +79,9 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
     if (found == allowlisted_entries_.end()) {
       return false;
     }
-    if (threat_type)
+    if (threat_type) {
       *threat_type = found->second;
+    }
     return true;
   }
   bool Contains(const GURL& url, SBThreatType* threat_type) {
@@ -330,8 +331,9 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
-  if (!site_list)
+  if (!site_list) {
     return false;
+  }
 
   // To cover the case of redirect urls, we set the threat type to the most
   // severe one in the current navigation chain.
@@ -586,14 +588,16 @@ void BaseUIManager::AddToAllowlistUrlSet(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // A WebContents might not exist if the tab has been closed.
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   AllowlistUrlSet::CreateForWebContents(web_contents);
   AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
 
-  if (allowlist_url.is_empty())
+  if (allowlist_url.is_empty()) {
     return;
+  }
 
   if (pending) {
     site_list->InsertPending(allowlist_url, navigation_id, threat_type);
@@ -653,8 +657,9 @@ ThreatSeverity BaseUIManager::GetSeverestThreatForNavigation(
   // Default is safe
   // Smaller numbers are more severe for ThreatSeverity
   ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
-  if (!handle)
+  if (!handle) {
     return min_severity;
+  }
 
   return GetSeverestThreatForRedirectChain(
       handle->GetRedirectChain(), handle->GetNavigationId(), severest_resource);

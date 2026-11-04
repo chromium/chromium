@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/url_constants.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"

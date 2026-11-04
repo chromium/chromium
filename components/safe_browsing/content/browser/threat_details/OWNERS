@@ -1,0 +1,3 @@
+# For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
+per-file threat_details.*=skrakowi@chromium.org
+per-file client_report_util*=skrakowi@chromium.org

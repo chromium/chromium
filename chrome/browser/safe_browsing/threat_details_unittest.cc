@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/threat_details/threat_details.h"
 
 #include <stdint.h>
 
@@ -27,9 +27,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/threat_details_history.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
+#include "components/safe_browsing/content/browser/threat_details/threat_details_history.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"

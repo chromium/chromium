@@ -8,7 +8,7 @@
 #if defined(UNIT_TEST)
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #endif
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page_factory.h"
 
 namespace safe_browsing {
 

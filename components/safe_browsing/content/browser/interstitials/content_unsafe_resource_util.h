@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CONTENT_UNSAFE_RESOURCE_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CONTENT_UNSAFE_RESOURCE_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_CONTENT_UNSAFE_RESOURCE_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_CONTENT_UNSAFE_RESOURCE_UTIL_H_
 
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
@@ -44,4 +44,4 @@ content::WebContents* GetWebContentsForLocator(
 
 }  // namespace safe_browsing::unsafe_resource_util
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CONTENT_UNSAFE_RESOURCE_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_CONTENT_UNSAFE_RESOURCE_UTIL_H_

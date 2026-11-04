@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_H_
 
 // A class that encapsulates the detailed threat reports sent when
 // users opt-in to do so from the safe browsing warning page.
@@ -360,4 +360,4 @@ class ThreatDetailsFactory {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_H_

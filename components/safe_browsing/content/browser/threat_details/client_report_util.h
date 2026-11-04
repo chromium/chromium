@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_REPORT_UTIL_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_REPORT_UTIL_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_CLIENT_REPORT_UTIL_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_CLIENT_REPORT_UTIL_H_
 
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
@@ -56,4 +56,4 @@ void FillInterstitialInteractionsHelper(
 
 }  // namespace safe_browsing::client_report_utils
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CLIENT_REPORT_UTIL_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_CLIENT_REPORT_UTIL_H_

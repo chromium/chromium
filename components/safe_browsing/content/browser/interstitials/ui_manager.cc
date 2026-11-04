@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,10 +12,10 @@
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/client_report_util.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-#include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/threat_details/client_report_util.h"
+#include "components/safe_browsing/content/browser/threat_details/threat_details.h"
 #include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager/ping_manager.h"
@@ -244,8 +244,9 @@ void SafeBrowsingUIManager::SendThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (shut_down_)
+  if (shut_down_) {
     return;
+  }
 
   DVLOG(1) << "Sending threat details.";
   delegate_->GetPingManager(browser_context)

@@ -25,14 +25,14 @@
 // decides to proceed in the first interstitial, we display all queued unsafe
 // resources in a new interstitial.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_SAFE_BROWSING_BLOCKING_PAGE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_SAFE_BROWSING_BLOCKING_PAGE_H_
 
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/safe_browsing/content/browser/base_blocking_page.h"
-#include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 
 namespace history {
 class HistoryService;
@@ -186,4 +186,4 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_SAFE_BROWSING_BLOCKING_PAGE_H_

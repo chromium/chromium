@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_util.h"
 #include "components/grit/components_resources.h"
-#include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"

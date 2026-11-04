@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_VIEW_SOURCE_NAVIGATION_THROTTLE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "content/public/browser/navigation_throttle.h"
 

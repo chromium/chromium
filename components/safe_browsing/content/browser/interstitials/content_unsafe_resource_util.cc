@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
 
 #include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "content/public/browser/navigation_controller.h"

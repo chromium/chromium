@@ -5,15 +5,15 @@
 // The Safe Browsing service is responsible for downloading anti-phishing and
 // anti-malware tables and checking urls against them.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_UI_MANAGER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_UI_MANAGER_H_
 
 #include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "components/safe_browsing/content/browser/base_ui_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/interstitials/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page_factory.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
@@ -215,4 +215,4 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_UI_MANAGER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_INTERSTITIALS_UI_MANAGER_H_

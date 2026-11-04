@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_HISTORY_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_HISTORY_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_HISTORY_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_HISTORY_H_
 
 // This class gets redirect chain for urls from the history service.
 
@@ -84,4 +84,4 @@ class ThreatDetailsRedirectsCollector : public history::HistoryServiceObserver {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_HISTORY_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_THREAT_DETAILS_THREAT_DETAILS_HISTORY_H_

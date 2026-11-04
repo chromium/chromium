@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -13,10 +13,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
-#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_controller_client.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -914,8 +914,8 @@ TEST_F(SafeBrowsingUIManagerTest,
   // Case 1: OnBlockingPageDone with MANAGED_POLICY_WARN and proceed=true ->
   // ENTERPRISE_WARNED_BYPASS with is_bypassing_interstitial=true.
   StartNavigation(kBadURL);
-  security_interstitials::UnsafeResource warn_resource =
-      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
+  security_interstitials::UnsafeResource warn_resource = MakeUnsafeResource(
+      kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN);
   SimulateBlockingPageDone({warn_resource}, /*proceed=*/true);
 
   ASSERT_EQ(1u, ui_manager_delegate()->url_filtering_event_params().size());
@@ -940,8 +940,8 @@ TEST_F(SafeBrowsingUIManagerTest,
 
   // Case 3: CreateBlockingPage with MANAGED_POLICY_BLOCK ->
   // ENTERPRISE_BLOCKED_SEEN with is_bypassing_interstitial=false.
-  security_interstitials::UnsafeResource block_resource =
-      MakeUnsafeResource(kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+  security_interstitials::UnsafeResource block_resource = MakeUnsafeResource(
+      kBadURL, SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
   ui_manager()->CreateBlockingPage(
       web_contents(), GURL(kBadURL), block_resource,
       /*forward_extension_event=*/true,

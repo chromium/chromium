@@ -115,7 +115,7 @@
 #include "components/pdf/common/pdf_util.h"
 #include "components/permissions/features.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/renderer/threat_dom_details.h"
+#include "components/safe_browsing/content/renderer/threat_details/threat_dom_details.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"

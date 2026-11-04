@@ -1,0 +1,5 @@
+# For non-mechanical changes, please send to nwokedi@ first as pre-reviewer.
+per-file safe_browsing_blocking_page*=skrakowi@chromium.org
+per-file base_ui_manager*=skrakowi@chromium.org
+per-file ui_manager*=skrakowi@chromium.org
+per-file content_unsafe_resource_util*=skrakowi@chromium.org

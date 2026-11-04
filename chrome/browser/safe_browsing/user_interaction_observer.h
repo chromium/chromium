@@ -9,7 +9,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"

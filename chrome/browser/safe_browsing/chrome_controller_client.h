@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CONTROLLER_CLIENT_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CONTROLLER_CLIENT_H_
 
-#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_controller_client.h"
 
 namespace content {
 class WebContents;

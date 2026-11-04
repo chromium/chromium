@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/base_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/base_blocking_page.h"
 
 #include <cstddef>
 #include <memory>
@@ -12,8 +12,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
+#include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_controller_client.h"
 #include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -174,8 +174,9 @@ BaseBlockingPage::GetInterstitialReason(
        ++iter) {
     const BaseUIManager::UnsafeResource& resource = *iter;
     safe_browsing::SBThreatType threat_type = resource.threat_type;
-    if (threat_type == SB_THREAT_TYPE_BILLING)
+    if (threat_type == SB_THREAT_TYPE_BILLING) {
       return BaseSafeBrowsingErrorUI::SB_REASON_BILLING;
+    }
 
     if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
       return BaseSafeBrowsingErrorUI::SB_REASON_MALWARE;
@@ -189,8 +190,9 @@ BaseBlockingPage::GetInterstitialReason(
     }
   }
 
-  if (harmful)
+  if (harmful) {
     return BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL;
+  }
   return BaseSafeBrowsingErrorUI::SB_REASON_PHISHING;
 }
 

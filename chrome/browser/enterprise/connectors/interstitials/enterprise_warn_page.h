@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/enterprise/connectors/core/enterprise_interstitial_base.h"
-#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/interstitials/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 
 namespace safe_browsing {
