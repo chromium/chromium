@@ -4,8 +4,15 @@
 
 #include "content/services/isolated_xr_device/xr_sandbox_hook_linux.h"
 
-#include <optional>
+#include <dlfcn.h>
+#include <gnu/libc-version.h>
 
+#include <optional>
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace vr {
@@ -55,6 +62,62 @@ TEST(XrSandboxHookLinuxTest, SteamVrMarkerMustBeTrue) {
   })");
   ASSERT_TRUE(manifest);
   EXPECT_EQ(XrRuntimeId::kOther, manifest->runtime_id);
+}
+
+class XrSandboxHookLinuxLoaderTest : public testing::Test {
+ protected:
+  // libc stands in for a runtime the hook already loaded by its real path.
+  static base::FilePath LibcPath() {
+    Dl_info info;
+    if (!dladdr(reinterpret_cast<void*>(&gnu_get_libc_version), &info)) {
+      return base::FilePath();
+    }
+    return base::MakeAbsoluteFilePath(base::FilePath(info.dli_fname));
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    manifest_ = temp_dir_.GetPath().Append("share/openxr/1/manifest.json");
+    ASSERT_TRUE(base::CreateDirectory(manifest_.DirName()));
+    ASSERT_TRUE(base::WriteFile(manifest_, "{}"));
+    libc_ = LibcPath();
+    ASSERT_FALSE(libc_.empty());
+  }
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath manifest_;
+  base::FilePath libc_;
+};
+
+TEST_F(XrSandboxHookLinuxLoaderTest, AliasReachesLoadedLibrary) {
+  base::FilePath lib = temp_dir_.GetPath().Append("lib");
+  ASSERT_TRUE(base::CreateSymbolicLink(libc_.DirName(), lib));
+  std::string library_path = "../../../lib/" + libc_.BaseName().value();
+  EXPECT_TRUE(AliasRuntimeLibraryForLoader(manifest_.value(), library_path));
+
+  // Once the path cannot be opened, as in the sandbox, the loader's dlopen()
+  // still finds the library by name.
+  ASSERT_TRUE(base::DeleteFile(lib));
+  std::string name = base::MakeAbsoluteFilePath(manifest_).DirName().value() +
+                     "/" + library_path;
+  void* handle = dlopen(name.c_str(), RTLD_NOW);
+  EXPECT_TRUE(handle);
+  EXPECT_EQ(handle, dlopen(libc_.value().c_str(), RTLD_NOW | RTLD_NOLOAD));
+}
+
+TEST_F(XrSandboxHookLinuxLoaderTest, AliasNeverLoadsAnotherFile) {
+  base::FilePath copy = temp_dir_.GetPath().Append("lib/libcopy.so");
+  ASSERT_TRUE(base::CreateDirectory(copy.DirName()));
+  ASSERT_TRUE(base::CopyFile(libc_, copy));
+  EXPECT_FALSE(AliasRuntimeLibraryForLoader(manifest_.value(),
+                                            "../../../lib/libcopy.so"));
+  EXPECT_FALSE(dlopen(copy.value().c_str(), RTLD_NOW | RTLD_NOLOAD));
+}
+
+TEST_F(XrSandboxHookLinuxLoaderTest, AliasSkipsAbsoluteAndBareNames) {
+  EXPECT_FALSE(AliasRuntimeLibraryForLoader(manifest_.value(), libc_.value()));
+  EXPECT_FALSE(AliasRuntimeLibraryForLoader(manifest_.value(),
+                                            libc_.BaseName().value()));
 }
 
 TEST(XrSandboxHookLinuxTest, RejectsManifestWithoutLibrary) {

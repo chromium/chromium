@@ -39,6 +39,13 @@ struct XrRuntimeManifest {
 // if it is not a manifest naming a runtime library. Exposed for testing.
 std::optional<XrRuntimeManifest> ParseXrRuntimeManifest(std::string_view json);
 
+// Uses dlopen(RTLD_NOLOAD) to give the already-loaded runtime the relative path
+// the OpenXR loader will use. This avoids reopening paths containing "." or
+// ".." that the file broker rejects. Returns true on success; skips absolute
+// paths and bare library names. Exposed for testing.
+bool AliasRuntimeLibraryForLoader(const std::string& manifest_path,
+                                  const std::string& library_path);
+
 // Pre-sandbox hook for the XR Device Service (kXrCompositing) on Linux: maps
 // the OpenXR loader and active runtime in before the sandbox seals, and
 // brokers the manifest paths, runtime library, Vulkan ICD and DRM nodes.

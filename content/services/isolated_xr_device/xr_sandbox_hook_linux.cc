@@ -215,11 +215,14 @@ void AddRuntimeSocketPermissions(
   }
   if (!runtime_dir.empty()) {
     // Monado: its client library connects to this compositor IPC socket
-    // (XRT_IPC_MSG_SOCK_FILENAME).
-    base::FilePath socket = NormalizePath(
-        base::FilePath(runtime_dir).AppendASCII("monado_comp_ipc").value());
-    if (!socket.empty()) {
-      permissions.push_back(BrokerFilePermission::ConnectOnly(socket.value()));
+    // (XRT_IPC_MSG_SOCK_FILENAME). WiVRn, built on Monado, renames it.
+    for (const char* name : {"monado_comp_ipc", "wivrn/comp_ipc"}) {
+      base::FilePath socket =
+          NormalizePath(base::FilePath(runtime_dir).AppendASCII(name).value());
+      if (!socket.empty()) {
+        permissions.push_back(
+            BrokerFilePermission::ConnectOnly(socket.value()));
+      }
     }
   }
 
@@ -439,6 +442,24 @@ std::optional<XrRuntimeManifest> ParseXrRuntimeManifest(std::string_view json) {
   return manifest;
 }
 
+bool AliasRuntimeLibraryForLoader(const std::string& manifest_path,
+                                  const std::string& library_path) {
+  if (library_path.find('/') == std::string::npos ||
+      base::FilePath(library_path).IsAbsolute()) {
+    return false;
+  }
+  base::FilePath manifest_file =
+      base::MakeAbsoluteFilePath(base::FilePath(manifest_path));
+  if (manifest_file.empty()) {
+    return false;
+  }
+  std::string name = manifest_file.DirName().value() + "/" + library_path;
+  // glibc matches the file by device and inode, then remembers this name.
+  // RTLD_NOLOAD prevents loading a new library.
+  return dlopen(name.c_str(),
+                RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE | RTLD_NOLOAD);
+}
+
 bool XrPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // Resolve the manifest ($XR_RUNTIME_JSON or the XDG/etc search) and the
   // runtime library it names before the broker forks (plain file reads, no
@@ -468,6 +489,9 @@ bool XrPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // Pre-warm the runtime + graphics driver closure now that the broker has
   // forked, so the recursive system-library grants are unnecessary.
   PrewarmGraphicsLibraries(runtime_library_path);
+  if (manifest) {
+    AliasRuntimeLibraryForLoader(manifest_path, manifest->library_path);
+  }
 
   // Intentionally no EngageNamespaceSandboxIfPossible(): its network namespace
   // breaks the runtime's connect() to the compositor's host AF_UNIX socket.
