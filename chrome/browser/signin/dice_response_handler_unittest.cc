@@ -2641,4 +2641,31 @@ TEST_F(DiceResponseHandlerTest, LinkedAccountsLatencyCancelledSession) {
       base::Milliseconds(80), 1);
 }
 
+TEST_F(DiceResponseHandlerTest, LinkedAccountsMultiAccountCount) {
+  dice_response_handler_->ProcessDiceHeader(
+      MakeMultiSigninDiceParams(
+          DiceAction::SIGNIN, /*account_count=*/3,
+          /*primary_is_connected=*/signin::Tribool::kFalse,
+          /*eligible_for_token_binding=*/false),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Dice.LinkedAccounts.MultiAccountCount", 3, 1);
+
+  // Only the initiator fetch is started.
+  EXPECT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
+}
+
+TEST_F(DiceResponseHandlerTest,
+       LinkedAccountsMultiAccountCountNotRecordedForSingleAccount) {
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNIN, /*eligible_for_token_binding=*/false),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  histogram_tester_.ExpectTotalCount(
+      "Signin.Dice.LinkedAccounts.MultiAccountCount", 0);
+
+  EXPECT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
+}
+
 }  // namespace

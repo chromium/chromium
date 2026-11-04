@@ -2068,7 +2068,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Dice.InvalidPrimaryConnectedInUnsignedProfile"
     enum="Boolean" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records whether Gaia sends primary_is_connected=true in the linked accounts
     metadata when the profile has no primary account (unsigned profile). Emitted
@@ -2079,7 +2079,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch"
     units="ms" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the latency to fetch the OAuth2 refresh token for the initiator
     account during a multi-account DICE Linked Accounts sign-in session. Emitted
@@ -2090,7 +2090,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral"
     units="ms" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the wall-clock duration the user spent waiting after accepting an
     interception prompt (profile creation or profile switch) for background
@@ -2120,11 +2120,24 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration"
     units="ms" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the total wall-clock duration of a multi-account DICE Linked
     Accounts sign-in session, measured from header processing start until all
     token fetches have completed or the session is terminated.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Dice.LinkedAccounts.MultiAccountCount" units="accounts"
+    expires_after="2027-04-01">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the number of accounts in a multi-account DICE Linked Accounts
+    signin response. Recorded once per DICE signin response with more than one
+    account. Single-account sign-ins are not recorded: compare with the Signin
+    bucket of Signin.DiceResponseHeader for the share of multi-account sign-ins.
+    Values above 10 (the Gaia limit) are recorded in the overflow bucket.
   </summary>
 </histogram>
 
@@ -2174,7 +2187,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.DiceLinkedAccountsMetaHeaderStatus"
     enum="DiceLinkedAccountsMetaHeaderStatus" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Records the parsing status of the
     X-Chrome-ID-Consistency-Linked-Accounts-Meta header during a DICE web

@@ -17,6 +17,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -62,6 +63,11 @@ const char kDiceLinkedAccountsLatencyInitiatorTokenFetch[] =
     "Signin.Dice.LinkedAccounts.Latency.InitiatorTokenFetch";
 const char kDiceLinkedAccountsLatencyTotalSessionDuration[] =
     "Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration";
+constexpr char kDiceLinkedAccountsMultiAccountCount[] =
+    "Signin.Dice.LinkedAccounts.MultiAccountCount";
+
+// Maximum number of accounts that can be signed in to Gaia at the same time.
+constexpr int kMaxGaiaAccounts = 10;
 
 // Used for UMA. Do not reorder, append new values at the end.
 enum DiceResponseHeader {
@@ -582,6 +588,15 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
   VLOG(1) << "Start processing Dice signin response";
   RecordDiceResponseHeader(kSignin);
+
+  // Single-account sign-ins are not recorded, as they would dominate the
+  // histogram.
+  if (signin_info.accounts().size() > 1) {
+    base::UmaHistogramExactLinear(
+        kDiceLinkedAccountsMultiAccountCount,
+        base::saturated_cast<int>(signin_info.accounts().size()),
+        kMaxGaiaAccounts + 1);
+  }
 
   if (signin_info.linked_accounts_metadata().primary_is_connected ==
       signin::Tribool::kTrue) {
