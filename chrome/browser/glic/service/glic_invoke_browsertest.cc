@@ -3159,10 +3159,6 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   // the next show starts out looking at a failed client.
   ASSERT_FALSE(instance->IsHibernated());
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  if (IsNoWebviewEnabled()) {
-    ASSERT_EQ(instance->host().client_load_error_reason(),
-              ClientLoadErrorReason::kGuestProcessGone);
-  }
 
   GlicHistogramTester histogram_tester;
   base::test::TestFuture<void> success_future;
@@ -3174,7 +3170,6 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
   EXPECT_TRUE(success_future.Wait());
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kReady);
-  EXPECT_EQ(instance->host().client_load_error_reason(), std::nullopt);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
                                       GlicInvokeResult::kSuccess, 1);
 }
@@ -3363,10 +3358,6 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_OK(DisconnectWebClient(instance));
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  if (IsNoWebviewEnabled()) {
-    EXPECT_EQ(instance->host().client_load_error_reason(),
-              ClientLoadErrorReason::kGuestProcessGone);
-  }
 
   GlicHistogramTester histogram_tester;
   base::test::TestFuture<std::optional<GlicInvokeError>> outcome;
@@ -3384,7 +3375,6 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(outcome.Get(), std::nullopt);
   EXPECT_EQ(instance->host().client_load_state(), ClientLoadState::kReady);
-  EXPECT_EQ(instance->host().client_load_error_reason(), std::nullopt);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
                                       GlicInvokeResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("Glic.InvokeResult2.OsButton",
@@ -3419,80 +3409,6 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
                                       GlicInvokeError::kClientLoadError, 1);
 }
 
-// When the panel is hidden (`!instance->IsShowing()`), no sign-in UI is shown
-// to the user, so `ClientLoadErrorReason::kSignIn` must fail immediately with
-// `GlicInvokeError::kClientLoadError` instead of stalling for `timeout` via
-// `SignInBehavior::kWaits`.
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
-                       HiddenInvokeFailsImmediatelyWhenClientNeedsSignIn) {
-  InvalidateAccount(GetProfile());
-  ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
-            mojom::ProfileReadyState::kSignInRequired);
-
-  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-
-  GlicHistogramTester histogram_tester;
-  base::test::TestFuture<GlicInvokeError> error_future;
-
-  GlicInvokeOptions options(glic::Target(*tab),
-                            mojom::InvocationSource::kExperimentalTriggering);
-  options.prompts = {"a prompt"};
-  options.timeout = base::Minutes(5);
-  options.on_error = error_future.GetCallback();
-
-  GlicInvokeWithAutoSubmitOptions auto_submit_options;
-  auto_submit_options.show_panel = false;
-
-  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options),
-                                     std::move(auto_submit_options));
-
-  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
-  ASSERT_TRUE(instance);
-  EXPECT_FALSE(instance->IsShowing());
-
-  EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
-  EXPECT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kSignIn);
-  histogram_tester.ExpectUniqueSample("Glic.InvokeResult2",
-                                      GlicInvokeError::kClientLoadError, 1);
-}
-
-// Show-only invocations (`SignInBehavior::kCompletes`) targeting an inactive
-// background tab leave the side panel hidden (`!instance->IsShowing()`), so
-// `ClientLoadErrorReason::kSignIn` must fail with `kClientLoadError` rather
-// than falsely completing without either a loaded client or a visible sign-in
-// panel.
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
-                       InactiveTabShowOnlyInvokeFailsWhenClientNeedsSignIn) {
-  InvalidateAccount(GetProfile());
-  ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
-            mojom::ProfileReadyState::kSignInRequired);
-
-  tabs::TabInterface* inactive_tab = GetTabListInterface()->GetActiveTab();
-  ASSERT_TRUE(CreateAndActivateTab(GetSimpleTestUrl()));
-  ASSERT_FALSE(inactive_tab->IsActivated());
-
-  base::test::TestFuture<void> success_future;
-  base::test::TestFuture<GlicInvokeError> error_future;
-
-  GlicInvokeOptions options(glic::Target(*inactive_tab),
-                            mojom::InvocationSource::kOsButton);
-  options.on_success = success_future.GetCallback();
-  options.on_error = error_future.GetCallback();
-
-  coordinator().Invoke(std::move(options));
-
-  GlicInstanceImpl* instance =
-      coordinator().GetInstanceImplForTab(inactive_tab);
-  ASSERT_TRUE(instance);
-  EXPECT_FALSE(instance->IsShowing());
-
-  EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
-  EXPECT_FALSE(success_future.IsReady());
-  EXPECT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kSignIn);
-}
-
 // The sign-in tests below put the host on the sign-in panel by hand, on top of
 // the failure `DisconnectWebClient()` leaves behind: the cause first, then the
 // failure, as glic_app_controller.ts and GlicNoWebviewContentsManager report
@@ -3517,7 +3433,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndWaitIdle());
   ASSERT_OK(DisconnectWebClient(instance));
   instance->host().ClientLoadErrorOccurred(ClientLoadErrorReason::kSignIn);
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kSignIn);
+  instance->host().SetClientLoadFailed(true);
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   ASSERT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kSignIn);
@@ -3555,7 +3471,7 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndWaitIdle());
   ASSERT_OK(DisconnectWebClient(instance));
   instance->host().ClientLoadErrorOccurred(ClientLoadErrorReason::kSignIn);
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kSignIn);
+  instance->host().SetClientLoadFailed(true);
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
   ASSERT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kSignIn);
@@ -3584,66 +3500,30 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 }
 
 // Withdrawing the failure (a reload, or the retry on show) also forgets its
-// cause: a later `kUnknown` failure is a plain load error, not a stale
-// sign-in.
+// cause: a later failure without a reported cause is a plain load error, not
+// a stale sign-in.
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        SignInReasonDoesNotOutliveItsFailure) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndWaitIdle());
   ASSERT_OK(DisconnectWebClient(instance));
   instance->host().ClientLoadErrorOccurred(ClientLoadErrorReason::kSignIn);
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kSignIn);
+  instance->host().SetClientLoadFailed(true);
   ASSERT_EQ(instance->host().client_load_error_reason(),
             ClientLoadErrorReason::kSignIn);
 
-  instance->host().ClearClientLoadFailed();
+  instance->host().SetClientLoadFailed(false);
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kLoading);
   EXPECT_EQ(instance->host().client_load_error_reason(), std::nullopt);
 
-  // Fail again, this time without a specific cause.
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kUnknown);
+  // Fail again, this time without a reported cause.
+  instance->host().SetClientLoadFailed(true);
   ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  ASSERT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kUnknown);
+  ASSERT_EQ(instance->host().client_load_error_reason(), std::nullopt);
 
   base::test::TestFuture<GlicInvokeError> error_future;
   GlicInvokeOptions options(glic::Target(*tab),
                             mojom::InvocationSource::kReshowInactive);
-  options.on_error = error_future.GetCallback();
-  coordinator().Invoke(std::move(options));
-
-  EXPECT_EQ(error_future.Get(), GlicInvokeError::kClientLoadError);
-}
-
-// Transitioning directly from `kSignIn` to `kUnknown` (such as `/sorry/`
-// `kGuestError`) overwrites the prior reason rather than misclassifying the
-// failure as `kSignInRequired`, and `ClearClientLoadFailed()` withdraws the
-// failure.
-IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
-                       UnknownFailureOverwritesPriorSignInReason) {
-  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
-  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndWaitIdle());
-  ASSERT_OK(DisconnectWebClient(instance));
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kSignIn);
-  ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  ASSERT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kSignIn);
-
-  instance->host().ClearClientLoadFailed();
-  ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kLoading);
-  EXPECT_EQ(instance->host().client_load_error_reason(), std::nullopt);
-
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kSignIn);
-  instance->host().SetClientLoadFailed(ClientLoadErrorReason::kUnknown);
-  ASSERT_EQ(instance->host().client_load_state(), ClientLoadState::kError);
-  EXPECT_EQ(instance->host().client_load_error_reason(),
-            ClientLoadErrorReason::kUnknown);
-
-  base::test::TestFuture<GlicInvokeError> error_future;
-  GlicInvokeOptions options(glic::Target(*tab),
-                            mojom::InvocationSource::kReshowInactive);
-  options.prompts = {"a prompt"};
-  options.timeout = base::Seconds(10);
   options.on_error = error_future.GetCallback();
   coordinator().Invoke(std::move(options));
 

@@ -513,13 +513,11 @@ void GlicInvokeHandler::OnSuccess() {
 }
 
 void GlicInvokeHandler::OnTimeout() {
-  // An invocation that needed the client and spent its time on a visible
-  // sign-in panel (SignInBehavior::kWaits) did not run out of time for anything
-  // the product did; the user did not sign in. Report that rather than a
-  // timeout.
+  // An invocation that needed the client and spent its time on the sign-in
+  // panel (SignInBehavior::kWaits) did not run out of time for anything the
+  // product did; the user did not sign in. Report that rather than a timeout.
   const Host& host = instance_->host();
-  OnError(instance_->IsShowing() &&
-                  host.client_load_state() == ClientLoadState::kError &&
+  OnError(host.client_load_state() == ClientLoadState::kError &&
                   host.client_load_error_reason() ==
                       ClientLoadErrorReason::kSignIn
               ? GlicInvokeError::kSignInRequired

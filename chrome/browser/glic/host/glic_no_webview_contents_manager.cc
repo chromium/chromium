@@ -689,8 +689,8 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
     SetHostForGuest(*guest_contents(), host);
   }
 
-  if (error_reason_.has_value()) {
-    host_->ClientLoadErrorOccurred(*error_reason_);
+  if (auto error = std::exchange(pending_client_load_error_, std::nullopt)) {
+    host_->ClientLoadErrorOccurred(*error);
   }
 
   web_client_manager_.AttachToHost(host);
@@ -900,33 +900,15 @@ mojom::WebClientState GlicNoWebviewContentsManager::web_client_state() const {
 }
 
 bool GlicNoWebviewContentsManager::HasClientLoadFailed() const {
-  return CurrentClientLoadErrorReason().has_value();
-}
-
-std::optional<ClientLoadErrorReason>
-GlicNoWebviewContentsManager::CurrentClientLoadErrorReason() const {
   // Unresponsiveness is deliberately not included: the client is still
   // connected and can become responsive again without being reloaded.
-  if (error_type_->has_value()) {
-    return error_reason_;
-  }
-  if (web_client_state() == mojom::WebClientState::kError) {
-    return ClientLoadErrorReason::kClientError;
-  }
-  if (guest_state_ == GuestState::kGuestError) {
-    return ClientLoadErrorReason::kUnknown;
-  }
-  return std::nullopt;
+  return error_type_->has_value() || guest_state_ == GuestState::kGuestError ||
+         web_client_state() == mojom::WebClientState::kError;
 }
 
 void GlicNoWebviewContentsManager::UpdateClientLoadFailed() {
   if (host_) {
-    if (std::optional<ClientLoadErrorReason> reason =
-            CurrentClientLoadErrorReason()) {
-      host_->SetClientLoadFailed(*reason);
-    } else {
-      host_->ClearClientLoadFailed();
-    }
+    host_->SetClientLoadFailed(HasClientLoadFailed());
   }
   ResolvePendingWaitForLoadCallbacks();
 }
@@ -1172,8 +1154,10 @@ void GlicNoWebviewContentsManager::SetErrorState(
   guest_state_.Set(GuestState::kLoading);
   if (host_) {
     host_->ClientLoadErrorOccurred(reason);
+  } else {
+    // Still warming; no Host to report to yet. AttachToHost() flushes this.
+    pending_client_load_error_ = reason;
   }
-  error_reason_ = reason;
   error_type_.Set(error_type);
 
   // An error occurred; transition to overlay if visible, or record for when
@@ -1185,7 +1169,7 @@ void GlicNoWebviewContentsManager::SetErrorState(
 }
 
 void GlicNoWebviewContentsManager::ClearErrorState() {
-  error_reason_.reset();
+  pending_client_load_error_.reset();
   error_type_.Set(std::nullopt);
   UpdateDisplayState();
 }
