@@ -2763,6 +2763,14 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
         ShouldSwapBrowsingInstance::kNo_SameDocumentNavigation);
   }
 
+  // If this is an error page that must stay in the current process (see
+  // DetermineSiteInstanceForURL), do not swap BrowsingInstances, as the error
+  // page must reuse `current_instance`.
+  if (error_page_process == ErrorPageProcess::kCurrentProcess) {
+    return BrowsingContextGroupSwap::CreateNoSwap(
+        ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance);
+  }
+
   // Check for reasons to swap processes even if we are in a process model that
   // doesn't usually swap (e.g., process-per-tab).  Any time we return true,
   // the new URL will be rendered in a new SiteInstance AND BrowsingInstance.
