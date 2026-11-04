@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_criteria.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -14,6 +15,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -390,11 +392,10 @@ TEST_F(TipsNotificationCriteriaTest,
 
 #pragma mark - ShouldSendEnhancedSafeBrowsing
 
-// Tests that the Enhanced Safe Browsing notification should be sent when
-// Advanced Protection is allowed but ESB is not enabled.
+// Tests that the Enhanced Safe Browsing notification should be sent when Safe
+// Browsing is not managed by policy and ESB is not enabled.
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendEnhancedSafeBrowsing_ShouldSend) {
-  profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, true);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   EXPECT_TRUE(criteria_->ShouldSendNotification(
       TipsNotificationType::kEnhancedSafeBrowsing));
@@ -404,19 +405,41 @@ TEST_F(TipsNotificationCriteriaTest,
 // is already enabled.
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendEnhancedSafeBrowsing_AlreadyEnabled) {
-  profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, true);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_FALSE(criteria_->ShouldSendNotification(
       TipsNotificationType::kEnhancedSafeBrowsing));
 }
 
 // Tests that the Enhanced Safe Browsing notification should not be sent when
-// Advanced Protection is not allowed.
+// `prefs::kSafeBrowsingEnabled` is managed by policy.
 TEST_F(TipsNotificationCriteriaTest,
-       TestShouldSendEnhancedSafeBrowsing_NotAllowed) {
-  profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, false);
+       TestShouldSendEnhancedSafeBrowsing_PolicyManaged) {
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kSafeBrowsingEnabled,
+                                                    base::Value(false));
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   EXPECT_FALSE(criteria_->ShouldSendNotification(
+      TipsNotificationType::kEnhancedSafeBrowsing));
+}
+
+// Tests that the Enhanced Safe Browsing notification should not be sent when
+// `prefs::kSafeBrowsingEnhanced` is managed by policy.
+TEST_F(TipsNotificationCriteriaTest,
+       TestShouldSendEnhancedSafeBrowsing_EnhancedPrefPolicyManaged) {
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kSafeBrowsingEnhanced, base::Value(false));
+  EXPECT_FALSE(criteria_->ShouldSendNotification(
+      TipsNotificationType::kEnhancedSafeBrowsing));
+}
+
+// Tests that the Enhanced Safe Browsing notification should still be sent when
+// Safe Browsing preferences have a recommended policy.
+TEST_F(TipsNotificationCriteriaTest,
+       TestShouldSendEnhancedSafeBrowsing_RecommendedPolicy) {
+  profile_->GetTestingPrefService()->SetRecommendedPref(
+      prefs::kSafeBrowsingEnabled, base::Value(true));
+  profile_->GetTestingPrefService()->SetRecommendedPref(
+      prefs::kSafeBrowsingEnhanced, base::Value(false));
+  EXPECT_TRUE(criteria_->ShouldSendNotification(
       TipsNotificationType::kEnhancedSafeBrowsing));
 }
 

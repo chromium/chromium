@@ -641,7 +641,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     inputContext->metadata_args.emplace(
         segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
         segmentation_platform::processing::ProcessedValue::FromFloat(
-            _prefService->GetBoolean(prefs::kAdvancedProtectionAllowed)));
+            !safe_browsing::IsSafeBrowsingPolicyManaged(*_prefService)));
 
     // Local signals
     inputContext->metadata_args.emplace(

@@ -87,6 +87,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
     "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/content_suggestions/ui:commands",
     "//ios/chrome/browser/default_browser/model",

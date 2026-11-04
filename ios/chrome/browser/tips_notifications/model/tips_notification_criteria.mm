@@ -193,7 +193,7 @@ bool TipsNotificationCriteria::ShouldSendLens() {
 }
 
 bool TipsNotificationCriteria::ShouldSendEnhancedSafeBrowsing() {
-  return profile_prefs_->GetBoolean(prefs::kAdvancedProtectionAllowed) &&
+  return !safe_browsing::IsSafeBrowsingPolicyManaged(*profile_prefs_) &&
          !safe_browsing::IsEnhancedProtectionEnabled(*profile_prefs_);
 }
 
