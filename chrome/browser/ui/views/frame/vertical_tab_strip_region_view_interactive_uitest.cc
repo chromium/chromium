@@ -489,8 +489,8 @@ class VerticalTabStripExpandOnHoverInteractiveUiTest
                                   ->view()
                                   ->GetBoundsInScreen();
                           covered.Intersect(test->browser_view()
-                                                ->GetLocationBarView()
-                                                ->GetBoundsInScreen());
+                                                ->GetLocationBar()
+                                                ->BoundsInScreen());
                           CHECK(!covered.IsEmpty());
                           return covered.CenterPoint();
                         },
