@@ -12,9 +12,15 @@
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_nine_patch.h"
+#include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -126,6 +132,56 @@ TEST_F(AppListFolderViewTest, AccessibleProperties) {
   ui::AXNodeData node_data;
   folder_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.role, ax::mojom::Role::kGenericContainer);
+}
+
+TEST_F(AppListFolderViewTest, DecorationStackingAndBounds) {
+  GetAppListTestHelper()->model()->CreateAndPopulateFolderWithApps(3);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+  LeftClickOn(helper->GetScrollableAppsGridView()->GetItemViewAt(0));
+  ASSERT_TRUE(helper->IsInFolderView());
+
+  auto* folder_view = helper->GetBubbleFolderView();
+  views::View* background_view = folder_view->children()[0];
+  SystemDecoration* decoration = folder_view->shadow();
+  ASSERT_TRUE(folder_view->layer());
+  EXPECT_EQ(folder_view->layer()->type(), ui::LAYER_NOT_DRAWN);
+  EXPECT_EQ(background_view->layer()->type(), ui::LAYER_SOLID_COLOR);
+  EXPECT_TRUE(decoration->HasShadow());
+  EXPECT_TRUE(decoration->HasHighlightBorder());
+
+  EXPECT_THAT(folder_view->layer()->children(),
+              testing::ElementsAre(background_view->layer(),
+                                   folder_view->animating_background()->layer(),
+                                   decoration->GetLayer(),
+                                   folder_view->contents_container()->layer()));
+
+  const gfx::Rect initial_decoration_bounds = decoration->GetLayer()->bounds();
+  EXPECT_LT(initial_decoration_bounds.x(), 0);
+  EXPECT_LT(initial_decoration_bounds.y(), 0);
+
+  folder_view->SetPosition(folder_view->origin() + gfx::Vector2d(17, 23));
+  EXPECT_EQ(decoration->GetLayer()->bounds(), initial_decoration_bounds);
+
+  const gfx::Rect open_nine_patch_border =
+      decoration->GetLayer()->children()[0]->AsNinePatch()->border();
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  folder_view->ScheduleShowHideAnimation(/*show=*/false,
+                                         /*hide_for_reparent=*/false);
+  ui::LayerAnimatorTestController test_controller(
+      folder_view->animating_background()->layer()->GetAnimator());
+  test_controller.StartThreadedAnimationsIfNeeded();
+  test_controller.Step(base::Milliseconds(125));
+  EXPECT_NE(decoration->GetLayer()->children()[0]->AsNinePatch()->border(),
+            open_nine_patch_border);
+
+  folder_view->HideViewImmediately();
+  EXPECT_FALSE(folder_view->animating_background()->GetVisible());
+  EXPECT_FALSE(decoration->GetLayer()->visible());
+  EXPECT_EQ(decoration->GetLayer()->children()[0]->AsNinePatch()->border(),
+            open_nine_patch_border);
 }
 
 }  // namespace ash

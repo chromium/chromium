@@ -130,7 +130,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Virtual keyboard
   int GetYOffsetForFolder();
 
-  // Recalculates and updates the bounds of the folder `shadow_`  .
+  // Recalculates and updates the bounds of the folder `decoration_`.
   void UpdateShadowBounds();
 
   // Returns true if this view's child views are in animation for opening or
@@ -160,7 +160,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   const gfx::Rect& preferred_bounds() const { return preferred_bounds_; }
 
-  SystemDecoration* shadow() { return shadow_.get(); }
+  SystemDecoration* shadow() { return decoration_.get(); }
 
   // Records the smoothness of folder show/hide animations mixed with the
   // BackgroundAnimation, FolderItemTitleAnimation, TopIconAnimation, and
@@ -243,7 +243,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Owned by views hierarchy.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
