@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_P2P_SOCKET_MANAGER_H_
 #define SERVICES_NETWORK_P2P_SOCKET_MANAGER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -63,6 +64,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager final
       public mojom::P2PTrustedSocketManager,
       public P2PSocket::Delegate {
  public:
+  static constexpr size_t kMaxSimultaneousDnsRequests = 512;
+
   using DeleteCallback =
       base::OnceCallback<void(P2PSocketManager* socket_manager)>;
 

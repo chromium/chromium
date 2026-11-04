@@ -406,6 +406,11 @@ void P2PSocketManager::GetHostAddress(
     std::optional<net::AddressFamily> address_family,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
+  if (dns_requests_.size() >= kMaxSimultaneousDnsRequests) {
+    LOG(WARNING) << "Too many concurrent DNS requests";
+    std::move(callback).Run(net::IPAddressList());
+    return;
+  }
   auto request = std::make_unique<DnsRequest>(
       url_request_context_->host_resolver(), enable_mdns);
   DnsRequest* request_ptr = request.get();

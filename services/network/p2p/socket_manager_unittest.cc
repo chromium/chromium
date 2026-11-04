@@ -115,6 +115,13 @@ class ReentrantFailingHostResolver : public net::HangingHostResolver {
     }
   }
 
+  void CompleteOnePendingRequest(int error) {
+    ASSERT_FALSE(pending_requests_.empty());
+    PendingRequest* request = pending_requests_.front().get();
+    pending_requests_.erase(pending_requests_.begin());
+    request->CompleteSynchronously(error);
+  }
+
  private:
   class PendingRequest {
    public:
@@ -501,6 +508,54 @@ TEST_F(P2PSocketManagerTest, DestructorHandlesReentrantDnsFailure) {
   socket_manager_remote_.reset();
   ASSERT_TRUE(base::test::RunUntil([&] { return !socket_manager_; }));
   EXPECT_EQ(resolver_ptr->pending_count(), 0u);
+}
+
+TEST_F(P2PSocketManagerTest, MaxSimultaneousDnsRequests) {
+  auto resolver = std::make_unique<ReentrantFailingHostResolver>();
+  ReentrantFailingHostResolver* resolver_ptr = resolver.get();
+  SetUpSocketManager(std::move(resolver));
+
+  size_t completed_count = 0;
+  for (size_t i = 0; i < P2PSocketManager::kMaxSimultaneousDnsRequests; ++i) {
+    socket_manager_remote_->GetHostAddress(
+        "stun" + base::NumberToString(i) + ".example",
+        /*address_family=*/std::nullopt, /*enable_mdns=*/false,
+        base::BindLambdaForTesting(
+            [&](const net::IPAddressList&) { ++completed_count; }));
+  }
+  resolver_ptr->WaitForPendingRequests(
+      P2PSocketManager::kMaxSimultaneousDnsRequests);
+  EXPECT_EQ(completed_count, 0u);
+
+  // One request beyond the cap should immediately resolve with an empty list
+  // without starting another HostResolver request.
+  base::RunLoop over_cap_loop;
+  net::IPAddressList over_cap_result = {net::IPAddress::IPv4Localhost()};
+  socket_manager_remote_->GetHostAddress(
+      "overflow.example", /*address_family=*/std::nullopt,
+      /*enable_mdns=*/false,
+      base::BindLambdaForTesting([&](const net::IPAddressList& addresses) {
+        over_cap_result = addresses;
+        over_cap_loop.Quit();
+      }));
+  over_cap_loop.Run();
+  EXPECT_TRUE(over_cap_result.empty());
+  EXPECT_EQ(resolver_ptr->pending_count(),
+            P2PSocketManager::kMaxSimultaneousDnsRequests);
+
+  // Completing one in-flight request frees a slot for a subsequent request.
+  resolver_ptr->CompleteOnePendingRequest(net::ERR_NAME_NOT_RESOLVED);
+  socket_manager_remote_.FlushForTesting();
+  EXPECT_EQ(completed_count, 1u);
+  EXPECT_EQ(resolver_ptr->pending_count(),
+            P2PSocketManager::kMaxSimultaneousDnsRequests - 1);
+
+  socket_manager_remote_->GetHostAddress("after-slot-freed.example",
+                                         /*address_family=*/std::nullopt,
+                                         /*enable_mdns=*/false,
+                                         base::DoNothing());
+  resolver_ptr->WaitForPendingRequests(
+      P2PSocketManager::kMaxSimultaneousDnsRequests);
 }
 
 }  // namespace network
