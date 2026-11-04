@@ -200,6 +200,15 @@ public class HintTextUpdaterUnitTest {
         assertHintText(AIM_ACTIVATION_HINT_TEXT);
     }
 
+    private void setInputState(InputState inputState) {
+        when(mSearchEngineService.getSearchEngineName()).thenReturn(SEARCH_ENGINE_NAME);
+        when(mFuseboxSessionState.getComposeboxQueryControllerBridge())
+                .thenReturn(mComposeboxQueryControllerBridge);
+        when(mComposeboxQueryControllerBridge.getInputStateSupplier())
+                .thenReturn(mInputStateSupplier);
+        mInputStateSupplier.set(inputState);
+    }
+
     @Test
     public void testDefaultEnabledBehavior() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
@@ -304,6 +313,51 @@ public class HintTextUpdaterUnitTest {
         mInputStateSupplier.set(emptyHintState);
         mUpdater.onTitleChanged();
         verify(mUpdateHintTextCallback).onResult(eq(searchEngineHint));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_NoToolMatch_UsesInputStateHintText() {
+        ToolConfig imageGenConfig =
+                ToolConfig.newBuilder()
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setHintText("Image Gen Tool Hint")
+                        .build();
+        setInputState(
+                new InputStateBuilder()
+                        .withHintText("Server Default Hint")
+                        .withToolConfigs(imageGenConfig)
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        verify(mUpdateHintTextCallback).onResult(eq("Server Default Hint"));
+
+        clearInvocations(mUpdateHintTextCallback);
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        verify(mUpdateHintTextCallback).onResult(eq("Image Gen Tool Hint"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_ToolMatchWithEmptyHint_UsesInputStateHintText() {
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder().setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH).build();
+        setInputState(
+                new InputStateBuilder()
+                        .withHintText("Server Default Hint")
+                        .withToolConfigs(deepSearchConfig)
+                        .build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Server Default Hint"));
+    }
+
+    @Test
+    public void testGetOmniboxHintText_NoToolMatchAndEmptyInputStateHint_UsesClientHint() {
+        setInputState(new InputStateBuilder().withHintText("").build());
+
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
+        verify(mUpdateHintTextCallback).onResult(eq("Ask anything"));
     }
 
     @Test

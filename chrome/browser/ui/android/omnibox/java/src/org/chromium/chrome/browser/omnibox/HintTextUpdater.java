@@ -229,15 +229,19 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return mResourceProvider.getString(R.string.omnibox_empty_hint);
         }
 
-        String toolHint = getToolHintFromInputState();
-        if (!TextUtils.isEmpty(toolHint)) {
-            return toolHint;
+        String inputStateHint = getHintFromInputState();
+        if (inputStateHint != null) {
+            return inputStateHint;
         }
 
         return getSearchEngineHintText(searchEngineService, searchEngineName);
     }
 
-    private @Nullable String getToolHintFromInputState() {
+    /**
+     * Returns the hint text from the server-provided {@link InputState}, or null when no server
+     * hint applies. The active tool's hint takes precedence over the default searchbox hint.
+     */
+    private @Nullable String getHintFromInputState() {
         if (mCurrentInput == null) {
             return null;
         }
@@ -247,8 +251,8 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
             return null;
         }
 
-        // The tool configuration lives on the session state, so it is only consulted while an
-        // input session is active and an AIM request type is selected.
+        // The input state lives on the session state, so it is only consulted while an input
+        // session is active and an AIM request type is selected.
         FuseboxSessionState fuseboxSessionState =
                 FuseboxSessionState.from(mLocationBarDataProvider);
         if (fuseboxSessionState == null) {
@@ -270,12 +274,12 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         int activeTool =
                 ToolModeUtils.getToolModeForRequestType(requestType, /* hasAttachments= */ false);
         for (ToolConfig config : inputState.getToolConfigs()) {
-            if (config.getToolValue() == activeTool) {
+            if (config.getToolValue() == activeTool && !config.getHintText().isEmpty()) {
                 return config.getHintText();
             }
         }
 
-        return null;
+        return TextUtils.isEmpty(inputState.hintText) ? null : inputState.hintText;
     }
 
     private String getSearchEngineHintText(
