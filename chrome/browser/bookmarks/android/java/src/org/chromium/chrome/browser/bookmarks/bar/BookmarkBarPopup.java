@@ -232,6 +232,9 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
                         .setViewportRectProvider(mBrowserControlsRectProvider)
                         .setFocusable(true)
                         .setOutsideTouchable(true)
+                        // Consume outside touches so tapping the anchor dismisses the popup
+                        // instead of also re-triggering the anchor's click and reopening it.
+                        .setTouchModal(true)
                         .setPreferredVerticalOrientation(
                                 AnchoredPopupWindow.VerticalOrientation.BELOW)
                         .setHorizontalOverlapAnchor(true)
