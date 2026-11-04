@@ -107,7 +107,7 @@
     {
         "name": "biometric",
         "group": "androidx.biometric",
-        "version": "1.4.0-alpha07"
+        "version": "1.4.0-beta01"
     },
     {
         "name": "browser",
@@ -362,7 +362,7 @@
     {
         "name": "coordinatorlayout",
         "group": "androidx.coordinatorlayout",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.4.0-alpha01"
     },
     {
         "name": "core",
@@ -637,7 +637,7 @@
     {
         "name": "input-motionprediction",
         "group": "androidx.input",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "interpolator",
