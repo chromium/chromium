@@ -112,7 +112,9 @@ class FakeDiagnosticsBrowserDelegate
   FakeDiagnosticsBrowserDelegate() = default;
   ~FakeDiagnosticsBrowserDelegate() override = default;
 
-  base::FilePath GetActiveUserProfileDir() override { return base::FilePath(); }
+  std::optional<base::FilePath> GetActiveUserProfileDir() override {
+    return std::nullopt;
+  }
 };
 
 }  // namespace

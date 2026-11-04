@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
@@ -102,7 +103,7 @@ TEST_F(DiagnosticsBrowserDelegateImplTest,
        GetActiveUserProfileDirForNoUserLoggedIn) {
   EXPECT_TRUE(user_manager::UserManager::IsInitialized());
   EXPECT_FALSE(user_manager::UserManager::Get()->IsUserLoggedIn());
-  EXPECT_EQ(base::FilePath(), delegate_.GetActiveUserProfileDir());
+  EXPECT_EQ(std::nullopt, delegate_.GetActiveUserProfileDir());
 }
 
 }  // namespace diagnostics

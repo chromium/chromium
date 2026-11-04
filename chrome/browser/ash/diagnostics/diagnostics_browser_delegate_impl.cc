@@ -4,33 +4,36 @@
 
 #include "chrome/browser/ash/diagnostics/diagnostics_browser_delegate_impl.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "content/public/browser/browser_context.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace diagnostics {
 
-base::FilePath DiagnosticsBrowserDelegateImpl::GetActiveUserProfileDir() {
+std::optional<base::FilePath>
+DiagnosticsBrowserDelegateImpl::GetActiveUserProfileDir() {
+  // TODO(crbug.com/563546692): Pass the AccountId in from the caller instead
+  // of looking the active session up here.
   const session_manager::Session* session =
       session_manager::SessionManager::Get()->GetActiveSession();
   // Handle no user logged in.
   if (!session) {
-    return base::FilePath();
+    return std::nullopt;
   }
 
-  content::BrowserContext* browser_context =
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          session->account_id());
-
-  // Profile may be null if called before profile load is complete.
-  if (!browser_context) {
-    return base::FilePath();
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(session->account_id());
+  if (!user) {
+    return std::nullopt;
   }
 
-  return browser_context->GetPath();
+  // The path is unset until the user's cryptohome is mounted.
+  return user->GetPath();
 }
 
 }  // namespace diagnostics

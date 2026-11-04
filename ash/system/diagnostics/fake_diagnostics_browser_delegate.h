@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_DIAGNOSTICS_FAKE_DIAGNOSTICS_BROWSER_DELEGATE_H_
 #define ASH_SYSTEM_DIAGNOSTICS_FAKE_DIAGNOSTICS_BROWSER_DELEGATE_H_
 
+#include <optional>
+
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/files/file_path.h"
 
@@ -20,19 +22,19 @@ constexpr char kDefaultUserDir[] = "/fake/user-dir";
 class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
  public:
   explicit FakeDiagnosticsBrowserDelegate(
-      const base::FilePath& path = base::FilePath(kDefaultUserDir));
+      std::optional<base::FilePath> path = base::FilePath(kDefaultUserDir));
 
   FakeDiagnosticsBrowserDelegate(const FakeDiagnosticsBrowserDelegate&) =
       delete;
   FakeDiagnosticsBrowserDelegate& operator=(
       const FakeDiagnosticsBrowserDelegate&) = delete;
 
-  ~FakeDiagnosticsBrowserDelegate() override = default;
+  ~FakeDiagnosticsBrowserDelegate() override;
 
-  base::FilePath GetActiveUserProfileDir() override;
+  std::optional<base::FilePath> GetActiveUserProfileDir() override;
 
  private:
-  base::FilePath active_user_dir_;
+  std::optional<base::FilePath> active_user_dir_;
 };
 
 }  // namespace ash::diagnostics

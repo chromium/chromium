@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_DIAGNOSTICS_DIAGNOSTICS_BROWSER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_DIAGNOSTICS_DIAGNOSTICS_BROWSER_DELEGATE_IMPL_H_
 
+#include <optional>
+
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 
 namespace base {
@@ -26,7 +28,7 @@ class DiagnosticsBrowserDelegateImpl final : public DiagnosticsBrowserDelegate {
   ~DiagnosticsBrowserDelegateImpl() override = default;
 
   // DiagnosticsBrowserDelegate:
-  base::FilePath GetActiveUserProfileDir() override;
+  std::optional<base::FilePath> GetActiveUserProfileDir() override;
 };
 
 }  // namespace diagnostics

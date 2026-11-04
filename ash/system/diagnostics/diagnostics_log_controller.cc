@@ -261,12 +261,13 @@ void DiagnosticsLogController::ResetLogBasePath() {
   // Check if there is an active user and profile is ready based on session and
   // login state.
   if (ShouldUseActiveUserProfileDir(state, status)) {
-    base::FilePath user_dir = g_instance->delegate_->GetActiveUserProfileDir();
+    const std::optional<base::FilePath> user_dir =
+        g_instance->delegate_->GetActiveUserProfileDir();
 
-    // Update |log_base_path_| when path is non-empty. Otherwise fallback to
+    // Update |log_base_path_| when a path is available. Otherwise fallback to
     // |kDiaganosticsTmpDir|.
-    if (!user_dir.empty()) {
-      g_instance->log_base_path_ = user_dir.Append(kDiaganosticsDirName);
+    if (user_dir.has_value() && !user_dir->empty()) {
+      g_instance->log_base_path_ = user_dir->Append(kDiaganosticsDirName);
       return;
     }
   }

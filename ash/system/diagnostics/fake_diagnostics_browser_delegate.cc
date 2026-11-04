@@ -4,15 +4,20 @@
 
 #include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 
 namespace ash::diagnostics {
 
 FakeDiagnosticsBrowserDelegate::FakeDiagnosticsBrowserDelegate(
-    const base::FilePath& path)
-    : active_user_dir_(path) {}
+    std::optional<base::FilePath> path)
+    : active_user_dir_(std::move(path)) {}
 
-base::FilePath FakeDiagnosticsBrowserDelegate::GetActiveUserProfileDir() {
+FakeDiagnosticsBrowserDelegate::~FakeDiagnosticsBrowserDelegate() = default;
+
+std::optional<base::FilePath>
+FakeDiagnosticsBrowserDelegate::GetActiveUserProfileDir() {
   return active_user_dir_;
 }
 

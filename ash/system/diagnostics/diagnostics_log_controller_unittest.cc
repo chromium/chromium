@@ -266,9 +266,9 @@ TEST_F(DiagnosticsLogControllerTest,
        ResetAndInitializeShouldLookupProfileUserEmptyPath) {
   const base::FilePath expected_path_not_regular_user =
       base::FilePath(kTmpDiagnosticsDir);
-  // Simulate DiagnosticsBrowserDelegate returning empty path.
+  // Simulate DiagnosticsBrowserDelegate returning no path.
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_with_empty_file_path =
-      std::make_unique<FakeDiagnosticsBrowserDelegate>(base::FilePath());
+      std::make_unique<FakeDiagnosticsBrowserDelegate>(std::nullopt);
   SetBrowserDelegate(std::move(delegate_with_empty_file_path));
   SimulateUserLogin(AccountId::FromUserEmail(kTestUserEmail));
   DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();

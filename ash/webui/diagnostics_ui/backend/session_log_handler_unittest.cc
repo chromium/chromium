@@ -77,7 +77,7 @@ class FakeDiagnosticsBrowserDelegate : public DiagnosticsBrowserDelegate {
   FakeDiagnosticsBrowserDelegate() = default;
   ~FakeDiagnosticsBrowserDelegate() override = default;
 
-  base::FilePath GetActiveUserProfileDir() override {
+  std::optional<base::FilePath> GetActiveUserProfileDir() override {
     base::ScopedTempDir tmp_dir;
     EXPECT_TRUE(tmp_dir.CreateUniqueTempDir());
     return tmp_dir.GetPath();

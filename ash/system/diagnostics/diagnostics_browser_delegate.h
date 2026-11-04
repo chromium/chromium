@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_DIAGNOSTICS_DIAGNOSTICS_BROWSER_DELEGATE_H_
 #define ASH_SYSTEM_DIAGNOSTICS_DIAGNOSTICS_BROWSER_DELEGATE_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
 
@@ -21,10 +23,10 @@ class ASH_EXPORT DiagnosticsBrowserDelegate {
       delete;
   virtual ~DiagnosticsBrowserDelegate();
 
-  // Override to retrieve full path to active user's profile directory or an
-  // empty path if there is no active user or the user's profile has not been
-  // loaded yet.
-  virtual base::FilePath GetActiveUserProfileDir() = 0;
+  // Override to retrieve the full path to the active user's profile
+  // directory, or std::nullopt if there is no active user or the user's
+  // profile has not been loaded yet.
+  virtual std::optional<base::FilePath> GetActiveUserProfileDir() = 0;
 };
 
 }  // namespace diagnostics

@@ -17,10 +17,9 @@ static_library("diagnostics") {
     "//ash/webui/diagnostics_ui/backend",
     "//base",
     "//chrome/browser/ash/net/network_health",
-    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/services/network_health/public/mojom",
     "//components/session_manager/core",
-    "//content/public/browser",
+    "//components/user_manager",
   ]
 }
 
