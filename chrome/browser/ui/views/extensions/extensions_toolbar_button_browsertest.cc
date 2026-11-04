@@ -59,6 +59,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarButtonBrowserTest, ButtonOpensMenu) {
 
   ClickExtensionsButton();
   EXPECT_FALSE(extensions_coordinator()->IsShowing());
+
+  // Reopen immediately before the asynchronous widget close task runs.
+  extensions_button()->ToggleExtensionsMenu();
+  EXPECT_TRUE(extensions_coordinator()->IsShowing());
+
+  extensions_button()->ToggleExtensionsMenu();
+  EXPECT_FALSE(extensions_coordinator()->IsShowing());
 }
 
 // Tests that updating the button state properly modifies the tooltip and
