@@ -1,0 +1,3 @@
+This is a wdspec test.
+[FAIL] test_iframe
+Harness: the test ran to completion.

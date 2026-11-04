@@ -2045,7 +2045,6 @@ crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot
 
 # Linux / Debug
 crbug.com/575780008 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
-crbug.com/571157929 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]  # Randomized context ID
 crbug.com/576634461 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 crbug.com/575784421 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/window_open.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
@@ -2106,7 +2105,6 @@ crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/set_timeouts/
 # Android
 crbug.com/534416988 [ Android ] external/wpt/webdriver/tests/bidi/browser/set_client_window_state/rect_state.py [ Failure ]
 crbug.com/534823421 [ Android ] external/wpt/webdriver/tests/bidi/browser/set_client_window_state/stress.py [ Failure ]
-crbug.com/515812909 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame_tentative.py [ Failure ]
 crbug.com/515812909 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py [ Failure ]
 crbug.com/576640672 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Skip Timeout ]
 crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/download_end/user_context_tentative.py [ Failure ]
