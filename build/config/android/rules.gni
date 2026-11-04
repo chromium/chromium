@@ -4038,6 +4038,11 @@ if (!is_robolectric && enable_java_templates) {
       chromium_code = false
       sources = []
       srcjar_deps = [ ":${_template_name}__protoc_java" ]
+
+      # Generated proto .java files can be very large (e.g. >3MB from 8
+      # .protos), so use a lower file-count threshold than java_library_impl's
+      # default.
+      allow_javac_sharding = len(invoker.sources) >= 8
       deps = [ "//third_party/android_deps:protobuf_lite_runtime_java" ]
       if (build_with_chromium) {
         deps += [ "//third_party/androidx:androidx_annotation_annotation_java" ]

@@ -3474,6 +3474,9 @@ if (enable_java_templates) {
   #    android java target to use.
   #  annotation_processor_deps: Optional list of dependencies corresponding
   #    to annotation processors used to compile these sources.
+  #  allow_javac_sharding: Optional. Whether compile_java.py may split this
+  #    target across multiple javac processes (which requires waiting for the
+  #    target's turbine header jar). Defaults to len(_java_files) >= 100.
   #  input_jars_paths: Optional list of additional .jar file paths, which will
   #    be added to the compile-time classpath when building this target (but
   #    not to the runtime classpath).
@@ -3677,10 +3680,6 @@ if (enable_java_templates) {
       }
       if (_jacoco_instrument) {
         _invoker_deps += [ _jacoco_dep ]
-      }
-      if (_has_sources) {
-        _generated_jar_path =
-            "$target_gen_dir/$_main_target_name.generated.srcjar"
       }
 
       _filter_jar = (defined(invoker.jar_excluded_patterns) &&
@@ -4201,11 +4200,21 @@ if (enable_java_templates) {
         if (defined(invoker.annotation_processor_deps)) {
           _annotation_processor_deps = invoker.annotation_processor_deps
         }
+        _has_annotation_processors = _annotation_processor_deps != []
+        _generated_jar_path =
+            "$target_gen_dir/$_main_target_name.generated.srcjar"
+
+        # compile_java.py shards above 3MB of Java sources; targets with fewer
+        # than 100 direct .java files stay below that threshold.
+        _allow_javac_sharding = len(_java_files) >= 100
+        if (defined(invoker.allow_javac_sharding)) {
+          _allow_javac_sharding = invoker.allow_javac_sharding
+        }
 
         compile_java_helper(_header_target_name) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           use_turbine = true
-          has_annotation_processors = _annotation_processor_deps != []
+          has_annotation_processors = _has_annotation_processors
           output_jar_path = _header_jar_path
           generated_jar_path = _generated_jar_path
           deps = _annotation_processor_deps
@@ -4229,10 +4238,17 @@ if (enable_java_templates) {
                                    ])
         main_target_name = _main_target_name
         output_jar_path = _javac_jar_path
-        if (!_skip_header_jar) {
+
+        # Only targets that may shard javac or run annotation processors via
+        # Turbine need to wait for their own header jar; all others run Turbine
+        # and javac concurrently.
+        if (!_skip_header_jar &&
+            (_allow_javac_sharding || _has_annotation_processors)) {
           deps = [ ":$_header_target_name" ]
           header_jar_path = _header_jar_path
-          generated_jar_path = _generated_jar_path
+          if (_has_annotation_processors) {
+            generated_jar_path = _generated_jar_path
+          }
         }
         if (defined(_filtered_classes_jar_path)) {
           filtered_classes_jar_path = _filtered_classes_jar_path

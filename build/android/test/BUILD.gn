@@ -46,6 +46,7 @@ if (!disable_android_lint) {
 }
 
 android_nocompile_test_suite("android_lookup_dep_tests") {
+  pydeps = [ "//build/android/gyp/turbine.pydeps" ]
   sources =
       [ rebase_path(missing_symbol_generated_importer_template_nocompile_source,
                     "",
@@ -66,7 +67,9 @@ android_nocompile_test_suite("android_lookup_dep_tests") {
       expected_compile_output_regex = "Hint: Try adding the following to //build/android/test/nocompile_gn:import_parent_missing_symbol_test_java\n *\"//build/android/test/nocompile_gn:b_java\""
     },
     {
-      target = "nocompile_gn:import_turbine_missing_symbol_test_java"
+      # Build __header directly since __compile_java does not depend on it for
+      # small targets.
+      target = "nocompile_gn:import_turbine_missing_symbol_test_java__header"
       nocompile_sources =
           rebase_path(import_turbine_missing_symbol_test_nocompile_sources,
                       "",
