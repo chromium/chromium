@@ -2,7 +2,7 @@ Name: CrabbyAvif - Library for decoding AVIF files.
 Short Name: crabbyavif
 URL: https://github.com/webmproject/CrabbyAvif
 Version: N/A
-Revision: bf81aaa3857218c64ba931d41d78a3360a8de810
+Revision: fba64ccafc6aac47cccadc14761029c224a1c3cf
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
