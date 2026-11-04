@@ -189,6 +189,15 @@ TEST_F(AppMenuBlockButtonTest, SingleLineHeightAndLayout) {
   auto* label = GetChildOfType<views::Label>();
   ASSERT_TRUE(icon_view);
   ASSERT_TRUE(label);
+  const int expected_content_width =
+      button_->GetContentsBounds().width() -
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON)
+          .width();
+  EXPECT_EQ(label->width(), expected_content_width);
+  EXPECT_GT(label->width(), label->GetPreferredSize({}).width());
+  EXPECT_EQ(icon_view->width(), expected_content_width);
+  EXPECT_EQ(icon_view->GetImageBounds().CenterPoint().x(),
+            icon_view->width() / 2);
   EXPECT_GE(label->height(), label->font_list().GetHeight());
   EXPECT_LE(
       std::abs(icon_view->y() - (button_->height() - label->bounds().bottom())),

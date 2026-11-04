@@ -121,7 +121,7 @@ AppMenuBlockButton::AppMenuBlockButton(views::MenuItemView* parent_menu_item,
       between_spacing));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
 
   if (std::u16string* text_override =
           base_action->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
