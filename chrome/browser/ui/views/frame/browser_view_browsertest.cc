@@ -29,7 +29,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/safe_browsing/realtime/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"

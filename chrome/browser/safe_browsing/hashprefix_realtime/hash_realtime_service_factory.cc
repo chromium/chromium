@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/hash_realtime_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
-#include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"

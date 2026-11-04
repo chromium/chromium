@@ -32,9 +32,9 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
-#include "chrome/browser/safe_browsing/chrome_sb_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/db/chrome_sb_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/password_protection/chrome_password_protection_service.h"
@@ -103,7 +103,7 @@
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/hash_realtime_service_factory.h"
 #include "chrome/browser/safe_browsing/incident_reporting/binary_integrity_analyzer.h"
 #endif
 

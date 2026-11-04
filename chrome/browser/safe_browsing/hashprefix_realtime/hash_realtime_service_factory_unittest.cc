@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/hash_realtime_service_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/hash_realtime_service_factory.h"
 
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"

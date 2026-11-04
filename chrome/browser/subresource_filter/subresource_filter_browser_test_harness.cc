@@ -18,7 +18,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
+#include "chrome/browser/safe_browsing/db/test_safe_browsing_database_helper.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"

@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
+#include "chrome/browser/safe_browsing/db/test_safe_browsing_database_helper.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"

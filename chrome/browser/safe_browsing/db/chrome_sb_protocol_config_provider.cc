@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_sb_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/db/chrome_sb_protocol_config_provider.h"
 
 #include <string>
 

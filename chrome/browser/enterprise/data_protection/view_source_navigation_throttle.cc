@@ -13,7 +13,7 @@
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/safe_browsing/realtime/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"

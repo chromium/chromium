@@ -7,7 +7,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"

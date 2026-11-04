@@ -36,7 +36,7 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/interstitials/delayed_interstitial_reporter.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/browser/safe_browsing/realtime/chrome_enterprise_url_lookup_service_factory.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"

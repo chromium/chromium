@@ -9,7 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
+#include "chrome/browser/safe_browsing/db/test_safe_browsing_database_helper.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

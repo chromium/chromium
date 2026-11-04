@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
+#include "chrome/browser/safe_browsing/db/v5_get_hash_protocol_manager_factory.h"
 
 #include <memory>
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_sb_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/db/chrome_sb_protocol_config_provider.h"
+#include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"

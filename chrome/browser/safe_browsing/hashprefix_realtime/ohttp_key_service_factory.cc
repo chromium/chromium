@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/ohttp_key_service_factory.h"
+#include "chrome/browser/safe_browsing/hashprefix_realtime/ohttp_key_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

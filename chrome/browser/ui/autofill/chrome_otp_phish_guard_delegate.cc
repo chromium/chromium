@@ -16,8 +16,8 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/autofill/otp_filling_safe_browsing_checker_client.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/safe_browsing/db/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

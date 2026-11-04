@@ -16,7 +16,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/v5_get_hash_protocol_manager_factory.h"
+#include "chrome/browser/safe_browsing/db/v5_get_hash_protocol_manager_factory.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #endif
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
+#include "chrome/browser/safe_browsing/db/test_safe_browsing_database_helper.h"
 
 #include <algorithm>
 #include <utility>
@@ -16,9 +16,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/sb_test_util.h"

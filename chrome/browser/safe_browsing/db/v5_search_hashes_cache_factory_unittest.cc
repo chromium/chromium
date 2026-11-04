@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/v5_search_hashes_cache_factory.h"
+#include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"
 
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
