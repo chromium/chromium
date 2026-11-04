@@ -86,6 +86,11 @@ void MacSystemProxyResolutionRequest::CancelResolveRequest() {
   proxy_resolution_request_.reset();
 }
 
+void MacSystemProxyResolutionRequest::CancelPlatformRequest() {
+  CancelResolveRequest();
+  mac_service_ = nullptr;
+}
+
 void MacSystemProxyResolutionRequest::ProxyResolutionComplete(
     const ProxyList& proxy_list,
     MacProxyResolutionStatus mac_status,

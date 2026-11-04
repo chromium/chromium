@@ -93,6 +93,10 @@ void WindowsSystemProxyResolutionRequest::CancelResolveRequest() {
   proxy_resolution_request_.reset();
 }
 
+void WindowsSystemProxyResolutionRequest::CancelPlatformRequest() {
+  CancelResolveRequest();
+}
+
 void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
     const ProxyList& proxy_list,
     WinHttpStatus winhttp_status,

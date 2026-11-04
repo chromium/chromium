@@ -55,6 +55,18 @@ void SystemProxyResolutionRequest::MarkCompleted() {
   service_ = nullptr;
 }
 
+void SystemProxyResolutionRequest::CancelForShutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(service_);
+
+  MarkCompleted();
+  CancelPlatformRequest();
+  results_ = nullptr;
+  net_log_.AddEvent(NetLogEventType::CANCELLED);
+  net_log_.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
+  user_callback_.Reset();
+}
+
 LoadState SystemProxyResolutionRequest::GetLoadState() const {
   // TODO(crbug.com/40111093): Consider adding a LoadState for "We're
   // waiting on system APIs to do their thing".

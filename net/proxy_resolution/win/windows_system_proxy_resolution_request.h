@@ -60,6 +60,8 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   void ResetProxyResolutionRequestForTesting();
 
  private:
+  void CancelPlatformRequest() override;
+
   // Cancels the callback from the resolver for a previously started proxy
   // resolution.
   void CancelResolveRequest();

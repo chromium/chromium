@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Shared typed-test infrastructure for SystemProxyResolutionService tests.
-// Each platform (Windows, macOS) includes this header in its own _unittest.cc
-// and instantiates the typed test suite with a platform-specific traits struct.
+// Each platform includes this header in its own _unittest.cc and instantiates
+// the typed test suite with a platform-specific traits struct.
 //
 // Pattern follows net/ssl/client_cert_store_unittest-inl.h.
 //
@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "net/base/fake_proxy_delegate.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
@@ -31,6 +32,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
+#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
@@ -139,7 +141,7 @@ class SystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
 TYPED_TEST_SUITE_P(SystemProxyResolutionServiceTest);
 
 // --------------------------------------------------------------------------
-// 16 shared typed tests
+// Shared typed tests
 // --------------------------------------------------------------------------
 
 TYPED_TEST_P(SystemProxyResolutionServiceTest, CreateWithNullResolver) {
@@ -179,6 +181,84 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest, ResolveProxyCancelled) {
 TYPED_TEST_P(SystemProxyResolutionServiceTest, ResolveProxyEmptyResults) {
   ProxyList expected_proxy_list;
   this->DoResolveProxyTest(expected_proxy_list);
+}
+
+TYPED_TEST_P(SystemProxyResolutionServiceTest, ShutdownCancelsPendingRequests) {
+  RecordingNetLogObserver observer;
+  const auto log = NetLogWithSource::Make(NetLogSourceType::URL_REQUEST);
+  ProxyInfo first_info;
+  ProxyInfo second_info;
+  TestCompletionCallback first_callback;
+  TestCompletionCallback second_callback;
+  std::unique_ptr<ProxyResolutionRequest> first_request;
+  std::unique_ptr<ProxyResolutionRequest> second_request;
+  ASSERT_EQ(ERR_IO_PENDING, this->service()->ResolveProxy(
+                                kResourceUrl, "GET", NetworkAnonymizationKey(),
+                                handles::kInvalidNetworkHandle, &first_info,
+                                first_callback.callback(), &first_request, log,
+                                DEFAULT_PRIORITY));
+  ASSERT_EQ(ERR_IO_PENDING, this->service()->ResolveProxy(
+                                kResourceUrl, "GET", NetworkAnonymizationKey(),
+                                handles::kInvalidNetworkHandle, &second_info,
+                                second_callback.callback(), &second_request,
+                                log, DEFAULT_PRIORITY));
+  this->service()->OnShutdown();
+  this->service()->OnShutdown();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(first_callback.have_result());
+  EXPECT_FALSE(second_callback.have_result());
+  EXPECT_TRUE(first_info.is_empty());
+  EXPECT_TRUE(second_info.is_empty());
+
+  // Requests must safely outlive both shutdown and service destruction.
+  this->ResetProxyResolutionService();
+  first_request.reset();
+  second_request.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(first_callback.have_result());
+  EXPECT_FALSE(second_callback.have_result());
+
+  int begins = 0;
+  int ends = 0;
+  int cancellations = 0;
+  for (const auto& entry : observer.GetEntries()) {
+    if (entry.source.id != log.source().id) {
+      continue;
+    }
+    if (entry.type == NetLogEventType::CANCELLED) {
+      ++cancellations;
+    }
+    if (entry.type == NetLogEventType::PROXY_RESOLUTION_SERVICE) {
+      begins += entry.phase == NetLogEventPhase::BEGIN;
+      ends += entry.phase == NetLogEventPhase::END;
+    }
+  }
+  EXPECT_EQ(2, begins);
+  EXPECT_EQ(2, ends);
+  EXPECT_EQ(2, cancellations);
+}
+
+TYPED_TEST_P(SystemProxyResolutionServiceTest, ShutdownPreventsNewRequests) {
+  RecordingNetLogObserver observer;
+  const auto log = NetLogWithSource::Make(NetLogSourceType::URL_REQUEST);
+  this->service()->OnShutdown();
+  this->service()->OnShutdown();
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  EXPECT_EQ(ERR_CONTEXT_SHUT_DOWN,
+            this->service()->ResolveProxy(
+                kResourceUrl, "GET", NetworkAnonymizationKey(),
+                handles::kInvalidNetworkHandle, &info, callback.callback(),
+                &request, log, DEFAULT_PRIORITY));
+  EXPECT_FALSE(request);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(callback.have_result());
+  EXPECT_TRUE(info.is_empty());
+  for (const auto& entry : observer.GetEntries()) {
+    EXPECT_NE(log.source().id, entry.source.id);
+  }
 }
 
 TYPED_TEST_P(SystemProxyResolutionServiceTest,
@@ -622,6 +702,8 @@ REGISTER_TYPED_TEST_SUITE_P(
     CreateWithNullResolver,
     ResolveProxyCancelled,
     ResolveProxyEmptyResults,
+    ShutdownCancelsPendingRequests,
+    ShutdownPreventsNewRequests,
     MultipleProxyResolutionRequests,
     ProxyResolutionServiceDestructionWithInFlightRequests,
     CastToConfiguredProxyResolutionService,

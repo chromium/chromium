@@ -51,7 +51,7 @@ class NET_EXPORT SystemProxyResolutionRequest : public ProxyResolutionRequest {
       CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log);
 
-  // Returns true if the request has been completed (callback already invoked).
+  // Returns true if the request has completed or was cancelled for shutdown.
   bool was_completed() const { return user_callback_.is_null(); }
 
   // Marks this request as completed: removes it from the service's pending
@@ -69,7 +69,7 @@ class NET_EXPORT SystemProxyResolutionRequest : public ProxyResolutionRequest {
   // Back-pointer to the owning service. Outstanding requests are cancelled
   // during the service subclass destructor, so this is guaranteed to be valid
   // throughout the lifetime of this object while the request is still pending.
-  // Set to nullptr by the derived class after completion.
+  // Cleared on completion or shutdown cancellation.
   raw_ptr<SystemProxyResolutionService> service_;
   CompletionOnceCallback user_callback_;
   raw_ptr<ProxyInfo> results_;
@@ -82,6 +82,14 @@ class NET_EXPORT SystemProxyResolutionRequest : public ProxyResolutionRequest {
   base::TimeTicks creation_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+ private:
+  friend class SystemProxyResolutionService;
+
+  void CancelForShutdown();
+  // Cancels the backend operation without invoking the completion callback and
+  // clears any platform-specific service back-pointers.
+  virtual void CancelPlatformRequest() = 0;
 };
 
 }  // namespace net

@@ -90,6 +90,11 @@ LinuxSystemProxyResolutionRequest::~LinuxSystemProxyResolutionRequest() {
   // Cancel the platform-specific resolver request before the base destructor
   // runs (which handles removing from the base pending set and net log
   // events).
+  CancelPlatformRequest();
+}
+
+void LinuxSystemProxyResolutionRequest::CancelPlatformRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   proxy_resolution_request_.reset();
   if (linux_service_) {
     linux_service_->RemoveLinuxPendingRequest(this);

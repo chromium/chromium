@@ -43,6 +43,9 @@ class NET_EXPORT SystemProxyResolutionService : public ProxyResolutionService {
   // ProxyResolutionService implementation:
   void ReportSuccess(const ProxyInfo& proxy_info) override;
   void SetProxyDelegate(ProxyDelegate* delegate) override;
+  // Cancels pending lookups without invoking their callbacks. Request handles
+  // remain caller-owned; subsequent ResolveProxy calls fail synchronously with
+  // ERR_CONTEXT_SHUT_DOWN.
   void OnShutdown() override;
   void ClearBadProxiesCache() override;
   const ProxyRetryInfoMap& proxy_retry_info() const override;
@@ -62,6 +65,7 @@ class NET_EXPORT SystemProxyResolutionService : public ProxyResolutionService {
   [[nodiscard]] bool ContainsPendingRequest(
       SystemProxyResolutionRequest* req) const;
   void RemovePendingRequest(SystemProxyResolutionRequest* req);
+  bool is_shutting_down() const { return is_shutting_down_; }
   // Exposed for platform subclass test fixtures (e.g., via friend or public
   // accessor on the concrete service class).
   size_t PendingRequestSizeForTesting() const {
@@ -83,6 +87,9 @@ class NET_EXPORT SystemProxyResolutionService : public ProxyResolutionService {
   // their destructor cleanup loop.
   std::set<raw_ptr<SystemProxyResolutionRequest, SetExperimental>>
       pending_requests_;
+
+  // Once set, no new platform proxy requests are started.
+  bool is_shutting_down_ = false;
 
   // Optional delegate for customizing proxy resolution behavior and receiving
   // proxy-related callbacks.

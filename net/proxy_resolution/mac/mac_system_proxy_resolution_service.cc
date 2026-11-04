@@ -71,6 +71,10 @@ int MacSystemProxyResolutionService::ResolveProxy(
   DCHECK(!callback.is_null());
   DCHECK(request);
 
+  if (is_shutting_down()) {
+    return ERR_CONTEXT_SHUT_DOWN;
+  }
+
   net_log.BeginEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
 
   // Once it's created, the MacSystemProxyResolutionRequest immediately

@@ -56,6 +56,8 @@ class NET_EXPORT LinuxSystemProxyResolutionRequest
                                LinuxProxyResolutionStatus linux_status);
 
  private:
+  void CancelPlatformRequest() override;
+
   // Typed pointer to the Linux-specific service. Cleared alongside the base
   // `service_` pointer in ProxyResolutionComplete() to avoid dangling when the
   // service is destroyed with in-flight requests.

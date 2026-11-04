@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "net/base/net_info_source_list.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/system_proxy_resolution_request.h"
 
 namespace net {
 
@@ -34,9 +35,16 @@ void SystemProxyResolutionService::SetProxyDelegate(ProxyDelegate* delegate) {
 }
 
 void SystemProxyResolutionService::OnShutdown() {
-  // TODO(crbug.com/40111093): Add cleanup here as necessary. If cleanup
-  // is unnecessary, update the interface to not require an implementation for
-  // this so OnShutdown() can be removed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_shutting_down_) {
+    return;
+  }
+  is_shutting_down_ = true;
+
+  while (!pending_requests_.empty()) {
+    SystemProxyResolutionRequest* request = *pending_requests_.begin();
+    request->CancelForShutdown();
+  }
 }
 
 void SystemProxyResolutionService::ClearBadProxiesCache() {
