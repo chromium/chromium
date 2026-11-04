@@ -962,6 +962,7 @@ if (is_win || is_mac || is_linux) {
       "test/request_matcher_unittest.cc",
       "test/server.cc",
       "test/server.h",
+      "test/server_unittest.cc",
       "test/unit_test_util_unittest.cc",
       "update_service_impl_impl_unittest.cc",
       "update_service_impl_inactive_unittest.cc",

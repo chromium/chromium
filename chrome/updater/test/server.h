@@ -34,6 +34,10 @@ class IntegrationTestCommands;
 
 class ScopedServer {
  public:
+  // Creates and starts a scoped server without setting up an updater to use
+  // it.
+  ScopedServer();
+
   // Creates and starts a scoped server. Sets up the updater to communicate with
   // it. The configuration persists after this instance is destroyed.
   explicit ScopedServer(scoped_refptr<IntegrationTestCommands> commands);
@@ -113,6 +117,8 @@ class ScopedServer {
   void set_gzip_response(bool gzip_response) { gzip_response_ = gzip_response; }
 
  private:
+  friend class ScopedServerTest;
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 

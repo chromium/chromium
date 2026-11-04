@@ -73,10 +73,14 @@ std::string DebugStringForReq(HttpRequest& request) {
 
 }  // namespace
 
-ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands) {
+ScopedServer::ScopedServer() {
   test_server_.RegisterRequestHandler(base::BindRepeating(
       &ScopedServer::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE((test_server_handle_ = test_server_.StartAndReturnHandle()));
+}
+
+ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands)
+    : ScopedServer() {
   CHECK(commands);
   commands->EnterTestMode(update_url(), crash_upload_url(),
                           /*app_logo_url=*/{},
