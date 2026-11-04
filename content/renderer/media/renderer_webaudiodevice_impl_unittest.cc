@@ -561,6 +561,150 @@ TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
   }
 }
 
+// A stereo preferred layout on a device with six addressable outputs. The
+// stereo request keeps its layout, while wider requests that still fit within
+// `total_channels` are opened as CHANNEL_LAYOUT_DISCRETE instead of the
+// guessed named layout.
+TEST_F(RendererWebAudioDeviceImplTest,
+       MaxChannelCount_UsesTotalChannelsWhenPresent) {
+  media::AudioParameters::HardwareCapabilities hardware_capabilities(
+      kHardwareBufferSize, kHardwareBufferSize);
+  hardware_capabilities.total_channels = 6;
+  media::AudioParameters stereo_params_with_total_channels(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), kHardwareSampleRate,
+      kHardwareBufferSize, hardware_capabilities);
+
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(
+          media::OutputDeviceInfo(std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+                                  stereo_params_with_total_channels)));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_EQ(6, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(2, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  SetupDevice({media::CHANNEL_LAYOUT_QUAD, 4});
+  EXPECT_EQ(6, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_DISCRETE,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(4, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  SetupDevice({media::CHANNEL_LAYOUT_5_1, 6});
+  EXPECT_EQ(6, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_DISCRETE,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(6, webaudio_device_->GetSinkParamsForTesting().channels());
+}
+
+// An unset (0) or smaller-than-preferred `total_channels` never lowers
+// MaxChannelCount() below the preferred layout's channel count, and requests
+// wider than MaxChannelCount() keep their guessed layout for the browser-side
+// downmix.
+TEST_F(RendererWebAudioDeviceImplTest,
+       MaxChannelCount_IgnoresUnsetOrSmallerTotalChannels) {
+  media::AudioParameters::HardwareCapabilities hardware_capabilities(
+      kHardwareBufferSize, kHardwareBufferSize);
+  hardware_capabilities.total_channels = 0;
+  media::AudioParameters params_5_1(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::FromLayout<media::CHANNEL_LAYOUT_5_1>(),
+      kHardwareSampleRate, kHardwareBufferSize, hardware_capabilities);
+
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_OK, params_5_1)));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_EQ(6, webaudio_device_->MaxChannelCount());
+
+  hardware_capabilities.total_channels = 2;
+  params_5_1.set_hardware_capabilities(hardware_capabilities);
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_OK, params_5_1)));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_EQ(6, webaudio_device_->MaxChannelCount());
+
+  media::AudioParameters stereo_params_unset_max(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), kHardwareSampleRate,
+      kHardwareBufferSize,
+      media::AudioParameters::HardwareCapabilities(kHardwareBufferSize,
+                                                   kHardwareBufferSize));
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(
+          media::OutputDeviceInfo(std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+                                  stereo_params_unset_max)));
+
+  SetupDevice({media::CHANNEL_LAYOUT_QUAD, 4});
+  EXPECT_EQ(2, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_QUAD,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(4, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  media::AudioParameters stereo_params_max_2(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), kHardwareSampleRate,
+      kHardwareBufferSize, hardware_capabilities);
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_OK, stereo_params_max_2)));
+
+  SetupDevice({media::CHANNEL_LAYOUT_5_1, 6});
+  EXPECT_EQ(2, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_5_1,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(6, webaudio_device_->GetSinkParamsForTesting().channels());
+}
+
+// A 16-output interface configured as 7.1.4 in Audio MIDI Setup
+// (crbug.com/578630432): MaxChannelCount() reports all 16 outputs while
+// requests up to the 12-channel preferred layout keep their named layout.
+TEST_F(RendererWebAudioDeviceImplTest,
+       MaxChannelCount_7Point1Point4PreferredLayoutOn16ChannelInterface) {
+  media::AudioParameters::HardwareCapabilities hardware_capabilities(
+      kHardwareBufferSize, kHardwareBufferSize);
+  hardware_capabilities.total_channels = 16;
+  media::AudioParameters params_7_1_4_on_16ch(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::FromLayout<media::CHANNEL_LAYOUT_7_1_4>(),
+      kHardwareSampleRate, kHardwareBufferSize, hardware_capabilities);
+
+  ON_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+      .WillByDefault(testing::Return(
+          media::OutputDeviceInfo(std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+                                  params_7_1_4_on_16ch)));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_EQ(16, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(2, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  SetupDevice({media::CHANNEL_LAYOUT_5_1, 6});
+  EXPECT_EQ(16, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_5_1,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(6, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  SetupDevice(
+      media::ChannelLayoutConfig::FromLayout<media::CHANNEL_LAYOUT_7_1_4>());
+  EXPECT_EQ(16, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_7_1_4,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(12, webaudio_device_->GetSinkParamsForTesting().channels());
+
+  SetupDevice({media::CHANNEL_LAYOUT_DISCRETE, 16});
+  EXPECT_EQ(16, webaudio_device_->MaxChannelCount());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_DISCRETE,
+            webaudio_device_->GetSinkParamsForTesting().channel_layout());
+  EXPECT_EQ(16, webaudio_device_->GetSinkParamsForTesting().channels());
+}
+
 TEST_F(RendererWebAudioDeviceImplTest, NullSink_RenderWorks) {
   {
     InSequence s;

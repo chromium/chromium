@@ -62,6 +62,10 @@ struct StructTraits<media::mojom::AudioParametersHardwareCapabilitiesDataView,
       const media::AudioParameters::HardwareCapabilities& input) {
     return input.require_audio_offload;
   }
+  static int32_t total_channels(
+      const media::AudioParameters::HardwareCapabilities& input) {
+    return input.total_channels;
+  }
 
   static bool Read(
       media::mojom::AudioParametersHardwareCapabilitiesDataView input,

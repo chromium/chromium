@@ -277,7 +277,10 @@ bool AudioParameters::IsValid() const {
            (hardware_capabilities_->max_frames_per_buffer <=
             media::limits::kMaxSamplesPerPacket) &&
            (hardware_capabilities_->max_frames_per_buffer >=
-            hardware_capabilities_->min_frames_per_buffer))) &&
+            hardware_capabilities_->min_frames_per_buffer) &&
+           (hardware_capabilities_->total_channels >= 0) &&
+           (hardware_capabilities_->total_channels <=
+            media::limits::kMaxChannels))) &&
          (channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
           channel_layout() == CHANNEL_LAYOUT_5_1_4_DOWNMIX ||
           channels() == ChannelLayoutToChannelCount(channel_layout()));
@@ -301,7 +304,8 @@ std::string AudioParameters::AsHumanReadableString() const {
       << ", require_encapsulation:"
       << hardware_capabilities_->require_encapsulation
       << ", require_audio_offload:"
-      << hardware_capabilities_->require_audio_offload;
+      << hardware_capabilities_->require_audio_offload
+      << ", total_channels:" << hardware_capabilities_->total_channels;
   }
   return s.str();
 }

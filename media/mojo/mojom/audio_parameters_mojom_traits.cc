@@ -117,7 +117,9 @@ bool StructTraits<media::mojom::AudioParametersHardwareCapabilitiesDataView,
     Read(media::mojom::AudioParametersHardwareCapabilitiesDataView input,
          media::AudioParameters::HardwareCapabilities* output) {
   if (input.min_frames_per_buffer() < 0 || input.max_frames_per_buffer() < 0 ||
-      input.default_frames_per_buffer() < 0 || input.bitstream_formats() < 0) {
+      input.default_frames_per_buffer() < 0 || input.bitstream_formats() < 0 ||
+      input.total_channels() < 0 ||
+      input.total_channels() > media::limits::kMaxChannels) {
     return false;
   }
   output->min_frames_per_buffer = input.min_frames_per_buffer();
@@ -126,6 +128,7 @@ bool StructTraits<media::mojom::AudioParametersHardwareCapabilitiesDataView,
   output->bitstream_formats = input.bitstream_formats();
   output->require_encapsulation = input.require_encapsulation();
   output->require_audio_offload = input.require_audio_offload();
+  output->total_channels = input.total_channels();
 #if BUILDFLAG(IS_WIN)
   if (output->require_audio_offload &&
       !base::FeatureList::IsEnabled(media::kAudioOffload)) {

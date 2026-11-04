@@ -80,10 +80,11 @@ MEDIA_EXPORT bool AudioChannelLayoutToChannelLayout(
     ChannelLayout* output_layout);
 
 // Extracts the channel count and best-matching `ChannelLayout` from
-// `input_layout`'s channel descriptions. Unlabeled channels are counted.
-// Layouts with no descriptions report 0 channels and `CHANNEL_LAYOUT_NONE`;
-// layouts of 1-2 channels map to mono or stereo; other layouts that do not map
-// to a distinct named configuration fall back to `CHANNEL_LAYOUT_DISCRETE`.
+// `input_layout`'s channel descriptions. Unlabeled channels are ignored when
+// matching a named configuration. Layouts with no descriptions report 0
+// channels and `CHANNEL_LAYOUT_NONE`; layouts of 1-2 channels map to mono or
+// stereo; other layouts that do not map to a distinct named configuration fall
+// back to `CHANNEL_LAYOUT_DISCRETE` with the total description count.
 MEDIA_EXPORT void ParseCoreAudioChannelLayout(
     const AudioChannelLayout& input_layout,
     uint32_t* channels,

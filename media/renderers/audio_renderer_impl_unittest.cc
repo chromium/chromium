@@ -1123,10 +1123,12 @@ TEST_F(AudioRendererImplTest, NonIamfDiscreteHardwareLayoutSquashedToStereo) {
 // Verify that a named hardware layout reaches the decoder unchanged. Only
 // discrete layouts are squashed.
 TEST_F(AudioRendererImplTest, IamfNamedHardwareLayoutIsNotSquashed) {
+  AudioParameters::HardwareCapabilities capabilities(128, 4096);
+  capabilities.total_channels = 16;
   AudioParameters hardware_params(
       AudioParameters::AUDIO_PCM_LOW_LATENCY,
       ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_7_1_4>(),
-      kOutputSamplesPerSecond, 512);
+      kOutputSamplesPerSecond, 512, capabilities);
   ConfigureConfigChangeRenderer(hardware_params, hardware_params);
 
   AudioDecoderConfig stream_config(

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "media/base/audio_parameters.h"
+#include "media/base/limits.h"
 #include "media/mojo/mojom/audio_parameters.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,7 @@ TEST(AudioParametersStructTraitsTest, NormalRoundTrip) {
       /*min_frames_per_buffer=*/128, /*max_frames_per_buffer=*/1024,
       /*default_frames_per_buffer=*/512, /*require_offload=*/false);
   hardware_capabilities.require_encapsulation = true;
+  hardware_capabilities.total_channels = 6;
   input.set_hardware_capabilities(hardware_capabilities);
 
   AudioParameters output;
@@ -89,6 +91,50 @@ TEST(AudioParametersStructTraitsTest, InvalidHardwareCapabilities) {
   // Set invalid min_frames_per_buffer.
   input->hardware_capabilities = media::AudioParameters::HardwareCapabilities(
       /*min_frames_per_buffer=*/-10, /*max_frames_per_buffer=*/512);
+
+  AudioParameters output;
+  EXPECT_FALSE(mojom::AudioParameters::Deserialize(
+      mojom::AudioParameters::Serialize(&input), &output));
+}
+
+TEST(AudioParametersStructTraitsTest,
+     ValidHardwareCapabilitiesTotalChannelsBoundaries) {
+  for (int total_channels : {0, limits::kMaxChannels}) {
+    SCOPED_TRACE(total_channels);
+    auto input = CreateValidMojomAudioParameters();
+    media::AudioParameters::HardwareCapabilities capabilities(
+        /*min_frames_per_buffer=*/128, /*max_frames_per_buffer=*/512);
+    capabilities.total_channels = total_channels;
+    input->hardware_capabilities = capabilities;
+
+    AudioParameters output;
+    EXPECT_TRUE(mojom::AudioParameters::Deserialize(
+        mojom::AudioParameters::Serialize(&input), &output));
+    ASSERT_TRUE(output.hardware_capabilities().has_value());
+    EXPECT_EQ(total_channels, output.hardware_capabilities()->total_channels);
+  }
+}
+
+TEST(AudioParametersStructTraitsTest,
+     InvalidHardwareCapabilitiesTotalChannelsNegative) {
+  auto input = CreateValidMojomAudioParameters();
+  media::AudioParameters::HardwareCapabilities capabilities(
+      /*min_frames_per_buffer=*/128, /*max_frames_per_buffer=*/512);
+  capabilities.total_channels = -1;
+  input->hardware_capabilities = capabilities;
+
+  AudioParameters output;
+  EXPECT_FALSE(mojom::AudioParameters::Deserialize(
+      mojom::AudioParameters::Serialize(&input), &output));
+}
+
+TEST(AudioParametersStructTraitsTest,
+     InvalidHardwareCapabilitiesTotalChannelsTooLarge) {
+  auto input = CreateValidMojomAudioParameters();
+  media::AudioParameters::HardwareCapabilities capabilities(
+      /*min_frames_per_buffer=*/128, /*max_frames_per_buffer=*/512);
+  capabilities.total_channels = limits::kMaxChannels + 1;
+  input->hardware_capabilities = capabilities;
 
   AudioParameters output;
   EXPECT_FALSE(mojom::AudioParameters::Deserialize(

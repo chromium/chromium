@@ -42,6 +42,8 @@ struct AudioParametersHardwareCapabilities {
   int32 bitstream_formats;
   bool require_encapsulation;
   bool require_audio_offload;
+  // Total channels the device exposes in this direction. 0 when unknown.
+  int32 total_channels;
 };
 
 struct AudioParameters {

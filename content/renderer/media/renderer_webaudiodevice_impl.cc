@@ -324,7 +324,16 @@ void RendererWebAudioDeviceImpl::HandleDeviceStatus(
 
   DCHECK_NE(0, output_buffer_size);
 
-  current_sink_params_.Reset(original_sink_params_.format(), layout_config_,
+  // Channels beyond the preferred speaker layout are only addressable as
+  // discrete outputs.
+  media::ChannelLayoutConfig sink_layout_config = layout_config_;
+  if (layout_config_.channels() > original_sink_params_.channels() &&
+      layout_config_.channels() <= MaxChannelCount()) {
+    sink_layout_config = {media::CHANNEL_LAYOUT_DISCRETE,
+                          layout_config_.channels()};
+  }
+
+  current_sink_params_.Reset(original_sink_params_.format(), sink_layout_config,
                              resolved_context_sample_rate, output_buffer_size);
 
   // Specify the latency info to be passed to the browser side.
@@ -456,6 +465,13 @@ int RendererWebAudioDeviceImpl::FramesPerBuffer() {
 }
 
 int RendererWebAudioDeviceImpl::MaxChannelCount() {
+  // `total_channels` is 0 when the backend does not report it, and the
+  // preferred layout's channels are always addressable.
+  if (original_sink_params_.hardware_capabilities().has_value()) {
+    return std::max(
+        original_sink_params_.channels(),
+        original_sink_params_.hardware_capabilities()->total_channels);
+  }
   return original_sink_params_.channels();
 }
 

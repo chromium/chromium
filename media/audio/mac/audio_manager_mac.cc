@@ -408,25 +408,15 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
                                   channel_layout);
       // Some devices can return noErr but 0 channels.
       if (*channels) {
-        // Discrete layouts have no speaker arrangement to honor, so use the
-        // hardware channel count directly instead of the layout's count.
-        int total_channel_count = 0;
-        if (*channel_layout == CHANNEL_LAYOUT_DISCRETE &&
-            GetDeviceTotalChannelCount(device, kAudioDevicePropertyScopeOutput,
-                                       &total_channel_count) &&
-            total_channel_count > 0) {
-          *channels = base::checked_cast<uint32_t>(total_channel_count);
-        }
         return true;
       }
     }
   }
 
-  // If the device has more channels than possible for layouts to express, use
-  // the total count of channels on the device; as of this writing, macOS will
-  // only return up to 8 channels in any layout. To allow WebAudio to work with
-  // > 8 channel devices, we must use the total channel count instead of the
-  // channel count of the preferred layout.
+  // Without a usable preferred layout, report devices with more outputs than
+  // any named layout can express as DISCRETE with the total output count, and
+  // fall back to the AudioUnit's layout otherwise. WebAudio learns the total
+  // output count separately via HardwareCapabilities::total_channels.
   int total_channel_count = 0;
   if (GetDeviceTotalChannelCount(device, kAudioDevicePropertyScopeOutput,
                                  &total_channel_count) &&
@@ -441,14 +431,6 @@ static bool GetOutputDeviceChannelsAndLayout(AudioDeviceID device,
 
     if (!GetOutputDeviceChannelsAndLayout(au.audio_unit(), channels,
                                           channel_layout)) {
-      return false;
-    }
-
-    // Use the hardware channel count for discrete layouts (see above).
-    if (*channel_layout == CHANNEL_LAYOUT_DISCRETE && total_channel_count > 0) {
-      *channels = base::checked_cast<uint32_t>(total_channel_count);
-    }
-    if (*channels == 0) {
       return false;
     }
   }
@@ -471,7 +453,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
 
   ParseCoreAudioChannelLayout(*scoped_device_layout->layout(), channels,
                               channel_layout);
-  return true;
+  return *channels > 0;
 }
 
 class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
@@ -978,7 +960,19 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
                                         &hardware_channel_layout)) {
     hardware_channels = 2;
     hardware_channel_layout = CHANNEL_LAYOUT_STEREO;
+  } else if (hardware_channel_layout == CHANNEL_LAYOUT_DISCRETE &&
+             hardware_channels > limits::kMaxChannels) {
+    hardware_channels = limits::kMaxChannels;
   }
+
+  int total_channels = 0;
+  if (!GetDeviceTotalChannelCount(device, kAudioDevicePropertyScopeOutput,
+                                  &total_channels)) {
+    total_channels = hardware_channels;
+  }
+  total_channels = std::min(
+      std::max(base::checked_cast<int>(hardware_channels), total_channels),
+      limits::kMaxChannels);
 
   // Use the input channel count and channel layout if possible.  Let OSX take
   // care of remapping the channels; this lets user specified channel layouts
@@ -989,20 +983,28 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   // itself. In this case, we can pass the original layout to the OS instead of
   // downmixing. This is only done for playback streams.
   const bool use_avf_streams = UsesQueuedOutputStream(input_params);
+  const uint32_t max_allowed_channels =
+      (has_valid_input_params &&
+       output_channel_layout == CHANNEL_LAYOUT_DISCRETE)
+          ? base::checked_cast<uint32_t>(total_channels)
+          : hardware_channels;
 
   if (!has_valid_input_params ||
-      (base::checked_cast<uint32_t>(output_channels) > hardware_channels &&
+      (base::checked_cast<uint32_t>(output_channels) > max_allowed_channels &&
        !use_avf_streams)) {
     output_channels = hardware_channels;
     output_channel_layout = hardware_channel_layout;
   }
 
+  AudioParameters::HardwareCapabilities hardware_capabilities(
+      GetMinAudioBufferSizeMacOS(hardware_sample_rate),
+      limits::kMaxAudioBufferSize);
+  hardware_capabilities.total_channels = total_channels;
+
   AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          {output_channel_layout, output_channels},
                          hardware_sample_rate, buffer_size,
-                         AudioParameters::HardwareCapabilities(
-                             GetMinAudioBufferSizeMacOS(hardware_sample_rate),
-                             limits::kMaxAudioBufferSize));
+                         hardware_capabilities);
   return params;
 }
 

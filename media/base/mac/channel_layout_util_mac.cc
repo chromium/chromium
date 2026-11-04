@@ -273,12 +273,17 @@ void ParseCoreAudioChannelLayout(const AudioChannelLayout& input_layout,
     return;
   }
 
-  // Multichannel interfaces often label all outputs as unknown. Count every
-  // description so those channels remain addressable (crbug.com/561637136).
   *channel_layout = CHANNEL_LAYOUT_DISCRETE;
 
+  uint32_t labeled_channels = 0;
   std::vector<Channels> channels_to_match;
   for (const AudioChannelDescription& description : descriptions) {
+    if (description.mChannelLabel == kAudioChannelLabel_Unknown) {
+      continue;
+    }
+
+    labeled_channels += 1;
+
     const std::optional<Channels> maybe_channel =
         AudioChannelLabelToChannel(description.mChannelLabel);
     if (maybe_channel.has_value()) {
@@ -286,15 +291,14 @@ void ParseCoreAudioChannelLayout(const AudioChannelLayout& input_layout,
     }
   }
 
-  // Named layouts require every channel to have a known speaker role.
-  if (channels_to_match.size() != descriptions.size()) {
+  if (labeled_channels == 0 || labeled_channels != channels_to_match.size()) {
     return;
   }
 
   for (int i = 0; i <= ChannelLayout::CHANNEL_LAYOUT_MAX; i++) {
     ChannelLayout layout = static_cast<ChannelLayout>(i);
     if (static_cast<uint32_t>(ChannelLayoutToChannelCount(layout)) !=
-        *channels) {
+        labeled_channels) {
       continue;
     }
 
@@ -317,6 +321,7 @@ void ParseCoreAudioChannelLayout(const AudioChannelLayout& input_layout,
     }
 
     if (matched) {
+      *channels = labeled_channels;
       *channel_layout = layout;
       return;
     }

@@ -11,6 +11,7 @@
 #include "audio_parameters.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/channel_layout.h"
+#include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -79,6 +80,27 @@ TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   EXPECT_EQ(expected_samples, params.frames_per_buffer());
   EXPECT_TRUE(params.RequireEncapsulation());
   EXPECT_TRUE(params.RequireOffload());
+}
+
+TEST(AudioParameters, HardwareCapabilitiesTotalChannelsValidation) {
+  AudioParameters::HardwareCapabilities capabilities(128, 1024);
+  capabilities.total_channels = 0;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         ChannelLayoutConfig::Stereo(), 48000, 480,
+                         capabilities);
+  EXPECT_TRUE(params.IsValid());
+
+  capabilities.total_channels = limits::kMaxChannels;
+  params.set_hardware_capabilities(capabilities);
+  EXPECT_TRUE(params.IsValid());
+
+  capabilities.total_channels = -1;
+  params.set_hardware_capabilities(capabilities);
+  EXPECT_FALSE(params.IsValid());
+
+  capabilities.total_channels = limits::kMaxChannels + 1;
+  params.set_hardware_capabilities(capabilities);
+  EXPECT_FALSE(params.IsValid());
 }
 
 TEST(AudioParameters, GetBytesPerBuffer) {
