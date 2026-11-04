@@ -299,8 +299,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // Associated StoragePartition never changes.
   virtual StoragePartition* GetStoragePartition() = 0;
 
-  // Returns the user browser context associated with this RenderFrameHost.
-  // Associated BrowserContext never changes.
+  // Returns the browser context associated with this RenderFrameHost.
+  // Associated BrowserContext never changes. For user-facing decisions, e.g.
+  // permissions, policies or the off-the-record state, use
+  // content::GetUserBrowserContext() instead. The embedder can show a frame
+  // for a user from a different BrowserContext.
   virtual BrowserContext* GetBrowserContext() = 0;
 
   // Returns the current document's response head. Note that this value will

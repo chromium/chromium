@@ -12,6 +12,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -164,14 +165,6 @@ const ui::ClipboardFormatType& SourceRFHTokenType() {
       ui::ClipboardFormatType::CustomPlatformType(kTypeName));
   return *type;
 }
-
-namespace {
-
-BrowserContext* GetUserBrowserContext(RenderFrameHost& rfh) {
-  return GetContentClient()->browser()->GetUserBrowserContext(rfh);
-}
-
-}  // namespace
 
 void OnReadSourceRFHToken(ui::ClipboardBuffer clipboard_buffer,
                           base::OnceCallback<void(ClipboardEndpoint)> callback,

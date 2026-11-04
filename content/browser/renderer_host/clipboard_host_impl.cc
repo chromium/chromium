@@ -43,6 +43,7 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "crypto/hmac.h"
@@ -93,8 +94,7 @@ class FrameClipboardContext : public ClipboardHostImpl::Context {
   bool CanWrite() override { return true; }
 
   BrowserContext* GetBrowserContext() override {
-    return GetContentClient()->browser()->GetUserBrowserContext(
-        *render_frame_host_);
+    return GetUserBrowserContext(*render_frame_host_);
   }
   StoragePartitionImpl* GetStoragePartition() override {
     return static_cast<StoragePartitionImpl*>(

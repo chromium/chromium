@@ -49,6 +49,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/user_browser_context.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -381,9 +382,7 @@ aura::Window* GetHostWindow(aura::Window* window) {
 // Returns whether drag-and-drop data from or to `web_contents` is
 // off-the-record.
 bool IsOffTheRecordForDragAndDrop(WebContents& web_contents) {
-  return GetContentClient()
-      ->browser()
-      ->GetUserBrowserContext(*web_contents.GetPrimaryMainFrame())
+  return GetUserBrowserContext(*web_contents.GetPrimaryMainFrame())
       ->IsOffTheRecord();
 }
 
