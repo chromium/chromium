@@ -143,8 +143,10 @@ TEST_F(PromoStyleViewControllerTest,
 // Tests that when content fits in the scroll view only while the action buttons
 // are hidden during `contentLoading`, `updateViewsForInitialScrollState` is
 // deferred until the buttons are shown and the scroll view has its final frame.
+// TODO(crbug.com/581795152): Re-enable once the test no longer depends on
+// OS-specific layout; it fails on iOS 18.
 TEST_F(PromoStyleViewControllerTest,
-       TestContentLoadingDefersScrollCheckWhileButtonsAreHidden) {
+       DISABLED_TestContentLoadingDefersScrollCheckWhileButtonsAreHidden) {
   view_controller_.scrollToEndMandatory = YES;
   view_controller_.readMoreString = @"Read More";
   view_controller_.contentLoading = YES;
