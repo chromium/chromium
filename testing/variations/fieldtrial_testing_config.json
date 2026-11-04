@@ -1584,7 +1584,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "delay": "250ms"
+                        "delay": "500ms"
                     },
                     "enable_features": [
                         "AudioRendererMixerImmediatePause"
