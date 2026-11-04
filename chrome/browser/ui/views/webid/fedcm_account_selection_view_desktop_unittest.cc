@@ -3781,7 +3781,7 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
               GURL("https://rp.example"), GURL("https://rp.example"),
               std::vector<ambient_signin::PasskeyOrPasswordCredential>(),
               /*credential_selected_callback=*/base::DoNothing(),
-              /*permission_decided_callback=*/base::DoNothing()));
+              ambient_signin::AmbientLoginPermissionRequest::Options{}));
   ASSERT_TRUE(WaitForAmbientBubble());
 
   std::unique_ptr<TestFedCmAccountSelectionView> controller =

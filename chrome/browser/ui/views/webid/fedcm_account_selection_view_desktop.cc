@@ -1807,10 +1807,11 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
           base::BindOnce(
               &FedCmAccountSelectionView::OnAmbientBubbleAccountSelected,
               ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(
-              &FedCmAccountSelectionView::OnAmbientBubbleDecided,
-              ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
-          bubble_starts_open);
+          ambient_signin::AmbientLoginPermissionRequest::Options{
+              .permission_decided_callback = base::BindRepeating(
+                  &FedCmAccountSelectionView::OnAmbientBubbleDecided,
+                  ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
+              .bubble_starts_open = bubble_starts_open});
 
   // Set before adding the request, since the decided callback runs
   // synchronously if the request is rejected right away.

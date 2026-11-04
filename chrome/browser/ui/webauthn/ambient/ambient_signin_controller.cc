@@ -92,7 +92,8 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin().GetURL(),
       std::move(credentials),
       base::BindOnce(&AmbientSigninController::OnMechanismSelected,
-                     GetWeakPtr()));
+                     GetWeakPtr()),
+      AmbientLoginPermissionRequest::Options{});
   permission_controller->RequestPermission(&render_frame_host(),
                                            std::move(request));
 }

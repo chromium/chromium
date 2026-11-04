@@ -81,10 +81,18 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   using FederatedCredentialSelectedCallback =
       base::OnceCallback<void(size_t index)>;
 
+  // A set of optional callbacks and values configured at creation time.
+  struct Options {
+    // When present, if a user selected a credential then this is called after
+    // the credential selection callback.
+    PermissionDecidedCallback permission_decided_callback = base::DoNothing();
+    // Whether the bubble opens automatically along with the chip. Otherwise,
+    // only the chip is shown, and the bubble opens when the user clicks it.
+    bool bubble_starts_open = true;
+  };
+
   // Constructor supporting both WebAuthn/password credentials and FedCM
-  // federated credentials. `bubble_starts_open` is whether the bubble opens
-  // automatically along with the chip. Otherwise, only the chip is shown, and
-  // the bubble opens when the user clicks it.
+  // federated credentials.
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
       const GURL& embedding_origin,
@@ -92,8 +100,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
       PasskeyOrPasswordSelectedCallback credential_selected_callback,
       std::vector<FederatedCredential> federated_credentials,
       FederatedCredentialSelectedCallback federated_selected_callback,
-      PermissionDecidedCallback permission_decided_callback = base::DoNothing(),
-      bool bubble_starts_open = true);
+      Options options);
 
   // Convenience constructor for passkey/password-only requests.
   AmbientLoginPermissionRequest(
@@ -101,8 +108,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
       const GURL& embedding_origin,
       std::vector<PasskeyOrPasswordCredential> credentials,
       PasskeyOrPasswordSelectedCallback credential_selected_callback,
-      PermissionDecidedCallback permission_decided_callback =
-          base::DoNothing());
+      Options options);
 
   ~AmbientLoginPermissionRequest() override;
 
