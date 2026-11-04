@@ -241,6 +241,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
     return menu_item_background_;
   }
 
+  // Returns how far the hover highlight is inset from this item's bounds.
+  gfx::Insets GetHighlightInsets() const;
+
   void SetSelectedColorId(std::optional<ui::ColorId> selected_color_id) {
     selected_color_id_ = selected_color_id;
   }
