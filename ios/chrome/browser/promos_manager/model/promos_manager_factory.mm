@@ -21,9 +21,9 @@ PromosManagerFactory::PromosManagerFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   auto promos_manager = std::make_unique<PromosManagerImpl>(
-      profile->GetPrefs(), base::DefaultClock::GetInstance(),
+      profile.GetPrefs(), base::DefaultClock::GetInstance(),
       feature_engagement::TrackerFactory::GetForProfile(profile));
   promos_manager->Init();
   return promos_manager;

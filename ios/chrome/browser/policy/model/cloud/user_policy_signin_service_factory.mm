@@ -36,7 +36,7 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 UserPolicySigninServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   BrowserPolicyConnector* connector =
       GetApplicationContext()->GetBrowserPolicyConnector();
   // Consistency check to make sure that the BrowserPolicyConnector is available
@@ -50,13 +50,13 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
   DCHECK(device_management_service);
 
   return std::make_unique<UserPolicySigninService>(
-      profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      profile.GetPrefs(), GetApplicationContext()->GetLocalState(),
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
-      device_management_service, profile->GetUserCloudPolicyManager(),
+      device_management_service, profile.GetUserCloudPolicyManager(),
       IdentityManagerFactory::GetForProfile(profile),
       enterprise_groups::EnterpriseGroupsProfileHandlerFactory::GetForProfile(
           profile),
-      profile->GetSharedURLLoaderFactory());
+      profile.GetSharedURLLoaderFactory());
 }
 
 void UserPolicySigninServiceFactory::RegisterProfilePrefs(

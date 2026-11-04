@@ -23,7 +23,7 @@ IOSPersonalContextFirstRunServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSPersonalContextFirstRunServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   personal_context::PersonalContextEligibilityService* eligibility_service =
       IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile);
   if (!eligibility_service) {
@@ -34,5 +34,5 @@ IOSPersonalContextFirstRunServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
 
   return std::make_unique<personal_context::PersonalContextFirstRunServiceImpl>(
-      eligibility_service, profile->GetPrefs(), identity_manager);
+      eligibility_service, profile.GetPrefs(), identity_manager);
 }

@@ -25,8 +25,8 @@ BrowserManagementServiceFactory::BrowserManagementServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 BrowserManagementServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  return std::make_unique<BrowserManagementService>(profile);
+    ProfileIOS& profile) const {
+  return std::make_unique<BrowserManagementService>(&profile);
 }
 
 }  // namespace policy

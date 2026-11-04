@@ -29,12 +29,12 @@ namespace enterprise_reporting {
 namespace {
 
 std::unique_ptr<SaasUsageReportScheduler> CreateSaasUsageReportScheduler(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   if (!base::FeatureList::IsEnabled(kSaasUsageReporting)) {
     return nullptr;
   }
   auto saas_usage_reporting_delegate_factory =
-      SaasUsageReportingDelegateFactoryIOS::CreateForProfile(profile);
+      SaasUsageReportingDelegateFactoryIOS::CreateForProfile(&profile);
   return SaasUsageReportScheduler::Create(
       "profile", saas_usage_reporting_delegate_factory.get());
 }
@@ -43,18 +43,18 @@ std::unique_ptr<SaasUsageReportScheduler> CreateSaasUsageReportScheduler(
 
 std::unique_ptr<KeyedService>
 CloudProfileReportingServiceFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!base::FeatureList::IsEnabled(kCloudProfileReporting)) {
     return nullptr;
   }
   ReportingDelegateFactoryIOS delegate_factory;
   return std::make_unique<CloudProfileReportingServiceIOS>(
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(), profile->GetProfileName(),
-      delegate_factory.GetReportSchedulerDelegate(profile),
+      profile.GetSharedURLLoaderFactory(), profile.GetProfileName(),
+      delegate_factory.GetReportSchedulerDelegate(&profile),
       IOSSignalsAggregatorFactory::GetForProfile(profile),
       CreateSaasUsageReportScheduler(profile),
-      profile->GetUserCloudPolicyManager());
+      profile.GetUserCloudPolicyManager());
 }
 
 CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS(

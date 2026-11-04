@@ -23,7 +23,7 @@ PrivateAiServiceFactory::PrivateAiServiceFactory(PassKey key)
 }
 
 std::unique_ptr<KeyedService> PrivateAiServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   if (!private_ai::PrivateAiService::CanPrivateAiBeEnabled(::GetChannel())) {
     return nullptr;
   }
@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> PrivateAiServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<private_ai::PrivateAiService>(
       IdentityManagerFactory::GetForProfile(profile), &bsa_factory,
-      profile->GetSharedURLLoaderFactory(), std::move(network_driver),
+      profile.GetSharedURLLoaderFactory(), std::move(network_driver),
       std::move(oak_session_driver),
       /*network_context_getter=*/base::NullCallback(),
       private_ai::kPrivateAiUrl.Get(),

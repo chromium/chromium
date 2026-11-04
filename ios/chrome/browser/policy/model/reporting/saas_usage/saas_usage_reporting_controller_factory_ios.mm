@@ -24,9 +24,9 @@ SaasUsageReportingControllerFactoryIOS::SaasUsageReportingControllerFactoryIOS(
 
 std::unique_ptr<KeyedService>
 SaasUsageReportingControllerFactoryIOS::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   PrefService* local_state = GetApplicationContext()->GetLocalState();
-  PrefService* profile_prefs = profile->GetPrefs();
+  PrefService* profile_prefs = profile.GetPrefs();
   return std::make_unique<SaasUsageReportingController>(
       local_state, profile_prefs,
       std::make_unique<PrefURLListMatcher>(local_state,

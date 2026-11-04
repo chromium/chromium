@@ -20,7 +20,7 @@ class SaasUsageReportingControllerFactoryIOS final
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace enterprise_reporting

@@ -19,13 +19,13 @@ PolicyBlocklistServiceFactory::PolicyBlocklistServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
-  PrefService* prefs = profile->GetPrefs();
+    ProfileIOS& profile) const {
+  PrefService* prefs = profile.GetPrefs();
   auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
       prefs, policy::policy_prefs::kUrlBlocklist,
       policy::policy_prefs::kUrlAllowlist);
   std::unique_ptr<policy::URLBlocklistManager> incognito_url_blocklist_manager;
-  if (profile->IsOffTheRecord()) {
+  if (profile.IsOffTheRecord()) {
     incognito_url_blocklist_manager =
         std::make_unique<policy::URLBlocklistManager>(
             prefs, policy::policy_prefs::kIncognitoModeUrlBlocklist,

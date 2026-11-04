@@ -23,7 +23,7 @@ PowerBookmarkServiceFactory::PowerBookmarkServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 PowerBookmarkServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   bookmarks::BookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForProfile(profile);
 
