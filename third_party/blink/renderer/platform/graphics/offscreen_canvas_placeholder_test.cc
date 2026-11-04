@@ -108,7 +108,7 @@ void OffscreenCanvasPlaceholderTest::CreateClient() {
       std::make_unique<MockPlaceholderClient>(placeholder_id_);
   resource_provider_ = CanvasNon2DResourceProvider::CreateForSoftwareCompositor(
       gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(),
+      gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(),
       test_web_shared_image_interface_provider_.get());
 }
 

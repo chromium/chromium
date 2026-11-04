@@ -74,19 +74,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
-  static std::unique_ptr<CanvasNon2DResourceProvider> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      base::OnceClosure context_lost_callback = {}) {
-    return Create(size, format, alpha_type, color_space, gfx::HDRMetadata(),
-                  context_provider_wrapper, shared_image_usage_flags,
-                  std::move(context_lost_callback));
-  }
 
   static std::unique_ptr<CanvasNon2DResourceProvider> Create(
       gfx::Size size,
@@ -102,17 +89,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const gfx::HDRMetadata& hdr_metadata,
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       base::OnceClosure context_lost_callback = {});
-  static std::unique_ptr<CanvasNon2DResourceProvider> CreateForWebGPU(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet shared_image_usage_flags = {},
-      base::OnceClosure context_lost_callback = {}) {
-    return CreateForWebGPU(size, format, alpha_type, color_space,
-                           gfx::HDRMetadata(), shared_image_usage_flags,
-                           std::move(context_lost_callback));
-  }
 
   static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
@@ -123,18 +99,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const gfx::HDRMetadata& hdr_metadata,
       WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
       base::OnceClosure context_lost_callback = {});
-  static std::unique_ptr<CanvasNon2DResourceProvider>
-  CreateForSoftwareCompositor(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-      base::OnceClosure context_lost_callback = {}) {
-    return CreateForSoftwareCompositor(
-        size, format, alpha_type, color_space, gfx::HDRMetadata(),
-        shared_image_interface_provider, std::move(context_lost_callback));
-  }
 
   static std::unique_ptr<CanvasNon2DResourceProvider>
   CreateForSoftwareCompositor(
