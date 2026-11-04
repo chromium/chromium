@@ -50,10 +50,9 @@ IOSPersonalContextEligibilityServiceFactory::BuildServiceInstanceFor(
   }
 
   account_settings::AccountSettingService* account_settings_service =
-      IOSAccountSettingServiceFactory::GetForProfile(
-          profile->GetOriginalProfile());
+      IOSAccountSettingServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+      IdentityManagerFactory::GetForProfile(profile);
 
   ApplicationContext* application_context = GetApplicationContext();
   std::string locale =
