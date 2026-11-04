@@ -626,7 +626,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   }
 
   // Add disclosure text.
-  row->AddChildView(CreateDisclosureLabel(account));
+  row->AddChildView(CreateDisclosureLabel(account, views::style::STYLE_LINK));
   return std::make_pair(std::move(row), button_ptr);
 }
 

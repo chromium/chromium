@@ -2400,7 +2400,7 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Recorded each time that the privacy-policy link in the FedCM prompt is
+    Recorded each time that the RP's privacy-policy link in the FedCM prompt is
     clicked.
   </summary>
 </histogram>
@@ -2410,8 +2410,8 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Recorded each time that the terms-of-service link in the FedCM prompt is
-    clicked.
+    Recorded each time that the RP's terms-of-service link in the FedCM prompt
+    is clicked.
   </summary>
 </histogram>
 

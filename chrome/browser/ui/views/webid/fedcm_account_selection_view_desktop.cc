@@ -680,6 +680,12 @@ void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
     case LinkType::PRIVACY_POLICY:
       UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.SignUp.PrivacyPolicyClicked", true);
       break;
+
+    case LinkType::IDP_LINK:
+      // Not recorded, so that the histograms above only count the RP's links.
+      // TODO(crbug.com/581372729): Record clicks on each of the identity
+      // provider's links, and how often the links are shown.
+      break;
   }
 }
 

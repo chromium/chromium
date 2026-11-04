@@ -18,7 +18,9 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/style/typography.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -185,6 +187,15 @@ class HoverButtonSecondaryView : public views::View {
   raw_ptr<views::ImageView> arrow_image_view_{nullptr};
 };
 
+// Sets `label`'s text to the `message_id` string. `replacements` fill its first
+// placeholders. Each of `link_callbacks` turns the next begin and end
+// placeholder pair into a link with `link_style`.
+void SetTextWithLinks(views::StyledLabel& label,
+                      int message_id,
+                      std::vector<std::u16string> replacements,
+                      std::vector<views::Link::ClickedCallback> link_callbacks,
+                      views::style::TextStyle link_style);
+
 // Base class for interacting with FedCM account selection dialog.
 class AccountSelectionViewBase {
  public:
@@ -268,9 +279,10 @@ class AccountSelectionViewBase {
       std::optional<std::u16string> used_string = std::nullopt);
 
   // Returns a StyledLabel containing a disclosure label. The label links to
-  // privacy policy and terms of service URLs, if available.
+  // privacy policy and terms of service URLs, if available, with `link_style`.
   std::unique_ptr<views::StyledLabel> CreateDisclosureLabel(
-      const IdentityRequestAccountPtr& account);
+      const IdentityRequestAccountPtr& account,
+      views::style::TextStyle link_style);
 
   // Gets the summary and description string of the error.
   std::pair<std::u16string, std::u16string> GetErrorDialogText(

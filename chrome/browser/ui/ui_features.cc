@@ -57,6 +57,13 @@ BASE_FEATURE(kCtrlTabMru, base::FEATURE_ENABLED_BY_DEFAULT);
 // navigation. Kill switch for crbug.com/554464784.
 BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing the identity provider's account management page, privacy
+// policy and terms of service links in the FedCM modal permission dialog on
+// desktop. The links are shown in the disclosure container, so this also
+// enables the container UI, as if `kFedCmPermissionUiWithContainer` were
+// enabled.
+BASE_FEATURE(kFedCmIdpLinks, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the request permission UI with a container for the disclosure text
 // in the FedCM active mode modal dialog on desktop.
 BASE_FEATURE(kFedCmPermissionUiWithContainer,

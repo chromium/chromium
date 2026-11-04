@@ -41,6 +41,8 @@ BASE_DECLARE_FEATURE(kFeedbackDisabledDialog);
 BASE_DECLARE_FEATURE(kLegacySearchIntegrityCheck);
 #endif
 
+BASE_DECLARE_FEATURE(kFedCmIdpLinks);
+
 BASE_DECLARE_FEATURE(kFedCmPermissionUiWithContainer);
 
 BASE_DECLARE_FEATURE(kFindInPageMatchCase);

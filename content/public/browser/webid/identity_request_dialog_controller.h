@@ -225,7 +225,16 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
-  enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
+  enum class LinkType {
+    // The RP's privacy policy and terms of service.
+    PRIVACY_POLICY,
+    TERMS_OF_SERVICE,
+    // Any of the identity provider's links: its account management page,
+    // privacy policy or terms of service.
+    // TODO(crbug.com/581372729): Replace with one value per link, so that
+    // ShowUrl() and DevTools can tell the links apart, e.g. for metrics.
+    IDP_LINK,
+  };
 
   // The volume of the dialog to show when in passive mode.
   enum class PassiveDialogVolume {

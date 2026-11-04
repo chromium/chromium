@@ -67,6 +67,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -153,21 +154,27 @@ std::unique_ptr<views::View> CreateButtonContainer() {
   return button_container;
 }
 
+// The identity provider's links are shown in the container, so `kFedCmIdpLinks`
+// also enables the container UI.
 bool IsContainerUIEnabled() {
   return base::FeatureList::IsEnabled(
-      features::kFedCmPermissionUiWithContainer);
+             features::kFedCmPermissionUiWithContainer) ||
+         base::FeatureList::IsEnabled(features::kFedCmIdpLinks);
 }
 
-// Creates a row with `icon` followed by `label`, on a rounded background.
+// Creates a row with `icon` followed by `label`, on a rounded background. The
+// top and bottom corners use `top_radius` and `bottom_radius`.
 std::unique_ptr<views::View> CreateDisclosureContainerRow(
     const gfx::VectorIcon& icon,
-    std::unique_ptr<views::StyledLabel> label) {
+    std::unique_ptr<views::StyledLabel> label,
+    float top_radius,
+    float bottom_radius) {
   auto row = std::make_unique<views::BoxLayoutView>();
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   row->SetInsideBorderInsets(kDisclosureContainerInsets);
   row->SetBetweenChildSpacing(kDisclosureContainerIconLabelSpacing);
   row->SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSurface3, kDisclosureContainerCornerRadius));
+      ui::kColorSysSurface3, top_radius, bottom_radius));
 
   auto* icon_view = row->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -183,19 +190,95 @@ std::unique_ptr<views::View> CreateDisclosureContainerRow(
   return row;
 }
 
-// Wraps `disclosure_label` in a container.
+// Wraps `disclosure_label` and, if set, `idp_links_label` in a container.
 std::unique_ptr<views::View> CreateDisclosureContainer(
-    std::unique_ptr<views::StyledLabel> disclosure_label) {
+    std::unique_ptr<views::StyledLabel> disclosure_label,
+    std::unique_ptr<views::StyledLabel> idp_links_label) {
+  // The gap between the rows, which shows the dialog background as a divider.
+  constexpr int kRowSpacing = 1;
   auto container = std::make_unique<views::BoxLayoutView>();
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  container->SetBetweenChildSpacing(kRowSpacing);
   container->SetProperty(views::kMarginsKey,
                          gfx::Insets::TLBR(/*top=*/kVerticalSpacing, /*left=*/0,
                                            /*bottom=*/0, /*right=*/0));
   container->AddChildView(CreateDisclosureContainerRow(
       features::IsRoundedIconsEnabled() ? kPersonFilledIcon
                                         : kPersonFilledPaddedSmallOldIcon,
-      std::move(disclosure_label)));
+      std::move(disclosure_label),
+      /*top_radius=*/kDisclosureContainerCornerRadius,
+      /*bottom_radius=*/
+      idp_links_label ? 0 : kDisclosureContainerCornerRadius));
+  if (idp_links_label) {
+    container->AddChildView(CreateDisclosureContainerRow(
+        features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                          : views::kInfoChromeRefreshOldIcon,
+        std::move(idp_links_label), /*top_radius=*/0,
+        /*bottom_radius=*/kDisclosureContainerCornerRadius));
+  }
   return container;
+}
+
+// Returns a label with links to whichever of the identity provider's account
+// management page, privacy policy and terms of service it has, or nullptr if it
+// has none.
+std::unique_ptr<views::StyledLabel> CreateIdpLinksLabel(
+    const content::IdentityProviderData& idp_data,
+    FedCmAccountSelectionView* owner) {
+  const content::IdentityProviderMetadata& metadata = idp_data.idp_metadata;
+  const bool has_account_management =
+      !metadata.account_management_url.is_empty();
+  const bool has_privacy_policy = !metadata.privacy_policy_url.is_empty();
+  const bool has_terms_of_service = !metadata.terms_of_service_url.is_empty();
+  if (!has_account_management && !has_privacy_policy && !has_terms_of_service) {
+    return nullptr;
+  }
+  const int resource_id = [&] {
+    if (has_account_management && has_privacy_policy && has_terms_of_service) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS;
+    }
+    if (has_account_management && has_privacy_policy) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_TOS;
+    }
+    if (has_account_management && has_terms_of_service) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_PP;
+    }
+    if (has_account_management) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_PP_OR_TOS;
+    }
+    if (has_privacy_policy && has_terms_of_service) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT;
+    }
+    if (has_privacy_policy) {
+      return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT_OR_TOS;
+    }
+    // Only the terms of service.
+    return IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT_OR_PP;
+  }();
+
+  // Add the links in the same order as they appear in `resource_id`.
+  std::vector<views::Link::ClickedCallback> link_callbacks;
+  auto add_link = [&](const GURL& url) {
+    link_callbacks.push_back(
+        base::BindRepeating(&FedCmAccountSelectionView::OnLinkClicked,
+                            base::Unretained(owner), LinkType::IDP_LINK, url));
+  };
+  if (has_account_management) {
+    add_link(metadata.account_management_url);
+  }
+  if (has_privacy_policy) {
+    add_link(metadata.privacy_policy_url);
+  }
+  if (has_terms_of_service) {
+    add_link(metadata.terms_of_service_url);
+  }
+
+  auto label = std::make_unique<views::StyledLabel>();
+  label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+  SetTextWithLinks(*label, resource_id,
+                   {base::UTF8ToUTF16(idp_data.idp_for_display)},
+                   std::move(link_callbacks), views::style::STYLE_LINK_4);
+  return label;
 }
 }  // namespace
 
@@ -774,10 +857,16 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
             Account::LoginState::kSignUp ||
         account->fields.empty());
   if (!account->fields.empty()) {
-    // Add disclosure label.
+    // Add disclosure label. In the container UI, its links have the same line
+    // height as the `STYLE_BODY_4` text around them, as in the identity
+    // provider's links below it.
     std::unique_ptr<views::StyledLabel> disclosure_label =
-        CreateDisclosureLabel(account);
+        CreateDisclosureLabel(account, IsContainerUIEnabled()
+                                           ? views::style::STYLE_LINK_4
+                                           : views::style::STYLE_LINK);
     // Announce immediately if the view is showing.
+    // TODO(crbug.com/571147733): Also announce the identity provider's links
+    // once their text is finalized.
     if (GetWidget()->IsVisible()) {
       GetViewAccessibility().AnnounceAlert(disclosure_label->GetText());
     } else {
@@ -785,8 +874,11 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     }
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
     if (IsContainerUIEnabled()) {
-      account_chooser_->AddChildView(
-          CreateDisclosureContainer(std::move(disclosure_label)));
+      account_chooser_->AddChildView(CreateDisclosureContainer(
+          std::move(disclosure_label),
+          base::FeatureList::IsEnabled(features::kFedCmIdpLinks)
+              ? CreateIdpLinksLabel(idp_data, owner_)
+              : nullptr));
     } else {
       disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
           /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0,

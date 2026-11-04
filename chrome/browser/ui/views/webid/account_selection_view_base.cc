@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
@@ -405,6 +406,34 @@ void AccountHoverButton::SetCallbackForTesting(
   callback_ = std::move(callback);
 }
 
+void SetTextWithLinks(views::StyledLabel& label,
+                      int message_id,
+                      std::vector<std::u16string> replacements,
+                      std::vector<views::Link::ClickedCallback> link_callbacks,
+                      views::style::TextStyle link_style) {
+  // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
+  replacements.insert(replacements.end(), link_callbacks.size() * 2,
+                      std::u16string());
+
+  std::vector<size_t> offsets;
+  label.SetText(l10n_util::GetStringFUTF16(message_id, replacements, &offsets));
+
+  // `offsets` is sorted by placeholder number, so the link offsets come last.
+  // Counting from the end allows a placeholder in `replacements` to appear more
+  // than once in the message.
+  CHECK_GE(offsets.size(), link_callbacks.size() * 2);
+  size_t offset_index = offsets.size() - link_callbacks.size() * 2;
+  for (views::Link::ClickedCallback& callback : link_callbacks) {
+    views::StyledLabel::RangeStyleInfo link_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+    link_info.text_style = link_style;
+    label.AddStyleRange(
+        gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
+        link_info);
+    offset_index += 2;
+  }
+}
+
 AccountSelectionViewBase::AccountSelectionViewBase(
     FedCmAccountSelectionView* owner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -568,7 +597,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
 
 std::unique_ptr<views::StyledLabel>
 AccountSelectionViewBase::CreateDisclosureLabel(
-    const IdentityRequestAccountPtr& account) {
+    const IdentityRequestAccountPtr& account,
+    views::style::TextStyle link_style) {
   // It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.
   std::unique_ptr<views::StyledLabel> disclosure_label =
@@ -587,39 +617,24 @@ AccountSelectionViewBase::CreateDisclosureLabel(
   int disclosure_resource_id = SelectDisclosureTextResourceId(
       client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
 
-  // The order that the links are added to `link_data` should match the order of
-  // the links in `disclosure_resource_id`.
-  std::vector<std::pair<LinkType, GURL>> link_data;
+  // The order that the links are added to `link_callbacks` should match the
+  // order of the links in `disclosure_resource_id`.
+  std::vector<views::Link::ClickedCallback> link_callbacks;
   if (!client_metadata.privacy_policy_url.is_empty()) {
-    link_data.emplace_back(LinkType::PRIVACY_POLICY,
-                           client_metadata.privacy_policy_url);
+    link_callbacks.push_back(base::BindRepeating(
+        &FedCmAccountSelectionView::OnLinkClicked, base::Unretained(owner_),
+        LinkType::PRIVACY_POLICY, client_metadata.privacy_policy_url));
   }
   if (!client_metadata.terms_of_service_url.is_empty()) {
-    link_data.emplace_back(LinkType::TERMS_OF_SERVICE,
-                           client_metadata.terms_of_service_url);
+    link_callbacks.push_back(base::BindRepeating(
+        &FedCmAccountSelectionView::OnLinkClicked, base::Unretained(owner_),
+        LinkType::TERMS_OF_SERVICE, client_metadata.terms_of_service_url));
   }
 
-  // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
-  std::vector<std::u16string> replacements = {
-      base::UTF8ToUTF16(idp_data.idp_for_display),
-      GetPermissionFieldsString(account->fields)};
-  replacements.insert(replacements.end(), link_data.size() * 2,
-                      std::u16string());
-
-  std::vector<size_t> offsets;
-  const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-      disclosure_resource_id, replacements, &offsets);
-  disclosure_label->SetText(disclosure_text);
-
-  size_t offset_index = 2u;
-  for (const std::pair<LinkType, GURL>& link_data_item : link_data) {
-    disclosure_label->AddStyleRange(
-        gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &FedCmAccountSelectionView::OnLinkClicked, base::Unretained(owner_),
-            link_data_item.first, link_data_item.second)));
-    offset_index += 2;
-  }
+  SetTextWithLinks(*disclosure_label, disclosure_resource_id,
+                   {base::UTF8ToUTF16(idp_data.idp_for_display),
+                    GetPermissionFieldsString(account->fields)},
+                   std::move(link_callbacks), link_style);
 
   return disclosure_label;
 }

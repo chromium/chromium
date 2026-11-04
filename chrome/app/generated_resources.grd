@@ -19350,6 +19350,28 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT" desc="The consent text shown to the user before sign up.">
       To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> will share your <ph name="FIELDS_STRING">$2<ex>name and email address</ex></ph> with this site. See this site's <ph name="BEGIN_LINK1">$3</ph>privacy policy<ph name="END_LINK1">$4</ph> and <ph name="BEGIN_LINK2">$5</ph>terms of service<ph name="END_LINK2">$6</ph>.
     </message>
+    <!-- TODO(crbug.com/571147733): Make the IDS_ACCOUNT_SELECTION_IDP_LINKS* strings translateable before launch. -->
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_PP" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no privacy policy. The first link opens the user's account page on the identity provider's website. The second link opens the identity provider's terms of service.">
+      You can make changes in your <ph name="BEGIN_LINK1">$2</ph><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account<ph name="END_LINK1">$3</ph>. See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK2">$4</ph>terms of service<ph name="END_LINK2">$5</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_TOS" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no terms of service. The first link opens the user's account page on the identity provider's website. The second link opens the identity provider's privacy policy.">
+      You can make changes in your <ph name="BEGIN_LINK1">$2</ph><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account<ph name="END_LINK1">$3</ph>. See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK2">$4</ph>privacy policy<ph name="END_LINK2">$5</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS" translateable="false" desc="Text shown to the user before sign up, below the consent text. The first link opens the user's account page on the identity provider's website. The other links open the identity provider's privacy policy and terms of service.">
+      You can make changes in your <ph name="BEGIN_LINK1">$2</ph><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account<ph name="END_LINK1">$3</ph>. See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK2">$4</ph>privacy policy<ph name="END_LINK2">$5</ph> and <ph name="BEGIN_LINK3">$6</ph>terms of service<ph name="END_LINK3">$7</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_PP_OR_TOS" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no privacy policy or terms of service. The link opens the user's account page on the identity provider's website.">
+      You can make changes in your <ph name="BEGIN_LINK">$2</ph><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> account<ph name="END_LINK">$3</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT_OR_PP" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no account page or privacy policy. The link opens the identity provider's terms of service.">
+      See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK">$2</ph>terms of service<ph name="END_LINK">$3</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT_OR_TOS" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no account page or terms of service. The link opens the identity provider's privacy policy.">
+      See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK">$2</ph>privacy policy<ph name="END_LINK">$3</ph>.
+    </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_LINKS_NO_ACCOUNT_MANAGEMENT" translateable="false" desc="Text shown to the user before sign up, below the consent text, when the identity provider has no account page. The links open the identity provider's privacy policy and terms of service.">
+      See <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.com</ex></ph> <ph name="BEGIN_LINK1">$2</ph>privacy policy<ph name="END_LINK1">$3</ph> and <ph name="BEGIN_LINK2">$4</ph>terms of service<ph name="END_LINK2">$5</ph>.
+    </message>
     <message name="IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT" desc="Title of the button that lets the user log in to a different account.">
       Use a different account
     </message>
