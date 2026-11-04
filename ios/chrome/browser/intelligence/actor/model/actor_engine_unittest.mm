@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -53,13 +53,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 #import "url/origin.h"
-
-@interface EngineFakeInterventionDelegate
-    : NSObject <ActorTaskInterventionDelegate>
-@end
-
-@implementation EngineFakeInterventionDelegate
-@end
 
 namespace actor {
 namespace {
@@ -259,8 +252,8 @@ TEST_F(ActorEngineTest, ToolDelegateForwardingAndOwnership) {
 // Tests that setting an intervention delegate on `ActorTask` initializes the
 // form filling handler on `ActorEngine`.
 TEST_F(ActorEngineTest, SetInterventionDelegateForwarding) {
-  EngineFakeInterventionDelegate* delegate =
-      [[EngineFakeInterventionDelegate alloc] init];
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
   task_->SetInterventionDelegate(delegate);
 
   ToolDelegate* tool_delegate = engine_.get();

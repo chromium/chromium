@@ -17,7 +17,7 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_service.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
@@ -108,36 +108,6 @@ autofill::ActorFormFillingRequest CreateCreditCardFormFillingRequest() {
 
 }  // namespace
 
-// A fake implementation of ActorTaskInterventionDelegate.
-@interface FakeFormFillingTaskInterventionDelegate
-    : NSObject <ActorTaskInterventionDelegate>
-@property(nonatomic, assign, readonly) BOOL selectFromSuggestionsCalled;
-@property(nonatomic, strong, readonly)
-    NSArray<ActorFormSuggestion*>* promptedSuggestions;
-@end
-
-@implementation FakeFormFillingTaskInterventionDelegate {
-  void (^_completionHandler)(ActorFormSuggestion*, BOOL);
-}
-
-- (void)actorTask:(actor::ActorTaskId)taskID
-    selectFromSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-        completionHandler:(void (^)(ActorFormSuggestion* selectedSuggestion,
-                                    BOOL obsoleteFlag))completionHandler {
-  _selectFromSuggestionsCalled = YES;
-  _promptedSuggestions = suggestions;
-  _completionHandler = [completionHandler copy];
-}
-
-- (void)runCompletionWithSuggestion:(ActorFormSuggestion*)selectedSuggestion {
-  if (_completionHandler) {
-    void (^completion)(ActorFormSuggestion*, BOOL) = _completionHandler;
-    _completionHandler = nil;
-    completion(selectedSuggestion, /*obsoleteFlag=*/NO);
-  }
-}
-@end
-
 namespace actor {
 
 // Unit test fixture for `AttemptFormFillingTool`.
@@ -158,8 +128,7 @@ class AttemptFormFillingToolTest : public PlatformTest {
         ActorTaskId(1), /*login_service=*/nullptr, std::move(mock_service));
     form_filling_handler_ptr_ = form_filling_handler.get();
 
-    intervention_delegate_ =
-        [[FakeFormFillingTaskInterventionDelegate alloc] init];
+    intervention_delegate_ = [[FakeActorTaskInterventionDelegate alloc] init];
     form_filling_handler_ptr_->SetInterventionDelegateForTesting(
         intervention_delegate_);
 
@@ -257,7 +226,7 @@ class AttemptFormFillingToolTest : public PlatformTest {
   ActorTaskFormFillingHandler* form_filling_handler() {
     return form_filling_handler_ptr_;
   }
-  FakeFormFillingTaskInterventionDelegate* intervention_delegate() {
+  FakeActorTaskInterventionDelegate* intervention_delegate() {
     return intervention_delegate_;
   }
 
@@ -269,7 +238,7 @@ class AttemptFormFillingToolTest : public PlatformTest {
   raw_ptr<autofill::MockActorFormFillingService>
       mock_form_filling_service_ptr_ = nullptr;
   raw_ptr<ActorTaskFormFillingHandler> form_filling_handler_ptr_ = nullptr;
-  FakeFormFillingTaskInterventionDelegate* intervention_delegate_ = nil;
+  FakeActorTaskInterventionDelegate* intervention_delegate_ = nil;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   base::Value success_js_result_;
   base::Value success_renderer_ids_js_result_;
