@@ -18,8 +18,8 @@
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
 #include "components/apps/link_capturing/intent_picker_info.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/simple_web_view.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -139,9 +139,9 @@ class BrowserController {
   // See OpenUrl below.
   struct OpenUrlParams {
     // Where to open the URL, e.g. in a new foreground tab (default), in a new
-    // window (`NEW_WINDOW`), or in an incognito window (`OFF_THE_RECORD`).
-    WindowOpenDisposition disposition =
-        WindowOpenDisposition::kNewForegroundTab;
+    // window (`kNewWindow`), or in an incognito window (`kOffTheRecord`).
+    ui::mojom::WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     // The page transition type. Web apps can capture navigations whose
     // transition is `PAGE_TRANSITION_LINK` (the default) without qualifiers;
     // add a qualifier such as `PAGE_TRANSITION_FROM_API` to prevent that.

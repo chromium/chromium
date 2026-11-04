@@ -53,6 +53,7 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -136,7 +137,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -157,7 +158,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                                  : window_features.bounds;
     raw_child_contents->SetBounds(bounds);
 
-    if (disposition == WindowOpenDisposition::kNewPictureInPicture) {
+    if (disposition == ui::mojom::WindowOpenDisposition::kNewPictureInPicture) {
       // Register the document Picture-in-Picture child contents so the
       // controller can manage the PiP window's lifetime.
       content::DocumentPictureInPictureWindowController* controller =
@@ -181,14 +182,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DCHECK_EQ(source, headless_web_contents_->web_contents());
     content::WebContents* target = nullptr;
     switch (params.disposition) {
-      case WindowOpenDisposition::kCurrentTab:
+      case ui::mojom::WindowOpenDisposition::kCurrentTab:
         target = source;
         break;
 
-      case WindowOpenDisposition::kNewPopup:
-      case WindowOpenDisposition::kNewWindow:
-      case WindowOpenDisposition::kNewBackgroundTab:
-      case WindowOpenDisposition::kNewForegroundTab: {
+      case ui::mojom::WindowOpenDisposition::kNewPopup:
+      case ui::mojom::WindowOpenDisposition::kNewWindow:
+      case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewForegroundTab: {
         if (headless_web_contents_->browser_context()
                 ->options()
                 ->block_new_web_contents()) {
@@ -209,10 +210,10 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
       }
 
       // TODO(veluca): add support for other disposition types.
-      case WindowOpenDisposition::kSingletonTab:
-      case WindowOpenDisposition::kOffTheRecord:
-      case WindowOpenDisposition::kSaveToDisk:
-      case WindowOpenDisposition::kIgnoreAction:
+      case ui::mojom::WindowOpenDisposition::kSingletonTab:
+      case ui::mojom::WindowOpenDisposition::kOffTheRecord:
+      case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+      case ui::mojom::WindowOpenDisposition::kIgnoreAction:
       default:
         return nullptr;
     }
