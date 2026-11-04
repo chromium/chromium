@@ -90,6 +90,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -337,10 +338,19 @@ class ContextualTasksButtonInteractiveTestMixin : public T {
 
   auto SignIntoEligibleAccount() {
     return this->Do([&]() {
+      gfx::ScopedAnimationDurationScaleMode zero_duration(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
       if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
               signin::ConsentLevel::kSignin)) {
         identity_test_env()->MakePrimaryAccountAvailable(
             "primary@example.com", signin::ConsentLevel::kSignin);
+      }
+      if (auto* toolbar_button_provider =
+              ToolbarButtonProvider::From(this->browser())) {
+        if (auto* avatar_button =
+                toolbar_button_provider->GetAvatarToolbarButtonInterface()) {
+          avatar_button->ClearActiveStateForTesting();
+        }
       }
       GetTestingService()->GetFakeEligibilityManager()->SetIsEligible(true);
     });
