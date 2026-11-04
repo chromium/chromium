@@ -787,7 +787,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   toolbarSwipeGestureIPH.delegate = self;
   [self.rootViewController.view addSubview:toolbarSwipeGestureIPH];
   AddSameConstraints(toolbarSwipeGestureIPH, guide);
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && !IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self.geminiHandler
         hideFloatyIfInvokedAnimated:NO
                          fromSource:gemini::FloatyUpdateSource::GestureIph];
@@ -1118,7 +1118,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       !dismissButtonTappedEvent.empty()) {
     _engagementTracker->NotifyEvent(dismissButtonTappedEvent);
   }
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && !IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self.geminiHandler
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::
@@ -1606,9 +1606,13 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     gestureIPHView.delegate = self;
     AddSameConstraints(gestureIPHView, contentAreaGuide);
     if (IsPageActionMenuEnabled()) {
-      [self.geminiHandler
-          hideFloatyIfInvokedAnimated:NO
-                           fromSource:gemini::FloatyUpdateSource::GestureIph];
+      if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+        [self.geminiHandler minimizeGeminiIfInvoked];
+      } else {
+        [self.geminiHandler
+            hideFloatyIfInvokedAnimated:NO
+                             fromSource:gemini::FloatyUpdateSource::GestureIph];
+      }
     }
     return gestureIPHView;
   }
