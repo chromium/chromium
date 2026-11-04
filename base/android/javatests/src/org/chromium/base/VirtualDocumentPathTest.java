@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.VirtualDocumentPath.CreateDocumentResult;
 import org.chromium.base.VirtualDocumentPath.ResolveResult;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -196,6 +197,9 @@ public class VirtualDocumentPathTest {
                 VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/b/x.txt");
 
         Assert.assertTrue(txt.writeFile(new byte[] {'a'}));
+        Assert.assertEquals(
+                "application/octet-stream",
+                TestDocumentsProvider.getLastCreatedMimeTypeForTesting());
         InputStream i = resolver.openInputStream(txt.resolveToContentUri());
         Assert.assertEquals('a', i.read());
         Assert.assertEquals(-1, i.read());
@@ -270,6 +274,46 @@ public class VirtualDocumentPathTest {
         TestDocumentsProvider.setThrowSecurityExceptionForTesting(true);
         Assert.assertEquals(
                 FileError.FILE_ERROR_ACCESS_DENIED, filePath.resolveDocument().getStatus());
+        TestDocumentsProvider.setThrowSecurityExceptionForTesting(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateDocument() throws IOException {
+        Context context = ContextUtils.getApplicationContext();
+        File root = context.getCacheDir();
+        Assert.assertTrue(new File(root, "dir").mkdirs());
+
+        VirtualDocumentPath missingParent =
+                VirtualDocumentPath.parse(
+                        "/SAF/" + DOCPROV_AUTHORITY + "/tree/missing_dir/file.txt");
+        CreateDocumentResult resMissingParent = missingParent.createDocument("text/plain");
+        Assert.assertEquals(FileError.FILE_ERROR_NOT_FOUND, resMissingParent.getStatus());
+
+        VirtualDocumentPath path =
+                VirtualDocumentPath.parse("/SAF/" + DOCPROV_AUTHORITY + "/tree/dir/doc.txt");
+        CreateDocumentResult res1 = path.createDocument("text/plain");
+        Assert.assertEquals(FileError.FILE_OK, res1.getStatus());
+        Assert.assertEquals("text/plain", TestDocumentsProvider.getLastCreatedMimeTypeForTesting());
+        Assert.assertEquals(
+                "content://" + DOCPROV_AUTHORITY + "/tree/dir/document/dir%2Fdoc.txt",
+                res1.getContentUriString());
+        Assert.assertTrue(path.writeFile(new byte[] {'a'}));
+
+        CreateDocumentResult res2 = path.createDocument("text/plain");
+        Assert.assertEquals(FileError.FILE_OK, res2.getStatus());
+        Assert.assertNotEquals(res1.getContentUriString(), res2.getContentUriString());
+        Assert.assertTrue(res2.getContentUriString().contains("doc%20(1).txt"));
+
+        try (InputStream i =
+                context.getContentResolver().openInputStream(path.resolveToContentUri())) {
+            Assert.assertEquals('a', i.read());
+            Assert.assertEquals(-1, i.read());
+        }
+
+        TestDocumentsProvider.setThrowSecurityExceptionForTesting(true);
+        Assert.assertEquals(
+                FileError.FILE_ERROR_ACCESS_DENIED, path.createDocument("text/plain").getStatus());
         TestDocumentsProvider.setThrowSecurityExceptionForTesting(false);
     }
 }

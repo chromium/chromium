@@ -5,11 +5,13 @@
 #include "base/android/virtual_document_path.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/virtual_document_path_jni/VirtualDocumentPath_jni.h"
@@ -85,17 +87,44 @@ bool VirtualDocumentPath::WriteFile(span<const uint8_t> data) const {
   return Java_VirtualDocumentPath_writeFile(env, obj_, bs);
 }
 
-std::optional<std::pair<std::string, bool>> VirtualDocumentPath::CreateOrOpen()
-    const {
+base::expected<std::string, base::File::Error>
+VirtualDocumentPath::CreateDocument(std::string_view mime_type) const {
+  CHECK(!mime_type.empty());
   JNIEnv* env = android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> result =
-      Java_VirtualDocumentPath_createOrOpen(env, obj_);
+      Java_VirtualDocumentPath_createDocument(env, obj_,
+                                              std::string(mime_type));
   if (result.is_null()) {
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
+  }
+  base::File::Error error = Java_CreateDocumentResult_getStatus(env, result);
+  if (error != base::File::FILE_OK) {
+    return base::unexpected(error);
+  }
+  std::string uri = Java_CreateDocumentResult_getContentUriString(env, result);
+  if (uri.empty()) {
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
+  }
+  return uri;
+}
+
+std::optional<std::pair<std::string, bool>> VirtualDocumentPath::CreateOrOpen(
+    std::string_view mime_type) const {
+  auto resolved = ResolveDocument();
+  if (resolved.has_value()) {
+    if (resolved->is_directory) {
+      return std::nullopt;
+    }
+    return std::make_pair(std::move(resolved->content_uri), false);
+  }
+  if (resolved.error() != base::File::FILE_ERROR_NOT_FOUND) {
     return std::nullopt;
   }
-  std::string uri = Java_CreateOrOpenResult_getContentUriString(env, result);
-  bool created = Java_CreateOrOpenResult_getCreated(env, result);
-  return std::make_pair(uri, created);
+  auto created = CreateDocument(mime_type);
+  if (!created.has_value()) {
+    return std::nullopt;
+  }
+  return std::make_pair(std::move(*created), true);
 }
 
 }  // namespace base::files_internal

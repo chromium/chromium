@@ -17,6 +17,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
@@ -57,24 +58,26 @@ class VirtualDocumentPath {
         }
     }
 
-    static class CreateOrOpenResult {
-        public final Uri contentUri;
-        public final boolean created;
+    static class CreateDocumentResult {
+        public final @FileError int status;
+        public final @Nullable Uri contentUri;
 
-        private CreateOrOpenResult(Uri contentUri, boolean created) {
+        CreateDocumentResult(@FileError int status, @Nullable Uri contentUri) {
+            this.status = status;
             this.contentUri = contentUri;
-            this.created = created;
+        }
+
+        @CalledByNative
+        @JniType("base::File::Error")
+        @FileError
+        int getStatus() {
+            return this.status;
         }
 
         @CalledByNative
         @JniType("std::string")
         String getContentUriString() {
-            return this.contentUri.toString();
-        }
-
-        @CalledByNative
-        boolean getCreated() {
-            return this.created;
+            return this.contentUri != null ? this.contentUri.toString() : "";
         }
     }
 
@@ -82,6 +85,9 @@ class VirtualDocumentPath {
 
     private static final String VIRTUAL_PATH_MARKER = "SAF";
     private static final String TREE_PATH = "tree";
+    // AOSP providers keep the requested display name unchanged for this type instead of appending
+    // an extension.
+    private static final String UNKNOWN_MIME_TYPE = "application/octet-stream";
 
     private final String mAuthority;
     private final String mTreeId;
@@ -317,85 +323,106 @@ class VirtualDocumentPath {
         ResolveResult existing = resolveChild(parentRes.contentUri, basename);
         if (existing.status != FileError.FILE_ERROR_NOT_FOUND) return false;
 
-        try {
-            Uri dir =
-                    DocumentsContract.createDocument(
-                            mResolver,
-                            parentRes.contentUri,
-                            DocumentsContract.Document.MIME_TYPE_DIR,
-                            basename);
-            return dir != null;
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to create directory");
-            return false;
-        }
+        CreateDocumentResult created =
+                createChildDocument(
+                        parentRes.contentUri, basename, DocumentsContract.Document.MIME_TYPE_DIR);
+        return created.status == FileError.FILE_OK && created.contentUri != null;
     }
 
     /**
      * Writes data to the file represented by the virtual path. If the file already exists its
-     * content is truncated first.
+     * content is truncated first. A missing file is created as {@link #UNKNOWN_MIME_TYPE} because
+     * base::WriteFile() has no type information.
      *
      * @param data The data to write.
      * @return Whether the data has been successfully written.
      */
     @CalledByNative
     boolean writeFile(byte[] data) {
-        CreateOrOpenResult result = createOrOpen();
-        if (result == null) return false;
-
-        try (OutputStream out = mResolver.openOutputStream(result.contentUri)) {
-            if (out == null) return false;
-            out.write(data);
-            return true;
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to write to " + result.contentUri);
-            return false;
-        }
-    }
-
-    /**
-     * Creates an empty file if it does not exist and its parent directory exists. It returns the
-     * content uri if the file exists or created.
-     */
-    @CalledByNative
-    @Nullable CreateOrOpenResult createOrOpen() {
         Pair<VirtualDocumentPath, String> pair = splitPath();
+        Uri targetUri;
         if (pair == null) {
             ResolveResult resolved = resolveDocument();
             if (resolved.status != FileError.FILE_OK
                     || resolved.isDirectory
                     || resolved.contentUri == null) {
-                return null;
+                return false;
             }
-            return new CreateOrOpenResult(resolved.contentUri, false);
+            targetUri = resolved.contentUri;
+        } else {
+            ResolveResult parentRes = pair.first.resolveDocument();
+            if (parentRes.status != FileError.FILE_OK
+                    || parentRes.contentUri == null
+                    || !parentRes.isDirectory) {
+                return false;
+            }
+            ResolveResult existing = resolveChild(parentRes.contentUri, pair.second);
+            if (existing.status == FileError.FILE_OK) {
+                if (existing.isDirectory || existing.contentUri == null) {
+                    return false;
+                }
+                targetUri = existing.contentUri;
+            } else if (existing.status == FileError.FILE_ERROR_NOT_FOUND) {
+                CreateDocumentResult created =
+                        createChildDocument(parentRes.contentUri, pair.second, UNKNOWN_MIME_TYPE);
+                if (created.status != FileError.FILE_OK || created.contentUri == null) {
+                    return false;
+                }
+                targetUri = created.contentUri;
+            } else {
+                return false;
+            }
+        }
+
+        try (OutputStream out = mResolver.openOutputStream(targetUri)) {
+            if (out == null) return false;
+            out.write(data);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to write to " + targetUri);
+            return false;
+        }
+    }
+
+    /**
+     * Calls {@link DocumentsContract#createDocument} once in the parent directory and returns the
+     * URI assigned by the provider. The provider may assign a different display name when the
+     * requested one is taken, so callers must use the returned URI rather than re-resolving the
+     * path.
+     */
+    @CalledByNative
+    CreateDocumentResult createDocument(@JniType("std::string") String mimeType) {
+        Pair<VirtualDocumentPath, String> pair = splitPath();
+        if (pair == null) {
+            return new CreateDocumentResult(FileError.FILE_ERROR_INVALID_OPERATION, null);
         }
         ResolveResult parentRes = pair.first.resolveDocument();
-        if (parentRes.status != FileError.FILE_OK
-                || parentRes.contentUri == null
-                || !parentRes.isDirectory) {
-            return null;
+        if (parentRes.status != FileError.FILE_OK || parentRes.contentUri == null) {
+            return new CreateDocumentResult(parentRes.status, null);
         }
+        if (!parentRes.isDirectory) {
+            return new CreateDocumentResult(FileError.FILE_ERROR_NOT_A_DIRECTORY, null);
+        }
+        return createChildDocument(parentRes.contentUri, pair.second, mimeType);
+    }
 
-        ResolveResult existing = resolveChild(parentRes.contentUri, pair.second);
-        if (existing.status == FileError.FILE_OK) {
-            if (existing.isDirectory || existing.contentUri == null) {
-                return null;
-            }
-            return new CreateOrOpenResult(existing.contentUri, false);
-        }
-        if (existing.status != FileError.FILE_ERROR_NOT_FOUND) {
-            return null;
-        }
-
+    private CreateDocumentResult createChildDocument(
+            Uri parentUri, String basename, String mimeType) {
         try {
-            Uri uri =
-                    DocumentsContract.createDocument(
-                            mResolver, parentRes.contentUri, "", pair.second);
-            if (uri == null) return null;
-            return new CreateOrOpenResult(uri, true);
+            Uri createdUri =
+                    DocumentsContract.createDocument(mResolver, parentUri, mimeType, basename);
+            if (createdUri == null) {
+                return new CreateDocumentResult(FileError.FILE_ERROR_FAILED, null);
+            }
+            return new CreateDocumentResult(FileError.FILE_OK, createdUri);
+        } catch (SecurityException e) {
+            return new CreateDocumentResult(FileError.FILE_ERROR_ACCESS_DENIED, null);
+        } catch (FileNotFoundException e) {
+            return new CreateDocumentResult(FileError.FILE_ERROR_NOT_FOUND, null);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            return new CreateDocumentResult(FileError.FILE_ERROR_INVALID_OPERATION, null);
         } catch (Exception e) {
-            Log.w(TAG, "Failed to create file");
-            return null;
+            return new CreateDocumentResult(FileError.FILE_ERROR_FAILED, null);
         }
     }
 

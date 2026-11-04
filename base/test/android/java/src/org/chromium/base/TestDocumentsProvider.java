@@ -61,6 +61,7 @@ public class TestDocumentsProvider extends DocumentsProvider {
     private static volatile boolean sSimulateLoading;
     private static volatile String sDuplicateDisplayName;
     private static volatile boolean sThrowSecurityException;
+    private static volatile String sLastCreatedMimeType;
 
     public static void setSimulateLoadingForTesting(boolean simulateLoading) {
         sSimulateLoading = simulateLoading;
@@ -72,6 +73,10 @@ public class TestDocumentsProvider extends DocumentsProvider {
 
     public static void setThrowSecurityExceptionForTesting(boolean throwSecurityException) {
         sThrowSecurityException = throwSecurityException;
+    }
+
+    public static String getLastCreatedMimeTypeForTesting() {
+        return sLastCreatedMimeType;
     }
 
     // The authority cannot be static as its initialization depends on a Context. A ContentProvider
@@ -191,20 +196,55 @@ public class TestDocumentsProvider extends DocumentsProvider {
     @Override
     public String createDocument(String parentDocumentId, String mimeType, String displayName)
             throws FileNotFoundException {
+        if (sThrowSecurityException) {
+            throw new SecurityException("Simulated security exception");
+        }
+        if (mimeType == null || mimeType.isEmpty()) {
+            throw new IllegalArgumentException("MIME type must not be empty");
+        }
+        sLastCreatedMimeType = mimeType;
         boolean isDirectory = DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType);
         File parent = getFile(parentDocumentId);
-        File child = new File(parent, displayName);
+        if (!parent.exists()) {
+            throw new FileNotFoundException("Parent does not exist: " + parentDocumentId);
+        }
+        if (!parent.isDirectory()) {
+            throw new IllegalArgumentException("Parent is not a directory: " + parentDocumentId);
+        }
+
+        File child = buildUniqueTarget(parent, displayName, isDirectory);
         try {
-            if (isDirectory) {
-                child.mkdirs();
-            } else {
-                parent.mkdirs();
-                child.createNewFile();
+            boolean created = isDirectory ? child.mkdir() : child.createNewFile();
+            if (!created) {
+                throw new FileNotFoundException("Failed to create document: " + displayName);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
         return getDocumentId(child);
+    }
+
+    private static File buildUniqueTarget(File parent, String displayName, boolean isDirectory) {
+        File candidate = new File(parent, displayName);
+        if (!candidate.exists()) {
+            return candidate;
+        }
+        String baseName = displayName;
+        String ext = "";
+        if (!isDirectory) {
+            int dotIndex = displayName.lastIndexOf('.');
+            if (dotIndex > 0 && dotIndex < displayName.length() - 1) {
+                baseName = displayName.substring(0, dotIndex);
+                ext = displayName.substring(dotIndex);
+            }
+        }
+        for (int index = 1; index < 1000; index++) {
+            candidate = new File(parent, baseName + " (" + index + ")" + ext);
+            if (!candidate.exists()) {
+                return candidate;
+            }
+        }
+        return candidate;
     }
 
     @Override

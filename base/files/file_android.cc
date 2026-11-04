@@ -90,7 +90,7 @@ base::expected<OpenAndroidFileResult, base::File::Error> OpenAndroidFile(
   CHECK(vp);
 
   std::optional<std::pair<std::string, bool>> create_result =
-      vp->CreateOrOpen();
+      vp->CreateOrOpen(kUnknownAndroidDocumentMimeType);
   if (!create_result) {
     return base::unexpected(File::Error::FILE_ERROR_NOT_A_DIRECTORY);
   }
