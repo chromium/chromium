@@ -18,7 +18,7 @@ class Profile;
 
 namespace ash {
 
-class SchedulerConfigurationManager;
+class SchedulerConfigurationManagerBase;
 
 namespace full_restore {
 class ArcGhostWindowHandler;
@@ -55,7 +55,7 @@ class AppRestoreArcTaskHandler : public KeyedService,
   // `this`. In tests, it may be null.
   AppRestoreArcTaskHandler(
       Profile* profile,
-      SchedulerConfigurationManager* scheduler_configuration_manager);
+      SchedulerConfigurationManagerBase* scheduler_configuration_manager);
   AppRestoreArcTaskHandler(const AppRestoreArcTaskHandler&) = delete;
   AppRestoreArcTaskHandler& operator=(const AppRestoreArcTaskHandler&) = delete;
   ~AppRestoreArcTaskHandler() override;
@@ -120,7 +120,8 @@ class AppRestoreArcTaskHandler : public KeyedService,
   ArcAppSingleRestoreHandler* CreateOrGetArcAppSingleRestoreHandler(
       LauncherTag launcher_tag);
 
-  const raw_ptr<SchedulerConfigurationManager> scheduler_configuration_manager_;
+  const raw_ptr<SchedulerConfigurationManagerBase>
+      scheduler_configuration_manager_;
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};

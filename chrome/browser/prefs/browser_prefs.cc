@@ -492,8 +492,8 @@
 #include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 #include "chromeos/ash/components/quickoffice/quickoffice_prefs.h"
 #include "chromeos/ash/components/report/report_controller.h"
-#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 #include "chromeos/ash/components/settings/device_settings_cache.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
@@ -1940,7 +1940,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   ash::Preferences::RegisterPrefs(registry);
   ash::ResetScreen::RegisterPrefs(registry);
-  ash::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
+  ash::SchedulerConfigurationManagerBase::RegisterLocalStatePrefs(registry);
   ash::SecureDnsManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
   ash::StartupUtils::RegisterPrefs(registry);

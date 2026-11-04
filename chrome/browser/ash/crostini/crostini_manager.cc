@@ -79,7 +79,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/component_updater/component_updater_service.h"
@@ -264,7 +264,7 @@ class CrostiniManager::CrostiniRestarter
   };
 
   CrostiniRestarter(
-      ash::SchedulerConfigurationManager* scheduler_configuration_manager,
+      ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
       Profile* profile,
       CrostiniManager* crostini_manager,
       guest_os::GuestId container_id,
@@ -362,7 +362,7 @@ class CrostiniManager::CrostiniRestarter
   void OnConciergeAvailable(std::optional<base::ScopedFD> disk_iamge,
                             bool service_available);
 
-  const raw_ptr<ash::SchedulerConfigurationManager>
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
   base::OneShotTimer stage_timeout_timer_;
@@ -428,7 +428,7 @@ class CrostiniManager::CrostiniRestarter
 };
 
 CrostiniManager::CrostiniRestarter::CrostiniRestarter(
-    ash::SchedulerConfigurationManager* scheduler_configuration_manager,
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
     Profile* profile,
     CrostiniManager* crostini_manager,
     guest_os::GuestId container_id,
@@ -1302,7 +1302,7 @@ CrostiniManager::CrostiniManager(
     const component_updater::ComponentUpdateService* component_update_service,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
-    ash::SchedulerConfigurationManager* scheduler_configuration_manager,
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
     Profile* profile)
     : component_update_service_(component_update_service),
       component_manager_ash_(component_manager_ash),

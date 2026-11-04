@@ -90,7 +90,7 @@ constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
 }  // namespace
 
 ArcAppQueueRestoreHandler::ArcAppQueueRestoreHandler(
-    SchedulerConfigurationManager* scheduler_configuration_manager) {
+    SchedulerConfigurationManagerBase* scheduler_configuration_manager) {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
 

@@ -5,16 +5,24 @@
 assert(is_chromeos)
 
 static_library("scheduler_config") {
-  sources = [
-    "scheduler_configuration_manager.cc",
-    "scheduler_configuration_manager.h",
-  ]
+  if (current_cpu == "x64") {
+    sources = [
+      "scheduler_configuration_manager.cc",
+      "scheduler_configuration_manager.h",
+    ]
+  } else {
+    sources = [
+      "no_op_scheduler_configuration_manager.cc",
+      "no_op_scheduler_configuration_manager.h",
+    ]
+  }
+
+  public_deps = [ "//chromeos/ash/components/system" ]
 
   deps = [
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/debug_daemon",
-    "//chromeos/ash/components/system",
     "//components/prefs",
   ]
 }
@@ -22,14 +30,16 @@ static_library("scheduler_config") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "scheduler_configuration_manager_unittest.cc" ]
+  if (current_cpu == "x64") {
+    sources = [ "scheduler_configuration_manager_unittest.cc" ]
 
-  deps = [
-    ":scheduler_config",
-    "//ash/constants",
-    "//base/test:test_support",
-    "//chromeos/ash/components/dbus/debug_daemon",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-  ]
+    deps = [
+      ":scheduler_config",
+      "//ash/constants",
+      "//base/test:test_support",
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//components/prefs:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

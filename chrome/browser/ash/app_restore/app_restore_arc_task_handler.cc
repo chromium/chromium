@@ -32,7 +32,7 @@ constexpr LauncherTag kFullRestoreLaunchHandlerTag = {
 
 AppRestoreArcTaskHandler::AppRestoreArcTaskHandler(
     Profile* profile,
-    SchedulerConfigurationManager* scheduler_configuration_manager)
+    SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : scheduler_configuration_manager_(scheduler_configuration_manager) {
   if (!scheduler_configuration_manager_) {
     CHECK_IS_TEST();

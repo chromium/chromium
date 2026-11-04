@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
-#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -81,7 +81,7 @@ class ArcAppQueueRestoreHandler
   // `scheduler_configuration_manager` should be non-null and must outlive
   // `this`. In tests, it may be null.
   explicit ArcAppQueueRestoreHandler(
-      SchedulerConfigurationManager* scheduler_configuration_manager);
+      SchedulerConfigurationManagerBase* scheduler_configuration_manager);
   ArcAppQueueRestoreHandler(const ArcAppQueueRestoreHandler&) = delete;
   ArcAppQueueRestoreHandler& operator=(const ArcAppQueueRestoreHandler&) =
       delete;

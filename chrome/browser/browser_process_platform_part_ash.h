@@ -33,7 +33,7 @@ class InSessionPasswordChangeManager;
 class PolicyUserManagerController;
 class ProfileHelper;
 class ProfileUserManagerController;
-class SchedulerConfigurationManager;
+class SchedulerConfigurationManagerBase;
 class SecureDnsManager;
 class UserImageManagerRegistry;
 
@@ -136,7 +136,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return multi_user_sign_in_policy_controller_.get();
   }
 
-  ash::SchedulerConfigurationManager* scheduler_configuration_manager() {
+  ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager() {
     return scheduler_configuration_manager_.get();
   }
 
@@ -243,7 +243,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   base::CallbackListSubscription primary_profile_shutdown_subscription_;
 
-  std::unique_ptr<ash::SchedulerConfigurationManager>
+  std::unique_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
   std::unique_ptr<ash::AshProxyMonitor> ash_proxy_monitor_;

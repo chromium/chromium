@@ -50,7 +50,7 @@ class Profile;
 namespace ash {
 class NetworkState;
 class NetworkStateHandler;
-class SchedulerConfigurationManager;
+class SchedulerConfigurationManagerBase;
 }  // namespace ash
 
 namespace component_updater {
@@ -193,7 +193,7 @@ class CrostiniManager : public KeyedService,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
-      ash::SchedulerConfigurationManager* scheduler_configuration_manager,
+      ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
       Profile* profile);
 
   CrostiniManager(const CrostiniManager&) = delete;
@@ -771,7 +771,7 @@ class CrostiniManager : public KeyedService,
       component_update_service_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
-  const raw_ptr<ash::SchedulerConfigurationManager>
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
   raw_ptr<Profile> profile_;

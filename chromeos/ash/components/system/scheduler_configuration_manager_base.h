@@ -7,13 +7,19 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/component_export.h"
 #include "base/observer_list.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace ash {
+
+class DebugDaemonClient;
 
 // A base class for SchedulerConfigurationManager.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
@@ -25,6 +31,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
     virtual void OnConfigurationSet(bool success,
                                     size_t num_cores_disabled) = 0;
   };
+
+  static std::unique_ptr<SchedulerConfigurationManagerBase> Create(
+      DebugDaemonClient* debug_daemon_client,
+      PrefService* local_state);
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   SchedulerConfigurationManagerBase();
 

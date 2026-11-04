@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -14,9 +15,12 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
+
+#if !defined(ARCH_CPU_X86_64)
+#error "SchedulerConfigurationManager is only supported on x86_64."
+#endif
 
 namespace ash {
 
@@ -27,11 +31,19 @@ constexpr base::FeatureParam<std::string> kSchedulerConfigurationParam{
 
 }  // namespace
 
+// static
+std::unique_ptr<SchedulerConfigurationManagerBase>
+SchedulerConfigurationManagerBase::Create(
+    DebugDaemonClient* debug_daemon_client,
+    PrefService* local_state) {
+  return std::make_unique<SchedulerConfigurationManager>(debug_daemon_client,
+                                                         local_state);
+}
+
 SchedulerConfigurationManager::SchedulerConfigurationManager(
     DebugDaemonClient* debug_daemon_client,
     PrefService* local_state)
     : debug_daemon_client_(debug_daemon_client) {
-#if defined(ARCH_CPU_X86_64)
   observer_.Init(local_state);
   observer_.Add(
       prefs::kSchedulerConfiguration,
@@ -40,28 +52,9 @@ SchedulerConfigurationManager::SchedulerConfigurationManager(
   debug_daemon_client_->WaitForServiceToBeAvailable(
       base::BindOnce(&SchedulerConfigurationManager::OnDebugDaemonReady,
                      weak_ptr_factory_.GetWeakPtr()));
-#else
-  // Hyper-Threading / SMT scheduler configuration via debugd is only supported
-  // on x86_64 (debugd always rejects non-x86_64 architectures with
-  // "Invalid architecture" and 0 disabled cores). Pre-populate the default
-  // reply and skip pref/D-Bus observation so callers never block on debugd
-  // availability and no spurious D-Bus IPCs or error logs are emitted.
-  (void)local_state;
-  last_reply_ = std::make_pair(false, 0u);
-#endif
 }
 
 SchedulerConfigurationManager::~SchedulerConfigurationManager() = default;
-
-// static
-void SchedulerConfigurationManager::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  // Ideally the pref would be registered specifying the default provided via
-  // the feature parameter. This is unfortunately not possible though because
-  // the feature API initialization depends on the local state PrefService, so
-  // this function runs before feature parameters are available.
-  registry->RegisterStringPref(prefs::kSchedulerConfiguration, std::string());
-}
 
 std::optional<std::pair<bool, size_t>>
 SchedulerConfigurationManager::GetLastReply() const {

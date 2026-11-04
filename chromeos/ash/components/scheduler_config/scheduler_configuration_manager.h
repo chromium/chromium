@@ -13,7 +13,6 @@
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace ash {
@@ -39,8 +38,6 @@ class SchedulerConfigurationManager : public SchedulerConfigurationManagerBase {
       const SchedulerConfigurationManager&) = delete;
 
   ~SchedulerConfigurationManager() override;
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // SchedulerConfigurationManagerBase overrides:
   std::optional<std::pair<bool, size_t>> GetLastReply() const override;

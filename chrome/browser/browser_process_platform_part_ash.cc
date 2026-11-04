@@ -62,8 +62,8 @@
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
-#include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -290,7 +290,7 @@ void BrowserProcessPlatformPart::ShutdownComponentManager() {
 void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {
   CHECK(!scheduler_configuration_manager_, base::NotFatalUntil::M163);
   scheduler_configuration_manager_ =
-      std::make_unique<ash::SchedulerConfigurationManager>(
+      ash::SchedulerConfigurationManagerBase::Create(
           ash::DebugDaemonClient::Get(), g_browser_process->local_state());
 }
 
