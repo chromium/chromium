@@ -2196,7 +2196,8 @@
       "external/wpt/longtask-timing/longtask-in-childiframe-crossorigin.html",
       "external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html",
       "http/tests/security/drag-drop-same-unique-origin.html",
-      "fast/dom/raf-throttling-out-of-view-cross-origin-page.html"
+      "fast/dom/raf-throttling-out-of-view-cross-origin-page.html",
+      "external/wpt/svg/styling/svg-filter-render-swap-content-visibility.tentative.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
