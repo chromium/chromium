@@ -277,6 +277,43 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       webui_delay, 1);
 }
 
+// The startup gap must pair with the startup reload button paint. If the
+// startup window paints its reload button but closes before its first
+// presentation, a later window records the new window gap instead.
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       NoStartupGapIfStartupWindowClosesBeforePresentation) {
+  base::HistogramTester tester;
+
+  {
+    // Window 1: Startup Window. Its reload button paints, but the window
+    // closes before its first presentation.
+    InitialWebUIWindowMetricsManager startup_manager(&browser_window_);
+    startup_manager.OnReloadButtonFirstPaint(base::TimeTicks::Now(),
+                                             /*is_startup=*/true);
+  }
+
+  base::TimeDelta webui_delay = base::Milliseconds(50);
+  {
+    // Window 2: New Window.
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    InitialWebUIWindowMetricsManager new_window_manager(&browser_window_);
+    new_window_manager.SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kNewEmptyWindow, start_time);
+
+    base::TimeTicks browser_window_time = start_time + kTestLatency;
+    new_window_manager.OnBrowserWindowFirstPresentation(browser_window_time);
+    new_window_manager.OnReloadButtonFirstPaint(
+        browser_window_time + webui_delay, /*is_startup=*/false);
+  }
+
+  tester.ExpectTotalCount(
+      "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
+  tester.ExpectUniqueTimeSample(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap2",
+      webui_delay, 1);
+}
+
 TEST_F(InitialWebUIWindowMetricsManagerTest,
        RecordsClosedBeforeFirstPaintForNewWindow) {
   InitialWebUIWindowMetricsManager::ResetForTesting();

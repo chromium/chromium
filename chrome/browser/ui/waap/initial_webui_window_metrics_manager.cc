@@ -15,17 +15,6 @@
 #include "ui/base/base_window.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-namespace {
-
-// Tracks process-wide startup metrics. Startup metrics must be recorded at
-// most once per browser process lifecycle across all windows.
-// Declared in the anonymous namespace so `ResetForTesting()` can reset state
-// between tests.
-bool g_is_startup_first_paint_recorded = false;
-bool g_process_startup_delta_recorded = false;
-
-}  // namespace
-
 DEFINE_USER_DATA(InitialWebUIWindowMetricsManager);
 
 InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
@@ -51,7 +40,7 @@ InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() {
   // when `should_skip_latency_metrics_` is true (e.g. for minimized windows) to
   // avoid logging background idle duration before window closure.
 
-  if (!g_is_startup_first_paint_recorded &&
+  if (!WaapUIMetricsService::IsStartupBrowserWindowFirstPaintRecorded() &&
       !skip_startup_metrics_for_testing_ &&
       window_show_first_requested_time_.has_value()) {
     waap_service_->OnStartupBrowserWindowClosedBeforeFirstPaint(
@@ -176,7 +165,10 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
     return;
   }
   // Ensures only one startup window is recorded per browser process.
-  bool& is_startup_first_paint_recorded = g_is_startup_first_paint_recorded;
+  // `WaapUIMetricsService::OnBrowserWindowFirstPresentation()` below marks the
+  // startup browser window first paint as recorded.
+  const bool is_startup_first_paint_recorded =
+      WaapUIMetricsService::IsStartupBrowserWindowFirstPaintRecorded();
   CHECK(waap_service_);
 
   if (window_show_first_requested_time_.has_value()) {
@@ -217,7 +209,6 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
   }
 
   if (!is_startup_first_paint_recorded && !skip_startup_metrics_for_testing_) {
-    is_startup_first_paint_recorded = true;
     is_new_window_first_paint_recorded_ = true;
     waap_service_->OnBrowserWindowFirstPresentation(timestamp);
   } else if (!is_new_window_first_paint_recorded_ &&
@@ -244,6 +235,7 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
 
   if (!reload_button_first_paint_time_.has_value()) {
     reload_button_first_paint_time_ = timestamp;
+    is_startup_reload_button_first_paint_ = is_startup;
     if (browser_window_first_paint_time_.has_value() &&
         !unpainted_termination_recorded_) {
       const bool painted_at_first_paint =
@@ -310,17 +302,6 @@ void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
     return;
   }
 
-  // Handle Startup metrics only once per process.
-  bool& process_startup_delta_recorded = g_process_startup_delta_recorded;
-  bool is_startup_metric = false;
-  if (!process_startup_delta_recorded) {
-    // Update the `process_startup_delta_recorded` before the negative delta check to make
-    // sure that we are in the correct state. Even if the recording is skipped, we don't
-    // accidentally record a startup metric for the new window case later.
-    is_startup_metric = true;
-    process_startup_delta_recorded = true;
-  }
-
   base::TimeDelta delta =
       *reload_button_first_paint_time_ - *browser_window_first_paint_time_;
 
@@ -333,8 +314,10 @@ void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
     return;
   }
 
-  if (is_startup_metric && !skip_startup_metrics_for_testing_) {
-    startup_delta_recorded_ = true;
+  // Only the window whose reload button paint was recorded as the startup
+  // paint records the startup gap, so that the gap always pairs with
+  // `InitialWebUI.Startup.ReloadButton.FirstPaint`.
+  if (is_startup_reload_button_first_paint_) {
     waap_service_->OnStartupBrowserWindowToReloadButtonFirstPaintGap(
         *browser_window_first_paint_time_, *reload_button_first_paint_time_);
   } else if (!new_window_delta_recorded_ &&
@@ -349,7 +332,5 @@ void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
 
 // static
 void InitialWebUIWindowMetricsManager::ResetForTesting() {
-  g_is_startup_first_paint_recorded = false;
-  g_process_startup_delta_recorded = false;
   WaapUIMetricsService::ResetForTesting();
 }

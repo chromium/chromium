@@ -61,6 +61,22 @@ TEST_F(WaapUIMetricsServiceTest, OnFirstPaint) {
       "InitialWebUI.Startup.ReloadButton.FirstPaint", 1);
 }
 
+// Tests that the OnBrowserWindowFirstPresentation method records a histogram
+// and marks the startup browser window first paint as recorded.
+TEST_F(WaapUIMetricsServiceTest, OnBrowserWindowFirstPresentation) {
+  WaapUIMetricsService* service =
+      WaapUIMetricsServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(
+      WaapUIMetricsService::IsStartupBrowserWindowFirstPaintRecorded());
+
+  service->OnBrowserWindowFirstPresentation(base::TimeTicks::Now());
+
+  histogram_tester()->ExpectTotalCount(
+      "InitialWebUI.Startup.BrowserWindow.FirstPaint", 1);
+  EXPECT_TRUE(WaapUIMetricsService::IsStartupBrowserWindowFirstPaintRecorded());
+}
+
 // Tests that the OnFirstContentfulPaint method records a histogram on the
 // first call, and does not record it again on subsequent calls.
 TEST_F(WaapUIMetricsServiceTest, OnFirstContentfulPaint) {

@@ -41,6 +41,7 @@ class WaapUIMetricsService : public KeyedService {
   // already recorded. Browser window startup metrics are not affected.
   static void SkipStartupForTesting();
 
+  static bool IsStartupBrowserWindowFirstPaintRecorded();
   static bool IsStartupFirstPaintRecorded();
   static bool IsStartupFirstContentfulPaintRecorded();
 

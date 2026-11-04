@@ -261,6 +261,11 @@ void WaapUIMetricsService::SkipStartupForTesting() {
 }
 
 // static
+bool WaapUIMetricsService::IsStartupBrowserWindowFirstPaintRecorded() {
+  return g_is_browser_window_first_paint_recorded;
+}
+
+// static
 bool WaapUIMetricsService::IsStartupFirstPaintRecorded() {
   return g_is_first_paint_recorded;
 }

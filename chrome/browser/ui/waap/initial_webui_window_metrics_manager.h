@@ -72,7 +72,8 @@ class InitialWebUIWindowMetricsManager {
   // Called by `InitialWebUIMetricsDispatcher` when the ReloadButton paints its
   // first frame. This handles reload button paint delta and new window metrics.
   // `is_startup` is decided by the dispatcher; when true, the startup metric
-  // has already been recorded and only per-window state is updated.
+  // has already been recorded, and the paint delta is recorded as a startup
+  // metric instead of a new window metric.
   void OnReloadButtonFirstPaint(base::TimeTicks timestamp, bool is_startup);
 
   // Called by `InitialWebUIMetricsDispatcher` when the ReloadButton paints its
@@ -163,7 +164,6 @@ class InitialWebUIWindowMetricsManager {
   bool is_new_window_reload_button_first_paint_recorded_ = false;
   bool is_new_window_reload_button_first_contentful_paint_recorded_ = false;
 
-  bool startup_delta_recorded_ = false;
   bool new_window_delta_recorded_ = false;
 
   base::OneShotTimer unpainted_10s_timer_;
@@ -175,6 +175,10 @@ class InitialWebUIWindowMetricsManager {
   // Track timestamps to calculate the delta between the two paint events.
   std::optional<base::TimeTicks> browser_window_first_paint_time_;
   std::optional<base::TimeTicks> reload_button_first_paint_time_;
+
+  // Whether the reload button first paint above was recorded as the startup
+  // paint, as decided by `InitialWebUIMetricsDispatcher`.
+  bool is_startup_reload_button_first_paint_ = false;
 
   // Track the first time a request to show the window was made.
   std::optional<base::TimeTicks> window_show_first_requested_time_;
