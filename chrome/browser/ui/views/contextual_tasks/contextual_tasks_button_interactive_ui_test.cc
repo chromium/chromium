@@ -1660,6 +1660,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+    ButtonShowsWhileSidePanelIsOpenWithoutPreexistingTask) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &ContextualTasksButton::IsHighlighted, true));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonPinningV2InteractiveTest,
     LensOverlayEntryPointHighlightsPinButtonInsteadOfLensButton) {
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),

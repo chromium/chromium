@@ -4626,12 +4626,14 @@ TEST_F(ContextualTasksUiTest,
   TriggerOnInnerWebContentsCreated(&controller, embedded_web_contents_.get());
 
   auto expect_promo = [&](int times) {
-    EXPECT_CALL(
+    auto& expectation = EXPECT_CALL(
         mock_user_education,
         MaybeShowFeaturePromo(
             testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
-        .Times(times)
-        .WillRepeatedly(Return(true));
+        .Times(times);
+    if (times > 0) {
+      expectation.WillRepeatedly(Return(true));
+    }
   };
 
   // 1. Navigating to a non-AI SRP or an in-progress AI query (no mstk/smstk)
@@ -4680,10 +4682,9 @@ TEST_F(ContextualTasksUiTest,
   controller.MaybeTriggerPinningPromo();
   testing::Mock::VerifyAndClearExpectations(&mock_user_education);
 
-  // 4. `EntrySource::kLensOverlay` requires a manually attached tab or PDF in
-  // the composebox (even if the task has PDF or webpage `UrlResource` entries
-  // or restored tabs from the initial Lens Overlay upload), and an active Lens
-  // overlay suppresses the promo.
+  // 4. `EntrySource::kLensOverlay` allows the promo when a finished AI response
+  // completes for a task with tab or PDF context, while an active Lens overlay
+  // suppresses the promo.
   testing::NiceMock<contextual_search::MockContextualSearchSessionHandle>
       mock_session_handle;
   ON_CALL(mock_panel_controller, GetContextualSearchSessionHandleForPanel())
@@ -4691,17 +4692,28 @@ TEST_F(ContextualTasksUiTest,
   ON_CALL(mock_panel_controller, GetActiveEntrySource())
       .WillByDefault(
           Return(ContextualTasksPanelController::EntrySource::kLensOverlay));
+  ON_CALL(mock_panel_controller, GetCurrentTask())
+      .WillByDefault(Return(ContextualTask(base::Uuid::GenerateRandomV4())));
   expect_promo(0);
   controller.MaybeTriggerPinningPromo();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  expect_promo(1);
   ON_CALL(mock_panel_controller, GetCurrentTask())
       .WillByDefault(Return(task_with_tab));
   controller.MaybeTriggerPinningPromo();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+  ON_CALL(mock_panel_controller, GetCurrentTask())
+      .WillByDefault(Return(ContextualTask(base::Uuid::GenerateRandomV4())));
+
   contextual_search::TabInfo restored_tab;
   restored_tab.tab_id = 99;
   restored_tab.url = GURL("https://example.com");
   mock_session_handle.SetRestoredTabs({restored_tab});
+  expect_promo(1);
   controller.MaybeTriggerPinningPromo();
   testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+  mock_session_handle.SetRestoredTabs({});
 
   contextual_search::FileInfo attached_pdf_info;
   attached_pdf_info.mime_type = lens::MimeType::kUnknown;
@@ -4722,9 +4734,6 @@ TEST_F(ContextualTasksUiTest,
   testing::Mock::VerifyAndClearExpectations(&mock_user_education);
 
   expect_promo(0);
-  ON_CALL(mock_panel_controller, GetActiveEntrySource())
-      .WillByDefault(
-          Return(ContextualTasksPanelController::EntrySource::kOther));
   controller.OnLensOverlayStateChanged(/*is_showing=*/true, std::nullopt);
   controller.MaybeTriggerPinningPromo();
 
