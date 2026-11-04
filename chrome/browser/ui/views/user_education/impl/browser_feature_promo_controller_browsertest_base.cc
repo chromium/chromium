@@ -58,7 +58,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace user_education {
 
@@ -396,14 +398,19 @@ BrowserFeaturePromoControllerTestBase::bubble_factory() {
 }
 
 views::View* BrowserFeaturePromoControllerTestBase::GetAnchorView() {
-  return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-      kToolbarAppMenuButtonElementId, browser_view()->GetElementContext());
+  auto* const element = GetAnchorElement();
+  if (auto* const view_element = element->AsA<views::TrackedElementViews>()) {
+    return view_element->view();
+  }
+  if (auto* const webui_element = element->AsA<ui::TrackedElementWebUI>()) {
+    return webui_element->GetWebView();
+  }
+  return nullptr;
 }
 
 ui::TrackedElement* BrowserFeaturePromoControllerTestBase::GetAnchorElement() {
-  auto* const result =
-      views::ElementTrackerViews::GetInstance()->GetElementForView(
-          GetAnchorView());
+  auto* const result = BrowserElements::From(browser())->GetElement(
+      kToolbarAppMenuButtonElementId);
   CHECK(result);
   return result;
 }

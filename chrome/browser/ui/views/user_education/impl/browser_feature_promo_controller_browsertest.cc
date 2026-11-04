@@ -1183,10 +1183,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerTrackerInitializedTest,
       IDS_CHROME_TIP,
       base::BindLambdaForTesting([&](const UserEducationContextPtr& context,
                                      FeaturePromoHandle handle) {
-        views::ElementTrackerViews::GetInstance()
-            ->GetUniqueView(kToolbarAppMenuButtonElementId,
-                            context->GetElementContext())
-            ->SetVisible(false);
+        GetAnchorView()->SetVisible(false);
         promo_handle = std::move(handle);
       })));
 
