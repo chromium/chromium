@@ -66,9 +66,6 @@ class CdpActorSessionTracker {
   // enabled, or returns `nullptr` if the feature is disabled.
   static std::unique_ptr<CdpActorSessionTracker> CreateIfEnabled();
 
-  // Creates a `CdpActorSessionTracker` for testing regardless of feature state.
-  static std::unique_ptr<CdpActorSessionTracker> CreateForTest();
-
   CdpActorSessionTracker(const CdpActorSessionTracker&) = delete;
   CdpActorSessionTracker& operator=(const CdpActorSessionTracker&) = delete;
   ~CdpActorSessionTracker();
@@ -95,8 +92,10 @@ class CdpActorSessionTracker {
 
   // Tracks a newly attached DevTools client `channel` when it targets an
   // eligible tab-bound `WebContents`, immediately recording built-in DevTools
-  // UI sessions. Does nothing if `channel` is null. A non-null `channel` stored
-  // in `active_channels_` is retained solely as an opaque lookup key (never
+  // UI sessions and pre-warming the OS process tree cache for external Pipe or
+  // WebSocket sessions (without recording a tab actor until `OnCommandHandled`
+  // fires). Does nothing if `channel` is null. A non-null `channel` stored in
+  // `active_channels_` is retained solely as an opaque lookup key (never
   // dereferenced after `OnClientAttached()` returns) until removed by
   // `OnClientDetached(channel)`.
   void OnClientAttached(content::DevToolsAgentHostClientChannel* channel);

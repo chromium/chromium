@@ -108,12 +108,6 @@ CdpActorSessionTracker::CreateIfEnabled() {
   return base::WrapUnique(new CdpActorSessionTracker());
 }
 
-// static
-std::unique_ptr<CdpActorSessionTracker>
-CdpActorSessionTracker::CreateForTest() {
-  return base::WrapUnique(new CdpActorSessionTracker());
-}
-
 CdpActorSessionTracker::CdpActorSessionTracker()
     : extraction_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -234,8 +228,7 @@ std::optional<EventInitiatorInfo> CdpActorSessionTracker::GetEventInitiatorInfo(
 void CdpActorSessionTracker::OnClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!channel ||
-      !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+  if (!channel) {
     return;
   }
 
@@ -271,19 +264,37 @@ void CdpActorSessionTracker::OnClientAttached(
     return;
   }
 
-  if (classified.category == SessionCategory::kDevToolsUi) {
-    it->second.has_handled_command = true;
-    TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
-        ->buffer()
-        .OnDevToolsUiAttached();
+  switch (classified.category) {
+    case SessionCategory::kIgnored:
+      break;
+    case SessionCategory::kDevToolsUi:
+      it->second.has_handled_command = true;
+      TabCdpActorTracker::GetOrCreateForWebContents(web_contents)
+          ->buffer()
+          .OnDevToolsUiAttached();
+      break;
+    case SessionCategory::kExternalPipe:
+      // Pre-warm the Pipe process tree cache in parallel with the initial CDP
+      // handshake without recording a tab actor until `OnCommandHandled()`
+      // fires.
+      StartExtraction(/*remote_endpoint=*/std::nullopt);
+      break;
+    case SessionCategory::kExternalWebSocket:
+      // Pre-warm the WebSocket endpoint cache in parallel with the initial CDP
+      // handshake without recording a tab actor until `OnCommandHandled()`
+      // fires.
+      if (classified.remote_endpoint.has_value()) {
+        websocket_cache_.try_emplace(*classified.remote_endpoint);
+        StartExtraction(classified.remote_endpoint);
+      }
+      break;
   }
 }
 
 void CdpActorSessionTracker::OnCommandHandled(
     content::DevToolsAgentHostClientChannel* channel) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!channel ||
-      !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+  if (!channel) {
     return;
   }
 
