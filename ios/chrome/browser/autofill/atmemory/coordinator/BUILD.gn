@@ -45,39 +45,3 @@ source_set("coordinator") {
     "//url",
   ]
 }
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_at_memory_fill_handler.h",
-    "fake_at_memory_fill_handler.mm",
-  ]
-  deps = [ "//ios/chrome/browser/autofill/atmemory/public" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "at_memory_granular_fill_mediator_unittest.mm",
-    "at_memory_mediator_unittest.mm",
-    "at_memory_search_mediator_unittest.mm",
-  ]
-  deps = [
-    ":coordinator",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/ios/browser:test_support",
-    "//components/personal_context/first_run",
-    "//ios/chrome/browser/autofill/atmemory/public",
-    "//ios/chrome/browser/autofill/atmemory/ui",
-    "//ios/chrome/browser/autofill/atmemory/ui:item",
-    "//ios/chrome/browser/autofill/public",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
-}

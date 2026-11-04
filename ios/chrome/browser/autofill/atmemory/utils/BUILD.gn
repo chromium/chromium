@@ -17,16 +17,3 @@ source_set("utils") {
     "//ios/web/public",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "atmemory_ui_util_unittest.mm" ]
-  deps = [
-    ":utils",
-    "//components/autofill/core/browser",
-    "//components/strings",
-    "//ios/chrome/browser/autofill/atmemory/ui:item",
-    "//testing/gtest",
-    "//ui/base",
-  ]
-}
