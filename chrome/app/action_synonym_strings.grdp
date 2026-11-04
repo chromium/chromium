@@ -45,6 +45,38 @@
   <message name="IDS_ACTION_SYNONYMS_MANAGE_CHROME_PROFILES" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Manage Chrome profiles') that users might type in the Chrome menu search bar to find the 'Manage Chrome profiles' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     switch, multiple, accounts, users, account, settings, profile
   </message>
+  <!-- kActionShowHistory: "Open history page". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_HISTORY" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Open history page') that users might type in the Chrome menu search bar to find the 'Open history page' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    past pages, journeys, timeline, crash, recovery, restore, tabs, find, site, visited, sites, previous, yesterday, before, earlier
+  </message>
+  <!-- kActionSidePanelShowHistoryCluster: "Show history in side panel". -->
+  <message name="IDS_ACTION_SYNONYMS_SIDE_PANEL_SHOW_HISTORY_CLUSTER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show history in side panel') that users might type in the Chrome menu search bar to find the 'Show history in side panel' action, which shows browsing history grouped by topic. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    history, topics, past, searches, tab, groups, organization, previous, yesterday, before, earlier
+  </message>
+  <!-- kActionBookmarkThisTab: "Bookmark this tab". -->
+  <message name="IDS_ACTION_SYNONYMS_BOOKMARK_THIS_TAB" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Bookmark this tab') that users might type in the Chrome menu search bar to find the 'Bookmark this tab' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    save, star, favorite, keep, page, list, remember
+  </message>
+  <!-- kActionBookmarkAllTabs: "Bookmark all tabs". -->
+  <message name="IDS_ACTION_SYNONYMS_BOOKMARK_ALL_TABS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Bookmark all tabs') that users might type in the Chrome menu search bar to find the 'Bookmark all tabs' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    save, session, group, folder, backup
+  </message>
+  <!-- kActionShowBookmarkBar: "Show bookmarks bar". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_BOOKMARK_BAR" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show bookmarks bar') that users might type in the Chrome menu search bar to find the 'Show bookmarks bar' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    toolbar, favorites bar, top, display, settings, shortcuts, show, open
+  </message>
+  <!-- kActionShowBookmarkManager: "Open bookmark manager". -->
+  <message name="IDS_ACTION_SYNONYMS_SHOW_BOOKMARK_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Open bookmark manager') that users might type in the Chrome menu search bar to find the 'Open bookmark manager' action, which lists all saved bookmarks. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    favorites, organizer, search, backup
+  </message>
+  <!-- kActionImportSettings: "Import bookmarks and settings...". -->
+  <message name="IDS_ACTION_SYNONYMS_IMPORT_SETTINGS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Import bookmarks and settings') that users might type in the Chrome menu search bar to find the 'Import bookmarks and settings' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    safari, edge, firefox, restore, backup, transfer, setup, old
+  </message>
+  <!-- kActionSidePanelShowReadingList: "Show reading list". -->
+  <message name="IDS_ACTION_SYNONYMS_SIDE_PANEL_SHOW_READING_LIST" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Show reading list') that users might type in the Chrome menu search bar to find the 'Show reading list' action, which opens the reading list in the side panel. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    articles, offline, queue, backlog, sidebar, mode
+  </message>
   <!-- kActionSendTabToSelf: "Send to your device". -->
   <message name="IDS_ACTION_SYNONYMS_SEND_TAB_TO_SELF" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Send to your device') that users might type in the Chrome menu search bar to find the 'Send to your device' action, which sends the current page to another of the user's signed-in devices. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     share, mobile, device, chromebook, pixel, sync history, transfer, phone, tablet

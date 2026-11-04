@@ -416,14 +416,18 @@ INSTANTIATE_TEST_SUITE_P(
     ActionAppMenuSynonymSearchBrowserTest,
     testing::Values(SynonymSearchCase{u"vault", kActionShowPasswordManager},
                     SynonymSearchCase{u"wallet", kActionShowPaymentMethods},
-                    SynonymSearchCase{u"zip", kActionShowContactInfo}));
+                    SynonymSearchCase{u"zip", kActionShowContactInfo},
+                    SynonymSearchCase{u"yesterday", kActionShowHistory},
+                    SynonymSearchCase{u"star", kActionBookmarkThisTab}));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// Profile-management actions are not shown in the app menu on ChromeOS.
-INSTANTIATE_TEST_SUITE_P(NonChromeOS,
-                         ActionAppMenuSynonymSearchBrowserTest,
-                         testing::Values(SynonymSearchCase{
-                             u"friend", kActionOpenGuestProfile}));
+// Profile-management and import actions are not shown in the app menu on
+// ChromeOS.
+INSTANTIATE_TEST_SUITE_P(
+    NonChromeOS,
+    ActionAppMenuSynonymSearchBrowserTest,
+    testing::Values(SynonymSearchCase{u"friend", kActionOpenGuestProfile},
+                    SynonymSearchCase{u"firefox", kActionImportSettings}));
 #endif
 
 class ActionAppMenuWithSearchQueryBrowserTest
