@@ -77,6 +77,7 @@ publickey-credentials-get
 publickey-credentials-remote-client-data-json
 rewriter
 screen-wake-lock
+semantic-embedder
 serial
 speaker-selection
 storage-access

@@ -501,6 +501,11 @@
       depends_on: ["WakeLock"],
     },
     {
+      name: "SemanticEmbedder",
+      permissions_policy_name: "semantic-embedder",
+      depends_on: ["AIEmbeddingsAPI"],
+    },
+    {
       name: "Serial",
       permissions_policy_name: "serial",
       depends_on: ["Serial"],

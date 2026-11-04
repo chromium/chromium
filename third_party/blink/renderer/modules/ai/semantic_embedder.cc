@@ -310,10 +310,8 @@ ScriptPromise<V8Availability> SemanticEmbedder::availability(
   auto promise = resolver->Promise();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  // TODO(crbug.com/392095655): Create a new Permissions Policy feature for
-  // this.
   if (!execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+          network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
     resolver->Resolve(AvailabilityToV8(Availability::kUnavailable));
     return promise;
   }
@@ -357,10 +355,8 @@ ScriptPromise<SemanticEmbedder> SemanticEmbedder::create(
   auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  // TODO(crbug.com/392095655): Create a new Permissions Policy feature for
-  // this.
   if (!execution_context->IsFeatureEnabled(
-          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+          network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, kExceptionMessagePermissionPolicy));
     return promise;

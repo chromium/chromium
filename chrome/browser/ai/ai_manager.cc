@@ -1907,10 +1907,8 @@ void AIManager::CanCreateSemanticEmbedder(
     return;
   }
 
-  // TODO(crbug.com/428233906): Implement a dedicated Permissions Policy for the
-  // Embedding API.
   if (IsPermissionsPolicyBlocked(
-          network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+          network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
     receivers_.ReportBadMessage("Permissions policy disabled");
     return;
   }
@@ -1954,7 +1952,7 @@ void AIManager::CreateSemanticEmbedder(
     return;
   }
 
-  if (IsBlocked(network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+  if (IsBlocked(network::mojom::PermissionsPolicyFeature::kSemanticEmbedder)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
   }

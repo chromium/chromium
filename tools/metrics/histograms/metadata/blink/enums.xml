@@ -7063,6 +7063,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="148" label="Haptics"/>
   <int value="149" label="PublicKeyCredentialsRemoteClientDataJson"/>
   <int value="150" label="UnboundedElement"/>
+  <int value="151" label="SemanticEmbedder"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->

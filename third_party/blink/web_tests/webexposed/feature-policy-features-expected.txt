@@ -76,6 +76,7 @@ publickey-credentials-create
 publickey-credentials-get
 rewriter
 screen-wake-lock
+semantic-embedder
 serial
 speaker-selection
 storage-access

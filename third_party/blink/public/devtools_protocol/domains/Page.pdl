@@ -153,6 +153,7 @@ domain Page
       publickey-credentials-remote-client-data-json
       rewriter
       screen-wake-lock
+      semantic-embedder
       serial
       smart-card
       speaker-selection

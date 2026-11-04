@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
@@ -38,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -446,6 +448,37 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWithoutOptimizationGuide) {
   ASSERT_TRUE(client.error_future().IsReady());
   EXPECT_EQ(client.error_future().Get(),
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+TEST_F(AIManagerTest, CanCreateSemanticEmbedderPermissionsPolicyDisabled) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kSemanticEmbedder);
+  mojo::test::BadMessageObserver observer;
+  GetAIManagerRemote()->CanCreateSemanticEmbedder(base::DoNothing());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Permissions policy disabled");
+}
+
+TEST_F(AIManagerTest, CreateSemanticEmbedderPermissionsPolicyDisabled) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kSemanticEmbedder);
+  mojo::test::BadMessageObserver observer;
+  TestCreateSemanticEmbedderClient client;
+  GetAIManagerRemote()->CreateSemanticEmbedder(
+      client.BindNewPipeAndPassRemote(), /*monitor=*/mojo::NullRemote());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
+}
+
+// The Semantic Embedder has its own policy, so blocking "language-model" does
+// not block it.
+TEST_F(AIManagerTest, SemanticEmbedderIgnoresLanguageModelPolicy) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kLanguageModel);
+  mojo::test::BadMessageObserver observer;
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager->CanCreateSemanticEmbedder(future.GetCallback());
+  ai_manager.FlushForTesting();
+  EXPECT_FALSE(observer.got_bad_message());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 TEST_F(AIManagerTest, CanCreateFeatureDisabled) {

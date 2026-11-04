@@ -350,6 +350,10 @@ enum PermissionsPolicyFeature {
   // escape the iframe's bounds.
   kUnboundedElement = 150,
 
+  // Allows sites to delegate Semantic Embedder API access to iframes.
+  // See https://github.com/explainers-by-googlers/semantic-embedder-api
+  kSemanticEmbedder = 151,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update
