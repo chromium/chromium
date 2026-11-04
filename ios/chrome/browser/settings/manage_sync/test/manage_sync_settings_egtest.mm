@@ -57,26 +57,58 @@ NSString* const kPassphrase = @"hello";
 
 void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
                                         BOOL expect_history_sync_ui) {
+  // Wait for the Tools menu to finish dismissing and Settings to be visible
+  // before tapping the sign-in promo row.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:chrome_test_util::ToolsMenuView()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SettingsCollectionView()];
+
   // Sign in with fake identity using the settings sign-in promo.
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          chrome_test_util::AccountChooserButtonMatcher(fake_identity)];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
                                    fake_identity)] performAction:grey_tap()];
+  // Wait for the default-account view to finish sliding out and the identity
+  // cell to become visible before tapping it.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kIdentityButtonControlIdentifier)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::IdentityCellMatcherForEmail(
+                          fake_identity.userEmail)];
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
                                    fake_identity.userEmail)]
       performAction:grey_tap()];
+  // Selecting an identity cell plays a 0.25s spring animation before popping
+  // ConsistencyAccountChooserViewController (another 0.25s slide transition).
+  // Wait for the identity cell to disappear and the primary "Continue as ..."
+  // button to become visible before tapping it.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_allOf(
+                                                 grey_accessibilityID(
+                                                     fake_identity.userEmail),
+                                                 grey_kindOfClassName(
+                                                     @"TableViewIdentityCell"),
+                                                 nil)];
   [ChromeEarlGrey
       waitForMatcher:chrome_test_util::ConsistencySigninPrimaryButtonMatcher()];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ConsistencySigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 
   [SigninEarlGreyUI dismissSigninConfirmationSnackbarForIdentity:fake_identity
                                                    assertVisible:NO];
 
   if (expect_history_sync_ui) {
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        chrome_test_util::ButtonStackPrimaryButton()];
     [[EarlGrey
         selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
         performAction:grey_tap()];
@@ -86,14 +118,20 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
 
   // Close settings and re-open it to make sure the settings UI is updated to
   // avoid flakiness.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsDoneButton()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
   [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:chrome_test_util::ToolsMenuView()];
 
   // Check that Settings is presented.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SettingsCollectionView()];
 }
 
 // Adds a bookmark. The storage type is determined based on if the user is
@@ -116,12 +154,15 @@ void ExpectBatchUploadRecommendationItem(int message_id,
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           l10n_util::GetStringUTF16(message_id), "count", count, "email",
           base::SysNSStringToUTF16(email)));
-  [[EarlGrey
-      selectElementWithMatcher:
+  // UITableView keeps reloaded cells in the reuse pool as `hidden=YES` with the
+  // same accessibilityID and accessibilityLabel, which causes
+  // `waitForSufficientlyVisibleElementWithMatcher:` to fail with a multiple
+  // elements matched exception unless `grey_hidden(NO)` is specified.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
           grey_allOf(grey_accessibilityID(
                          kBatchUploadRecommendationItemAccessibilityIdentifier),
-                     grey_accessibilityLabel(text), grey_sufficientlyVisible(),
-                     nil)] assertWithMatcher:grey_notNil()];
+                     grey_accessibilityLabel(text), grey_hidden(NO), nil)];
 }
 
 // Waits for snackbar item to show up after pressing save on the batch upload
@@ -690,30 +731,48 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI openSyncSettings];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Verify the error section is showing.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kSyncErrorButtonIdentifier)];
 
   // Tap "Enter Passphrase" button.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
       performAction:grey_tap()];
 
+  // Wait for the passphrase view controller to finish presenting before
+  // entering the passphrase.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)];
+
   // Enter the passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(
+              kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)];
 
   // Verify it goes back to "manage sync" UI.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
-  // Verify the error section is not showing anymore.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
-      assertWithMatcher:grey_notVisible()];
+  // Verify the error section is not showing anymore. UITableView keeps
+  // deleted cells in the reuse pool as `hidden=YES`, so match on
+  // `grey_sufficientlyVisible()` when waiting for the error row to disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_allOf(grey_accessibilityID(kSyncErrorButtonIdentifier),
+                     grey_sufficientlyVisible(), nil)];
 }
 
 // Tests the "History and Tabs" toggle manages both types. When both types
@@ -731,13 +790,18 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   SignInWithPromoFromAccountSettings(fakeIdentity,
                                      /*expect_history_sync_ui=*/NO);
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Verify that for "History and Tabs" an "Off" button is shown instead of a
   // toggle.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(
-                                   l10n_util::GetNSString(IDS_IOS_SETTING_OFF))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_SETTING_OFF))];
 }
 
 // Tests the "History and Tabs" toggle manages both types. When History
@@ -754,13 +818,19 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   SignInWithPromoFromAccountSettings(fakeIdentity,
                                      /*expect_history_sync_ui=*/NO);
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Verify that for "History and Tabs" a toggle shows.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncHistoryAndTabsIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          chrome_test_util::TableViewSwitchCell(kSyncHistoryAndTabsIdentifier,
+                                                /*is_toggled_on=*/NO,
+                                                /*enabled=*/YES)];
 }
 
 // Tests the "History and Tabs" toggle manages both types. When Tabs
@@ -777,13 +847,19 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   SignInWithPromoFromAccountSettings(fakeIdentity,
                                      /*expect_history_sync_ui=*/NO);
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Verify that for "History and Tabs" a toggle shows.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncHistoryAndTabsIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          chrome_test_util::TableViewSwitchCell(kSyncHistoryAndTabsIdentifier,
+                                                /*is_toggled_on=*/NO,
+                                                /*enabled=*/YES)];
 }
 
 // Tests closing the account settings with a remote signout.
@@ -793,16 +869,24 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI openSyncSettings];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Remove fakeIdentity from device.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedOut];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Check that Settings is presented.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::SettingsCollectionView()];
 }
 
 // Tests that the batch upload button description in the account settings
@@ -824,6 +908,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Open the "manage sync" view.
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Find and match the batch upload recommendation item text.
   ExpectBatchUploadRecommendationItem(
@@ -848,6 +938,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Open the "manage sync" view.
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Find and match the batch upload recommendation item text.
   ExpectBatchUploadRecommendationItem(
@@ -859,8 +955,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // contains the correct string for reading list.
 - (void)testBulkUploadDescriptionTextForReadingList {
   // Add local data.
-  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
-      GURL("https://example.com"), nil);
+  GREYAssertNil([ReadingListAppInterface
+                    addEntryWithURL:[NSURL URLWithString:@"https://example.com"]
+                              title:@"example"
+                               read:YES],
+                @"Unable to add Reading List item");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -872,6 +971,12 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Open the "manage sync" view.
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
 
   // Find and match the batch upload recommendation item text.
   ExpectBatchUploadRecommendationItem(
