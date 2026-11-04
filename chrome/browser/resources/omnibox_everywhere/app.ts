@@ -95,7 +95,6 @@ export class OmniboxEverywhereAppElement extends
       usePecApi_: {type: Boolean},
       isOblongShape_: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
-      composeboxState_: {type: Object},
       showVoiceSearchOverlay_: {
         type: Boolean,
         reflect: true,
@@ -158,7 +157,6 @@ export class OmniboxEverywhereAppElement extends
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
-  protected accessor composeboxState_: ComposeboxState|null = null;
   protected accessor showVoiceSearchOverlay_: boolean = false;
   protected accessor hasVoiceSearchError_: boolean = false;
   protected accessor voiceSearchTranscript_: string = '';
@@ -386,13 +384,13 @@ export class OmniboxEverywhereAppElement extends
     // (e.g. when clicking a tool or attaching a tab from the '+' context menu).
     const text = this.searchbox ? this.searchbox.getInputText?.() || '' : '';
     // Calls setActiveToolMode(initialMode) directly without passing mode down
-    // through composeboxState_. This prevents
+    // through composebox.state. This prevents
     // ComposeboxEmbedderMixin.updateState() from mistakenly calling
     // handleToolClick() and toggling off the active tool mode.
     const {mode: initialMode = ToolMode.kUnspecified, ...stateForComposebox} =
         state ?? {};
 
-    this.composeboxState_ = {
+    const composeboxState: ComposeboxState = {
       text,
       files: [],
       mode: ToolMode.kUnspecified,
@@ -416,6 +414,7 @@ export class OmniboxEverywhereAppElement extends
     this.setIsComposebox_(true);
     await this.updateComplete;
     if (this.composebox) {
+      this.composebox.state = composeboxState;
       this.composebox.focusInput();
       if (!isPendingScreenshot) {
         this.composebox.playGlowAnimation();
@@ -537,7 +536,6 @@ export class OmniboxEverywhereAppElement extends
     SearchboxBrowserProxy.getInstance().handler.openHotkeySettings();
   }
   protected async onOpenComposebox_(e: CustomEvent<ComposeboxState>) {
-    this.composeboxState_ = e.detail;
     this.screenshotOriginWasSearchbox_ = false;
     this.setIsComposebox_(true);
     await this.updateComplete;
@@ -545,13 +543,13 @@ export class OmniboxEverywhereAppElement extends
         this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
             'omnibox-everywhere-composebox');
     if (composebox) {
+      composebox.state = e.detail;
       composebox.focusInput();
       composebox.playGlowAnimation();
     }
   }
 
   protected async onCloseComposebox_() {
-    this.composeboxState_ = null;
     this.isPendingScreenshot_ = false;
     this.screenshotOriginWasSearchbox_ = false;
     this.setIsComposebox_(false);
@@ -594,7 +592,6 @@ export class OmniboxEverywhereAppElement extends
   }
 
   protected async onComposeboxSubmit_() {
-    this.composeboxState_ = null;
     this.isComposeboxMode_ = false;
     this.isPendingScreenshot_ = false;
     this.screenshotOriginWasSearchbox_ = false;
