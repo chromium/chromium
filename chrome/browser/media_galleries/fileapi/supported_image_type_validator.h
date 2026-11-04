@@ -29,8 +29,6 @@ class SupportedImageTypeValidator : public storage::CopyOrMoveFileValidator {
 
   // storage::CopyOrMoveFileValidator:
   void StartPreWriteValidation(ResultCallback result_callback) override;
-  void StartPostWriteValidation(const base::FilePath& dest_platform_path,
-                                ResultCallback result_callback) override;
 
  private:
   friend class MediaFileValidatorFactory;

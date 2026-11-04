@@ -78,28 +78,23 @@ void ExpectOk(const GURL& origin_url,
 
 class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
  public:
-  // A factory that creates validators that accept everything or nothing.
+  // A factory that rejects filenames containing "2".
   TestValidatorFactory() = default;
   ~TestValidatorFactory() override = default;
 
   CopyOrMoveFileValidator* CreateCopyOrMoveFileValidator(
-      const FileSystemURL& /*src_url*/,
+      const FileSystemURL& src_url,
       const base::FilePath& /*platform_path*/) override {
-    // Move arg management to TestValidator?
-    return new TestValidator(true, true, std::string("2"));
+    return new TestValidator(
+        !src_url.virtual_path().BaseName().AsUTF8Unsafe().contains("2"));
   }
 
  private:
   class TestValidator : public CopyOrMoveFileValidator {
    public:
-    explicit TestValidator(bool pre_copy_valid,
-                           bool post_copy_valid,
-                           const std::string& reject_string)
+    explicit TestValidator(bool pre_copy_valid)
         : result_(pre_copy_valid ? base::File::FILE_OK
-                                 : base::File::FILE_ERROR_SECURITY),
-          write_result_(post_copy_valid ? base::File::FILE_OK
-                                        : base::File::FILE_ERROR_SECURITY),
-          reject_string_(reject_string) {}
+                                 : base::File::FILE_ERROR_SECURITY) {}
 
     TestValidator(const TestValidator&) = delete;
     TestValidator& operator=(const TestValidator&) = delete;
@@ -112,22 +107,8 @@ class TestValidatorFactory : public CopyOrMoveFileValidatorFactory {
           FROM_HERE, base::BindOnce(std::move(result_callback), result_));
     }
 
-    void StartPostWriteValidation(const base::FilePath& dest_platform_path,
-                                  ResultCallback result_callback) override {
-      base::File::Error result = write_result_;
-      std::string unsafe = dest_platform_path.BaseName().AsUTF8Unsafe();
-      if (unsafe.contains(reject_string_)) {
-        result = base::File::FILE_ERROR_SECURITY;
-      }
-      // Post the result since a real validator must do work asynchronously.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(result_callback), result));
-    }
-
    private:
     base::File::Error result_;
-    base::File::Error write_result_;
-    std::string reject_string_;
   };
 };
 
@@ -872,7 +853,7 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectories) {
 }
 
 TEST(LocalFileSystemCopyOrMoveOperationTest,
-     MoveDirectoryFailPostWriteValidation) {
+     MoveDirectoryFailPreWriteValidation) {
   CopyOrMoveOperationTestHelper helper("http://foo", kFileSystemTypeTemporary,
                                        kFileSystemTypeTest);
   helper.SetUp();
@@ -886,7 +867,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest,
             helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases));
 
   // Move it.
-  helper.Move(src, dest);
+  EXPECT_EQ(base::File::FILE_ERROR_SECURITY, helper.Move(src, dest));
 
   // Verify.
   ASSERT_TRUE(helper.DirectoryExists(src));

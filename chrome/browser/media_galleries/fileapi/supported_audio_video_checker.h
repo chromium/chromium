@@ -16,8 +16,7 @@ class MediaFileValidatorFactory;
 class SafeAudioVideoChecker;
 
 // Uses SafeAudioVideoChecker to validate supported audio and video files in
-// the utility process and then uses storage::CopyOrMoveFileValidator to ask the
-// OS to virus scan them. The entire file is not decoded so a positive result
+// the utility process. The entire file is not decoded so a positive result
 // from this class does not make the file safe to use in the browser process.
 class SupportedAudioVideoChecker : public storage::CopyOrMoveFileValidator {
  public:
@@ -31,8 +30,6 @@ class SupportedAudioVideoChecker : public storage::CopyOrMoveFileValidator {
 
   // storage::CopyOrMoveFileValidator:
   void StartPreWriteValidation(ResultCallback result_callback) override;
-  void StartPostWriteValidation(const base::FilePath& dest_platform_path,
-                                ResultCallback result_callback) override;
 
  private:
   friend class MediaFileValidatorFactory;

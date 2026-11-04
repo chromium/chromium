@@ -206,7 +206,7 @@ class CopyOrMoveFileValidatorTestHelper {
 };
 
 // For TestCopyOrMoveFileValidatorFactory
-enum Validity { VALID, PRE_WRITE_INVALID, POST_WRITE_INVALID };
+enum Validity { VALID, PRE_WRITE_INVALID };
 
 class TestCopyOrMoveFileValidatorFactory
     : public CopyOrMoveFileValidatorFactory {
@@ -233,12 +233,8 @@ class TestCopyOrMoveFileValidatorFactory
   class TestCopyOrMoveFileValidator : public CopyOrMoveFileValidator {
    public:
     explicit TestCopyOrMoveFileValidator(Validity validity)
-        : result_(validity == VALID || validity == POST_WRITE_INVALID
-                      ? base::File::FILE_OK
-                      : base::File::FILE_ERROR_SECURITY),
-          write_result_(validity == VALID || validity == PRE_WRITE_INVALID
-                            ? base::File::FILE_OK
-                            : base::File::FILE_ERROR_SECURITY) {}
+        : result_(validity == VALID ? base::File::FILE_OK
+                                    : base::File::FILE_ERROR_SECURITY) {}
 
     TestCopyOrMoveFileValidator(const TestCopyOrMoveFileValidator&) = delete;
     TestCopyOrMoveFileValidator& operator=(const TestCopyOrMoveFileValidator&) =
@@ -252,16 +248,8 @@ class TestCopyOrMoveFileValidatorFactory
           FROM_HERE, base::BindOnce(std::move(result_callback), result_));
     }
 
-    void StartPostWriteValidation(const base::FilePath& dest_platform_path,
-                                  ResultCallback result_callback) override {
-      // Post the result since a real validator must do work asynchronously.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(result_callback), write_result_));
-    }
-
    private:
     base::File::Error result_;
-    base::File::Error write_result_;
   };
 
   Validity validity_;
@@ -324,18 +312,6 @@ TEST(CopyOrMoveFileValidatorTest, OverrideValidator) {
   auto accept_factory =
       std::make_unique<TestCopyOrMoveFileValidatorFactory>(VALID);
   helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(accept_factory));
-
-  helper.CopyTest(base::File::FILE_ERROR_SECURITY);
-  helper.MoveTest(base::File::FILE_ERROR_SECURITY);
-}
-
-TEST(CopyOrMoveFileValidatorTest, RejectPostWrite) {
-  CopyOrMoveFileValidatorTestHelper helper("http://foo", kNoValidatorType,
-                                           kWithValidatorType);
-  helper.SetUp();
-  auto factory =
-      std::make_unique<TestCopyOrMoveFileValidatorFactory>(POST_WRITE_INVALID);
-  helper.SetMediaCopyOrMoveFileValidatorFactory(std::move(factory));
 
   helper.CopyTest(base::File::FILE_ERROR_SECURITY);
   helper.MoveTest(base::File::FILE_ERROR_SECURITY);

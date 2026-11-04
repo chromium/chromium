@@ -289,8 +289,7 @@ class CopyOrMoveOnSameFileSystemImpl
 
 // Specifically for cross file system copy/move operation, this class creates
 // a snapshot file, validates it if necessary, runs copying process,
-// validates the created file, and removes source file for move (noop for
-// copy).
+// and removes source file for move (noop for copy).
 class SnapshotCopyOrMoveImpl
     : public CopyOrMoveOperationDelegate::CopyOrMoveImpl {
  public:
@@ -415,48 +414,22 @@ class SnapshotCopyOrMoveImpl
       return;
     }
 
-    // |validator_| is nullptr when the destination filesystem does not do
-    // validation.
-    if (!validator_) {
-      // No validation is needed. If TouchFile failed to restore the "last
-      // modified" time, just ignore the error.
-      RunAfterPostWriteValidation(std::move(callback), base::File::FILE_OK);
-      return;
-    }
-
-    PostWriteValidation(
-        base::BindOnce(&SnapshotCopyOrMoveImpl::RunAfterPostWriteValidation,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void RunAfterPostWriteValidation(
-      CopyOrMoveOperationDelegate::StatusCallback callback,
-      base::File::Error error) {
+    // Ignore errors restoring the last modified time.
     if (force_error_for_test_) {
-      error = base::File::FILE_ERROR_FAILED;
-    }
-    if (cancel_requested_) {
-      DidEndCopy(std::move(callback), base::File::FILE_ERROR_ABORT);
-      return;
-    }
-
-    if (error != base::File::FILE_OK) {
-      // Failed to validate. Remove the destination file.
       operation_runner_->Remove(
           dest_url_, true /* recursive */,
           base::BindOnce(&SnapshotCopyOrMoveImpl::DidRemoveDestForError,
-                         weak_factory_.GetWeakPtr(), error,
-                         std::move(callback)));
+                         weak_factory_.GetWeakPtr(),
+                         base::File::FILE_ERROR_FAILED, std::move(callback)));
       return;
     }
 
     if (operation_type_ == CopyOrMoveOperationDelegate::OPERATION_COPY) {
       DidEndCopy(std::move(callback), base::File::FILE_OK);
       return;
-    } else {
-      DidEndCopy(CopyOrMoveOperationDelegate::StatusCallback(),
-                 base::File::FILE_OK);
     }
+    DidEndCopy(CopyOrMoveOperationDelegate::StatusCallback(),
+               base::File::FILE_OK);
 
     DCHECK_EQ(CopyOrMoveOperationDelegate::OPERATION_MOVE, operation_type_);
 
@@ -483,8 +456,7 @@ class SnapshotCopyOrMoveImpl
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
     if (error != base::File::FILE_OK) {
-      VLOG(1) << "Error removing destination file after validation error: "
-              << error;
+      VLOG(1) << "Error removing destination file after copy error: " << error;
     }
     DidEndCopy(std::move(callback), prior_error);
   }
@@ -497,49 +469,6 @@ class SnapshotCopyOrMoveImpl
     validator_.reset(validator_factory_->CreateCopyOrMoveFileValidator(
         src_url_, platform_path));
     validator_->StartPreWriteValidation(std::move(callback));
-  }
-
-  // Runs post-write validation.
-  void PostWriteValidation(
-      CopyOrMoveOperationDelegate::StatusCallback callback) {
-    operation_runner_->CreateSnapshotFile(
-        dest_url_,
-        base::BindOnce(
-            &SnapshotCopyOrMoveImpl::PostWriteValidationAfterCreateSnapshotFile,
-            weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
-  void PostWriteValidationAfterCreateSnapshotFile(
-      CopyOrMoveOperationDelegate::StatusCallback callback,
-      base::File::Error error,
-      const base::File::Info& file_info,
-      const base::FilePath& platform_path,
-      ScopedFile temp_file) {
-    if (cancel_requested_)
-      error = base::File::FILE_ERROR_ABORT;
-
-    if (error != base::File::FILE_OK) {
-      std::move(callback).Run(error);
-      return;
-    }
-
-    DCHECK(validator_);
-    // Note: temp_file passed here to keep the file alive until after
-    // the StartPostWriteValidation operation finishes.
-    validator_->StartPostWriteValidation(
-        platform_path,
-        base::BindOnce(&SnapshotCopyOrMoveImpl::DidPostWriteValidation,
-                       weak_factory_.GetWeakPtr(), std::move(temp_file),
-                       std::move(callback)));
-  }
-
-  // |temp_file| is unused; it is passed here to make sure the reference is
-  // alive until after post-write validation is complete.
-  void DidPostWriteValidation(
-      ScopedFile temp_file,
-      CopyOrMoveOperationDelegate::StatusCallback callback,
-      base::File::Error error) {
-    std::move(callback).Run(error);
   }
 
   raw_ptr<CopyOrMoveFileValidatorFactory> validator_factory_;

@@ -23,12 +23,6 @@ class InvalidFileValidator : public storage::CopyOrMoveFileValidator {
     std::move(result_callback).Run(base::File::FILE_ERROR_SECURITY);
   }
 
-  void StartPostWriteValidation(const base::FilePath& dest_platform_path,
-                                storage::CopyOrMoveFileValidator::ResultCallback
-                                    result_callback) override {
-    std::move(result_callback).Run(base::File::FILE_ERROR_SECURITY);
-  }
-
  private:
   friend class ::MediaFileValidatorFactory;
 

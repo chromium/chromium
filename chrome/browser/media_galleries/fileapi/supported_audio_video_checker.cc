@@ -85,16 +85,6 @@ void SupportedAudioVideoChecker::StartPreWriteValidation(
                      weak_factory_.GetWeakPtr()));
 }
 
-void SupportedAudioVideoChecker::StartPostWriteValidation(
-    const base::FilePath& dest_platform_path,
-    ResultCallback result_callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-
-  // StartPostWriteValidation() implementation is required. So effectively do
-  // nothing here.
-  std::move(result_callback).Run(base::File::FILE_OK);
-}
-
 SupportedAudioVideoChecker::SupportedAudioVideoChecker(
     const base::FilePath& path)
     : path_(path) {}
