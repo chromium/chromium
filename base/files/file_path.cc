@@ -683,13 +683,14 @@ FilePath FilePath::AddExtension(StringViewType extension) const {
     return *this;
   }
 
-  StringType str = path_;
-  if (extension[0] != kExtensionSeparator &&
-      *(str.end() - 1) != kExtensionSeparator) {
-    str.append(1, kExtensionSeparator);
-  }
-  str.append(extension);
-  return FilePath(str);
+  const bool needs_separator =
+      extension[0] != kExtensionSeparator &&
+      (path_.size() > 0 && path_.back() != kExtensionSeparator);
+  return FilePath(
+      base::StrCat({path_,
+                    needs_separator ? StringViewType(&kExtensionSeparator, 1)
+                                    : StringViewType(),
+                    extension}));
 }
 
 FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
@@ -718,12 +719,12 @@ FilePath FilePath::ReplaceExtension(StringViewType extension) const {
     return no_ext;
   }
 
-  StringType str = no_ext.value();
-  if (extension[0] != kExtensionSeparator) {
-    str.append(1, kExtensionSeparator);
-  }
-  str.append(extension);
-  return FilePath(str);
+  const bool needs_separator = extension[0] != kExtensionSeparator;
+  return FilePath(
+      base::StrCat({no_ext.value(),
+                    needs_separator ? StringViewType(&kExtensionSeparator, 1)
+                                    : StringViewType(),
+                    extension}));
 }
 
 bool FilePath::MatchesExtension(StringViewType extension) const {

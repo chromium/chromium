@@ -14,6 +14,17 @@
 
 namespace base {
 
+namespace {
+
+size_t HexStringSizeToByteSize(size_t hex_string_size) {
+  if (hex_string_size > 0 && hex_string_size % 2 == 0) {
+    return hex_string_size / 2;
+  }
+  return 0;
+}
+
+}  // namespace
+
 std::string NumberToString(int value) {
   return internal::IntToStringT<std::string>(value);
 }
@@ -174,12 +185,18 @@ bool HexStringToUInt64(std::string_view input, uint64_t* output) {
 
 bool HexStringToBytes(std::string_view input, std::vector<uint8_t>* output) {
   DCHECK(output->empty());
+  if (size_t byte_size = HexStringSizeToByteSize(input.size())) {
+    output->reserve(byte_size);
+  }
   return internal::HexStringToByteContainer<uint8_t>(
       input, std::back_inserter(*output));
 }
 
 bool HexStringToString(std::string_view input, std::string* output) {
   DCHECK(output->empty());
+  if (size_t byte_size = HexStringSizeToByteSize(input.size())) {
+    output->reserve(byte_size);
+  }
   return internal::HexStringToByteContainer<char>(input,
                                                   std::back_inserter(*output));
 }

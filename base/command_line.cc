@@ -146,7 +146,10 @@ std::wstring QuoteForCommandLineToArgvWInternal(
     return arg;
   }
 
-  std::wstring out(1, L'"');
+  std::wstring out;
+  // Reserve for the arg string plus two quotes.
+  out.reserve(arg.size() + 2);
+  out.push_back(L'"');
   for (size_t i = 0; i < arg.size(); ++i) {
     if (arg[i] == L'\\') {
       // Finds the extent of this run of backslashes.
@@ -710,8 +713,8 @@ CommandLine::StringType CommandLine::GetArgumentsStringInternal(
         // `has_single_argument_switch_` is true.
         DCHECK(!appended_single_argument_switch);
         appended_single_argument_switch = true;
-        params.append(base::StrCat(
-            {kSwitchPrefixes[0], kSingleArgument, FILE_PATH_LITERAL(" ")}));
+        base::StrAppend(&params, {kSwitchPrefixes[0], kSingleArgument,
+                                  FILE_PATH_LITERAL(" ")});
       } else {
         arg = QuoteForCommandLineToArgvWInternal(arg,
                                                  allow_unsafe_insert_sequences);
@@ -732,8 +735,7 @@ CommandLine::StringType CommandLine::GetCommandLineString() const {
 #endif
   StringType params(GetArgumentsString());
   if (!params.empty()) {
-    string.append(FILE_PATH_LITERAL(" "));
-    string.append(params);
+    base::StrAppend(&string, {FILE_PATH_LITERAL(" "), params});
   }
   return string;
 }
@@ -754,10 +756,9 @@ std::wstring CommandLine::QuoteForCommandLineToArgvW(const std::wstring& arg) {
 // applications installed using the old syntax, etc.
 CommandLine::StringType CommandLine::GetCommandLineStringForShell() const {
   DCHECK(GetArgs().empty());
-  StringType command_line_string = GetCommandLineString();
-  return command_line_string + FILE_PATH_LITERAL(" ") +
-         StringType(kSwitchPrefixes[0]) + kSingleArgument +
-         FILE_PATH_LITERAL(" %1");
+  return base::StrCat({GetCommandLineString(), FILE_PATH_LITERAL(" "),
+                       StringType(kSwitchPrefixes[0]), kSingleArgument,
+                       FILE_PATH_LITERAL(" %1")});
 }
 
 CommandLine::StringType
@@ -769,8 +770,7 @@ CommandLine::GetCommandLineStringWithUnsafeInsertSequences() const {
   StringType params(
       GetArgumentsStringInternal(/*allow_unsafe_insert_sequences=*/true));
   if (!params.empty()) {
-    string.append(FILE_PATH_LITERAL(" "));
-    string.append(params);
+    base::StrAppend(&string, {FILE_PATH_LITERAL(" "), params});
   }
   return string;
 }

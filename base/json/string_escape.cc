@@ -150,6 +150,9 @@ std::string GetQuotedJSONString(std::u16string_view str) {
 std::string EscapeBytesAsInvalidJSONString(std::string_view str,
                                            bool put_in_quotes) {
   std::string dest;
+  // The output will always be at least str.size() bytes, plus 2 bytes if
+  // quoted.
+  dest.reserve(str.size() + (put_in_quotes ? 2 : 0));
 
   if (put_in_quotes) {
     dest.push_back('"');
