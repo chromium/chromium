@@ -80,13 +80,6 @@ namespace {
 #define ASSIGN_OPTIONAL_OR_RETURN_VOID(lhs, rexpr) \
   ASSIGN_OR_RETURN(lhs, rexpr, [] { return; });
 
-// Registers a fuzz test for all three device types (CPU, GPU, NPU).
-// The variadic args carry the .WithDomains()/.WithSeeds() chain.
-#define WEBNN_FUZZ_TEST_F(func, ...)  \
-  FUZZ_TEST_F(CPU, func) __VA_ARGS__; \
-  FUZZ_TEST_F(GPU, func) __VA_ARGS__; \
-  FUZZ_TEST_F(NPU, func) __VA_ARGS__
-
 template <typename T>
 std::vector<uint8_t> CreateBufferAs(size_t buffer_size, int64_t fill_value) {
   std::vector<uint8_t> buffer(buffer_size, 0);
@@ -3395,8 +3388,10 @@ class CPU : public WebNNGraphImplFuzzerImpl<
 class GPU : public WebNNGraphImplFuzzerImpl<
                 WebNNGraphImplFuzzerDevice<mojom::Device::kGpu>> {};
 
+#if !BUILDFLAG(IS_LINUX)
 class NPU : public WebNNGraphImplFuzzerImpl<
                 WebNNGraphImplFuzzerDevice<mojom::Device::kNpu>> {};
+#endif  // !BUILDFLAG(IS_LINUX)
 
 template <typename BaseFixture>
 void WebNNGraphImplFuzzerImpl<BaseFixture>::Activation(ActivationParams params,
@@ -7261,6 +7256,23 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::DQTransposeQ(
   GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
 }
 
+// Fuzz tests. WEBNN_FUZZ_TEST_F(Name, ...) registers CPU.Name, GPU.Name and
+// NPU.Name, all with the same .WithDomains() and .WithSeeds() settings. NPU is
+// skipped on Linux because WebNN has no NPU accelerator implemented there and
+// ClusterFuzz has no Linux machines with NPUs.
+// When you add or remove a test below, update `fuzztests` in BUILD.gn to match.
+// LINT.IfChange(npu_fuzztests)
+#if BUILDFLAG(IS_LINUX)
+#define WEBNN_FUZZ_TEST_F(func, ...)  \
+  FUZZ_TEST_F(CPU, func) __VA_ARGS__; \
+  FUZZ_TEST_F(GPU, func) __VA_ARGS__
+#else
+#define WEBNN_FUZZ_TEST_F(func, ...)  \
+  FUZZ_TEST_F(CPU, func) __VA_ARGS__; \
+  FUZZ_TEST_F(GPU, func) __VA_ARGS__; \
+  FUZZ_TEST_F(NPU, func) __VA_ARGS__
+#endif  // BUILDFLAG(IS_LINUX)
+
 // gelu, hardSwish, relu, sigmoid, softplus, softsign and tanh are all
 // activations with no extra options, so they share a single fuzzer that
 // selects among them via `kind`.
@@ -8406,5 +8418,6 @@ WEBNN_FUZZ_TEST_F(
                      /*seed_for_input=*/2,
                      /*seed_for_scale=*/0.25f,
                      /*seed_for_zero_point=*/0}}));
+// LINT.ThenChange(//services/webnn/BUILD.gn:npu_fuzztests)
 
 }  // namespace webnn::test
