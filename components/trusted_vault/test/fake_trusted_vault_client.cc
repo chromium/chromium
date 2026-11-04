@@ -5,8 +5,10 @@
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -177,14 +179,10 @@ void FakeTrustedVaultClient::FetchKeys(
     return;
   }
 
-  // Fetch keys from the server and cache them.
-  cached_keys.keys =
-      server_.RequestRotatedKeysFromServer(gaia_id, cached_keys.keys.back());
-  cached_keys.marked_as_stale = false;
-
-  // Return the newly-cached keys.
-  pending_responses_.push_back(
-      base::BindOnce(std::move(callback), cached_keys.keys));
+  // Fetch keys from the server and cache them upon completion.
+  pending_responses_.push_back(base::BindOnce(
+      &FakeTrustedVaultClient::CompleteStaleFetchKeys,
+      weak_ptr_factory_.GetWeakPtr(), gaia_id, std::move(callback)));
 }
 
 void FakeTrustedVaultClient::StoreKeys(
@@ -193,10 +191,13 @@ void FakeTrustedVaultClient::StoreKeys(
     int last_key_version,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
+  const bool keys_changed = cached_keys.keys != keys;
   cached_keys.keys = keys;
   cached_keys.marked_as_stale = false;
-  for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged(trigger);
+  if (keys_changed) {
+    for (Observer& observer : observer_list_) {
+      observer.OnTrustedVaultKeysChanged(trigger);
+    }
   }
 }
 
@@ -282,6 +283,38 @@ void FakeTrustedVaultClient::ClearLocalDataForAccount(
   if (it != gaia_id_to_cached_keys_.end()) {
     gaia_id_to_cached_keys_.erase(it);
   }
+}
+
+void FakeTrustedVaultClient::CompleteStaleFetchKeys(
+    const GaiaId& gaia_id,
+    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+        callback) {
+  auto it = gaia_id_to_cached_keys_.find(gaia_id);
+  if (it == gaia_id_to_cached_keys_.end() || it->second.keys.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  CachedKeysPerUser& cached_keys = it->second;
+  if (!cached_keys.marked_as_stale) {
+    const std::vector<std::vector<uint8_t>> keys = cached_keys.keys;
+    std::move(callback).Run(keys);
+    return;
+  }
+
+  std::vector<std::vector<uint8_t>> rotated_keys =
+      server_.RequestRotatedKeysFromServer(gaia_id, cached_keys.keys.back());
+  if (!rotated_keys.empty()) {
+    StoreKeys(gaia_id, rotated_keys,
+              /*last_key_version=*/static_cast<int>(rotated_keys.size()) - 1,
+              /*trigger=*/std::nullopt);
+  } else {
+    // Key rotation failed (local keys are obsolete); clear cached keys and
+    // stale flag without notifying observers.
+    cached_keys.keys.clear();
+    cached_keys.marked_as_stale = false;
+  }
+  std::move(callback).Run(rotated_keys);
 }
 
 void FakeTrustedVaultClient::PostCompleteAllPendingRequests() {

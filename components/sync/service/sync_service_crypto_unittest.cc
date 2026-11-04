@@ -5,11 +5,13 @@
 #include "components/sync/service/sync_service_crypto.h"
 
 #include <functional>
+#include <optional>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -80,7 +82,19 @@ CustomPassphraseBootstrapToken CreateBootstrapToken(
   return CustomPassphraseBootstrapToken::FromProto(std::move(proto));
 }
 
+class MockTrustedVaultClientObserver
+    : public trusted_vault::TrustedVaultClient::Observer {
+ public:
+  MockTrustedVaultClientObserver() = default;
+  ~MockTrustedVaultClientObserver() override = default;
 
+  MOCK_METHOD(void,
+              OnTrustedVaultKeysChanged,
+              (std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+                   trigger),
+              (override));
+  MOCK_METHOD(void, OnTrustedVaultRecoverabilityChanged, (), (override));
+};
 
 class MockDelegate : public SyncServiceCrypto::Delegate {
  public:
@@ -461,8 +475,6 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreCorruptedBootstrapToken) {
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }
 
-
-
 TEST_F(SyncServiceCryptoTest,
        ShouldReadValidTrustedVaultKeysFromClientBeforeInitialization) {
   // Cache `kInitialTrustedVaultKeys` into `trusted_vault_client_` prior to
@@ -745,7 +757,13 @@ TEST_F(SyncServiceCryptoTest, ShouldFollowKeyRotationDueToSecondFetch) {
 
   // Because of `kRotatedKeys` is a continuation of `kInitialTrustedVaultKeys`,
   // TrustedVaultServer should successfully deliver the new keys `kRotatedKeys`
-  // to the client.
+  // to the client and notify observers.
+  testing::StrictMock<MockTrustedVaultClientObserver> client_observer;
+  base::ScopedObservation<trusted_vault::TrustedVaultClient,
+                          trusted_vault::TrustedVaultClient::Observer>
+      observation(&client_observer);
+  observation.Observe(&trusted_vault_client_);
+  EXPECT_CALL(client_observer, OnTrustedVaultKeysChanged(Eq(std::nullopt)));
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
   ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_FALSE(crypto_.IsTrustedVaultKeyRequired());

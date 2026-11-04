@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -348,6 +349,58 @@ TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest,
   trusted_vault_client_.StoreKeys(sync_service_.GetAccountInfo().gaia,
                                   GetTestKeys(), /*last_key_version=*/1,
                                   /*trigger=*/std::nullopt);
+  EXPECT_EQ(tracker.GetEncryptionState(),
+            OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
+
+  EXPECT_CALL(observer_,
+              OnDeviceEncryptionStateChanged(
+                  OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
+                  OnDeviceEncryptionState::kDeviceReady));
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_EQ(tracker.GetEncryptionState(),
+            OnDeviceEncryptionState::kDeviceReady);
+}
+
+TEST_F(PasskeyTrustedVaultOnDeviceEncryptionStateTrackerTest,
+       NotifiesWhenFetchKeysFollowsKeyRotation) {
+  const std::vector<std::vector<uint8_t>> kInitialKeys = GetTestKeys();
+  const std::vector<std::vector<uint8_t>> kRotatedKeys = {kInitialKeys[0],
+                                                          {4, 5, 6}};
+  const CoreAccountInfo account_info = sync_service_.GetAccountInfo();
+
+  trusted_vault_client_.StoreKeys(account_info.gaia, kInitialKeys,
+                                  /*last_key_version=*/1,
+                                  /*trigger=*/std::nullopt);
+  PasskeyTrustedVaultOnDeviceEncryptionStateTracker tracker(
+      &sync_service_, &trusted_vault_client_);
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_EQ(tracker.GetEncryptionState(),
+            OnDeviceEncryptionState::kDeviceReady);
+
+  base::ScopedObservation<OnDeviceEncryptionStateTracker,
+                          OnDeviceEncryptionStateTracker::Observer>
+      observation(&observer_);
+  observation.Observe(&tracker);
+
+  // Rotate keys on the server, mark local keys as stale, and trigger a
+  // `FetchKeys()` call that downloads the rotated keys.
+  trusted_vault_client_.server()->StoreKeysOnServer(account_info.gaia,
+                                                    kRotatedKeys);
+  trusted_vault_client_.MarkLocalKeysAsStale(account_info, base::DoNothing());
+  trusted_vault_client_.FetchKeys(account_info, base::DoNothing());
+  EXPECT_EQ(trusted_vault_client_.GetStoredKeys(account_info.gaia),
+            kInitialKeys);
+
+  // Completing the `FetchKeys()` call notifies observers via
+  // `OnTrustedVaultKeysChanged()`, which resets cached state while re-fetching.
+  EXPECT_CALL(
+      observer_,
+      OnDeviceEncryptionStateChanged(
+          OnDeviceEncryptionState::kDeviceReady,
+          OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable));
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  EXPECT_EQ(trusted_vault_client_.GetStoredKeys(account_info.gaia),
+            kRotatedKeys);
   EXPECT_EQ(tracker.GetEncryptionState(),
             OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
 

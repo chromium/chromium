@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TEST_FAKE_TRUSTED_VAULT_CLIENT_H_
 #define COMPONENTS_TRUSTED_VAULT_TEST_FAKE_TRUSTED_VAULT_CLIENT_H_
 
+#include <cstdint>
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -153,6 +155,10 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     std::vector<std::vector<uint8_t>> keys;
   };
 
+  void CompleteStaleFetchKeys(
+      const GaiaId& gaia_id,
+      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+          callback);
   void PostCompleteAllPendingRequests();
 
   const bool auto_complete_requests_;
