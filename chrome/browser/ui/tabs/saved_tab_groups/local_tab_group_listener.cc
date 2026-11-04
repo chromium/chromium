@@ -11,7 +11,6 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
@@ -353,7 +352,7 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
   // Navigate if needed.
   if (saved_tab.url() != local_tab->GetContents()->GetURL()) {
     SavedTabGroupWebContentsListener* listener =
-        local_tab->GetTabFeatures()->saved_tab_group_web_contents_listener();
+        SavedTabGroupWebContentsListener::From(local_tab);
     listener->NavigateToUrl(base::PassKey<LocalTabGroupListener>(),
                             saved_tab.url());
   }

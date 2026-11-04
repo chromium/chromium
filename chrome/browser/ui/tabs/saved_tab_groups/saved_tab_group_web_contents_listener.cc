@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
@@ -83,6 +84,8 @@ bool WasNavigationInitiatedFromSync(
 
 }  // namespace
 
+DEFINE_USER_DATA(SavedTabGroupWebContentsListener);
+
 void SavedTabGroupWebContentsListener::OnTabDiscarded(
     tabs::TabInterface* tab_interface,
     content::WebContents* old_content,
@@ -98,7 +101,9 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     TabGroupSyncService* service,
     tabs::TabInterface* local_tab)
-    : service_(service), local_tab_(local_tab) {
+    : service_(service),
+      local_tab_(local_tab),
+      scoped_unowned_user_data_(local_tab->GetUnownedUserDataHost(), *this) {
   tab_discard_subscription_ = local_tab->RegisterWillDiscardContents(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
@@ -112,6 +117,12 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
   TabGroupSyncTabState::Reset(contents());
+}
+
+// static
+SavedTabGroupWebContentsListener* SavedTabGroupWebContentsListener::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(

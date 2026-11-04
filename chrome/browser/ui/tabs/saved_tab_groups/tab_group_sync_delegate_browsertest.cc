@@ -20,7 +20,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -217,11 +216,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   SavedTabGroupWebContentsListener* listener =
-      browser()
-          ->tab_strip_model()
-          ->GetTabAtIndex(0)
-          ->GetTabFeatures()
-          ->saved_tab_group_web_contents_listener();
+      SavedTabGroupWebContentsListener::From(
+          browser()->tab_strip_model()->GetTabAtIndex(0));
 
   ASSERT_TRUE(listener->saved_group());
   EXPECT_EQ(listener->saved_group()->local_group_id(), group_id);
@@ -243,11 +239,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   LocalTabGroupID group_id = browser()->tab_strip_model()->AddToNewGroup({1});
 
   SavedTabGroupWebContentsListener* listener =
-      browser()
-          ->tab_strip_model()
-          ->GetTabAtIndex(0)
-          ->GetTabFeatures()
-          ->saved_tab_group_web_contents_listener();
+      SavedTabGroupWebContentsListener::From(
+          browser()->tab_strip_model()->GetTabAtIndex(0));
 
   EXPECT_FALSE(listener->saved_group());
   ASSERT_TRUE(model_->Contains(group_id));
@@ -484,11 +477,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
   // Simulate a sync navigation.
   GURL url_to_navigate_to = GURL("https://www.google.com/1");
-  browser()
-      ->tab_strip_model()
-      ->GetTabAtIndex(0)
-      ->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
+  SavedTabGroupWebContentsListener::From(
+      browser()->tab_strip_model()->GetTabAtIndex(0))
       ->NavigateToUrlForTest(url_to_navigate_to);
 
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
@@ -516,11 +506,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
   // Perform a sync navigation.
   GURL second_url_to_navigate_to = GURL("https://www.google.com/2");
-  browser()
-      ->tab_strip_model()
-      ->GetTabAtIndex(0)
-      ->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
+  SavedTabGroupWebContentsListener::From(
+      browser()->tab_strip_model()->GetTabAtIndex(0))
       ->NavigateToUrlForTest(second_url_to_navigate_to);
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
             second_url_to_navigate_to);
@@ -536,11 +523,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
   // Perform a local navigation.
   GURL first_url_to_navigate_to = GURL("https://www.google.com/1");
-  browser()
-      ->tab_strip_model()
-      ->GetTabAtIndex(0)
-      ->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
+  SavedTabGroupWebContentsListener::From(
+      browser()->tab_strip_model()->GetTabAtIndex(0))
       ->NavigateToUrlForTest(first_url_to_navigate_to);
   EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
             first_url_to_navigate_to);

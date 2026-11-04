@@ -677,8 +677,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       saved_tab_group_web_contents_listener_ =
-          std::make_unique<tab_groups::SavedTabGroupWebContentsListener>(
-              tab_group_sync_service, &tab);
+          GetUserDataFactory()
+              .CreateInstance<tab_groups::SavedTabGroupWebContentsListener>(
+                  tab, tab_group_sync_service, &tab);
     }
 
     if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {

@@ -13,6 +13,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -35,9 +36,13 @@ class TabGroupSyncService;
 // a sync navigation occurs, updates the local webcontents.
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(SavedTabGroupWebContentsListener);
+
   SavedTabGroupWebContentsListener(TabGroupSyncService* service,
                                    tabs::TabInterface* local_tab);
   ~SavedTabGroupWebContentsListener() override;
+
+  static SavedTabGroupWebContentsListener* From(tabs::TabInterface* tab);
 
   // Method to be called when a navigation request comes in via sync. Sets the
   // property `navigation_initiated_from_sync` on the navigation so that when
@@ -94,6 +99,9 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // The URL that will be navigated to once the tab is foregrounded.
   std::optional<GURL> deferred_url_;
+
+  ui::ScopedUnownedUserData<SavedTabGroupWebContentsListener>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace tab_groups

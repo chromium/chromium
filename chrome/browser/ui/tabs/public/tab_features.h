@@ -439,11 +439,6 @@ class TabFeatures {
       std::unique_ptr<customize_chrome::SidePanelController>
           customize_chrome_side_panel_controller);
 
-  tab_groups::SavedTabGroupWebContentsListener*
-  saved_tab_group_web_contents_listener() const {
-    return saved_tab_group_web_contents_listener_.get();
-  }
-
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
 
   page_actions::PageActionController* page_action_controller() {

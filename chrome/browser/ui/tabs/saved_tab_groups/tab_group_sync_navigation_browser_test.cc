@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -441,9 +440,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
 
   // Navigate a tab through sync.
-  tab->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
-      ->NavigateToUrlForTest(url2);
+  SavedTabGroupWebContentsListener::From(tab)->NavigateToUrlForTest(url2);
   content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
   EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
   EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
@@ -477,9 +474,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
 
   // Navigate a tab through sync.
-  tab->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
-      ->NavigateToUrlForTest(url2);
+  SavedTabGroupWebContentsListener::From(tab)->NavigateToUrlForTest(url2);
   content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
   EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
   EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
@@ -518,9 +513,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
 
   // Navigate a tab through sync.
-  tab->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
-      ->NavigateToUrlForTest(url2);
+  SavedTabGroupWebContentsListener::From(tab)->NavigateToUrlForTest(url2);
   content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
   EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url2);
   EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
@@ -558,9 +551,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
 
   tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
   // Navigate a tab through sync.
-  tab->GetTabFeatures()
-      ->saved_tab_group_web_contents_listener()
-      ->NavigateToUrlForTest(url);
+  SavedTabGroupWebContentsListener::From(tab)->NavigateToUrlForTest(url);
   content::WaitForLoadStop(tabstrip->GetWebContentsAt(0));
   EXPECT_EQ(tab->GetContents()->GetLastCommittedURL(), url);
   EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(tab->GetContents()));
