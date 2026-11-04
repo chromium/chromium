@@ -44,6 +44,7 @@ _DISABLED_ALWAYS = [
     "StringFormatCount",  # Has false-positives.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
     "ThreadConstraint",  # Disabled to avoid false positives (b/496928954).
+    "StaticInitializerThreadConstraint",  # Same as above (b/496928954).
     "Typos",  # Strings are committed in English first and later translated.
     "VisibleForTests",  # Does not recognize "ForTesting" methods.
     "UniqueConstants",  # Chromium enums allow aliases.
