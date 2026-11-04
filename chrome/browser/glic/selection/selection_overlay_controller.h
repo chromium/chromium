@@ -133,6 +133,9 @@ class SelectionOverlayController
   using SuggestedActionsCallback = base::RepeatingCallback<void(
       const std::vector<selection::SuggestedActionPtr>&)>;
   void GetSuggestedActionsForTesting(SuggestedActionsCallback callback);
+  bool HasPageContextForTesting() const {
+    return session_->tab_context && !session_->redacted_screenshot.empty();
+  }
 
  private:
   void WillDiscardContents(tabs::TabInterface* tab,
@@ -165,6 +168,9 @@ class SelectionOverlayController
   // What `SelectionOverlayPage::SetSidePanelOpen()` sends: the panel is
   // showing, or backgrounded and comes back with `tab_`.
   bool IsSidePanelOpen() const;
+  // Whether a region from `SetRegionFromBounds()` is selected text, not an
+  // image.
+  bool IsTextSelectionEntryPoint() const;
   // Called when the overlay's WebView takes focus, e.g. when the user clicks
   // on it. In a split view the overlay can be rendered over the inactive tab,
   // in which case `tab_` needs to be activated.

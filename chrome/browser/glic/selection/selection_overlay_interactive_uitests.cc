@@ -255,6 +255,18 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
         std::move(options), ::selection::EntryPoint::kContextMenuText);
   }
 
+  void ShowWithImageSelection(selection::InteractionOptionsPtr options) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    auto* controller = GetController();
+    ASSERT_TRUE(controller);
+    gfx::Rect view_bounds = web_contents->GetViewBounds();
+    controller->ShowWithSelection(
+        web_contents->GetPrimaryMainFrame(),
+        gfx::Rect(view_bounds.x() + 10, view_bounds.y() + 10, 100, 50),
+        std::move(options), ::selection::EntryPoint::kContextMenuImage);
+  }
+
   auto LoadPageAndWaitForPaint(ui::ElementIdentifier tab) {
     return Steps(InstrumentTab(tab),
                  NavigateWebContents(
@@ -412,14 +424,17 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
       WaitForShow(kLensPreselectionBubbleElementId));
 }
 
-// Starting a capture session while text is selected sends the pre-selected
-// region to the web client without the user adjusting it.
+// Starting a capture session while text is selected highlights the text in the
+// overlay, without sending a duplicate screenshot region to the web client on
+// top of `GlicSelectionObserver`'s text selection (b:575500214).
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithTextSelection,
-                       PreSelectedRegionReachesClient) {
+                       PreSelectedTextNotSyncedAsRegion) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                       kHasSelectionBounds);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasPageContext);
 
   const DeepQuery kRenderer = {"selection-overlay-app",
                                "glic-selection-overlay",
@@ -443,16 +458,25 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithTextSelection,
                    selection_observer->GetCurrentSelectionBounds().has_value();
           }),
       WaitForState(kHasSelectionBounds, true), OpenGlic(),
+      WaitForJsResultAt(kGlicContentsElementId,
+                        DeepQuery{"#additionalContextResult"},
+                        "el => el.innerText.includes("
+                        "'MIME Type: application/x-glic-selection')"),
       ClickMockGlicElement({"#captureRegionBtn"}),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
                         "el => el.selectedRegions.length === 1"),
-      // The region must also reach the web client, which only happens if the
-      // deferred render runs once the overlay and the page context are ready.
-      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
-                        "el => el.innerText.includes('Region: ')"));
+      PollState(kHasPageContext,
+                [this]() {
+                  return GetController() &&
+                         GetController()->HasPageContextForTesting();
+                }),
+      WaitForState(kHasPageContext, true),
+      CheckJsResultAt(kGlicContentsElementId,
+                      DeepQuery{"#additionalContextResult"},
+                      "el => !el.innerText.includes('Region: ')"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -616,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
-        ShowWithSelection(selection::InteractionOptions::New(
+        ShowWithImageSelection(selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true,
             /*skip_intro_animation=*/true));
       }),
@@ -640,17 +664,18 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   OverlayBaseController::State::kOverlay));
 }
 
-// Same hand-off when the panel is already open as the session starts. The
-// context menu starts a page session without checking the panel, so this is
-// how it reaches the panel.
+// A session started on a text selection with the panel already open isn't
+// handed off: the panel already has the text, and syncing it again would add
+// a screenshot of the same text (b:575500214).
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
-                       SessionStartedWithPanelOpenGetsHandedOff) {
+                       TextSessionWithPanelOpenNotHandedOff) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kRenderer = {"selection-overlay-app",
                                "glic-selection-overlay",
                                "post-selection-renderer"};
   const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
 
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
@@ -661,12 +686,70 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
-      WaitForJsResultAt(kGlicContentsElementId, {"#additionalContextResult"},
-                        "el => el.innerText.includes('Region: ')"),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.selectedRegions.length === 1"),
       CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
-                      "el => el.hasAttribute('pressed')"),
-      CheckJsResultAt(kOverlayWebContentsId, kRenderer,
-                      "el => el.selectedRegions.length === 1"),
+                      "el => !el.hasAttribute('pressed')"),
+      CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                      "el => el.innerText.trim() === ''"),
+      CheckResult([this]() { return GetController()->state(); },
+                  OverlayBaseController::State::kOverlay));
+}
+
+// Opening the panel mid-session on a text selection does not hand off either:
+// `GlicSelectionObserver` sends the text to the panel when it opens
+// (b:575500214).
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       TextSessionNotHandedOffWhenPanelOpensMidSession) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+  const DeepQuery kContextResult = {"#additionalContextResult"};
+
+  RunTestSequence(LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
+                    ShowWithSelection(selection::InteractionOptions::New(
+                        /*hide_handles=*/true, /*disable_multi_select=*/true,
+                        /*skip_intro_animation=*/true));
+                  }),
+                  WaitForShow(OverlayBaseController::kOverlayId),
+                  InstrumentNonTabWebView(kOverlayWebContentsId,
+                                          OverlayBaseController::kOverlayId),
+                  WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                                    "el => el.selectedRegions.length === 1"),
+                  OpenGlic(),
+                  CheckJsResultAt(kGlicContentsElementId, kCaptureButton,
+                                  "el => !el.hasAttribute('pressed')"),
+                  CheckJsResultAt(kGlicContentsElementId, kContextResult,
+                                  "el => !el.innerText.includes('Region: ')"),
+                  CheckResult([this]() { return GetController()->state(); },
+                              OverlayBaseController::State::kOverlay));
+}
+
+// A session without a selection is handed off right away when the panel is
+// already open. The context menu starts a page session without checking the
+// panel, so this is how it reaches the panel.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       SessionStartedWithPanelOpenGetsHandedOff) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kCaptureButton = {"#captureRegionBtn"};
+
+  RunTestSequence(
+      LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
+        GetController()->Show(/*options=*/nullptr,
+                              ::selection::EntryPoint::kContextMenuPage);
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kGlicContentsElementId, kCaptureButton,
+                        "el => el.hasAttribute('pressed')"),
+      // The overlay WebUI gets the screenshot once it's initialized.
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
       CheckResult([this]() { return GetController()->state(); },
                   OverlayBaseController::State::kOverlay));
 }
@@ -797,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithHeldHandoff,
 
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
-        ShowWithSelection(selection::InteractionOptions::New(
+        ShowWithImageSelection(selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true,
             /*skip_intro_animation=*/true));
       }),
@@ -2302,7 +2385,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
 
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab), Do([this]() {
-        ShowWithSelection(selection::InteractionOptions::New(
+        ShowWithImageSelection(selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true,
             /*skip_intro_animation=*/true));
       }),
@@ -2567,11 +2650,14 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 
 // With the side panel open, the small chip starts a capture session through
 // the web client. The session pre-selects the text selection and treats it
-// like the other small chip paths: no handles, no click-to-add-region.
+// like the other small chip paths: no handles, no click-to-add-region, and no
+// duplicate screenshot region sent to the panel (b:575500214).
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                        SmallChipWithSidePanelOpenKeepsTextSelection) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasPageContext);
   const DeepQuery kRenderer = {"selection-overlay-app",
                                "glic-selection-overlay",
                                "post-selection-renderer"};
@@ -2583,7 +2669,16 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                         "el => el.selectedRegions.length === 1"),
       CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
                       "el => el.hideHandles && el.disableMultiSelect && "
-                      "el.sidePanelOpen"));
+                      "el.sidePanelOpen"),
+      PollState(kHasPageContext,
+                [this]() {
+                  return GetController() &&
+                         GetController()->HasPageContextForTesting();
+                }),
+      WaitForState(kHasPageContext, true),
+      CheckJsResultAt(kGlicContentsElementId,
+                      DeepQuery{"#additionalContextResult"},
+                      "el => !el.innerText.includes('Region: ')"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,

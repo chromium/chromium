@@ -354,7 +354,14 @@ void SelectionOverlayController::OnSidePanelStateChanged(
 }
 
 void SelectionOverlayController::PostHandSessionToPanel() {
-  if (session_->owner != Session::Owner::kDirect) {
+  // Don't hand off a text selection: `GlicSelectionObserver` already sends the
+  // text to the panel, and adopting the session would add a duplicate
+  // screenshot chip.
+  // TODO(b:579078690): Clean this up once text and region selections use one
+  // path.
+  bool is_text_selection =
+      !session_->selected_regions.empty() && IsTextSelectionEntryPoint();
+  if (session_->owner != Session::Owner::kDirect || is_text_selection) {
     return;
   }
   // Not right away: the panel may be opening for this session's own
@@ -392,7 +399,7 @@ void SelectionOverlayController::AdoptSession(
     mojo::PendingRemote<mojom::CaptureRegionObserver> observer) {
   session_->owner = Session::Owner::kPanel;
   BindCaptureRegionObserver(std::move(observer));
-  if (!session_->selected_regions.empty()) {
+  if (!session_->selected_regions.empty() && !IsTextSelectionEntryPoint()) {
     SyncRegionsToPanel(/*should_focus_panel=*/false);
   }
 }
@@ -402,6 +409,10 @@ bool SelectionOverlayController::IsSidePanelOpen() const {
   // with the tab. Not `kShown` only, which would flip the overlay to closed and
   // back on every tab switch.
   return GlicSidePanelCoordinator::IsShowingOrBackgrounded(tab_);
+}
+
+bool SelectionOverlayController::IsTextSelectionEntryPoint() const {
+  return session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
 }
 
 void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
@@ -575,10 +586,11 @@ void SelectionOverlayController::CaptureRegion(
         const bool has_region =
             selection_overlay_controller->GetSelectedRegionCount() > 0;
         if (has_region) {
-          // Nothing is fetched yet, so this only queues the region for the
-          // web client until the page context is here.
-          selection_overlay_controller->SyncRegions(
-              /*should_focus_panel=*/false);
+          // Don't call `SyncRegions()`: `GlicSelectionObserver` already sent
+          // the selected text to the panel, and `InitializeOverlay()` forwards
+          // `selected_regions` to the overlay WebUI.
+          // TODO(b:579078690): Clean this up once text and region selections
+          // use one path.
           // Same as the other small chip paths: the text selection is fixed,
           // and a click on the background doesn't start a new region.
           selection_overlay_controller->session_->interaction_options =
@@ -685,8 +697,7 @@ void SelectionOverlayController::SetRegionFromBounds(
   session_->active_region_id.reset();
   session_->surrounding_text_timer.Stop();
   if (tab_ && tab_->GetContents()) {
-    const bool is_text_selection =
-        session_->entry_point != ::selection::EntryPoint::kContextMenuImage;
+    const bool is_text_selection = IsTextSelectionEntryPoint();
     if (auto region = CreateRegionFromBounds(
             selection_bounds, tab_->GetContents()->GetViewBounds(),
             /*apply_padding=*/is_text_selection)) {
