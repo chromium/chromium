@@ -32,6 +32,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kArabicIndicDigitInput);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAsyncBeforeUnload);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                           kAsyncBeforeUnloadTimeout);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAuraDragDropSessionId);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync);
 // Please check the code comment on
 // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() in the

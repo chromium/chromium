@@ -75,6 +75,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "AsyncBeforeUnloadTimeout",
                    base::Milliseconds(500));
 
+// Uses drag session IDs to prevent stale Aura drag callbacks and cleanup from
+// modifying a newer drag.
+BASE_FEATURE(kAuraDragDropSessionId, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Synchronously continuing with navigation can lead to trying to start another
 // navigation synchronously while the first navigation is still being processed
 // on the stack. This results in re-entrancy which is unsafe and triggers a

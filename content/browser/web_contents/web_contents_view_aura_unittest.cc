@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,8 +20,11 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_frame_widget.h"
@@ -248,10 +252,13 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
     aura::test::EnvTestHelper(aura::Env::GetInstance())
         .SetInputStateLookup(nullptr);
     aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+    drag_data_ = std::make_unique<ui::OSExchangeData>();
+    drag_data_->SetString(u"Current drag");
   }
 
   void TearDown() override {
     occluding_window_.reset();
+    drag_data_.reset();
     aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point());
     aura::test::EnvTestHelper(aura::Env::GetInstance())
         .SetInputStateLookup(aura::InputStateLookup::Create());
@@ -268,6 +275,40 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
 
   aura::Window* GetNativeView() { return web_contents()->GetNativeView(); }
 
+  ui::DropTargetEvent DragEvent() const {
+    return ui::DropTargetEvent(*drag_data_, kClientPt, kScreenPt,
+                               ui::DragDropTypes::DRAG_COPY);
+  }
+
+  void EnterDrag() { GetView()->OnDragEntered(DragEvent()); }
+
+  base::OnceClosure TargetingCallback(bool enter, uint64_t session_id) {
+    auto* view = GetView();
+    auto* target = static_cast<RenderWidgetHostViewBase*>(
+        main_rfh()->GetRenderWidgetHost()->GetView());
+    auto drop_data = std::make_unique<DropData>();
+    drop_data->text = u"Stale drag";
+    return base::BindOnce(enter ? &WebContentsViewAura::DragEnteredCallback
+                                : &WebContentsViewAura::DragUpdatedCallback,
+                          view->weak_ptr_factory_.GetWeakPtr(), session_id,
+                          WebContentsViewAura::DropMetadata(DragEvent()),
+                          std::move(drop_data), target->GetWeakPtr(),
+                          kClientPt);
+  }
+
+  void ExpectCurrentDrag(uint64_t session_id, const DropData* data) {
+    auto* view = GetView();
+    EXPECT_NE(nullptr, data);
+    EXPECT_EQ(session_id, view->drag_session_id_);
+    EXPECT_TRUE(view->drag_in_progress_);
+    EXPECT_EQ(data, view->current_drag_data_.get());
+    EXPECT_EQ(main_rfh()->GetRenderWidgetHost(),
+              view->current_rwh_for_drag_.get());
+    if (view->current_drag_data_) {
+      EXPECT_EQ(u"Current drag", view->current_drag_data_->text);
+    }
+  }
+
   void CheckDropData(WebContentsViewAura* view) const {
     EXPECT_EQ(nullptr, view->current_drag_data_);
     ASSERT_NE(nullptr, drop_complete_data_);
@@ -283,6 +324,7 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
 
   // |occluding_window_| occludes |web_contents()| when it's shown.
   std::unique_ptr<aura::Window> occluding_window_;
+  std::unique_ptr<ui::OSExchangeData> drag_data_;
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;
@@ -309,6 +351,11 @@ class WebContentsViewAuraTest : public RenderViewHostTestHarness {
     const bool drop_allowed;
   };
   std::unique_ptr<DropCompleteData> drop_complete_data_;
+};
+
+class WebContentsViewAuraSessionIdTest : public WebContentsViewAuraTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kAuraDragDropSessionId};
 };
 
 TEST_F(WebContentsViewAuraTest, EnableDisableOverscroll) {
@@ -803,7 +850,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
 // Ensures that when two virtual file drops overlap, navigations during the
 // first drop's extraction are correctly respected and disallow the drop.
 // This is a regression test for https://crbug.com/503720291.
-TEST_F(WebContentsViewAuraTest,
+TEST_F(WebContentsViewAuraSessionIdTest,
        DragDropVirtualFilesNavigationObservedAcrossOverlappingDrops) {
   WebContentsViewAura* view = GetView();
 
@@ -856,6 +903,7 @@ TEST_F(WebContentsViewAuraTest,
   DeferredVirtualFileProvider::TempFilesCallback second_temp_files_cb =
       second_provider_ptr->TakePendingCallback();
   ASSERT_TRUE(second_temp_files_cb);
+  const uint64_t second_drag_session_id = view->drag_session_id_;
 
   // Temp-file retrieval for the first drop completes.
   std::move(first_temp_files_cb)
@@ -866,6 +914,8 @@ TEST_F(WebContentsViewAuraTest,
   // drop was initiated, regardless of any later drag activity.
   ASSERT_TRUE(first_drop_allowed.has_value());
   EXPECT_FALSE(first_drop_allowed.value());
+  EXPECT_EQ(second_drag_session_id, view->drag_session_id_);
+  EXPECT_TRUE(view->drag_in_progress_);
 }
 
 TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles_DestroyDuringExtraction) {
@@ -1938,11 +1988,70 @@ class TestDragEndedWebContentsDelegate : public WebContentsDelegate {
   bool handle_drag_ended_called_ = false;
 };
 
+class TestAsyncDropWebContentsViewDelegate : public WebContentsViewDelegate {
+ public:
+  void OnPerformingDrop(const DropData& drop_data,
+                        DropCompletionCallback callback) override {
+    drop_completion_ = std::move(callback);
+  }
+
+  DropCompletionCallback drop_completion_;
+};
+
+class TestDragDestDelegate : public WebDragDestDelegate {
+ public:
+  void DragInitialize(WebContents*) override {}
+  void OnDragOver() override {}
+  void OnDragEnter() override {}
+  void OnDrop() override {
+    ++drop_count_;
+    drag_text_.clear();
+  }
+  void OnDragLeave() override { drag_text_.clear(); }
+  void OnReceiveDragData(const ui::OSExchangeData& data) override {
+    drag_text_ = data.GetString().value_or(std::u16string());
+  }
+
+  int drop_count() const { return drop_count_; }
+  const std::u16string& drag_text() const { return drag_text_; }
+
+ private:
+  int drop_count_ = 0;
+  std::u16string drag_text_;
+};
+
 class TestDragEndedFrameWidget : public FakeFrameWidget {
  public:
   explicit TestDragEndedFrameWidget(
       mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget> receiver)
       : FakeFrameWidget(std::move(receiver)) {}
+
+  void DragTargetDragEnter(blink::mojom::DragDataPtr drag_data,
+                           const gfx::PointF& point_in_viewport,
+                           const gfx::PointF& screen_point,
+                           blink::DragOperationsMask operations_allowed,
+                           uint32_t key_modifiers,
+                           DragTargetDragEnterCallback callback) override {
+    std::move(callback).Run(DragOperation::kNone, false);
+  }
+
+  void DragTargetDragOver(const gfx::PointF& point_in_viewport,
+                          const gfx::PointF& screen_point,
+                          blink::DragOperationsMask operations_allowed,
+                          uint32_t key_modifiers,
+                          DragTargetDragOverCallback callback) override {
+    drag_target_drag_over_called_ = true;
+    std::move(callback).Run(DragOperation::kNone, false);
+  }
+
+  void DragTargetDrop(blink::mojom::DragDataPtr drag_data,
+                      const gfx::PointF& point_in_viewport,
+                      const gfx::PointF& screen_point,
+                      uint32_t key_modifiers,
+                      base::OnceClosure callback) override {
+    ++drag_target_drop_count_;
+    std::move(callback).Run();
+  }
 
   void DragSourceEndedAt(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
@@ -1967,11 +2076,17 @@ class TestDragEndedFrameWidget : public FakeFrameWidget {
     return drag_source_ended_at_called_;
   }
   bool system_drag_ended_called() const { return system_drag_ended_called_; }
+  bool drag_target_drag_over_called() const {
+    return drag_target_drag_over_called_;
+  }
+  int drag_target_drop_count() const { return drag_target_drop_count_; }
   ui::mojom::DragOperation operation() const { return operation_; }
 
  private:
   bool drag_source_ended_at_called_ = false;
   bool system_drag_ended_called_ = false;
+  bool drag_target_drag_over_called_ = false;
+  int drag_target_drop_count_ = 0;
   ui::mojom::DragOperation operation_ = ui::mojom::DragOperation::kCopy;
   base::OnceClosure quit_closure_;
 };
@@ -2021,6 +2136,182 @@ TEST_F(WebContentsViewAuraTest, StartDraggingMouseReleasedEndsDrag) {
   EXPECT_TRUE(frame_widget.system_drag_ended_called());
 
   web_contents()->SetDelegate(nullptr);
+}
+
+// Tests that a delayed enter-targeting reply after exit cannot restore drag
+// state or prevent drag-ended notifications when the native drag loop returns.
+TEST_F(WebContentsViewAuraSessionIdTest,
+       DragEnterCallbackAfterExitEndsSourceDrag) {
+  NavigateAndCommit(GURL("https://example.com/"));
+  TestDragEndedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  WebContentsViewAura* view = GetView();
+  auto* source_rwh =
+      static_cast<RenderWidgetHostImpl*>(main_rfh()->GetRenderWidgetHost());
+  DropData drop_data;
+  drop_data.text = u"Source drag";
+  auto delayed_enter =
+      TargetingCallback(/*enter=*/true, view->drag_session_id_);
+
+  view->drag_security_info_.OnDragInitiated(source_rwh, drop_data);
+  view->OnDragExited();
+  std::move(delayed_enter).Run();
+  view->EndDragAfterNativeLoop(source_rwh->GetWeakPtr(), DragOperation::kNone);
+  frame_widget.FlushForTesting();
+
+  // The stale reply must not revive the drag or delay source completion.
+  EXPECT_FALSE(view->drag_in_progress_);
+  EXPECT_FALSE(static_cast<bool>(view->end_drag_runner_));
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+  EXPECT_TRUE(delegate.handle_drag_ended_called());
+  EXPECT_TRUE(frame_widget.drag_source_ended_at_called());
+  EXPECT_TRUE(frame_widget.system_drag_ended_called());
+
+  view->end_drag_runner_.RunAndReset();
+  web_contents()->SetDelegate(nullptr);
+}
+
+// Tests that updates before the enter reply and stale enter/update replies are
+// ignored.
+TEST_F(WebContentsViewAuraSessionIdTest,
+       DragTargetingCallbacksFromPreviousDragAreIgnored) {
+  NavigateAndCommit(GURL("https://example.com/"));
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+
+  auto* view = GetView();
+  // An update arriving before the initial enter reply must not start a drag.
+  const uint64_t pending_session_id = ++view->drag_session_id_;
+  TargetingCallback(/*enter=*/false, pending_session_id).Run();
+  EXPECT_FALSE(view->drag_in_progress_);
+  EXPECT_FALSE(view->current_drag_data_);
+
+  // Hold the old replies while the pointer exits and enters a new session.
+  auto delayed_enter = TargetingCallback(/*enter=*/true, pending_session_id);
+  auto delayed_update = TargetingCallback(/*enter=*/false, pending_session_id);
+  view->OnDragExited();
+  EnterDrag();
+  frame_widget.FlushForTesting();
+  ASSERT_TRUE(view->current_drag_data_);
+  const uint64_t session_id = view->drag_session_id_;
+  ASSERT_NE(pending_session_id, session_id);
+  const DropData* current_data = view->current_drag_data_.get();
+
+  // Old replies must neither replace the new data nor send a drag-over IPC.
+  std::move(delayed_enter).Run();
+  std::move(delayed_update).Run();
+  frame_widget.FlushForTesting();
+  ExpectCurrentDrag(session_id, current_data);
+  EXPECT_FALSE(frame_widget.drag_target_drag_over_called());
+
+  view->OnDragExited();
+}
+
+// Completes an older accepted drop after a new drag enters. The old drop may
+// reach the renderer without changing the new drag or its delegate state.
+TEST_F(WebContentsViewAuraSessionIdTest, OldDropCompletionDoesNotEndNewDrag) {
+  NavigateAndCommit(GURL("https://example.com/"));
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  auto* view = GetView();
+  auto async_drop_delegate =
+      std::make_unique<TestAsyncDropWebContentsViewDelegate>();
+  auto* delegate = async_drop_delegate.get();
+  view->SetDelegateForTesting(std::move(async_drop_delegate));
+  TestDragDestDelegate drag_dest_delegate;
+  view->SetDragDestDelegateForTesting(&drag_dest_delegate);
+
+  EnterDrag();
+  frame_widget.FlushForTesting();
+  ASSERT_TRUE(view->current_drag_data_);
+  std::optional<DropData> result = *view->current_drag_data_;
+  DragOperation output_drag_op = DragOperation::kNone;
+  view->GetDropCallback(DragEvent())
+      .Run(std::make_unique<ui::OSExchangeData>(drag_data_->provider().Clone()),
+           output_drag_op, /*drag_image_layer_owner=*/nullptr);
+  ASSERT_TRUE(delegate->drop_completion_);
+
+  EnterDrag();
+  frame_widget.FlushForTesting();
+  const uint64_t session_id = view->drag_session_id_;
+  const DropData* current_data = view->current_drag_data_.get();
+  ASSERT_TRUE(current_data->text);
+  EXPECT_EQ(*current_data->text, drag_dest_delegate.drag_text());
+  bool end_drag_called = false;
+  view->end_drag_runner_.ReplaceClosure(
+      base::BindLambdaForTesting([&] { end_drag_called = true; }));
+  view->end_drag_runner_session_id_ = session_id;
+  const int drop_count = frame_widget.drag_target_drop_count();
+  const int delegate_drop_count = drag_dest_delegate.drop_count();
+
+  std::move(delegate->drop_completion_).Run(std::move(result));
+  frame_widget.FlushForTesting();
+  ExpectCurrentDrag(session_id, current_data);
+  EXPECT_EQ(drop_count + 1, frame_widget.drag_target_drop_count());
+  EXPECT_EQ(delegate_drop_count, drag_dest_delegate.drop_count());
+  EXPECT_EQ(*current_data->text, drag_dest_delegate.drag_text());
+  EXPECT_FALSE(end_drag_called);
+
+  view->OnDropExit(session_id);
+  EXPECT_TRUE(end_drag_called);
+
+  view->SetDragDestDelegateForTesting(nullptr);
+}
+
+// Deferred drop cleanup must affect only its originating session, whether the
+// callback is cancelled or its delayed targeting reply eventually arrives.
+TEST_F(WebContentsViewAuraSessionIdTest,
+       OldDropTargetingReplyDoesNotEndNewDrag) {
+  NavigateAndCommit(GURL("https://example.com/"));
+  TestDragEndedFrameWidget frame_widget(
+      BindFakeFrameWidgetInterfaces(main_rfh()));
+  WebContentsViewAura* view = GetView();
+  auto* target = static_cast<RenderWidgetHostViewBase*>(
+      main_rfh()->GetRenderWidgetHost()->GetView());
+
+  // Hold a drop callback and its targeting reply until a newer drag enters.
+  EnterDrag();
+  frame_widget.FlushForTesting();
+  const uint64_t old_session_id = view->drag_session_id_;
+  auto cancelled_callback = view->GetDropCallback(DragEvent());
+  auto callback = base::BindOnce(
+      &WebContentsViewAura::PerformDropCallback,
+      view->weak_ptr_factory_.GetWeakPtr(),
+      WebContentsViewAura::DropMetadata(DragEvent()), old_session_id,
+      std::make_unique<ui::OSExchangeData>(drag_data_->provider().Clone()),
+      target->GetWeakPtr(), kClientPt);
+
+  EnterDrag();
+  frame_widget.FlushForTesting();
+  const uint64_t session_id = view->drag_session_id_;
+  const DropData* current_data = view->current_drag_data_.get();
+  bool end_drag_called = false;
+  view->end_drag_runner_.ReplaceClosure(
+      base::BindLambdaForTesting([&] { end_drag_called = true; }));
+  view->end_drag_runner_session_id_ = old_session_id;
+
+  cancelled_callback.Reset();
+  ExpectCurrentDrag(session_id, current_data);
+  EXPECT_TRUE(end_drag_called);
+
+  end_drag_called = false;
+  view->end_drag_runner_.ReplaceClosure(
+      base::BindLambdaForTesting([&] { end_drag_called = true; }));
+  view->end_drag_runner_session_id_ = session_id;
+
+  std::move(callback).Run();
+  frame_widget.FlushForTesting();
+  ExpectCurrentDrag(session_id, current_data);
+  EXPECT_EQ(0, frame_widget.drag_target_drop_count());
+  EXPECT_FALSE(end_drag_called);
+  EXPECT_TRUE(view->end_drag_runner_);
+  EXPECT_EQ(session_id, view->end_drag_runner_session_id_);
+
+  // Only the newer drag's own cleanup should run its completion runner.
+  view->OnDropExit(session_id);
+  EXPECT_TRUE(end_drag_called);
 }
 
 }  // namespace content

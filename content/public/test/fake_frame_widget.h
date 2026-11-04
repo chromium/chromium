@@ -29,6 +29,8 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   FakeFrameWidget(const FakeFrameWidget&) = delete;
   void operator=(const FakeFrameWidget&) = delete;
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
   base::i18n::TextDirection GetTextDirection() const;
   const blink::mojom::ViewportIntersectionStatePtr& GetIntersectionState()
       const;
