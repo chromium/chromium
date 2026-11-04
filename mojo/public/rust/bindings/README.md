@@ -419,9 +419,9 @@ TODO(crbug.com/547988937): link to an in-production use case instead/as well.
 ### Associated Interfaces
 
 The basic Mojo model is simple: you create two ends of a message pipe (a
-`Remote` and a `Receiver`, then send them to different part of the program and
-use them to send messages through that pipe). If you want to communicate with
-multiple parts of the program, you create multiple pipes.
+`Remote` and a `Receiver`), then send them to different parts of the program
+and use them to send messages through that pipe. If you want to communicate
+with multiple parts of the program, you create multiple pipes.
 
 However, those pipes operate independently and asynchronously. Therefore, two
 messages sent on different pipes won't necessarily arrive in the order they were
@@ -437,15 +437,15 @@ explanation of the same thing.
 
 #### Overall Model
 
-The Rust types `AssociatedRemote` and `AssociatedReceiver` are analogoues to the
+The Rust types `AssociatedRemote` and `AssociatedReceiver` are analogous to the
 `Remote/Receiver` types, but with the difference that they do not own their
 message pipe. Instead, they communicate using an existing pipe, connected by
 some other `Remote/Receiver` pair. Those are the **primary endpoints**; the
-other are **associated endpoints**.
+others are **associated endpoints**.
 
 Associated endpoints operate just like the primary endpoints; they have an
 interface (e.g. `AssociatedRemote<dyn MathService>`) and can be used to send
-and receive messages (e.g. `assoc_rem.Add(1, 3)`). The main different is that
+and receive messages (e.g. `assoc_rem.Add(1, 3)`). The main difference is that
 _all messages sent on a single message pipe will be processed in the order they
 were sent_ (strict FIFO order).
 
@@ -459,10 +459,8 @@ operating on the same pipe without problems.
 * Since the primary pair owns the pipe, closing one of them will permanently
   disconnect _all_ associated interfaces on that pipe.
 * Due to the FIFO ordering guarantee, if _any_ remote sends a message before its
-  receiver is ready (o.e. it hasn't been [bound](#sending-messages)), _all_
+  receiver is ready (i.e. it hasn't been [bound](#sending-messages)), _all_
   messages on the pipe will be stalled until the receiver is set up or dropped.
-  * This also applies to disconnect notifications when one half of an associated
-    pair is dropped.
 
 #### Usage
 
@@ -475,11 +473,11 @@ types; in Mojom, they are written `pending_associated_remote` and
 `pending_associated_receiver`.
 
 ```text
-// This interface does nothing allows users to create an associated
+// This interface allows users to create an associated
 // MathService pair. It can also be used to send other kinds of
 // messages, like a normal interface.
 interface Foo {
-  PassMathService(pending_associated_receiver<MathService> bar_rec);
+  PassMathService(pending_associated_receiver<MathService> math_rec);
   DoSomething(int32 arg);
 };
 
@@ -501,7 +499,7 @@ Like non-associated `Remotes` and `Receivers`, you must first bind these before
 they can be used.
 
 ```Rust
-let mut bar_remote: AssociatedRemote<dyn MathService> = p_remote.bind();
+let mut math_remote: AssociatedRemote<dyn MathService> = p_remote.bind();
 ```
 
 However, associated endpoints have an additional step: you must specify which
@@ -509,9 +507,9 @@ message pipe the pair will use. To do so, **you must send one of the endpoints
 in a Mojo message**:
 
 ```Rust
-// Sending `p_remote` over an existing endpoint associates BOTH `p_remote` and `p_receiver`
+// Sending `p_receiver` over an existing endpoint associates BOTH `p_remote` and `p_receiver`
 // with that endpoint's underlying message pipe.
-foo_remote.PassBar(p_receiver);
+foo_remote.PassMathService(p_receiver);
 ```
 
 Note that `foo_remote` does not have to be the pipe's primary `Remote`; it's
@@ -530,10 +528,10 @@ perfectly fine to send `p_receiver` through an already-set-up associated endpoin
 Once that's done, you can treat the endpoints just like primary endpoints, and
 bind/drop them the same way.
 
-#### Associating with a C++ pipe
+#### Associating Rust endpoints with a C++ pipe
 
 Sometimes, you may want to create an associated endpoint on a pipe that already
-exists in C++ code (that is, attach to a C++ `Remote` or `Receiver`) (for example,
+exists in C++ code, so it's attached to a C++ `Remote` or `Receiver` (for example,
 attaching a frame-associated interface to `content::mojom::RenderFrameHost` or
 `blink::mojom::LocalFrame`).
 In order to do so, you'll need to convert one of your pending endpoints to a form
@@ -549,6 +547,7 @@ let mut math_remote = p_remote.bind();
 ```
 
 This returns a tuple containing:
+
 1. A normal Rust `PendingAssociatedRemote` (or `PendingAssociatedReceiver`),
    which you can bind and use in Rust, or send in a Mojo message.
 2. A `cxx::UniquePtr<CxxPendingAssociatedEndpoint>`, which can be converted
@@ -593,6 +592,39 @@ let mut math_receiver = p_receiver.bind(some_state_object);
 
 Once bound, you can use the `Remote` or `Receiver` to communicate over the C++
 message pipe just like any other associated endpoint.
+
+#### Associating C++ endpoints with a Rust pipe
+
+You can also attach C++ associated endpoints to a pipe that belongs to a Rust
+`Remote` or `Receiver`. Create the pair in C++ as usual, but since the pipe is
+in Rust, you'll need to pass one of the endpoints to Rust via FFI. This works
+the same way as in the previous section: convert your C++ endpoint using
+`MakeAssociatedEndpointRustAdapter` and pass it over:
+
+```cpp
+mojo::AssociatedRemote<MathService> math_remote;
+mojo::rust::bindings::CxxPendingAssociatedEndpoint receiver_adapter =
+    mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        math_remote.BindNewEndpointAndPassReceiver());
+
+PassToRustOverFFI(std::move(receiver_adapter));
+```
+
+Once in Rust, convert it to a Rust pending endpoint using `from_cpp()`. At
+that point, you can send it in a Mojo message as usual:
+
+```Rust
+let p_receiver =
+    PendingAssociatedReceiver::<dyn MathService>::from_cpp(receiver_adapter);
+foo_remote.PassMathService(p_receiver);
+```
+
+`math_remote` then works like any other C++ associated remote.
+
+Alternatively, if you received the pending endpoint via the Rust pipe,
+you can bind it in C++ by first calling `into_cpp()` on it, passing the
+result to C++, then using `PassPendingAssociatedRemote` or
+`PassPendingAssociatedReceiver` as before.
 
 ### Versioning
 

@@ -243,7 +243,7 @@ unsafe impl Send for ffi::AssociatedEndpointRustAdapter {}
 unsafe impl Sync for ffi::AssociatedEndpointRustAdapter {}
 
 // SAFETY: `RustAssociatedEndpointClient` has four fields:
-// 1. `controller_` is a `Box<MultiplexRouter>` (`Send` + `Sync)` wrapped by a
+// 1. `controller_` is a `Box<MultiplexRouter>` (`Send` + `Sync`) wrapped by a
 //    `scoped_refptr<RustAssociatedGroupController>`, which is
 //    `RefCountedThreadSafe`.
 // 2. `id_` is just an int
