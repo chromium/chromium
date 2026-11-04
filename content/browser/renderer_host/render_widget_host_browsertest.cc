@@ -202,7 +202,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
     SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
   }
 
-  base::TimeTicks GetNextSimulatedEventTime() {
+  virtual base::TimeTicks GetNextSimulatedEventTime() {
     return last_simulated_event_time_ + simulated_event_time_delta_;
   }
 
@@ -1565,6 +1565,14 @@ class RenderWidgetHostDelegatedInkMetadataTest
     )HTML")));
     load_stop_observer.Wait();
     SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+  }
+
+  // Use real timestamps rather than the +100ms synthetic step from
+  // RenderWidgetHostTouchEmulatorBrowserTest; otherwise fast test runs can
+  // generate events with timestamps in the future relative to frame
+  // presentation time, tripping a DCHECK in CompositorFrameReporter.
+  base::TimeTicks GetNextSimulatedEventTime() override {
+    return ui::EventTimeForNow();
   }
 
  protected:
