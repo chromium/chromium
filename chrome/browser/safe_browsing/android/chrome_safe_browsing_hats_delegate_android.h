@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/core/browser/referring_app_info.h"
+#include "components/safe_browsing/core/browser/referring_app_info/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 
 class Profile;

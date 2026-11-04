@@ -12,7 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/safe_browsing/core/browser/referring_app_info.h"
+#include "components/safe_browsing/core/browser/referring_app_info/referring_app_info.h"
 #endif
 
 namespace content {

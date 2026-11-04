@@ -312,8 +312,8 @@ source_set("safe_browsing_hats_delegate_unittest") {
 
 source_set("referring_app_info") {
   sources = [
-    "referring_app_info.cc",
-    "referring_app_info.h",
+    "referring_app_info/referring_app_info.cc",
+    "referring_app_info/referring_app_info.h",
   ]
   deps = [
     "//components/safe_browsing/core/browser/utils",
@@ -324,7 +324,7 @@ source_set("referring_app_info") {
 
 source_set("referring_app_info_unittest") {
   testonly = true
-  sources = [ "referring_app_info_unittest.cc" ]
+  sources = [ "referring_app_info/referring_app_info_unittest.cc" ]
   deps = [
     ":referring_app_info",
     "//components/safe_browsing/core/common/proto:csd_proto",

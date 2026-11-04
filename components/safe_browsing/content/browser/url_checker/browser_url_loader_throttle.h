@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/url_checker/url_checker_holder.h"
-#include "components/safe_browsing/core/browser/referring_app_info.h"
+#include "components/safe_browsing/core/browser/referring_app_info/referring_app_info.h"
 #include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_thread.h"

@@ -34,7 +34,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/safe_browsing/core/browser/referring_app_info.h"  // nogncheck
+#include "components/safe_browsing/core/browser/referring_app_info/referring_app_info.h"  // nogncheck
 #endif
 
 class PrefService;

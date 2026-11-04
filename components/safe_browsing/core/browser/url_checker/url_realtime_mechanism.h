@@ -12,7 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/referring_app_info.h"
+#include "components/safe_browsing/core/browser/referring_app_info/referring_app_info.h"
 #include "components/safe_browsing/core/browser/url_checker/database_manager_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker/safe_browsing_lookup_mechanism.h"

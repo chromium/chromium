@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Referring app found, referring WebAPK found"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/safe_browsing/core/browser/referring_app_info.h:GetReferringAppInfoResult) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/referring_app_info/referring_app_info.h:GetReferringAppInfoResult) -->
 
 <enum name="SBClientDetectionClassifyThresholdsResult">
   <int value="0" label="Success"/>
