@@ -21,6 +21,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -43,6 +44,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -134,6 +136,10 @@ class NamedMojoIpcServerTest : public testing::TestWithParam<MessagePipeType>,
   EchoStringHandler echo_string_handler_;
 
   base::RepeatingClosure on_echo_string_called_;
+
+  bool WasServerEndpointCreated() const {
+    return on_server_endpoint_created_run_loop_->AnyQuitCalled();
+  }
 
  private:
   void EchoString(const std::string& input,
@@ -366,6 +372,42 @@ TEST_P(NamedMojoIpcServerTest,
   base::Process child_process =
       LaunchClientProcess(kClientProcessHangAfterConnectSwitch);
   WaitForServerEndpointCreated();
+}
+
+TEST_P(NamedMojoIpcServerTest, PreexistingPipeRejectedUntilClosed) {
+  ipc_server_.reset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  test_server_name_ = test::GenerateRandomServerName();
+
+  mojo::NamedPlatformChannel::Options channel_options;
+  channel_options.server_name = test_server_name_;
+  channel_options.enforce_uniqueness = false;
+  mojo::PlatformChannelServerEndpoint squatted_endpoint =
+      mojo::NamedPlatformChannel(channel_options).TakeServerEndpoint();
+  ASSERT_TRUE(squatted_endpoint.is_valid());
+
+  CreateIpcServer();
+  ipc_server_->StartServer();
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop flush_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_loop.QuitClosure());
+  flush_loop.Run();
+  EXPECT_FALSE(WasServerEndpointCreated());
+
+  squatted_endpoint.reset();
+  WaitForServerEndpointCreated();
+
+  base::Process child_process = LaunchClientProcess();
+  EXPECT_EQ(0, WaitForProcessExit(child_process));
+
+  // Verify that the server re-arms the next pipe instance after the client
+  // connects and can serve subsequent connections.
+  WaitForServerEndpointCreated();
+  base::Process child_process_2 = LaunchClientProcess();
+  EXPECT_EQ(0, WaitForProcessExit(child_process_2));
 }
 #endif
 
