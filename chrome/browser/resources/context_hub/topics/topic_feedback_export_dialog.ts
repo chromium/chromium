@@ -42,6 +42,17 @@ export const COVERAGE_TOPIC_COUNT = 3;
 // dialog and the topics' details pages.
 export const COVERAGE_TOPICS_STORAGE_KEY = 'topicsFeedbackCoverageTopicIds';
 
+// Local storage key of the rater's unsent choices in the dialog, so that they
+// survive closing the dialog, e.g. to rate topics first.
+export const EXPORT_DRAFT_STORAGE_KEY = 'topicsFeedbackExportDraft';
+
+interface ExportDraft {
+  windowDays: number;
+  domainExclusions: Array<[string, boolean]>;
+  excludedUrls: string[];
+  missingTopics: string;
+}
+
 // Saves `contents` as a file named `fileName` in the user's downloads.
 export type FileDownloader = (contents: string, fileName: string) => void;
 
@@ -180,6 +191,8 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
   private previewRequestId_: number = 0;
 
   override connectedCallback() {
+    // Before the first render, which would otherwise save over the draft.
+    this.restoreDraft_();
     super.connectedCallback();
     this.fetchPreview_();
   }
@@ -192,6 +205,49 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
       sessionStorage.setItem(
           COVERAGE_TOPICS_STORAGE_KEY, JSON.stringify(this.coverageTopicIds_));
     }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('windowDays_') ||
+        changedPrivateProperties.has('domainExclusions_') ||
+        changedPrivateProperties.has('excludedUrls_') ||
+        changedPrivateProperties.has('missingTopics_')) {
+      this.saveDraft_();
+    }
+  }
+
+  private restoreDraft_() {
+    try {
+      const draft: Partial<ExportDraft> =
+          JSON.parse(localStorage.getItem(EXPORT_DRAFT_STORAGE_KEY) || '{}');
+      if (EXPORT_WINDOW_DAYS.includes(Number(draft.windowDays))) {
+        this.windowDays_ = Number(draft.windowDays);
+      }
+      if (Array.isArray(draft.domainExclusions)) {
+        this.domainExclusions_ = new Map(draft.domainExclusions);
+      }
+      if (Array.isArray(draft.excludedUrls)) {
+        this.excludedUrls_ = new Set(draft.excludedUrls);
+      }
+      if (typeof draft.missingTopics === 'string') {
+        this.missingTopics_ = draft.missingTopics;
+      }
+    } catch {
+      // Ignore a malformed draft.
+    }
+  }
+
+  private saveDraft_() {
+    const draft: ExportDraft = {
+      windowDays: this.windowDays_,
+      domainExclusions: [...this.domainExclusions_],
+      excludedUrls: [...this.excludedUrls_],
+      missingTopics: this.missingTopics_,
+    };
+    localStorage.setItem(EXPORT_DRAFT_STORAGE_KEY, JSON.stringify(draft));
   }
 
   showModal() {
@@ -422,6 +478,7 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
       const {jsonBundle} = await browserProxyFactory.getInstance()
                                .handler.generateTopicsFeedbackBundle(options);
       fileDownloader(jsonBundle, getExportFileName(new Date()));
+      localStorage.removeItem(EXPORT_DRAFT_STORAGE_KEY);
       this.exportState_ = 'done';
       this.hasDownloaded_ = true;
     } catch (e) {
@@ -466,6 +523,7 @@ export class TopicFeedbackExportDialogElement extends CrLitElement {
     this.confirmingClear_ = false;
     await browserProxyFactory.getInstance().handler.clearTopicFeedbacks();
     sessionStorage.removeItem(COVERAGE_TOPICS_STORAGE_KEY);
+    localStorage.removeItem(EXPORT_DRAFT_STORAGE_KEY);
     this.fire('topic-feedbacks-cleared');
   }
 

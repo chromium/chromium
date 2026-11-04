@@ -13,7 +13,7 @@ import type {TopicCollectionCarouselElement} from 'chrome://context-hub/topics/t
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
 import {getSuggestedPrompts, TOPIC_DETAILS_TABS, TOPIC_VISITS_TAB} from 'chrome://context-hub/topics/topic_details.js';
 import type {TopicFeedbackControlsElement} from 'chrome://context-hub/topics/topic_feedback_controls.js';
-import {COVERAGE_TOPICS_STORAGE_KEY, getExportFileName, pickCoverageTopicIds, setFileDownloaderForTesting} from 'chrome://context-hub/topics/topic_feedback_export_dialog.js';
+import {COVERAGE_TOPICS_STORAGE_KEY, EXPORT_DRAFT_STORAGE_KEY, getExportFileName, pickCoverageTopicIds, setFileDownloaderForTesting} from 'chrome://context-hub/topics/topic_feedback_export_dialog.js';
 import type {TopicFeedbackExportDialogElement} from 'chrome://context-hub/topics/topic_feedback_export_dialog.js';
 import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
 import {BADGE_BACKGROUND_COLORS, createEmptyCollectionFeedback, createEmptyTopicFeedback, createTopicSnapshot, DEFAULT_ICON, formatTopicFeedbackComment, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, isCollectionFeedbackEmpty, isTopicFeedbackEmpty, isTopicFeedbackValid, MAX_TOPIC_SITES, normalizeTopicFeedbackComment, parseTopicFeedbackComment, setCollectionFeedback, TOPIC_DEFECT_CATEGORIES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
@@ -831,6 +831,7 @@ suite('TopicFeedbackExportDialog', () => {
       kTopicsFeedbackFormUrl: FORM_URL,
     });
     sessionStorage.clear();
+    localStorage.removeItem(EXPORT_DRAFT_STORAGE_KEY);
     handler = TestMock.fromClass(PageHandlerRemote);
     const {instance} = browserProxyFactory.createForTest(handler);
     browserProxyFactory.setInstance(instance);
@@ -855,6 +856,7 @@ suite('TopicFeedbackExportDialog', () => {
   teardown(() => {
     setFileDownloaderForTesting(null);
     sessionStorage.clear();
+    localStorage.removeItem(EXPORT_DRAFT_STORAGE_KEY);
   });
 
   async function openDialog(feedbacks: TopicFeedback[] = []) {
@@ -1079,6 +1081,45 @@ suite('TopicFeedbackExportDialog', () => {
 
     await click('#openForm');
     assertEquals(FORM_URL, await openWindowProxy.whenCalled('openUrl'));
+  });
+
+  async function reopenDialog() {
+    view.shadowRoot.querySelector<HTMLElement>('#sendFeedbackButton')!.click();
+    await microtasksFinished();
+    dialog = view.shadowRoot.querySelector('topic-feedback-export-dialog')!;
+    await microtasksFinished();
+  }
+
+  test('keeps unsent choices after closing the dialog', async () => {
+    await openDialog();
+    await select(query<HTMLSelectElement>('#windowSelect')!, '14');
+    queryAll<CrCheckboxElement>('.domain-checkbox')[0]!.click();
+    query<CrTextareaElement>('#missingTopics')!.value = 'My trip planning';
+    await microtasksFinished();
+    await closeDialog();
+
+    await reopenDialog();
+    assertEquals('14', query<HTMLSelectElement>('#windowSelect')!.value);
+    const options = dialog.getExportOptionsForTesting();
+    assertEquals(14, options.windowDays);
+    assertDeepEquals(
+        ['www.example.com', 'docs.google.com'], options.excludedDomains);
+    assertEquals('My trip planning', options.missingTopics);
+  });
+
+  test('clears unsent choices after downloading', async () => {
+    await openDialog(likeTopics(4));
+    query<CrTextareaElement>('#missingTopics')!.value = 'My trip planning';
+    await microtasksFinished();
+    await click('#acknowledge');
+    await click('#download');
+    await handler.whenCalled('generateTopicsFeedbackBundle');
+    await microtasksFinished();
+    assertEquals(null, localStorage.getItem(EXPORT_DRAFT_STORAGE_KEY));
+    await closeDialog();
+
+    await reopenDialog();
+    assertEquals('', dialog.getExportOptionsForTesting().missingTopics);
   });
 
   test('download is the primary action before downloading', async () => {
