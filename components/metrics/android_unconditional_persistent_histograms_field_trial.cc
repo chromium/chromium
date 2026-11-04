@@ -30,7 +30,8 @@ void EnrollClient() {
 
   int enabled_percent = 0;
   int control_percent = 0;
-  // Stage 2: 50% Enabled on Canary/Dev/Beta, 100% Default on Stable.
+  // Stage 3: 50% Enabled on Canary/Dev/Beta, 1% Enabled and 1% Control on
+  // Stable.
   switch (version_info::android::GetChannel()) {
     case version_info::Channel::UNKNOWN:
       enabled_percent = 100;
@@ -43,8 +44,8 @@ void EnrollClient() {
       control_percent = 50;
       break;
     case version_info::Channel::STABLE:
-      enabled_percent = 0;
-      control_percent = 0;
+      enabled_percent = 1;
+      control_percent = 1;
       break;
   }
 
