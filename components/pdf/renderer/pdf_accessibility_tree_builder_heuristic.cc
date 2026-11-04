@@ -25,6 +25,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -2267,10 +2268,12 @@ ListEndReason GetNonMarkerListEndReason(const TextRunContext& run_context,
   return ListEndReason::kParagraph;
 }
 
-// Records end metrics for `level`.
+// Records end metrics for `level`. `level.item_char_counts` must include its
+// last item.
 void RecordListEndMetrics(const ListLevel& level,
                           ListEndReason reason,
                           bool is_top_level) {
+  CHECK_EQ(level.item_char_counts.size(), level.list->child_ids.size());
   base::UmaHistogramCounts100(
       base::StrCat({"Accessibility.PdfHeuristics.",
                     is_top_level ? "TopLevel" : "Nested",
@@ -2279,6 +2282,21 @@ void RecordListEndMetrics(const ListLevel& level,
       level.list->child_ids.size());
   base::UmaHistogramEnumeration("Accessibility.PdfHeuristics.ListEndReason",
                                 reason);
+
+  if (level.item_char_counts.size() >= 2) {
+    std::vector<size_t> others = level.item_char_counts;
+    // Exclude the last item from the median so it can't skew the baseline it
+    // is compared against.
+    const size_t last = others.back();
+    others.pop_back();
+    std::ranges::sort(others);
+    const size_t median = others[others.size() / 2];
+    if (median > 0) {
+      base::UmaHistogramCounts1000(
+          "Accessibility.PdfHeuristics.ListLastItemLengthRatio",
+          base::ClampRound(100.0 * last / median));
+    }
+  }
 
   if (is_top_level) {
     base::UmaHistogramExactLinear(
@@ -2576,21 +2594,28 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     if (list_marker_kind.form != ListMarkerForm::kNone) {
       CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
       gfx::RectF marker_bounds = text_run.bounds;
-      float item_text_x = 0.0f;
+      float item_text_x;
+      size_t item_start_char_index;
       if (list_marker_kind.form == ListMarkerForm::kCombined) {
         const ListMarkerPrefix prefix = GetListMarkerPrefix(run_context.chars);
         marker_prefix_char_count = prefix.char_count;
         marker_bounds.set_width(prefix.marker_width);
         item_text_x = text_run.bounds.x() +
                       GetCharsWidth(run_context.chars.first(prefix.char_count));
+        item_start_char_index =
+            page_layout.text_run_start_indices[text_run_index] +
+            prefix.char_count;
       } else {
         CHECK_EQ(list_marker_kind.form, ListMarkerForm::kStandalone);
         // Standalone markers are only classified when item text follows in
         // `next_run`.
         CHECK(run_context.next_run);
         item_text_x = run_context.next_run->bounds.x();
+        item_start_char_index =
+            page_layout.text_run_start_indices[text_run_index + 1];
       }
       list_levels_.back().item_text_x = item_text_x;
+      list_levels_.back().last_item_start_char_index = item_start_char_index;
 
       AddListMarkerToNode(GetListMarkerName(run_context, list_marker_kind),
                           marker_bounds, block_node);
@@ -2716,7 +2741,12 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
   }
 
-  PopListLevels(list_levels_, /*levels_to_keep=*/0, ListEndReason::kPageEnd);
+  if (!list_levels_.empty()) {
+    list_levels_.back().item_char_counts.push_back(
+        page_layout.chars.size() -
+        list_levels_.back().last_item_start_char_index);
+    PopListLevels(list_levels_, /*levels_to_keep=*/0, ListEndReason::kPageEnd);
+  }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Add the wrapper node if still in OCR block and text runs finish.
@@ -2790,6 +2820,11 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   std::vector<ListLevel> levels;
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     std::swap(levels, list_levels_);
+    if (!levels.empty()) {
+      levels.back().item_char_counts.push_back(
+          layout.text_run_start_indices[text_run_index] -
+          levels.back().last_item_start_char_index);
+    }
   }
   // Set on each path that returns with an open list.
   std::optional<ListEndReason> end_reason;

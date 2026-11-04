@@ -5460,6 +5460,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
       "Accessibility.PdfHeuristics.TopLevelUnorderedListItemCount", 5, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListLastItemLengthRatio", 171, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
@@ -5513,6 +5515,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByOutdent) {
   CheckParagraph(page->GetChildAtIndex(1u), "Outdented paragraph");
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kOutdent, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.ListLastItemLengthRatio", 0);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicListTerminatedByNewListMarker) {
@@ -6492,6 +6496,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedList) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -6507,6 +6512,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedRuns) {
 
   CheckOrderedList(page->GetChildAtIndex(0u), {"First", "Second"},
                    {"1. ", "2. "});
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListLastItemLengthRatio", 120, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListCombinedAfterParagraph) {
@@ -6977,6 +6984,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
       "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
   histogram_tester.ExpectTotalCount("Accessibility.PdfHeuristics.ListEndReason",
                                     3);
+  // Items within each list have equal lengths.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListLastItemLengthRatio", 100, 3);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListRequiresSequence) {

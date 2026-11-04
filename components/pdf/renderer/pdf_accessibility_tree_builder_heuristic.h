@@ -54,6 +54,11 @@ struct ListLevel {
   raw_ptr<ui::AXNodeData> last_item;
   // The x-coordinate, in page pixels, where `last_item`'s text starts.
   float item_text_x = 0.0f;
+  // Page character index where `last_item`'s text starts, after its marker.
+  size_t last_item_start_char_index = 0;
+  // Character counts of this level's ended items, excluding markers and
+  // nested lists.
+  std::vector<size_t> item_char_counts;
   // The value of the most recent item if this is an ordered list; unset for an
   // unordered list.
   std::optional<int> last_ordered_value;
