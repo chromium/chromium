@@ -629,16 +629,12 @@ void Browser::TabStripEmpty() {
 void Browser::OnTabGroupFocusChanged(
     std::optional<tab_groups::TabGroupId> new_focused_group,
     std::optional<tab_groups::TabGroupId> old_focused_group) {
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
-      tab_strip_model_->closing_all() || IsDeleteScheduled()) {
-    return;
-  }
-  SessionService* service = SessionServiceFactory::GetForProfile(profile_);
-  if (service) {
-    service->AddWindowExtraData(
-        session_id_, tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
-        new_focused_group.has_value() ? new_focused_group->ToString()
-                                      : std::string());
+  PersistFocusedTabGroup();
+}
+
+void Browser::OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) {
+  if (tab_strip_model_->GetFocusedGroup() == group_id) {
+    PersistFocusedTabGroup();
   }
 }
 
@@ -882,6 +878,21 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
     int entry_count = new_contents->GetController().GetEntryCount();
     new_contents->GetController().NotifyEntryChanged(
         new_contents->GetController().GetEntryAtIndex(entry_count - 1));
+  }
+}
+
+void Browser::PersistFocusedTabGroup() {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+      tab_strip_model_->closing_all() || IsDeleteScheduled()) {
+    return;
+  }
+  SessionService* service = SessionServiceFactory::GetForProfile(profile_);
+  if (service) {
+    std::optional<tab_groups::TabGroupId> focused_group =
+        tab_strip_model_->GetPersistableFocusedGroup();
+    service->AddWindowExtraData(
+        session_id_, tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey,
+        focused_group.has_value() ? focused_group->ToString() : std::string());
   }
 }
 

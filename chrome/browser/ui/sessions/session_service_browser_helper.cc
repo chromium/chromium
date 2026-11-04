@@ -25,6 +25,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/range/range.h"
 
 namespace {
 
@@ -32,6 +33,9 @@ void UpdateTabGroupSessionMetadata(Profile& profile,
                                    TabStripModel& tab_strip_model,
                                    SessionID session_id,
                                    const tab_groups::TabGroupId& group_id) {
+  if (!tab_strip_model.IsPersistableTabGroup(group_id)) {
+    return;
+  }
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(&profile);
   if (!session_service) {
@@ -180,6 +184,30 @@ void SessionServiceBrowserHelper::OnTabStripModelChanged(
   }
 }
 
+void SessionServiceBrowserHelper::OnTabGroupPromoted(
+    const tab_groups::TabGroupId& group) {
+  // See comment in `OnTabGroupChanged`.
+  CHECK(!IsRelevantToAppSessionService(browser_type_),
+        base::NotFatalUntil::M162);
+  CHECK(tab_strip_model_->group_model(), base::NotFatalUntil::M162);
+  // Promotion is only sent for a group that is in the model and is no longer
+  // ephemeral, so it is always persistable.
+  CHECK(tab_strip_model_->group_model()->ContainsTabGroup(group),
+        base::NotFatalUntil::M162);
+
+  // While the group was ephemeral, its tabs were written to the session as
+  // ungrouped and its metadata was not written. Write both now. The focused
+  // group is persisted by Browser::OnTabGroupPromoted().
+  const gfx::Range tab_range =
+      tab_strip_model_->group_model()->GetTabGroup(group)->ListTabs();
+  for (tabs::TabInterface* tab :
+       tab_strip_model_->GetTabsAtIndices(tab_range.ToIntVector())) {
+    UpdateTabGroupSessionDataForTab(tab, group);
+  }
+  UpdateTabGroupSessionMetadata(*profile_, *tab_strip_model_, session_id_,
+                                group);
+}
+
 void SessionServiceBrowserHelper::OnTabGroupChanged(
     const TabGroupChange& change) {
   // If apps ever get tab grouping, this function needs to be updated to
@@ -309,9 +337,9 @@ void SessionServiceBrowserHelper::SyncHistoryWithTabs(int index) {
         session_service->SetTabIndexInWindow(session_id_, tab_id,
                                              current_index);
 
-        std::optional<tab_groups::TabGroupId> group_id =
-            tab_strip_model_->GetTabGroupForTab(current_index);
-        session_service->SetTabGroup(session_id_, tab_id, std::move(group_id));
+        session_service->SetTabGroup(
+            session_id_, tab_id,
+            tab_strip_model_->GetPersistableTabGroupForTab(current_index));
       }
     }
     current_index++;
@@ -324,6 +352,9 @@ void SessionServiceBrowserHelper::UpdateTabGroupSessionDataForTab(
   // See comment in `OnTabGroupChanged`.
   CHECK(!IsRelevantToAppSessionService(browser_type_),
         base::NotFatalUntil::M162);
+  if (group.has_value() && !tab_strip_model_->IsPersistableTabGroup(*group)) {
+    group = std::nullopt;
+  }
   SessionService* const session_service =
       SessionServiceFactory::GetForProfile(&*profile_);
   if (!session_service) {

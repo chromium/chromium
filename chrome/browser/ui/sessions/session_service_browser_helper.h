@@ -70,6 +70,7 @@ class SessionServiceBrowserHelper : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabGroupPromoted(const tab_groups::TabGroupId& group) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,

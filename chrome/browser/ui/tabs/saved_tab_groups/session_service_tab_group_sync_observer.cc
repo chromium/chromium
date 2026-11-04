@@ -83,7 +83,7 @@ void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
   }
 
   CHECK(tab_strip_model_->SupportsTabGroups());
-  if (!tab_strip_model_->group_model()->ContainsTabGroup(local_id.value())) {
+  if (!tab_strip_model_->IsPersistableTabGroup(local_id.value())) {
     return;
   }
 

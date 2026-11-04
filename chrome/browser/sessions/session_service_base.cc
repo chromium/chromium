@@ -740,6 +740,9 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {
+      if (!tab_strip->IsPersistableTabGroup(group_id)) {
+        continue;
+      }
       const tab_groups::TabGroupVisualData* visual_data =
           group_model->GetTabGroup(group_id)->visual_data();
 
@@ -767,7 +770,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
       tab_strip->SupportsTabGroups()) {
     std::optional<tab_groups::TabGroupId> focused_group =
-        tab_strip->GetFocusedGroup();
+        tab_strip->GetPersistableFocusedGroup();
     if (focused_group.has_value()) {
       command_storage_manager()->AppendRebuildCommand(
           sessions::CreateAddWindowExtraDataCommand(
@@ -796,7 +799,7 @@ void SessionServiceBase::BuildCommandsForBrowser(
     WebContents* tab = tab_interface->GetContents();
     CHECK(tab, base::NotFatalUntil::M163);
     const std::optional<tab_groups::TabGroupId> group_id =
-        tab_strip->GetTabGroupForTab(index);
+        tab_strip->GetPersistableTabGroupForTab(index);
     const std::optional<split_tabs::SplitTabId> split_id =
         tab_strip->GetSplitForTab(index);
 

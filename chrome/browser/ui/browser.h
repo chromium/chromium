@@ -121,6 +121,7 @@ class Browser : public TabStripModelObserver,
   void OnTabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group,
       std::optional<tab_groups::TabGroupId> old_focused_group) override;
+  void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) override;
 
   // BrowserWindowInterface overrides:
   Profile* GetProfile() override;
@@ -228,6 +229,10 @@ class Browser : public TabStripModelObserver,
   void OnTabReplacedAt(content::WebContents* old_contents,
                        content::WebContents* new_contents,
                        int index);
+
+  // Writes the persistable focused tab group of this window to the session, or
+  // clears it if no persistable group is focused.
+  void PersistFocusedTabGroup();
 
   // In-progress download termination handling /////////////////////////////////
 

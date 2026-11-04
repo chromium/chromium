@@ -6071,6 +6071,122 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest, RestoreFocusedTabGroup) {
             new_tab_strip_model->GetFocusedGroup());
 }
 
+// An ephemeral focused group must not be written to the session: after a
+// restart the tabs come back ungrouped, unfocused, and without group metadata.
+IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest,
+                       PRE_DoNotRestoreEphemeralFocusedTabGroup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  const tab_groups::TabGroupId group = tab_strip_model->EnterFocusMode({0, 1});
+  ASSERT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+  ASSERT_EQ(group, tab_strip_model->GetFocusedGroup());
+}
+
+IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest,
+                       DoNotRestoreEphemeralFocusedTabGroup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // The two restored tabs, plus any tab the test harness opens on startup.
+  ASSERT_GE(tab_strip_model->count(), 2);
+  EXPECT_FALSE(tab_strip_model->GetFocusedGroup().has_value());
+  EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(i).has_value()) << i;
+  }
+}
+
+// Same as above, but through a full command rebuild
+// (SessionServiceBase::BuildCommandsForBrowser) rather than the incremental
+// writers, which is the path a restart only takes periodically.
+IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest,
+                       DoNotRestoreEphemeralFocusedTabGroupOnRebuild) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  const tab_groups::TabGroupId group = tab_strip_model->EnterFocusMode({0, 1});
+  ASSERT_EQ(group, tab_strip_model->GetFocusedGroup());
+
+  // QuitBrowserAndRestore() rebuilds all commands from the live browser first.
+  TabStripModel* new_tab_strip_model =
+      QuitBrowserAndRestore(browser())->GetTabStripModel();
+  ASSERT_EQ(2, new_tab_strip_model->count());
+  EXPECT_FALSE(new_tab_strip_model->GetFocusedGroup().has_value());
+  EXPECT_TRUE(new_tab_strip_model->group_model()->ListTabGroups().empty());
+}
+
+// Promoting a focused ephemeral group makes it persistable: after a restart the
+// group is restored with its visuals, its saved group, and focus.
+//
+// This uses the in-process QuitBrowserAndRestore() rather than a PRE_ test: on
+// a real restart the test harness opens its own startup tab, and on Linux that
+// tab is activated outside the restored group before the test body runs, which
+// exits focus mode and makes the focus assertion meaningless.
+IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest,
+                       RestorePromotedFocusedTabGroup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  ASSERT_TRUE(sync_service);
+  sync_service->SetIsInitializedForTesting(true);
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  const tab_groups::TabGroupId group = tab_strip_model->EnterFocusMode({0, 1});
+  ASSERT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+  ASSERT_EQ(group, tab_strip_model->GetFocusedGroup());
+
+  // Set visuals before promoting so that promotion itself is what persists
+  // them.
+  const tab_groups::TabGroupVisualData promoted_visuals(
+      u"Promoted Group", tab_groups::TabGroupColorId::kBlue);
+  tab_strip_model->ChangeTabGroupVisuals(group, promoted_visuals);
+  tab_strip_model->PromoteEphemeralTabGroup(group);
+  ASSERT_FALSE(tab_strip_model->IsEphemeralTabGroup(group));
+  ASSERT_TRUE(sync_service->GetGroup(group).has_value());
+  const base::Uuid saved_guid = sync_service->GetGroup(group)->saved_guid();
+
+  TabStripModel* new_tab_strip_model =
+      QuitBrowserAndRestore(browser())->GetTabStripModel();
+
+  ASSERT_EQ(2, new_tab_strip_model->count());
+  ASSERT_EQ(1u, new_tab_strip_model->group_model()->ListTabGroups().size());
+  const std::optional<tab_groups::TabGroupId> restored_group =
+      new_tab_strip_model->GetTabGroupForTab(0);
+  ASSERT_TRUE(restored_group.has_value());
+  EXPECT_EQ(restored_group, new_tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_FALSE(new_tab_strip_model->IsEphemeralTabGroup(*restored_group));
+  EXPECT_EQ(restored_group, new_tab_strip_model->GetFocusedGroup());
+  EXPECT_EQ(promoted_visuals, *new_tab_strip_model->group_model()
+                                   ->GetTabGroup(*restored_group)
+                                   ->visual_data());
+
+  // The restored group reconnects to the saved group created at promotion
+  // time, rather than creating a duplicate.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const std::optional<tab_groups::SavedTabGroup> saved_group =
+        sync_service->GetGroup(saved_guid);
+    return saved_group.has_value() &&
+           saved_group->local_group_id() == restored_group;
+  }));
+  EXPECT_EQ(1u, sync_service->GetAllGroups().size());
+}
+
 class PageContentCacheSessionRestoreTest : public SessionRestoreTest {
  public:
   PageContentCacheSessionRestoreTest() {
