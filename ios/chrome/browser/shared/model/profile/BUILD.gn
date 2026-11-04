@@ -13,7 +13,6 @@ source_set("features") {
     "//base",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

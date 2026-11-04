@@ -220,15 +220,13 @@ TEST_F(PushNotificationDelegateTest, WillPresentNotification) {
   EXPECT_TRUE(completion_handler_called);
 }
 
-// Tests that when multi-profile push notification handling is enabled and the
-// notification response doesn't contain a direct profile name but contains a
-// Chime Gaia ID, the delegate maps it to the corresponding profile name and
-// calls the ChangeProfileCommands handler.
+// Tests that when the notification response doesn't contain a direct profile
+// name but contains a Chime Gaia ID, the delegate maps it to the corresponding
+// profile name and calls the ChangeProfileCommands handler.
 TEST_F(PushNotificationDelegateTest,
        HandleNotificationResponseWithChimeGaiaID) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kIOSPushNotificationMultiProfile, kContentPushNotifications}, {});
+  scoped_feature_list.InitAndEnableFeature(kContentPushNotifications);
 
   // Assign Gaia ID "12345" to the test profile.
   profile_manager_.GetProfileAttributesStorage()

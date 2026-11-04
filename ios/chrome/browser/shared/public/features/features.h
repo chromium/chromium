@@ -381,14 +381,6 @@ BASE_DECLARE_FEATURE(kIOSOneTimeDefaultBrowserNotification);
 
 // Returns whether `kIOSReactivationNotifications` is enabled.
 
-// Enables Profile-specific push notification handling logic. When enabled, this
-// routes incoming notifications to the PushNotificationClientManager associated
-// with the current Profile, rather than using a single global manager. This
-// flag is disabled by default while the refactor is ongoing.
-//
-// DO NOT CHECK DIRECTLY, use IsMultiProfilePushNotificationHandlingEnabled()!
-BASE_DECLARE_FEATURE(kIOSPushNotificationMultiProfile);
-
 extern const char kFullscreenTransitionSlower[];
 extern const char kFullscreenTransitionDefaultSpeed[];
 extern const char kFullscreenTransitionFaster[];

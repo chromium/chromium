@@ -9,9 +9,6 @@
 
 // THIS CANNOT BE USED FROM EARLGREY TESTS.
 
-// YES if Profile-specific push notification handling is enabled.
-bool IsMultiProfilePushNotificationHandlingEnabled();
-
 // Whether to destroy the OTR profile early in ~ProfileIOSImpl.
 BASE_DECLARE_FEATURE(kDestroyOTRProfileEarly);
 
