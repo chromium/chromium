@@ -32,4 +32,8 @@ struct DisplayColorSpaces {
 
   // The maximum HDR luminance, as a multiple of the SDR maximum luminance.
   float hdr_max_luminance_relative;
+
+  // Whether the display system decodes the sRGB transfer function with a pure
+  // gamma 2.2 curve.
+  bool srgb_is_gamma22;
 };

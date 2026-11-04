@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -21,6 +22,8 @@
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space.mojom.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
+#include "ui/gfx/mojom/display_color_spaces.mojom.h"
+#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 #include "ui/gfx/mojom/native_handle_types_mojom_traits.h"
@@ -440,6 +443,18 @@ TEST_F(StructTraitsTest, RRectF) {
   input.SetCornerRadii(RRectF::Corner::kLowerLeft, 0, 0);
   remote->EchoRRectF(input, &output);
   EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, DisplayColorSpaces) {
+  gfx::DisplayColorSpaces input(gfx::ColorSpace::CreateHDR10());
+  input.SetSDRMaxLuminanceNits(250.f);
+  input.SetHDRMaxLuminanceRelative(4.f);
+  input.set_srgb_is_gamma22(true);
+  gfx::DisplayColorSpaces output;
+  mojo::test::SerializeAndDeserialize<gfx::mojom::DisplayColorSpaces>(input,
+                                                                      output);
+  EXPECT_EQ(input, output);
+  EXPECT_TRUE(output.srgb_is_gamma22());
 }
 
 TEST_F(StructTraitsTest, HDRMetadata) {

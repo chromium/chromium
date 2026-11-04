@@ -380,6 +380,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
   // |current_viewport_rect_|.
   gfx::Rect current_render_pass_update_rect_;
 
+  // When content with the sRGB transfer function must be drawn as gamma 2.2
+  // into the current render pass, sRGB primaries with the gamma 2.2 transfer
+  // function. Null otherwise, including outside of render passes.
+  sk_sp<SkColorSpace> srgb_as_gamma22_color_space_;
+
   // The scissor rect for the current draw. In the same coordinate space as and
   // contained by |current_render_pass_update_rect_|.
   std::optional<gfx::Rect> scissor_rect_;
@@ -554,6 +559,19 @@ class VIZ_SERVICE_EXPORT SkiaRenderer
   // Returns the color space of the current draw layer, which may differ from
   // the render pass' color space.
   gfx::ColorSpace CurrentDrawLayerColorSpace() const;
+
+  // Returns the color space as which SDR content in `color_space` must be
+  // drawn into the current render pass, or null if it can be drawn as is. When
+  // the display system decodes sRGB as gamma 2.2 (see
+  // gfx::DisplayColorSpaces::srgb_is_gamma22()), content with the sRGB
+  // transfer function is decoded with gamma 2.2 when it is converted to an HDR
+  // output color space.
+  sk_sp<SkColorSpace> GetSrgbAsGamma22ColorSpace(
+      const gfx::ColorSpace& color_space) const;
+
+  // Computes `srgb_as_gamma22_color_space_` for `render_pass`, which is about
+  // to be drawn.
+  void UpdateSrgbAsGamma22ColorSpace(const AggregatedRenderPass* render_pass);
 
   // A layer that may be pushed at the start of |BeginDrawingRenderPass| that is
   // the size of the pass' update rect. Drawing done inside this layer is in a

@@ -42,6 +42,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
       const gfx::DisplayColorSpaces& input) {
     return input.GetHDRMaxLuminanceRelative();
   }
+  static bool srgb_is_gamma22(const gfx::DisplayColorSpaces& input) {
+    return input.srgb_is_gamma22();
+  }
   static bool Read(gfx::mojom::DisplayColorSpacesDataView data,
                    gfx::DisplayColorSpaces* out);
 };

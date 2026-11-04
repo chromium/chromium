@@ -75,6 +75,7 @@ bool StructTraits<
 
   out->SetSDRMaxLuminanceNits(input.sdr_max_luminance_nits());
   out->SetHDRMaxLuminanceRelative(input.hdr_max_luminance_relative());
+  out->set_srgb_is_gamma22(input.srgb_is_gamma22());
 
   return true;
 }

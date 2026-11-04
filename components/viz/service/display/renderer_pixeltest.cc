@@ -4346,6 +4346,89 @@ INSTANTIATE_TEST_SUITE_P(,
 // GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestColorConversion);
 
+// Draws #1F1F1F, directly and through a render pass, onto an HDR output.
+// The output is scRGB linear with SDR white at 10.0, and the readback is of
+// the linear values, so dark tones are resolved well enough to tell the
+// piece-wise sRGB and gamma 2.2 decodings apart.
+class RendererPixelTestSrgbAsGamma22 : public RendererPixelTestColorConversion {
+ public:
+  RendererPixelTestSrgbAsGamma22() {
+    this->display_color_spaces_.SetSDRMaxLuminanceNits(800.f);
+  }
+
+ protected:
+  bool DrawDarkGray(int expected_value) {
+    gfx::Rect rect(this->device_viewport_size_);
+    gfx::Rect left(rect.width() / 2, rect.height());
+    gfx::Rect right(rect.width() / 2, 0, rect.width() - rect.width() / 2,
+                    rect.height());
+    const SkColor4f dark_gray = SkColor4f::FromColor(0xFF1F1F1F);
+
+    AggregatedRenderPassId child_id{2};
+    auto child_pass = CreateTestRenderPass(child_id, gfx::Rect(right.size()),
+                                           gfx::Transform());
+    SharedQuadState* child_state =
+        CreateTestSharedQuadState(gfx::Transform(), gfx::Rect(right.size()),
+                                  child_pass.get(), gfx::MaskFilterInfo());
+    // Two quads, so that the render pass isn't bypassed.
+    gfx::Rect child_top(right.width(), right.height() / 2);
+    gfx::Rect child_bottom(0, right.height() / 2, right.width(),
+                           right.height() - right.height() / 2);
+    for (const gfx::Rect& child_rect : {child_top, child_bottom}) {
+      auto* quad = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      quad->SetNew(child_state, child_rect, child_rect, dark_gray, false);
+    }
+
+    AggregatedRenderPassId root_id{1};
+    auto root_pass = CreateTestRootRenderPass(root_id, rect);
+    gfx::Transform right_transform;
+    right_transform.Translate(right.x(), right.y());
+    SharedQuadState* rpdq_state =
+        CreateTestSharedQuadState(right_transform, gfx::Rect(right.size()),
+                                  root_pass.get(), gfx::MaskFilterInfo());
+    CreateTestRenderPassDrawQuad(rpdq_state, gfx::Rect(right.size()), child_id,
+                                 root_pass.get());
+    SharedQuadState* root_state = CreateTestSharedQuadState(
+        gfx::Transform(), rect, root_pass.get(), gfx::MaskFilterInfo());
+    auto* quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+    quad->SetNew(root_state, left, left, dark_gray, false);
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(child_pass));
+    pass_list.push_back(std::move(root_pass));
+
+    std::vector<SkColor> expected_output_colors(
+        rect.width() * rect.height(),
+        SkColorSetARGB(255, expected_value, expected_value, expected_value));
+    return this->RunPixelTest(&pass_list, &expected_output_colors,
+                              cc::FuzzyPixelComparator()
+                                  .SetErrorPixelsPercentageLimit(0.f)
+                                  .SetAbsErrorLimit(1));
+  }
+};
+
+// Without set_srgb_is_gamma22(), sRGB content is decoded with the piece-wise
+// sRGB curve: 0x1F decodes to 0.01370, i.e. 0.1370 * 255 = 35 in the output.
+TEST_P(RendererPixelTestSrgbAsGamma22, PiecewiseByDefault) {
+  EXPECT_TRUE(DrawDarkGray(35));
+}
+
+// With set_srgb_is_gamma22(), sRGB content is decoded with gamma 2.2 when it is
+// converted to the HDR output: 0x1F decodes to 0.00970, i.e. 0.0970 * 255 = 25
+// in the output (https://crbug.com/475549558).
+TEST_P(RendererPixelTestSrgbAsGamma22, Gamma22WhenSet) {
+  this->display_color_spaces_.set_srgb_is_gamma22(true);
+  EXPECT_TRUE(DrawDarkGray(25));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RendererPixelTestSrgbAsGamma22,
+                         testing::ValuesIn(GetGpuRendererTypes()),
+                         testing::PrintToStringParamName());
+
+// GetGpuRendererTypes() can return an empty list, e.g. on Fuchsia ARM64.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(RendererPixelTestSrgbAsGamma22);
+
 TEST_P(RendererPixelTest, CopyOutputRequestTrackedElements) {
   gfx::Rect viewport_rect(this->device_viewport_size_);
 

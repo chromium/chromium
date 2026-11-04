@@ -167,6 +167,10 @@ WaylandWpImageDescription::AsDisplayColorSpaces(
   gfx::DisplayColorSpaces display_color_spaces(color_space_);
   display_color_spaces.SetSDRMaxLuminanceNits(sdr_max_luminance_nits_);
   display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_relative_);
+  // Compositors display sRGB as gamma 2.2, so sRGB content must look that way
+  // on HDR outputs too, where viz converts it to the output color space.
+  display_color_spaces.set_srgb_is_gamma22(
+      base::FeatureList::IsEnabled(kWaylandSrgbAsGamma22));
   if (display_color_spaces.SupportsHDR() && hdr_output_format) {
     // SDR content is also composed into the preferred HDR target space, so all
     // usages need a high-bit-depth output format to avoid banding.

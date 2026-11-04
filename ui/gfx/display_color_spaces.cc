@@ -251,6 +251,7 @@ void DisplayColorSpaces::AsValueInto(
                    skia::SkColorSpacePrimariesToString(primaries_));
   value->SetDouble("sdr_max_luminance_nits", sdr_max_luminance_nits_);
   value->SetDouble("hdr_max_luminance_relative", hdr_max_luminance_relative_);
+  value->SetBoolean("srgb_is_gamma22", srgb_is_gamma22_);
 }
 
 

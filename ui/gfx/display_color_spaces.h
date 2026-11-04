@@ -129,6 +129,15 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // Returns log2 of GetHDRMaxLuminanceRelative.
   float GetHdrHeadroom() const;
 
+  // Set whether the display system decodes the sRGB transfer function with a
+  // pure gamma 2.2 curve, as Wayland compositors do. When set, SDR content with
+  // the sRGB transfer function is decoded with gamma 2.2 when it is converted
+  // to an HDR output color space, so that it looks the same as on SDR outputs.
+  void set_srgb_is_gamma22(bool srgb_is_gamma22) {
+    srgb_is_gamma22_ = srgb_is_gamma22;
+  }
+  bool srgb_is_gamma22() const { return srgb_is_gamma22_; }
+
   // TODO(crbug.com/40144904): These helper functions exist temporarily
   // to handle the transition of display::ScreenInfo off of ColorSpace. All
   // calls to these functions are to be eliminated.
@@ -181,6 +190,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
+  bool srgb_is_gamma22_ = false;
 };
 
 // A ref counted object to avoid copying DisplayColorSpaces.

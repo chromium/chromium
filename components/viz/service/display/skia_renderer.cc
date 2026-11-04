@@ -73,6 +73,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
@@ -816,6 +817,13 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   LOG_IF(ERROR, !image_context->has_image())
       << "Failed to create the promise sk image.";
 
+  // `override_color_space` is how the display system interprets the resource
+  // (only set for Android SurfaceControl overlay candidates, which never decode
+  // sRGB as gamma 2.2), so it is used as is.
+  if (sk_image_ && !override_color_space) {
+    override_color_space = skia_renderer->GetSrgbAsGamma22ColorSpace(
+        resource_provider->GetColorSpace(resource_id));
+  }
   if (sk_image_ && override_color_space) {
     sk_image_ = sk_image_->reinterpretColorSpace(override_color_space);
   }
@@ -1504,6 +1512,42 @@ bool SkiaRenderer::NeedsLayerForColorConversion(
   return true;
 }
 
+void SkiaRenderer::UpdateSrgbAsGamma22ColorSpace(
+    const AggregatedRenderPass* render_pass) {
+  // Render passes other than the root pass, and SDR outputs, keep sRGB content
+  // as is: SDR output color spaces are chosen such that sRGB content passes
+  // through to the display system unchanged.
+  if (render_pass != current_frame()->root_render_pass ||
+      !current_frame()->display_color_spaces.srgb_is_gamma22() ||
+      !RenderPassColorSpace(render_pass).IsHDR()) {
+    srgb_as_gamma22_color_space_ = nullptr;
+    return;
+  }
+  srgb_as_gamma22_color_space_ =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::k2Dot2, SkNamedGamut::kSRGB);
+}
+
+sk_sp<SkColorSpace> SkiaRenderer::GetSrgbAsGamma22ColorSpace(
+    const gfx::ColorSpace& color_space) const {
+  if (!srgb_as_gamma22_color_space_) {
+    return nullptr;
+  }
+  // Only content with the sRGB transfer function is affected. HDR content (e.g.
+  // in an extended sRGB space) keeps its own transfer function.
+  if (color_space.GetTransferID() != gfx::ColorSpace::TransferID::SRGB) {
+    return nullptr;
+  }
+  // sRGB uses the BT.709 primaries, so the common case of sRGB content can use
+  // the cached color space. Other primaries (e.g. Display P3, which also uses
+  // the sRGB transfer function) keep their primaries.
+  if (color_space.GetPrimaryID() == gfx::ColorSpace::PrimaryID::BT709) {
+    return srgb_as_gamma22_color_space_;
+  }
+  skcms_Matrix3x3 to_xyzd50;
+  color_space.GetPrimaryMatrix(&to_xyzd50);
+  return SkColorSpace::MakeRGB(SkNamedTransferFn::k2Dot2, to_xyzd50);
+}
+
 gfx::ColorSpace SkiaRenderer::CurrentDrawLayerColorSpace() const {
   if (hdr_color_conversion_layer_reset_) {
     // A color conversion layer allows us to draw everything in an extended
@@ -1598,6 +1642,7 @@ void SkiaRenderer::BeginDrawingRenderPass(
   }
 
   current_render_pass_update_rect_ = render_pass_update_rect;
+  UpdateSrgbAsGamma22ColorSpace(render_pass);
 }
 
 void SkiaRenderer::DoDrawQuad(const DrawQuad* quad,
@@ -2505,6 +2550,18 @@ void SkiaRenderer::DrawColoredQuad(SkColor4f color,
       // Concatenate the bypass'ed quad's transform after all the RPDQ state
       // has been pushed to the canvas.
       current_canvas_->concat(rpdq_params->bypass_geometry->transform);
+    }
+  }
+
+  // Quad colors are sRGB. Colors outside of [0, 1] (e.g. HDR colors in
+  // extended sRGB) keep the piece-wise sRGB transfer function.
+  if (color.fR >= 0.f && color.fR <= 1.f && color.fG >= 0.f &&
+      color.fG <= 1.f && color.fB >= 0.f && color.fB <= 1.f) {
+    if (sk_sp<SkColorSpace> gamma22_color_space =
+            GetSrgbAsGamma22ColorSpace(gfx::ColorSpace::CreateSRGB())) {
+      SkPaint paint;
+      paint.setColor(color, gamma22_color_space.get());
+      color = paint.getColor4f();
     }
   }
 
@@ -3428,6 +3485,11 @@ void SkiaRenderer::DrawRenderPassQuad(
   if (!content_image)
     return;
 
+  if (sk_sp<SkColorSpace> gamma22_color_space =
+          GetSrgbAsGamma22ColorSpace(RenderPassBackingColorSpace(backing))) {
+    content_image = content_image->reinterpretColorSpace(gamma22_color_space);
+  }
+
   if (backing.generate_mipmap)
     params->sampling =
         SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
@@ -3513,11 +3575,16 @@ void SkiaRenderer::DidChangeHasBackBuffers() {
 void SkiaRenderer::FinishDrawingRenderPass() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
                "SkiaRenderer::FinishDrawingRenderPass");
-  if (!current_canvas_)
+  if (!current_canvas_) {
+    srgb_as_gamma22_color_space_ = nullptr;
     return;
+  }
 
   if (!batched_quads_.empty())
     FlushBatchedQuads();
+
+  // Nothing else draws quads into this render pass.
+  srgb_as_gamma22_color_space_ = nullptr;
 
   bool is_root_render_pass =
       current_frame()->current_render_pass == current_frame()->root_render_pass;
