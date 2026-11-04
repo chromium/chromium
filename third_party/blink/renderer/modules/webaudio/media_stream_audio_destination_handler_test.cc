@@ -66,7 +66,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
 class MockWebAudioDestinationConsumer : public WebAudioDestinationConsumer {
  public:
   MOCK_METHOD2(SetFormat, void(int, float));
-  MOCK_METHOD2(ConsumeAudio, void(const Vector<const float*>&, int));
+  MOCK_METHOD2(ConsumeAudio, void(const Vector<base::span<const float>>&, int));
 };
 
 }  // namespace
@@ -167,7 +167,7 @@ TEST_F(MediaStreamAudioDestinationHandlerTest, AudioConsumerStressTest) {
 
   Vector<float> data_l(128, 0.0f);
   Vector<float> data_r(128, 0.0f);
-  Vector<const float*> audio_data = {data_l.data(), data_r.data()};
+  Vector<base::span<const float>> audio_data = {data_l, data_r};
 
   auto source = std::make_unique<WebAudioMediaStreamSource>(
       task_environment_.GetMainThreadTaskRunner());
@@ -179,8 +179,8 @@ TEST_F(MediaStreamAudioDestinationHandlerTest, AudioConsumerStressTest) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](scoped_refptr<WebAudioDestinationConsumer> consumer,
-             Vector<const float*> audio_data, std::atomic<bool>* stop,
-             base::WaitableEvent* done) {
+             Vector<base::span<const float>> audio_data,
+             std::atomic<bool>* stop, base::WaitableEvent* done) {
             while (!stop->load(std::memory_order_relaxed)) {
               consumer->ConsumeAudio(audio_data, 10);
             }

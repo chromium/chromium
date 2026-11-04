@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -40,7 +41,7 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
     void Detach();
 
     void SetFormat(int number_of_channels, float sample_rate) override;
-    void ConsumeAudio(const Vector<const float*>& audio_data,
+    void ConsumeAudio(const Vector<base::span<const float>>& audio_data,
                       int number_of_frames) override;
 
    private:
@@ -60,7 +61,7 @@ class PLATFORM_EXPORT WebAudioMediaStreamSource final
 
  private:
   scoped_refptr<AudioConsumer> consumer_;
-  void ConsumeAudioInternal(const Vector<const float*>& audio_data,
+  void ConsumeAudioInternal(const Vector<base::span<const float>>& audio_data,
                             int number_of_frames);
   void SetFormat(int number_of_channels, float sample_rate);
 

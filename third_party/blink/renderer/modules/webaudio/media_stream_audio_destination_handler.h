@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_STREAM_AUDIO_DESTINATION_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_MEDIA_STREAM_AUDIO_DESTINATION_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -89,7 +90,8 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   // synchronization to prevent Use-After-Free issues during garbage collection.
   scoped_refptr<WebAudioDestinationConsumer> destination_consumer_
       GUARDED_BY(consumer_lock_);
-  Vector<const float*> consumer_bus_wrapper_ GUARDED_BY(consumer_lock_);
+  Vector<base::span<const float>> consumer_bus_wrapper_
+      GUARDED_BY(consumer_lock_);
 
   // This synchronizes dynamic changes to the channel count with
   // process() to manage the mix bus.

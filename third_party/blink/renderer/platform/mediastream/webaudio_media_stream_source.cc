@@ -60,7 +60,7 @@ void WebAudioMediaStreamSource::AudioConsumer::SetFormat(int number_of_channels,
 }
 
 void WebAudioMediaStreamSource::AudioConsumer::ConsumeAudio(
-    const Vector<const float*>& audio_data,
+    const Vector<base::span<const float>>& audio_data,
     int number_of_frames) {
   base::AutoTryLock try_lock(lock_);
   if (try_lock.is_acquired() && owner_) {
@@ -91,7 +91,7 @@ void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
 }
 
 void WebAudioMediaStreamSource::ConsumeAudioInternal(
-    const Vector<const float*>& audio_data,
+    const Vector<base::span<const float>>& audio_data,
     int number_of_frames) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "WebAudioMediaStreamSource::ConsumeAudioInternal", "frames",
@@ -102,12 +102,17 @@ void WebAudioMediaStreamSource::ConsumeAudioInternal(
   current_reference_time_ = base::TimeTicks::Now();
   wrapper_bus_->set_frames(number_of_frames);
   DCHECK_EQ(wrapper_bus_->channels(), static_cast<int>(audio_data.size()));
+  const size_t frames = base::checked_cast<size_t>(number_of_frames);
   for (wtf_size_t i = 0; i < audio_data.size(); ++i) {
-    // TODO(crbug.com/375449662): Spanify `audio_data`.
+    const base::span<const float> channel = audio_data[i].first(frames);
+    // `media::AudioBus` can only wrap mutable memory, but `wrapper_bus_` is
+    // only ever read from (by `fifo_`), so dropping constness here is fine.
+    // SAFETY: The resulting span covers exactly the same memory as `channel`,
+    // which was bounds-checked against `audio_data[i]` above.
     wrapper_bus_->SetChannelData(
         static_cast<int>(i),
-        UNSAFE_TODO(base::span(const_cast<float*>(audio_data[i]),
-                               base::checked_cast<size_t>(number_of_frames))));
+        UNSAFE_BUFFERS(base::span<float>(const_cast<float*>(channel.data()),
+                                         channel.size())));
   }
 
   // The following will result in zero, one, or multiple synchronous calls to
