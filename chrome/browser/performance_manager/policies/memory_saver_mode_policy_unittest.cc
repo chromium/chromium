@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/policies/memory_saver_mode_policy.h"
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/test/scoped_feature_list.h"
@@ -385,13 +386,36 @@ class MemorySaverModeMemoryCoordinatorTest
     : public MemorySaverModeMemoryCoordinatorDisabledTest {
  public:
   MemorySaverModeMemoryCoordinatorTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMemorySaverMemoryCoordinatorPolicy);
+    // The policy only applies to consumers that are effectively stateful (see
+    // base::IsEffectivelyStateful()). Enable stateful memory pressure so that
+    // it doesn't depend on the platform's default.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMemorySaverMemoryCoordinatorPolicy,
+         base::kStatefulMemoryPressure},
+        {});
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(MemorySaverModeMemoryCoordinatorTest, StatefulMemoryPressureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  // The consumer operates in stateless mode regardless of its declared traits,
+  // so the policy doesn't apply to it.
+  ::testing::StrictMock<base::RegisteredMockMemoryConsumer> consumer(
+      "StatefulConsumer", kStatefulTraits);
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
+  EXPECT_CALL(consumer, OnReleaseMemory()).Times(0);
+
+  policy()->OnMemorySaverModeChanged(true);
+  policy()->SetMode(
+      user_tuning::prefs::MemorySaverModeAggressiveness::kAggressive);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::Default());
+  policy()->OnMemorySaverModeChanged(false);
+}
 
 TEST_F(MemorySaverModeMemoryCoordinatorDisabledTest,
        MemoryCoordinatorPolicyDisabledByDefault) {

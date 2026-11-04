@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
@@ -26,8 +27,7 @@ ZeroLimitPolicy::ZeroLimitPolicy(MemoryCoordinatorPolicyManager& manager)
                                  base::MemoryConsumerTraits traits,
                                  ProcessType process_type,
                                  ChildProcessId child_process_id) {
-            return traits.is_stateful ==
-                   base::MemoryConsumerTraits::IsStateful::kYes;
+            return base::IsEffectivelyStateful(traits);
           })),
       policy_registration_(manager, *this) {
   SetLimit(base::MemoryLimit::FromPercent(0), /*release_memory=*/true);

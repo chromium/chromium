@@ -13,18 +13,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
-
-bool IsEffectivelyStateful(const base::MemoryConsumerTraits& traits) {
-  return base::FeatureList::IsEnabled(base::kStatefulMemoryPressure) &&
-         traits.is_stateful == base::MemoryConsumerTraits::IsStateful::kYes;
-}
 
 // MemoryCoordinatorPolicyManager::GroupState ----------------------------------
 
@@ -125,7 +119,7 @@ bool MemoryCoordinatorPolicyManager::GroupState::ClearMemoryReleaseSuppression(
   // its current limit allows. A stateful consumer can't be above the highest
   // limit applied since it last released memory. A stateless consumer ignores
   // limit updates, so it may be above its limit whenever under pressure.
-  return IsEffectivelyStateful(traits_)
+  return base::IsEffectivelyStateful(traits_)
              ? current_limit_ < peak_limit_since_release_
              : current_limit_ < base::MemoryLimit::Default();
 }

@@ -100,8 +100,8 @@ class MemoryCoordinatorPolicyManagerTest : public Test {
 
  private:
   // Whether a dropped release request is replayed depends on whether the group
-  // is stateful (see IsEffectivelyStateful()). Enable stateful memory pressure
-  // so that it doesn't depend on the platform's default.
+  // is stateful (see base::IsEffectivelyStateful()). Enable stateful memory
+  // pressure so that it doesn't depend on the platform's default.
   base::test::ScopedFeatureList scoped_feature_list_{
       base::kStatefulMemoryPressure};
   base::test::TaskEnvironment task_environment_;

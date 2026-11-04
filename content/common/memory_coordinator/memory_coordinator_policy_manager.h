@@ -40,13 +40,6 @@ struct GlobalMemoryConsumerUpdate {
   bool operator==(const GlobalMemoryConsumerUpdate&) const = default;
 };
 
-// Returns true if a consumer with `traits` operates in stateful mode, i.e. it
-// maintains the memory limit it receives. Consumers operate in stateless mode
-// regardless of their declared traits when base::kStatefulMemoryPressure is
-// disabled.
-CONTENT_EXPORT bool IsEffectivelyStateful(
-    const base::MemoryConsumerTraits& traits);
-
 // Manages memory coordinator policies and aggregates their memory limit
 // requests for consumer groups by multiplying them together.
 class CONTENT_EXPORT MemoryCoordinatorPolicyManager
@@ -149,10 +142,10 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // Release requests that are suppressed are dropped. When a group is no
   // longer suppressed by any policy, and a release request was dropped, it is
   // asked to release memory so that it converges to its aggregate memory
-  // limit. For stateless groups (see IsEffectivelyStateful()), this is only
-  // done if their limit is below the default. For stateful groups, this is only
-  // done if their limit is lower than the highest limit applied since they last
-  // released memory, as their consumers can't be above that.
+  // limit. For stateless groups (see base::IsEffectivelyStateful()), this is
+  // only done if their limit is below the default. For stateful groups, this is
+  // only done if their limit is lower than the highest limit applied since they
+  // last released memory, as their consumers can't be above that.
   //
   // `policy` must be registered. Must not be called while policies are being
   // notified (e.g. from MemoryCoordinatorPolicy::OnConsumerGroupAdded()).

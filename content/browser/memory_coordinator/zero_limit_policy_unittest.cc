@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/hash/hash.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
@@ -68,9 +69,42 @@ class ZeroLimitPolicyTest : public testing::Test {
   MemoryCoordinatorPolicyManager& policy_manager() { return policy_manager_; }
 
  private:
+  // The policy only applies to consumers that are effectively stateful (see
+  // base::IsEffectivelyStateful()). Enable stateful memory pressure so that it
+  // doesn't depend on the platform's default.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      base::kStatefulMemoryPressure};
   base::test::TaskEnvironment task_environment_;
   MemoryCoordinatorPolicyManager policy_manager_;
 };
+
+TEST_F(ZeroLimitPolicyTest, StatefulMemoryPressureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId;
+
+  policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER, kChildId,
+                                              &host);
+
+  const std::string kStatefulName = "stateful_consumer";
+  const uint32_t kStatefulId = base::PersistentHash(kStatefulName);
+
+  policy_manager().OnConsumerGroupAdded(kStatefulId, kStatefulName,
+                                        kStatefulTraits, kChildId);
+
+  // The consumer operates in stateless mode regardless of its declared traits,
+  // so the policy doesn't apply to it.
+  EXPECT_CALL(host, UpdateConsumers).Times(0);
+  {
+    ZeroLimitPolicy policy(policy_manager());
+  }
+  Mock::VerifyAndClearExpectations(&host);
+
+  policy_manager().OnConsumerGroupRemoved(kStatefulId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
 
 TEST_F(ZeroLimitPolicyTest, ExistingConsumersUpdatedToZero) {
   MockMemoryConsumerGroupHost host;

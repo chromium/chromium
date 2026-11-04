@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
@@ -19,7 +20,9 @@ using user_tuning::prefs::MemorySaverModeAggressiveness;
 
 // Only stateful MemoryConsumers that support dynamic memory limits (such as
 // resized in-memory caches) can meaningfully maintain a persistent percentage
-// cap while Memory Saver Mode is active.
+// cap while Memory Saver Mode is active. Consumers that declare themselves
+// stateful but operate in stateless mode (see base::IsEffectivelyStateful())
+// would ignore the cap.
 bool ShouldManageConsumer(uint32_t consumer_id,
                           std::string_view consumer_name,
                           base::MemoryConsumerTraits traits,
@@ -27,7 +30,7 @@ bool ShouldManageConsumer(uint32_t consumer_id,
                           content::ChildProcessId child_process_id) {
   return traits.supports_memory_limit ==
              base::MemoryConsumerTraits::SupportsMemoryLimit::kYes &&
-         traits.is_stateful == base::MemoryConsumerTraits::IsStateful::kYes;
+         base::IsEffectivelyStateful(traits);
 }
 
 base::MemoryLimit GetLimitForState(bool enabled,

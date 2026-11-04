@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
@@ -87,7 +88,7 @@ void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {
         // kStatefulMemoryPressure feature is disabled, consumers operate in
         // stateless mode regardless of their declared traits, so they still
         // require repeated signals.
-        return !IsEffectivelyStateful(traits);
+        return !base::IsEffectivelyStateful(traits);
       },
       std::nullopt, true);
 }
