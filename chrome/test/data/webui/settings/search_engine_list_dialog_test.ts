@@ -5,7 +5,8 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import type {CrButtonElement, SearchEngine, SettingsSearchEngineListDialogElement} from 'chrome://settings/settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import type {SearchEngine, SettingsSearchEngineListDialogElement} from 'chrome://settings/settings.js';
 import {loadTimeData, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -60,8 +61,7 @@ suite('SearchEngineListDialog', function() {
   });
 
   test('More options entry point is hidden', function() {
-    assertFalse(
-        isVisible(dialog.shadowRoot.querySelector('#moreEnginesButton')));
+    assertFalse(isVisible(dialog.$.moreEnginesButton));
   });
 
   test('Subtitle is displayed below title', function() {
@@ -178,13 +178,16 @@ suite('SearchEngineListDialogWithMoreEngines', function() {
   });
 
   test('More options fires more-engines-click', async function() {
-    const moreEnginesButton =
-        dialog.shadowRoot.querySelector<CrButtonElement>('#moreEnginesButton');
-    assertTrue(!!moreEnginesButton);
+    const moreEnginesButton = dialog.$.moreEnginesButton;
     assertTrue(isVisible(moreEnginesButton));
 
     const moreEnginesClicked = eventToPromise('more-engines-click', dialog);
     moreEnginesButton.click();
     await moreEnginesClicked;
+  });
+
+  test('focusMoreEnginesButton focuses More options', function() {
+    dialog.focusMoreEnginesButton();
+    assertEquals(dialog.$.moreEnginesButton, getDeepActiveElement());
   });
 });

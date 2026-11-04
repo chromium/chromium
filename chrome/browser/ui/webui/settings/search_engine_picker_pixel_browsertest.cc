@@ -47,11 +47,11 @@ constexpr char kPickerScreenshotBaselineCL[] = "8641569";
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // "More search engines" dialog.
-constexpr char kMoreEnginesScreenshotBaselineCL[] = "8641629";
+constexpr char kMoreEnginesScreenshotBaselineCL[] = "8715108";
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI of the
 // "More search engines" dialog with the guest checkbox.
-constexpr char kMoreEnginesGuestCheckboxBaselineCL[] = "8680002";
+constexpr char kMoreEnginesGuestCheckboxBaselineCL[] = "8715108";
 
 // Artificial prepopulated search engines, which replace the production ones
 // through `ScopedPrepopulatedEnginesOverride`. They have no favicon URL, so

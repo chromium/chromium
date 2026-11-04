@@ -40,8 +40,8 @@ export function getHtml(this: SettingsSearchEngineMoreEnginesDialogElement) {
         $i18n{saveGuestChoiceText}
       </cr-checkbox>
     ` : ''}
-    <cr-button id="cancelButton" @click="${this.onCancelClick_}">
-      $i18n{searchEnginesCancelButton}
+    <cr-button id="backButton" @click="${this.onBackClick_}">
+      $i18n{searchEnginesBackButton}
     </cr-button>
     <cr-button id="setAsDefaultButton" class="action-button"
         @click="${this.onSetAsDefaultClick_}"

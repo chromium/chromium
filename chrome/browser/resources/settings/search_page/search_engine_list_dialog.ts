@@ -10,7 +10,8 @@
  *
  * When the "More options" entry point is enabled, clicking it fires a
  * 'more-engines-click' event, letting the parent replace this dialog with
- * 'settings-search-engine-more-engines-dialog'.
+ * 'settings-search-engine-more-engines-dialog'. When the user goes back from
+ * that dialog, the parent shows this dialog again, in its initial state.
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -21,9 +22,11 @@ import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import './search_engine_icon.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {isRTL} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -38,6 +41,7 @@ import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl} from './search_engine
 export interface SettingsSearchEngineListDialogElement {
   $: {
     dialog: CrDialogElement,
+    moreEnginesButton: CrButtonElement,
   };
 }
 
@@ -111,6 +115,14 @@ export class SettingsSearchEngineListDialogElement extends
     // The title is in the header slot rather than the title slot, so that the
     // "More options" button can be next to it without being in the <h2>.
     this.$.dialog.setTitleAriaLabel(this.getTitle_());
+  }
+
+  /**
+   * Focuses the "More options" button, e.g. when this dialog is shown again
+   * after the user went back from the more engines dialog.
+   */
+  focusMoreEnginesButton() {
+    focusWithoutInk(this.$.moreEnginesButton);
   }
 
   protected getTitle_(): string {

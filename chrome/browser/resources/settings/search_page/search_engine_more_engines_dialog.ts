@@ -9,9 +9,10 @@
  * 'settings-search-page' in place of 'settings-search-engine-list-dialog', to
  * let the user search additional search engines and choose one as default.
  *
- * It closes when canceled (Cancel or Esc), or when an engine is chosen, in
- * which case it makes the engine default and fires a 'search-engine-changed'
- * event first.
+ * Clicking "Back" fires a 'back-click' event, letting the parent replace this
+ * dialog with 'settings-search-engine-list-dialog' again. Otherwise, it closes
+ * when canceled (Esc), or when an engine is chosen, in which case it makes the
+ * engine default and fires a 'search-engine-changed' event first.
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -165,8 +166,10 @@ export class SettingsSearchEngineMoreEnginesDialogElement extends
     this.saveGuestChoice = e.detail.value;
   }
 
-  protected onCancelClick_() {
-    this.$.dialog.cancel();
+  protected onBackClick_() {
+    // The parent replaces this dialog with the search engine list dialog, so
+    // unlike Esc, this doesn't cancel or close the dialog.
+    this.fire('back-click');
   }
 
   protected onSetAsDefaultClick_() {

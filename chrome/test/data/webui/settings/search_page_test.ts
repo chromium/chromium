@@ -323,11 +323,7 @@ suite('SearchPageTests', function() {
       await beforeSwitch(searchEngineListDialog);
     }
 
-    const moreEnginesButton =
-        searchEngineListDialog.shadowRoot.querySelector<HTMLElement>(
-            '#moreEnginesButton');
-    assertTrue(!!moreEnginesButton);
-    moreEnginesButton.click();
+    searchEngineListDialog.$.moreEnginesButton.click();
     await microtasksFinished();
 
     const moreEnginesDialog = page.shadowRoot.querySelector(
@@ -377,13 +373,102 @@ suite('SearchPageTests', function() {
         const moreEnginesDialog = await openMoreEnginesDialog();
 
         const closed = eventToPromise('close', moreEnginesDialog);
-        moreEnginesDialog.shadowRoot
-            .querySelector<HTMLElement>('#cancelButton')!.click();
+        // Pressing Esc cancels the dialog.
+        moreEnginesDialog.$.dialog.cancel();
         await closed;
         await microtasksFinished();
 
         assertFalse(!!page.shadowRoot.querySelector(
             'settings-search-engine-more-engines-dialog'));
+        assertEquals(
+            page.shadowRoot.querySelector('#openDialogButton'),
+            getDeepActiveElement());
+      });
+
+  test(
+      'Back replaces the more engines dialog with the initial list dialog',
+      async function() {
+        browserProxy.setSaveGuestChoice(true);
+        const moreEnginesDialog = await openMoreEnginesDialog(
+            async (listDialog: SettingsSearchEngineListDialogElement) => {
+              // Select another engine than the default one, which isn't
+              // selected anymore once back to the list dialog.
+              const radioGroup =
+                  listDialog.shadowRoot.querySelector('cr-radio-group');
+              assertTrue(!!radioGroup);
+              const radioButtons =
+                  listDialog.shadowRoot.querySelectorAll('cr-radio-button');
+              radioButtons[1]!.click();
+              await microtasksFinished();
+              assertEquals('db:1', radioGroup.selected);
+            });
+
+        // Uncheck the guest choice checkbox of the more engines dialog.
+        const moreEnginesCheckbox =
+            moreEnginesDialog.shadowRoot.querySelector<CrCheckboxElement>(
+                '#saveGuestChoiceCheckbox');
+        assertTrue(!!moreEnginesCheckbox);
+        assertTrue(moreEnginesCheckbox.checked);
+        moreEnginesCheckbox.click();
+        await microtasksFinished();
+
+        const backButton =
+            moreEnginesDialog.shadowRoot.querySelector<HTMLElement>(
+                '#backButton');
+        assertTrue(!!backButton);
+        backButton.click();
+        await microtasksFinished();
+
+        // The dialogs are not stacked.
+        assertFalse(!!page.shadowRoot.querySelector(
+            'settings-search-engine-more-engines-dialog'));
+        const listDialog =
+            page.shadowRoot.querySelector('settings-search-engine-list-dialog');
+        assertTrue(!!listDialog);
+        assertTrue(listDialog.$.dialog.getNative().matches(':modal'));
+
+        // The list dialog is in its initial state, with the default engine
+        // selected, and the "More options" button is focused.
+        const radioGroup =
+            listDialog.shadowRoot.querySelector('cr-radio-group');
+        assertTrue(!!radioGroup);
+        assertEquals('db:0', radioGroup.selected);
+        assertEquals(listDialog.$.moreEnginesButton, getDeepActiveElement());
+
+        // The guest choice of the more engines dialog is carried over.
+        const listCheckbox =
+            listDialog.shadowRoot.querySelector<CrCheckboxElement>(
+                '#saveGuestChoiceCheckbox');
+        assertTrue(!!listCheckbox);
+        assertFalse(listCheckbox.checked);
+
+        assertEquals(0, browserProxy.getCallCount('setDefaultSearchEngine'));
+      });
+
+  test(
+      'Closing the list dialog shown by Back returns the focus to the button',
+      async function() {
+        const moreEnginesDialog = await openMoreEnginesDialog();
+        const backButton =
+            moreEnginesDialog.shadowRoot.querySelector<HTMLElement>(
+                '#backButton');
+        assertTrue(!!backButton);
+        backButton.click();
+        await microtasksFinished();
+
+        const listDialog =
+            page.shadowRoot.querySelector('settings-search-engine-list-dialog');
+        assertTrue(!!listDialog);
+        const closed = eventToPromise('close', listDialog);
+        const cancelButton =
+            listDialog.shadowRoot.querySelector<HTMLElement>('#cancelButton');
+        assertTrue(!!cancelButton);
+        cancelButton.click();
+        await closed;
+        await microtasksFinished();
+
+        assertFalse(!!page.shadowRoot.querySelector(
+            'settings-search-engine-list-dialog'));
         assertEquals(
             page.shadowRoot.querySelector('#openDialogButton'),
             getDeepActiveElement());

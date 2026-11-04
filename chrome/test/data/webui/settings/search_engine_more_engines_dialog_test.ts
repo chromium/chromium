@@ -175,11 +175,35 @@ suite('SearchEngineMoreEnginesDialog', function() {
     assertFalse(dialog.$.dialog.open);
   });
 
-  test('Cancel closes without choosing an engine', async function() {
+  test(
+      'Back fires back-click without choosing an engine or closing',
+      async function() {
+        let closed = false;
+        dialog.addEventListener('close', () => {
+          closed = true;
+        });
+        const backClicked = eventToPromise('back-click', dialog);
+
+        await clickRadioButton(0);
+        const backButton =
+            dialog.shadowRoot.querySelector<CrButtonElement>('#backButton');
+        assertTrue(!!backButton);
+        backButton.click();
+        await backClicked;
+        await microtasksFinished();
+
+        // The dialog is replaced by its parent, rather than closed.
+        assertTrue(dialog.$.dialog.open);
+        assertFalse(closed);
+        assertEquals(0, browserProxy.getCallCount('setDefaultSearchEngine'));
+      });
+
+  test('Esc closes without choosing an engine', async function() {
     const closed = eventToPromise('close', dialog);
 
     await clickRadioButton(0);
-    dialog.shadowRoot.querySelector<CrButtonElement>('#cancelButton')!.click();
+    // Pressing Esc cancels the dialog.
+    dialog.$.dialog.cancel();
     await closed;
 
     assertFalse(dialog.$.dialog.open);

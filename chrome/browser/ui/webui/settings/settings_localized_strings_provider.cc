@@ -3076,6 +3076,7 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchEnginesSetAsDefaultButton",
        IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE},
       {"searchEnginesCancelButton", IDS_CANCEL},
+      {"searchEnginesBackButton", IDS_SETTINGS_SEARCH_ENGINES_BACK_BUTTON},
       {"searchEnginesConfirmationToastLabel",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
       {"searchEnginesPickerTitle", IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE},

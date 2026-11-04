@@ -52,6 +52,7 @@ export function getHtml(this: SettingsSearchPageElement) {
       ${this.showMoreEnginesDialog_ ? html`
         <settings-search-engine-more-engines-dialog
             .saveGuestChoice="${this.saveGuestChoice_}"
+            @back-click="${this.onMoreEnginesBackClick_}"
             @close="${this.onMoreEnginesDialogClose_}"
             @save-guest-choice-changed="${this.onSaveGuestChoiceChanged_}"
             @search-engine-changed="${this.onSearchEngineChanged_}">

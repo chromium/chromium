@@ -220,6 +220,10 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     // switching to it: the list dialog is then removed while open, which
     // doesn't fire 'close'.
     this.saveGuestChoice_ = null;
+    // If the list dialog was shown again when going back from the more engines
+    // dialog, the browser can't return the focus to the button, since the list
+    // dialog was then opened from the removed more engines dialog.
+    this.focusOpenDialogButton_();
   }
 
   protected onMoreEnginesClick_() {
@@ -227,11 +231,31 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     this.showMoreEnginesDialog_ = true;
   }
 
+  protected onMoreEnginesBackClick_() {
+    // Like when switching to the more engines dialog, the open dialog is
+    // removed, which doesn't fire 'close', so the guest choice is kept. The
+    // list dialog is created again, in its initial state.
+    this.showMoreEnginesDialog_ = false;
+    this.showSearchEngineListDialog_ = true;
+    // The focus is moved to the "More options" button, from which the user
+    // left the list dialog, rather than left to the browser.
+    this.updateComplete.then(() => {
+      const listDialog =
+          this.shadowRoot.querySelector('settings-search-engine-list-dialog');
+      assert(listDialog);
+      listDialog.focusMoreEnginesButton();
+    });
+  }
+
   protected onMoreEnginesDialogClose_() {
     this.showMoreEnginesDialog_ = false;
     this.saveGuestChoice_ = null;
     // The browser can't return the focus to the button, since the more engines
     // dialog was opened from the removed list dialog, so it is done here.
+    this.focusOpenDialogButton_();
+  }
+
+  private focusOpenDialogButton_() {
     const openDialogButton =
         this.shadowRoot.querySelector<HTMLElement>('#openDialogButton');
     assert(openDialogButton);
