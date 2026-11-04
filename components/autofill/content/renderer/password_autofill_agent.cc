@@ -760,13 +760,14 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::OnUserGesture() {
     return;
   }
   was_user_gesture_seen_ = true;
-  for (FieldRendererId element : element_ids_) {
+  // Exchange `element_ids_` because ShowValue() triggers DOM events that may
+  // mutate `element_ids_`.
+  for (FieldRendererId element : std::exchange(element_ids_, {})) {
     if (WebInputElement input_element =
             GetFormControlByRendererId(element).DynamicTo<WebInputElement>()) {
       ShowValue(input_element);
     }
   }
-  element_ids_.clear();
 }
 
 void PasswordAutofillAgent::PasswordValueGatekeeper::Reset() {
