@@ -1534,6 +1534,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "V8Flag_code_cache_source_hash_sha256",
                 "Auto-generated flag for V8Flag_code_cache_source_hash_sha256."),
+        Flag.baseFeature(
+                NetFeatures.COOKIE_MONSTER_PER_KEY_DELETE,
+                "Uses per-key loading for single-domain CookieMonster deletes instead of"
+                        + " triggering a global cookie store load."),
+        Flag.baseFeature(
+                SafeBrowsingFeatures.PRIORITIZE_SAFE_BROWSING_NAVIGATION_CALLBACKS,
+                "Prioritizes Safe Browsing database lookup callbacks for navigation requests."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
