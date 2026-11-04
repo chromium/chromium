@@ -51,6 +51,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -304,7 +305,7 @@ TEST_F(WebStateImplTest, DelegateTest) {
 
   // Test that OpenURLFromWebState() is called without a virtual URL.
   WebState::OpenURLParams params(GURL("https://chromium.test/"), Referrer(),
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui::PAGE_TRANSITION_LINK, true);
   EXPECT_FALSE(delegate.last_open_url_request());
   web_state->OpenURL(params);
@@ -325,8 +326,8 @@ TEST_F(WebStateImplTest, DelegateTest) {
   // Test that OpenURLFromWebState() is called with a virtual URL.
   params = WebState::OpenURLParams(
       GURL("https://chromium.test/"), GURL("https://virtual.chromium.test/"),
-      Referrer(), WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
-      true);
+      Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_LINK, true);
   web_state->OpenURL(params);
   open_url_request = delegate.last_open_url_request();
   ASSERT_TRUE(open_url_request);

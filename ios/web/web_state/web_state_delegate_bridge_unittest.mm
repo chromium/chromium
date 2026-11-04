@@ -18,6 +18,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/page_transition_types.h"
 
 // Class which conforms to CRWWebStateDelegate protocol, but does not implement
@@ -103,7 +104,8 @@ TEST_F(WebStateDelegateBridgeTest, OpenURLFromWebState) {
   web::WebState::OpenURLParams params(
       GURL("https://chromium.test/"), GURL("https://virtual.chromium.test/"),
       web::Referrer(GURL("https://chromium2.test/"), ReferrerPolicyNever),
-      WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_FORM_SUBMIT, true);
+      ui::mojom::WindowOpenDisposition::kNewWindow,
+      ui::PAGE_TRANSITION_FORM_SUBMIT, true);
   EXPECT_EQ(&fake_web_state_,
             bridge_->OpenURLFromWebState(&fake_web_state_, params));
 

@@ -6,33 +6,33 @@
 #define IOS_WEB_PUBLIC_WEB_STATE_H_
 
 #import <UIKit/UIKit.h>
-#include <stdint.h>
+#import <stdint.h>
 
-#include <map>
-#include <memory>
-#include <optional>
-#include <string>
-#include <string_view>
-#include <utility>
-#include <vector>
+#import <map>
+#import <memory>
+#import <optional>
+#import <string>
+#import <string_view>
+#import <utility>
+#import <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/supports_user_data.h"
-#include "base/time/time.h"
-#include "build/blink_buildflags.h"
-#include "components/sessions/core/session_id.h"
-#include "ios/web/public/js_messaging/content_world.h"
-#include "ios/web/public/navigation/referrer.h"
-#include "ios/web/public/web_state_id.h"
-#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
-#include "url/gurl.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
+#import "base/supports_user_data.h"
+#import "base/time/time.h"
+#import "build/blink_buildflags.h"
+#import "components/sessions/core/session_id.h"
+#import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/web_state_id.h"
+#import "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#import "mojo/public/cpp/system/message_pipe.h"
+#import "ui/base/mojom/window_open_disposition.mojom-forward.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 class GURL;
 
@@ -115,12 +115,12 @@ class WebState : public base::SupportsUserData {
     OpenURLParams(const GURL& url,
                   const GURL& virtual_url,
                   const Referrer& referrer,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   ui::PageTransition transition,
                   bool is_renderer_initiated);
     OpenURLParams(const GURL& url,
                   const Referrer& referrer,
-                  WindowOpenDisposition disposition,
+                  ui::mojom::WindowOpenDisposition disposition,
                   ui::PageTransition transition,
                   bool is_renderer_initiated);
     OpenURLParams(const OpenURLParams& params);
@@ -135,7 +135,7 @@ class WebState : public base::SupportsUserData {
     Referrer referrer;
 
     // The disposition requested by the navigation source.
-    WindowOpenDisposition disposition;
+    ui::mojom::WindowOpenDisposition disposition;
 
     // The transition type of navigation.
     ui::PageTransition transition;

@@ -42,6 +42,7 @@ source_set("content") {
     "web_state/crc_web_viewport_container_view.h",
     "web_state/crc_web_viewport_container_view.mm",
   ]
+  public_deps = [ "//ui/base/mojom" ]
   deps = [
     ":send_webkit_message_js",
     "//base",

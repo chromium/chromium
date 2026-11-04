@@ -4,13 +4,14 @@
 
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 
+#import "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace web {
 
 FakeOpenURLRequest::FakeOpenURLRequest()
     : params(GURL(),
              Referrer(),
-             WindowOpenDisposition::kUnknown,
+             ui::mojom::WindowOpenDisposition::kUnknown,
              ui::PAGE_TRANSITION_LINK,
              false) {}
 
