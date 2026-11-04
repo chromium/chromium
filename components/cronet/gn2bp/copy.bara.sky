@@ -199,6 +199,13 @@ def workflow(name, destination, destination_files, mode, additional_transform, c
         mode = mode,
         transformations = [
             core.move("out/gn2bp", ""),
+            # TODO(b/581699173): Remove once AOSP's Crubit prebuilt
+            # defines rs::char_ instead of rs_std::char_.
+            core.replace(
+                before = "::rs::char_ rust_char =",
+                after = "auto rust_char =",
+                paths = glob(["build/rust/tests/test_cpp_api_from_rust/unittests.cc"]),
+            ),
             additional_transform,
         ],
         consistency_file_path = consistency_file_path,
