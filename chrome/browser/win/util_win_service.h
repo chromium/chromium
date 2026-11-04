@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_UTIL_WIN_SERVICE_H_
 #define CHROME_BROWSER_WIN_UTIL_WIN_SERVICE_H_
 
+#include "chrome/services/util_win/public/mojom/uia_element_probe.mojom-forward.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -17,5 +18,11 @@ mojo::Remote<chrome::mojom::UtilWin> LaunchUtilWinServiceInstance();
 // returns a remote interface to it. The lifetime of the service process is tied
 // strictly to the lifetime of the returned Remote.
 mojo::Remote<chrome::mojom::ProcessorMetrics> LaunchProcessorMetricsService();
+
+// Spawns a new isolated instance of the UI Automation element probe service.
+// The service process lives as long as the returned Remote. Its own instance
+// rather than a UtilWin method: it loads uiautomationcore.dll, wants an MTA
+// where UtilWin runs an STA, and can block on a suspended UWP app.
+mojo::Remote<chrome::mojom::UiaElementProbe> LaunchUiaElementProbeService();
 
 #endif  // CHROME_BROWSER_WIN_UTIL_WIN_SERVICE_H_

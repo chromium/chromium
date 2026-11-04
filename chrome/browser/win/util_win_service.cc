@@ -5,6 +5,7 @@
 #include "chrome/browser/win/util_win_service.h"
 
 #include "chrome/grit/generated_resources.h"
+#include "chrome/services/util_win/public/mojom/uia_element_probe.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -22,6 +23,16 @@ mojo::Remote<chrome::mojom::UtilWin> LaunchUtilWinServiceInstance() {
 mojo::Remote<chrome::mojom::ProcessorMetrics> LaunchProcessorMetricsService() {
   // Runs with kNoSandbox from sandbox.mojom.Sandbox.
   return content::ServiceProcessHost::Launch<chrome::mojom::ProcessorMetrics>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_UTILITY_WIN_NAME)
+          .Pass());
+}
+
+mojo::Remote<chrome::mojom::UiaElementProbe> LaunchUiaElementProbeService() {
+  // Runs with the kNoSandbox declared by UiaElementProbe's [ServiceSandbox]
+  // attribute, which Launch<>() picks up: the utility sandbox blocks the target
+  // app's UIA provider. No UI pump; the service brings its own MTA.
+  return content::ServiceProcessHost::Launch<chrome::mojom::UiaElementProbe>(
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_UTILITY_WIN_NAME)
           .Pass());

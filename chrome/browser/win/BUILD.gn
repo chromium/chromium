@@ -28,6 +28,7 @@ source_set("win") {
     "remove_app_compat_entries.h",
     "taskbar_manager.h",
     "titlebar_config.h",
+    "uia_element_locator_win.h",
     "uninstallation_via_os_settings.h",
     "util_win_service.h",
   ]
@@ -38,6 +39,7 @@ source_set("win") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/win/conflicts:module_info",
     "//chrome/common:mojo_bindings",
+    "//chrome/services/util_win/public/cpp:uia_element_probe_types",
     "//chrome/services/util_win/public/mojom",
     "//components/favicon_base",
     "//components/history/core/browser",
@@ -87,6 +89,7 @@ source_set("impl") {
     "remove_app_compat_entries.cc",
     "taskbar_manager.cc",
     "titlebar_config.cc",
+    "uia_element_locator_win.cc",
     "uninstallation_via_os_settings.cc",
     "util_win_service.cc",
   ]
@@ -119,6 +122,7 @@ source_set("impl") {
     "//chrome/common:version_header",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:with_no_strings",
+    "//chrome/services/util_win/public/cpp:uia_element_probe_types",
     "//chrome/services/util_win/public/mojom",
     "//components/crash/core/common:crash_key",
     "//components/enterprise/isolated_mode",
@@ -185,6 +189,7 @@ source_set("unit_tests") {
     "registry_watcher_unittest.cc",
     "remove_app_compat_entries_unittest.cc",
     "taskbar_manager_unittest.cc",
+    "uia_element_locator_win_unittest.cc",
     "uninstallation_via_os_settings_unittest.cc",
   ]
 
@@ -199,13 +204,17 @@ source_set("unit_tests") {
     "//chrome/install_static:install_static_util",
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:with_no_strings",
+    "//chrome/services/util_win/public/cpp:uia_element_probe_types",
+    "//chrome/services/util_win/public/mojom",
     "//chrome/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/variations",
     "//components/version_info",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 }
