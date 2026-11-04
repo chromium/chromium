@@ -1,22 +1,29 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unit tests for earl_grey_header_util.py."""
 
+from pathlib import Path
 import unittest
 
 from earl_grey_header_util import (
     clean_comment_text,
+    discover_earlgrey_headers,
     extract_method_declaration,
     extract_preceding_comments,
     is_earlgrey_header,
+    load_domain_rules,
     parse_method_declaration,
     strip_trailing_attributes,
     validate_method_docstrings,
+    DomainGroup,
     MethodInfo,
     MethodParam,
 )
+
+_SRC_ROOT = Path(__file__).resolve().parents[4]
+RULES_PATH = Path(__file__).resolve().parent.parent / 'mcp_domains.yaml'
 
 
 class EarlGreyHeaderUtilTest(unittest.TestCase):
@@ -24,57 +31,81 @@ class EarlGreyHeaderUtilTest(unittest.TestCase):
 
     def test_is_earlgrey_header(self):
         """Tests header filtering for EarlGrey and AppInterface headers."""
+        rules = load_domain_rules(RULES_PATH)
+
         # Standalone included headers.
         self.assertTrue(
-            is_earlgrey_header('ios/testing/earl_grey/app_launch_manager.h')
+            is_earlgrey_header(
+                'ios/testing/earl_grey/app_launch_manager.h', rules
+            )
         )
         self.assertTrue(
-            is_earlgrey_header('/ios/testing/earl_grey/app_launch_manager.h')
+            is_earlgrey_header(
+                '/ios/testing/earl_grey/app_launch_manager.h', rules
+            )
         )
 
         # Standard app interface and earl grey headers.
         self.assertTrue(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h'
+                'ios/chrome/test/earl_grey/chrome_actions_app_interface.h',
+                rules,
             )
         )
         self.assertTrue(
-            is_earlgrey_header('ios/chrome/test/earl_grey/chrome_earl_grey.h')
+            is_earlgrey_header(
+                'ios/chrome/test/earl_grey/chrome_earl_grey.h', rules
+            )
         )
         self.assertTrue(
             is_earlgrey_header(
-                'ios/web/shell/test/app/web_shell_test_app_interface.h'
+                'ios/web/shell/test/earl_grey/shell_actions_app_interface.h',
+                rules,
             )
         )
 
         # Excluded directories.
         self.assertFalse(
-            is_earlgrey_header('ios/chrome/test/perf/perf_test_app_interface.h')
+            is_earlgrey_header(
+                'ios/chrome/test/perf/perf_test_app_interface.h', rules
+            )
         )
         self.assertFalse(
-            is_earlgrey_header('ios/chrome/test/wpt/wpt_app_interface.h')
+            is_earlgrey_header('ios/chrome/test/wpt/wpt_app_interface.h', rules)
         )
 
-        # Excluded specific headers.
+        # Excluded specific headers (paired backends and internal helpers).
+        self.assertFalse(
+            is_earlgrey_header(
+                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h',
+                rules,
+            )
+        )
         self.assertFalse(
             is_earlgrey_header(
                 'ios/chrome/test/earl_grey/'
-                'earl_grey_scoped_block_swizzler_app_interface.h'
+                'earl_grey_scoped_block_swizzler_app_interface.h',
+                rules,
             )
         )
 
         # Non-header files.
         self.assertFalse(
             is_earlgrey_header(
-                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.mm'
+                'ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.mm',
+                rules,
             )
         )
 
         # Standard non-EG headers.
         self.assertFalse(
-            is_earlgrey_header('ios/chrome/browser/ui/tab_grid/tab_grid_view.h')
+            is_earlgrey_header(
+                'ios/chrome/browser/ui/tab_grid/tab_grid_view.h', rules
+            )
         )
-        self.assertFalse(is_earlgrey_header('chrome/browser/ui/browser.h'))
+        self.assertFalse(
+            is_earlgrey_header('chrome/browser/ui/browser.h', rules)
+        )
 
     def test_strip_trailing_attributes(self):
         """Tests stripping compiler attributes, macros, and semicolons."""
@@ -246,6 +277,82 @@ class EarlGreyHeaderUtilTest(unittest.TestCase):
             init_method, 'Initializes a new instance.'
         )
         self.assertEqual(errors, [])
+
+    def test_load_domain_rules(self):
+        """Tests that mcp_domains.yaml loads correctly and validates schema."""
+        self.assertTrue(RULES_PATH.is_file())
+        rules = load_domain_rules(RULES_PATH)
+        self.assertGreater(len(rules), 0)
+
+        seen_domain_ids = set()
+        for group in rules:
+            self.assertIsInstance(group, DomainGroup)
+            self.assertIsInstance(group.includes, tuple)
+            self.assertGreater(len(group.includes), 0)
+            for prefix in group.includes:
+                self.assertIsInstance(prefix, str)
+                self.assertGreater(len(prefix.strip()), 0)
+            self.assertIsInstance(group.excludes, tuple)
+            for excl in group.excludes:
+                self.assertIsInstance(excl, str)
+                self.assertGreater(len(excl.strip()), 0)
+            self.assertIsInstance(group.domain_id, str)
+            self.assertTrue(group.domain_id.islower())
+            self.assertNotIn(group.domain_id, seen_domain_ids)
+            seen_domain_ids.add(group.domain_id)
+            self.assertIsInstance(group.description, str)
+            self.assertGreater(len(group.description.strip()), 0)
+
+        all_domain_excludes = [
+            excl for group in rules for excl in group.excludes
+        ]
+        self.assertIn(
+            'ios/chrome/test/earl_grey/'
+            'earl_grey_scoped_block_swizzler_app_interface.h',
+            all_domain_excludes,
+        )
+
+    def test_discover_earlgrey_headers(self):
+        """Tests discovery of EarlGrey headers grouped by domain."""
+        rules = load_domain_rules(RULES_PATH)
+        domain_groups = discover_earlgrey_headers(_SRC_ROOT, rules=rules)
+        self.assertIsInstance(domain_groups, dict)
+        self.assertGreater(len(domain_groups), 0)
+
+        total_headers = 0
+        for domain_id, group in domain_groups.items():
+            self.assertIsInstance(domain_id, str)
+            self.assertIsInstance(group, DomainGroup)
+            self.assertEqual(group.domain_id, domain_id)
+            self.assertIsInstance(group.description, str)
+            self.assertGreater(len(group.description.strip()), 0)
+            self.assertIsInstance(group.headers, tuple)
+            total_headers += len(group.headers)
+            for h in group.headers:
+                self.assertTrue(h.is_file())
+                self.assertTrue(h.name.endswith('.h'))
+        self.assertEqual(total_headers, 89)
+
+        # Custom rules test.
+        custom_rules = (
+            DomainGroup(
+                domain_id='custom_domain',
+                description='Custom description.',
+                includes=('ios/custom/**/*.h',),
+            ),
+        )
+        custom_mapping = discover_earlgrey_headers(
+            _SRC_ROOT, rules=custom_rules
+        )
+        self.assertIn('custom_domain', custom_mapping)
+        self.assertIsInstance(custom_mapping['custom_domain'], DomainGroup)
+        self.assertEqual(
+            custom_mapping['custom_domain'].domain_id, 'custom_domain'
+        )
+        self.assertEqual(
+            custom_mapping['custom_domain'].description, 'Custom description.'
+        )
+        self.assertEqual(custom_mapping['custom_domain'].headers, ())
 
 
 if __name__ == '__main__':

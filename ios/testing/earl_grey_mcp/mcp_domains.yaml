@@ -1,0 +1,155 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Maps EarlGrey and AppInterface headers to functional domains for MCP tool
+# discovery. Enforced by ios/PRESUBMIT.py.
+#
+# HOW IT WORKS:
+# - Patterns in `include` and `exclude` are glob patterns matched against
+#   repository-relative file paths (e.g. `ios/chrome/browser/autofill/**/*_app_interface.h`).
+# - Evaluated sequentially from top to bottom; the first matching domain wins.
+# - A header matches a domain if its path matches an `include` pattern and does
+#   not match any `exclude` pattern for that domain.
+#
+# WHEN UPDATING:
+# - Use standard glob syntax (* and **).
+# - Domain `id`s must be `snake_case` and remain stable for downstream tools.
+
+domains:
+  - id: testing_earlgrey
+    description: "Base EarlGrey test utilities, AppLaunchManager, and coverage helpers."
+    include:
+      - ios/testing/earl_grey/app_launch_manager.h
+
+  - id: chrome_earlgrey
+    description: "Core ChromeEarlGrey, ChromeEarlGreyUI, ChromeMatchers, and actions."
+    include:
+      - ios/chrome/test/earl_grey/*_app_interface.h
+      - ios/chrome/test/earl_grey/*earl_grey*.h
+      - ios/chrome/test/scoped_eg_traits_overrider_app_interface.h
+    exclude:
+      - ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h
+      - ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler_app_interface.h
+
+  - id: web_shell_earlgrey
+    description: "Core ShellEarlGrey, ShellMatchers, and ShellActions for ios_web_shell."
+    include:
+      - ios/web/shell/test/earl_grey/*_app_interface.h
+      - ios/web/shell/test/earl_grey/*earl_grey*.h
+    exclude:
+      - ios/web/shell/test/earl_grey/shell_earl_grey_app_interface.h
+
+  - id: auth_and_ntp
+    description: "Authentication, sign-in, first run, and New Tab Page interfaces."
+    include:
+      - ios/chrome/browser/authentication/**/*_app_interface.h
+      - ios/chrome/browser/authentication/**/*earl_grey*.h
+      - ios/chrome/browser/content_suggestions/**/*_app_interface.h
+      - ios/chrome/browser/first_run/**/*_app_interface.h
+      - ios/chrome/browser/google_one/**/*_app_interface.h
+      - ios/chrome/browser/ntp/**/*_app_interface.h
+      - ios/chrome/browser/signin/**/*_app_interface.h
+    exclude:
+      - ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h
+
+  - id: autofill_and_passwords
+    description: "Autofill, password manager, biometrics, and passkeys interfaces."
+    include:
+      - ios/chrome/browser/autofill/**/*_app_interface.h
+      - ios/chrome/browser/device_reauth/**/*_app_interface.h
+      - ios/chrome/browser/passwords/**/*_app_interface.h
+      - ios/chrome/browser/webauthn/**/*_app_interface.h
+
+  - id: bookmarks_and_reading
+    description: "Bookmarks, reading list, recent tabs, and Safari data import."
+    include:
+      - ios/chrome/browser/bookmarks/**/*_app_interface.h
+      - ios/chrome/browser/bookmarks/**/*earl_grey*.h
+      - ios/chrome/browser/bring_android_tabs/**/*_app_interface.h
+      - ios/chrome/browser/reader_mode/**/*_app_interface.h
+      - ios/chrome/browser/reading_list/**/*_app_interface.h
+      - ios/chrome/browser/recent_tabs/**/*_app_interface.h
+      - ios/chrome/browser/safari_data_import/**/*_app_interface.h
+      - ios/chrome/browser/safari_data_import/**/*earl_grey*.h
+    exclude:
+      - ios/chrome/browser/bookmarks/test/bookmark_earl_grey_app_interface.h
+
+  - id: omnibox_and_search
+    description: "Omnibox, autocomplete, Lens overlay, QR scanner, and search engines."
+    include:
+      - ios/chrome/browser/autocomplete/**/*_app_interface.h
+      - ios/chrome/browser/composebox/**/*_app_interface.h
+      - ios/chrome/browser/lens_overlay/**/*_app_interface.h
+      - ios/chrome/browser/omnibox/**/*_app_interface.h
+      - ios/chrome/browser/omnibox/**/*earl_grey*.h
+      - ios/chrome/browser/qr_scanner/**/*_app_interface.h
+      - ios/chrome/browser/search_engine_choice/**/*earl_grey*.h
+      - ios/chrome/browser/search_engines/**/*_app_interface.h
+
+  - id: tabs_and_windowing
+    description: "Tabs, tab switcher, grid, groups, and windowing interfaces."
+    include:
+      - ios/chrome/browser/browser_view/**/*_app_interface.h
+      - ios/chrome/browser/fullscreen/**/*_app_interface.h
+      - ios/chrome/browser/tab_switcher/**/*_app_interface.h
+      - ios/chrome/browser/tabs/**/*_app_interface.h
+
+  - id: settings_and_policy
+    description: "Settings, enterprise policy, permissions, and management interfaces."
+    include:
+      - ios/chrome/browser/enterprise/**/*_app_interface.h
+      - ios/chrome/browser/page_info/**/*_app_interface.h
+      - ios/chrome/browser/permissions/**/*_app_interface.h
+      - ios/chrome/browser/policy/**/*_app_interface.h
+      - ios/chrome/browser/policy/**/*earl_grey*.h
+      - ios/chrome/browser/settings/**/*_app_interface.h
+
+  - id: ui_surfaces_and_prompts
+    description: "Infobars, snackbars, edit menus, sharing, file picker, and prompts."
+    include:
+      - ios/chrome/browser/browser_content/**/*_app_interface.h
+      - ios/chrome/browser/device_sharing/**/*_app_interface.h
+      - ios/chrome/browser/download/**/*_app_interface.h
+      - ios/chrome/browser/drive_file_picker/**/*_app_interface.h
+      - ios/chrome/browser/find_in_page/**/*_app_interface.h
+      - ios/chrome/browser/infobars/**/*_app_interface.h
+      - ios/chrome/browser/infobars/**/*earl_grey*.h
+      - ios/chrome/browser/phone_number/**/*_app_interface.h
+      - ios/chrome/browser/safe_mode/**/*_app_interface.h
+      - ios/chrome/browser/snackbar/**/*_app_interface.h
+      - ios/chrome/browser/unit_conversion/**/*_app_interface.h
+
+  - id: web_security_and_intelligence
+    description: "Web navigation, SSL/HTTPS, Safe Browsing, translate, intelligence."
+    include:
+      - ios/chrome/browser/commerce/**/*_app_interface.h
+      - ios/chrome/browser/contextual_panel/**/*_app_interface.h
+      - ios/chrome/browser/https_upgrades/**/*_app_interface.h
+      - ios/chrome/browser/intelligence/**/*_app_interface.h
+      - ios/chrome/browser/net/**/*_app_interface.h
+      - ios/chrome/browser/optimization_guide/**/*_app_interface.h
+      - ios/chrome/browser/partial_translate/**/*_app_interface.h
+      - ios/chrome/browser/price_insights/**/*_app_interface.h
+      - ios/chrome/browser/safe_browsing/**/*_app_interface.h
+      - ios/chrome/browser/ssl/**/*_app_interface.h
+      - ios/chrome/browser/translate/**/*_app_interface.h
+      - ios/chrome/browser/web/**/*_app_interface.h
+      - ios/chrome/browser/web_extension/**/*_app_interface.h
+
+  - id: metrics_sync_and_promos
+    description: "Metrics, variations, performance, WPT, sync, notifications, promos."
+    include:
+      - ios/chrome/browser/credential_provider_promo/**/*_app_interface.h
+      - ios/chrome/browser/default_browser/**/*_app_interface.h
+      - ios/chrome/browser/docking_promo/**/*_app_interface.h
+      - ios/chrome/browser/feature_engagement/**/*_app_interface.h
+      - ios/chrome/browser/metrics/**/*_app_interface.h
+      - ios/chrome/browser/post_restore_signin/**/*_app_interface.h
+      - ios/chrome/browser/promos_manager/**/*_app_interface.h
+      - ios/chrome/browser/push_notification/**/*_app_interface.h
+      - ios/chrome/browser/sync/**/*_app_interface.h
+      - ios/chrome/browser/tips_notifications/**/*_app_interface.h
+      - ios/chrome/browser/unified_consent/**/*_app_interface.h
+      - ios/chrome/browser/variations/**/*_app_interface.h
+      - ios/chrome/test/variations_smoke_test/*_app_interface.h

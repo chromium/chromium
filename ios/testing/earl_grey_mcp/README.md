@@ -274,7 +274,9 @@ error-prone. Instead, every Objective-C method is mapped 1-to-1 to a
 1. **Level 1 — Functional Domains (≤ 20 domains)**: Grouped by feature area
    (e.g., `testing_earlgrey`, `chrome_earlgrey`, `web_shell_earlgrey`, and
    Chrome feature domains, plus `Core EarlGrey Framework` merged from runtime
-   introspection; 13 static domains at the time of writing).
+   introspection; 13 static domains at the time of writing). Domains, their
+   human-readable descriptions, and their header `includes`/`excludes` glob
+   patterns are centrally configured in `mcp_domains.yaml`.
 2. **Level 2 — Interface Classes (≤ 25 classes per domain)**: Individual bridged
    `*AppInterface` and EarlGrey helper classes within each domain.
 3. **Level 3 — `#pragma mark` Categories (≤ 35 categories per class)**:
@@ -285,15 +287,19 @@ error-prone. Instead, every Objective-C method is mapped 1-to-1 to a
 
 ### 3.1 Build-Time Breadth Caps & Docstring Enforcement
 
-During the build, `extract_eg_metadata.py` validates two invariants across all
+During the build, `extract_eg_metadata.py` validates three invariants across all
 bridged EarlGrey headers:
 
-1. **Hierarchy Breadth Caps**: If any domain, class, or `#pragma mark` category
+1. **Domain Classification (`mcp_domains.yaml`)**: Every bridged header must
+   match an `includes` glob in `mcp_domains.yaml` to be mapped to a known
+   domain. Headers not covered by any domain rule fail the build and presubmit.
+   Private implementation or eDO backend headers are excluded via `excludes`.
+2. **Hierarchy Breadth Caps**: If any domain, class, or `#pragma mark` category
    exceeds its maximum child count, the build fails with an actionable error
    message instructing the developer how to rebalance the hierarchy (for
    example, by adding `#pragma mark - <Category>` sections to subdivide an
    oversized header or merging closely related interfaces).
-2. **Docstring & Parameter Completeness (Also Checked in
+3. **Docstring & Parameter Completeness (Also Checked in
    `//ios/PRESUBMIT.py`)**: Every bridged EarlGrey method declaration must have
    a preceding comment block that documents:
    - Its **functionality** (what the method does),

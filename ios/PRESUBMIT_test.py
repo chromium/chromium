@@ -736,7 +736,7 @@ class CheckEarlGreyHeaderDocstringsTest(unittest.TestCase):
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
         mock_input.files = [
             PRESUBMIT_test_mocks.MockFile(
-                'ios/chrome/browser/foo/test/foo_app_interface.h', lines
+                'ios/chrome/test/earl_grey/foo_app_interface.h', lines
             )
         ]
         mock_output = PRESUBMIT_test_mocks.MockOutputApi()
@@ -758,7 +758,7 @@ class CheckEarlGreyHeaderDocstringsTest(unittest.TestCase):
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
         mock_input.files = [
             PRESUBMIT_test_mocks.MockFile(
-                'ios/chrome/browser/foo/test/foo_app_interface.h', lines
+                'ios/chrome/test/earl_grey/foo_app_interface.h', lines
             )
         ]
         mock_output = PRESUBMIT_test_mocks.MockOutputApi()
@@ -794,7 +794,7 @@ class CheckEarlGreyHeaderDocstringsTest(unittest.TestCase):
         mock_input = PRESUBMIT_test_mocks.MockInputApi()
         mock_input.files = [
             PRESUBMIT_test_mocks.MockFile(
-                'ios/chrome/browser/foo/test/foo_app_interface.h', lines
+                'ios/chrome/test/earl_grey/foo_app_interface.h', lines
             )
         ]
         mock_output = PRESUBMIT_test_mocks.MockOutputApi()
@@ -840,6 +840,14 @@ class CheckEarlGreyHeaderDocstringsTest(unittest.TestCase):
             ),
             PRESUBMIT_test_mocks.MockFile(
                 'ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h',
+                lines,
+            ),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/test/earl_grey/chrome_actions_app_interface.h',
+                lines,
+            ),
+            PRESUBMIT_test_mocks.MockFile(
+                'ios/chrome/test/earl_grey/chrome_earl_grey.h',
                 lines,
             ),
             PRESUBMIT_test_mocks.MockFile(

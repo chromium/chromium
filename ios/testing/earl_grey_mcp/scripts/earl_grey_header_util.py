@@ -9,40 +9,15 @@ build-time MCP metadata extraction (`extract_eg_metadata.py`).
 """
 
 from dataclasses import dataclass
+from fnmatch import fnmatchcase
 from pathlib import Path
 import re
 
-# Standalone EarlGrey utility headers located outside ios/chrome/ and ios/web/
-# that are bridged to MCP.
-INCLUDED_EARL_GREY_HEADERS: frozenset[str] = frozenset(
-    {
-        'ios/testing/earl_grey/app_launch_manager.h',
-    }
-)
+try:
+    import yaml
+except ImportError:
+    import pyyaml as yaml
 
-# Top-level directory prefixes searched for EarlGrey and AppInterface headers.
-EARL_GREY_SEARCH_PREFIXES: tuple[str, ...] = (
-    'ios/chrome/',
-    'ios/web/',
-)
-
-# Directories excluded from EarlGrey header discovery (performance and WPT
-# tests).
-EXCLUDED_EARL_GREY_DIRECTORIES: tuple[str, ...] = (
-    'ios/chrome/test/perf/',
-    'ios/chrome/test/wpt/',
-)
-
-# Headers under ios/chrome/ and ios/web/ that cannot be mapped to MCP tools
-# (e.g. methods taking raw Objective-C blocks or test-runner swizzling).
-EXCLUDED_EARL_GREY_HEADERS: frozenset[str] = frozenset(
-    {
-        (
-            'ios/chrome/test/earl_grey/'
-            'earl_grey_scoped_block_swizzler_app_interface.h'
-        ),
-    }
-)
 
 # Detects the beginning of an Objective-C method declaration by matching the
 # class (`+`) or instance (`-`) prefix followed by the opening parenthesis of
@@ -118,47 +93,98 @@ class MethodInfo:
     params: list[MethodParam]
 
 
-def is_earlgrey_header(rel_path: str) -> bool:
-    """Returns True if `rel_path` is an EarlGrey or AppInterface header."""
+@dataclass(frozen=True)
+class DomainGroup:
+    """Represents an EarlGrey MCP functional domain, its path rules, and
+    headers."""
+
+    domain_id: str
+    description: str
+    includes: tuple[str, ...] = ()
+    excludes: tuple[str, ...] = ()
+    headers: tuple[Path, ...] = ()
+
+
+def load_domain_rules(rules_path: Path) -> tuple[DomainGroup, ...]:
+    """Loads domain classification rules from a YAML file at `rules_path`.
+
+    Returns:
+        A tuple of `DomainGroup` instances containing path patterns and
+        metadata.
+    """
+    with open(rules_path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f)
+
+    rules = []
+    for item in data.get('domains', []):
+        domain_id = item['id']
+        description = item['description']
+        includes = tuple(item.get('include', item.get('matches', [])))
+        excludes = tuple(item.get('exclude', []))
+        rules.append(
+            DomainGroup(
+                domain_id=domain_id,
+                description=description,
+                includes=includes,
+                excludes=excludes,
+            )
+        )
+    return tuple(rules)
+
+
+def is_earlgrey_header(
+    rel_path: str,
+    rules: tuple[DomainGroup, ...],
+) -> bool:
+    """Returns True if `rel_path` matches an EarlGrey MCP domain glob rule."""
     normalized = rel_path.replace('\\', '/').lstrip('/')
-    if not normalized.endswith('.h'):
-        return False
-    if normalized in INCLUDED_EARL_GREY_HEADERS:
-        return True
-    if not normalized.startswith(EARL_GREY_SEARCH_PREFIXES):
-        return False
-    if normalized.startswith(EXCLUDED_EARL_GREY_DIRECTORIES):
-        return False
-    if normalized in EXCLUDED_EARL_GREY_HEADERS:
-        return False
-    filename = normalized.rsplit('/', 1)[-1]
-    return filename.endswith('_app_interface.h') or 'earl_grey' in filename
-
-
-def discover_earlgrey_headers(src_root: Path) -> list[Path]:
-    """Finds all bridged EarlGrey and AppInterface headers under `src_root`."""
-    headers: set[Path] = set()
-    for prefix in EARL_GREY_SEARCH_PREFIXES:
-        search_dir = src_root / prefix
-        if not search_dir.is_dir():
+    for group in rules:
+        if any(fnmatchcase(normalized, e) for e in group.excludes):
             continue
-        for candidate in search_dir.rglob('*.h'):
-            rel_path = candidate.relative_to(src_root).as_posix()
-            if not is_earlgrey_header(rel_path):
-                continue
-            # Automatically skip an `*_earl_grey_app_interface.h` backend
-            # when a paired `*_earl_grey.h` test-side wrapper exists in the
-            # same directory.
-            if candidate.name.endswith('_earl_grey_app_interface.h'):
-                stem = candidate.name[: -len('_app_interface.h')]
-                if candidate.with_name(f'{stem}.h').exists():
+
+        for pattern in group.includes:
+            if fnmatchcase(normalized, pattern):
+                return True
+
+    return False
+
+
+def discover_earlgrey_headers(
+    src_root: Path,
+    rules: tuple[DomainGroup, ...],
+) -> dict[str, DomainGroup]:
+    """Finds all bridged EarlGrey and AppInterface headers under `src_root`,
+    grouped by domain in a single pass using direct globbing.
+
+    Returns:
+        A dict mapping each `domain_id` to its `DomainGroup` containing domain
+        metadata and sorted resolved header `Path`s.
+    """
+    domain_headers: dict[str, list[Path]] = {g.domain_id: [] for g in rules}
+    seen: set[Path] = set()
+
+    for group in rules:
+        for pattern in group.includes:
+            for candidate in src_root.glob(pattern):
+                resolved = candidate.resolve()
+                if resolved in seen:
                     continue
-            headers.add(candidate.resolve())
-    for extra in INCLUDED_EARL_GREY_HEADERS:
-        extra_path = (src_root / extra).resolve()
-        if extra_path.is_file():
-            headers.add(extra_path)
-    return sorted(headers)
+                rel_path = resolved.relative_to(src_root).as_posix()
+                if any(fnmatchcase(rel_path, e) for e in group.excludes):
+                    continue
+                seen.add(resolved)
+                domain_headers[group.domain_id].append(resolved)
+
+    return {
+        group.domain_id: DomainGroup(
+            domain_id=group.domain_id,
+            description=group.description,
+            includes=group.includes,
+            excludes=group.excludes,
+            headers=tuple(sorted(domain_headers[group.domain_id])),
+        )
+        for group in rules
+    }
 
 
 def strip_trailing_attributes(decl: str) -> str:

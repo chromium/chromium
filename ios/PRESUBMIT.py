@@ -852,11 +852,34 @@ def _CheckEarlGreyHeaderDocstrings(input_api, output_api):
     and return values (for non-void methods).
     """
     eg_util = _ImportEarlGreyHeaderUtil(input_api)
+    from pathlib import Path
+
+    mcp_domains_path = Path(
+        input_api.os_path.join(
+            input_api.PresubmitLocalPath(),
+            'testing',
+            'earl_grey_mcp',
+            'mcp_domains.yaml',
+        )
+    )
+    if (
+        not mcp_domains_path.is_file()
+        and hasattr(input_api, 'change')
+        and hasattr(input_api.change, 'RepositoryRoot')
+    ):
+        mcp_domains_path = (
+            Path(input_api.change.RepositoryRoot())
+            / 'ios'
+            / 'testing'
+            / 'earl_grey_mcp'
+            / 'mcp_domains.yaml'
+        )
+    domain_rules = eg_util.load_domain_rules(mcp_domains_path)
 
     errors = []
     for filename in input_api.AffectedFiles(include_deletes=False):
         local_path = filename.LocalPath()
-        if not eg_util.is_earlgrey_header(local_path):
+        if not eg_util.is_earlgrey_header(local_path, rules=domain_rules):
             continue
 
         changed_lines = {line_num for line_num, _ in filename.ChangedContents()}
