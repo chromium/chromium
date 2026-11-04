@@ -49,15 +49,15 @@ class MockSecurityStateModelDelegate : public SecurityStateModelDelegate {
   MOCK_METHOD(MaliciousContentStatus,
               GetMaliciousContentStatus,
               (content::WebContents * web_contents),
-              (const override));
+              (const, override));
   MOCK_METHOD(SecurityLevel,
               GetSecurityLevel,
               (content::WebContents * web_contents),
-              (const override));
+              (const, override));
   MOCK_METHOD(std::unique_ptr<security_state::VisibleSecurityState>,
               GetVisibleSecurityState,
               (content::WebContents * web_contents),
-              (const override));
+              (const, override));
 };
 
 // Mock implementation of SecurityStateClient.
