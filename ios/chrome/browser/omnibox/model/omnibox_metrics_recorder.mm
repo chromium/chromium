@@ -18,7 +18,6 @@
 #import "components/omnibox/browser/autocomplete_match_type.h"
 #import "components/omnibox/browser/autocomplete_provider.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
-#import "components/omnibox/browser/history_fuzzy_provider.h"
 #import "components/omnibox/browser/omnibox_event_global_tracker.h"
 #import "components/omnibox/browser/omnibox_log.h"
 #import "components/omnibox/browser/omnibox_logging_utils.h"
@@ -99,8 +98,6 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
 
   omnibox::RecordActionShownForAllActions(_autocompleteController->result(),
                                           selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(
-      _autocompleteController->result(), match);
 
   base::TimeDelta elapsedTimeSinceLastChangeToDefaultMatch(
       now - _autocompleteController->last_time_default_match_changed());

@@ -67,7 +67,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/contextual_search_provider.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
-#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
@@ -2660,7 +2659,6 @@ void OmniboxEditModel::OpenMatch(
   const AutocompleteResult& result =
       snapshot ? snapshot->result : autocomplete_controller()->result();
   omnibox::RecordActionShownForAllActions(result, selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(result, match);
 
   const AutocompleteInput& input = snapshot ? snapshot->input : input_;
 

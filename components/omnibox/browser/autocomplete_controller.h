@@ -40,7 +40,6 @@ class ContextualSearchProvider;
 class DocumentProvider;
 class FeaturedSearchProvider;
 class GURL;
-class HistoryFuzzyProvider;
 class HistoryQuickProvider;
 class HistoryURLProvider;
 class KeywordProvider;
@@ -564,7 +563,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<OnDeviceHeadProvider> on_device_head_provider_ = nullptr;
   raw_ptr<ClipboardProvider> clipboard_provider_ = nullptr;
   raw_ptr<VoiceSuggestProvider> voice_suggest_provider_ = nullptr;
-  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_ = nullptr;
   raw_ptr<OpenTabProvider> open_tab_provider_ = nullptr;
   raw_ptr<TabGroupProvider> tab_group_provider_ = nullptr;
   raw_ptr<FeaturedSearchProvider> featured_search_provider_ = nullptr;

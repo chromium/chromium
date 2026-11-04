@@ -27,7 +27,6 @@
 #if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/geolocation_header_service.h"
 #endif  // !BUILDFLAG(IS_IOS)
-#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -191,7 +190,6 @@ void OpenMatch(
   GURL destination_url = action ? action->getUrl() : match.destination_url;
 
   omnibox::RecordActionShownForAllActions(result, selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(result, match);
 
   // TODO(crbug.com/530290300): This should no longer be possible once
   //  selections are tied to source result. Eliminate and simplify below.

@@ -58,7 +58,6 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
-#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -389,8 +388,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     TRACE_EVENT("omnibox", "OnSuggestionSelected.RecordClipboardMetrics");
     RecordClipboardMetrics(match.type);
   }
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(
-      autocomplete_controller_->result(), match);
 
   // The following histogram should be recorded for both TYPED and pasted
   // URLs, but should still exclude reloads.

@@ -19,7 +19,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_provider.h"
 
 // This namespace encapsulates the implementation details of fuzzy matching and
@@ -187,10 +186,6 @@ struct Node {
 class HistoryFuzzyProvider : public HistoryProvider,
                              public history::HistoryServiceObserver {
  public:
-  // Records fuzzy matching related metrics when user opens a match.
-  static void RecordOpenMatchMetrics(const AutocompleteResult& result,
-                                     const AutocompleteMatch& match_opened);
-
   explicit HistoryFuzzyProvider(AutocompleteProviderClient* client);
   HistoryFuzzyProvider(const HistoryFuzzyProvider&) = delete;
   HistoryFuzzyProvider& operator=(const HistoryFuzzyProvider&) = delete;
@@ -213,8 +208,7 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Add the best matches, converting them to fuzzy suggestions in the process.
   // The given `penalty` is a percentage relevance penalty that will
   // deduct from the relevance of each match.
-  // Returns the number of matches actually added.
-  int AddConvertedMatches(const ACMatches& matches, int penalty);
+  void AddConvertedMatches(const ACMatches& matches, int penalty);
 
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
@@ -227,9 +221,6 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Removes deleted (or all) URLs from trie.
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  // Record UMA histogram data for measuring usefulness of sub-providers.
-  void RecordMatchConversion(const char* name, int count);
 
   AutocompleteInput autocomplete_input_;
 

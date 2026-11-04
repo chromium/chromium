@@ -1494,10 +1494,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
   }
   if (provider_types &
       static_cast<int>(AutocompleteProvider::Type::kHistoryFuzzy)) {
-    auto history_fuzzy_provider =
-        base::MakeRefCounted<HistoryFuzzyProvider>(provider_client_.get());
-    history_fuzzy_provider_ = history_fuzzy_provider.get();
-    providers_.push_back(std::move(history_fuzzy_provider));
+    providers_.push_back(
+        base::MakeRefCounted<HistoryFuzzyProvider>(provider_client_.get()));
   }
   if (provider_types & static_cast<int>(AutocompleteProvider::Type::kOpenTab)) {
     auto open_tab_provider =
