@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -1467,6 +1468,27 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2PromoParamInteractiveTest,
           false),
       EnsurePresent(EphemeralButtonId()),
       CheckEphemeralButtonHighlighted(true));
+}
+
+// If the ephemeral button hides again before it has settled in the toolbar
+// (e.g. the task is disassociated right after the panel closes), the toast is
+// never requested.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2PromoParamInteractiveTest,
+                       EphemeralPromoNotRequestedWhenButtonHidesImmediately) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(), RemoveTaskFromTab(0),
+      WaitForHide(EphemeralButtonId()),
+      // Let any posted promo request run.
+      Do([]() { base::RunLoop().RunUntilIdle(); }),
+      CheckPromoRequested(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
+          false),
+      EnsureNotPresent(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
 class ContextualTasksEphemeralBrandedButtonInteractiveTest

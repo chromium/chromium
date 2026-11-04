@@ -158,6 +158,10 @@ class ContextualTasksEphemeralButtonController
   void OnSidePanelAlignmentChanged();
   void MaybeNotifyVisibilityShouldChange();
   void RecordTaskOpenClickCounts(const OpenSidePanelSessionCounts& counts);
+  // Shows the ephemeral button toast if the button is still visible in its
+  // collapsed state. Posted from MaybeNotifyVisibilityShouldChange() under the
+  // pin button refactor so the popped-out action has been laid out first.
+  void MaybeShowEphemeralButtonPromo();
   void FlushOpenClickCounts(bool flush_all);
   void UpdatePinnedButtonActiveIndicator();
   void UpdatePinButtonTooltip();
