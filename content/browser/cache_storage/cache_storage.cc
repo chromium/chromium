@@ -461,6 +461,7 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
     for (int i = 0, max = protobuf_index.cache_size(); i < max; ++i) {
       const proto::CacheStorageIndex::Cache& cache = protobuf_index.cache(i);
       CHECK(cache.has_cache_dir(), base::NotFatalUntil::M158);
+      CHECK(base::Uuid::ParseLowercase(cache.cache_dir()).is_valid());
       std::optional<base::ByteSize> cache_size;
       if (cache.has_size() && cache.size() >= 0) {
         cache_size = base::ByteSize(base::checked_cast<uint64_t>(cache.size()));
@@ -576,10 +577,12 @@ class CacheStorage::SimpleCacheLoader : public CacheStorage::CacheLoader {
 
     for (int i = 0, max = index.cache_size(); i < max; ++i) {
       const proto::CacheStorageIndex::Cache& cache = index.cache(i);
-      if (!cache.has_cache_dir()) {
-        // If `cache_dir` is missing, the index is in a bad state. Return an
-        // empty index so that the `CacheStorage` can start fresh. The
-        // unreferenced caches will be discarded later in initialization.
+      if (!cache.has_cache_dir() ||
+          !base::Uuid::ParseLowercase(cache.cache_dir()).is_valid()) {
+        // If `cache_dir` is missing or not a valid lowercase UUID, the index is
+        // in a bad state. Return an empty index so that the `CacheStorage` can
+        // start fresh. The unreferenced caches will be discarded later in
+        // initialization.
         return proto::CacheStorageIndex();
       }
       if (cache.has_size()) {

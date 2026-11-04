@@ -1801,6 +1801,49 @@ TEST_F(CacheStorageManagerTest, IndexMissingCacheDirStartsFresh) {
       [&]() { return !base::PathExists(legacy_cache_path); }));
 }
 
+// Check that an index entry whose `cache_dir` is not a lowercase UUID (e.g. a
+// path traversal string) is rejected so `CacheStorage` starts fresh without
+// deleting directories outside the origin storage directory.
+TEST_F(CacheStorageManagerTest, IndexInvalidCacheDirStartsFresh) {
+  const std::u16string kCacheName = u"foo";
+  const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
+
+  ASSERT_TRUE(Open(bucket_locator1_, kCacheName));
+  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), kFooURL));
+  const base::FilePath cache_path =
+      CacheStorageCache::From(callback_cache_handle_)->path();
+  const base::FilePath storage_dir = cache_path.DirName();
+  const base::FilePath index_path =
+      storage_dir.AppendASCII(CacheStorage::kIndexFileName);
+  ASSERT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+  DestroyStorageManager();
+  disk_cache::FlushCacheThreadForTesting();
+
+  const base::FilePath victim_dir =
+      storage_dir.DirName().AppendASCII("victim_dir");
+  ASSERT_TRUE(base::CreateDirectory(victim_dir));
+  const base::FilePath victim_file = victim_dir.AppendASCII("file.txt");
+  ASSERT_TRUE(base::WriteFile(victim_file, "secret"));
+
+  std::string serialized_index;
+  proto::CacheStorageIndex index;
+  ASSERT_TRUE(base::ReadFileToString(index_path, &serialized_index));
+  ASSERT_TRUE(index.ParseFromString(serialized_index));
+  ASSERT_EQ(1, index.cache_size());
+  index.mutable_cache(0)->set_cache_dir("../victim_dir");
+  ASSERT_TRUE(index.SerializeToString(&serialized_index));
+  ASSERT_TRUE(base::WriteFile(index_path, serialized_index));
+
+  CreateStorageManager();
+  EXPECT_EQ(0u, Keys(bucket_locator1_));
+  EXPECT_FALSE(Has(bucket_locator1_, kCacheName));
+  EXPECT_FALSE(Delete(bucket_locator1_, kCacheName));
+  disk_cache::FlushCacheThreadForTesting();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !base::PathExists(cache_path); }));
+  EXPECT_TRUE(base::PathExists(victim_file));
+}
+
 TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {
   const std::u16string kCacheName = u"foo";
 
