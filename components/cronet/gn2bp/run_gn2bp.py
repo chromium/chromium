@@ -49,6 +49,9 @@ _BORINGSSL_SCRIPT = os.path.join('src', 'util', 'generate_build_files.py')
 _COPYBARA_CONFIG_PATH = os.path.join(
     REPOSITORY_ROOT, 'components/cronet/gn2bp/copy.bara.sky'
 )
+_COPYBARA_DIFF3_WRAPPER_PATH = os.path.join(
+    REPOSITORY_ROOT, 'components/cronet/gn2bp/copybara_diff3.sh'
+)
 _COPYBARA_PATH = os.path.join(
     REPOSITORY_ROOT, 'tools/copybara/copybara/copybara_deploy.jar'
 )
@@ -412,6 +415,8 @@ def _run_copybara_to_aosp(
       """)
     additional_parameters = [
         '--ignore-noop',
+        '--diff-bin',
+        _COPYBARA_DIFF3_WRAPPER_PATH,
         '--force-message',
         commit_message,
     ]
