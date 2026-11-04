@@ -43,7 +43,7 @@ class CORE_EXPORT IdTargetObserverRegistry final
   friend class IdTargetObserver;
 
  public:
-  IdTargetObserverRegistry() : notifying_observers_in_set_(nullptr) {}
+  IdTargetObserverRegistry() = default;
   IdTargetObserverRegistry(const IdTargetObserverRegistry&) = delete;
   IdTargetObserverRegistry& operator=(const IdTargetObserverRegistry&) = delete;
 
@@ -59,11 +59,9 @@ class CORE_EXPORT IdTargetObserverRegistry final
   using ObserverSet = GCedHeapHashSet<Member<IdTargetObserver>>;
   using IdToObserverSetMap = HeapHashMap<StringImpl*, Member<ObserverSet>>;
   IdToObserverSetMap registry_;
-  Member<ObserverSet> notifying_observers_in_set_;
 };
 
 inline void IdTargetObserverRegistry::NotifyObservers(const AtomicString& id) {
-  DCHECK(!notifying_observers_in_set_);
   if (id.empty() || registry_.empty())
     return;
   IdTargetObserverRegistry::NotifyObserversInternal(id);

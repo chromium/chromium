@@ -42,7 +42,9 @@ void IdTargetObserver::Trace(Visitor* visitor) const {
 }
 
 void IdTargetObserver::Unregister() {
-  Registry().RemoveObserver(id_, this);
+  CHECK(registry_);
+  registry_->RemoveObserver(id_, this);
+  registry_ = nullptr;
 }
 
 }  // namespace blink

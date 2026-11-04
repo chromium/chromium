@@ -32,7 +32,6 @@ namespace blink {
 
 void IdTargetObserverRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(registry_);
-  visitor->Trace(notifying_observers_in_set_);
 }
 
 void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
@@ -44,42 +43,48 @@ void IdTargetObserverRegistry::AddObserver(const AtomicString& id,
   if (result.is_new_entry)
     result.stored_value->value = MakeGarbageCollected<ObserverSet>();
 
-  result.stored_value->value->insert(observer);
+  auto insert_result = result.stored_value->value->insert(observer);
+  CHECK(insert_result.is_new_entry);
 }
 
 void IdTargetObserverRegistry::RemoveObserver(const AtomicString& id,
                                               IdTargetObserver* observer) {
-  if (id.empty() || registry_.empty())
+  if (id.empty()) {
     return;
+  }
 
   IdToObserverSetMap::iterator iter = registry_.find(id.Impl());
+  CHECK(iter != registry_.end());
 
   ObserverSet* set = iter->value.Get();
   set->erase(observer);
-  if (set->empty() && set != notifying_observers_in_set_)
+  if (set->empty()) {
     registry_.erase(iter);
+  }
 }
 
 void IdTargetObserverRegistry::NotifyObserversInternal(const AtomicString& id) {
   DCHECK(!id.empty());
   DCHECK(!registry_.empty());
 
+  // Note that `id` may be a reference into an element's AttributeCollection
+  // buffer, which an observer's IdTargetChanged() callback can reallocate and
+  // free, so `id` must not be accessed after any observer has been notified.
   auto it_reg = registry_.find(id.Impl());
-  if (it_reg != registry_.end())
-    notifying_observers_in_set_ = it_reg->value;
-  if (!notifying_observers_in_set_)
+  if (it_reg == registry_.end()) {
     return;
-
-  HeapVector<Member<IdTargetObserver>> copy(*notifying_observers_in_set_);
-  for (const auto& observer : copy) {
-    if (notifying_observers_in_set_->Contains(observer))
-      observer->IdTargetChanged();
   }
 
-  if (notifying_observers_in_set_->empty())
-    registry_.erase(id.Impl());
-
-  notifying_observers_in_set_ = nullptr;
+  // `set` may be erased from `registry_` during the loop, but stays alive on
+  // the stack. Observers are never re-added, so checking `set` is enough to
+  // skip the ones unregistered by earlier callbacks.
+  ObserverSet* set = it_reg->value.Get();
+  HeapVector<Member<IdTargetObserver>> copy(*set);
+  for (const auto& observer : copy) {
+    if (set->Contains(observer)) {
+      observer->IdTargetChanged();
+    }
+  }
 }
 
 bool IdTargetObserverRegistry::HasObservers(const AtomicString& id) const {
