@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/test/scoped_feature_list.h"
 #include "components/metal_util/hdr_copier_layer.h"
@@ -15,6 +16,7 @@
 #include "testing/gtest_mac.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
+#include "ui/base/cocoa/ca_backdrop_filter_api.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -53,6 +55,8 @@ struct CALayerProperties {
 
   bool allow_av_layers = true;
   bool allow_solid_color_layers = true;
+  std::vector<ui::CABackdropFilter> backdrop_filters;
+  std::optional<gfx::RRectF> backdrop_filter_bounds;
 };
 
 base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreateCVPixelBuffer(
@@ -77,7 +81,8 @@ bool ScheduleCALayer(ui::CARendererLayerTree* tree,
       properties->transform, io_surface, io_surface_color_space,
       properties->contents_rect, properties->rect, properties->background_color,
       properties->edge_aa_mask, properties->opacity, properties->filter,
-      gfx::HDRMetadata(), properties->protected_video_type, false));
+      gfx::HDRMetadata(), properties->protected_video_type, false,
+      properties->backdrop_filters, properties->backdrop_filter_bounds));
 }
 
 void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
@@ -99,9 +104,8 @@ void UpdateCALayerTree(std::unique_ptr<ui::CARendererLayerTree>& ca_layer_tree,
 class CALayerTreeTest : public testing::Test {
  protected:
   void SetUp() override { superlayer_ = [[CALayer alloc] init]; }
-  // Traverse the tree. Validate that there exists only one content layer, and
-  // return that layer.
-  CALayer* GetOnlyContentLayer() {
+  // Traverse the tree and return the single transform layer.
+  CALayer* GetOnlyTransformLayer() {
     EXPECT_EQ(1u, [[superlayer_ sublayers] count]);
     CALayer* root_layer = [superlayer_ sublayers][0];
     EXPECT_EQ(1u, [[root_layer sublayers] count]);
@@ -109,7 +113,12 @@ class CALayerTreeTest : public testing::Test {
     EXPECT_EQ(1u, [[clip_and_sorting_layer sublayers] count]);
     CALayer* rounded_rect_layer = [clip_and_sorting_layer sublayers][0];
     EXPECT_EQ(1u, [[rounded_rect_layer sublayers] count]);
-    CALayer* transform_layer = [rounded_rect_layer sublayers][0];
+    return [rounded_rect_layer sublayers][0];
+  }
+  // Traverse the tree. Validate that there exists only one content layer, and
+  // return that layer.
+  CALayer* GetOnlyContentLayer() {
+    CALayer* transform_layer = GetOnlyTransformLayer();
     EXPECT_EQ(1u, [[transform_layer sublayers] count]);
     return [transform_layer sublayers][0];
   }
@@ -1202,6 +1211,287 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
 #pragma clang diagnostic pop
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBlur) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(64, 64, 256, 256);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 20.0f});
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(gfx::RectF(properties.rect), 16.0f);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  // Expect two sublayers: backdrop layer and content layer.
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* backdrop_layer = [transform_layer sublayers][0];
+  CALayer* content_layer = [transform_layer sublayers][1];
+
+  EXPECT_TRUE(
+      [backdrop_layer isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+  EXPECT_EQ(1u, [[backdrop_layer filters] count]);
+  id filter = [backdrop_layer filters][0];
+  // inputRadius should be scaled by 1 / scale_factor: 20.0 / 2.0 = 10.0.
+  EXPECT_DOUBLE_EQ(10.0, [[filter valueForKey:@"inputRadius"] doubleValue]);
+
+  // Position should match rect scaled by 1 / scale_factor: 64.0 / 2.0 = 32.0.
+  EXPECT_DOUBLE_EQ(32.0, backdrop_layer.position.x);
+  EXPECT_DOUBLE_EQ(32.0, backdrop_layer.position.y);
+  EXPECT_DOUBLE_EQ(128.0, backdrop_layer.bounds.size.width);
+  EXPECT_DOUBLE_EQ(128.0, backdrop_layer.bounds.size.height);
+
+  EXPECT_DOUBLE_EQ(32.0, content_layer.position.x);
+  EXPECT_DOUBLE_EQ(32.0, content_layer.position.y);
+  EXPECT_DOUBLE_EQ(128.0, content_layer.bounds.size.width);
+  EXPECT_DOUBLE_EQ(128.0, content_layer.bounds.size.height);
+
+  EXPECT_DOUBLE_EQ(8.0, backdrop_layer.cornerRadius);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterRemoval) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(64, 64, 256, 256);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 20.0f});
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* backdrop_layer = [transform_layer sublayers][0];
+  EXPECT_TRUE(
+      [backdrop_layer isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+
+  // Remove the backdrop filter; only the content layer should remain.
+  properties.backdrop_filters.clear();
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+  ASSERT_EQ(1u, [[transform_layer sublayers] count]);
+  EXPECT_EQ(nil, backdrop_layer.superlayer);
+  EXPECT_FALSE([[transform_layer sublayers][0]
+      isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+
+  // Re-add the backdrop filter; a new backdrop layer should be inserted
+  // underneath the content layer.
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 20.0f});
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  EXPECT_TRUE([[transform_layer sublayers][0]
+      isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+  EXPECT_FALSE([[transform_layer sublayers][1]
+      isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterSiblingZOrder) {
+  CALayerProperties back_sibling;
+  back_sibling.rect = gfx::Rect(0, 0, 256, 256);
+  back_sibling.background_color = SkColors::kRed;
+
+  CALayerProperties middle_backdrop;
+  middle_backdrop.rect = gfx::Rect(32, 32, 128, 128);
+  middle_backdrop.background_color = SkColors::kTransparent;
+  middle_backdrop.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 16.0f});
+
+  CALayerProperties front_sibling;
+  front_sibling.rect = gfx::Rect(64, 64, 64, 64);
+  front_sibling.background_color = SkColors::kBlue;
+
+  auto tree = std::make_unique<ui::CARendererLayerTree>(true, true);
+  EXPECT_TRUE(ScheduleCALayer(tree.get(), &back_sibling));
+  EXPECT_TRUE(ScheduleCALayer(tree.get(), &middle_backdrop));
+  EXPECT_TRUE(ScheduleCALayer(tree.get(), &front_sibling));
+  tree->CommitScheduledCALayers(superlayer_, nullptr, gfx::Size(256, 256),
+                                1.0f);
+
+  // Expected back-to-front order: back sibling, backdrop layer, middle content
+  // layer, front sibling. Layers are identified by their (distinct) widths.
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  ASSERT_EQ(4u, [[transform_layer sublayers] count]);
+  NSArray<CALayer*>* sublayers = [transform_layer sublayers];
+  Class backdrop_class = NSClassFromString(@"CABackdropLayer");
+
+  EXPECT_FALSE([sublayers[0] isKindOfClass:backdrop_class]);
+  EXPECT_DOUBLE_EQ(256.0, sublayers[0].bounds.size.width);
+
+  EXPECT_TRUE([sublayers[1] isKindOfClass:backdrop_class]);
+  EXPECT_DOUBLE_EQ(32.0, sublayers[1].position.x);
+  EXPECT_DOUBLE_EQ(128.0, sublayers[1].bounds.size.width);
+
+  EXPECT_FALSE([sublayers[2] isKindOfClass:backdrop_class]);
+  EXPECT_DOUBLE_EQ(32.0, sublayers[2].position.x);
+  EXPECT_DOUBLE_EQ(128.0, sublayers[2].bounds.size.width);
+
+  EXPECT_FALSE([sublayers[3] isKindOfClass:backdrop_class]);
+  EXPECT_DOUBLE_EQ(64.0, sublayers[3].bounds.size.width);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBlurRadiusUpdate) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(64, 64, 256, 256);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 50.0f});
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(gfx::RectF(properties.rect), 16.0f);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* backdrop_layer = [transform_layer sublayers][0];
+  CALayer* content_layer = [transform_layer sublayers][1];
+  ASSERT_EQ(1u, [[backdrop_layer filters] count]);
+  // inputRadius in CA points: 50.0 / 2.0 = 25.0.
+  EXPECT_DOUBLE_EQ(25.0, [[[backdrop_layer filters][0]
+                             valueForKey:@"inputRadius"] doubleValue]);
+
+  // Changing only the blur radius reuses both CALayers and updates the filter.
+  properties.backdrop_filters[0].blur_radius = 60.0f;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  EXPECT_EQ(backdrop_layer, [transform_layer sublayers][0]);
+  EXPECT_EQ(content_layer, [transform_layer sublayers][1]);
+  ASSERT_EQ(1u, [[backdrop_layer filters] count]);
+  // 60.0 / 2.0 = 30.0.
+  EXPECT_DOUBLE_EQ(30.0, [[[backdrop_layer filters][0]
+                             valueForKey:@"inputRadius"] doubleValue]);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBoundsPadding) {
+  CALayerProperties properties;
+  // Content layer rect is expanded to a 64-pixel multiple (e.g. 896x576).
+  properties.rect = gfx::Rect(0, -1, 896, 576);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 40.0f});
+  // The actual element border box is 880x560 with 24px corner radius.
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(gfx::RectF(0, 0, 880, 560), 24.0f);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* backdrop_layer = [transform_layer sublayers][0];
+  CALayer* content_layer = [transform_layer sublayers][1];
+
+  // The content layer has the padded buffer size: 896/2 = 448, 576/2 = 288.
+  EXPECT_DOUBLE_EQ(448.0, content_layer.bounds.size.width);
+  EXPECT_DOUBLE_EQ(288.0, content_layer.bounds.size.height);
+
+  // The backdrop layer MUST match backdrop_filter_bounds (440x280), NOT the
+  // padded rect!
+  EXPECT_DOUBLE_EQ(0.0, backdrop_layer.position.x);
+  EXPECT_DOUBLE_EQ(0.0, backdrop_layer.position.y);
+  EXPECT_DOUBLE_EQ(440.0, backdrop_layer.bounds.size.width);
+  EXPECT_DOUBLE_EQ(280.0, backdrop_layer.bounds.size.height);
+
+  EXPECT_DOUBLE_EQ(12.0, backdrop_layer.cornerRadius);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBoundsPartialCorners) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(0, 0, 280, 160);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 30.0f});
+  // Top-left and top-right rounded (24px), bottom-right and bottom-left square
+  // (0px). Should use hardware cornerRadius + maskedCorners.
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(gfx::RectF(0, 0, 280, 160), 24.0f, 24.0f, 24.0f, 24.0f, 0.0f,
+                  0.0f, 0.0f, 0.0f);
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* backdrop_layer = [GetOnlyTransformLayer() sublayers][0];
+  EXPECT_DOUBLE_EQ(12.0, backdrop_layer.cornerRadius);
+  EXPECT_EQ(CACornerMask(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner),
+            backdrop_layer.maskedCorners);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterBoundsCircle) {
+  CALayerProperties properties;
+  properties.rect = gfx::Rect(0, 0, 160, 160);
+  properties.scale_factor = 2.0f;
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 30.0f});
+  // Circle: width 160, height 160, radius 80.
+  // Circles have uniform X and Y radii (kSingle), so they clip natively via
+  // cornerRadius.
+  properties.backdrop_filter_bounds =
+      gfx::RRectF(SkRRect::MakeOval(SkRect::MakeXYWH(0, 0, 160, 160)));
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+
+  CALayer* backdrop_layer = [GetOnlyTransformLayer() sublayers][0];
+  EXPECT_DOUBLE_EQ(40.0, backdrop_layer.cornerRadius);
+}
+
+TEST_F(CALayerTreeTest, BackdropFilterTypeChange) {
+  // Without fullscreen low power mode, clear NV12 content is downgraded to a
+  // regular CALayer, whereas protected content stays an
+  // AVSampleBufferDisplayLayer.
+  CALayerProperties properties;
+  properties.io_surface =
+      gfx::CreateIOSurface(gfx::Size(256, 256), viz::MultiPlaneFormat::kNV12);
+  properties.backdrop_filters.push_back(
+      ui::CABackdropFilter{.blur_radius = 20.0f});
+
+  std::unique_ptr<ui::CARendererLayerTree> ca_layer_tree;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+  CALayer* transform_layer = GetOnlyTransformLayer();
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* old_backdrop_layer = [transform_layer sublayers][0];
+  EXPECT_TRUE(
+      [old_backdrop_layer isKindOfClass:NSClassFromString(@"CABackdropLayer")]);
+  EXPECT_FALSE([[transform_layer sublayers][1]
+      isKindOfClass:[AVSampleBufferDisplayLayer class]]);
+
+  // Changing the foreground layer type replaces the foreground CALayer while
+  // reusing the backdrop CALayer underneath the new foreground content layer.
+  properties.protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+  EXPECT_EQ(transform_layer, GetOnlyTransformLayer());
+  ASSERT_EQ(2u, [[transform_layer sublayers] count]);
+  CALayer* new_backdrop_layer = [transform_layer sublayers][0];
+  EXPECT_EQ(old_backdrop_layer, new_backdrop_layer);
+  EXPECT_TRUE([[transform_layer sublayers][1]
+      isKindOfClass:[AVSampleBufferDisplayLayer class]]);
+
+  // Changing the type and removing the backdrop filter at the same time leaves
+  // only the new content layer.
+  properties.protected_video_type = gfx::ProtectedVideoType::kClear;
+  properties.backdrop_filters.clear();
+  UpdateCALayerTree(ca_layer_tree, &properties, superlayer_);
+  CALayer* content_layer = GetOnlyContentLayer();
+  EXPECT_FALSE(
+      [content_layer isKindOfClass:[AVSampleBufferDisplayLayer class]]);
+  EXPECT_EQ(nil, new_backdrop_layer.superlayer);
+}
+
+TEST_F(CALayerTreeTest, CABackdropLayerSPIHelpers) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(ui::kCoreAnimationBackdropFilter);
+    EXPECT_FALSE(ui::CABackdropLayerSupported());
+  }
+  base::test::ScopedFeatureList scoped_feature_list{
+      ui::kCoreAnimationBackdropFilter};
+  EXPECT_TRUE(ui::CABackdropLayerSupported());
+  EXPECT_NE(nil, ui::CreateCABackdropLayer());
+  EXPECT_NE(nil, ui::CreateCABlurFilter(10.0));
 }
 
 TEST(HDRCoperLayerTest, Formats) {

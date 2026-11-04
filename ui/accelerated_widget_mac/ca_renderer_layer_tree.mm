@@ -11,6 +11,7 @@
 #include <GLES2/gl2extchromium.h>
 
 #include <array>
+#include <cmath>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
@@ -19,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/metal_util/hdr_copier_layer.h"
@@ -26,6 +28,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cocoa/animation_utils.h"
+#include "ui/base/cocoa/ca_backdrop_filter_api.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -63,20 +66,19 @@ bool UseCALayerContentsHeadroom() {
   return false;
 }
 
-// Applies hardware `cornerRadius` and `maskedCorners` to `layer` if `rrect` can
-// be represented natively by CALayer (no rounded corners, uniform circular
-// corners on all 4 corners, or a single uniform circular radius on a subset of
-// corners with the remaining corners square). Returns false if `rrect` has
-// elliptical corners or multiple distinct non-zero corner radii.
-bool ApplyCornerRadiusToCALayer(CALayer* layer,
-                                const gfx::RRectF& rrect,
-                                float scale_factor) {
+// Computes the CALayer `cornerRadius` (in `rrect` units) and `maskedCorners`
+// for `rrect` if it can be represented natively by CALayer (no rounded corners,
+// uniform circular corners on all 4 corners, or a single uniform circular
+// radius on a subset of corners with the remaining corners square). Returns
+// false if `rrect` has elliptical corners or multiple distinct non-zero corner
+// radii.
+bool GetCALayerCornerRadius(const gfx::RRectF& rrect,
+                            float* corner_radius,
+                            CACornerMask* corner_mask) {
   if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
-    static constexpr CACornerMask kAllCorners =
-        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
-        kCALayerMaxXMaxYCorner | kCALayerMinXMaxYCorner;
-    layer.cornerRadius = rrect.GetSimpleRadius() / scale_factor;
-    layer.maskedCorners = kAllCorners;
+    *corner_radius = rrect.GetSimpleRadius();
+    *corner_mask = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+                   kCALayerMaxXMaxYCorner | kCALayerMinXMaxYCorner;
     return true;
   }
 
@@ -104,8 +106,32 @@ bool ApplyCornerRadiusToCALayer(CALayer* layer,
       masked_corners |= mask;
     }
   }
-  layer.cornerRadius = uniform_radius / scale_factor;
-  layer.maskedCorners = masked_corners;
+  *corner_radius = uniform_radius;
+  *corner_mask = masked_corners;
+  return true;
+}
+
+// Returns true if `rrect` can be represented natively by CALayer
+// `cornerRadius` + `maskedCorners`. See GetCALayerCornerRadius().
+bool IsCALayerCornerRadiusCompatible(const gfx::RRectF& rrect) {
+  float corner_radius = 0.0f;
+  CACornerMask corner_mask = 0;
+  return GetCALayerCornerRadius(rrect, &corner_radius, &corner_mask);
+}
+
+// Applies hardware `cornerRadius` and `maskedCorners` to `layer` if `rrect` can
+// be represented natively by CALayer. Returns false (leaving `layer` unchanged)
+// otherwise. See GetCALayerCornerRadius().
+bool ApplyCornerRadiusToCALayer(CALayer* layer,
+                                const gfx::RRectF& rrect,
+                                float scale_factor) {
+  float corner_radius = 0.0f;
+  CACornerMask corner_mask = 0;
+  if (!GetCALayerCornerRadius(rrect, &corner_radius, &corner_mask)) {
+    return false;
+  }
+  layer.cornerRadius = corner_radius / scale_factor;
+  layer.maskedCorners = corner_mask;
   return true;
 }
 
@@ -417,6 +443,21 @@ bool CARendererLayerTree::ScheduleCALayer(const CARendererLayerParams& params) {
     DLOG(ERROR) << "ScheduleCALayer called after CommitScheduledCALayers.";
     return false;
   }
+  if (!params.backdrop_filters.empty()) {
+    // In Viz/CSS, a RenderPassDrawQuad's opacity applies to the combined
+    // (filtered backdrop + foreground content) group as a whole. Here the
+    // quad is split into two sibling CALayers (a CABackdropLayer and a
+    // foreground content CALayer): setting `opacity` on the foreground layer
+    // only fades the foreground, setting it on both blends them sequentially
+    // rather than as a group, and wrapping them in an isolated group layer
+    // (allowsGroupOpacity) would prevent CABackdropLayer from sampling the
+    // backdrop behind the group. Viz overlay promotion must reject non-unit
+    // opacity before reaching here.
+    CHECK_EQ(params.opacity, 1.0f);
+    if (params.backdrop_filter_bounds.has_value()) {
+      CHECK(IsCALayerCornerRadiusCompatible(*params.backdrop_filter_bounds));
+    }
+  }
   return root_layer_.AddContentLayer(params);
 }
 
@@ -523,7 +564,7 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
           matched_transform_layer->weak_factory_for_new_layer_.GetWeakPtr();
       matched_transform_layer->ca_layer_used_ = true;
     } else {
-      matched_content_layer->RemoveFromSuperlayer();
+      [matched_content_layer->ca_layer_ removeFromSuperlayer];
     }
   }
 
@@ -532,11 +573,11 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
   }
 
   if (matched_transform_layer != parent_layer_->old_layer_.get()) {
-    matched_content_layer->RemoveFromSuperlayer();
+    [matched_content_layer->ca_layer_ removeFromSuperlayer];
   } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
     // For the content layers with the same superlayer, if the order changes.
     // this matched old layer should be removed from its superlayer first.
-    matched_content_layer->RemoveFromSuperlayer();
+    [matched_content_layer->ca_layer_ removeFromSuperlayer];
     [matched_transform_layer->ca_layer_ removeFromSuperlayer];
     [matched_clip_layer->clipping_ca_layer_ removeFromSuperlayer];
   }
@@ -649,7 +690,7 @@ void CARendererLayerTree::TransformLayer::CALayerFallBack() {
             ++old_layer_child_it;
             break;
           }
-          old_layer_child->RemoveFromSuperlayer();
+          [old_layer_child->ca_layer_ removeFromSuperlayer];
           ++old_layer_child_it;
         }
       } else {
@@ -907,12 +948,19 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   }
 }
 
-void CARendererLayerTree::ContentLayer::RemoveFromSuperlayer() {
-  [ca_layer_ removeFromSuperlayer];
-}
+CARendererLayerTree::ContentLayer::ContentLayer(
+    TransformLayer* parent_layer,
+    std::vector<CABackdropFilter> backdrop_filters,
+    const gfx::RRectF& backdrop_filter_bounds)
+    : parent_layer_(parent_layer),
+      rect_(backdrop_filter_bounds.rect()),
+      ca_filter_(kCAFilterLinear),
+      type_(CALayerType::kBackdropFilter),
+      backdrop_filters_(std::move(backdrop_filters)),
+      backdrop_filter_bounds_(backdrop_filter_bounds) {}
 
 CARendererLayerTree::ContentLayer::~ContentLayer() {
-  RemoveFromSuperlayer();
+  [ca_layer_ removeFromSuperlayer];
   [update_indicator_layer_ removeFromSuperlayer];
 }
 
@@ -974,6 +1022,11 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
 
 void CARendererLayerTree::TransformLayer::AddContentLayer(
     const CARendererLayerParams& params) {
+  if (!params.backdrop_filters.empty()) {
+    gfx::RRectF bounds = params.backdrop_filter_bounds.value_or(
+        gfx::RRectF(gfx::RectF(params.rect)));
+    content_layers_.emplace_back(this, params.backdrop_filters, bounds);
+  }
   content_layers_.emplace_back(this, params);
 }
 
@@ -1164,6 +1217,8 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   bool update_ca_edge_aa_mask = true;
   bool update_opacity = true;
   bool update_ca_filter = true;
+  bool update_backdrop_filter_bounds = true;
+  bool update_backdrop_filter = true;
 
   if (old_layer_ && old_layer_->type_ == type_) {
     CHECK(old_layer_->ca_layer_, base::NotFatalUntil::M163);
@@ -1189,6 +1244,9 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     update_ca_edge_aa_mask = old_layer_->ca_edge_aa_mask_ != ca_edge_aa_mask_;
     update_opacity = old_layer_->opacity_ != opacity_;
     update_ca_filter = old_layer_->ca_filter_ != ca_filter_;
+    update_backdrop_filter_bounds =
+        old_layer_->backdrop_filter_bounds_ != backdrop_filter_bounds_;
+    update_backdrop_filter = old_layer_->backdrop_filters_ != backdrop_filters_;
     if (type_ == CALayerType::kVideo) {
       av_layer_.preventsCapture =
           protected_video_type_ != gfx::ProtectedVideoType::kClear;
@@ -1213,8 +1271,13 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
           av_layer_.preventsCapture = true;
         }
         break;
+      case CALayerType::kBackdropFilter:
+        ca_layer_ = CreateCABackdropLayer();
+        ca_layer_.masksToBounds = YES;
+        break;
       case CALayerType::kDefault:
         ca_layer_ = [[CALayer alloc] init];
+        break;
     }
     ca_layer_.anchorPoint = CGPointZero;
   }
@@ -1231,82 +1294,19 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
   DCHECK_EQ(ca_layer_.superlayer, superlayer)
       << " last content ca_layer: " << last_committed_ca_layer;
 
-#if BUILDFLAG(IS_MAC)
   bool update_anything = update_contents || update_contents_rect ||
                          update_rect || update_background_color ||
                          update_ca_edge_aa_mask || update_opacity ||
-                         update_ca_filter;
-#endif
+                         update_ca_filter || update_backdrop_filter_bounds ||
+                         update_backdrop_filter;
 
-  switch (type_) {
-    case CALayerType::kHDRCopier:
-      if (update_contents) {
-        metal::UpdateHDRCopierLayer(ca_layer_, io_surface_.get(),
-                                    tree()->metal_device_,
-                                    tree()->display_hdr_headroom_,
-                                    io_surface_color_space_, hdr_metadata_);
-      }
-      break;
-    case CALayerType::kVideo:
-      if (update_contents) {
-        bool result = false;
-        if (cv_pixel_buffer_) {
-          result = AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
-              av_layer_, cv_pixel_buffer_.get());
-          if (!result) {
-            LOG(ERROR)
-                << "AVSampleBufferDisplayLayerEnqueueCVPixelBuffer failed";
-          }
-        } else {
-          result = AVSampleBufferDisplayLayerEnqueueIOSurface(
-              av_layer_, io_surface_.get(), io_surface_color_space_,
-              hdr_metadata_);
-          if (!result) {
-            LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
-          }
-        }
-        // TODO(ccameron): Recreate the AVSampleBufferDisplayLayer on failure.
-        // This is not being done yet, to determine if this happens concurrently
-        // with video flickering.
-        // https://crbug.com/702369
-      }
-      break;
-    case CALayerType::kDefault:
-      if (update_contents) {
-        if (io_surface_) {
-          ca_layer_.contents = (__bridge id)io_surface_.get();
-        } else if (solid_color_contents_) {
-          ca_layer_.contents = solid_color_contents_->GetContents();
-        } else {
-          ca_layer_.contents = nil;
-        }
-        ca_layer_.contentsScale = tree()->scale_factor_;
-      }
-      break;
+  if (type_ == CALayerType::kBackdropFilter) {
+    CommitBackdropFilterToCA(update_backdrop_filter,
+                             update_backdrop_filter_bounds);
+  } else {
+    CommitContentsToCA(update_contents, update_contents_rect);
   }
 
-  if (UseCALayerContentsHeadroom() && update_contents) {
-    if (@available(macOS 26, iOS 26, *)) {
-      float max_hdr_headroom = gfx::ToneMapUtil::GetMaxHdrHeadroom(
-          io_surface_color_space_, hdr_metadata_);
-      if (io_surface_color_space_.IsHDR() || max_hdr_headroom > 0.f) {
-        // Assume that all HDR content uses the full 4 stops (16x linear)
-        // headroom that an XDR display supports. Replace this when an accurate
-        // TODO(https://crbug.com/540031280): Accurately track content HDR
-        // headroom.
-        ca_layer_.contentsHeadroom = 16.f;
-        ca_layer_.preferredDynamicRange = CADynamicRangeHigh;
-      } else {
-        ca_layer_.contentsHeadroom = 0.f;
-        ca_layer_.preferredDynamicRange = CADynamicRangeStandard;
-      }
-    }
-  }
-
-  if (update_contents_rect) {
-    if (type_ != CALayerType::kVideo)
-      ca_layer_.contentsRect = contents_rect_.ToCGRect();
-  }
   if (update_rect) {
     gfx::RectF dip_rect = gfx::RectF(rect_);
     dip_rect.Scale(1 / tree()->scale_factor_);
@@ -1337,6 +1337,110 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     ca_layer_.minificationFilter = ca_filter_;
   }
 
+  CommitDebugBordersToCA(update_anything);
+}
+
+void CARendererLayerTree::ContentLayer::CommitContentsToCA(
+    bool update_contents,
+    bool update_contents_rect) {
+  if (update_contents) {
+    switch (type_) {
+      case CALayerType::kHDRCopier:
+        metal::UpdateHDRCopierLayer(ca_layer_, io_surface_.get(),
+                                    tree()->metal_device_,
+                                    tree()->display_hdr_headroom_,
+                                    io_surface_color_space_, hdr_metadata_);
+        break;
+      case CALayerType::kVideo: {
+        bool result = false;
+        if (cv_pixel_buffer_) {
+          result = AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
+              av_layer_, cv_pixel_buffer_.get());
+          if (!result) {
+            LOG(ERROR)
+                << "AVSampleBufferDisplayLayerEnqueueCVPixelBuffer failed";
+          }
+        } else {
+          result = AVSampleBufferDisplayLayerEnqueueIOSurface(
+              av_layer_, io_surface_.get(), io_surface_color_space_,
+              hdr_metadata_);
+          if (!result) {
+            LOG(ERROR) << "AVSampleBufferDisplayLayerEnqueueIOSurface failed";
+          }
+        }
+        // TODO(ccameron): Recreate the AVSampleBufferDisplayLayer on failure.
+        // This is not being done yet, to determine if this happens concurrently
+        // with video flickering.
+        // https://crbug.com/702369
+        break;
+      }
+      case CALayerType::kDefault:
+        if (io_surface_) {
+          ca_layer_.contents = (__bridge id)io_surface_.get();
+        } else if (solid_color_contents_) {
+          ca_layer_.contents = solid_color_contents_->GetContents();
+        } else {
+          ca_layer_.contents = nil;
+        }
+        ca_layer_.contentsScale = tree()->scale_factor_;
+        break;
+      case CALayerType::kBackdropFilter:
+        NOTREACHED();
+    }
+
+    if (UseCALayerContentsHeadroom()) {
+      if (@available(macOS 26, iOS 26, *)) {
+        float max_hdr_headroom = gfx::ToneMapUtil::GetMaxHdrHeadroom(
+            io_surface_color_space_, hdr_metadata_);
+        if (io_surface_color_space_.IsHDR() || max_hdr_headroom > 0.f) {
+          // Assume that all HDR content uses the full 4 stops (16x linear)
+          // headroom that an XDR display supports. Replace this when an
+          // accurate
+          // TODO(https://crbug.com/540031280): Accurately track content HDR
+          // headroom.
+          ca_layer_.contentsHeadroom = 16.f;
+          ca_layer_.preferredDynamicRange = CADynamicRangeHigh;
+        } else {
+          ca_layer_.contentsHeadroom = 0.f;
+          ca_layer_.preferredDynamicRange = CADynamicRangeStandard;
+        }
+      }
+    }
+  }
+
+  if (update_contents_rect) {
+    if (type_ != CALayerType::kVideo) {
+      ca_layer_.contentsRect = contents_rect_.ToCGRect();
+    }
+  }
+}
+
+void CARendererLayerTree::ContentLayer::CommitBackdropFilterToCA(
+    bool update_backdrop_filter,
+    bool update_backdrop_filter_bounds) {
+  DCHECK_EQ(type_, CALayerType::kBackdropFilter);
+  if (update_backdrop_filter) {
+    NSMutableArray* filters =
+        [NSMutableArray arrayWithCapacity:backdrop_filters_.size()];
+    for (const auto& filter : backdrop_filters_) {
+      // `blur_radius` is in RenderPass local pixels. Convert it to points in
+      // the layer's local space. This relies on CoreAnimation scaling filter
+      // radii by the ancestor TransformLayer's transform.
+      id blur_filter =
+          CreateCABlurFilter(filter.blur_radius / tree()->scale_factor_);
+      [filters addObject:blur_filter];
+    }
+    ca_layer_.filters = filters;
+  }
+  if (update_backdrop_filter_bounds) {
+    // Representability is validated in ScheduleCALayer().
+    CHECK(ApplyCornerRadiusToCALayer(ca_layer_, backdrop_filter_bounds_,
+                                     tree()->scale_factor_));
+  }
+}
+
+void CARendererLayerTree::ContentLayer::CommitDebugBordersToCA(
+    bool update_anything) {
 #if BUILDFLAG(IS_MAC)
   static bool show_overlay_borders =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1366,6 +1470,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
           green = blue = 1;
         }
         break;
+      case CALayerType::kBackdropFilter:
       case CALayerType::kDefault:
         if (pixel_format == 0) {
           // Grey is no IOSurface (a solid color layer).

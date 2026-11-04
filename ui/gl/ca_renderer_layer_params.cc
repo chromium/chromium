@@ -4,6 +4,8 @@
 
 #include "ui/gl/ca_renderer_layer_params.h"
 
+#include <utility>
+
 namespace ui {
 
 CARendererLayerParams::CARendererLayerParams(
@@ -22,7 +24,9 @@ CARendererLayerParams::CARendererLayerParams(
     bool nearest_neighbor_filter,
     const gfx::HDRMetadata& hdr_metadata,
     gfx::ProtectedVideoType protected_video_type,
-    bool is_render_pass_draw_quad)
+    bool is_render_pass_draw_quad,
+    std::vector<CABackdropFilter> backdrop_filters,
+    std::optional<gfx::RRectF> backdrop_filter_bounds)
     : is_clipped(is_clipped),
       clip_rect(clip_rect),
       rounded_corner_bounds(rounded_corner_bounds),
@@ -38,7 +42,9 @@ CARendererLayerParams::CARendererLayerParams(
       nearest_neighbor_filter(nearest_neighbor_filter),
       hdr_metadata(hdr_metadata),
       protected_video_type(protected_video_type),
-      is_render_pass_draw_quad(is_render_pass_draw_quad) {}
+      is_render_pass_draw_quad(is_render_pass_draw_quad),
+      backdrop_filters(std::move(backdrop_filters)),
+      backdrop_filter_bounds(std::move(backdrop_filter_bounds)) {}
 
 CARendererLayerParams::CARendererLayerParams(
     const CARendererLayerParams& other) = default;

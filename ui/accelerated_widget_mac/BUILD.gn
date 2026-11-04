@@ -99,6 +99,7 @@ test("accelerated_widget_mac_unittests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
     "//ui/gfx:test_support",
     "//ui/gl",
   ]

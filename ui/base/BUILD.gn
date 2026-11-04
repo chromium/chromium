@@ -358,6 +358,8 @@ component("base") {
 
   if (is_apple) {
     sources += [
+      "cocoa/ca_backdrop_filter_api.h",
+      "cocoa/ca_backdrop_filter_api.mm",
       "cocoa/quartz_util.h",
       "cocoa/quartz_util.mm",
       "cocoa/remote_layer_api.h",

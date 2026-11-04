@@ -11,8 +11,8 @@
 
 #include <list>
 #include <memory>
-#include <optional>
 #include <unordered_map>
+#include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/feature_list.h"
@@ -28,6 +28,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/ca_renderer_layer_params.h"
 
 @class AVSampleBufferDisplayLayer;
 
@@ -36,8 +37,6 @@ namespace ui {
 ACCELERATED_WIDGET_MAC_EXPORT BASE_DECLARE_FEATURE(
     kFullscreenLowPowerBackdropMac);
 
-struct CARendererLayerParams;
-
 enum class CALayerType {
   // A CALayer with contents set to an IOSurface by setContents.
   kDefault,
@@ -45,6 +44,8 @@ enum class CALayerType {
   kVideo,
   // A CAMetalLayer that copies half-float or 10-bit IOSurfaces.
   kHDRCopier,
+  // A CABackdropLayer with CAFilter backdrop filters.
+  kBackdropFilter,
 };
 
 // The CARendererLayerTree will construct a hierarchy of CALayers from a linear
@@ -232,6 +233,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
    public:
     ContentLayer(TransformLayer* parent_layer,
                  const CARendererLayerParams& params);
+    ContentLayer(TransformLayer* parent_layer,
+                 std::vector<CABackdropFilter> backdrop_filters,
+                 const gfx::RRectF& backdrop_filter_bounds);
 
     ContentLayer(ContentLayer&& layer) = delete;
     ContentLayer(const ContentLayer&) = delete;
@@ -240,7 +244,10 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // See the behavior of RootLayer for the effects of these functions.
     ~ContentLayer();
     void CommitToCA(CALayer* last_committed_ca_layer);
-    void RemoveFromSuperlayer();
+    void CommitContentsToCA(bool update_contents, bool update_contents_rect);
+    void CommitBackdropFilterToCA(bool update_backdrop_filter,
+                                  bool update_backdrop_filter_bounds);
+    void CommitDebugBordersToCA(bool update_anything);
 
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
     void UpdateMapAndMatchOldLayers(CALayerMap& old_ca_layer_map,
@@ -281,6 +288,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
     gfx::ProtectedVideoType protected_video_type_ =
         gfx::ProtectedVideoType::kClear;
+
+    std::vector<CABackdropFilter> backdrop_filters_;
+    gfx::RRectF backdrop_filter_bounds_;
 
     CALayer* __strong ca_layer_;
 
