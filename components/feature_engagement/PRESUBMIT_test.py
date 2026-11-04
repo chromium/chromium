@@ -17,6 +17,7 @@ class MockChange(object):
     def __init__(self, input_api):
         self._input_api = input_api
         self.description = ''
+        self.issue = None
 
     def AffectedFiles(self):
         return self._input_api.files
@@ -25,11 +26,51 @@ class MockChange(object):
         return self.description
 
 
+class MockGerrit(object):
+    """Minimal stand-in for presubmit_support.GerritAccessor."""
+
+    def __init__(self, owner_email, approvers=None, owners_override=False):
+        self._owner_email = owner_email
+        self._approvers = list(approvers or [])
+        self._owners_override = owners_override
+
+    def IsOwnersOverrideApproved(self, issue):
+        return self._owners_override
+
+    def GetChangeOwner(self, issue):
+        return self._owner_email
+
+    def GetChangeReviewers(self, issue, approving_only=True):
+        return list(self._approvers)
+
+
+class MockCannedChecks(object):
+    """Mirrors presubmit_canned_checks.GetCodereviewOwnerAndReviewers."""
+
+    def GetCodereviewOwnerAndReviewers(
+        self, input_api, _email_regexp=None, approval_needed=True
+    ):
+        issue = input_api.change.issue
+        if not issue:
+            return None, set()
+        owner_email = input_api.gerrit.GetChangeOwner(issue)
+        reviewers = set(
+            r
+            for r in input_api.gerrit.GetChangeReviewers(issue, approval_needed)
+            if r != owner_email
+        )
+        return owner_email, reviewers
+
+
 class MockInputApi(object):
     def __init__(self):
         self.re = re
         self.files = []
         self.change = MockChange(self)
+        self.is_committing = False
+        self.dry_run = False
+        self.gerrit = None
+        self.canned_checks = MockCannedChecks()
 
     def AffectedFiles(self):
         return [
@@ -948,7 +989,11 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
             ),
         ]
         results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-        self.assertEqual(0, len(results))
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(0, len(errors))
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(1, len(warnings))
+        self.assertNotIn('not sorted alphabetically', warnings[0].message)
 
     def testAllowlistSorting_UnsortedWarning(self):
         input_api = MockInputApi()
@@ -970,9 +1015,12 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
             ),
         ]
         results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-        warnings = [r for r in results if r.type == 'Warning']
-        self.assertEqual(1, len(warnings))
-        self.assertIn('not sorted alphabetically', warnings[0].message)
+        sorting_warnings = [
+            r
+            for r in results
+            if r.type == 'Warning' and 'not sorted alphabetically' in r.message
+        ]
+        self.assertEqual(1, len(sorting_warnings))
 
     def testEnterprisePolicyBypass_AllowlistAdditionMissingTag(self):
         input_api = MockInputApi()
@@ -1085,6 +1133,149 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
             'Removing the isAllowedToBypassEnterprisePolicy() check',
             errors[0].message,
         )
+
+    def _TaggedAllowlistAddition(self):
+        input_api = MockInputApi()
+        input_api.change.description = (
+            '[UserEducation.BypassPolicyCheck]=b/571067209 Approved'
+        )
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._ENTERPRISE_POLICY_ALLOWLIST_PATH,
+                new_contents=[
+                    '    FeatureConstants.A_FEATURE,',
+                    '    FeatureConstants.B_FEATURE',
+                ],
+                old_contents=['    FeatureConstants.A_FEATURE'],
+            ),
+        ]
+        return input_api
+
+    def testPolicyBypassReview_TaggedUploadWarns(self):
+        input_api = self._TaggedAllowlistAddition()
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(0, len(errors))
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(1, len(warnings))
+        self.assertIn('Code-Review+1', warnings[0].message)
+        self.assertIn('User Education (Java) owner', warnings[0].message)
+        self.assertNotIn('jhimawan@google.com', warnings[0].message)
+        self.assertNotIn('mschillaci@google.com', warnings[0].message)
+        self.assertIn('[UserEducation.BypassPolicyCheck]=', warnings[0].message)
+
+    def testPolicyBypassReview_TagWithoutAllowlistChangeStillWarns(self):
+        input_api = MockInputApi()
+        input_api.change.description = (
+            '[UserEducation.BypassPolicyCheck]=b/571067209 Approved'
+        )
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(0, len(errors))
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(1, len(warnings))
+
+    def testPolicyBypassReview_UntaggedAllowlistAdditionNamesOwners(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.change.description = ''
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('possible owners:', errors[0].message)
+        self.assertIn('jhimawan@google.com', errors[0].message)
+        self.assertIn('mschillaci@google.com', errors[0].message)
+        self.assertIn('[UserEducation.BypassPolicyCheck]=', errors[0].message)
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(0, len(warnings))
+
+    def testPolicyBypassReview_UntaggedTrackerImplTamperingNamesOwners(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile(
+                PRESUBMIT._TRACKER_IMPL_JAVA_PATH,
+                new_contents=[
+                    'public class TrackerImpl implements Tracker {',
+                    '    // Check removed!',
+                    '}',
+                ],
+                old_contents=[
+                    'public class TrackerImpl implements Tracker {',
+                    (
+                        '    boolean allowed = '
+                        'isAllowedToBypassEnterprisePolicy(feature);'
+                    ),
+                    '}',
+                ],
+            ),
+        ]
+        results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('possible owners:', errors[0].message)
+        self.assertIn('jhimawan@google.com', errors[0].message)
+
+    def testPolicyBypassReview_DryRunWarnsOnly(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        input_api.dry_run = True
+        input_api.change.issue = 123
+        input_api.gerrit = MockGerrit('dev@chromium.org')
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(0, len(errors))
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(1, len(warnings))
+        self.assertNotIn('jhimawan@google.com', warnings[0].message)
+        self.assertNotIn('mschillaci@google.com', warnings[0].message)
+
+    def testPolicyBypassReview_CommitWithoutOwnerApprovalBlocked(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        input_api.change.issue = 123
+        input_api.gerrit = MockGerrit(
+            'dev@chromium.org', approvers=['someone@chromium.org']
+        )
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        errors = [r for r in results if r.type == 'Error']
+        self.assertEqual(1, len(errors))
+        self.assertIn('Code-Review+1', errors[0].message)
+        self.assertIn('possible owners:', errors[0].message)
+        self.assertIn('jhimawan@google.com', errors[0].message)
+        self.assertIn('mschillaci@google.com', errors[0].message)
+        warnings = [r for r in results if r.type == 'Warning']
+        self.assertEqual(0, len(warnings))
+
+    def testPolicyBypassReview_CommitWithOwnerApprovalPasses(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        input_api.change.issue = 123
+        input_api.gerrit = MockGerrit(
+            'dev@chromium.org', approvers=['mschillaci@google.com']
+        )
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testPolicyBypassReview_OwnerAuthoredCommitPasses(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        input_api.change.issue = 123
+        input_api.gerrit = MockGerrit('jhimawan@google.com')
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testPolicyBypassReview_OwnersOverrideCommitPasses(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        input_api.change.issue = 123
+        input_api.gerrit = MockGerrit('dev@chromium.org', owners_override=True)
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testPolicyBypassReview_CommitWithoutIssuePasses(self):
+        input_api = self._TaggedAllowlistAddition()
+        input_api.is_committing = True
+        results = PRESUBMIT.CheckChangeOnCommit(input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
 
     def testNoUnauthorizedTrackerJni_BlocksCustomBridge(self):
         input_api = MockInputApi()

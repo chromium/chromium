@@ -46,6 +46,11 @@ _BYPASS_POLICY_TAG_RE = (
     r'^\s*\[UserEducation\.BypassPolicyCheck\]\s*=\s*\S.*$'
 )
 
+_USER_EDUCATION_JAVA_POLICY_OWNERS = (
+    'jhimawan@google.com',
+    'mschillaci@google.com',
+)
+
 _ALLOWED_JNI_FILES = (
     _TRACKER_IMPL_JAVA_PATH,
     'components/feature_engagement/internal/android/tracker_impl_android.cc',
@@ -496,11 +501,75 @@ def _HasValidBypassPolicyTag(input_api):
     return bool(tag_re.search(description))
 
 
+def _IsCommitting(input_api):
+    """True for a real commit (CQ submit), False for uploads and dry runs."""
+    return bool(
+        getattr(input_api, 'is_committing', False)
+        and not getattr(input_api, 'dry_run', False)
+    )
+
+
+def _HasUserEducationJavaPolicyOwnerApproval(input_api):
+    """Checks whether a User Education Java policy owner approved the CL.
+
+    Mirrors _ChangeHasReviewerFromOwnersFile in the root PRESUBMIT.py. With
+    no Gerrit issue there is nothing to look up, so the CL is let through. A
+    policy owner authoring the CL, a Code-Review+1 from a policy owner, or
+    Owners-Override all satisfy the check.
+    """
+    issue = getattr(input_api.change, 'issue', None)
+    gerrit = getattr(input_api, 'gerrit', None)
+    canned_checks = getattr(input_api, 'canned_checks', None)
+    if not issue or gerrit is None or canned_checks is None:
+        return True
+
+    if hasattr(gerrit, 'IsOwnersOverrideApproved') and (
+        gerrit.IsOwnersOverrideApproved(issue)
+    ):
+        return True
+
+    owner_email, approvers = canned_checks.GetCodereviewOwnerAndReviewers(
+        input_api, None, approval_needed=True
+    )
+    if owner_email in _USER_EDUCATION_JAVA_POLICY_OWNERS:
+        return True
+    return any(
+        owner in approvers for owner in _USER_EDUCATION_JAVA_POLICY_OWNERS
+    )
+
+
+def _PolicyBypassReviewResults(input_api, output_api):
+    """Warns on upload/dry run; blocks commit until a policy owner approves."""
+    owners = ', '.join(_USER_EDUCATION_JAVA_POLICY_OWNERS)
+    if not _IsCommitting(input_api):
+        return [
+            output_api.PresubmitPromptWarning(
+                f'Enterprise policy bypass change detected. Make sure the CL '
+                f'description includes '
+                f'{_BYPASS_POLICY_TAG}=<justification and link to approval> '
+                f'and that a User Education (Java) owner approves this change '
+                f'(Code-Review+1) before it is submitted.'
+            )
+        ]
+    if _HasUserEducationJavaPolicyOwnerApproval(input_api):
+        return []
+    return [
+        output_api.PresubmitError(
+            f'Enterprise policy bypass change detected '
+            f'({_BYPASS_POLICY_TAG} is set), but no User Education (Java) '
+            f'policy owner has approved this change. Get a Code-Review+1 '
+            f'from a User Education (Java) policy owner (possible owners: '
+            f'{owners}) before submitting.'
+        )
+    ]
+
+
 def _CheckEnterprisePolicyBypass(input_api, output_api):
     """Enforces allowlist and CL tag rules for bypassing PromotionsEnabled."""
     results = []
     feature_re = input_api.re.compile(r'\bFeatureConstants\.([A-Z0-9_]+)\b')
     has_bypass_tag = _HasValidBypassPolicyTag(input_api)
+    owners = ', '.join(_USER_EDUCATION_JAVA_POLICY_OWNERS)
 
     # 1. Check modifications to EnterprisePolicyBypassAllowlist.java.
     for f in input_api.AffectedFiles():
@@ -541,13 +610,12 @@ def _CheckEnterprisePolicyBypass(input_api, output_api):
                     f'{formatted}\n\n'
                     f'Bypassing the PromotionsEnabled enterprise policy is '
                     f'restricted to critical legal, regulatory, privacy, or '
-                    f'security prompts and requires explicit approval from '
-                    f'User Education owners (see '
-                    f'chrome/browser/user_education/OWNERS or '
-                    f'components/feature_engagement/OWNERS).\n\n'
-                    f'Once approved, include the following line in your CL '
-                    f'description with a justification and link to the '
-                    f'approval or bug:\n'
+                    f'security prompts and requires explicit approval from a '
+                    f'User Education (Java) policy owner (possible owners: '
+                    f'{owners}).\n\n'
+                    f'Add one of them as a reviewer and include the following '
+                    f'line in your CL description with a justification and '
+                    f'link to the approval or bug:\n'
                     f'  {_BYPASS_POLICY_TAG}='
                     f'<justification and link to approval>'
                 )
@@ -570,12 +638,15 @@ def _CheckEnterprisePolicyBypass(input_api, output_api):
                 output_api.PresubmitError(
                     f'{_TRACKER_IMPL_JAVA_PATH}: Removing the '
                     f'isAllowedToBypassEnterprisePolicy() check from '
-                    f'TrackerImpl is not permitted without User Education '
-                    f'owner approval and `{_BYPASS_POLICY_TAG}=<justification>`'
-                    f' in the CL description.'
+                    f'TrackerImpl is not permitted without approval from a '
+                    f'User Education (Java) policy owner (possible owners: '
+                    f'{owners}) and `{_BYPASS_POLICY_TAG}=<justification>` '
+                    f'in the CL description.'
                 )
             )
 
+    if has_bypass_tag:
+        results.extend(_PolicyBypassReviewResults(input_api, output_api))
     return results
 
 
