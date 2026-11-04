@@ -47,6 +47,7 @@ struct TabInfo;
 
 namespace lens {
 class ClientToAimMessage;
+class ClientToSearchMessage;
 }  // namespace lens
 
 namespace contextual_tasks {
@@ -242,6 +243,11 @@ bool ShouldUseDarkMode(Profile* profile);
 // Returns the ClientToAimMessage containing the HandshakePing
 // with supported capabilities.
 lens::ClientToAimMessage GetHandshakeMessageProto();
+
+// Returns the `ClientToSearchMessage` containing the `HandshakePing`
+// with supported capabilities for `profile` (may be `nullptr`, in which case
+// tab-sharing capabilities are omitted).
+lens::ClientToSearchMessage GetSearchHandshakeMessageProto(Profile* profile);
 
 // Returns the serialized ClientToAimMessage containing the HandshakePing
 // with supported capabilities.

@@ -69,6 +69,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -759,6 +760,17 @@ lens::ClientToAimMessage GetHandshakeMessageProto() {
     ping->add_capabilities(lens::FeatureCapability::UNLOCK_INPUT);
     ping->add_capabilities(lens::FeatureCapability::LOCK_INPUT);
   }
+  return message;
+}
+
+lens::ClientToSearchMessage GetSearchHandshakeMessageProto(Profile* profile) {
+  lens::ClientToSearchMessage message;
+  lens::ClientToSearchMessage::HandshakePing* ping =
+      message.mutable_handshake_ping();
+  if (CanShareTabContext(profile)) {
+    ping->add_capabilities(lens::ClientToSearchMessage::HandshakePing::TABS);
+  }
+  ping->add_capabilities(lens::ClientToSearchMessage::HandshakePing::LENS);
   return message;
 }
 

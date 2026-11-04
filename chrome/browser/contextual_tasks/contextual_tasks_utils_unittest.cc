@@ -38,6 +38,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/actions/actions.h"
 
 namespace contextual_tasks {
@@ -356,6 +357,49 @@ TEST_F(ContextualTasksUtilsTest,
       static_cast<int>(
           contextual_search::SearchContentSharingSettingsValue::kDisabled));
   EXPECT_FALSE(CanShareTabContext(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest, GetSearchHandshakeMessageProto_Capabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
+
+  // Regular profile with tab sharing enabled includes both `TABS` and `LENS`.
+  lens::ClientToSearchMessage regular_msg =
+      GetSearchHandshakeMessageProto(profile_.get());
+  ASSERT_TRUE(regular_msg.has_handshake_ping());
+  EXPECT_THAT(
+      regular_msg.handshake_ping().capabilities(),
+      testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::TABS,
+                           lens::ClientToSearchMessage::HandshakePing::LENS));
+
+  // Incognito (OTR) profile omits `TABS` and includes only `LENS`.
+  Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
+  lens::ClientToSearchMessage otr_msg =
+      GetSearchHandshakeMessageProto(otr_profile);
+  ASSERT_TRUE(otr_msg.has_handshake_ping());
+  EXPECT_THAT(
+      otr_msg.handshake_ping().capabilities(),
+      testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::LENS));
+
+  // Null profile omits `TABS` and includes only `LENS`.
+  lens::ClientToSearchMessage null_msg =
+      GetSearchHandshakeMessageProto(nullptr);
+  ASSERT_TRUE(null_msg.has_handshake_ping());
+  EXPECT_THAT(
+      null_msg.handshake_ping().capabilities(),
+      testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::LENS));
+
+  // Disabling context sharing via pref omits `TABS` and includes only `LENS`.
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  lens::ClientToSearchMessage disabled_pref_msg =
+      GetSearchHandshakeMessageProto(profile_.get());
+  ASSERT_TRUE(disabled_pref_msg.has_handshake_ping());
+  EXPECT_THAT(
+      disabled_pref_msg.handshake_ping().capabilities(),
+      testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::LENS));
 }
 
 TEST_F(ContextualTasksUtilsTest, IsUrlValidForContextSharing) {
