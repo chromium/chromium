@@ -217,8 +217,9 @@ public class NtpThemeColorUtils {
 
         if (backgroundData
                 instanceof NtpBackgroundDataCustomizedColor ntpBackgroundDataCustomizedColor) {
-            return ntpBackgroundDataCustomizedColor.getNtpThemeColorFromHexInfo()
-                    .backgroundColorLight;
+            return ColorUtils.inNightMode(context)
+                    ? ntpBackgroundDataCustomizedColor.getNtpBackgroundColorDark()
+                    : ntpBackgroundDataCustomizedColor.getNtpBackgroundColorLight();
         }
 
         if (BottomBarConfigUtils.isBottomBarEnabled(context)) {

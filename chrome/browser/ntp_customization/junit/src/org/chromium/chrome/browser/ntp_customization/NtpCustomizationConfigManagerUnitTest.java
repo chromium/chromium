@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformTyp
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
@@ -403,6 +404,42 @@ public class NtpCustomizationConfigManagerUnitTest {
                         /* fromInitialization= */ eq(true),
                         /* oldType= */ eq(NtpBackgroundType.DEFAULT),
                         /* newType= */ eq(NtpBackgroundType.COLOR_FROM_HEX));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testEnsureInitialized_colorFromHex_restoresLightAndDarkColors() {
+        @ColorInt int backgroundColorLight = Color.WHITE;
+        @ColorInt int backgroundColorDark = Color.BLACK;
+        @ColorInt int primaryColorLight = Color.RED;
+        @ColorInt int primaryColorDark = Color.BLUE;
+        NtpThemeColorFromHexInfo savedHexInfo =
+                new NtpThemeColorFromHexInfo(
+                        mContext,
+                        backgroundColorLight,
+                        backgroundColorDark,
+                        primaryColorLight,
+                        primaryColorDark);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
+                NtpBackgroundType.COLOR_FROM_HEX);
+        NtpCustomizationUtils.saveThemeColorFromHexInfoToSharedPreference(savedHexInfo);
+
+        ColorUtils.setInNightModeForTesting(true);
+        NtpCustomizationConfigManager manager = createUninitializedManager();
+        manager.addListener(mListener, mContext, /* skipNotify= */ false);
+
+        assertEquals(savedHexInfo, manager.getNtpThemeColorInfo());
+        assertEquals(backgroundColorDark, manager.getBackgroundColor(mContext));
+        verify(mListener)
+                .onBackgroundColorChanged(
+                        eq(savedHexInfo),
+                        eq(backgroundColorDark),
+                        /* fromInitialization= */ eq(true),
+                        /* oldType= */ eq(NtpBackgroundType.DEFAULT),
+                        /* newType= */ eq(NtpBackgroundType.COLOR_FROM_HEX));
+
+        ColorUtils.setInNightModeForTesting(false);
+        assertEquals(backgroundColorLight, manager.getBackgroundColor(mContext));
     }
 
     @Test

@@ -264,21 +264,35 @@ public class NtpCustomizationConfigManager {
         } else if (mBackgroundType == NtpBackgroundType.COLOR_FROM_HEX) {
             @Nullable
             @ColorInt
-            Integer primaryColor =
+            Integer primaryColorLight =
                     NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference();
-            if (primaryColor == null) {
+            if (primaryColorLight == null) {
                 onBackgroundInitializationFailed();
                 return;
             }
 
             @ColorInt
-            int backgroundColor =
+            Integer primaryColorDark =
+                    NtpCustomizationUtils.getCustomizedPrimaryColorDarkFromSharedPreference();
+            @ColorInt
+            int backgroundColorLight =
                     NtpCustomizationUtils.getBackgroundColorFromSharedPreference(
                             NtpThemeColorUtils.getDefaultBackgroundColor(context));
+            @ColorInt
+            int backgroundColorDark =
+                    NtpCustomizationUtils.getBackgroundColorDarkFromSharedPreference(
+                            backgroundColorLight);
             mNtpBackgroundData =
                     new NtpBackgroundDataCustomizedColor(
                             PlatformType.ANDROID,
-                            new NtpThemeColorFromHexInfo(context, backgroundColor, primaryColor));
+                            new NtpThemeColorFromHexInfo(
+                                    context,
+                                    backgroundColorLight,
+                                    backgroundColorDark,
+                                    primaryColorLight,
+                                    primaryColorDark != null
+                                            ? primaryColorDark
+                                            : primaryColorLight));
             notifyBackgroundColorChanged(
                     context, /* fromInitialization= */ true, NtpBackgroundType.DEFAULT);
         }

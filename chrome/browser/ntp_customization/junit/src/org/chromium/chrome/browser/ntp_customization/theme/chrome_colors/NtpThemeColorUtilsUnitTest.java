@@ -290,6 +290,33 @@ public class NtpThemeColorUtilsUnitTest {
     }
 
     @Test
+    public void testGetBackgroundColorFromNtpBackgroundData_customizedColorLightAndDark() {
+        @ColorInt int backgroundColorLight = Color.WHITE;
+        @ColorInt int backgroundColorDark = Color.BLACK;
+        NtpThemeColorFromHexInfo customInfo =
+                new NtpThemeColorFromHexInfo(
+                        mContext,
+                        backgroundColorLight,
+                        backgroundColorDark,
+                        /* primaryColorLight= */ Color.BLUE,
+                        /* primaryColorDark= */ Color.CYAN);
+        NtpBackgroundDataCustomizedColor dataCustomizedColor =
+                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, customInfo);
+
+        ColorUtils.setInNightModeForTesting(false);
+        assertEquals(
+                backgroundColorLight,
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(
+                        mContext, dataCustomizedColor));
+
+        ColorUtils.setInNightModeForTesting(true);
+        assertEquals(
+                backgroundColorDark,
+                NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(
+                        mContext, dataCustomizedColor));
+    }
+
+    @Test
     public void testGetDefaultBackgroundColor() {
         assertEquals(
                 ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mContext),
