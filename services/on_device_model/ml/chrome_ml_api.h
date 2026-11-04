@@ -115,6 +115,8 @@ struct ChromeMLModelDescriptor {
   // TODO(crbug.com/517228178): Remove this once internal LiteRT-LM migrates
   // to per-session speculative decoding.
   bool enable_speculative_decoding;
+  // TODO(crbug.com/578136046): Remove once LiteRT-LM GPU IR migration is done.
+  bool use_gpu_ir_model;
 
   ml::ModelPerformanceHint performance_hint;
 

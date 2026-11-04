@@ -73,6 +73,10 @@ const base::FeatureParam<bool> kAllowFp16{
     &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_allow_fp16", true};
 
+const base::FeatureParam<bool> kUseGpuIrModel{
+    &optimization_guide::features::kOptimizationGuideModelExecution,
+    "on_device_model_use_gpu_ir_model", false};
+
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
 std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
@@ -895,6 +899,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
       .use_low_power = kUseLowPower.Get(),
       .allow_fp16 = kAllowFp16.Get(),
+      .use_gpu_ir_model = kUseGpuIrModel.Get(),
       .performance_hint = params->performance_hint,
       .vram_mb = params->vram_mb,
   };
