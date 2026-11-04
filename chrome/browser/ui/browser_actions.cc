@@ -448,21 +448,30 @@ void BrowserActions::PopulateSynonyms() {
   // Maps an action to the string resource holding its comma-separated search
   // synonyms. To add synonyms for an action, add a message to
   // chrome/app/action_synonym_strings.grdp and list it here.
-  static constexpr auto kActionSynonymMessageIds =
-      std::to_array<std::pair<actions::ActionId, int>>({
-          {kActionShowPasswordManager,
-           IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER},
-          {kActionShowPaymentMethods, IDS_ACTION_SYNONYMS_SHOW_PAYMENT_METHODS},
-          {kActionShowContactInfo, IDS_ACTION_SYNONYMS_SHOW_CONTACT_INFO},
-          {kActionCustomizeChrome, IDS_ACTION_SYNONYMS_CUSTOMIZE_CHROME},
-          {kActionCloseProfile, IDS_ACTION_SYNONYMS_CLOSE_PROFILE},
-          {kActionManageGoogleAccount,
-           IDS_ACTION_SYNONYMS_MANAGE_GOOGLE_ACCOUNT},
-          {kActionOpenGuestProfile, IDS_ACTION_SYNONYMS_OPEN_GUEST_PROFILE},
-          {kActionAddNewProfile, IDS_ACTION_SYNONYMS_ADD_NEW_PROFILE},
-          {kActionManageChromeProfiles,
-           IDS_ACTION_SYNONYMS_MANAGE_CHROME_PROFILES},
-      });
+  static constexpr auto kActionSynonymMessageIds = std::to_array<
+      std::pair<actions::ActionId, int>>({
+      {kActionShowPasswordManager, IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER},
+      {kActionShowPaymentMethods, IDS_ACTION_SYNONYMS_SHOW_PAYMENT_METHODS},
+      {kActionShowContactInfo, IDS_ACTION_SYNONYMS_SHOW_CONTACT_INFO},
+      {kActionCustomizeChrome, IDS_ACTION_SYNONYMS_CUSTOMIZE_CHROME},
+      {kActionCloseProfile, IDS_ACTION_SYNONYMS_CLOSE_PROFILE},
+      {kActionManageGoogleAccount, IDS_ACTION_SYNONYMS_MANAGE_GOOGLE_ACCOUNT},
+      {kActionOpenGuestProfile, IDS_ACTION_SYNONYMS_OPEN_GUEST_PROFILE},
+      {kActionAddNewProfile, IDS_ACTION_SYNONYMS_ADD_NEW_PROFILE},
+      {kActionManageChromeProfiles, IDS_ACTION_SYNONYMS_MANAGE_CHROME_PROFILES},
+      {kActionSendTabToSelf, IDS_ACTION_SYNONYMS_SEND_TAB_TO_SELF},
+      {kActionQrCodeGenerator, IDS_ACTION_SYNONYMS_QR_CODE_GENERATOR},
+      {kActionRouteMedia, IDS_ACTION_SYNONYMS_ROUTE_MEDIA},
+      {kActionTabSearch, IDS_ACTION_SYNONYMS_TAB_SEARCH},
+      {kActionNameWindow, IDS_ACTION_SYNONYMS_NAME_WINDOW},
+      {kActionToggleVerticalTabs, IDS_ACTION_SYNONYMS_TOGGLE_VERTICAL_TABS},
+      {kActionSidePanelShowCustomizeChrome,
+       IDS_ACTION_SYNONYMS_SIDE_PANEL_CUSTOMIZE_CHROME},
+      {kActionShowReadingModeSidePanel, IDS_ACTION_SYNONYMS_SHOW_READING_MODE},
+      {kActionPerformance, IDS_ACTION_SYNONYMS_PERFORMANCE},
+      {kActionTaskManagerAppMenu, IDS_ACTION_SYNONYMS_TASK_MANAGER},
+      {kActionDevTools, IDS_ACTION_SYNONYMS_DEV_TOOLS},
+  });
 
   // TODO(crbug.com/581423314): Each entry costs a FindAction tree walk during
   // window creation. Verify this stays performant as the synonym table grows.
