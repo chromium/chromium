@@ -4,10 +4,8 @@
 
 #include "chrome/browser/web_applications/visited_manifest_manager.h"
 
-#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,13 +37,7 @@ blink::Manifest CreateExampleManifest(int i) {
   return CreateManifestWithScope(GetExampleUrl(i));
 }
 
-class VisitedManagerEnabledTest : public testing::Test {
- private:
-  base::test::ScopedFeatureList enable_feature{
-      kBlockMlPromotionInNestedPagesNoManifest};
-};
-
-TEST_F(VisitedManagerEnabledTest, ControlledChecks) {
+TEST(VisitedManifestManagerTest, ControlledChecks) {
   VisitedManifestManager manager;
 
   manager.OnManifestSeen(
@@ -71,7 +63,7 @@ TEST_F(VisitedManagerEnabledTest, ControlledChecks) {
       GURL("https://www.example1.com/seeo/")));
 }
 
-TEST_F(VisitedManagerEnabledTest, ClearDateRange) {
+TEST(VisitedManifestManagerTest, ClearDateRange) {
   base::SimpleTestClock clock;
   VisitedManifestManager manager(&clock);
 
@@ -116,7 +108,7 @@ TEST_F(VisitedManagerEnabledTest, ClearDateRange) {
       manager.IsUrlControlledBySeenManifest(GURL("https://www.example3.com/")));
 }
 
-TEST_F(VisitedManagerEnabledTest, TestLru) {
+TEST(VisitedManifestManagerTest, TestLru) {
   VisitedManifestManager manager;
   // Fill up the cache. Eviction should start from 0, as that is the first one
   // that was added.
@@ -157,37 +149,12 @@ TEST_F(VisitedManagerEnabledTest, TestLru) {
   }
 }
 
-TEST_F(VisitedManagerEnabledTest, TestInvalidManifests) {
+TEST(VisitedManifestManagerTest, TestInvalidManifests) {
   VisitedManifestManager manager;
   manager.OnManifestSeen(
       CreatManifestWithScopeNoStartUrl(GURL("https://www.example0.com/")));
   EXPECT_FALSE(
       manager.IsUrlControlledBySeenManifest(GURL("https://www.example0.com/")));
-}
-
-TEST(VisitedManagerDisabledTest, DisabledFeature) {
-  // Ensure that we can disable the feature and have things not crash, and
-  // always returns 'false'.
-  base::test::ScopedFeatureList disable;
-  disable.InitAndDisableFeature(kBlockMlPromotionInNestedPagesNoManifest);
-  base::SimpleTestClock clock;
-  VisitedManifestManager manager(&clock);
-
-  base::Time start = base::Time::Now();
-  clock.SetNow(start);
-  manager.OnManifestSeen(
-      CreateManifestWithScope(GURL("https://www.example0.com/")));
-  manager.OnManifestSeen(
-      CreateManifestWithScope(GURL("https://www.example1.com/")));
-
-  base::Time check_time = clock.Now();
-
-  EXPECT_FALSE(
-      manager.IsUrlControlledBySeenManifest(GURL("https://www.example0.com/")));
-  EXPECT_FALSE(
-      manager.IsUrlControlledBySeenManifest(GURL("https://www.example1.com/")));
-
-  manager.ClearSeenScopes(start, check_time);
 }
 
 }  // namespace
