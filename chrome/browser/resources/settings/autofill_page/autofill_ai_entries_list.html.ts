@@ -37,10 +37,17 @@ export function getHtml(this: SettingsAutofillAiEntriesListElement) {
           ${item.entityInstanceSubLabel}
         </div>
       </div>
-      <div id="walletIndicator" ?hidden="${!item.storedInWallet}">
+      <div class="walletIndicator" ?hidden="${!item.storedInWallet}">
 <if expr="_google_chrome">
-        <cr-icon aria-hidden="true" icon="settings-internal:google-wallet">
-        </cr-icon>
+        ${this.autofillEnableGradientGoogleLogos_ ? html`
+          <img class="walletIcon"
+              srcset="${this.getScaledSrcSet_(
+                  'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT')}"
+              alt="" role="presentation">
+        ` : html`
+          <cr-icon aria-hidden="true" icon="settings-internal:google-wallet">
+          </cr-icon>
+        `}
 </if>
 <if expr="not _google_chrome">
         <span class="sub-label">$i18n{googleWallet}</span>

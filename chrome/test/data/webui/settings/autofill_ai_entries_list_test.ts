@@ -849,6 +849,65 @@ suite('AutofillAiEntriesListUiTest', function() {
         EntityTypeName.kVehicle,
         entityDataManager.getArgs('preloadDetailsForUpsertPass')[0]);
   });
+
+  test('WalletIndicatorShowsGradientIcon', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableGradientGoogleLogos: true,
+    });
+    await createEntriesList();
+
+    const listItems =
+        entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
+    // Toyota (index 2) is stored in Wallet.
+    const walletItem = listItems[2]!;
+    assertTrue(walletItem.textContent.includes('Toyota'));
+    const walletIndicator =
+        walletItem.querySelector<HTMLElement>('.walletIndicator');
+    assertTrue(!!walletIndicator);
+    assertFalse(walletIndicator.hidden);
+
+    const walletIcon =
+        walletIndicator.querySelector<HTMLImageElement>('.walletIcon');
+    // `walletIcon` is only present in Google Chrome branded builds.
+    if (walletIcon) {
+      assertTrue(walletIcon.srcset.includes(
+          'IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT'));
+      assertFalse(!!walletIndicator.querySelector('cr-icon'));
+    } else {
+      const textIndicator = walletIndicator.querySelector('.sub-label');
+      assertTrue(!!textIndicator);
+      assertTrue(isVisible(textIndicator));
+    }
+  });
+
+  test('WalletIndicatorShowsDefaultIconWhenGradientDisabled', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableGradientGoogleLogos: false,
+    });
+    await createEntriesList();
+
+    const listItems =
+        entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
+    // Toyota (index 2) is stored in Wallet.
+    const walletItem = listItems[2]!;
+    assertTrue(walletItem.textContent.includes('Toyota'));
+    const walletIndicator =
+        walletItem.querySelector<HTMLElement>('.walletIndicator');
+    assertTrue(!!walletIndicator);
+    assertFalse(walletIndicator.hidden);
+
+    const crIcon = walletIndicator.querySelector('cr-icon');
+    // `cr-icon` is only present in Google Chrome branded builds.
+    if (crIcon) {
+      assertEquals(
+          'settings-internal:google-wallet', crIcon.getAttribute('icon'));
+      assertFalse(!!walletIndicator.querySelector('.walletIcon'));
+    } else {
+      const textIndicator = walletIndicator.querySelector('.sub-label');
+      assertTrue(!!textIndicator);
+      assertTrue(isVisible(textIndicator));
+    }
+  });
 });
 
 suite('AutofillAiEntriesListUserActionsTest', function() {

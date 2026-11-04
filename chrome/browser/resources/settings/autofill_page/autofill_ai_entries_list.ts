@@ -142,6 +142,8 @@ export class SettingsAutofillAiEntriesListElement extends
         is enabled.
       */
       autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
+
+      autofillEnableGradientGoogleLogos_: {type: Boolean},
     };
   }
 
@@ -162,6 +164,8 @@ export class SettingsAutofillAiEntriesListElement extends
   protected accessor entityInstances_: EntityInstanceWithLabels[] = [];
   private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
+  protected accessor autofillEnableGradientGoogleLogos_: boolean =
+      loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
   private accessor canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
   private activeEntityInstanceGuid_: string|null = null;
@@ -451,6 +455,14 @@ export class SettingsAutofillAiEntriesListElement extends
 
   private get isNewEntitiesAdditionAllowedByPref_(): boolean {
     return this.allowNewEntitiesAdditionPref?.value ?? true;
+  }
+
+  /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  protected getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
   }
 
   protected typeNameToIconName_(name: EntityTypeName): string|undefined {

@@ -41,3 +41,9 @@
 .cr-row {
   border-top: none;
 }
+
+.walletIcon {
+  height: var(--cr-icon-size);
+  vertical-align: middle;
+  width: var(--cr-icon-size);
+}
