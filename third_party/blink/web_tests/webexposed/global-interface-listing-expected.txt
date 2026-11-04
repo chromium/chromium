@@ -1320,6 +1320,8 @@ interface CanvasRenderingContext2D
     method ellipse
     method endLayer
     method fill
+    method fillGlyphRun
+    method fillGlyphRuns
     method fillRect
     method fillText
     method fillTextCluster
@@ -1345,7 +1347,10 @@ interface CanvasRenderingContext2D
     method scale
     method setLineDash
     method setTransform
+    method shapeText
     method stroke
+    method strokeGlyphRun
+    method strokeGlyphRuns
     method strokeRect
     method strokeText
     method strokeTextCluster
@@ -3639,6 +3644,15 @@ interface GeolocationPositionError
     getter code
     getter message
     method constructor
+interface GlyphRun
+    attribute @@toStringTag
+    getter end
+    getter start
+    getter width
+    getter x
+    getter y
+    method constructor
+    method textMetrics
 interface GravitySensor : Accelerometer
     attribute @@toStringTag
     method constructor
@@ -7438,6 +7452,8 @@ interface OffscreenCanvasRenderingContext2D
     method ellipse
     method endLayer
     method fill
+    method fillGlyphRun
+    method fillGlyphRuns
     method fillRect
     method fillText
     method fillTextCluster
@@ -7463,7 +7479,10 @@ interface OffscreenCanvasRenderingContext2D
     method scale
     method setLineDash
     method setTransform
+    method shapeText
     method stroke
+    method strokeGlyphRun
+    method strokeGlyphRuns
     method strokeRect
     method strokeText
     method strokeTextCluster
@@ -10237,6 +10256,16 @@ interface ShadowRoot : DocumentFragment
     setter innerHTML
     setter onslotchange
     setter referenceTarget
+interface ShapedText
+    attribute @@toStringTag
+    getter width
+    method actualBoundingBox
+    method advanceToPosition
+    method constructor
+    method glyphClusters
+    method glyphRuns
+    method positionToAdvance
+    method selectionRects
 interface SharedWorker : EventTarget
     attribute @@toStringTag
     getter onerror

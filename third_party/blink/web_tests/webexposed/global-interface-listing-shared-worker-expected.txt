@@ -1059,6 +1059,15 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUValidationError : GPUError
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface GlyphRun
+[Worker]     attribute @@toStringTag
+[Worker]     getter end
+[Worker]     getter start
+[Worker]     getter width
+[Worker]     getter x
+[Worker]     getter y
+[Worker]     method constructor
+[Worker]     method textMetrics
 [Worker] interface Headers
 [Worker]     attribute @@toStringTag
 [Worker]     method @@iterator
@@ -1491,6 +1500,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method ellipse
 [Worker]     method endLayer
 [Worker]     method fill
+[Worker]     method fillGlyphRun
+[Worker]     method fillGlyphRuns
 [Worker]     method fillRect
 [Worker]     method fillText
 [Worker]     method fillTextCluster
@@ -1516,7 +1527,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method scale
 [Worker]     method setLineDash
 [Worker]     method setTransform
+[Worker]     method shapeText
 [Worker]     method stroke
+[Worker]     method strokeGlyphRun
+[Worker]     method strokeGlyphRuns
 [Worker]     method strokeRect
 [Worker]     method strokeText
 [Worker]     method strokeTextCluster
@@ -1937,6 +1951,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unregister
 [Worker]     method update
 [Worker]     setter onupdatefound
+[Worker] interface ShapedText
+[Worker]     attribute @@toStringTag
+[Worker]     getter width
+[Worker]     method actualBoundingBox
+[Worker]     method advanceToPosition
+[Worker]     method constructor
+[Worker]     method glyphClusters
+[Worker]     method glyphRuns
+[Worker]     method positionToAdvance
+[Worker]     method selectionRects
 [Worker] interface SharedWorkerGlobalScope : WorkerGlobalScope
 [Worker]     attribute @@toStringTag
 [Worker]     attribute PERSISTENT

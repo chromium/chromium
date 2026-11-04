@@ -70,6 +70,33 @@ TextMetrics::TextMetrics(ShapedText& shaped_text)
   InitFromShapedText();
 }
 
+TextMetrics::TextMetrics(ShapedText& shaped_text,
+                         uint32_t start,
+                         uint32_t end,
+                         double run_x,
+                         double run_width,
+                         const SimpleFontData* font_data)
+    : baselines_(Baselines::Create()), shaped_text_(&shaped_text) {
+  const Font* font = shaped_text_->GetFont();
+  const SimpleFontData* effective_font_data =
+      font_data ? font_data : (font ? font->PrimaryFont() : nullptr);
+  if (!effective_font_data) {
+    return;
+  }
+
+  width_ = run_width;
+  gfx::RectF glyph_bounds =
+      shaped_text_->ComputeGlyphBoundsForRange(start, end);
+  float run_visual_left =
+      static_cast<float>(run_x) + shaped_text_->TextAlignDx();
+  glyph_bounds.Offset(-run_visual_left, 0.0f);
+
+  actual_bounding_box_left_ = -glyph_bounds.x();
+  actual_bounding_box_right_ = glyph_bounds.right();
+
+  PopulateVerticalMetrics(*effective_font_data, glyph_bounds);
+}
+
 void TextMetrics::InitFromShapedText() {
   if (!shaped_text_->GetFont()) {
     return;
@@ -96,7 +123,9 @@ void TextMetrics::PopulateVerticalMetrics(const SimpleFontData& font_data,
       FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
   const float descent = font_metrics.FloatDescent(
       FontBaseline::kAlphabetic, FontMetrics::ApplyBaselineTable(true));
-  baseline_y = GetFontBaseline(shaped_text_->ContextTextBaseline(), font_data);
+  // Text is drawn at the primary font's baseline, even for the runs that use
+  // fallback fonts, so the metrics of all the fonts are relative to it.
+  baseline_y = shaped_text_->BaselineY();
   font_bounding_box_ascent_ = ascent - baseline_y;
   font_bounding_box_descent_ = descent + baseline_y;
   actual_bounding_box_ascent_ = -glyph_bounds.y() - baseline_y;
@@ -135,18 +164,18 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {
-  return shaped_text_->getSelectionRects(start, end, exception_state);
+  return shaped_text_->selectionRects(start, end, exception_state);
 }
 
 DOMRectReadOnly* TextMetrics::getActualBoundingBox(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {
-  return shaped_text_->getActualBoundingBox(start, end, exception_state);
+  return shaped_text_->actualBoundingBox(start, end, exception_state);
 }
 
 unsigned TextMetrics::getIndexFromOffset(double x) {
-  return shaped_text_->getIndexFromOffset(x);
+  return shaped_text_->advanceToPosition(x);
 }
 
 namespace {
@@ -183,6 +212,10 @@ float getTextBaselineDelta(float baseline,
 
 HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
     const TextClusterOptions* options) {
+  // The whole text: there is no valid range in an empty text.
+  if (shaped_text_->GetText().empty()) {
+    return {};
+  }
   return getTextClustersImpl(0, shaped_text_->GetText().length(), options,
                              /*exception_state=*/nullptr);
 }
@@ -201,7 +234,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     const TextClusterOptions* options,
     ExceptionState* exception_state) {
   HeapVector<Member<TextCluster>> clusters_for_range;
-  Vector<ShapedText::ClusterData> clusters =
+  HeapVector<ShapedText::ClusterData> clusters =
       shaped_text_->CollectClustersForRange(start, end, exception_state);
   if (clusters.empty()) {
     return clusters_for_range;

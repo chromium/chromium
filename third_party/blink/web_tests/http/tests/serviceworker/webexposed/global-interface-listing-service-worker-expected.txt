@@ -1117,6 +1117,15 @@ interface GPUUncapturedErrorEvent : Event
 interface GPUValidationError : GPUError
     attribute @@toStringTag
     method constructor
+interface GlyphRun
+    attribute @@toStringTag
+    getter end
+    getter start
+    getter width
+    getter x
+    getter y
+    method constructor
+    method textMetrics
 interface Headers
     attribute @@toStringTag
     method @@iterator
@@ -1559,6 +1568,8 @@ interface OffscreenCanvasRenderingContext2D
     method ellipse
     method endLayer
     method fill
+    method fillGlyphRun
+    method fillGlyphRuns
     method fillRect
     method fillText
     method fillTextCluster
@@ -1584,7 +1595,10 @@ interface OffscreenCanvasRenderingContext2D
     method scale
     method setLineDash
     method setTransform
+    method shapeText
     method stroke
+    method strokeGlyphRun
+    method strokeGlyphRuns
     method strokeRect
     method strokeText
     method strokeTextCluster
@@ -2042,6 +2056,16 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
+interface ShapedText
+    attribute @@toStringTag
+    getter width
+    method actualBoundingBox
+    method advanceToPosition
+    method constructor
+    method glyphClusters
+    method glyphRuns
+    method positionToAdvance
+    method selectionRects
 interface StorageBucket
     attribute @@toStringTag
     getter caches

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/canvas/shaped_text.h"
 
 #include <algorithm>
+#include <ranges>
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
@@ -30,16 +31,68 @@ namespace blink {
 
 namespace {
 
+// The font of each code unit of a run, from a single pass over its glyphs, so
+// that looking up the font of each cluster doesn't rescan the run.
+class RunFonts {
+  STACK_ALLOCATED();
+
+ public:
+  explicit RunFonts(const ShapedText::RunWithOffset& run_with_offset)
+      : run_with_offset_(run_with_offset) {
+    fonts_.resize(run_with_offset.num_characters_);
+    run_with_offset.shape_result_->ForEachGlyph(
+        0, 0, run_with_offset.num_characters_, 0,
+        [](void* context, unsigned character_index, Glyph glyph,
+           gfx::Vector2dF glyph_offset, float total_advance, bool is_horizontal,
+           CanvasRotationInVertical rotation, const SimpleFontData* font_data) {
+          auto& fonts =
+              *static_cast<HeapVector<Member<const SimpleFontData>>*>(context);
+          // Keep the font of the first glyph visited for each code unit.
+          if (!fonts[character_index]) {
+            fonts[character_index] = font_data;
+          }
+        },
+        &fonts_);
+  }
+
+  // Returns the font of the text-relative [start, end) range of the run: that
+  // of its first glyph in visual order, or `default_font` if it has no glyphs.
+  const SimpleFontData* ForRange(unsigned start,
+                                 unsigned end,
+                                 const SimpleFontData* default_font) const {
+    // subspan() CHECKs that [start, end) lies within the run.
+    const auto range_fonts = base::span(fonts_).subspan(
+        start - run_with_offset_.character_offset_, end - start);
+
+    auto first_font = [default_font](auto&& fonts) -> const SimpleFontData* {
+      auto it = std::ranges::find_if(
+          fonts, [](const auto& font) { return font != nullptr; });
+      return it != std::ranges::end(fonts) ? it->Get() : default_font;
+    };
+
+    // Glyphs are in visual order: LTR from the first code unit, RTL from the
+    // last.
+    return run_with_offset_.shape_result_->IsRtl()
+               ? first_font(std::views::reverse(range_fonts))
+               : first_font(range_fonts);
+  }
+
+ private:
+  const ShapedText::RunWithOffset& run_with_offset_;
+  HeapVector<Member<const SimpleFontData>> fonts_;
+};
+
 // Appends the glyph clusters of a run that intersect the text-relative
 // [start, end) range to `clusters`, in logical order.
-void AppendRunClusters(const ShapedText::RunWithOffset& run_with_offset,
-                       uint32_t start,
-                       uint32_t end,
-                       Vector<ShapedText::ClusterData>& clusters) {
+// Returns the number of appended clusters.
+wtf_size_t AppendRunClusters(const ShapedText::RunWithOffset& run_with_offset,
+                             uint32_t start,
+                             uint32_t end,
+                             HeapVector<ShapedText::ClusterData>& clusters) {
   const unsigned offset = run_with_offset.character_offset_;
   // Every cluster lies within its run, so a run outside the range has none.
   if (offset + run_with_offset.num_characters_ <= start || end <= offset) {
-    return;
+    return 0;
   }
 
   const wtf_size_t initial_clusters_index = clusters.size();
@@ -49,7 +102,8 @@ void AppendRunClusters(const ShapedText::RunWithOffset& run_with_offset,
       [](void* context, unsigned character_index, float total_advance,
          unsigned graphemes_in_cluster, float cluster_advance,
          CanvasRotationInVertical rotation) {
-        auto* clusters = static_cast<Vector<ShapedText::ClusterData>*>(context);
+        auto* clusters =
+            static_cast<HeapVector<ShapedText::ClusterData>*>(context);
         // The run-local `start` is made text-relative, and `end` is set, below.
         clusters->push_back(ShapedText::ClusterData{.start = character_index,
                                                     .end = character_index,
@@ -89,12 +143,17 @@ void AppendRunClusters(const ShapedText::RunWithOffset& run_with_offset,
   }
 
   clusters.Shrink(write_index);
+
+  return write_index - initial_clusters_index;
 }
 
 // Returns true if [start, end) is within `text`. Otherwise, throws an
 // IndexSizeError and returns false. `exception_state` may be null only when the
 // range is known to be valid. Indexes less than 0 are rejected by
 // [EnforceRange] in the IDL bindings.
+// TODO(crbug.com/580852205): This doesn't match selectionRects(), which
+// accepts start == text.length() and collapses start > end. Define consistent
+// range semantics for all the range queries.
 bool CheckRange(const String& text,
                 uint32_t start,
                 uint32_t end,
@@ -111,11 +170,32 @@ bool CheckRange(const String& text,
   return false;
 }
 
+// A visually contiguous part of the text with a single font and direction, used
+// to build glyphRuns().
+struct RunSegment {
+  DISALLOW_NEW();
+
+  void Trace(Visitor* visitor) const { visitor->Trace(font_data); }
+
+  unsigned start = 0;
+  unsigned end = 0;
+  float x_position = 0.0f;
+  float width = 0.0f;
+  TextDirection direction = TextDirection::kLtr;
+  Member<const SimpleFontData> font_data;
+};
+
 }  // namespace
+
+template <>
+struct VectorTraits<RunSegment> : VectorTraitsBase<RunSegment> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
 
 void ShapedText::Trace(Visitor* visitor) const {
   visitor->Trace(font_);
   visitor->Trace(runs_with_offset_);
+  ScriptWrappable::Trace(visitor);
 }
 
 ShapedText::ShapedText() = default;
@@ -231,7 +311,7 @@ std::pair<float, gfx::RectF> ShapedText::MeasureRuns(
   return {xpos, glyph_bounds};
 }
 
-const HeapVector<Member<DOMRectReadOnly>> ShapedText::getSelectionRects(
+const HeapVector<Member<DOMRectReadOnly>> ShapedText::selectionRects(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {
@@ -400,7 +480,7 @@ gfx::RectF ShapedText::ComputeGlyphBoundsForRange(uint32_t start,
   return bounding_box;
 }
 
-DOMRectReadOnly* ShapedText::getActualBoundingBox(
+DOMRectReadOnly* ShapedText::actualBoundingBox(
     uint32_t start,
     uint32_t end,
     ExceptionState& exception_state) {
@@ -413,22 +493,147 @@ DOMRectReadOnly* ShapedText::getActualBoundingBox(
   return DOMRectReadOnly::FromRectF(bounding_box);
 }
 
-Vector<ShapedText::ClusterData> ShapedText::CollectClustersForRange(
+HeapVector<ShapedText::ClusterData> ShapedText::CollectClustersForRange(
     uint32_t start,
     uint32_t end,
     ExceptionState* exception_state) const {
-  Vector<ClusterData> clusters;
+  HeapVector<ClusterData> clusters;
   if (!CheckRange(text_, start, end, exception_state)) {
     return clusters;
   }
 
+  const SimpleFontData* primary_font = font_ ? font_->PrimaryFont() : nullptr;
+
   for (const auto& run_with_offset : runs_with_offset_) {
-    AppendRunClusters(run_with_offset, start, end, clusters);
+    const wtf_size_t first = clusters.size();
+    if (!AppendRunClusters(run_with_offset, start, end, clusters)) {
+      continue;
+    }
+    if (!run_with_offset.shape_result_->HasFallbackFonts(primary_font)) {
+      for (wtf_size_t i = first; i < clusters.size(); i++) {
+        clusters[i].font_data = primary_font;
+      }
+      continue;
+    }
+    const RunFonts run_fonts(run_with_offset);
+    for (wtf_size_t i = first; i < clusters.size(); i++) {
+      ClusterData& cluster = clusters[i];
+      cluster.font_data =
+          run_fonts.ForRange(cluster.start, cluster.end, primary_font);
+    }
   }
   return clusters;
 }
 
-unsigned ShapedText::getIndexFromOffset(double x) {
+HeapVector<Member<GlyphRun>> ShapedText::glyphRuns() {
+  HeapVector<Member<GlyphRun>> result;
+  if (!font_) {
+    return result;
+  }
+  const SimpleFontData* primary_font = font_->PrimaryFont();
+  HeapVector<RunSegment> segments;
+
+  // Merges `seg` into the last segment when they are visually adjacent and
+  // have the same font and direction.
+  auto append_or_merge = [&segments](const RunSegment& seg) {
+    if (!segments.empty()) {
+      RunSegment& prev = segments.back();
+      if (prev.font_data == seg.font_data && prev.direction == seg.direction) {
+        if (IsLtr(seg.direction) && prev.end == seg.start) {
+          prev.end = seg.end;
+          prev.width += seg.width;
+          return;
+        }
+        if (IsRtl(seg.direction) && seg.end == prev.start) {
+          prev.start = seg.start;
+          prev.width += seg.width;
+          return;
+        }
+      }
+    }
+    segments.push_back(seg);
+  };
+
+  for (const auto& run_with_offset : runs_with_offset_) {
+    // A run without fallback fonts is a single segment. Otherwise, split it
+    // into clusters, each with its resolved font.
+    if (!run_with_offset.shape_result_->HasFallbackFonts(primary_font)) {
+      append_or_merge(
+          RunSegment{.start = run_with_offset.character_offset_,
+                     .end = run_with_offset.character_offset_ +
+                            run_with_offset.num_characters_,
+                     .x_position = run_with_offset.x_position_,
+                     .width = run_with_offset.shape_result_->Width(),
+                     .direction = run_with_offset.direction_,
+                     .font_data = primary_font});
+      continue;
+    }
+
+    HeapVector<ClusterData> clusters;
+    AppendRunClusters(run_with_offset, 0, text_.length(), clusters);
+    const RunFonts run_fonts(run_with_offset);
+    HeapVector<RunSegment> run_segments;
+    run_segments.reserve(clusters.size());
+    for (const ClusterData& cluster : clusters) {
+      run_segments.push_back(RunSegment{
+          .start = cluster.start,
+          .end = cluster.end,
+          .x_position = cluster.x_position,
+          .width = cluster.width,
+          .direction = run_with_offset.direction_,
+          .font_data =
+              run_fonts.ForRange(cluster.start, cluster.end, primary_font)});
+    }
+    // Clusters are in logical order. Reverse RTL runs into visual order.
+    if (IsRtl(run_with_offset.direction_)) {
+      std::reverse(run_segments.begin(), run_segments.end());
+    }
+    for (const auto& seg : run_segments) {
+      append_or_merge(seg);
+    }
+  }
+
+  result.reserve(segments.size());
+  for (const auto& seg : segments) {
+    result.push_back(MakeGarbageCollected<GlyphRun>(
+        seg.start, seg.end, seg.x_position - text_align_dx_, 0.0, seg.width,
+        *this, seg.font_data.Get()));
+  }
+  return result;
+}
+
+HeapVector<Member<GlyphRun>> ShapedText::glyphClusters() {
+  // The whole text: there is no valid range in an empty text.
+  if (text_.empty()) {
+    return {};
+  }
+  return GetGlyphClustersImpl(0, text_.length(), /*exception_state=*/nullptr);
+}
+
+HeapVector<Member<GlyphRun>> ShapedText::glyphClusters(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState& exception_state) {
+  return GetGlyphClustersImpl(start, end, &exception_state);
+}
+
+HeapVector<Member<GlyphRun>> ShapedText::GetGlyphClustersImpl(
+    uint32_t start,
+    uint32_t end,
+    ExceptionState* exception_state) {
+  HeapVector<ClusterData> clusters =
+      CollectClustersForRange(start, end, exception_state);
+  HeapVector<Member<GlyphRun>> result;
+  result.reserve(clusters.size());
+  for (const auto& cluster : clusters) {
+    result.push_back(MakeGarbageCollected<GlyphRun>(
+        cluster.start, cluster.end, cluster.x_position - text_align_dx_, 0.0,
+        cluster.width, *this, cluster.font_data.Get()));
+  }
+  return result;
+}
+
+unsigned ShapedText::advanceToPosition(double x) {
   if (runs_with_offset_.empty()) {
     return 0;
   }
@@ -460,6 +665,39 @@ unsigned ShapedText::getIndexFromOffset(double x) {
     }
   }
   return 0;
+}
+
+double ShapedText::positionToAdvance(uint32_t position,
+                                     ExceptionState& exception_state) {
+  if (position > text_.length()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        ExceptionMessages::IndexExceedsMaximumBound("position", position,
+                                                    text_.length()));
+    return 0.0;
+  }
+
+  // `position` is in the run that starts at or contains it (see the bidi
+  // limitation in the header). The end of the text is at the end of the
+  // (logically) last run.
+  const bool at_text_end = position == text_.length();
+  for (const auto& run_with_offset : runs_with_offset_) {
+    const unsigned int run_start_index = run_with_offset.character_offset_;
+    const unsigned int run_end_index =
+        run_start_index + run_with_offset.num_characters_;
+    if (position < run_start_index || position > run_end_index ||
+        (position == run_end_index && !at_text_end)) {
+      continue;
+    }
+    float x = run_with_offset.shape_result_->CaretPositionForOffset(
+                  position - run_start_index, run_with_offset.text_,
+                  position < run_end_index ? AdjustMidCluster::kToStart
+                                           : AdjustMidCluster::kToEnd) +
+              run_with_offset.x_position_;
+    return x - text_align_dx_;
+  }
+
+  return -text_align_dx_;
 }
 
 unsigned ShapedText::CorrectForMixedBidi(

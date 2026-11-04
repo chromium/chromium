@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    RuntimeEnabled=ExtendedTextMetrics,
+    Exposed=(Window,Worker)
+]
+interface ShapedText {
+    readonly attribute double width;
+
+    [MeasureAs=ExtendedTextMetrics] sequence<GlyphRun> glyphRuns();
+    [MeasureAs=ExtendedTextMetrics] sequence<GlyphRun> glyphClusters();
+    [RaisesException, MeasureAs=ExtendedTextMetrics] sequence<GlyphRun> glyphClusters([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+
+    [RaisesException, MeasureAs=ExtendedTextMetrics] sequence<DOMRectReadOnly> selectionRects([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    [RaisesException, MeasureAs=ExtendedTextMetrics] DOMRectReadOnly actualBoundingBox([EnforceRange] unsigned long start, [EnforceRange] unsigned long end);
+    [MeasureAs=ExtendedTextMetrics] unsigned long advanceToPosition(double advance);
+    [RaisesException, MeasureAs=ExtendedTextMetrics] double positionToAdvance([EnforceRange] unsigned long position);
+};

@@ -53,6 +53,16 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   // Computes the metrics of the whole `shaped_text`, and keeps a reference to
   // it for the shaping-based queries below.
   explicit TextMetrics(ShapedText& shaped_text);
+  // Computes the metrics of the [start, end) range of `shaped_text`, such as a
+  // glyph run at `run_x` (relative to the alignment point) with advance
+  // `run_width`. The vertical metrics use `font_data`, or the primary font if
+  // null, relative to the primary font's textBaseline anchor.
+  TextMetrics(ShapedText& shaped_text,
+              uint32_t start,
+              uint32_t end,
+              double run_x,
+              double run_width,
+              const SimpleFontData* font_data);
 
   double width() const { return width_; }
   double actualBoundingBoxLeft() const { return actual_bounding_box_left_; }

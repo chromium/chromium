@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/element_image.h"
+#include "third_party/blink/renderer/core/html/canvas/glyph_run.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/shaped_text.h"
@@ -1942,6 +1943,50 @@ void BaseRenderingContext2D::strokeTextCluster(
                    cluster_align, cluster_baseline, text_cluster->start(),
                    text_cluster->end(), nullptr,
                    text_cluster->textMetrics()->GetFont());
+}
+
+void BaseRenderingContext2D::fillGlyphRun(const GlyphRun* glyph_run,
+                                          double x,
+                                          double y) {
+  DCHECK(glyph_run);
+  ShapedText* shaped_text = glyph_run->GetShapedText();
+  DCHECK(shaped_text);
+  DrawTextInternal(
+      shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
+      CanvasRenderingContext2DState::kFillPaintType,
+      V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
+      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont());
+}
+
+void BaseRenderingContext2D::strokeGlyphRun(const GlyphRun* glyph_run,
+                                            double x,
+                                            double y) {
+  DCHECK(glyph_run);
+  ShapedText* shaped_text = glyph_run->GetShapedText();
+  DCHECK(shaped_text);
+  DrawTextInternal(
+      shaped_text->GetText(), glyph_run->x() + x, glyph_run->y() + y,
+      CanvasRenderingContext2DState::kStrokePaintType,
+      V8CanvasTextAlign::Enum::kLeft, shaped_text->ContextTextBaseline(),
+      glyph_run->start(), glyph_run->end(), nullptr, shaped_text->GetFont());
+}
+
+void BaseRenderingContext2D::fillGlyphRuns(
+    const HeapVector<Member<GlyphRun>>& glyph_runs,
+    double x,
+    double y) {
+  for (const auto& glyph_run : glyph_runs) {
+    fillGlyphRun(glyph_run.Get(), x, y);
+  }
+}
+
+void BaseRenderingContext2D::strokeGlyphRuns(
+    const HeapVector<Member<GlyphRun>>& glyph_runs,
+    double x,
+    double y) {
+  for (const auto& glyph_run : glyph_runs) {
+    strokeGlyphRun(glyph_run.Get(), x, y);
+  }
 }
 
 void BaseRenderingContext2D::DrawTextInternal(

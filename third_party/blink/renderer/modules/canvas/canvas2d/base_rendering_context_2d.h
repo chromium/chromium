@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -68,6 +69,7 @@ class CanvasImageProvider;
 class CanvasRenderingContext2DSettings;
 class DrawElementImageOptions;
 class ExceptionState;
+class GlyphRun;
 class ImageData;
 class ImageDataSettings;
 class ShapedText;
@@ -237,6 +239,14 @@ class MODULES_EXPORT BaseRenderingContext2D
                          double x,
                          double y,
                          const TextClusterOptions* cluster_options);
+  void fillGlyphRun(const GlyphRun* glyph_run, double x, double y);
+  void strokeGlyphRun(const GlyphRun* glyph_run, double x, double y);
+  void fillGlyphRuns(const HeapVector<Member<GlyphRun>>& glyph_runs,
+                     double x,
+                     double y);
+  void strokeGlyphRuns(const HeapVector<Member<GlyphRun>>& glyph_runs,
+                       double x,
+                       double y);
 
   int LayerCount() const final;
   bool isContextLost() const final {
