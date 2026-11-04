@@ -26,7 +26,7 @@
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"

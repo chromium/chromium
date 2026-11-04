@@ -24,7 +24,7 @@
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"

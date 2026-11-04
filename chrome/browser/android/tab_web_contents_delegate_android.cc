@@ -81,7 +81,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/pdf/common/constants.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/file_select_listener.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
 
 #include <memory>
 
@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

@@ -53,7 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/file_type_policies/file_type_policies.h"

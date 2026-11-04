@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"

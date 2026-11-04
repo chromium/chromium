@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_SAFE_BROWSING_PRIVATE_SAFE_BROWSING_UTIL_H_
 
 #include "chrome/common/extensions/api/safe_browsing_private.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 
 namespace extensions {
 

@@ -94,7 +94,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/content/common/file_type_policies/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"

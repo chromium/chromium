@@ -382,7 +382,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 #include "chrome/browser/safe_browsing/triggers/trigger_creator.h"
 #include "components/safe_browsing/content/browser/interstitials/ui_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/core/common/features.h"

@@ -9,7 +9,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"

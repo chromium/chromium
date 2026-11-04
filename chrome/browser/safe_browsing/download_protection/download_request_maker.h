@@ -13,7 +13,7 @@
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 #include "components/download/public/common/download_item.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/file_system_access_write_item.h"
 

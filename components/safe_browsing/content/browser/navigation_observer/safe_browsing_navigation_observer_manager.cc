@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 
 #include <iterator>
 #include <memory>
@@ -17,8 +17,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager_util.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager_util.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"

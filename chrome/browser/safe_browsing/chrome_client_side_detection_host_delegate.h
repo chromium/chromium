@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "content/public/browser/global_routing_id.h"
 
 #if BUILDFLAG(IS_ANDROID)

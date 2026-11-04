@@ -20,7 +20,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "content/public/browser/browser_context.h"

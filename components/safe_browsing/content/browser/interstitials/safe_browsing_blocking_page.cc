@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/interstitials/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/threat_details/client_report_util.h"
 #include "components/safe_browsing/content/browser/threat_details/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"

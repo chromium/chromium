@@ -21,7 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"

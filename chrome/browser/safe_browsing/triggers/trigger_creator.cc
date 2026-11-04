@@ -12,7 +12,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/triggers/ad_sampler_trigger.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"

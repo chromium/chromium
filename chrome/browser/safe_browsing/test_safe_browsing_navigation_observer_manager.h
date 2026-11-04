@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 
 class BrowserWindowInterface;
 

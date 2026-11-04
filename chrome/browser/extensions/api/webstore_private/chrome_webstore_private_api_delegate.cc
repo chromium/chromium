@@ -25,7 +25,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/metrics_collector/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/content/browser/navigation_observer/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #endif
 
