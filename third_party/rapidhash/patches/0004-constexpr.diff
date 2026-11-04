@@ -1,0 +1,97 @@
+diff --git a/third_party/rapidhash/rapidhash.h b/third_party/rapidhash/rapidhash.h
+--- a/third_party/rapidhash/rapidhash.h
++++ b/third_party/rapidhash/rapidhash.h
+@@ -87,9 +87,6 @@
+ // case of just hashing raw bytes, this is simply reading. But for other
+ // conversions, the reader is doing slightly more work, such as packing
+ // or unpacking. See e.g. ConvertTo8BitHashReader in string_hasher.h.
+-//
+-// Note that this reader could be made constexpr if we needed to evaluate
+-// hashes at compile-time.
+ struct PlainHashReader {
+   // If this is different from 1 (only 1, 2 and 4 are really reasonable
+   // options), it means the reader consumes its input at a faster rate than
+@@ -107,7 +104,13 @@
+   // Read 64 little-endian bits from the input, taking into account
+   // the expansion/compression if relevant. Unaligned reads must be
+   // supported.
+-  static inline uint64_t Read64(const uint8_t* p) {
++  static constexpr inline uint64_t Read64(const uint8_t* p) {
++    if consteval {
++      return uint64_t{p[0]} | (uint64_t{p[1]} << 8) | (uint64_t{p[2]} << 16) |
++             (uint64_t{p[3]} << 24) | (uint64_t{p[4]} << 32) |
++             (uint64_t{p[5]} << 40) | (uint64_t{p[6]} << 48) |
++             (uint64_t{p[7]} << 56);
++    }
+     uint64_t v;
+     memcpy(&v, p, 8);
+     return v;
+@@ -116,7 +119,11 @@
+   // Similarly, read 32 little-endian (unaligned) bits. Note that
+   // this must return uint64_t, _not_ uint32_t, as the hasher assumes
+   // it can freely shift such numbers up and down.
+-  static inline uint64_t Read32(const uint8_t* p) {
++  static constexpr inline uint64_t Read32(const uint8_t* p) {
++    if consteval {
++      return uint64_t{p[0]} | (uint64_t{p[1]} << 8) | (uint64_t{p[2]} << 16) |
++             (uint64_t{p[3]} << 24);
++    }
+     uint32_t v;
+     memcpy(&v, p, 4);
+     return v;
+@@ -131,7 +138,7 @@
+   // 1, 2 or 3 bytes; if the hash is e.g. 7 bytes, two overlapping 32-bit
+   // reads will be done instead. Note that if you have kCompressionFactor == 2,
+   // this means that this will only ever be called with k = 2.
+-  static inline uint64_t ReadSmall(const uint8_t* p, size_t k) {
++  static constexpr inline uint64_t ReadSmall(const uint8_t* p, size_t k) {
+     return (uint64_t{p[0]} << 56) | (uint64_t{p[k >> 1]} << 32) | p[k - 1];
+   }
+ };
+@@ -188,7 +195,8 @@
+  *
+  *  Calculates 128-bit C = *A * *B.
+  */
+-inline std::pair<uint64_t, uint64_t> rapid_mul128(uint64_t A, uint64_t B) {
++constexpr inline std::pair<uint64_t, uint64_t> rapid_mul128(uint64_t A,
++                                                            uint64_t B) {
+ #if defined(__SIZEOF_INT128__)
+   __uint128_t r = A;
+   r *= B;
+@@ -225,7 +233,7 @@
+  *  Calculates 128-bit C = A * B.
+  *  Returns 64-bit xor between high and low 64 bits of C.
+  */
+-inline uint64_t rapid_mix(uint64_t A, uint64_t B) {
++constexpr inline uint64_t rapid_mix(uint64_t A, uint64_t B) {
+   std::tie(A, B) = rapid_mul128(A, B);
+   return A ^ B;
+ }
+@@ -252,10 +260,10 @@
+  *  No other reads from memory take place. No writes to memory take place.
+  */
+ template <class Reader>
+-ALWAYS_INLINE uint64_t rapidhash_internal(const uint8_t* p,
+-                                          const size_t len,
+-                                          uint64_t seed,
+-                                          const uint64_t secret[3]) {
++ALWAYS_INLINE constexpr uint64_t rapidhash_internal(const uint8_t* p,
++                                                    const size_t len,
++                                                    uint64_t seed,
++                                                    const uint64_t secret[3]) {
+   // For brevity.
+   constexpr unsigned x = Reader::kCompressionFactor;
+   constexpr unsigned y = Reader::kExpansionFactor;
+@@ -331,9 +339,9 @@
+  *  Returns a 64-bit hash.
+  */
+ template <class Reader = PlainHashReader>
+-ALWAYS_INLINE static uint64_t rapidhash(const uint8_t* key,
+-                                        size_t len,
+-                                        uint64_t seed = RAPID_SEED) {
++ALWAYS_INLINE static constexpr uint64_t rapidhash(const uint8_t* key,
++                                                  size_t len,
++                                                  uint64_t seed = RAPID_SEED) {
+   return rapidhash_internal<Reader>(key, len, seed, rapid_secret);
+ }
+ 
