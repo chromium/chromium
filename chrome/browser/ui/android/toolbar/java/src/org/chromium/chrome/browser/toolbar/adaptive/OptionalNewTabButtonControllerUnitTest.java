@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
-import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -66,7 +66,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock TabCreator mTabCreator;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
-    @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
+    @Mock private ButtonDataObserver mButtonDataObserver;
 
     private final SettableMonotonicObservableSupplier<Integer> mTabStripVisibilitySupplier =
             ObservableSuppliers.createMonotonic();

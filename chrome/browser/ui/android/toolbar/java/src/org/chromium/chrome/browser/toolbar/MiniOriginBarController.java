@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -429,13 +430,11 @@ public class MiniOriginBarController implements Observer {
 
     private boolean isCobrowseSheetOpen() {
         BottomSheetContent content = mBottomSheetController.getCurrentSheetContent();
-        if (content == null
-                || content.getPriority() != BottomSheetContent.ContentPriority.COBROWSE) {
+        if (content == null || content.getPriority() != ContentPriority.COBROWSE) {
             return false;
         }
         int state = mBottomSheetController.getSheetState();
-        return state == BottomSheetController.SheetState.HALF
-                || state == BottomSheetController.SheetState.FULL;
+        return state == SheetState.HALF || state == SheetState.FULL;
     }
 
     /**

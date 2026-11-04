@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.toolbar.LocationBarModel.NativeLocationBarModelAndroid;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
@@ -94,9 +95,7 @@ public final class ToolbarSecurityIconTest {
 
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
 
-    @Mock
-    private JniUniquePtr<LocationBarModel.NativeLocationBarModelAndroid>
-            mNativeLocationBarModelAndroid;
+    @Mock private JniUniquePtr<NativeLocationBarModelAndroid> mNativeLocationBarModelAndroid;
 
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
 

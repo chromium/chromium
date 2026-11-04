@@ -33,6 +33,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedService.AllowedChangedObserver;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -67,7 +68,7 @@ public class AdaptiveToolbarButtonController
                 ButtonDataObserver,
                 SharedPreferences.OnSharedPreferenceChangeListener,
                 ConfigurationChangedObserver,
-                GlicKeyedService.AllowedChangedObserver {
+                AllowedChangedObserver {
 
     private final Context mContext;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();

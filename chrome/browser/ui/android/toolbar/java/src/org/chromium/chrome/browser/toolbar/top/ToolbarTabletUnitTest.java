@@ -180,7 +180,7 @@ public final class ToolbarTabletUnitTest {
 
     private final Answer<Object> mAddIncognitoObserverInIncognitoMode =
             (invocation) -> {
-                IncognitoStateProvider.IncognitoStateObserver observer = invocation.getArgument(0);
+                IncognitoStateObserver observer = invocation.getArgument(0);
                 observer.onIncognitoStateChanged(/* isIncognito= */ true);
                 return null;
             };

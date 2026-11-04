@@ -33,7 +33,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -53,6 +54,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,12 +62,11 @@ import java.util.concurrent.TimeoutException;
 
 /** Render tests for tab switcher long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(UNIT_TESTS)
 public class TabSwitcherActionMenuRenderTest {
-    @ParameterAnnotations.ClassParameter
-    private static final List<ParameterSet> sClassParams =
-            new NightModeTestUtils.NightModeParams().getParameters();
+    @ClassParameter
+    private static final List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

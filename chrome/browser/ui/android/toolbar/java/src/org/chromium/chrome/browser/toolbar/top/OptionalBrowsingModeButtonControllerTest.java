@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 import java.util.ArrayList;
@@ -92,9 +93,9 @@ public class OptionalBrowsingModeButtonControllerTest {
     ButtonDataImpl mShareButtonData;
     ButtonDataImpl mVoiceButtonData;
 
-    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor1;
-    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor2;
-    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor3;
+    @Captor ArgumentCaptor<ButtonDataObserver> mObserverCaptor1;
+    @Captor ArgumentCaptor<ButtonDataObserver> mObserverCaptor2;
+    @Captor ArgumentCaptor<ButtonDataObserver> mObserverCaptor3;
 
     OptionalBrowsingModeButtonController mButtonController;
 

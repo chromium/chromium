@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.download.DownloadToolbarButtonState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -81,6 +82,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +104,7 @@ public class TopToolbarCoordinatorUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private MenuButtonCoordinator mBrowsingModeMenuButtonCoordinator;
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
-    @Mock private Supplier<org.chromium.ui.resources.ResourceManager> mResourceManagerSupplier;
+    @Mock private Supplier<ResourceManager> mResourceManagerSupplier;
     @Mock private HistoryDelegate mHistoryDelegate;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TabObscuringHandler mTabObscuringHandler;
@@ -522,15 +524,11 @@ public class TopToolbarCoordinatorUnitTest {
     public void testGetTopControlVisibility() {
         when(mBrowserControlsVisibilityManager.getControlsPosition())
                 .thenReturn(ControlsPosition.TOP);
-        assertEquals(
-                TopControlsStacker.TopControlVisibility.VISIBLE,
-                mCoordinator.getTopControlVisibility());
+        assertEquals(TopControlVisibility.VISIBLE, mCoordinator.getTopControlVisibility());
 
         when(mBrowserControlsVisibilityManager.getControlsPosition())
                 .thenReturn(ControlsPosition.BOTTOM);
-        assertEquals(
-                TopControlsStacker.TopControlVisibility.HIDDEN,
-                mCoordinator.getTopControlVisibility());
+        assertEquals(TopControlVisibility.HIDDEN, mCoordinator.getTopControlVisibility());
     }
 
     @Test

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator.MenuItemType;
 import org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuCoordinator.TabGroupExistenceChecker;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -155,7 +156,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
         // Close, Divider, New Tab, New Incognito
         assertEquals(R.id.close_tab, getMenuItemId(items, 0));
-        assertEquals(TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER, items.get(1).type);
+        assertEquals(MenuItemType.DIVIDER, items.get(1).type);
         assertEquals(R.id.new_tab_menu_id, getMenuItemId(items, 2));
         assertEquals(R.id.new_incognito_tab_menu_id, getMenuItemId(items, 3));
         assertEquals(R.id.add_tab_to_new_group_menu_id, getMenuItemId(items, 4));
@@ -173,7 +174,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
         // Close, Divider, New Tab, New Incognito
         assertEquals(R.id.close_tab, getMenuItemId(items, 0));
-        assertEquals(TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER, items.get(1).type);
+        assertEquals(MenuItemType.DIVIDER, items.get(1).type);
         assertEquals(R.id.new_tab_menu_id, getMenuItemId(items, 2));
         assertEquals(R.id.new_incognito_tab_menu_id, getMenuItemId(items, 3));
         assertEquals(R.id.add_tab_to_new_group_menu_id, getMenuItemId(items, 4));
@@ -191,7 +192,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         // Close tab, Divider, New tab, New Incognito tab, Add tab to new group
         assertEquals(5, items.size());
         assertEquals(R.id.close_tab, getMenuItemId(items, 0));
-        assertEquals(TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER, items.get(1).type);
+        assertEquals(MenuItemType.DIVIDER, items.get(1).type);
         assertEquals(R.id.new_tab_menu_id, getMenuItemId(items, 2));
         assertEquals(R.id.new_incognito_tab_menu_id, getMenuItemId(items, 3));
         assertEquals(R.id.add_tab_to_new_group_menu_id, getMenuItemId(items, 4));
@@ -210,7 +211,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         assertEquals(7, items.size());
         assertEquals(R.id.close_tab, getMenuItemId(items, 0));
         assertEquals(R.id.close_all_incognito_tabs_menu_id, getMenuItemId(items, 1));
-        assertEquals(TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER, items.get(2).type);
+        assertEquals(MenuItemType.DIVIDER, items.get(2).type);
         assertEquals(R.id.new_incognito_tab_menu_id, getMenuItemId(items, 3));
         assertEquals(R.id.new_window_menu_id, getMenuItemId(items, 4));
         assertEquals(R.id.new_incognito_window_menu_id, getMenuItemId(items, 5));
@@ -354,27 +355,21 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildListItemByMenuItemType_CloseTab() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.CLOSE_TAB);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.CLOSE_TAB);
         assertEquals(R.string.close_tab, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(R.id.close_tab, item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
     public void testBuildListItemByMenuItemType_NewTab() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.NEW_TAB);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.NEW_TAB);
         assertEquals(R.string.menu_new_tab, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(R.id.new_tab_menu_id, item.model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
     public void testBuildListItemByMenuItemType_NewIncognitoTab_Enabled() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.NEW_INCOGNITO_TAB);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB);
         assertEquals(
                 R.string.menu_new_incognito_tab, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
@@ -386,9 +381,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Test
     public void testBuildListItemByMenuItemType_NewIncognitoTab_Disabled() {
         IncognitoUtils.setEnabledForTesting(false);
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.NEW_INCOGNITO_TAB);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.NEW_INCOGNITO_TAB);
         assertEquals(
                 R.string.menu_new_incognito_tab, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
@@ -400,8 +393,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Test
     public void testBuildListItemByMenuItemType_CloseAllIncognito() {
         ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.CLOSE_ALL_INCOGNITO_TABS);
+                mCoordinator.buildListItemByMenuItemType(MenuItemType.CLOSE_ALL_INCOGNITO_TABS);
         assertEquals(
                 R.string.menu_close_all_incognito_tabs,
                 item.model.get(ListMenuItemProperties.TITLE_ID));
@@ -414,9 +406,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     public void testBuildListItemByMenuItemType_AddToGroup() {
         when(mTab.getTabGroupId()).thenReturn(null);
 
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.ADD_TAB_TO_GROUP);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP);
         assertEquals(
                 R.string.menu_add_tab_to_group, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
@@ -427,9 +417,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     public void testBuildListItemByMenuItemType_MoveTabToGroup() {
         when(mTab.getTabGroupId()).thenReturn(Token.createRandom());
 
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.ADD_TAB_TO_GROUP);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_GROUP);
         assertEquals(
                 R.string.menu_move_tab_to_group, item.model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
@@ -438,9 +426,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildListItemByMenuItemType_AddToNewGroup() {
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.ADD_TAB_TO_NEW_GROUP);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.ADD_TAB_TO_NEW_GROUP);
         assertEquals(
                 R.string.menu_add_tab_to_new_group,
                 item.model.get(ListMenuItemProperties.TITLE_ID));
@@ -452,9 +438,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     @Test
     public void testBuildListItemByMenuItemType_Divider() {
         when(mProfile.isIncognitoBranded()).thenReturn(false);
-        ListItem item =
-                mCoordinator.buildListItemByMenuItemType(
-                        TabSwitcherActionMenuCoordinator.MenuItemType.DIVIDER);
+        ListItem item = mCoordinator.buildListItemByMenuItemType(MenuItemType.DIVIDER);
         item.model.containsKey(ListSectionDividerProperties.COLOR_ID);
     }
 

@@ -82,6 +82,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
@@ -1398,23 +1400,17 @@ public class ToolbarPositionControllerTest {
         BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
         when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
-        when(mBottomSheetController.getSheetState())
-                .thenReturn(BottomSheetController.SheetState.HALF);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
 
-        observer.onSheetStateChanged(
-                BottomSheetController.SheetState.HALF,
-                BottomSheetController.StateChangeReason.NONE);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
 
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
         assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
 
         // Restore to HIDDEN
-        when(mBottomSheetController.getSheetState())
-                .thenReturn(BottomSheetController.SheetState.HIDDEN);
-        observer.onSheetStateChanged(
-                BottomSheetController.SheetState.HIDDEN,
-                BottomSheetController.StateChangeReason.NONE);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
+        observer.onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
         mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
@@ -1434,12 +1430,9 @@ public class ToolbarPositionControllerTest {
         BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
         when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
-        when(mBottomSheetController.getSheetState())
-                .thenReturn(BottomSheetController.SheetState.FULL);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
 
-        observer.onSheetStateChanged(
-                BottomSheetController.SheetState.FULL,
-                BottomSheetController.StateChangeReason.NONE);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
@@ -1459,12 +1452,9 @@ public class ToolbarPositionControllerTest {
         BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
         when(bottomSheetContent.actsAsBrowserControls()).thenReturn(false);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
-        when(mBottomSheetController.getSheetState())
-                .thenReturn(BottomSheetController.SheetState.HALF);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
 
-        observer.onSheetStateChanged(
-                BottomSheetController.SheetState.HALF,
-                BottomSheetController.StateChangeReason.NONE);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
         mBrowserControlsObserver.onBottomControlsHeightAnimationEnded();
 
         BottomControlsLayer toolbarLayer =
@@ -1485,12 +1475,9 @@ public class ToolbarPositionControllerTest {
         BottomSheetContent bottomSheetContent = mock(BottomSheetContent.class);
         when(bottomSheetContent.actsAsBrowserControls()).thenReturn(true);
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(bottomSheetContent);
-        when(mBottomSheetController.getSheetState())
-                .thenReturn(BottomSheetController.SheetState.HALF);
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
 
-        observer.onSheetStateChanged(
-                BottomSheetController.SheetState.HALF,
-                BottomSheetController.StateChangeReason.NONE);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
 
         BottomControlsLayer toolbarLayer =
                 mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);

@@ -30,7 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -295,7 +295,7 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE)
     public void uncommittedMainFrameNavigationFinishesProgressBar() {
         initMediator();
         doReturn(0.1f).when(mTab).getProgress();

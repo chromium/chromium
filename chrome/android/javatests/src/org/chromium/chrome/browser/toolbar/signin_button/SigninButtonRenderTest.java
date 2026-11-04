@@ -42,7 +42,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class SigninButtonRenderTest {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
     }
 
-    @UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameterBefore(NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
@@ -108,7 +108,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedOut(boolean nightModeEnabled) throws IOException {
         startActivityOnNtp();
 
@@ -123,7 +123,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedOut_aiTierRingEnabled(boolean nightModeEnabled)
             throws IOException {
         startActivityOnNtp();
@@ -139,7 +139,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedOut_SigninDisabled(boolean nightModeEnabled)
             throws IOException {
         startActivityOnNtp();
@@ -157,7 +157,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedIn_Avatar(boolean nightModeEnabled) throws IOException {
         startActivityOnNtp();
 
@@ -174,7 +174,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButtonWithErrorBadge(boolean nightModeEnabled) throws IOException {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         ThreadUtils.runOnUiThreadBlocking(
@@ -201,7 +201,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedIn_withAiTierRingEnabled_identityErrorExist(
             boolean nightModeEnabled) throws IOException {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
@@ -236,7 +236,7 @@ public class SigninButtonRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
-    @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    @UseMethodParameter(NightModeParams.class)
     public void testSigninButton_SignedIn_withAiTierRingEnabled(boolean nightModeEnabled)
             throws IOException {
         startActivityOnNtp();

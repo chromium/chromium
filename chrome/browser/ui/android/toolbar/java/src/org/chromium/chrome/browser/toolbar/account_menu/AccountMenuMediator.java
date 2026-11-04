@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -46,7 +47,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController.SigninSurveyType;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -59,6 +60,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninPromoAction;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
@@ -72,9 +74,7 @@ import java.lang.annotation.RetentionPolicy;
 /** Mediator managing business logic and menu items for the Account Menu popup. */
 @NullMarked
 public class AccountMenuMediator
-        implements SigninManager.SignInStateObserver,
-                ProfileDataCache.Observer,
-                SyncService.SyncStateChangedListener {
+        implements SignInStateObserver, ProfileDataCache.Observer, SyncStateChangedListener {
     /**
      * Events recorded for the account menu: the menu being shown, along with the sign-in state it
      * was shown in, and the item the user selected in it. These values are persisted to logs.
@@ -176,7 +176,7 @@ public class AccountMenuMediator
         updateMenuItems(/* recordShownMetrics= */ false);
     }
 
-    // SigninManager.SignInStateObserver implementation.
+    // SignInStateObserver implementation.
     @Override
     public void onSignInAllowedChanged() {
         updateMenuItems(/* recordShownMetrics= */ false);
@@ -192,7 +192,7 @@ public class AccountMenuMediator
         updateMenuItems(/* recordShownMetrics= */ false);
     }
 
-    /** {@link SyncService.SyncStateChangedListener} implementation. */
+    /** {@link SyncStateChangedListener} implementation. */
     @Override
     public void syncStateChanged() {
         updateMenuItems(/* recordShownMetrics= */ false);
@@ -400,7 +400,7 @@ public class AccountMenuMediator
                                 HistorySyncConfig.OptInMode.OPTIONAL,
                                 mContext.getString(R.string.history_sync_title),
                                 mContext.getString(R.string.history_sync_subtitle))
-                        .signinSurveyType(SigninSurveyController.SigninSurveyType.NTP_SIGNIN_BUTTON)
+                        .signinSurveyType(SigninSurveyType.NTP_SIGNIN_BUTTON)
                         .build();
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {

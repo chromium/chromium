@@ -24,7 +24,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -37,19 +38,19 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
 import java.io.IOException;
 import java.util.List;
 
 /** Render tests for adaptive test long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(UNIT_TESTS)
 public class AdaptiveButtonActionMenuRenderTest {
-    @ParameterAnnotations.ClassParameter
-    public static List<ParameterSet> sClassParams =
-            new NightModeTestUtils.NightModeParams().getParameters();
+    @ClassParameter
+    public static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

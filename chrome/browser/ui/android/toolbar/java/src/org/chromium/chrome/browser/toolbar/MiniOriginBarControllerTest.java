@@ -53,8 +53,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.toolbar.MiniOriginBarController.MiniOriginState;
 import org.chromium.chrome.browser.toolbar.MiniOriginBarController.MiniOriginWindowInsetsAnimationListener;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.content.browser.input.ImeAdapterImpl;
@@ -92,9 +95,8 @@ public class MiniOriginBarControllerTest {
     private final FrameLayout.LayoutParams mLocationBarLayoutParams =
             new FrameLayout.LayoutParams(200, 100, Gravity.TOP);
     private final FormFieldFocusedSupplier mIsFormFieldFocused = new FormFieldFocusedSupplier();
-    private final ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate
-            mKeyboardVisibilityDelegate =
-                    new ToolbarPositionControllerTest.FakeKeyboardVisibilityDelegate();
+    private final FakeKeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
+            new FakeKeyboardVisibilityDelegate();
     private MiniOriginBarController mMiniOriginBarController;
     private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -188,16 +190,10 @@ public class MiniOriginBarControllerTest {
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         doReturn(mBottomSheetContent).when(mBottomSheetController).getCurrentSheetContent();
-        doReturn(BottomSheetContent.ContentPriority.COBROWSE)
-                .when(mBottomSheetContent)
-                .getPriority();
-        doReturn(BottomSheetController.SheetState.HALF)
-                .when(mBottomSheetController)
-                .getSheetState();
+        doReturn(ContentPriority.COBROWSE).when(mBottomSheetContent).getPriority();
+        doReturn(SheetState.HALF).when(mBottomSheetController).getSheetState();
 
-        mBottomSheetObserverCaptor
-                .getValue()
-                .onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.HALF, 0);
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         verify(mLocationBar, never()).setShowOriginOnly(anyBoolean());
@@ -216,16 +212,10 @@ public class MiniOriginBarControllerTest {
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         doReturn(mBottomSheetContent).when(mBottomSheetController).getCurrentSheetContent();
-        doReturn(BottomSheetContent.ContentPriority.COBROWSE)
-                .when(mBottomSheetContent)
-                .getPriority();
-        doReturn(BottomSheetController.SheetState.PEEK)
-                .when(mBottomSheetController)
-                .getSheetState();
+        doReturn(ContentPriority.COBROWSE).when(mBottomSheetContent).getPriority();
+        doReturn(SheetState.PEEK).when(mBottomSheetController).getSheetState();
 
-        mBottomSheetObserverCaptor
-                .getValue()
-                .onSheetStateChanged(BottomSheetController.SheetState.PEEK, 0);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.PEEK, 0);
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
@@ -240,16 +230,10 @@ public class MiniOriginBarControllerTest {
         mMiniOriginBarController.onControlsPositionChanged(ControlsPosition.BOTTOM);
 
         doReturn(mBottomSheetContent).when(mBottomSheetController).getCurrentSheetContent();
-        doReturn(BottomSheetContent.ContentPriority.COBROWSE)
-                .when(mBottomSheetContent)
-                .getPriority();
-        doReturn(BottomSheetController.SheetState.HALF)
-                .when(mBottomSheetController)
-                .getSheetState();
+        doReturn(ContentPriority.COBROWSE).when(mBottomSheetContent).getPriority();
+        doReturn(SheetState.HALF).when(mBottomSheetController).getSheetState();
 
-        mBottomSheetObserverCaptor
-                .getValue()
-                .onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.HALF, 0);
 
         mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
         mKeyboardVisibilityDelegate.setVisibilityForTests(true);
@@ -257,12 +241,8 @@ public class MiniOriginBarControllerTest {
         assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
 
         // Transition to PEEK state
-        doReturn(BottomSheetController.SheetState.PEEK)
-                .when(mBottomSheetController)
-                .getSheetState();
-        mBottomSheetObserverCaptor
-                .getValue()
-                .onSheetStateChanged(BottomSheetController.SheetState.PEEK, 0);
+        doReturn(SheetState.PEEK).when(mBottomSheetController).getSheetState();
+        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(SheetState.PEEK, 0);
 
         assertEquals(MiniOriginState.SHOWING, mMiniOriginBarController.getCurrentStateForTesting());
 

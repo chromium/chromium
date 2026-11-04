@@ -245,7 +245,7 @@ public class ToolbarControlContainerTest {
                 mToolbarDataProvider,
                 mDesktopWindowStateManager,
                 mTopControlsStacker);
-        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
+        ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 mControlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
     }
@@ -1335,7 +1335,7 @@ public class ToolbarControlContainerTest {
                 mToolbarDataProvider,
                 null,
                 mTopControlsStacker);
-        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
+        ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
 
@@ -1376,7 +1376,7 @@ public class ToolbarControlContainerTest {
                 mToolbarDataProvider,
                 null,
                 mTopControlsStacker);
-        ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
+        ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.VISIBLE);
         toolbarContainer.layout(0, 0, 1000, 100);

@@ -42,7 +42,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,7 +58,7 @@ import java.util.function.Supplier;
 class BottomControlsMediator
         implements BrowserControlsStateProvider.Observer,
                 FullscreenManager.Observer,
-                KeyboardVisibilityDelegate.KeyboardVisibilityListener,
+                KeyboardVisibilityListener,
                 LayoutStateObserver,
                 TabObscuringHandler.Observer,
                 BottomControlsLayer {

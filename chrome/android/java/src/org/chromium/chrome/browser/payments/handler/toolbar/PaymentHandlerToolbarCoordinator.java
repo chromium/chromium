@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.omnibox.SecurityStatusIcon;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -189,7 +190,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                 mActivity,
                 mWebContents,
                 /* contentPublisher= */ null,
-                PageInfoController.OpenedFromSource.TOOLBAR,
+                OpenedFromSource.TOOLBAR,
                 new ChromePageInfoControllerDelegate(
                         mActivity,
                         mWebContents,

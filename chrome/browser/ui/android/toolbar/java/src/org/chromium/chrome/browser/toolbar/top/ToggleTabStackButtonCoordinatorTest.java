@@ -47,6 +47,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -99,7 +100,7 @@ public class ToggleTabStackButtonCoordinatorTest {
             ObservableSuppliers.createNonNull(0);
 
     private boolean mOverviewOpen;
-    private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
+    private Set<LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
 
     private ToggleTabStackButtonCoordinator mCoordinator;
@@ -121,14 +122,14 @@ public class ToggleTabStackButtonCoordinatorTest {
                             return null;
                         })
                 .when(mLayoutStateProvider)
-                .addObserver(any(LayoutStateProvider.LayoutStateObserver.class));
+                .addObserver(any(LayoutStateObserver.class));
         doAnswer(
                         invocation -> {
                             mLayoutStateObserverSet.remove(invocation.getArgument(0));
                             return null;
                         })
                 .when(mLayoutStateProvider)
-                .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
+                .removeObserver(any(LayoutStateObserver.class));
 
         mLayoutStateObserverSet = new HashSet<>();
         mLayoutSateProviderOneshotSupplier = new OneshotSupplierImpl<>();
@@ -183,20 +184,20 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private void showOverviewMode() {
         mOverviewOpen = true;
-        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+        for (LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onStartedShowing(/* layoutType= */ LayoutType.HUB);
         }
-        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+        for (LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onFinishedShowing(LayoutType.HUB);
         }
     }
 
     private void hideOverviewMode() {
         mOverviewOpen = false;
-        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+        for (LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onStartedHiding(LayoutType.HUB);
         }
-        for (LayoutStateProvider.LayoutStateObserver observer : mLayoutStateObserverSet) {
+        for (LayoutStateObserver observer : mLayoutStateObserverSet) {
             observer.onFinishedHiding(LayoutType.HUB);
         }
     }

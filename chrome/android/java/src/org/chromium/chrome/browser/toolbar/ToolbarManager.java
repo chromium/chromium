@@ -118,6 +118,7 @@ import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.media.PictureInPictureWindowManagerBridge;
@@ -164,6 +165,7 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -190,6 +192,7 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.LocationBarModel.OfflineStatus;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomBarConstraintsSupplier;
@@ -385,7 +388,7 @@ public class ToolbarManager
     private @MonotonicNonNull TabModelSelector mTabModelSelector;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
+    private ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final ActivityResultTracker mActivityResultTracker;
     private final SnackbarManager mSnackbarManager;
@@ -411,7 +414,7 @@ public class ToolbarManager
     private final FindToolbarObserver mFindToolbarObserver;
 
     private @MonotonicNonNull LayoutStateProvider mLayoutStateProvider;
-    private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private final LayoutStateObserver mLayoutStateObserver;
     private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private CallbackController mCallbackController = new CallbackController();
 
@@ -929,7 +932,7 @@ public class ToolbarManager
                         activity,
                         ntpDelegate,
                         ReaderModeTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                        new LocationBarModel.OfflineStatus() {
+                        new OfflineStatus() {
                             @Override
                             public boolean isShowingTrustedOfflinePage(Tab tab) {
                                 return OfflinePageTabData.isShowingTrustedOfflinePage(tab);
@@ -1444,7 +1447,7 @@ public class ToolbarManager
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver =
-                new ActivityTabProvider.ActivityTabTabObserver(mActivityTabProvider) {
+                new ActivityTabTabObserver(mActivityTabProvider) {
                     private @Nullable NavigationHandle mLastNavigation;
                     private @Nullable String mLastUrl;
                     private @Nullable String mCurrentUrl;
@@ -1582,8 +1585,7 @@ public class ToolbarManager
                         NewTabPage ntp = getNewTabPageForCurrentTab();
                         if (ntp == null) return;
                         if (!UrlUtilities.isNtpUrl(params.getUrl())
-                                && loadUrlResult.tabLoadStatus
-                                        != Tab.TabLoadStatus.PAGE_LOAD_FAILED) {
+                                && loadUrlResult.tabLoadStatus != TabLoadStatus.PAGE_LOAD_FAILED) {
                             ntp.setUrlFocusAnimationsDisabled(true);
                             onTabOrModelChanged();
                         }
@@ -1822,7 +1824,7 @@ public class ToolbarManager
                 };
 
         mLayoutStateObserver =
-                new LayoutStateProvider.LayoutStateObserver() {
+                new LayoutStateObserver() {
                     @Override
                     public void onStartedShowing(@LayoutType int layoutType) {
                         if (layoutType == LayoutType.HUB) {

@@ -202,7 +202,7 @@ public class BottomControlsMediatorTest {
     public void testEdgeToEdge_NtpOnly() {
         Tab tab = mock(Tab.class);
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        when(mWindowAndroid.getContext()).thenReturn(new java.lang.ref.WeakReference<>(activity));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
 
         when(tab.isIncognito()).thenReturn(false);
         NativePage ntp = mock(NativePage.class);
@@ -245,7 +245,7 @@ public class BottomControlsMediatorTest {
     public void testEdgeToEdge_NtpYTranslation() {
         Tab tab = mock(Tab.class);
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        when(mWindowAndroid.getContext()).thenReturn(new java.lang.ref.WeakReference<>(activity));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
 
         when(tab.isIncognito()).thenReturn(false);
         NativePage ntp = mock(NativePage.class);
@@ -512,7 +512,7 @@ public class BottomControlsMediatorTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void testShowShadow_DisabledWhenBottomBarEnabled() {
         Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        when(mWindowAndroid.getContext()).thenReturn(new java.lang.ref.WeakReference<>(activity));
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
 
         when(mBottomControlsStacker.isTopmostVisibleLayer(LayerType.TABSTRIP_TOOLBAR))
                 .thenReturn(true);

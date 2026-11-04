@@ -45,6 +45,8 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -668,9 +670,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
 
-        int expectedTextColor =
-                com.google.android.material.color.MaterialColors.getColor(
-                        mOptionalButtonView, textColorAttr);
+        int expectedTextColor = MaterialColors.getColor(mOptionalButtonView, textColorAttr);
         assertEquals(expectedTextColor, mActionChipLabel.getCurrentTextColor());
 
         assertEquals(

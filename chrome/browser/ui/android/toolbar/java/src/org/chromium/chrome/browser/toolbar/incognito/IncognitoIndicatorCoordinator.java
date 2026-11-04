@@ -47,6 +47,7 @@ import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.Collection;
@@ -319,7 +320,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         .setDesiredContentWidth(desiredWidth)
                         .setHorizontalOverlapAnchor(true)
                         .setPreferredHorizontalOrientation(
-                                AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE)
+                                HorizontalOrientation.MAX_AVAILABLE_SPACE)
                         .setVerticalOverlapAnchor(false);
         if (isIncognitoCardEnabled()) {
             builder.setOutsideTouchable(true);

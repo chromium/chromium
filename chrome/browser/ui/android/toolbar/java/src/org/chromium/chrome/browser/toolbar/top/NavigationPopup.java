@@ -51,6 +51,7 @@ import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -309,7 +310,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mListMenuHost.tryToFitLargestItem(true);
         mListMenuHost.setDelegate(createListMenuDelegate(), false);
         mListMenuHost.addPopupListener(
-                new ListMenuHost.PopupMenuShownListener() {
+                new PopupMenuShownListener() {
                     @Override
                     public void onPopupMenuShown() {}
 

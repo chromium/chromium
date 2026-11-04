@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.ViewResourceCoordinatorLayout;
@@ -94,7 +95,7 @@ import java.util.function.Supplier;
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, Observer, DesktopWindowStateManager.AppHeaderObserver {
+        implements ControlContainer, Observer, AppHeaderObserver {
     private static final String TAG = "ToolbarCtrlContainer";
     private static final double SAMPLE_STALE_CAPTURE_PROBABILITY = 0.01;
 

@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
 class BottomControlsProperties {
@@ -37,26 +37,27 @@ class BottomControlsProperties {
             new WritableBooleanPropertyKey();
 
     /** Whether the view is obscured. */
-    static final PropertyModel.WritableBooleanPropertyKey IS_OBSCURED =
-            new PropertyModel.WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey IS_OBSCURED = new WritableBooleanPropertyKey();
 
     /** The tag indicating that this layer should be moved by viz. */
-    static final PropertyModel.WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
-            new PropertyModel.WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
+            new WritableObjectPropertyKey<>();
 
     /** Whether the top shadow should be visible. */
     static final WritableBooleanPropertyKey SHOW_SHADOW = new WritableBooleanPropertyKey();
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                // go/keep-sorted start
                 ANDROID_VIEW_HEIGHT_NO_PADDING,
-                BOTTOM_PADDING,
-                Y_OFFSET,
                 ANDROID_VIEW_TRANSLATE_Y,
                 ANDROID_VIEW_VISIBLE,
+                BOTTOM_PADDING,
                 COMPOSITED_VIEW_VISIBLE,
                 IS_OBSCURED,
                 OFFSET_TAG,
-                SHOW_SHADOW
+                SHOW_SHADOW,
+                Y_OFFSET
+                // go/keep-sorted end
             };
 }

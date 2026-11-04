@@ -38,7 +38,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -100,7 +100,7 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                         mIncognitoStateProvider,
                         () ->
                                 MultiWindowUtils.getInstanceCount(
-                                        MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD),
+                                        PersistedInstanceType.OFF_THE_RECORD),
                         /* visible= */ false);
         assertNull(
                 "Indicator should not be inflated initially.",

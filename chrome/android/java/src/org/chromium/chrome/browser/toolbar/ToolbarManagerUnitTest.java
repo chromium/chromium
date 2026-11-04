@@ -68,6 +68,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -147,6 +148,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.LocationBarModel.NativeLocationBarModelAndroid;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.VisibilityDelegate;
@@ -245,11 +247,7 @@ public class ToolbarManagerUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModelDotInfo mTabModelDotInfo;
     @Mock private LocationBarModel.Natives mLocationBarModelNatives;
-
-    @Mock
-    private JniUniquePtr<LocationBarModel.NativeLocationBarModelAndroid>
-            mNativeLocationBarModelAndroid;
-
+    @Mock private JniUniquePtr<NativeLocationBarModelAndroid> mNativeLocationBarModelAndroid;
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
@@ -1481,8 +1479,7 @@ public class ToolbarManagerUnitTest {
         mActivityTabProvider.setForTesting(tab);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        ActivityTabProvider.ActivityTabTabObserver observer =
-                mToolbarManager.getActivityTabTabObserverForTesting();
+        ActivityTabTabObserver observer = mToolbarManager.getActivityTabTabObserverForTesting();
         assertNotNull(observer);
 
         NavigationHandle navigation = mock(NavigationHandle.class);
@@ -1539,7 +1536,7 @@ public class ToolbarManagerUnitTest {
         verify(findToolbarManager, never()).addObserver(any());
     }
 
-    private ActivityTabProvider.ActivityTabTabObserver setUpForTabLoadStopped(Tab activeTab) {
+    private ActivityTabTabObserver setUpForTabLoadStopped(Tab activeTab) {
         // onLoadStopped() calls mToolbar.onPageLoadStopped(), which triggers bitmap texture
         // capture (ViewResourceAdapter). Stub the JNI and theme color providers required during
         // the view drawing and native container resource creation.
@@ -1554,8 +1551,7 @@ public class ToolbarManagerUnitTest {
         mToolbarManager
                 .getLocationBarModelForTesting()
                 .addObserver(mLocationBarDataProviderObserver);
-        ActivityTabProvider.ActivityTabTabObserver tabObserver =
-                mToolbarManager.getActivityTabTabObserverForTesting();
+        ActivityTabTabObserver tabObserver = mToolbarManager.getActivityTabTabObserverForTesting();
         assertNotNull(tabObserver);
         return tabObserver;
     }
@@ -1564,7 +1560,7 @@ public class ToolbarManagerUnitTest {
     @EnableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
     public void testOnLoadStopped_zeroSuggestPrefetch_featureEnabled() {
         Tab tab = mockTab(/* isNtp= */ true);
-        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+        ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
 
         tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ true);
         verify(mLocationBarDataProviderObserver).hintZeroSuggestRefresh();
@@ -1574,7 +1570,7 @@ public class ToolbarManagerUnitTest {
     @DisableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
     public void testOnLoadStopped_zeroSuggestPrefetch_featureDisabled() {
         Tab tab = mockTab(/* isNtp= */ true);
-        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+        ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
 
         tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ true);
         verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
@@ -1584,7 +1580,7 @@ public class ToolbarManagerUnitTest {
     @EnableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
     public void testOnLoadStopped_zeroSuggestPrefetch_notDifferentDocument() {
         Tab tab = mockTab(/* isNtp= */ true);
-        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+        ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
 
         tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ false);
         verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
@@ -1595,7 +1591,7 @@ public class ToolbarManagerUnitTest {
     public void testOnLoadStopped_zeroSuggestPrefetch_notActiveTab() {
         Tab activeTab = mockTab(/* isNtp= */ true);
         Tab backgroundTab = mockTab(/* isNtp= */ true);
-        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(activeTab);
+        ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(activeTab);
 
         tabObserver.onLoadStopped(backgroundTab, /* toDifferentDocument= */ true);
         verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();

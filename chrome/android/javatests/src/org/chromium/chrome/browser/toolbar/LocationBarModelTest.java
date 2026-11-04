@@ -28,7 +28,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
+import org.chromium.chrome.browser.toolbar.LocationBarModel.OfflineStatus;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -75,7 +77,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for LocationBarModel. */
 @RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class LocationBarModelTest {
@@ -204,7 +206,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    @UseMethodParameter(IncognitoTransitionParamProvider.class)
     // TODO(crbug.com/457847264): Restrict to phones after launch.
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_toolbarDataProvider(
@@ -259,7 +261,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    @UseMethodParameter(IncognitoTransitionParamProvider.class)
     // TODO(crbug.com/457847264): Restrict to phones after launch.
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_switchTab(boolean fromIncognito, boolean toIncognito) {
@@ -311,7 +313,7 @@ public class LocationBarModelTest {
 
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
+    @UseMethodParameter(IncognitoTransitionParamProvider.class)
     // TODO(crbug.com/457847264): Restrict to phones after launch.
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnIncognitoStateChange_newTab(boolean fromIncognito, boolean toIncognito) {
@@ -531,7 +533,7 @@ public class LocationBarModelTest {
                     context,
                     NewTabPageDelegate.EMPTY,
                     ReaderModeTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                    new LocationBarModel.OfflineStatus() {},
+                    new OfflineStatus() {},
                     ObservableSuppliers.createNonNull(ControlsPosition.TOP));
             initializeWithNative();
 
