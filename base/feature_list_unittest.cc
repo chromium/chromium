@@ -186,20 +186,23 @@ class FeatureListTest : public testing::Test {
   static_assert(sizeof(Feature) == 2 * sizeof(void*));
   static_assert(alignof(Feature) == alignof(void*));
   static_assert(offsetof(Feature, name) == 0);
-  static_assert(offsetof(Feature, state) == sizeof(void*));
+  static_assert(offsetof(Feature, tagged_state) == sizeof(void*));
   // LINT.ThenChange(feature.rs:FeatureStruct)
 
-  // Rust's `AtomicU32` in base/feature.rs relies on this layout.
-  static_assert(sizeof(std::atomic<uint32_t>) == sizeof(uint32_t));
-  static_assert(alignof(std::atomic<uint32_t>) == alignof(uint32_t));
+  // Rust's `AtomicU32` in base/feature.rs relies on this layout, since C++
+  // accesses it as an `internal::FeatureStateStorage`.
+  static_assert(sizeof(internal::FeatureStateStorage) == sizeof(uint32_t));
+  static_assert(alignof(internal::FeatureStateStorage) == alignof(uint32_t));
 
   Feature::FeatureStateCache GetFeatureStateForTesting(const Feature& feature) {
-    return feature.state->load(std::memory_order_relaxed);
+    return internal::GetFeatureStateCache(feature.tagged_state)
+        .load(std::memory_order_relaxed);
   }
 
-  const std::atomic<Feature::FeatureStateCache>*
-  GetFeatureStateStorageForTesting(const Feature& feature) {
-    return feature.state;
+  // Only for comparing addresses. Use `GetFeatureStateForTesting()` to read the
+  // state.
+  const void* GetFeatureStateStorageForTesting(const Feature& feature) {
+    return internal::GetFeatureStateWord(feature.tagged_state);
   }
 
  private:
@@ -243,6 +246,35 @@ TEST_F(FeatureListTest, FeaturesHaveDistinctStateStorage) {
             GetFeatureStateStorageForTesting(kFeatureOffByDefault));
 }
 
+TEST_F(FeatureListTest, FeatureStateIsZeroInitialized) {
+  // The default state lives in the pointer to the state storage, so that the
+  // storage of features that are not runtime mutable starts out as zero (and
+  // can be placed in .bss).
+  static BASE_FEATURE(kLocalFeatureOn, FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(kLocalFeatureOff, FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(
+      kLocalCountryFeature, FEATURE_DISABLED_FOR_COUNTRIES, "de");
+  static BASE_RUNTIME_MUTABLE_FEATURE(kLocalMutableFeature,
+                                      FEATURE_ENABLED_BY_DEFAULT);
+  EXPECT_EQ(0u, GetFeatureStateForTesting(kLocalFeatureOn));
+  EXPECT_EQ(0u, GetFeatureStateForTesting(kLocalFeatureOff));
+  EXPECT_EQ(0u, GetFeatureStateForTesting(kLocalCountryFeature));
+  EXPECT_EQ(
+      static_cast<Feature::FeatureStateCache>(internal::kRuntimeMutabilityMask),
+      GetFeatureStateForTesting(kLocalMutableFeature));
+
+  EXPECT_EQ(FEATURE_ENABLED_BY_DEFAULT, kLocalFeatureOn.GetDefaultState());
+  EXPECT_EQ(FEATURE_DISABLED_BY_DEFAULT, kLocalFeatureOff.GetDefaultState());
+  EXPECT_EQ(FEATURE_DISABLED_FOR_COUNTRIES,
+            kLocalCountryFeature.GetDefaultState());
+  EXPECT_EQ(FEATURE_ENABLED_BY_DEFAULT, kLocalMutableFeature.GetDefaultState());
+
+  // Masking off the tag must yield an aligned pointer to the storage.
+  EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(
+                    GetFeatureStateStorageForTesting(kLocalCountryFeature)) %
+                    alignof(uint32_t));
+}
+
 TEST_F(FeatureListTest, DefaultStatesFromTemplates) {
   EXPECT_EQ(
       FEATURE_ENABLED_BY_DEFAULT,
@@ -253,8 +285,8 @@ TEST_F(FeatureListTest, DefaultStatesFromTemplates) {
 }
 
 TEST_F(FeatureListTest, ClearCachedValuePreservesFeatureMetadata) {
-  // The cache word also holds the default state and runtime-mutability flag.
-  // Check that cache resets leave these definition-time values untouched.
+  // The cache word also holds the runtime-mutability flag. Check that cache
+  // resets leave it, and the default state, untouched.
   EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOnByDefault));
   FeatureList::ClearFeatureCachedValueForTesting(kFeatureOnByDefault);
   EXPECT_EQ(FEATURE_ENABLED_BY_DEFAULT, kFeatureOnByDefault.GetDefaultState());
@@ -1146,13 +1178,14 @@ using FeatureListDeathTest = FeatureListTest;
 TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
   // TODO(dcheng): Add a nocompile version of this test. In general, people
   // should not be constructing features at runtime anyway but just in case...
-  std::atomic<Feature::FeatureStateCache> state(
+  internal::FeatureStateStorage state{
       internal::MakeFeatureStateCacheInitialValue(
-          /*is_runtime_mutable=*/false, FEATURE_DISABLED_BY_DEFAULT));
+          /*is_runtime_mutable=*/false)};
   EXPECT_DEATH(
       Feature(
           StrCat({BUILDFLAG(BANNED_BASE_FEATURE_PREFIX), "MyFeature"}).c_str(),
-          &state, internal::FeatureMacroHandshake::kSecret),
+          internal::TagFeatureStateStorage<FEATURE_DISABLED_BY_DEFAULT>(state),
+          internal::FeatureMacroHandshake::kSecret),
       StrCat({"Invalid feature name ", BUILDFLAG(BANNED_BASE_FEATURE_PREFIX),
               "MyFeature"}));
 }
@@ -1160,13 +1193,13 @@ TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
 TEST_F(FeatureListDeathTest, DiesWithBadMutableFeatureName) {
   // TODO(dcheng): Add a nocompile version of this test. In general, people
   // should not be constructing features at runtime anyway but just in case...
-  std::atomic<Feature::FeatureStateCache> state(
-      internal::MakeFeatureStateCacheInitialValue(
-          /*is_runtime_mutable=*/true, FEATURE_DISABLED_BY_DEFAULT));
+  internal::FeatureStateStorage state{
+      internal::MakeFeatureStateCacheInitialValue(/*is_runtime_mutable=*/true)};
   EXPECT_DEATH(
       Feature(
           StrCat({BUILDFLAG(BANNED_BASE_FEATURE_PREFIX), "MyFeature"}).c_str(),
-          &state, internal::FeatureMacroHandshake::kSecret),
+          internal::TagFeatureStateStorage<FEATURE_DISABLED_BY_DEFAULT>(state),
+          internal::FeatureMacroHandshake::kSecret),
       StrCat({"Invalid feature name ", BUILDFLAG(BANNED_BASE_FEATURE_PREFIX),
               "MyFeature"}));
 }

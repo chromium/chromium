@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -107,7 +108,7 @@ Feature::FeatureStateCache PackFeatureState(
 // Atomically sets the override state and caching context in the packed cache
 // value. The resolved state and explicit-override marker are updated together,
 // while the flags in the packed cache value are preserved.
-void AtomicSetFeatureState(std::atomic<FeatureStateCache>& state,
+void AtomicSetFeatureState(std::atomic_ref<FeatureStateCache> state,
                            FeatureList::OverrideState override_state,
                            bool resolved_enabled,
                            uint32_t caching_context) {
@@ -387,18 +388,19 @@ uint16_t g_current_caching_context = 1;
 }  // namespace
 
 bool Feature::IsRuntimeMutable() const {
-  return FeatureIsRuntimeMutable(state->load(std::memory_order_relaxed));
+  return FeatureIsRuntimeMutable(internal::GetFeatureStateCache(tagged_state)
+                                     .load(std::memory_order_relaxed));
 }
 
 bool Feature::WasAccessedEarlyForTesting() const {
-  return HasFlags(state->load(std::memory_order_relaxed),
+  return HasFlags(internal::GetFeatureStateCache(tagged_state)
+                      .load(std::memory_order_relaxed),
                   internal::kCachedLogEarlyMask);
 }
 
 FeatureState Feature::GetDefaultState() const {
-  return static_cast<FeatureState>((state->load(std::memory_order_relaxed) &
-                                    internal::kFeatureDefaultStateMask) >>
-                                   internal::kFeatureDefaultStateShift);
+  return static_cast<FeatureState>(
+      internal::GetFeatureDefaultStateTag(tagged_state));
 }
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -1080,8 +1082,9 @@ void FeatureList::ResetEarlyFeatureAccessTrackerForTesting() {
 // static
 void FeatureList::ClearFeatureCachedValueForTesting(const Feature& feature) {
   // Keep the bits that are fixed when the feature is defined.
-  feature.state->fetch_and(internal::kFeatureImmutableStateMask,
-                           std::memory_order_relaxed);
+  internal::GetFeatureStateCache(feature.tagged_state)
+      .fetch_and(internal::kFeatureImmutableStateMask,
+                 std::memory_order_relaxed);
 }
 
 bool FeatureList::IsRuntimeMutabilityEnabledForTesting(
@@ -1149,16 +1152,17 @@ void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor,
 void FeatureList::RegisterFeatureAccess(
     const Feature& feature,
     Feature::FeatureStateCache logging_mask) {
-  Feature::FeatureStateCache expected =
-      feature.state->load(std::memory_order_relaxed);
+  std::atomic_ref<Feature::FeatureStateCache> state =
+      internal::GetFeatureStateCache(feature.tagged_state);
+  Feature::FeatureStateCache expected = state.load(std::memory_order_relaxed);
 
   while ((expected & logging_mask) != logging_mask) {
     Feature::FeatureStateCache new_value = expected | logging_mask;
     // Note that compare_exchange_weak() will update `expected` if the value
     // doesn't match.
-    if (feature.state->compare_exchange_weak(expected, new_value,
-                                             std::memory_order_relaxed,
-                                             std::memory_order_relaxed)) {
+    if (state.compare_exchange_weak(expected, new_value,
+                                    std::memory_order_relaxed,
+                                    std::memory_order_relaxed)) {
       if ((logging_mask & internal::kCachedLogGeneralMask) &&
           (expected & internal::kCachedLogGeneralMask) == 0) {
         base::UmaHistogramSparse(
@@ -1202,7 +1206,8 @@ void FeatureList::BuildTrialToFeaturesIndex() {
 
 bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
   const Feature::FeatureStateCache cached_value =
-      feature.state->load(std::memory_order_relaxed);
+      internal::GetFeatureStateCache(feature.tagged_state)
+          .load(std::memory_order_relaxed);
   if (!FeatureIsRuntimeMutable(cached_value) &&
       (cached_value & internal::kCachingContextMask) == caching_context_) {
     return (cached_value & internal::kCachedResolvedEnabledMask) != 0;
@@ -1270,7 +1275,8 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
     bool activate_trial) const {
   DCHECK(initialized_);
   Feature::FeatureStateCache current_cached_value =
-      feature.state->load(std::memory_order_relaxed);
+      internal::GetFeatureStateCache(feature.tagged_state)
+          .load(std::memory_order_relaxed);
 
   // If the feature is runtime mutable, then we need to check if there is a
   // runtime override state and use that if it exists.
@@ -1292,11 +1298,11 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
   }
 
   // It is safe to defer these checks until after the cache check above:
-  // `feature.state` points to storage unique to this `Feature` instance and
-  // only gets populated with `caching_context_` after passing the checks below
-  // on a cache miss. Any duplicate `Feature` definition with the same `name`
-  // at a different address has its own state storage (initially uncached),
-  // so its first query will also miss the cache and fail
+  // `feature.tagged_state` points to storage unique to this `Feature` instance
+  // and only gets populated with `caching_context_` after passing the checks
+  // below on a cache miss. Any duplicate `Feature` definition with the same
+  // `name` at a different address has its own state storage (initially
+  // uncached), so its first query will also miss the cache and fail
   // `CheckFeatureIdentity()` below.
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature))
@@ -1315,8 +1321,8 @@ FeatureList::OverrideState FeatureList::GetOverrideStateImpl(
   if (activate_trial) {
     const bool resolved_enabled =
         IsFeatureEnabledForOverrideState(feature, state);
-    AtomicSetFeatureState(*feature.state, state, resolved_enabled,
-                          caching_context_);
+    AtomicSetFeatureState(internal::GetFeatureStateCache(feature.tagged_state),
+                          state, resolved_enabled, caching_context_);
   }
 
   return state;

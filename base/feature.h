@@ -5,7 +5,6 @@
 #ifndef BASE_FEATURE_H_
 #define BASE_FEATURE_H_
 
-#include <atomic>
 #include <cstdint>
 #include <string_view>
 
@@ -188,9 +187,10 @@ enum FeatureState {
   kFeatureStateMaxValue = FEATURE_ENABLED_FOR_COUNTRIES,
 };
 
-static_assert(FeatureState::kFeatureStateMaxValue < 4,
-              "FeatureState values must fit in the 2-bit default-state field "
-              "of the packed feature state");
+static_assert(FeatureState::kFeatureStateMaxValue <=
+                  internal::kFeatureDefaultStateTagMask,
+              "FeatureState values must fit in the 2-bit default-state tag "
+              "of Feature::tagged_state");
 
 constexpr bool IsCountrySpecificFeatureState(FeatureState state) {
   switch (state) {
@@ -211,18 +211,18 @@ constexpr bool IsCountrySpecificFeatureState(FeatureState state) {
 //
 // A Feature is immutable, so it can be placed in read-only memory. The state
 // that `FeatureList` writes, such as the cached resolved state, lives in a
-// separate atomic word that `state` points to.
+// separate atomic word that `tagged_state` points into.
 struct BASE_EXPORT Feature {
   // The type used to store the cached state of a feature. This is a uint32_t
   // that is packed with the resolved enabled state, explicit-override marker,
-  // logging and mutability flags, default state, and a caching context ID.
-  // See the comments on `state` below for more details.
+  // logging and mutability flags, and a caching context ID. See the comments
+  // on `tagged_state` below for more details.
   using FeatureStateCache = uint32_t;
 
   constexpr Feature(const char* name,
-                    std::atomic<FeatureStateCache>* state,
+                    void* tagged_state,
                     internal::FeatureMacroHandshake handshake)
-      : name(name), state(state) {
+      : name(name), tagged_state(tagged_state) {
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
     if (std::string_view(name).starts_with(
             BUILDFLAG(BANNED_BASE_FEATURE_PREFIX))) {
@@ -261,15 +261,20 @@ struct BASE_EXPORT Feature {
   friend class FeatureList;
   friend class FeatureListTest;
 
-  // Points to a packed value where bits 24 and 25 hold the resolved enabled
-  // state and whether the feature was explicitly overridden. Bits 16 through 23
-  // hold flags (logging, runtime mutability, and the default state), and bits 0
+  // Points into an `internal::FeatureStateStorage`, at an offset equal to the
+  // feature's default `FeatureState`. Masking off the low bits yields the
+  // storage, which holds a packed value where bits 24 and 25 hold the resolved
+  // enabled state and whether the feature was explicitly overridden. Bits 16
+  // through 23 hold flags (logging and runtime mutability), and bits 0
   // through 15 hold a caching context ID used to allow ScopedFeatureLists to
   // invalidate these cached values in testing. A value of 0 in the caching
   // context ID field indicates that this value has never been looked up and
   // cached, a value of 1 indicates this value contains a state cached via
   // `base::FeatureList`, and any other value indicates that this cached value
   // is only valid for a particular ScopedFeatureList instance.
+  //
+  // The default state is stored in the pointer rather than in the packed value
+  // so that the packed value of most features is zero-initialized.
   //
   // Packing these values into a uint32_t makes it so that atomic operations
   // performed on this fields can be lock free.
@@ -283,7 +288,7 @@ struct BASE_EXPORT Feature {
   //
   // RAW_PTR_EXCLUSION: The feature macros guarantee that the state storage has
   // static storage duration.
-  RAW_PTR_EXCLUSION std::atomic<FeatureStateCache>* const state;
+  RAW_PTR_EXCLUSION void* const tagged_state;
 };
 
 // `FeatureWithCountryRestriction` allows enabling or disabling a feature for a
@@ -320,10 +325,11 @@ struct BASE_EXPORT Feature {
 struct BASE_EXPORT FeatureWithCountryRestriction : public Feature {
   constexpr FeatureWithCountryRestriction(
       const char* feature_name,
-      std::atomic<FeatureStateCache>* state,
+      void* tagged_state,
       base::span<const std::string_view> countries_list,
       internal::FeatureMacroHandshake handshake)
-      : Feature(feature_name, state, handshake), countries(countries_list) {}
+      : Feature(feature_name, tagged_state, handshake),
+        countries(countries_list) {}
 
   FeatureWithCountryRestriction(const FeatureWithCountryRestriction&) = delete;
   FeatureWithCountryRestriction& operator=(

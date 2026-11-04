@@ -5,7 +5,6 @@
 #define BASE_FEATURE_INTERNAL_H_
 
 #include <array>
-#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <string_view>
@@ -23,18 +22,64 @@ namespace feature_state_masks {
 
 enum : uint32_t {
   kRuntimeMutabilityMask = 1 << 18,
-  // LINT.IfChange(FeatureDefaultState)
-  kFeatureDefaultStateShift = 19,
-  // LINT.ThenChange(feature.rs:FeatureDefaultState)
 };
 
 }  // namespace feature_state_masks
 
-constexpr uint32_t MakeFeatureStateCacheInitialValue(bool is_runtime_mutable,
-                                                     uint32_t default_state) {
-  return (is_runtime_mutable ? feature_state_masks::kRuntimeMutabilityMask
-                             : 0u) |
-         (default_state << feature_state_masks::kFeatureDefaultStateShift);
+constexpr uint32_t MakeFeatureStateCacheInitialValue(bool is_runtime_mutable) {
+  return is_runtime_mutable ? feature_state_masks::kRuntimeMutabilityMask : 0u;
+}
+
+// The writable state of one feature. A `Feature` does not point at `word`
+// directly. Instead, it points at `default_state_tags[default_state]`, so that
+// the default state is encoded in the low bits of the pointer. This keeps
+// `word` zero-initialized (and thus in .bss on ELF) for all features that are
+// not runtime-mutable.
+//
+// `word` is a plain `uint32_t` so that this header does not need <atomic>. It
+// must only be accessed atomically, via `GetFeatureStateCache()` in
+// base/feature_list_internal.h.
+union FeatureStateStorage {
+  uint32_t word;
+  // Never accessed. Exists only so that tagged pointers can be formed in
+  // constant expressions, where `reinterpret_cast` and `void*` arithmetic are
+  // not allowed. The 1-byte element type makes
+  // `&default_state_tags[kDefaultState]` advance the address by exactly
+  // `kDefaultState` bytes. This is a C array rather than a `std::array`
+  // because calling `operator[]` on an inactive union member is not allowed in
+  // constant expressions, while the built-in subscript only forms an address.
+  char default_state_tags[sizeof(uint32_t)];
+};
+
+// LINT.IfChange(FeatureDefaultStateTag)
+inline constexpr uintptr_t kFeatureDefaultStateTagMask = 0b11;
+// LINT.ThenChange(feature.rs:FeatureDefaultStateTag)
+
+static_assert(sizeof(FeatureStateStorage) == sizeof(uint32_t));
+static_assert(alignof(FeatureStateStorage) > kFeatureDefaultStateTagMask,
+              "FeatureStateStorage must be aligned enough to leave room for "
+              "the default-state tag in the low bits of its address");
+
+// Returns a pointer into `storage` that is tagged with `kDefaultState`.
+template <uint32_t kDefaultState>
+constexpr void* TagFeatureStateStorage(FeatureStateStorage& storage) {
+  static_assert(kDefaultState <= kFeatureDefaultStateTagMask);
+  return &storage.default_state_tags[kDefaultState];
+}
+
+// Returns the default state that `tagged_state` is tagged with.
+inline uint32_t GetFeatureDefaultStateTag(const void* tagged_state) {
+  return static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tagged_state) &
+                               kFeatureDefaultStateTagMask);
+}
+
+// Returns the state word that `tagged_state` points into. Use
+// `GetFeatureStateCache()` in base/feature_list_internal.h to access it.
+inline uint32_t* GetFeatureStateWord(void* tagged_state) {
+  return &reinterpret_cast<FeatureStateStorage*>(
+              reinterpret_cast<uintptr_t>(tagged_state) &
+              ~kFeatureDefaultStateTagMask)
+              ->word;
 }
 
 // Returns true if all country codes in the given span are valid in a simple
@@ -97,20 +142,22 @@ namespace base::internal {
 // state storage. A variable template keeps BASE_FEATURE() a single declaration,
 // so prefixes such as static and COMPONENT_EXPORT() still apply to the feature.
 template <typename Tag, uint32_t initial_value>
-BASE_FEATURE_STATE_SECTION inline constinit std::atomic<uint32_t>
+BASE_FEATURE_STATE_SECTION inline constinit FeatureStateStorage
     feature_state_storage{initial_value};
 
 }  // namespace base::internal
 
-// Returns a pointer to a new state storage object for a feature.
-#define BASE_FEATURE_INTERNAL_STATE(is_runtime_mutable, default_state,  \
-                                    state_predicate)                    \
-  ([]<base::FeatureState kDefaultState>() {                             \
-    static_assert(state_predicate(kDefaultState));                      \
-    return &base::internal::feature_state_storage<                      \
-        decltype([] {}),                                                \
-        base::internal::MakeFeatureStateCacheInitialValue(              \
-            is_runtime_mutable, static_cast<uint32_t>(kDefaultState))>; \
+// Returns a tagged pointer to a new state storage object for a feature.
+#define BASE_FEATURE_INTERNAL_STATE(is_runtime_mutable, default_state,   \
+                                    state_predicate)                     \
+  ([]<base::FeatureState kDefaultState>() {                              \
+    static_assert(state_predicate(kDefaultState));                       \
+    return base::internal::TagFeatureStateStorage<static_cast<uint32_t>( \
+        kDefaultState)>(                                                 \
+        base::internal::feature_state_storage<                           \
+            decltype([] {}),                                             \
+            base::internal::MakeFeatureStateCacheInitialValue(           \
+                is_runtime_mutable)>);                                   \
   }.template operator()<(default_state)>())
 
 // Three-argument version of BASE_FEATURE macro.
