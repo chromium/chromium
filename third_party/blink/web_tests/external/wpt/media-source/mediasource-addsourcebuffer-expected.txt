@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test addSourceBuffer() with null
+  assert_throws_dom: addSourceBuffer() threw an exception when passed null. function "function() { mediaSource.addSourceBuffer(null); }" threw object "TypeError: Failed to execute 'addSourceBuffer' on 'MediaSource': SourceBufferConfig must have precisely one media type" that is not a DOMException NotSupportedError: property "code" is equal to undefined, expected 9
+Harness: the test ran to completion.
+

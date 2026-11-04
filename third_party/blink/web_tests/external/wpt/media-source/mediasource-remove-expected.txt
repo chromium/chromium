@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Test removing all appended data.
+  assert_equals: Initial buffered range. expected "{ [0.095, 6.548) }" but got "{ [0.000, 6.548) }"
+[FAIL] Test removing beginning of appended data.
+  assert_equals: Initial buffered range. expected "{ [0.095, 6.548) }" but got "{ [0.000, 6.548) }"
+[FAIL] Test removing the middle of appended data.
+  assert_equals: Initial buffered range. expected "{ [0.095, 6.548) }" but got "{ [0.000, 6.548) }"
+[FAIL] Test removing the end of appended data.
+  assert_equals: Initial buffered range. expected "{ [0.095, 6.548) }" but got "{ [0.000, 6.548) }"
+Harness: the test ran to completion.
+

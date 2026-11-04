@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Muxed content with different lengths
+  assert_equals: mediaSource.activeSourceBuffers[0] expected "{ [0.067, 2.043) }" but got "{ [0.000, 2.043) }"
+[FAIL] buffered return the same object over multiple calls.
+  assert_equals: expected object "[object TimeRanges]" but got object "[object TimeRanges]"
+Harness: the test ran to completion.
+

@@ -4456,8 +4456,6 @@ crbug.com/722212 fast/events/pointerevents/mouse-pointer-event-properties.html [
 crbug.com/874837 [ Win ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
 crbug.com/874837 [ Debug Linux ] ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure Pass ]
 
-crbug.com/715718 external/wpt/media-source/mediasource-remove.html [ Failure Pass ]
-
 # Temporarily disabled since tests don't make window key on Mac
 crbug.com/1267867 [ Mac ] external/wpt/pointerevents/pointerlock/* [ Failure Skip ]
 crbug.com/1267867 [ Mac ] external/wpt/pointerlock/* [ Failure Skip ]
@@ -4583,15 +4581,10 @@ crbug.com/814964 virtual/gpu-rasterization/images/yuv-decode-eligible/color-prof
 
 # These pass on bots with proprietary codecs (most CQ bots) while failing on bots without.
 crbug.com/807110 external/wpt/html/semantics/embedded-content/media-elements/mime-types/canPlayType.html [ Failure Pass ]
-crbug.com/807110 external/wpt/media-source/mediasource-addsourcebuffer.html [ Failure Pass ]
-crbug.com/807110 external/wpt/media-source/mediasource-buffered.html [ Failure Pass ]
-crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-a-bitrate.html [ Failure Pass ]
-crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Failure Pass Timeout ]
-crbug.com/807110 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Failure Pass Timeout ]
-# Failure and Pass for crbug.com/807110 and Timeout for crbug.com/727252.
-crbug.com/727252 [ Debug ] external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
-crbug.com/727252 [ Release ] external/wpt/media-source/mediasource-endofstream.html [ Failure Pass Timeout ]
-crbug.com/807110 external/wpt/media-source/mediasource-sequencemode-append-buffer.html [ Failure Pass ]
+crbug.com/727252 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-bitrate.html [ Pass Timeout ]
+crbug.com/727252 [ Release Win ] external/wpt/media-source/mediasource-config-change-mp4-v-framerate.html [ Pass Timeout ]
+crbug.com/727252 [ Debug ] external/wpt/media-source/mediasource-endofstream.html [ Pass Timeout ]
+crbug.com/727252 [ Release ] external/wpt/media-source/mediasource-endofstream.html [ Pass Timeout ]
 crbug.com/794338 media/video-rotation.html [ Failure Pass ]
 
 # MHT works only when loaded from local FS (file://..).
@@ -5738,6 +5731,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/W3C/vid
 crbug.com/1426179 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-changetype.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-changetype-play-implicit.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-changetype-play.html [ Failure Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-config-change-mp4-a-bitrate.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-config-change-mp4-av-audio-bitrate.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-config-change-mp4-av-framesize.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/mediasource-config-change-mp4-av-video-bitrate.html [ Failure Skip ]
