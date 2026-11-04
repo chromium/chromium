@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_task.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
@@ -35,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -980,6 +982,10 @@ class ActorTaskSurfaceTest : public ActorTaskTest {
   }
 
  protected:
+  ActorKeyedService& service() {
+    return *ActorKeyedService::Get(profile_.get());
+  }
+
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
   tabs::MockTabInterface mock_tab_;
@@ -1038,10 +1044,12 @@ TEST_F(ActorTaskSurfaceTest, ObserveTabOnceThroughSurface) {
 // A surface without a tab comes under actor control like a tab, but doesn't
 // count as visible.
 TEST_F(ActorTaskSurfaceTest, ControlsSurfaceWithoutTab) {
-  ActorSurface* actor_surface = registry().CreateHeadlessWebContents();
+  ScopedHeadlessActorSurface headless = service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
+  ActorSurface* actor_surface = actor_surface_handle.Get();
   ASSERT_TRUE(actor_surface);
   ASSERT_FALSE(actor_surface->GetTabHandle());
-  const ActorSurfaceHandle actor_surface_handle = actor_surface->GetHandle();
   content::WebContents* contents = actor_surface->GetWebContents();
 
   base::test::TestFuture<mojom::ActionResultPtr> add_future;
@@ -1060,9 +1068,109 @@ TEST_F(ActorTaskSurfaceTest, ControlsSurfaceWithoutTab) {
 
   task_->RemoveActorSurface(actor_surface_handle);
   EXPECT_FALSE(contents->IsBeingCaptured());
+}
 
-  // Destroy the page before the test harness tears down.
-  registry().DestroySurface(actor_surface_handle);
+// A page without a tab can't close itself (e.g. window.close()), so the task
+// keeps acting on it, unlike a tab-backed surface whose tab closes.
+TEST_F(ActorTaskSurfaceTest, SurfaceWithoutTabClosingItselfKeepsTask) {
+  ScopedHeadlessActorSurface headless = service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
+  content::WebContents* contents = actor_surface_handle.Get()->GetWebContents();
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+
+  contents->Close();
+
+  EXPECT_FALSE(task_->IsCompleted());
+  EXPECT_TRUE(task_->IsActingOnActorSurface(actor_surface_handle));
+  EXPECT_TRUE(registry().Get(actor_surface_handle));
+
+  task_->RemoveActorSurface(actor_surface_handle);
+}
+
+// Dropping the ScopedHeadlessActorSurface destroys the page. A task still
+// acting on it stops instead of keeping a surface that is gone.
+TEST_F(ActorTaskSurfaceTest, DestroyingSurfaceWithoutTabStopsTask) {
+  std::optional<ScopedHeadlessActorSurface> headless =
+      service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless->actor_surface_handle();
+  content::WebContentsDestroyedWatcher watcher(
+      actor_surface_handle.Get()->GetWebContents());
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+
+  ExpectStopNotification(ActorTask::State::kCancelled);
+  ExpectTabRemovedNotification(tabs::TabHandle::Null());
+  headless.reset();
+
+  EXPECT_TRUE(task_->IsCompleted());
+  EXPECT_EQ(task_->stopped_reason(), ActorTask::StoppedReason::kTabDetached);
+  EXPECT_FALSE(registry().Get(actor_surface_handle));
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+// A task stopping because its page is being destroyed may ask to destroy the
+// same page again, e.g. from a task state callback. That nested request is
+// ignored: the page stays alive until every task has been told.
+TEST_F(ActorTaskSurfaceTest, DestroyingSurfaceWithoutTabAgainWhileNotifying) {
+  std::optional<ScopedHeadlessActorSurface> headless =
+      service().CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless->actor_surface_handle();
+  content::WebContentsDestroyedWatcher watcher(
+      actor_surface_handle.Get()->GetWebContents());
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_future;
+  task_->AddActorSurface(actor_surface_handle, /*stop_task_on_detach=*/true,
+                         add_future.GetCallback());
+  ASSERT_TRUE(add_future.Wait());
+
+  bool destroyed_again = false;
+  base::CallbackListSubscription subscription =
+      service().AddTaskStateChangedCallback(
+          base::BindLambdaForTesting([&](ActorTask& task) {
+            if (!task.IsCompleted()) {
+              return;
+            }
+            service().DestroyHeadlessActorSurface(actor_surface_handle);
+            destroyed_again = true;
+            EXPECT_FALSE(watcher.IsDestroyed());
+            EXPECT_TRUE(registry().Get(actor_surface_handle));
+          }));
+
+  ExpectStopNotification(ActorTask::State::kCancelled);
+  ExpectTabRemovedNotification(tabs::TabHandle::Null());
+  headless.reset();
+
+  EXPECT_TRUE(destroyed_again);
+  EXPECT_TRUE(task_->IsCompleted());
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+// Shutdown() destroys every headless page; a ScopedHeadlessActorSurface dropped
+// afterwards does nothing.
+TEST_F(ActorTaskSurfaceTest, DroppingSurfaceWithoutTabAfterShutdown) {
+  std::optional<ScopedHeadlessActorSurface> headless =
+      service().CreateHeadlessActorSurface();
+  content::WebContentsDestroyedWatcher watcher(
+      headless->actor_surface_handle().Get()->GetWebContents());
+
+  // Shutdown() deletes the task, which owns the mock dispatcher. Drop the
+  // pointers to them first so they don't dangle.
+  task_ = nullptr;
+  mock_ui_event_dispatcher_ = nullptr;
+  service().Shutdown();
+  EXPECT_TRUE(watcher.IsDestroyed());
+
+  headless.reset();
 }
 
 }  // namespace

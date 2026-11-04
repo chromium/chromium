@@ -54,8 +54,6 @@ void HeadlessWebContentsManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HeadlessWebContentsManager::CloseContents(content::WebContents* source) {
-  Destroy(source);
-}
+void HeadlessWebContentsManager::CloseContents(content::WebContents* source) {}
 
 }  // namespace actor

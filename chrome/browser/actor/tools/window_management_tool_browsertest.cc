@@ -8,7 +8,6 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
-#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -246,8 +245,9 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
 // multiple surfaces is supported.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
                        CreateWindowDoesNotAddTabWhenHeadlessSurfaceActing) {
-  ActorSurface* headless_surface =
-      actor_keyed_service().GetSurfaceRegistry().CreateHeadlessWebContents();
+  ScopedHeadlessActorSurface headless =
+      actor_keyed_service().CreateHeadlessActorSurface();
+  ActorSurface* headless_surface = headless.actor_surface_handle().Get();
   ASSERT_TRUE(headless_surface);
   const ActorSurfaceHandle headless_handle = headless_surface->GetHandle();
 

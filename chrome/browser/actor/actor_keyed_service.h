@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -56,6 +57,7 @@ class ActorUiStateManagerInterface;
 class UiEventDispatcher;
 }  // namespace ui
 
+class ActorKeyedService;
 class ActorSurfaceRegistry;
 class ChromeActuationTransportHandlerFactory;
 class EnterprisePolicyChecker;
@@ -63,6 +65,32 @@ class ActorTaskMetadata;
 class HeadlessWebContentsManager;
 class ToolRequest;
 class TabObservationStrategy;
+
+// Owns a headless actor surface created by
+// ActorKeyedService::CreateHeadlessActorSurface(), and destroys it through
+// ActorKeyedService::DestroyHeadlessActorSurface() when it goes out of scope.
+// Whoever holds it decides how long the headless page lives.
+class ScopedHeadlessActorSurface {
+ public:
+  ScopedHeadlessActorSurface(base::PassKey<ActorKeyedService>,
+                             ActorSurfaceHandle actor_surface_handle,
+                             base::OnceClosure destroyer);
+  ScopedHeadlessActorSurface(const ScopedHeadlessActorSurface&) = delete;
+  ScopedHeadlessActorSurface& operator=(const ScopedHeadlessActorSurface&) =
+      delete;
+  ScopedHeadlessActorSurface(ScopedHeadlessActorSurface&& other);
+  ~ScopedHeadlessActorSurface();
+
+  ActorSurfaceHandle actor_surface_handle() const {
+    return actor_surface_handle_;
+  }
+
+ private:
+  // The headless surface this object owns.
+  ActorSurfaceHandle actor_surface_handle_;
+  // Runs ActorKeyedService::DestroyHeadlessActorSurface() on destruction.
+  base::ScopedClosureRunner destroyer_;
+};
 
 // This class owns all ActorTasks for a given profile. ActorTasks are kept in
 // memory until the process is destroyed.
@@ -143,6 +171,23 @@ class ActorKeyedService : public KeyedService,
 
   // The registry of surfaces the actor can act on for the associated profile.
   ActorSurfaceRegistry& GetSurfaceRegistry() LIFETIME_BOUND;
+
+  // Creates a headless actor surface: a page with no tab and no window. It
+  // lives until the returned object is destroyed, or until this service shuts
+  // down.
+  [[nodiscard]] ScopedHeadlessActorSurface CreateHeadlessActorSurface();
+
+  // Destroys the headless actor surface `actor_surface_handle` and its page.
+  // First tells the tasks acting on or observing it, while the page is still
+  // alive, through ActorTask::OnActorSurfaceWillDetach(). A no-op if the
+  // surface is already gone, or after Shutdown(). `actor_surface_handle` must
+  // not refer to a tab-backed surface.
+  void DestroyHeadlessActorSurface(ActorSurfaceHandle actor_surface_handle);
+
+  // Lets tests call the ActorSurfaceRegistry methods reserved for this class.
+  static base::PassKey<ActorKeyedService> GetPassKeyForTesting() {
+    return base::PassKey<ActorKeyedService>();
+  }
 
   // The shared browser tool registry for the associated profile.
   const ToolRegistry& tool_registry() const LIFETIME_BOUND {
@@ -380,6 +425,10 @@ class ActorKeyedService : public KeyedService,
   // surfaces.
   std::unique_ptr<HeadlessWebContentsManager> headless_web_contents_manager_;
   std::unique_ptr<ActorSurfaceRegistry> surface_registry_;
+
+  // For avoiding reentrancy. A temporary set of headless surfaces being
+  // destroyed.
+  base::flat_set<ActorSurfaceHandle> headless_actor_surfaces_being_destroyed_;
 
   // Registered with `TransportService` when `kBrowserActuator` is
   // enabled, and unregistered and destroyed in `Shutdown()` after tasks are

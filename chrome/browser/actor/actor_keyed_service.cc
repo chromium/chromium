@@ -161,6 +161,21 @@ CreateOptionalPaintPreviewOptions() {
 
 using ui::ActorUiStateManagerInterface;
 
+ScopedHeadlessActorSurface::ScopedHeadlessActorSurface(
+    base::PassKey<ActorKeyedService>,
+    ActorSurfaceHandle actor_surface_handle,
+    base::OnceClosure destroyer)
+    : actor_surface_handle_(actor_surface_handle),
+      destroyer_(std::move(destroyer)) {}
+
+ScopedHeadlessActorSurface::ScopedHeadlessActorSurface(
+    ScopedHeadlessActorSurface&& other)
+    : actor_surface_handle_(std::exchange(other.actor_surface_handle_,
+                                          ActorSurfaceHandle::Null())),
+      destroyer_(std::move(other.destroyer_)) {}
+
+ScopedHeadlessActorSurface::~ScopedHeadlessActorSurface() = default;
+
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
   headless_web_contents_manager_ =
@@ -229,6 +244,57 @@ void ActorKeyedService::OnProfileInitializationComplete(Profile* profile) {
   // initialized which may not be true until the profile is initialized.
   download_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
       profile_->GetDownloadManager(), this);
+}
+
+ScopedHeadlessActorSurface ActorKeyedService::CreateHeadlessActorSurface() {
+  CHECK(surface_registry_);
+  const ActorSurfaceHandle actor_surface_handle =
+      surface_registry_
+          ->CreateHeadlessWebContents(base::PassKey<ActorKeyedService>())
+          ->GetHandle();
+  return ScopedHeadlessActorSurface(
+      base::PassKey<ActorKeyedService>(), actor_surface_handle,
+      base::BindOnce(&ActorKeyedService::DestroyHeadlessActorSurface,
+                     weak_ptr_factory_.GetWeakPtr(), actor_surface_handle));
+}
+
+void ActorKeyedService::DestroyHeadlessActorSurface(
+    ActorSurfaceHandle actor_surface_handle) {
+  if (!surface_registry_) {
+    // The registry is gone after Shutdown(), and with it every headless
+    // surface.
+    return;
+  }
+  ActorSurface* actor_surface = surface_registry_->Get(actor_surface_handle);
+  if (!actor_surface) {
+    // Already destroyed, e.g. destroyed explicitly before the scoper was
+    // dropped.
+    return;
+  }
+  // Only headless surfaces can be destroyed here.
+  CHECK(!actor_surface->IsTab());
+  if (!headless_actor_surfaces_being_destroyed_.insert(actor_surface_handle)
+           .second) {
+    // We probably reached here via reentrancy. Ignore it.
+    return;
+  }
+
+  // Tell tasks first, while the surface and its page are still alive. This may
+  // stop tasks.
+  std::vector<TaskId> tasks_to_notify =
+      FindTaskIdsInActive([actor_surface_handle](const ActorTask& task) {
+        return task.HasActorSurface(actor_surface_handle) ||
+               task.GetLastActedActorSurfaces().contains(actor_surface_handle);
+      });
+  for (TaskId id : tasks_to_notify) {
+    if (ActorTask* task = GetTask(id)) {
+      task->OnActorSurfaceWillDetach(actor_surface_handle);
+    }
+  }
+
+  surface_registry_->DestroyHeadlessActorSurface(
+      actor_surface_handle, base::PassKey<ActorKeyedService>());
+  headless_actor_surfaces_being_destroyed_.erase(actor_surface_handle);
 }
 
 ActorKeyedService::~ActorKeyedService() = default;

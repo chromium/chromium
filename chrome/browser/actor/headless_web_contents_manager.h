@@ -23,6 +23,11 @@ namespace actor {
 // Central class responsible for creating and owning headless WebContents, i.e.
 // WebContents that are not attached to a tab or a browser window. Notifies
 // observers about the lifecycle of a headless WebContents.
+//
+// A headless page can't close itself: window.close() is ignored, so its
+// lifetime doesn't depend on the page. It lives until Destroy() is called,
+// normally through ActorKeyedService::DestroyHeadlessActorSurface(), or until
+// the manager is destroyed.
 class HeadlessWebContentsManager : public content::WebContentsDelegate {
  public:
   // Observer to be notified about headless WebContents lifecycle events.
@@ -53,6 +58,8 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   content::BrowserContext* browser_context() const { return browser_context_; }
 
   // content::WebContentsDelegate:
+  // Intentionally does not destroy `source`: a headless page outlives
+  // window.close() and is destroyed only through Destroy().
   void CloseContents(content::WebContents* source) override;
 
  private:

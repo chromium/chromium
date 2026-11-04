@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/headless_web_contents_manager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -22,16 +23,17 @@ class WebContents;
 
 namespace actor {
 
+class ActorKeyedService;
 class ActorSurfaceImpl;
 
-// Owns every ActorSurface for a profile.
+// Owns every ActorSurface for a profile, both tab-backed and headless.
 //
 // Every live tab in this profile has a tab-backed surface, created eagerly by
-// ActorSurfaceTabHelper and torn down when the tab is destroyed.
-// Headless surfaces are torn down by DestroySurface(), which drops the surface
-// and then asks HeadlessWebContentsManager to destroy the WebContents. Either
-// way a surface never outlives its backing, which is what lets
-// ActorSurface::GetWebContents() always return a valid pointer.
+// ActorSurfaceTabHelper and torn down when the tab is destroyed. Headless
+// surfaces are created and destroyed by the client via ActorKeyedService APIs.
+// A surface never outlives its backing, which is what lets
+// ActorSurface::GetWebContents() always return a valid pointer. See
+// chrome/browser/actor/README.md.
 class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
  public:
   // `headless_manager` must outlive this registry.
@@ -52,11 +54,12 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   void OnTabWillBeDestroyed(tabs::TabHandle tab);
 
   // Creates a headless WebContents owned by the headless manager and returns
-  // its surface.
-  ActorSurface* CreateHeadlessWebContents();
+  // its surface. Features use ActorKeyedService::CreateHeadlessActorSurface().
+  ActorSurface* CreateHeadlessWebContents(base::PassKey<ActorKeyedService>);
 
   // `contents` must be owned by the headless manager.
-  ActorSurface* CreateForHeadless(content::WebContents* contents);
+  ActorSurface* CreateForHeadless(content::WebContents* contents,
+                                  base::PassKey<ActorKeyedService>);
 
   // Reconciles registry state when a surface's backing changes; the surface
   // keeps its ActorSurfaceHandle. Promotion and demotion move the same
@@ -68,7 +71,12 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
   void OnSurfacePromoted(ActorSurfaceHandle handle);
   void OnSurfaceWillBeDemoted(ActorSurfaceHandle handle);
 
-  void DestroySurface(ActorSurfaceHandle handle);
+  // Called to destroy the headless surface represented by `handle` and its
+  // WebContents. The surface is dropped before the WebContents is destroyed. A
+  // no-op if the surface is already gone. For tab-backed surfaces, cleanup is
+  // done via OnTabWillBeDestroyed() instead.
+  void DestroyHeadlessActorSurface(ActorSurfaceHandle handle,
+                                   base::PassKey<ActorKeyedService>);
 
   // HeadlessWebContentsManager::Observer:
   void OnHeadlessContentsWillBeDestroyed(

@@ -277,7 +277,8 @@ class ActorTask : public base::SupportsUserData {
   // Add/remove the given surface to the set of pages this task is operating
   // over and notify the UI if this is a new page for the task. Added pages
   // will enter actuation mode and be kept as visible. If `stop_task_on_detach`
-  // is true, then the task will be stopped when the page's tab is detached.
+  // is true, then the task will be stopped when the page goes away: its tab is
+  // closed, or its headless page is destroyed.
   using AddTabCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
   void AddActorSurface(ActorSurfaceHandle actor_surface_handle,
                        bool stop_task_on_detach,
@@ -357,6 +358,10 @@ class ActorTask : public base::SupportsUserData {
     return additional_tab_observations_;
   }
 
+  // Method to be called when a surface this task acts on or observes is about
+  // to go away: its tab is closing (ActorTabStripTrackerDesktop) or the
+  // headless surface is being destroyed (ActorKeyedService). Stops the task if
+  // the surface was added with `stop_task_on_detach`.
   void OnActorSurfaceWillDetach(ActorSurfaceHandle actor_surface_handle);
 
   const std::string& step_progress() const { return step_progress_; }

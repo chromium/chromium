@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface.h"
-#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/history_tool.h"
@@ -962,8 +961,8 @@ TEST_F(ActorNavigationThrottleTest, MaybeCreateAndAdd_AttachesForActingTab) {
 TEST_F(ActorNavigationThrottleTest,
        MaybeCreateAndAdd_AttachesForActingHeadlessPage) {
   ActorKeyedService* service = ActorKeyedService::Get(profile());
-  ActorSurface* actor_surface =
-      service->GetSurfaceRegistry().CreateHeadlessWebContents();
+  ScopedHeadlessActorSurface headless = service->CreateHeadlessActorSurface();
+  ActorSurface* actor_surface = headless.actor_surface_handle().Get();
   ASSERT_TRUE(actor_surface);
   content::WebContents* headless_contents = actor_surface->GetWebContents();
   ASSERT_FALSE(tabs::TabInterface::MaybeGetFromContents(headless_contents));
@@ -988,11 +987,8 @@ TEST_F(ActorNavigationThrottleTest,
 
   EXPECT_EQ(registry.throttles().size(), 1u);
 
-  // The headless page is owned by the profile; destroy it before the test
-  // harness checks for leaked RenderWidgetHosts.
   registry.throttles().clear();
   service->StopTask(task_id, ActorTask::StoppedReason::kTaskComplete);
-  service->GetSurfaceRegistry().DestroySurface(actor_surface->GetHandle());
 }
 
 // MaybeCreateAndAdd() doesn't attach the throttle to a page no task acts on.

@@ -93,17 +93,22 @@ void ActorSurfaceRegistry::OnTabCreated(tabs::TabInterface& tab) {
 
 void ActorSurfaceRegistry::OnTabWillBeDestroyed(tabs::TabHandle tab) {
   auto it = tab_to_surface_.find(tab);
-  if (it != tab_to_surface_.end()) {
-    DestroySurface(it->second);
+  if (it == tab_to_surface_.end()) {
+    return;
   }
+  const ActorSurfaceHandle actor_surface_handle = it->second;
+  tab_to_surface_.erase(it);
+  owned_surfaces_.erase(actor_surface_handle);
 }
 
-ActorSurface* ActorSurfaceRegistry::CreateHeadlessWebContents() {
-  return CreateForHeadless(headless_manager_->Create());
+ActorSurface* ActorSurfaceRegistry::CreateHeadlessWebContents(
+    base::PassKey<ActorKeyedService> pass_key) {
+  return CreateForHeadless(headless_manager_->Create(), pass_key);
 }
 
 ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
-    content::WebContents* contents) {
+    content::WebContents* contents,
+    base::PassKey<ActorKeyedService>) {
   CHECK(contents);
   CHECK_EQ(contents->GetBrowserContext(), headless_manager_->browser_context());
   if (ActorSurface* existing = GetForHeadless(contents)) {
@@ -146,25 +151,26 @@ void ActorSurfaceRegistry::OnSurfaceWillBeDemoted(ActorSurfaceHandle handle) {
   surface->SetHeadless();
 }
 
-void ActorSurfaceRegistry::DestroySurface(ActorSurfaceHandle handle) {
+void ActorSurfaceRegistry::DestroyHeadlessActorSurface(
+    ActorSurfaceHandle handle,
+    base::PassKey<ActorKeyedService>) {
   ActorSurfaceImpl* surface = GetImpl(handle);
   if (!surface) {
     return;
   }
-  if (std::optional<tabs::TabHandle> tab = surface->GetTabHandle()) {
-    tab_to_surface_.erase(*tab);
-    owned_surfaces_.erase(handle);
-  } else {
-    content::WebContents* contents = surface->GetWebContents();
-    owned_surfaces_.erase(handle);
-    headless_manager_->Destroy(contents);
-  }
+  CHECK(!surface->IsTab());
+  content::WebContents* contents = surface->GetWebContents();
+  // Destroy the surface before its WebContents, so it never outlives it.
+  owned_surfaces_.erase(handle);
+  headless_manager_->Destroy(contents);
 }
 
 void ActorSurfaceRegistry::OnHeadlessContentsWillBeDestroyed(
     content::WebContents* contents) {
-  // Intentionally empty: the registry drops headless surfaces in
-  // DestroySurface() before asking the manager to destroy the WebContents.
+  // Headless WebContents are only destroyed through
+  // DestroyHeadlessActorSurface(), which drops the surface first. A headless
+  // page can't close itself.
+  CHECK(!GetForHeadless(contents));
 }
 
 base::WeakPtr<ActorSurfaceRegistry> ActorSurfaceRegistry::GetWeakPtr() {

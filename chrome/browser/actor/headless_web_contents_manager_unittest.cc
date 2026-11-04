@@ -65,15 +65,21 @@ TEST_F(HeadlessWebContentsManagerTest, DestroyNotifiesThenDestroys) {
   EXPECT_TRUE(watcher.IsDestroyed());
 }
 
-// window.close() reaches the manager through WebContentsDelegate and must take
-// the same notify-then-destroy path.
-TEST_F(HeadlessWebContentsManagerTest, PageInitiatedCloseNotifiesThenDestroys) {
+// The page can't close itself: window.close() reaches the manager through
+// CloseContents(), which leaves the page alive.
+TEST_F(HeadlessWebContentsManagerTest, PageInitiatedCloseKeepsContents) {
   content::WebContents* contents = manager_->Create();
   content::WebContentsDestroyedWatcher watcher(contents);
-  ExpectNotifiedWhileValid(contents);
+  EXPECT_CALL(observer_, OnHeadlessContentsWillBeDestroyed).Times(0);
 
   contents->Close();
 
+  EXPECT_FALSE(watcher.IsDestroyed());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Destroy it explicitly before teardown.
+  ExpectNotifiedWhileValid(contents);
+  manager_->Destroy(contents);
   EXPECT_TRUE(watcher.IsDestroyed());
 }
 
