@@ -53,7 +53,9 @@ ui::TextInputClient* GetTextInputClient() {
   if (!handler)
     return nullptr;
   ui::TextInputClient* client = handler->GetInputMethod()->GetTextInputClient();
-  CHECK(client, base::NotFatalUntil::M160);
+  // TODO(crbug.com/578760208): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(client);
   return client;
 }
 
