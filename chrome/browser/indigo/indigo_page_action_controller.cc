@@ -4,6 +4,7 @@
 
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
@@ -67,6 +68,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/visibility.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -589,6 +591,24 @@ void IndigoPageActionController::DidFinishNavigation(
   last_non_retry_trigger_source_ = std::nullopt;
   context_menu_shown_on_current_page_ = false;
   trigger_source_recorded_on_current_page_ = false;
+  page_eligible_time_ = std::nullopt;
+  hidden_since_page_appeared_ = false;
+  if (navigation_handle->IsPageActivation()) {
+    // These pages painted before the user saw them, so start at activation.
+    page_appeared_time_ = base::TimeTicks::Now();
+  } else if (navigation_handle->IsSameDocument()) {
+    // There's no paint signal for these, so once the document has painted,
+    // start at navigation start.
+    if (page_appeared_time_) {
+      page_appeared_time_ = navigation_handle->NavigationStart();
+    }
+  } else {
+    page_appeared_time_ = std::nullopt;
+  }
+  if (page_appeared_time_ &&
+      web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    hidden_since_page_appeared_ = true;
+  }
   UpdateEntryPointsState();
 
   if (optimization_guide_) {
@@ -758,6 +778,10 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   TriggerEvaluation eval = EvaluateTriggerState();
   last_trigger_source_ = eval.source;
   const bool should_show = eval.source.has_value();
+  if (should_show && !page_eligible_time_) {
+    page_eligible_time_ = base::TimeTicks::Now();
+    MaybeRecordTimeToPageEligible();
+  }
 
   // Delegate chip and anchored message cueing to Contextual Cues whenever CCV2
   // is enabled and doing so will leave at least one functioning entry point
@@ -804,6 +828,16 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     page_action_controller_->Hide(kActionIndigo);
   }
   is_shown_ = should_show;
+}
+
+void IndigoPageActionController::MaybeRecordTimeToPageEligible() {
+  if (!page_appeared_time_ || !page_eligible_time_ ||
+      hidden_since_page_appeared_) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(
+      "Indigo.Discovery.TimeToPageEligible",
+      std::max(base::TimeDelta(), *page_eligible_time_ - *page_appeared_time_));
 }
 
 void IndigoPageActionController::RefreshDiscoverySkills() {
@@ -1124,6 +1158,27 @@ void IndigoPageActionController::DOMContentLoaded(
 
 void IndigoPageActionController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   metadata_classifier_.OnDocumentOnLoadCompletedInPrimaryMainFrame();
+}
+
+void IndigoPageActionController::OnFirstContentfulPaintInPrimaryMainFrame(
+    base::TimeTicks presentation_time) {
+  // Prerender activation replays an older FCP; keep the activation time.
+  if (page_appeared_time_) {
+    return;
+  }
+  page_appeared_time_ = presentation_time;
+  // A paint while hidden (e.g. a thumbnail capture) isn't one the user saw.
+  if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+    hidden_since_page_appeared_ = true;
+  }
+  MaybeRecordTimeToPageEligible();
+}
+
+void IndigoPageActionController::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility != content::Visibility::VISIBLE && page_appeared_time_) {
+    hidden_since_page_appeared_ = true;
+  }
 }
 
 void IndigoPageActionController::CheckEligibilityForCueing(

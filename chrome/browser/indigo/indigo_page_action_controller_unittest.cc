@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,6 +69,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/public/skill.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -381,6 +383,20 @@ class IndigoPageActionControllerTestBase : public testing::Test {
                 optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillOnce(base::test::RunOnceCallback<2>(
             decision, optimization_guide::OptimizationMetadata()));
+  }
+
+  // Like `ExpectOptimizationGuideDecision()`, but leaves the answer to the
+  // test.
+  void DeferOptimizationGuideDecision(
+      const GURL& url,
+      optimization_guide::OptimizationGuideDecisionCallback& callback) {
+    EXPECT_CALL(
+        *mock_optimization_guide_,
+        CanApplyOptimization(
+            url, optimization_guide::proto::OptimizationType::INDIGO,
+            testing::An<
+                optimization_guide::OptimizationGuideDecisionCallback>()))
+        .WillOnce(MoveArg<2>(&callback));
   }
 
   void SetupEligibleAndOnboarded() {
@@ -2203,6 +2219,92 @@ TEST_P(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
   histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
                                       IndigoTriggerSource::kOptimizationGuide,
                                       1);
+}
+
+TEST_P(IndigoPageActionControllerTest, RecordsTimeToPageEligible) {
+  CreateController();
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+  optimization_guide::OptimizationGuideDecisionCallback decision_callback;
+  DeferOptimizationGuideDecision(url, decision_callback);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url);
+  controller_->OnFirstContentfulPaintInPrimaryMainFrame(
+      task_environment_.NowTicks());
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  std::move(decision_callback)
+      .Run(OptimizationGuideDecision::kTrue,
+           optimization_guide::OptimizationMetadata());
+
+  histogram_tester.ExpectUniqueTimeSample("Indigo.Discovery.TimeToPageEligible",
+                                          base::Milliseconds(300), 1);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       RecordsZeroTimeToPageEligibleIfEligibleBeforePaint) {
+  CreateController();
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url);
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  controller_->OnFirstContentfulPaintInPrimaryMainFrame(
+      task_environment_.NowTicks());
+
+  histogram_tester.ExpectUniqueTimeSample("Indigo.Discovery.TimeToPageEligible",
+                                          base::TimeDelta(), 1);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       DoesNotRecordTimeToPageEligibleIfHidden) {
+  CreateController();
+  base::HistogramTester histogram_tester;
+
+  GURL url("https://example.com");
+  optimization_guide::OptimizationGuideDecisionCallback decision_callback;
+  DeferOptimizationGuideDecision(url, decision_callback);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url);
+  controller_->OnFirstContentfulPaintInPrimaryMainFrame(
+      task_environment_.NowTicks());
+  controller_->OnVisibilityChanged(content::Visibility::HIDDEN);
+  controller_->OnVisibilityChanged(content::Visibility::VISIBLE);
+  std::move(decision_callback)
+      .Run(OptimizationGuideDecision::kTrue,
+           optimization_guide::OptimizationMetadata());
+
+  histogram_tester.ExpectTotalCount("Indigo.Discovery.TimeToPageEligible", 0);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       RecordsTimeToPageEligibleFromSameDocumentNavigationStart) {
+  CreateController();
+  base::HistogramTester histogram_tester;
+
+  GURL url1("https://example.com/page1");
+  ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kFalse);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_interface_->GetContents(), url1);
+  controller_->OnFirstContentfulPaintInPrimaryMainFrame(
+      task_environment_.NowTicks());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  GURL url2("https://example.com/page2");
+  optimization_guide::OptimizationGuideDecisionCallback decision_callback;
+  DeferOptimizationGuideDecision(url2, decision_callback);
+  auto navigation2 = content::NavigationSimulator::CreateRendererInitiated(
+      url2, tab_interface_->GetContents()->GetPrimaryMainFrame());
+  navigation2->CommitSameDocument();
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  std::move(decision_callback)
+      .Run(OptimizationGuideDecision::kTrue,
+           optimization_guide::OptimizationMetadata());
+
+  histogram_tester.ExpectUniqueTimeSample("Indigo.Discovery.TimeToPageEligible",
+                                          base::Milliseconds(300), 1);
 }
 
 TEST_P(IndigoPageActionControllerTest, CheckEligibilityForCueingForced) {

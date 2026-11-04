@@ -137,6 +137,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.Discovery.TimeToPageEligible" units="ms"
+    expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records the time from when the page appears to the user until Indigo becomes
+    available on it (the page eligibility check first passes), or 0 if it was
+    already eligible. A page appears at first contentful paint, at activation
+    for prerendered and back/forward cached pages, and at navigation start for
+    same-document navigations that change the URL after the first paint. Not
+    recorded if the tab isn't visible in between.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.Glic.MaybeInvokeResult"
     enum="IndigoMaybeInvokeGlicResult" expires_after="2027-05-13">
   <owner>rodneyding@google.com</owner>
