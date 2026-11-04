@@ -6226,9 +6226,7 @@ gfx::Rect WebContentsImpl::ConstrainPopupBounds(const gfx::Rect& bounds) {
     if (display::Screen* screen = display::Screen::Get();
         screen && !screen->IsHeadless()) {
       const display::Display display =
-          view->GetNativeView()
-              ? screen->GetDisplayNearestView(view->GetNativeView())
-              : screen->GetDisplayMatching(bounds);
+          screen->GetDisplayNearestView(view->GetNativeView());
       const gfx::Rect work_area = display.work_area();
       if (!work_area.IsEmpty() &&
           constrained_bounds.bottom() > work_area.bottom()) {
