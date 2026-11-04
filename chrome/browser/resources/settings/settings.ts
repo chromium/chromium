@@ -141,7 +141,8 @@ export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_bann
 export {AiSettingsSection, buildRouter, getTopLevelRoute, resetRouterForTesting, routes} from './route.js';
 export {Route, Router} from './router.js';
 export type {SettingsRoutes} from './router.js';
-export {MAX_SEARCH_RESULTS, setSettingsSearchManagerForTesting, SettingsSearchManagerImpl} from './search/settings_search_manager.js';
+export {SettingsSearchDropdownElement} from './search/settings_search_dropdown.js';
+export {MAX_SEARCH_RESULTS, SettingsSearchManagerImpl} from './search/settings_search_manager.js';
 export type {SettingsSearchManager, SettingsSearchRequest} from './search/settings_search_manager.js';
 export {MAX_DWELL_TIME_MS, QUERY_SUBMITTED_DELAY_MS, SearchMetricsRecorder} from './search_metrics_recorder.js';
 export {ExtensionControlledMessageElement} from './search_page/extension_controlled_message.js';

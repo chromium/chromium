@@ -5,7 +5,7 @@
 // clang-format off
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MAX_QUERY_LENGTH, MAX_SEARCH_RESULTS, Router, routes, settingsSearchBrowserProxyFactory, SettingsSearchManagerImpl, setSettingsSearchManagerForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, MAX_QUERY_LENGTH, MAX_SEARCH_RESULTS, Router, routes, settingsSearchBrowserProxyFactory, SettingsSearchManagerImpl} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -258,7 +258,7 @@ suite('SettingsSearch2026', () => {
     loadTimeData.overrideValues({enableSettingsSearch2026: true});
     handler = new TestSettingsSearchHandler();
     settingsSearchBrowserProxyFactory.setInstance({handler});
-    setSettingsSearchManagerForTesting(new SettingsSearchManagerImpl());
+    SettingsSearchManagerImpl.resetInstanceForTesting();
 
     createSettingsUi();
   });
@@ -270,9 +270,20 @@ suite('SettingsSearch2026', () => {
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
 
+  // TODO(b:578148222): Update once the URL `search` param is supported with
+  // the search dropdown.
+  test('IgnoresSearchUrlParam', async () => {
+    Router.getInstance().navigateTo(
+        routes.BASIC, new URLSearchParams('search=theme'));
+    await microtasksFinished();
+    assertEquals('', searchField.getValue());
+    assertEquals(0, handler.getCallCount('search'));
+  });
+
   test('DisabledFlagDoesNotUseSearchHandler', () => {
     loadTimeData.overrideValues({enableSettingsSearch2026: false});
     createSettingsUi();
+    assertFalse(!!ui.shadowRoot.querySelector('settings-search-dropdown'));
 
     searchField.setValue('theme');
     assertEquals(0, handler.getCallCount('search'));

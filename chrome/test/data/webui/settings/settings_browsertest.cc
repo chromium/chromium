@@ -1259,6 +1259,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsRadioGroup) {
   RunTest("settings/settings_radio_group_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsSearchDropdown) {
+  RunTest("settings/settings_search_dropdown_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsSearchManager) {
   RunTest("settings/settings_search_manager_test.js", "mocha.run()");
 }

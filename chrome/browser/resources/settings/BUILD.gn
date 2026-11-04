@@ -425,6 +425,8 @@ build_webui("build") {
     "safety_hub/safety_hub_page.ts",
     "safety_hub/unused_site_permissions_module.html.ts",
     "safety_hub/unused_site_permissions_module.ts",
+    "search/settings_search_dropdown.html.ts",
+    "search/settings_search_dropdown.ts",
     "search/settings_search_manager.ts",
     "search_metrics_recorder.ts",
     "search_page/extension_controlled_message.html.ts",

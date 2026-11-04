@@ -107,21 +107,18 @@ export class SettingsSearchManagerImpl implements SettingsSearchManager {
       }
     }
   }
+
+  static getInstance(): SettingsSearchManager {
+    return instance || (instance = new SettingsSearchManagerImpl());
+  }
+
+  static setInstance(obj: SettingsSearchManager) {
+    instance = obj;
+  }
+
+  static resetInstanceForTesting() {
+    instance = null;
+  }
 }
 
 let instance: SettingsSearchManager|null = null;
-
-export function getSettingsSearchManager(): SettingsSearchManager {
-  if (instance === null) {
-    instance = new SettingsSearchManagerImpl();
-  }
-  return instance;
-}
-
-/**
- * Sets the SettingsSearchManager singleton instance, useful for testing.
- */
-export function setSettingsSearchManagerForTesting(
-    searchManager: SettingsSearchManager) {
-  instance = searchManager;
-}

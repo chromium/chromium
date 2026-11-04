@@ -159,6 +159,7 @@ build_webui_tests("build") {
     "settings_menu_test.ts",
     "settings_pref_util_test.ts",
     "settings_radio_group_test.ts",
+    "settings_search_dropdown_test.ts",
     "settings_search_manager_test.ts",
     "settings_section_test.ts",
     "settings_slider_test.ts",
