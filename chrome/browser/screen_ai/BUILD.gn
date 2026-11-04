@@ -153,8 +153,6 @@ source_set("browser_tests") {
     "screen_ai_service_router_browsertest.cc",
   ]
 
-  public_deps = [ "//chrome/test:test_support_ui" ]
-
   deps = [
     ":screen_ai_install_state",
     ":screen_ai_service_router_factory",
@@ -162,6 +160,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai/public:optical_character_recognizer",
     "//chrome/browser/ui/browser_window",
+    "//chrome/test/base:in_process_browser_test",
     "//components/metrics:content",
     "//services/screen_ai/buildflags",
     "//services/screen_ai/public/cpp:utilities",
@@ -177,6 +176,7 @@ source_set("browser_tests") {
     sources += [ "main_content_extraction_browsertest.cc" ]
     data_deps = [ "//third_party/screen-ai:screen_ai" ]
     deps += [
+      "//chrome/test/base:ui_test_utils",
       "//mojo/public/cpp/bindings",
       "//net:test_support",
       "//services/metrics/public/cpp:metrics_cpp",

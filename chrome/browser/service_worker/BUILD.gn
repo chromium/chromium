@@ -41,12 +41,16 @@ if (enable_extensions) {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:ui_test_utils",
+      "//components/content_settings/core/browser:cookie_settings",
       "//components/favicon/content",
       "//components/metrics:content",
+      "//components/page_load_metrics/browser",
       "//components/page_load_metrics/browser:test_support",
       "//components/ukm:test_support",
       "//content/test:test_support",
+      "//net:test_support",
     ]
   }
 }

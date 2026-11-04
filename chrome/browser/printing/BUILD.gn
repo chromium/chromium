@@ -316,7 +316,6 @@ if (enable_printing) {
         "//chrome/browser/ui/dialogs:browser_dialogs",
         "//chrome/common:constants",
         "//chrome/test:test_support",
-        "//chrome/test:test_support_ui",
         "//content/public/browser",
         "//content/test:test_support",
         "//printing",

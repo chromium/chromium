@@ -70,7 +70,7 @@ if (!is_android) {
     ]
     public_deps = [
       ":no_state_prefetch",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:in_process_browser_test",
       "//components/no_state_prefetch/browser",
       "//components/safe_browsing:buildflags",
     ]
@@ -83,7 +83,10 @@ if (!is_android) {
     deps = [
       "//base",
       "//chrome/browser/external_protocol",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
+      "//chrome/test/base:ui_test_utils",
       "//net:test_support",
       "//testing/gtest",
     ]
