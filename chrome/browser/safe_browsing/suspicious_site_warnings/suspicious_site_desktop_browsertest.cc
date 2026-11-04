@@ -595,7 +595,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
       second_shown_future.GetCallback());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   browser()->GetTabStripModel()->ActivateTabAt(0);
 

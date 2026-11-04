@@ -6244,7 +6244,7 @@ class PageContentCacheSessionRestoreTest : public SessionRestoreTest {
     // Opening a new foreground tab hides Tab 0, which writes its extracted
     // PageContext to PageContentCache under `tab0_id`.
     ui_test_utils::NavigateToURLWithDisposition(
-        target, GetUrl2(), WindowOpenDisposition::kNewForegroundTab,
+        target, GetUrl2(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     EXPECT_EQ(target->GetTabStripModel()->count(), 2);
 

@@ -465,7 +465,8 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest,
   // (`Update(contents)` with non-null `contents`): animation is suppressed and
   // layout is invalidated.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), mock_secure_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), mock_secure_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_FALSE(icon_view->ShouldShowLabel());
   views::test::RunScheduledLayout(location_bar_view);

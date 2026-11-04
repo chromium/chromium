@@ -46,7 +46,7 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -478,7 +478,8 @@ TEST_F(RemoteActorCredentialSharingImplTest,
       opener.get(), GURL("https://accounts.google.com"));
   content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
   content::WebContentsTester::For(web_contents())
-      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+      ->SetOriginalWindowOpenDisposition(
+          ::ui::mojom::WindowOpenDisposition::kNewPopup);
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://gemini.google.com"), main_rfh());
@@ -532,7 +533,8 @@ TEST_F(RemoteActorCredentialSharingImplTest,
       opener.get(), GURL("https://example.com"));
   content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
   content::WebContentsTester::For(web_contents())
-      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+      ->SetOriginalWindowOpenDisposition(
+          ::ui::mojom::WindowOpenDisposition::kNewPopup);
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://gemini.google.com"), main_rfh());
@@ -573,7 +575,7 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
   content::WebContentsTester::For(web_contents())
       ->SetOriginalWindowOpenDisposition(
-          WindowOpenDisposition::kNewForegroundTab);
+          ::ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://gemini.google.com"), main_rfh());
@@ -613,7 +615,8 @@ TEST_F(RemoteActorCredentialSharingImplTest,
       opener.get(), GURL("https://accounts.google.com"));
   content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
   content::WebContentsTester::For(web_contents())
-      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+      ->SetOriginalWindowOpenDisposition(
+          ::ui::mojom::WindowOpenDisposition::kNewPopup);
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://gemini.google.com"), main_rfh());

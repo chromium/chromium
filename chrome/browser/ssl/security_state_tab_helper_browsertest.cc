@@ -1116,11 +1116,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest,
             chrome_security_state::GetCommittedSecurityLevel(contents));
 
   // Start a pending browser-initiated HTTP navigation.
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/title1.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/title1.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   CheckSecurityInfoForNonCommitted(contents);
   EXPECT_EQ(security_state::SECURE,
             chrome_security_state::GetCommittedSecurityLevel(contents));
@@ -1157,11 +1157,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest,
   // Verify that an HTTPS-Upgrades pending navigation does not leak
   // `is_https_only_mode_upgraded` onto the committed certificate-error
   // interstitial (which would downgrade DANGEROUS to WARNING).
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          embedded_test_server()->GetURL("/title2.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         embedded_test_server()->GetURL("/title2.html"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   ASSERT_NE(nullptr, contents->GetController().GetPendingEntry());
   HttpsOnlyModeTabHelper* const https_only_helper =
       HttpsOnlyModeTabHelper::FromWebContents(contents);
@@ -1180,11 +1180,11 @@ IN_PROC_BROWSER_TEST_F(SecurityStateLoadingTest,
   EXPECT_EQ(security_state::DANGEROUS,
             chrome_security_state::GetCommittedSecurityLevel(contents));
 
-  browser()->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          https_server_.GetURL("/hung"), WindowOpenDisposition::kCurrentTab,
-          ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                         https_server_.GetURL("/hung"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   hung_https_response.WaitForRequest();
 
   EXPECT_EQ(security_state::NONE,

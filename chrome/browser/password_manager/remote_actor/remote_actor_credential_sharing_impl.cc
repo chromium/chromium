@@ -31,7 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -228,7 +228,7 @@ bool RemoteActorCredentialSharingImpl::HasValidUserActivation() {
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   bool is_new_popup =
       web_contents && web_contents->GetOriginalWindowOpenDisposition() ==
-                          WindowOpenDisposition::kNewPopup;
+                          ::ui::mojom::WindowOpenDisposition::kNewPopup;
   content::RenderFrameHost* opener =
       web_contents ? web_contents->GetOpener() : nullptr;
   if (!opener || !is_new_popup ||

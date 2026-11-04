@@ -409,7 +409,8 @@ TEST_F(OmniboxEverywhereHandlerTest,
   GURL captured_url;
   EXPECT_CALL(*mock_service_,
               OpenUrl(testing::_, testing::_, testing::_, testing::_))
-      .WillOnce([&](const GURL& url, WindowOpenDisposition, ui::PageTransition,
+      .WillOnce([&](const GURL& url, ui::mojom::WindowOpenDisposition,
+                    ui::PageTransition,
                     base::OnceCallback<void(content::NavigationHandle&)>) {
         captured_url = url;
       });

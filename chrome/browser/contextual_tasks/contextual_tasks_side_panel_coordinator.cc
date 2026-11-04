@@ -114,8 +114,8 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -889,7 +889,7 @@ void ContextualTasksSidePanelCoordinator::OpenUrlInNewTab(const GURL& url) {
       &is_opening_tab_from_panel_ui_, true);
   NavigateParams params(browser_window_->GetProfile(), url,
                         ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.browser = browser_window_;
   Navigate(&params);
 }

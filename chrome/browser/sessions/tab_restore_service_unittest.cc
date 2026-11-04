@@ -1924,8 +1924,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
 
   // How many notifications a plain restore sends.
   testing::NiceMock<MockLiveTabContext> baseline_context;
-  service_->RestoreEntryById(&baseline_context, baseline_tab_id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &baseline_context, baseline_tab_id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   const int notifications_per_restore = change_counter.count;
   change_counter.count = 0;
 
@@ -1940,8 +1941,9 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
         service_->PromoteEphemeralTabGroup(group_id, promoted_visuals);
         return nullptr;
       });
-  service_->RestoreEntryById(&restore_context, tab_to_restore_id,
-                             WindowOpenDisposition::kNewForegroundTab);
+  service_->RestoreEntryById(
+      &restore_context, tab_to_restore_id,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   service_->RemoveObserver(&change_counter);
 
   // The promotion must not add a notification mid-restore; the restore's own

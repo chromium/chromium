@@ -389,7 +389,7 @@ std::vector<int32_t> RecentlyClosedTabsBridge::RestoreForUndo(
   std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, SessionID::FromSerializedValue(entry_id),
-          WindowOpenDisposition::kNewBackgroundTab);
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   if (!restored_tabs.has_value()) {
     // Return an empty vector if the entry does not exist.

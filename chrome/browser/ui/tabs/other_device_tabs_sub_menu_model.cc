@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/tabs/remote_tabs_menu_util.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 OtherDeviceTabsSubMenuModel::OtherDeviceTabsSubMenuModel(
@@ -84,8 +84,8 @@ void OtherDeviceTabsSubMenuModel::OpenTab(const std::string& session_tag,
                             : nullptr;
   remote_tabs_menu_util::OpenForeignSessionTab(
       browser_, open_tabs, session_tag, tab_id,
-      ui::DispositionFromEventFlags(event_flags,
-                                    WindowOpenDisposition::kNewForegroundTab),
+      ui::DispositionFromEventFlags(
+          event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab),
       base::UserMetricsAction("WrenchMenu_OpenRecentTabFromDevice"));
 }
 

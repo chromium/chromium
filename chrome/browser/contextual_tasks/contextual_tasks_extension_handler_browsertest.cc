@@ -718,15 +718,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   const GURL aim_search_url("https://www.google.com/search?q=test&udm=50");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), regular_search_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), regular_search_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), aim_zero_state_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), aim_zero_state_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), aim_search_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), aim_search_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   base::RunLoop run_loop;
@@ -7000,7 +7003,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL dogs_url = embedded_test_server()->GetURL("/title2.html");
   handler_ = nullptr;
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), cats_url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), cats_url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dogs_url));
 
@@ -7072,7 +7075,7 @@ IN_PROC_BROWSER_TEST_F(
   // 2. Opening a new tab (`url2`) associated with the task next to the side
   // panel switches the implicit tab context to `url2`.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url2, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   auto* tab_list = TabListInterface::From(browser());
   ASSERT_EQ(tab_list->GetTabCount(), 2);

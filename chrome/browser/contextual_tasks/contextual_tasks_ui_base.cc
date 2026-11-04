@@ -709,7 +709,8 @@ void ContextualTasksUIBase::OpenUrlInNewTabFromPanelUi(const GURL& url) {
   }
   if (BrowserWindowInterface* browser = GetBrowser()) {
     OpenUrlWithDisposition(GetProfile(), url,
-                           WindowOpenDisposition::kNewForegroundTab, browser);
+                           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                           browser);
   }
 }
 

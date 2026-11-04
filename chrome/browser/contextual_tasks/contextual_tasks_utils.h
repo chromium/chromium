@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class Profile;
 class BrowserWindowInterface;
@@ -328,7 +328,8 @@ enum class ContextualTasksLinkOpenDisposition {
 
 // Records side panel link click metrics, including the requested window open
 // disposition.
-void RecordSidePanelLinkClickedMetrics(WindowOpenDisposition disposition);
+void RecordSidePanelLinkClickedMetrics(
+    ui::mojom::WindowOpenDisposition disposition);
 
 }  // namespace contextual_tasks
 

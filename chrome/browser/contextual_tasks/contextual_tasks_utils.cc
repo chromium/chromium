@@ -76,7 +76,7 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/base/device_form_factor.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -916,23 +916,24 @@ void RecordExtensionQueuedSearchMessagesDropped(size_t count) {
       count);
 }
 
-void RecordSidePanelLinkClickedMetrics(WindowOpenDisposition disposition) {
+void RecordSidePanelLinkClickedMetrics(
+    ui::mojom::WindowOpenDisposition disposition) {
   ContextualTasksLinkOpenDisposition open_disposition =
       ContextualTasksLinkOpenDisposition::kOther;
   switch (disposition) {
-    case WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
       open_disposition = ContextualTasksLinkOpenDisposition::kCurrentTab;
       break;
-    case WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
       open_disposition = ContextualTasksLinkOpenDisposition::kNewForegroundTab;
       break;
-    case WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
       open_disposition = ContextualTasksLinkOpenDisposition::kNewBackgroundTab;
       break;
-    case WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
       open_disposition = ContextualTasksLinkOpenDisposition::kNewWindow;
       break;
-    case WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
       open_disposition = ContextualTasksLinkOpenDisposition::kOffTheRecord;
       break;
     default:

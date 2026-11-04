@@ -4620,8 +4620,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
     }
   }
 
-  if (disposition == WindowOpenDisposition::kNewSplitView && !user_gesture) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewSplitView &&
+      !user_gesture) {
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   const BlockedWindowParams blocked_params(

@@ -1820,8 +1820,9 @@ bool ContextualTasksUiService::HandleCitationClick(
   TabListInterface* tab_list =
       browser_window ? TabListInterface::From(browser_window) : nullptr;
   const bool can_navigate_existing_tab =
-      url_params.disposition == WindowOpenDisposition::kCurrentTab ||
-      url_params.disposition == WindowOpenDisposition::kNewForegroundTab;
+      url_params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      url_params.disposition ==
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
   if (tab_list && can_navigate_existing_tab) {
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();

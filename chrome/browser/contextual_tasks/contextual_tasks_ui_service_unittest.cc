@@ -3394,7 +3394,7 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* browser) {
         EXPECT_EQ(external_url, params.url);
-        // CURRENT_TAB should be converted to NEW_FOREGROUND_TAB.
+        // `kCurrentTab` should be converted to `kNewForegroundTab`.
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   params.disposition);
         run_loop.Quit();
@@ -4088,14 +4088,16 @@ TEST_F(
                     const blink::mojom::WindowFeatures& features,
                     BrowserWindowInterface* target_browser) {
         EXPECT_EQ(citation_url, params.url);
-        EXPECT_EQ(WindowOpenDisposition::kNewBackgroundTab, params.disposition);
+        EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+                  params.disposition);
         run_loop.Quit();
       });
 
-  content::OpenURLParams open_params(citation_url, content::Referrer(),
-                                     WindowOpenDisposition::kNewBackgroundTab,
-                                     ui::PageTransition::PAGE_TRANSITION_LINK,
-                                     /*is_renderer_initiated=*/true);
+  content::OpenURLParams open_params(
+      citation_url, content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
 
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       std::move(open_params), panel_contents.get(),

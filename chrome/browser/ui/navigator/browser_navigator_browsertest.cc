@@ -890,8 +890,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateOnTabSwitchLostTest) {
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
 }
 
-// This test verifies that SWITCH_TO_TAB will switch to a tab even if the scheme
-// mismatches, as long as the rest of the URL does.
+// This test verifies that `kSwitchToTab` will switch to a tab even if the
+// scheme mismatches, as long as the rest of the URL does.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SchemeMismatchTabSwitchTest) {
   GURL navigate_url("https://www.chromium.org/");
   GURL search_url("http://www.chromium.org/");
@@ -2756,7 +2756,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   WebContents* old_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   NavigateParams params(MakeNavigateParams());
-  params.disposition = WindowOpenDisposition::kNewSplitView;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewSplitView;
   params.user_gesture = false;
   Navigate(&params);
 
@@ -2771,7 +2771,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   ASSERT_TRUE(new_tab);
   EXPECT_FALSE(old_tab->IsSplit());
   EXPECT_FALSE(new_tab->IsSplit());
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            params.disposition);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
@@ -2784,7 +2785,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   WebContents* returned_contents = old_contents->GetDelegate()->AddNewContents(
       old_contents, std::move(new_contents), GetGoogleURL(),
-      WindowOpenDisposition::kNewSplitView, blink::mojom::WindowFeatures(),
+      ui::mojom::WindowOpenDisposition::kNewSplitView,
+      blink::mojom::WindowFeatures(),
       /*user_gesture=*/false,
       /*was_blocked=*/nullptr);
 
@@ -2843,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          GetGoogleURL(), ui::mojom::WindowOpenDisposition::kNewSplitView,
           ui::PAGE_TRANSITION_LINK);
   open_params.user_gesture = false;
   WebContents* returned_contents = source_contents->OpenURL(open_params, {});
@@ -2872,7 +2874,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          GetGoogleURL(), ui::mojom::WindowOpenDisposition::kNewSplitView,
           ui::PAGE_TRANSITION_LINK);
   open_params.user_gesture = false;
   WebContents* returned_contents = source_contents->OpenURL(open_params, {});
@@ -2889,12 +2891,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, blocked_requests.size());
 
   // Simulate user unblocking the popup.
-  popup_blocker->ShowBlockedPopup(blocked_requests.begin()->first,
-                                  WindowOpenDisposition::kCurrentTab);
+  popup_blocker->ShowBlockedPopup(
+      blocked_requests.begin()->first,
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   // Since there was no user gesture, the disposition was normalized to
-  // NEW_FOREGROUND_TAB before being blocked. Unblocking the popup opens a third
-  // tab rather than navigating the partner pane.
+  // `kNewForegroundTab` before being blocked. Unblocking the popup opens a
+  // third tab rather than navigating the partner pane.
   EXPECT_EQ(3, browser()->GetTabStripModel()->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL), other_contents->GetVisibleURL());
   EXPECT_EQ(
@@ -2925,13 +2928,13 @@ IN_PROC_BROWSER_TEST_F(
 
   content::OpenURLParams open_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          GetGoogleURL(), ui::mojom::WindowOpenDisposition::kNewSplitView,
           ui::PAGE_TRANSITION_LINK);
   open_params.user_gesture = false;
   WebContents* returned_contents = source_contents->OpenURL(open_params, {});
 
   // Since there is no user gesture, the disposition is normalized to
-  // NEW_FOREGROUND_TAB. The partner pane in the split tab should not be
+  // `kNewForegroundTab`. The partner pane in the split tab should not be
   // navigated; instead, a new foreground tab should be opened.
   EXPECT_NE(nullptr, returned_contents);
   EXPECT_NE(source_contents, returned_contents);

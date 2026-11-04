@@ -14,7 +14,6 @@
 #include "extensions/common/extension_urls.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
-#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
