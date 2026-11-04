@@ -17,6 +17,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
@@ -1002,6 +1003,176 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathInfo(project_dir.AppendASCII("vimrc")),
           HandleType::kFile, AccessTrigger::kProgrammaticWrite),
+      SensitiveDirectoryResult::kAllowed);
+}
+
+// Tests that hidden dot-files and dot-directories directly under
+// `base::DIR_HOME` (and their descendants) are blocked across access triggers,
+// while dotfiles inside non-dot subdirectories of `base::DIR_HOME` remain
+// allowed.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_HomeDotFilesBlocked) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+
+  // Hidden dot-directories under `base::DIR_HOME` (including AI coding agent
+  // config directories and unlisted dot-directories) and their descendants must
+  // be blocked across all triggers.
+  for (const char* dir_name :
+       {".aws", ".cargo", ".claude", ".codeium", ".codex", ".continue",
+        ".copilot", ".cursor", ".emacs.d", ".gemini", ".kube", ".local"}) {
+    base::FilePath dot_dir = home_dir.AppendASCII(dir_name);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_dir),
+                  HandleType::kDirectory, AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_dir),
+                  HandleType::kDirectory, AccessTrigger::kSave),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_dir),
+                  HandleType::kDirectory, AccessTrigger::kDragAndDrop),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_dir),
+                  HandleType::kDirectory, AccessTrigger::kProgrammaticRead),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_dir),
+                  HandleType::kDirectory, AccessTrigger::kProgrammaticWrite),
+              SensitiveDirectoryResult::kAbort);
+
+    base::FilePath nested_file =
+        dot_dir.AppendASCII("subdir").AppendASCII("settings.json");
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(nested_file),
+                  HandleType::kFile, AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(nested_file),
+                  HandleType::kFile, AccessTrigger::kSave),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(nested_file),
+                  HandleType::kFile, AccessTrigger::kProgrammaticRead),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(nested_file),
+                  HandleType::kFile, AccessTrigger::kProgrammaticWrite),
+              SensitiveDirectoryResult::kAbort);
+  }
+
+  // Hidden dot-files directly under `base::DIR_HOME` must be blocked.
+  for (const char* file_name :
+       {".aider.conf.yml", ".claude.json", ".emacs", ".gdbinit", ".lldbinit",
+        ".netrc", ".tmux.conf"}) {
+    base::FilePath dot_file = home_dir.AppendASCII(file_name);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_file), HandleType::kFile,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_file), HandleType::kFile,
+                  AccessTrigger::kSave),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_file), HandleType::kFile,
+                  AccessTrigger::kProgrammaticRead),
+              SensitiveDirectoryResult::kAbort);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(dot_file), HandleType::kFile,
+                  AccessTrigger::kProgrammaticWrite),
+              SensitiveDirectoryResult::kAbort);
+  }
+
+  // Non-dot subdirectories under `base::DIR_HOME` and project-level dotfiles
+  // inside them remain allowed.
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(home_dir.AppendASCII("notes.txt")),
+          HandleType::kFile, AccessTrigger::kOpen),
+      SensitiveDirectoryResult::kAllowed);
+  base::FilePath project_dir = home_dir.AppendASCII("project");
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(project_dir),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  for (const char* project_dotfile :
+       {".clang-format", ".eslintrc.json", ".gitignore"}) {
+    base::FilePath file_path = project_dir.AppendASCII(project_dotfile);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(file_path), HandleType::kFile,
+                  AccessTrigger::kOpen),
+              SensitiveDirectoryResult::kAllowed);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(file_path), HandleType::kFile,
+                  AccessTrigger::kSave),
+              SensitiveDirectoryResult::kAllowed);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(file_path), HandleType::kFile,
+                  AccessTrigger::kProgrammaticRead),
+              SensitiveDirectoryResult::kAllowed);
+    EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                  permission_context(), PathInfo(file_path), HandleType::kFile,
+                  AccessTrigger::kProgrammaticWrite),
+              SensitiveDirectoryResult::kAllowed);
+  }
+  base::FilePath project_dot_dir = project_dir.AppendASCII(".claude");
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(project_dot_dir),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(project_dot_dir.AppendASCII("settings.json")),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAllowed);
+}
+
+// Tests that disabling `features::kFileSystemAccessBlockHomeDotFiles` falls
+// back to the explicit `kBlockPaths` rules under `base::DIR_HOME`.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_HomeDotFilesFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFileSystemAccessBlockHomeDotFiles);
+
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  ScopedHomeDirOverride home_override = OverrideHomeDir(home_dir);
+
+  // Explicitly blocklisted paths under `base::DIR_HOME` remain blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".ssh")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".bashrc")),
+                HandleType::kFile, AccessTrigger::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(home_dir.AppendASCII(".vim")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Unlisted dot-entries under `base::DIR_HOME` are allowed when the feature is
+  // disabled.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(home_dir.AppendASCII(".unlisted_dotfile")),
+                HandleType::kFile, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(home_dir.AppendASCII(".unlisted_dotdir")),
+                HandleType::kDirectory, AccessTrigger::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(
+              home_dir.AppendASCII(".unlisted_dotdir").AppendASCII("file.txt")),
+          HandleType::kFile, AccessTrigger::kOpen),
       SensitiveDirectoryResult::kAllowed);
 }
 

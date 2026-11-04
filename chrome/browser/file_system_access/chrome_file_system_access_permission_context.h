@@ -200,6 +200,10 @@ class ChromeFileSystemAccessPermissionContext
     std::vector<BlockPathRule> block_path_rules_;
     std::vector<RawBlockPathRule> profile_based_block_path_rules_;
     std::vector<RawBlockPathRule> suffix_block_path_rules_;
+    // Normalized `base::DIR_HOME` path on non-ChromeOS platforms, used to block
+    // hidden dot-entries (`.*`) directly under the home directory. On ChromeOS,
+    // `profile_path` is used as the home directory instead.
+    base::FilePath home_path_;
   };
 
   struct BlockPath {

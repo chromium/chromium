@@ -8,6 +8,12 @@
 
 namespace features {
 
+// Enables blocking access to all hidden dot-files and dot-directories directly
+// under `base::DIR_HOME` (and their descendants) in the File System Access API
+// sensitive path blocklist.
+BASE_FEATURE(kFileSystemAccessBlockHomeDotFiles,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables revoking pre-existing permissions when moving a file to a path that
 // already has permissions, which can happen the destination path was once
 // granted permission for a different file that has since been removed.
