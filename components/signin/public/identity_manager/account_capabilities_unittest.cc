@@ -336,6 +336,51 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToParentalControlsViaBundle) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInFeminineGrammaticalGender) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_feminine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_feminine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInMasculineGrammaticalGender) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_masculine_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_masculine_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, ShouldBeAddressedInNeuterGrammaticalGender) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_should_be_addressed_in_neuter_grammatical_gender(true);
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kTrue);
+
+  mutator.set_should_be_addressed_in_neuter_grammatical_gender(false);
+  EXPECT_EQ(capabilities.should_be_addressed_in_neuter_grammatical_gender(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanUseSpeakerLabelInRecorderApp) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_speaker_label_in_recorder_app(),

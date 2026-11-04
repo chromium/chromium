@@ -182,6 +182,18 @@ ACCOUNT_CAPABILITY(kMustSkipAppleAgeRangeInChromeCapabilityName,
                    "accountcapabilities/gi2tqnbnmnqxa")
 #endif
 
+ACCOUNT_CAPABILITY(kShouldBeAddressedInFeminineGrammaticalGender,
+                   SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER,
+                   "accountcapabilities/ge3dsnbnmnqxa")
+
+ACCOUNT_CAPABILITY(kShouldBeAddressedInMasculineGrammaticalGender,
+                   SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER,
+                   "accountcapabilities/ge3dsnjnmnqxa")
+
+ACCOUNT_CAPABILITY(kShouldBeAddressedInNeuterGrammaticalGender,
+                   SHOULD_BE_ADDRESSED_IN_NEUTER_GRAMMATICAL_GENDER,
+                   "accountcapabilities/ge3dsnrnmnqxa")
+
 ACCOUNT_CAPABILITY(
     kSupportsWalletPrivatePassesInAutofillCapabilityName,
     SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME,

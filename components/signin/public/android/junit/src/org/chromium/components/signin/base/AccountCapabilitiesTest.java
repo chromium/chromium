@@ -80,9 +80,15 @@ public final class AccountCapabilitiesTest {
                     .MUST_SHOW_EQUALLY_WEIGHTED_BUTTONS_FOR_PRIVATE_PASSES_IN_CHROME_AUTOFILL_CAPABILITY_NAME:
                 return capabilities
                         .mustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill();
+            case AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER:
+                return capabilities.shouldBeAddressedInFeminineGrammaticalGender();
+            case AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER:
+                return capabilities.shouldBeAddressedInMasculineGrammaticalGender();
+            case AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_NEUTER_GRAMMATICAL_GENDER:
+                return capabilities.shouldBeAddressedInNeuterGrammaticalGender();
             case AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME:
                 return capabilities.supportsWalletPrivatePassesInAutofill();
-                /** keep-sorted end */
+            /** keep-sorted end */
         }
         throw new AssertionError("Capability name is not known.");
     }

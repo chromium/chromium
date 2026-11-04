@@ -218,6 +218,30 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return shouldBeAddressedInFeminineGrammaticalGender capability value.
+     */
+    public @Tribool int shouldBeAddressedInFeminineGrammaticalGender() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_FEMININE_GRAMMATICAL_GENDER);
+    }
+
+    /**
+     * @return shouldBeAddressedInMasculineGrammaticalGender capability value.
+     */
+    public @Tribool int shouldBeAddressedInMasculineGrammaticalGender() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_MASCULINE_GRAMMATICAL_GENDER);
+    }
+
+    /**
+     * @return shouldBeAddressedInNeuterGrammaticalGender capability value.
+     */
+    public @Tribool int shouldBeAddressedInNeuterGrammaticalGender() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.SHOULD_BE_ADDRESSED_IN_NEUTER_GRAMMATICAL_GENDER);
+    }
+
+    /**
      * @return supportsWalletPrivatePassesInAutofill capability value.
      */
     public @Tribool int supportsWalletPrivatePassesInAutofill() {

@@ -188,6 +188,15 @@ class AccountCapabilities {
   signin::Tribool must_skip_apple_age_range_in_chrome() const;
 #endif
 
+  // The user should be addressed in feminine grammatical gender.
+  signin::Tribool should_be_addressed_in_feminine_grammatical_gender() const;
+
+  // The user should be addressed in masculine grammatical gender.
+  signin::Tribool should_be_addressed_in_masculine_grammatical_gender() const;
+
+  // The user should be addressed in neuter grammatical gender.
+  signin::Tribool should_be_addressed_in_neuter_grammatical_gender() const;
+
   // Whether the account may fill and save Wallet private passes in Autofill.
   signin::Tribool supports_wallet_private_passes_in_autofill() const;
 
