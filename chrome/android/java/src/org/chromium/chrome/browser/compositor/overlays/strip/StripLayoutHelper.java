@@ -101,7 +101,6 @@ import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
@@ -1460,11 +1459,7 @@ public class StripLayoutHelper
             computeAndUpdateTabWidth(/* animate= */ false, /* deferAnimations= */ false);
         }
         if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
-            tabSelected(
-                    LayoutManagerImpl.time(),
-                    getSelectedTabId(),
-                    Tab.INVALID_TAB_ID,
-                    TabSelectionType.FROM_USER);
+            tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
         }
         mModel.addObserver(mTabModelObserver);
         mModel.addTabGroupObserver(mTabGroupObserver);
@@ -1607,11 +1602,7 @@ public class StripLayoutHelper
         rebuildStripTabs(/* deferAnimations= */ false);
         registerTabsWithUnderlineManager();
         if (getSelectedTabId() != Tab.INVALID_TAB_ID) {
-            tabSelected(
-                    LayoutManagerImpl.time(),
-                    getSelectedTabId(),
-                    Tab.INVALID_TAB_ID,
-                    TabSelectionType.FROM_USER);
+            tabSelected(LayoutManagerImpl.time(), getSelectedTabId(), Tab.INVALID_TAB_ID);
         }
     }
 
@@ -1913,9 +1904,8 @@ public class StripLayoutHelper
      * @param time The current time of the app in ms.
      * @param id The id of the selected tab.
      * @param prevId The id of the previously selected tab.
-     * @param type The type of tab selection.
      */
-    public void tabSelected(long time, int id, int prevId, @TabSelectionType int type) {
+    public void tabSelected(long time, int id, int prevId) {
         StripLayoutTab stripTab = findTabById(id);
         // TODO(crbug.com/469826110): Switch to an assert when we can no longer get a #tabSelected
         //  event before the tab is recreated (e.g. through an undone closure).
@@ -1923,16 +1913,6 @@ public class StripLayoutHelper
 
         updateSelectedTab(id, prevId);
         updateCloseButtons();
-
-        Tab tab = getTabById(id);
-        if (tab != null
-                && mModel != null
-                && tab.getTabGroupId() != null
-                && mModel.getTabGroupCollapsed(tab.getTabGroupId())
-                && type != TabSelectionType.FROM_DRAG) {
-            // Auto-expand the group so the newly selected tab is visible on the strip.
-            mModel.setTabGroupCollapsed(tab.getTabGroupId(), /* isCollapsed= */ false);
-        }
 
         if (!mReorderDelegate.getInReorderMode()) {
             // If the tab was selected through a method other than the user tapping on the strip, it
@@ -1942,7 +1922,8 @@ public class StripLayoutHelper
 
         mUpdateHost.requestUpdate();
 
-        setAccessibilityDescription(stripTab, getTabById(id));
+        Tab tab = getTabById(id);
+        setAccessibilityDescription(stripTab, tab);
         if (prevId != Tab.INVALID_TAB_ID) {
             setAccessibilityDescription(findTabById(prevId), getTabById(prevId));
         }
@@ -2143,7 +2124,7 @@ public class StripLayoutHelper
         // before its creation event, such as when a tab is reselected for an undone closure.
         // See crbug.com/469826110.
         if (selected) {
-            tabSelected(time, id, findSelectedStripTabId(), TabSelectionType.FROM_USER);
+            tabSelected(time, id, findSelectedStripTabId());
         }
 
         mUpdateHost.requestUpdate();

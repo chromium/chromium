@@ -1274,8 +1274,7 @@ public class StripLayoutHelperTest {
     private void selectTabAtDrawX(StripLayoutTab[] tabs, int index, float drawX) {
         when(tabs[index].getDrawX()).thenReturn(drawX);
         when(tabs[index].getIsSelected()).thenReturn(true);
-        mStripLayoutHelper.tabSelected(
-                TIMESTAMP, index, Tab.INVALID_TAB_ID, TabSelectionType.FROM_USER);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, index, Tab.INVALID_TAB_ID);
     }
 
     /**
@@ -3975,7 +3974,7 @@ public class StripLayoutHelperTest {
         when(mTab.getId()).thenReturn(tabId);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         verify(mStripLayoutHelper, times(1))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
     }
 
     @Test
@@ -3987,10 +3986,10 @@ public class StripLayoutHelperTest {
         when(mTab.getId()).thenReturn(tabId);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         verify(mStripLayoutHelper, times(1))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
         mStripLayoutHelper.onTabStateInitialized();
         verify(mStripLayoutHelper, times(2))
-                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID), anyInt());
+                .tabSelected(anyLong(), eq(tabId), eq(Tab.INVALID_TAB_ID));
     }
 
     private SavedTabGroup setupTabGroupSync(Token tabGroupId) {
@@ -4818,7 +4817,7 @@ public class StripLayoutHelperTest {
         when(mController.wouldTriggerIph(anyInt())).thenReturn(true);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
-        mStripLayoutHelper.tabSelected(0, tabIndex, 0, TabSelectionType.FROM_USER);
+        mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
     }
 
@@ -5019,7 +5018,7 @@ public class StripLayoutHelperTest {
         initializeTest(/* tabIndex= */ 5, /* numTabs= */ 10);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 10);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        mStripLayoutHelper.tabSelected(1, 5, 0, TabSelectionType.FROM_USER);
+        mStripLayoutHelper.tabSelected(1, 5, 0);
         // Trigger update to set foreground container visibility.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutTab theClickedTab = tabs[5];
@@ -5670,40 +5669,6 @@ public class StripLayoutHelperTest {
         verify(mTabCreator).launchNtp(anyInt());
     }
 
-    @Test
-    public void testTabSelected_ExpandsGroup() {
-        // Group first two tabs and collapse.
-        int startIndex = 3;
-        initializeTest(startIndex);
-        groupTabs(0, 2, TAB_GROUP_ID_1);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
-
-        // Select the first tab.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_USER);
-
-        // Verify we auto-expand.
-        verify(mModel)
-                .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
-    }
-
-    @Test
-    public void testTabSelected_FromDrag_DoesNotExpandGroup() {
-        // Group first two tabs and collapse.
-        int startIndex = 3;
-        initializeTest(startIndex);
-        groupTabs(0, 2, TAB_GROUP_ID_1);
-        when(mModel.getTabGroupCollapsed(TAB_GROUP_ID_1)).thenReturn(true);
-
-        // Select the first tab via drag.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 0, startIndex, TabSelectionType.FROM_DRAG);
-
-        // Verify we do NOT auto-expand.
-        verify(mModel, never())
-                .setTabGroupCollapsed(
-                        TAB_GROUP_ID_1, /* isCollapsed= */ false, /* animate= */ false);
-    }
-
     private void testTabCreated_InCollapsedGroup(boolean selected) {
         // Group first two tabs and collapse.
         initializeTest(/* tabIndex= */ 3);
@@ -5991,7 +5956,7 @@ public class StripLayoutHelperTest {
         when(mController.wouldTriggerIph(eq(IphType.VERTICAL_TABS_PROMO))).thenReturn(true);
 
         // Select tab to queue Vertical Tabs IPH.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 1, 0, TabSelectionType.FROM_USER);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 1, 0);
 
         // Run layout pass (completes animations/scroll and runs queue).
         mStripLayoutHelper.finishAnimations();
