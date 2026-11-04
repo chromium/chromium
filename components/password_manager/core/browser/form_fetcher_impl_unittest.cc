@@ -21,11 +21,13 @@
 #include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
+#include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -881,6 +883,104 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsIfBackendError) {
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
+}
+
+// Checks that HTTP-to-HTTPS migration runs when the HTTPS site only has a
+// blocklisted entry, and preserves the HTTPS blocklist state alongside the
+// migrated credential.
+TEST_P(FormFetcherImplTest,
+       MigratesHttpPasswordsAndKeepsBlocklistWhenHttpsOnlyBlocklisted) {
+  form_digest_ = PasswordFormDigest(PasswordForm::Scheme::kHtml, kTestHttpsURL,
+                                    GURL(kTestHttpsURL));
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest_, &client_, /*should_migrate_http_passwords=*/true);
+
+  const PasswordForm http_form = CreateHTTPNonFederated();
+  const PasswordForm https_form =
+      HttpPasswordStoreMigrator::MigrateHttpFormToHttps(http_form);
+  const PasswordForm blocked_form = CreateBlocked();
+  const PasswordFormDigest http_form_digest(PasswordForm::Scheme::kHtml,
+                                            kTestHttpURL, GURL(kTestHttpURL));
+
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  base::WeakPtr<PasswordStoreConsumer> profile_store_migrator;
+  base::WeakPtr<PasswordStoreConsumer> account_store_migrator;
+  EXPECT_CALL(*profile_mock_store_, GetLogins(http_form_digest, _))
+      .WillOnce(SaveArg<1>(&profile_store_migrator));
+  if (account_mock_store_) {
+    EXPECT_CALL(*account_mock_store_, GetLogins(http_form_digest, _))
+        .WillOnce(SaveArg<1>(&account_store_migrator));
+  }
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/FromPasswordForms({blocked_form}),
+      /*account_store_results=*/FromPasswordForms({blocked_form}));
+  EXPECT_EQ(FormFetcher::State::WAITING, form_fetcher_->GetState());
+  ASSERT_TRUE(profile_store_migrator);
+  if (account_mock_store_) {
+    ASSERT_TRUE(account_store_migrator);
+  }
+
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  profile_store_migrator->OnGetPasswordStoreResultsOrErrorFrom(
+      profile_mock_store_.get(), FromPasswordForms({http_form}));
+  if (account_mock_store_) {
+    account_store_migrator->OnGetPasswordStoreResultsOrErrorFrom(
+        account_mock_store_.get(), {});
+  }
+
+  EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(),
+              UnorderedElementsAre(https_form));
+  EXPECT_TRUE(form_fetcher_->IsBlocklisted());
+}
+
+// Checks that HTTP-to-HTTPS migration does not start when the HTTPS site
+// already has a password credential alongside a blocklisted entry.
+TEST_P(FormFetcherImplTest,
+       DoesNotMigrateHttpPasswordsWhenHttpsHasUsableAndBlocklistedCredentials) {
+  form_digest_ = PasswordFormDigest(PasswordForm::Scheme::kHtml, kTestHttpsURL,
+                                    GURL(kTestHttpsURL));
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest_, &client_, /*should_migrate_http_passwords=*/true);
+
+  const std::vector<PasswordForm> https_forms = {CreateBlocked(),
+                                                 CreateNonFederated()};
+
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  EXPECT_CALL(*profile_mock_store_, GetLogins).Times(0);
+  if (account_mock_store_) {
+    EXPECT_CALL(*account_mock_store_, GetLogins).Times(0);
+  }
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/FromPasswordForms(https_forms),
+      /*account_store_results=*/FromPasswordForms(https_forms));
+}
+
+// Checks that HTTP-to-HTTPS migration does not start when the HTTPS site
+// already has a federated credential alongside a blocklisted entry.
+TEST_P(
+    FormFetcherImplTest,
+    DoesNotMigrateHttpPasswordsWhenHttpsHasFederatedAndBlocklistedCredentials) {
+  form_digest_ = PasswordFormDigest(PasswordForm::Scheme::kHtml, kTestHttpsURL,
+                                    GURL(kTestHttpsURL));
+  form_fetcher_ = std::make_unique<FormFetcherImpl>(
+      form_digest_, &client_, /*should_migrate_http_passwords=*/true);
+
+  const std::vector<PasswordForm> https_forms = {CreateBlocked(),
+                                                 CreateFederated()};
+
+  Fetch();
+  form_fetcher_->AddConsumer(&consumer_);
+  EXPECT_CALL(*profile_mock_store_, GetLogins).Times(0);
+  if (account_mock_store_) {
+    EXPECT_CALL(*account_mock_store_, GetLogins).Times(0);
+  }
+  EXPECT_CALL(consumer_, OnFetchCompleted);
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/FromPasswordForms(https_forms),
+      /*account_store_results=*/FromPasswordForms(https_forms));
 }
 
 // Test that ensures HTTP passwords are only migrated on HTTPS sites when no

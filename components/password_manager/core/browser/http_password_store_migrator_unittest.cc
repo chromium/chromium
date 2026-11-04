@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/affiliations/core/browser/match_type.h"
@@ -45,6 +46,16 @@ PasswordForm CreateTestForm() {
   form.action = GURL("https://example.org/action.html");
   form.username_value = u"user";
   form.password_value = PasswordString(u"password");
+  form.match_type = affiliations::MatchType::kExact;
+  return form;
+}
+
+// Creates a dummy http blocklisted form.
+PasswordForm CreateBlockedForm() {
+  PasswordForm form;
+  form.url = GURL(kTestHttpURL);
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+  form.blocked_by_user = true;
   form.match_type = affiliations::MatchType::kExact;
   return form;
 }
@@ -303,6 +314,53 @@ TEST_F(HttpPasswordStoreMigratorTest, MigratorReceivesBackendErrorWithHSTS) {
 
 TEST_F(HttpPasswordStoreMigratorTest, MigratorReceivesBackendErrorWithoutHSTS) {
   TestMigratorReceivesBackendError(false);
+}
+
+TEST_F(HttpPasswordStoreMigratorTest, SkipsBlocklistedFormsDuringMigration) {
+  PasswordForm http_form = CreateTestForm();
+  PasswordForm expected_https_form = http_form;
+  expected_https_form.url = GURL(kTestHttpsURL);
+  expected_https_form.signon_realm =
+      expected_https_form.url.DeprecatedGetOriginAsURL().spec();
+
+  EXPECT_CALL(store(), GetLogins);
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _, _))
+      .WillOnce(testing::WithArg<2>([](auto cb) { std::move(cb).Run(true); }));
+  EXPECT_CALL(store(), GetSmartBubbleStatsStore)
+      .WillOnce(Return(&smart_bubble_stats_store()));
+  HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
+                                     &store(), &mock_network_context(),
+                                     &consumer());
+
+  // `store()` is a `StrictMock`, so any `AddLogin` or `RemoveLogin` call for
+  // the blocklisted form fails the test.
+  EXPECT_CALL(store(), AddLogin(EqStoredCredential(expected_https_form), _));
+  EXPECT_CALL(store(), RemoveLogin(_, EqStoredCredential(http_form)));
+  EXPECT_CALL(consumer(),
+              ProcessMigratedForms(ElementsAre(expected_https_form)));
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, FromPasswordForms({CreateBlockedForm(), http_form}));
+}
+
+TEST_F(HttpPasswordStoreMigratorTest,
+       DoesNotRecordMigrationMetricsForBlocklistedForm) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(store(), GetLogins);
+  EXPECT_CALL(mock_network_context(), IsHSTSActiveForHost(kTestHost, _, _))
+      .WillOnce(testing::WithArg<2>([](auto cb) { std::move(cb).Run(false); }));
+  HttpPasswordStoreMigrator migrator(url::Origin::Create(GURL(kTestHttpsURL)),
+                                     &store(), &mock_network_context(),
+                                     &consumer());
+
+  EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, FromPasswordForms({CreateBlockedForm()}));
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.HttpPasswordMigrationCount2", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.HttpPasswordMigrationMode2", 0);
 }
 
 TEST(HttpPasswordStoreMigrator, MigrateHttpFormToHttpsTestSignonRealm) {

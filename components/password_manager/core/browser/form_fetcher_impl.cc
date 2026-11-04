@@ -120,8 +120,7 @@ void FormFetcherImpl::Fetch() {
       logger->LogMessage(Logger::STRING_NO_STORE);
     }
 
-    std::vector<StoredCredential> results;
-    AggregatePasswordStoreResults(std::move(results));
+    AddResultsAndFinishIfDone({});
     return;
   }
 
@@ -426,23 +425,30 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   DCHECK_EQ(State::WAITING, state_);
   DCHECK_GT(wait_counter_, 0);
 
-  if (should_migrate_http_passwords_ && results.empty() && !has_backend_error &&
-      form_digest_.url.SchemeIs(url::kHttpsScheme)) {
+  // Migrate HTTP passwords when the HTTPS site has no usable credentials
+  // (either nothing stored, or only a "Never save" blocklist entry).
+  const bool has_usable_credentials =
+      std::ranges::any_of(results, [](const StoredCredential& credential) {
+        return !credential.blocked_by_user;
+      });
+  if (should_migrate_http_passwords_ && !has_usable_credentials &&
+      !has_backend_error && form_digest_.url.SchemeIs(url::kHttpsScheme)) {
+    // Keep the fetch waiting until HTTP migration finishes in
+    // `ProcessMigratedForms()`, while still passing `results` (which may hold
+    // HTTPS blocklist entries) to `AddResultsAndFinishIfDone()` below.
+    wait_counter_++;
     http_migrators_[store] = std::make_unique<HttpPasswordStoreMigrator>(
         url::Origin::Create(form_digest_.url), store,
         client_->GetNetworkContext(), this);
-    // The migrator will call us back at ProcessMigratedForms().
-    return;
   }
 
-  AggregatePasswordStoreResults(std::move(results));
+  AddResultsAndFinishIfDone(std::move(results));
 }
 
-void FormFetcherImpl::AggregatePasswordStoreResults(
+void FormFetcherImpl::AddResultsAndFinishIfDone(
     std::vector<StoredCredential> results) {
-  // Store the results.
-  for (auto& form : results) {
-    partial_results_.push_back(std::move(form));
+  for (StoredCredential& credential : results) {
+    partial_results_.push_back(std::move(credential));
   }
 
   // If we're still awaiting more results, nothing else to do.
@@ -468,9 +474,7 @@ void FormFetcherImpl::OnGetSiteStatistics(
 }
 
 void FormFetcherImpl::ProcessMigratedForms(std::vector<PasswordForm> forms) {
-  // The migration from HTTP to HTTPS (within the profile store) was finished.
-  // Continue processing with the migrated results.
-  AggregatePasswordStoreResults(FromPasswordForms(std::move(forms)));
+  AddResultsAndFinishIfDone(FromPasswordForms(std::move(forms)));
 }
 
 }  // namespace password_manager

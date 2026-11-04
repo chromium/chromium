@@ -95,7 +95,10 @@ class FormFetcherImpl : public FormFetcher,
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(std::vector<PasswordForm> forms) override;
 
-  void AggregatePasswordStoreResults(std::vector<StoredCredential> results);
+  // Appends `results` to `partial_results_` and decrements `wait_counter_`.
+  // Once all pending store queries and HTTP migrations finish, splits matches
+  // and notifies consumers (or triggers a queued refetch).
+  void AddResultsAndFinishIfDone(std::vector<StoredCredential> results);
 
   // PasswordStore results will be fetched for this description.
   const PasswordFormDigest form_digest_;
@@ -127,7 +130,8 @@ class FormFetcherImpl : public FormFetcher,
   // always false for non HTML forms.
   const bool should_migrate_http_passwords_;
 
-  // Does the actual migration.
+  // Active HTTP-to-HTTPS migrators keyed by the password store being migrated
+  // (profile and/or account store).
   base::flat_map<PasswordStoreInterface*,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
@@ -146,7 +150,12 @@ class FormFetcherImpl : public FormFetcher,
   // form fetcher.
   bool filter_grouped_credentials_ = true;
 
+  // Number of in-flight store queries and HTTP migrations for the active
+  // `Fetch()`. Reaching 0 finishes the fetch.
   int wait_counter_ = 0;
+
+  // Credentials accumulated across stores and HTTP migrators while
+  // `wait_counter_ > 0`, before `SplitResults()` partitions them.
   std::vector<StoredCredential> partial_results_;
 
   // Statistics for the current domain.

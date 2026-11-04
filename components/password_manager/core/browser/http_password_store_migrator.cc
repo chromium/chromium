@@ -128,10 +128,13 @@ void HttpPasswordStoreMigrator::OnHSTSQueryResult(HSTSResult is_hsts) {
 }
 
 void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
-  // Ignore PSL, affiliated, grouped and other matches.
+  // Only migrate exact-match credentials. `GetLogins()` also returns HTTP
+  // "Never save" (`blocked_by_user`) entries, which should not carry over to
+  // HTTPS or be counted as migrated passwords.
   std::erase_if(results_, [](const PasswordForm& form) {
-    return password_manager_util::GetMatchType(form) !=
-           password_manager_util::GetLoginMatchType::kExact;
+    return form.blocked_by_user ||
+           password_manager_util::GetMatchType(form) !=
+               password_manager_util::GetLoginMatchType::kExact;
   });
 
   // Add the new credentials to the password store. The HTTP forms are
