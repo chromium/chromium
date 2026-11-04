@@ -10,6 +10,7 @@
 
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
+#include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/coral_item_remover.h"
@@ -39,6 +40,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -1142,8 +1144,11 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
 
-  // Add an item to the model.
+  // Add an item and a cached icon to the model.
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
+  model->icon_cache()->Put("https://example.com/icon.png",
+                           gfx::test::CreateImageSkia(16));
+  ASSERT_EQ(model->icon_cache()->size_for_test(), 1u);
 
   // Set the other types as empty so the model has fresh data.
   model->SetCalendarItems({});
@@ -1162,8 +1167,9 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   SimulateUserLogin(AccountId::FromUserEmail("user2@test.com"));
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
-  // The model is empty.
+  // The model and icon cache are empty.
   EXPECT_TRUE(model->GetAllItems().empty());
+  EXPECT_EQ(model->icon_cache()->size_for_test(), 0u);
 
   // The data is not fresh.
   EXPECT_FALSE(model->IsDataFresh());

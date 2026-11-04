@@ -5,19 +5,25 @@
 #ifndef ASH_BIRCH_BIRCH_ICON_CACHE_H_
 #define ASH_BIRCH_BIRCH_ICON_CACHE_H_
 
+#include <cstddef>
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
-// Caches icons downloaded from URLs. Birch has a very small number of icons so
-// there is no cache invalidation or removal of items from the cache. URLs are
-// encoded as strings as this is common in client code.
+// Bounded LRU cache for icons downloaded from URLs. URLs are encoded as strings
+// as this is common in client code.
 class ASH_EXPORT BirchIconCache {
  public:
+  // Maximum number of downloaded icons retained in memory. The birch bar shows
+  // at most 4 chips, so this covers the icons of several overview sessions as
+  // suggestions change, while bounding memory since downloaded icons can be
+  // large (e.g. ~147 KB for a 192x192 touch icon).
+  static constexpr size_t kMaxCacheSize = 20;
+
   BirchIconCache();
   BirchIconCache(const BirchIconCache&) = delete;
   BirchIconCache& operator=(const BirchIconCache&) = delete;
@@ -30,11 +36,14 @@ class ASH_EXPORT BirchIconCache {
   // Adds or replaces an image in the cache.
   void Put(const std::string& url, const gfx::ImageSkia& icon);
 
-  size_t size_for_test() const { return map_.size(); }
+  // Clears all cached icons.
+  void Clear();
+
+  size_t size_for_test() const { return cache_.size(); }
 
  private:
-  // Maps a URL to an icon.
-  base::flat_map<std::string, gfx::ImageSkia> map_;
+  // Maps a URL to an icon with LRU eviction.
+  base::LRUCache<std::string, gfx::ImageSkia> cache_{kMaxCacheSize};
 };
 
 }  // namespace ash

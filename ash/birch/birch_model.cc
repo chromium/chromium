@@ -580,6 +580,10 @@ void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
 
   // Clear the existing data and mark the data as not fresh.
   ClearAllItems();
+  // Icons are downloaded with the active user's account but keyed only by URL,
+  // so clear them to avoid showing one user's icons to another. A per-user
+  // cache would avoid refetching but multi-user sign-in is rarely used.
+  icon_cache_->Clear();
   MarkDataNotFresh();
 }
 

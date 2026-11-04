@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -16,8 +15,8 @@ BirchIconCache::BirchIconCache() = default;
 BirchIconCache::~BirchIconCache() = default;
 
 gfx::ImageSkia BirchIconCache::Get(const std::string& url) {
-  auto it = map_.find(url);
-  if (it == map_.end()) {
+  auto it = cache_.Get(url);
+  if (it == cache_.end()) {
     // Return a null image if the URL was not found.
     return gfx::ImageSkia();
   }
@@ -25,7 +24,11 @@ gfx::ImageSkia BirchIconCache::Get(const std::string& url) {
 }
 
 void BirchIconCache::Put(const std::string& url, const gfx::ImageSkia& icon) {
-  map_[url] = icon;
+  cache_.Put(url, icon);
+}
+
+void BirchIconCache::Clear() {
+  cache_.Clear();
 }
 
 }  // namespace ash
