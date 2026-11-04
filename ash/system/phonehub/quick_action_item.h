@@ -11,6 +11,7 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -43,7 +44,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   void SetSubLabel(const std::u16string& sub_label);
 
   // Set the color of sub-label shown below the label.
-  void SetSubLabelColor(SkColor color);
+  void SetSubLabelColorId(ui::ColorId color_id);
 
   // Set the tooltip text of the icon button.
   void SetTooltip(const std::u16string& text);
@@ -73,7 +74,7 @@ class ASH_EXPORT QuickActionItem : public views::View {
   raw_ptr<views::Label> sub_label_ = nullptr;
 
   // Enabled color of the sub label.
-  SkColor sub_label_color_;
+  ui::ColorId sub_label_color_;
 };
 
 }  // namespace ash

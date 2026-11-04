@@ -33,7 +33,8 @@ void ConfigureLabelProperties(views::Label* label) {
 
 QuickActionItem::QuickActionItem(Delegate* delegate,
                                  int label_id,
-                                 const gfx::VectorIcon& icon) {
+                                 const gfx::VectorIcon& icon)
+    : sub_label_color_(cros_tokens::kCrosSysOnSurfaceVariant) {
   SetPreferredSize(kUnifiedFeaturePodSize);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -68,10 +69,6 @@ QuickActionItem::QuickActionItem(Delegate* delegate,
                                         *label_);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
                                         *sub_label_);
-  sub_label_color_ =
-      GetColorProvider()
-          ? GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant)
-          : gfx::kPlaceholderColor;
 
   SetEnabled(true /* enabled */);
 }
@@ -82,10 +79,11 @@ void QuickActionItem::SetSubLabel(const std::u16string& sub_label) {
   sub_label_->SetText(sub_label);
 }
 
-void QuickActionItem::SetSubLabelColor(SkColor color) {
-  if (sub_label_color_ == color)
+void QuickActionItem::SetSubLabelColorId(ui::ColorId color_id) {
+  if (sub_label_color_ == color_id) {
     return;
-  sub_label_color_ = color;
+  }
+  sub_label_color_ = color_id;
   sub_label_->SetEnabledColor(sub_label_color_);
 }
 
@@ -108,14 +106,6 @@ std::u16string_view QuickActionItem::GetItemLabel() const {
 void QuickActionItem::SetEnabled(bool enabled) {
   View::SetEnabled(enabled);
   icon_button_->SetEnabled(enabled);
-  if (!GetColorProvider()) {
-    return;
-  }
-
-  // When creating QuickActionItem |sub_label_color_| may have been set to
-  // gfx::kPlaceholderColor if color provider was null, update color here.
-  sub_label_color_ =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   if (!enabled) {
     label_->SetEnabledColor(cros_tokens::kTextColorSecondary);

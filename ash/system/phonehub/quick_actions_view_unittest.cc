@@ -9,8 +9,11 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -45,6 +48,9 @@ class QuickActionsViewTest : public AshTestBase {
 
  protected:
   QuickActionsView* actions_view() { return quick_actions_view_.get(); }
+  std::unique_ptr<QuickActionsView> take_actions_view() {
+    return std::move(quick_actions_view_);
+  }
   phonehub::FakeTetherController* tether_controller() {
     return phone_hub_manager_.fake_tether_controller();
   }
@@ -82,9 +88,6 @@ TEST_F(QuickActionsViewTest, EnableHotspotToggle) {
   views::test::ButtonTestApi test_api(
       actions_view()->GetEnableHotspotQuickActionItem()->icon_button());
   test_api.NotifyClick(ui::test::TestEvent());
-  // The color provider is null in tests causing toggle to not be set
-  // so setting here.
-  actions_view()->GetEnableHotspotQuickActionItem()->SetToggled(true);
   EXPECT_EQ(TetherController::Status::kConnecting,
             tether_controller()->GetStatus());
 
@@ -162,6 +165,24 @@ TEST_F(QuickActionsViewTest, LocatePhoneToggle) {
   EXPECT_FALSE(actions_view()->locate_phone_for_testing()->IsToggled());
 
   find_my_device_controller()->SetShouldRequestFail(false);
+}
+
+TEST_F(QuickActionsViewTest, SubLabelColorWithColorId) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+  widget->SetContentsView(take_actions_view());
+
+  QuickActionItem* item =
+      static_cast<QuickActionsView*>(widget->GetContentsView())
+          ->GetEnableHotspotQuickActionItem();
+  views::View* label_view = item->children()[1].get();
+  auto* sub_label = static_cast<views::Label*>(label_view->children()[1].get());
+
+  item->SetSubLabelColorId(cros_tokens::kCrosSysPositive);
+  item->SetEnabled(false);
+  item->SetEnabled(true);
+
+  EXPECT_EQ(sub_label->GetEnabledColor(), widget->GetColorProvider()->GetColor(
+                                              cros_tokens::kCrosSysPositive));
 }
 
 }  // namespace ash
