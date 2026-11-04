@@ -7,7 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/browser/safe_browsing/metrics_collector/safe_browsing_metrics_collector_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_allowlist.h"
 #include "extensions/browser/extension_prefs_factory.h"

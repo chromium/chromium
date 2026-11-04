@@ -8,14 +8,14 @@ import("//extensions/buildflags/buildflags.gni")
 
 static_library("safe_browsing") {
   public = [
-    "chrome_controller_client.h",
+    "interstitials/chrome_controller_client.h",
     "metrics/bundled_settings_metrics_provider.h",
     "metrics/safe_browsing_metrics_provider.h",
     "url_checker_delegate_impl.h",
   ]
 
   sources = [
-    "chrome_controller_client.cc",
+    "interstitials/chrome_controller_client.cc",
     "metrics/bundled_settings_metrics_provider.cc",
     "metrics/safe_browsing_metrics_provider.cc",
     "url_checker_delegate_impl.cc",
@@ -202,11 +202,8 @@ static_library("safe_browsing") {
     public += [
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.h",
-      "chrome_ping_manager_factory.h",
-      "chrome_safe_browsing_blocking_page_factory.h",
       "chrome_safe_browsing_local_state_delegate.h",
       "chrome_safe_browsing_tab_observer_delegate.h",
-      "chrome_ui_manager_delegate.h",
       "chrome_user_population_helper.h",
       "client_side_detection_intelligent_scan_delegate_factory.h",
       "client_side_detection_intelligent_scan_delegate_util.h",
@@ -215,7 +212,6 @@ static_library("safe_browsing") {
       "db/chrome_sb_protocol_config_provider.h",
       "db/v5_get_hash_protocol_manager_factory.h",
       "db/v5_search_hashes_cache_factory.h",
-      "delayed_warning_navigation_throttle.h",
       "download_protection/check_client_download_request.h",
       "download_protection/check_client_download_request_base.h",
       "download_protection/check_file_system_access_write_request.h",
@@ -232,6 +228,12 @@ static_library("safe_browsing") {
       "download_protection/file_system_access_metadata.h",
       "gemini_antiscam_protection/gemini_antiscam_protection_service.h",
       "gemini_antiscam_protection/gemini_antiscam_protection_service_factory.h",
+      "interstitials/chrome_safe_browsing_blocking_page_factory.h",
+      "interstitials/chrome_ui_manager_delegate.h",
+      "interstitials/delayed_warning_navigation_throttle.h",
+      "interstitials/phishy_interaction_tracker.h",
+      "interstitials/test_safe_browsing_blocking_page_quiet.h",
+      "interstitials/user_interaction_observer.h",
       "network_context_service.h",
       "network_context_service_factory.h",
       "notification_content_detection/notification_content_detection_service_factory.h",
@@ -241,7 +243,7 @@ static_library("safe_browsing") {
       "password_protection/chrome_password_protection_service.h",
       "password_protection/chrome_password_protection_service_factory.h",
       "password_protection/chrome_password_reuse_detection_manager_client.h",
-      "phishy_interaction_tracker.h",
+      "ping_manager/chrome_ping_manager_factory.h",
       "realtime/chrome_enterprise_url_lookup_service_factory.h",
       "realtime/url_lookup_service_factory.h",
       "safe_browsing_navigation_observer_manager_factory.h",
@@ -254,18 +256,13 @@ static_library("safe_browsing") {
       "tailored_security/tailored_security_service_factory.h",
       "tailored_security/tailored_security_url_observer.h",
       "telemetry/telemetry_service.h",
-      "test_safe_browsing_blocking_page_quiet.h",
-      "trigger_creator.h",
-      "user_interaction_observer.h",
+      "triggers/trigger_creator.h",
     ]
     sources += [
       "chrome_client_side_detection_host_delegate.cc",
       "chrome_client_side_detection_service_delegate.cc",
-      "chrome_ping_manager_factory.cc",
-      "chrome_safe_browsing_blocking_page_factory.cc",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_tab_observer_delegate.cc",
-      "chrome_ui_manager_delegate.cc",
       "chrome_user_population_helper.cc",
       "client_side_detection_intelligent_scan_delegate_factory.cc",
       "client_side_detection_intelligent_scan_delegate_util.cc",
@@ -274,7 +271,6 @@ static_library("safe_browsing") {
       "db/chrome_sb_protocol_config_provider.cc",
       "db/v5_get_hash_protocol_manager_factory.cc",
       "db/v5_search_hashes_cache_factory.cc",
-      "delayed_warning_navigation_throttle.cc",
       "download_protection/check_client_download_request.cc",
       "download_protection/check_client_download_request_base.cc",
       "download_protection/check_file_system_access_write_request.cc",
@@ -291,6 +287,12 @@ static_library("safe_browsing") {
       "download_protection/file_system_access_metadata.cc",
       "gemini_antiscam_protection/gemini_antiscam_protection_service.cc",
       "gemini_antiscam_protection/gemini_antiscam_protection_service_factory.cc",
+      "interstitials/chrome_safe_browsing_blocking_page_factory.cc",
+      "interstitials/chrome_ui_manager_delegate.cc",
+      "interstitials/delayed_warning_navigation_throttle.cc",
+      "interstitials/phishy_interaction_tracker.cc",
+      "interstitials/test_safe_browsing_blocking_page_quiet.cc",
+      "interstitials/user_interaction_observer.cc",
       "network_context_service.cc",
       "network_context_service_factory.cc",
       "notification_content_detection/notification_content_detection_service_factory.cc",
@@ -300,7 +302,7 @@ static_library("safe_browsing") {
       "password_protection/chrome_password_protection_service.cc",
       "password_protection/chrome_password_protection_service_factory.cc",
       "password_protection/chrome_password_reuse_detection_manager_client.cc",
-      "phishy_interaction_tracker.cc",
+      "ping_manager/chrome_ping_manager_factory.cc",
       "realtime/chrome_enterprise_url_lookup_service_factory.cc",
       "realtime/url_lookup_service_factory.cc",
       "safe_browsing_navigation_observer_manager_factory.cc",
@@ -313,9 +315,7 @@ static_library("safe_browsing") {
       "tailored_security/tailored_security_service_factory.cc",
       "tailored_security/tailored_security_url_observer.cc",
       "telemetry/telemetry_service.cc",
-      "test_safe_browsing_blocking_page_quiet.cc",
-      "trigger_creator.cc",
-      "user_interaction_observer.cc",
+      "triggers/trigger_creator.cc",
     ]
     if (is_android) {
       public += [
@@ -740,8 +740,8 @@ static_library("advanced_protection") {
 
 source_set("metrics_collector") {
   sources = [
-    "safe_browsing_metrics_collector_factory.cc",
-    "safe_browsing_metrics_collector_factory.h",
+    "metrics_collector/safe_browsing_metrics_collector_factory.cc",
+    "metrics_collector/safe_browsing_metrics_collector_factory.h",
   ]
 
   deps = [
@@ -801,7 +801,6 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode != 0) {
     sources += [
-      "chrome_ui_manager_delegate_unittest.cc",
       "chrome_user_population_helper_unittest.cc",
       "client_side_detection_host_unittest.cc",
       "download_protection/download_item_metadata_unittest.cc",
@@ -813,9 +812,10 @@ source_set("unit_tests") {
       "download_protection/file_analyzer_unittest.cc",
       "download_protection/file_system_access_metadata_unittest.cc",
       "gemini_antiscam_protection/gemini_antiscam_protection_service_unittest.cc",
+      "interstitials/chrome_ui_manager_delegate_unittest.cc",
       "notification_content_detection/notification_content_detection_util_unittest.cc",
       "password_protection/chrome_password_protection_service_unittest.cc",
-      "threat_details_unittest.cc",
+      "threat_details/threat_details_unittest.cc",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/test:test_support",
@@ -906,7 +906,6 @@ source_set("unit_tests") {
   if (safe_browsing_mode == 1) {
     sources += [
       "advanced_protection/advanced_protection_status_manager_desktop_unittest.cc",
-      "chrome_ping_manager_factory_unittest.cc",
       "chrome_safe_browsing_hats_delegate_desktop_unittest.cc",
       "client_side_detection_intelligent_scan_delegate_desktop_unittest.cc",
       "client_side_detection_intelligent_scan_delegate_factory_unittest.cc",
@@ -956,8 +955,9 @@ source_set("unit_tests") {
       "incident_reporting/preference_validation_delegate_unittest.cc",
       "incident_reporting/state_store_unittest.cc",
       "incident_reporting/tracked_preference_incident_unittest.cc",
+      "interstitials/phishy_interaction_tracker_unittest.cc",
       "password_protection/chrome_password_reuse_detection_manager_client_unittest.cc",
-      "phishy_interaction_tracker_unittest.cc",
+      "ping_manager/chrome_ping_manager_factory_unittest.cc",
       "safe_browsing_service_unittest.cc",
       "suspicious_site_warnings/suspicious_site_controller_desktop_unittest.cc",
       "tailored_security/chrome_tailored_security_service_unittest.cc",
@@ -1217,9 +1217,11 @@ if (safe_browsing_mode != 0) {
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    public = [ "safe_browsing_blocking_page_platform_test_helper.h" ]
+    public =
+        [ "interstitials/safe_browsing_blocking_page_platform_test_helper.h" ]
 
-    sources = [ "safe_browsing_blocking_page_platform_test_helper.cc" ]
+    sources =
+        [ "interstitials/safe_browsing_blocking_page_platform_test_helper.cc" ]
 
     public_deps = [
       ":safe_browsing",
@@ -1264,7 +1266,7 @@ if (safe_browsing_mode != 0) {
 
     sources = [
       "client_side_detection_service_browsertest.cc",
-      "safe_browsing_blocking_page_platform_test.cc",
+      "interstitials/safe_browsing_blocking_page_platform_test.cc",
     ]
 
     deps = [
@@ -1390,11 +1392,11 @@ source_set("browser_tests") {
       "db/sb_embedded_test_server_browsertest.cc",
       "db/v5_local_database_browsertest.cc",
       "hashprefix_realtime/ohttp_key_service_browsertest.cc",
+      "interstitials/safe_browsing_blocking_page_test.cc",
       "notification_content_detection/notification_content_detection_service_browsertest.cc",
       "password_protection/chrome_password_protection_service_browsertest.cc",
       "password_protection/chrome_password_protection_service_sync_browsertest.cc",
       "realtime/url_lookup_service_browsertest.cc",
-      "safe_browsing_blocking_page_test.cc",
       "safe_browsing_navigation_observer_browsertest.cc",
       "safe_browsing_service_browsertest.cc",
       "tailored_security/chrome_tailored_security_service_browsertest.cc",
@@ -1480,7 +1482,7 @@ if (safe_browsing_mode != 0 && is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "safe_browsing_blocking_page_android_test.cc" ]
+    sources = [ "interstitials/safe_browsing_blocking_page_android_test.cc" ]
     deps = [
       ":blocking_page_platform_test_support",
       ":safe_browsing",

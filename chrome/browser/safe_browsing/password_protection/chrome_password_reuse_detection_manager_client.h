@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
+#include "chrome/browser/safe_browsing/interstitials/phishy_interaction_tracker.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"

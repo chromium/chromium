@@ -36,7 +36,7 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
-#include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
+#include "chrome/browser/safe_browsing/interstitials/phishy_interaction_tracker.h"
 #endif
 
 class PrefChangeRegistrar;

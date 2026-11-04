@@ -56,7 +56,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"
 #endif
 
 

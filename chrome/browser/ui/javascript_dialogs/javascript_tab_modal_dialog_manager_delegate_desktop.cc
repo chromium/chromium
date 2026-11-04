@@ -26,7 +26,7 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"
 #endif
 
 JavaScriptTabModalDialogManagerDelegateDesktop::

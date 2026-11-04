@@ -114,7 +114,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 

@@ -757,10 +757,10 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/db/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/browser/safe_browsing/password_protection/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/ping_manager/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/realtime/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/realtime/url_lookup_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"

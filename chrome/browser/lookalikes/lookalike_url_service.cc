@@ -13,7 +13,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"
 #include "chrome/common/channel_info.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/lookalikes/core/lookalike_url_util.h"

@@ -490,7 +490,8 @@ if (!is_android) {
     ]
 
     if (safe_browsing_mode == 1) {
-      sources += [ "safe_browsing/threat_dom_details_browsertest.cc" ]
+      sources +=
+          [ "safe_browsing/threat_details/threat_dom_details_browsertest.cc" ]
       deps += [
         "//components/safe_browsing/content/common:interfaces",
         "//components/safe_browsing/content/renderer",
