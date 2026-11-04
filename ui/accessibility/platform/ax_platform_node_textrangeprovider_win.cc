@@ -2192,7 +2192,9 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     OnTextDeletionOrInsertion(const AXNode& node, const AXNodeData& new_data) {
-  CHECK(new_data.IsTextField(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580133497): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(new_data.IsTextField());
 
   base::span<const int> start_offsets = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperationStartOffsets);
