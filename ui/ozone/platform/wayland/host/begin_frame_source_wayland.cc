@@ -163,50 +163,46 @@ void BeginFrameSourceWayland::MaybeIssueBeginFrame() {
   base::TimeTicks now = base::TimeTicks::Now();
   const base::TimeDelta effective_interval = GetEffectiveInterval();
 
+  // Issue at most one begin frame per vsync cycle, because:
+  //
+  // 1) viz won't ack additional frames with the same frame time.
+  // 2) it's wasteful to produce frames faster than the display.
+  //
   if (!last_frame_deadline_time_.is_null()) {
-    // Wayland sometimes fires multiple frame callbacks within one refresh
-    // cycle. Issuing faster than the display is wasteful and can cause
-    // stalls since viz won't ack additional frames with the same frame_time,
-    // which would happen below when we snap to vsync. So we defer until just
-    // after the last frame's deadline to make sure the next frame will be
-    // snapped to the next vsync.
     base::TimeDelta time_to_next_frame =
         last_frame_deadline_time_ - now + base::Microseconds(1);
     if (time_to_next_frame.is_positive()) {
-      DVLOG(1) << "MaybeIssueBeginFrame: tried to issue too early, waiting "
-               << time_to_next_frame.InMillisecondsF() << "ms";
-      if (!deferred_issue_begin_frame_timer_.IsRunning()) {
-        deferred_issue_begin_frame_timer_.Start(
-            FROM_HERE, time_to_next_frame,
-            base::BindOnce(&BeginFrameSourceWayland::MaybeIssueBeginFrame,
-                           weak_factory_.GetWeakPtr()));
-      }
+      DeferIssueToNextFrame("attempted to issue before deadline",
+                            time_to_next_frame);
       return;
     }
   }
 
+  // Derive the true deadline (vsync) from the last presentation time,
+  // falling back to the approximation of one interval from now.
   base::TimeTicks deadline = now + effective_interval;
-  // The naive deadline of one interval from now is too far in the
-  // future because "now" is some meaningful amount of time after the previous
-  // frame was shown due to IPC delays, etc. If we have the last known
-  // presentation time, we can calculate a deadline aligned to the
-  // display's actual vsync/refresh cycle.
   if (!last_presentation_time_.is_null()) {
-    // If an issue lands exactly on a tick, snap forward so it gets the
-    // full interval rather than a deadline of now.
+    // Add a tiny value so we snap to the *next* vsync in case now == vsync.
     deadline =
         (now + base::Microseconds(1))
             .SnappedToNextTick(last_presentation_time_, effective_interval);
+
+    // Apply a half-interval margin to further prevent multiple frames from
+    // issuing during the same vsync cycle. This catches compositors that
+    // sometimes send late presentation timestamps (Mutter), causing us to
+    // compute the wrong next deadline. Similar to kDoubleTickDivisor in viz.
+    if (!last_frame_deadline_time_.is_null() &&
+        deadline - last_frame_deadline_time_ < effective_interval / 2) {
+      DeferIssueToNextFrame("attempted to issue within half interval margin",
+                            deadline - now + base::Microseconds(1));
+      return;
+    }
   }
-  // Likewise, we can determine the true frame time, which was immediately after
-  // the previous frame was shown. This keeps the difference between frame time
-  // and deadline equal to the interval. If we don't have presentation time,
-  // frame_time will resolve to "now" and still be consistent with the deadline
-  // of now + interval, but both will be out of sync with the display.
-  //
-  // The frame time must advance or viz drops the begin frame without acking,
-  // which can happen if the interval grows between issues. Clamp to the
-  // previous deadline, as in DelayBasedBeginFrameSource::OnTimerTick.
+
+  // The frame time should line up with the previous vsync. But if the
+  // interval changes, that could put it before the previous deadline, causing
+  // viz to drop the begin frame without acking. So we clamp as in
+  // DelayBasedBeginFrameSource::OnTimerTick.
   base::TimeTicks frame_time =
       std::max(deadline - effective_interval, last_frame_deadline_time_);
 
@@ -306,6 +302,19 @@ void BeginFrameSourceWayland::UpdateBeginFrameProduction() {
     deferred_issue_begin_frame_timer_.Stop();
   }
   UpdateFrameCallbackRecoveryTimer();
+}
+
+void BeginFrameSourceWayland::DeferIssueToNextFrame(const char* reason,
+                                                    base::TimeDelta delay) {
+  if (deferred_issue_begin_frame_timer_.IsRunning()) {
+    return;
+  }
+  TRACE_EVENT_INSTANT("wayland", "MaybeIssueBeginFrame: deferring", "reason",
+                      reason, "wait_us", delay.InMicroseconds());
+  deferred_issue_begin_frame_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&BeginFrameSourceWayland::MaybeIssueBeginFrame,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void BeginFrameSourceWayland::OnFrameCallbackRecoveryTimerFired() {

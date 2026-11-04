@@ -369,14 +369,17 @@ TEST_F(BeginFrameSourceWaylandTest, FrameTimeNeverPrecedesPreviousDeadline) {
   const base::TimeTicks last_deadline =
       base::TimeTicks::Now() - base::Milliseconds(1);
   set_last_frame_deadline(last_deadline);
+  // The next tick lands three quarters of the new interval past the previous
+  // deadline: clear of the half-interval double-tick margin, but with the tick
+  // before it still earlier than the previous deadline.
   const base::TimeDelta interval = 2 * kDefaultInterval;
   source_->OnPresentationFeedback(gfx::PresentationFeedback(
-      last_deadline - kDefaultInterval, interval, /*flags=*/0));
+      last_deadline - interval / 4, interval, /*flags=*/0));
   source_->SetNeedsBeginFrame(true);
 
   EXPECT_EQ(1, delegate_.begin_frame_count);
   EXPECT_EQ(interval, delegate_.last_interval);
-  EXPECT_EQ(last_deadline + kDefaultInterval, delegate_.last_deadline);
+  EXPECT_EQ(last_deadline + 3 * interval / 4, delegate_.last_deadline);
   EXPECT_EQ(last_deadline, delegate_.last_frame_time);
 }
 
@@ -394,6 +397,46 @@ TEST_F(BeginFrameSourceWaylandTest, DeferredFrameEventuallyIssues) {
   delegate_.quit_closure = run_loop.QuitClosure();
   run_loop.Run();
   EXPECT_EQ(2, delegate_.begin_frame_count);
+}
+
+// Defer if a bad presentation timestamp would cause two issuances
+// within the same vsync cycle.
+TEST_F(BeginFrameSourceWaylandTest, DoubleTickDefersToNextTick) {
+  const base::TimeTicks last_deadline =
+      base::TimeTicks::Now() - base::Milliseconds(1);
+  set_last_frame_deadline(last_deadline);
+  const base::TimeTicks next_tick = last_deadline + kDefaultInterval / 4;
+  source_->OnPresentationFeedback(gfx::PresentationFeedback(
+      next_tick - kDefaultInterval, kDefaultInterval, /*flags=*/0));
+  source_->SetNeedsBeginFrame(true);
+
+  ASSERT_EQ(0, delegate_.begin_frame_count);
+  ASSERT_TRUE(DeferredIssueTimerRunning());
+  EXPECT_EQ(last_deadline, last_frame_deadline());
+
+  base::RunLoop run_loop;
+  delegate_.quit_target = 1;
+  delegate_.quit_closure = run_loop.QuitClosure();
+  run_loop.Run();
+  EXPECT_EQ(1, delegate_.begin_frame_count);
+  EXPECT_EQ(next_tick + kDefaultInterval, delegate_.last_deadline);
+  EXPECT_EQ(kDefaultInterval,
+            delegate_.last_deadline - delegate_.last_frame_time);
+}
+
+// Do not apply the double-tick margin if there is no previous deadline.
+TEST_F(BeginFrameSourceWaylandTest, FreshStartIssuesForNextTick) {
+  const base::TimeTicks timebase =
+      base::TimeTicks::Now() - (kDefaultInterval - base::Milliseconds(1));
+  source_->OnPresentationFeedback(
+      gfx::PresentationFeedback(timebase, kDefaultInterval, /*flags=*/0));
+  source_->SetNeedsBeginFrame(true);
+
+  EXPECT_EQ(1, delegate_.begin_frame_count);
+  EXPECT_FALSE(DeferredIssueTimerRunning());
+  EXPECT_EQ(timebase + kDefaultInterval, delegate_.last_deadline);
+  EXPECT_EQ(kDefaultInterval,
+            delegate_.last_deadline - delegate_.last_frame_time);
 }
 
 // If the frame callback never arrives, the recovery timer breaks the stall by

@@ -54,6 +54,8 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension {
   // the current state. Called after every state transition.
   void UpdateFrameCallbackRecoveryTimer();
   void OnFrameCallbackRecoveryTimerFired();
+  void DeferIssueToNextFrame(const char* reason,
+                             base::TimeDelta time_to_next_frame);
 
   base::TimeDelta GetEffectiveInterval() const;
 
@@ -104,7 +106,7 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension {
 
   // Recovers from stalls if expected frame callbacks do not arrive.
   base::OneShotTimer frame_callback_recovery_timer_;
-  // Throttles if multiple frame callbacks arrive within the same vsync cycle.
+  // Waits out the vsync cycle we last issued for before issuing again.
   base::OneShotTimer deferred_issue_begin_frame_timer_;
 
   base::WeakPtrFactory<BeginFrameSourceWayland> weak_factory_{this};
