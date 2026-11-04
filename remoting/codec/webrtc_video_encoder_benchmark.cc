@@ -104,6 +104,14 @@ struct FrameMetric {
   bool key_frame = false;
 };
 
+struct RunResults {
+  base::TimeTicks start_time;
+  base::TimeTicks end_time;
+  int64_t total_pixels = 0;
+  int64_t updated_pixels = 0;
+  std::vector<FrameMetric> frame_metrics;
+};
+
 struct LatencyStats {
   size_t count = 0;
   double total_ms = 0.0;
@@ -295,6 +303,216 @@ std::vector<std::unique_ptr<webrtc::SharedDesktopFrame>> LoadFrames(
   return frames;
 }
 
+base::DictValue SummarizeAndPrintResults(const EncoderConfig& encoder_config,
+                                         const RuntimeParams& runtime_params,
+                                         const RunResults& run_results) {
+  const auto& frame_metrics = run_results.frame_metrics;
+  std::vector<double> all_times_ms;
+  std::vector<double> keyframe_times_ms;
+  std::vector<double> delta_times_ms;
+
+  std::vector<size_t> all_sizes;
+  std::vector<size_t> keyframe_sizes;
+  std::vector<size_t> delta_sizes;
+
+  std::vector<int> all_quantizers;
+  std::vector<int> delta_quantizers;
+
+  all_times_ms.reserve(frame_metrics.size());
+  all_sizes.reserve(frame_metrics.size());
+  all_quantizers.reserve(frame_metrics.size());
+
+  for (const auto& m : frame_metrics) {
+    all_times_ms.push_back(m.encode_time_ms);
+    all_sizes.push_back(m.size_bytes);
+    all_quantizers.push_back(m.quantizer);
+    if (m.key_frame) {
+      keyframe_times_ms.push_back(m.encode_time_ms);
+      keyframe_sizes.push_back(m.size_bytes);
+    } else {
+      delta_times_ms.push_back(m.encode_time_ms);
+      delta_sizes.push_back(m.size_bytes);
+      delta_quantizers.push_back(m.quantizer);
+    }
+  }
+
+  LatencyStats all_latency = ComputeLatencyStats(all_times_ms);
+  LatencyStats kf_latency = ComputeLatencyStats(keyframe_times_ms);
+  LatencyStats delta_latency = ComputeLatencyStats(delta_times_ms);
+
+  SizeStats all_size_stats = ComputeSizeStats(all_sizes);
+  SizeStats kf_size_stats = ComputeSizeStats(keyframe_sizes);
+  SizeStats delta_size_stats = ComputeSizeStats(delta_sizes);
+
+  QuantizerStats all_qp_stats = ComputeQuantizerStats(all_quantizers);
+  QuantizerStats delta_qp_stats = ComputeQuantizerStats(delta_quantizers);
+
+  double wall_clock_ms =
+      (run_results.end_time - run_results.start_time).InMillisecondsF();
+  double wall_clock_fps = (wall_clock_ms > 0.0 && !frame_metrics.empty())
+                              ? (frame_metrics.size() * 1000.0) / wall_clock_ms
+                              : 0.0;
+  double encoder_fps =
+      (all_latency.total_ms > 0.0 && !frame_metrics.empty())
+          ? (frame_metrics.size() * 1000.0) / all_latency.total_ms
+          : 0.0;
+  double updated_area_pct =
+      (run_results.total_pixels > 0)
+          ? (run_results.updated_pixels * 100.0) / run_results.total_pixels
+          : 0.0;
+  double achieved_bitrate_kbps =
+      (!frame_metrics.empty() && runtime_params.fps > 0.0)
+          ? (static_cast<double>(all_size_stats.total_bytes) * 8.0 *
+             runtime_params.fps) /
+                (frame_metrics.size() * 1000.0)
+          : 0.0;
+
+  std::ios old_state(nullptr);
+  old_state.copyfmt(std::cout);
+  std::cout << std::fixed << std::setprecision(2);
+
+  std::cout << "=================================================="
+            << std::endl;
+  std::cout << "RESULTS: " << encoder_config.name << " ("
+            << CodecToString(encoder_config.codec) << ", "
+            << runtime_params.size.width() << "x"
+            << runtime_params.size.height() << ", " << runtime_params.scenario
+            << ", " << runtime_params.fps << " FPS)" << std::endl;
+  std::cout << "Config:  Profile "
+            << (encoder_config.profile == Profile::k1 ? "1 (I444)" : "0 (I420)")
+            << " | Speed " << encoder_config.encoder_speed << " | Active Map: "
+            << (encoder_config.use_active_map ? "enabled" : "disabled")
+            << " | Target Bitrate: " << encoder_config.bitrate_kbps << " kbps"
+            << std::endl;
+  std::cout << "--------------------------------------------------"
+            << std::endl;
+  std::cout << "Frames encoded:           " << frame_metrics.size() << " ("
+            << kf_latency.count << " key, " << delta_latency.count << " delta)"
+            << std::endl;
+  std::cout << "Average updated area:     " << updated_area_pct << "%"
+            << std::endl;
+  std::cout << "Wall-clock time:          " << wall_clock_ms << " ms ("
+            << wall_clock_fps << " FPS)" << std::endl;
+  std::cout << "Encoder-only time:        " << all_latency.total_ms << " ms ("
+            << encoder_fps << " FPS)" << std::endl;
+  std::cout << "--------------------------------------------------"
+            << std::endl;
+  std::cout << "Encode Latency (All):     mean=" << all_latency.mean_ms
+            << " ms | p50=" << all_latency.p50_ms
+            << " ms | p90=" << all_latency.p90_ms
+            << " ms | p99=" << all_latency.p99_ms
+            << " ms | max=" << all_latency.max_ms << " ms" << std::endl;
+  if (kf_latency.count > 0) {
+    std::cout << "Encode Latency (Key):     mean=" << kf_latency.mean_ms
+              << " ms | max=" << kf_latency.max_ms << " ms" << std::endl;
+  }
+  if (delta_latency.count > 0) {
+    std::cout << "Encode Latency (Delta):   mean=" << delta_latency.mean_ms
+              << " ms | p50=" << delta_latency.p50_ms
+              << " ms | p90=" << delta_latency.p90_ms
+              << " ms | p99=" << delta_latency.p99_ms
+              << " ms | max=" << delta_latency.max_ms << " ms" << std::endl;
+  }
+  std::cout << "--------------------------------------------------"
+            << std::endl;
+  std::cout << "Stream Bitrate:           " << achieved_bitrate_kbps
+            << " kbps (target: " << encoder_config.bitrate_kbps << " kbps)"
+            << std::endl;
+  std::cout << "Total Encoded Size:       " << all_size_stats.total_bytes
+            << " bytes (" << (all_size_stats.total_bytes / 1024.0) << " KiB)"
+            << std::endl;
+  std::cout << "Frame Size (All):         avg=" << all_size_stats.avg_bytes
+            << " B | max=" << all_size_stats.max_bytes << " B" << std::endl;
+  if (kf_size_stats.count > 0) {
+    std::cout << "Frame Size (Key):         avg=" << kf_size_stats.avg_bytes
+              << " B | max=" << kf_size_stats.max_bytes << " B" << std::endl;
+  }
+  if (delta_size_stats.count > 0) {
+    std::cout << "Frame Size (Delta):       avg=" << delta_size_stats.avg_bytes
+              << " B | max=" << delta_size_stats.max_bytes << " B" << std::endl;
+  }
+  if (all_qp_stats.count > 0) {
+    std::cout << "Quantizer / QP (All):     avg=" << all_qp_stats.avg_qp
+              << " | min=" << all_qp_stats.min_qp
+              << " | max=" << all_qp_stats.max_qp << std::endl;
+  }
+  if (delta_qp_stats.count > 0) {
+    std::cout << "Quantizer / QP (Delta):   avg=" << delta_qp_stats.avg_qp
+              << " | min=" << delta_qp_stats.min_qp
+              << " | max=" << delta_qp_stats.max_qp << std::endl;
+  }
+  std::cout << "=================================================="
+            << std::endl;
+
+  std::cout.copyfmt(old_state);
+
+  base::DictValue result;
+  result.Set("encoder_name", encoder_config.name);
+  result.Set("codec", CodecToString(encoder_config.codec));
+  result.Set("profile", encoder_config.profile == Profile::k1 ? 1 : 0);
+  result.Set("color_space",
+             encoder_config.color_space == ColorSpace::kI444 ? "I444" : "I420");
+  result.Set("encoder_speed", encoder_config.encoder_speed);
+  result.Set("use_active_map", encoder_config.use_active_map);
+  result.Set("target_bitrate_kbps", encoder_config.bitrate_kbps);
+  result.Set("scenario", runtime_params.scenario);
+  result.Set("width", runtime_params.size.width());
+  result.Set("height", runtime_params.size.height());
+  result.Set("target_fps", runtime_params.fps);
+
+  result.Set("frames_encoded", static_cast<int>(frame_metrics.size()));
+  result.Set("keyframes_encoded", static_cast<int>(kf_latency.count));
+  result.Set("delta_frames_encoded", static_cast<int>(delta_latency.count));
+  result.Set("updated_area_percent", updated_area_pct);
+  result.Set("wall_clock_time_ms", wall_clock_ms);
+  result.Set("wall_clock_fps", wall_clock_fps);
+  result.Set("encoder_time_ms", all_latency.total_ms);
+  result.Set("encoder_fps", encoder_fps);
+  result.Set("achieved_bitrate_kbps", achieved_bitrate_kbps);
+  result.Set("total_encoded_bytes",
+             static_cast<double>(all_size_stats.total_bytes));
+
+  auto latency_to_dict = [](const LatencyStats& s) {
+    base::DictValue d;
+    d.Set("count", static_cast<int>(s.count));
+    d.Set("total_ms", s.total_ms);
+    d.Set("mean_ms", s.mean_ms);
+    d.Set("p50_ms", s.p50_ms);
+    d.Set("p90_ms", s.p90_ms);
+    d.Set("p99_ms", s.p99_ms);
+    d.Set("max_ms", s.max_ms);
+    return d;
+  };
+  result.Set("latency_all", latency_to_dict(all_latency));
+  result.Set("latency_keyframe", latency_to_dict(kf_latency));
+  result.Set("latency_delta", latency_to_dict(delta_latency));
+
+  auto size_to_dict = [](const SizeStats& s) {
+    base::DictValue d;
+    d.Set("count", static_cast<int>(s.count));
+    d.Set("total_bytes", static_cast<double>(s.total_bytes));
+    d.Set("avg_bytes", s.avg_bytes);
+    d.Set("max_bytes", static_cast<double>(s.max_bytes));
+    return d;
+  };
+  result.Set("frame_size_all", size_to_dict(all_size_stats));
+  result.Set("frame_size_keyframe", size_to_dict(kf_size_stats));
+  result.Set("frame_size_delta", size_to_dict(delta_size_stats));
+
+  auto qp_to_dict = [](const QuantizerStats& s) {
+    base::DictValue d;
+    d.Set("count", static_cast<int>(s.count));
+    d.Set("avg_qp", s.avg_qp);
+    d.Set("min_qp", s.min_qp);
+    d.Set("max_qp", s.max_qp);
+    return d;
+  };
+  result.Set("quantizer_all", qp_to_dict(all_qp_stats));
+  result.Set("quantizer_delta", qp_to_dict(delta_qp_stats));
+
+  return result;
+}
+
 class EncoderBenchmark {
  public:
   EncoderBenchmark() {
@@ -335,10 +553,8 @@ class EncoderBenchmark {
     next_frame_index_ = 0;
     frames_encoded_ = 0;
     top_off_active_ = false;
-    total_pixels_ = 0;
-    updated_pixels_ = 0;
-    frame_metrics_.clear();
-    frame_metrics_.reserve(preloaded_frames.size());
+    run_results_ = RunResults();
+    run_results_.frame_metrics.reserve(preloaded_frames.size());
 
     if (preloaded_frames.empty()) {
       LOG(ERROR) << "No frames available to encode.";
@@ -351,15 +567,16 @@ class EncoderBenchmark {
     quit_closure_ = run_loop.QuitClosure();
     main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
+    // Ensure encoder is initialized and warmed up before starting the timer.
+    // RunLoop::QuitClosure() is thread-safe and is invoked on
+    // `encode_task_runner_` once the warm-up encode and encoder creation
+    // complete.
+    base::RunLoop init_loop;
     encode_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EncoderBenchmark::InitializeEncoderOnEncodeThread,
-                       base::Unretained(this)));
-
-    // Ensure encoder is initialized before starting the timer.
-    base::RunLoop init_loop;
-    encode_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                                          init_loop.QuitClosure());
+                       base::Unretained(this),
+                       base::ScopedClosureRunner(init_loop.QuitClosure())));
     init_loop.Run();
 
     if (!encoder_initialized_) {
@@ -370,7 +587,7 @@ class EncoderBenchmark {
 
     std::cout << "Running encoder '" << encoder_config_.name << "'..."
               << std::endl;
-    start_time_ = base::TimeTicks::Now();
+    run_results_.start_time = base::TimeTicks::Now();
 
     capture_task_runner_->PostTask(
         FROM_HERE,
@@ -378,7 +595,7 @@ class EncoderBenchmark {
                        base::Unretained(this)));
 
     run_loop.Run();
-    end_time_ = base::TimeTicks::Now();
+    run_results_.end_time = base::TimeTicks::Now();
 
     // Destroy the encoder between runs to ensure clean state.
     base::RunLoop destroy_loop;
@@ -390,14 +607,16 @@ class EncoderBenchmark {
     destroy_loop.Run();
 
     preloaded_frames_ = {};
-    return SummarizeAndPrintResults();
+    return SummarizeAndPrintResults(encoder_config_, runtime_params_,
+                                    run_results_);
   }
 
  private:
-  void InitializeEncoderOnEncodeThread() {
+  void InitializeEncoderOnEncodeThread(
+      base::ScopedClosureRunner on_initialized) {
     DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
-    auto warmup_encoder = CreateEncoder(encoder_config_);
-    if (!warmup_encoder) {
+    warmup_encoder_ = CreateEncoder(encoder_config_);
+    if (!warmup_encoder_) {
       encoder_initialized_ = false;
       return;
     }
@@ -411,16 +630,37 @@ class EncoderBenchmark {
     warmup_params.fps = static_cast<int>(std::round(runtime_params_.fps));
     warmup_params.key_frame = true;
     warmup_params.clear_active_map = true;
-    warmup_encoder->Encode(preloaded_frames_[0]->Share(), warmup_params,
-                           base::DoNothing());
-    warmup_encoder.reset();
+    warmup_encoder_->Encode(
+        preloaded_frames_[0]->Share(), warmup_params,
+        base::BindOnce(&EncoderBenchmark::OnWarmupEncodedOnEncodeThread,
+                       base::Unretained(this), std::move(on_initialized)));
+  }
 
+  void OnWarmupEncodedOnEncodeThread(
+      base::ScopedClosureRunner on_initialized,
+      WebrtcVideoEncoder::EncodeResult /*result*/,
+      std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> /*frame*/) {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    // Defer resetting |warmup_encoder_| and creating |encoder_| to a follow-up
+    // task on |encode_task_runner_| so synchronous encoders finish unwinding
+    // Encode() before |warmup_encoder_| is destroyed, and two encoder instances
+    // are never alive simultaneously.
+    encode_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EncoderBenchmark::FinishWarmupOnEncodeThread,
+                       base::Unretained(this), std::move(on_initialized)));
+  }
+
+  void FinishWarmupOnEncodeThread(base::ScopedClosureRunner on_initialized) {
+    DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    warmup_encoder_.reset();
     encoder_ = CreateEncoder(encoder_config_);
     encoder_initialized_ = (encoder_ != nullptr);
   }
 
   void DestroyEncoderOnEncodeThread() {
     DCHECK(encode_task_runner_->RunsTasksInCurrentSequence());
+    warmup_encoder_.reset();
     encoder_.reset();
     encoder_initialized_ = false;
   }
@@ -442,12 +682,12 @@ class EncoderBenchmark {
 
     // Stats are tracked on capture thread.
     // Use int64_t to prevent overflow for large dimensions.
-    total_pixels_ += static_cast<int64_t>(frame->size().width()) *
-                     static_cast<int64_t>(frame->size().height());
+    run_results_.total_pixels += static_cast<int64_t>(frame->size().width()) *
+                                 static_cast<int64_t>(frame->size().height());
     for (webrtc::DesktopRegion::Iterator r(frame->updated_region());
          !r.IsAtEnd(); r.Advance()) {
-      updated_pixels_ += static_cast<int64_t>(r.rect().width()) *
-                         static_cast<int64_t>(r.rect().height());
+      run_results_.updated_pixels += static_cast<int64_t>(r.rect().width()) *
+                                     static_cast<int64_t>(r.rect().height());
     }
 
     encode_task_runner_->PostTask(
@@ -486,7 +726,7 @@ class EncoderBenchmark {
       metric.size_bytes = frame->data ? frame->data->size() : 0;
       metric.quantizer = frame->quantizer;
       metric.key_frame = frame->key_frame;
-      frame_metrics_.push_back(metric);
+      run_results_.frame_metrics.push_back(metric);
       top_off_active_ = (frame->quantizer > WebrtcVideoEncoder::kMinQuantizer);
     } else {
       LOG(ERROR) << "Encoder failed to encode frame.";
@@ -510,220 +750,10 @@ class EncoderBenchmark {
     }
   }
 
-  base::DictValue SummarizeAndPrintResults() {
-    std::vector<double> all_times_ms;
-    std::vector<double> keyframe_times_ms;
-    std::vector<double> delta_times_ms;
-
-    std::vector<size_t> all_sizes;
-    std::vector<size_t> keyframe_sizes;
-    std::vector<size_t> delta_sizes;
-
-    std::vector<int> all_quantizers;
-    std::vector<int> delta_quantizers;
-
-    all_times_ms.reserve(frame_metrics_.size());
-    all_sizes.reserve(frame_metrics_.size());
-    all_quantizers.reserve(frame_metrics_.size());
-
-    for (const auto& m : frame_metrics_) {
-      all_times_ms.push_back(m.encode_time_ms);
-      all_sizes.push_back(m.size_bytes);
-      all_quantizers.push_back(m.quantizer);
-      if (m.key_frame) {
-        keyframe_times_ms.push_back(m.encode_time_ms);
-        keyframe_sizes.push_back(m.size_bytes);
-      } else {
-        delta_times_ms.push_back(m.encode_time_ms);
-        delta_sizes.push_back(m.size_bytes);
-        delta_quantizers.push_back(m.quantizer);
-      }
-    }
-
-    LatencyStats all_latency = ComputeLatencyStats(all_times_ms);
-    LatencyStats kf_latency = ComputeLatencyStats(keyframe_times_ms);
-    LatencyStats delta_latency = ComputeLatencyStats(delta_times_ms);
-
-    SizeStats all_size_stats = ComputeSizeStats(all_sizes);
-    SizeStats kf_size_stats = ComputeSizeStats(keyframe_sizes);
-    SizeStats delta_size_stats = ComputeSizeStats(delta_sizes);
-
-    QuantizerStats all_qp_stats = ComputeQuantizerStats(all_quantizers);
-    QuantizerStats delta_qp_stats = ComputeQuantizerStats(delta_quantizers);
-
-    double wall_clock_ms = (end_time_ - start_time_).InMillisecondsF();
-    double wall_clock_fps =
-        (wall_clock_ms > 0.0 && !frame_metrics_.empty())
-            ? (frame_metrics_.size() * 1000.0) / wall_clock_ms
-            : 0.0;
-    double encoder_fps =
-        (all_latency.total_ms > 0.0 && !frame_metrics_.empty())
-            ? (frame_metrics_.size() * 1000.0) / all_latency.total_ms
-            : 0.0;
-    double updated_area_pct =
-        (total_pixels_ > 0) ? (updated_pixels_ * 100.0) / total_pixels_ : 0.0;
-    double achieved_bitrate_kbps =
-        (!frame_metrics_.empty() && runtime_params_.fps > 0.0)
-            ? (static_cast<double>(all_size_stats.total_bytes) * 8.0 *
-               runtime_params_.fps) /
-                  (frame_metrics_.size() * 1000.0)
-            : 0.0;
-
-    std::ios old_state(nullptr);
-    old_state.copyfmt(std::cout);
-    std::cout << std::fixed << std::setprecision(2);
-
-    std::cout << "=================================================="
-              << std::endl;
-    std::cout << "RESULTS: " << encoder_config_.name << " ("
-              << CodecToString(encoder_config_.codec) << ", "
-              << runtime_params_.size.width() << "x"
-              << runtime_params_.size.height() << ", "
-              << runtime_params_.scenario << ", " << runtime_params_.fps
-              << " FPS)" << std::endl;
-    std::cout << "Config:  Profile "
-              << (encoder_config_.profile == Profile::k1 ? "1 (I444)"
-                                                         : "0 (I420)")
-              << " | Speed " << encoder_config_.encoder_speed
-              << " | Active Map: "
-              << (encoder_config_.use_active_map ? "enabled" : "disabled")
-              << " | Target Bitrate: " << encoder_config_.bitrate_kbps
-              << " kbps" << std::endl;
-    std::cout << "--------------------------------------------------"
-              << std::endl;
-    std::cout << "Frames encoded:           " << frame_metrics_.size() << " ("
-              << kf_latency.count << " key, " << delta_latency.count
-              << " delta)" << std::endl;
-    std::cout << "Average updated area:     " << updated_area_pct << "%"
-              << std::endl;
-    std::cout << "Wall-clock time:          " << wall_clock_ms << " ms ("
-              << wall_clock_fps << " FPS)" << std::endl;
-    std::cout << "Encoder-only time:        " << all_latency.total_ms << " ms ("
-              << encoder_fps << " FPS)" << std::endl;
-    std::cout << "--------------------------------------------------"
-              << std::endl;
-    std::cout << "Encode Latency (All):     mean=" << all_latency.mean_ms
-              << " ms | p50=" << all_latency.p50_ms
-              << " ms | p90=" << all_latency.p90_ms
-              << " ms | p99=" << all_latency.p99_ms
-              << " ms | max=" << all_latency.max_ms << " ms" << std::endl;
-    if (kf_latency.count > 0) {
-      std::cout << "Encode Latency (Key):     mean=" << kf_latency.mean_ms
-                << " ms | max=" << kf_latency.max_ms << " ms" << std::endl;
-    }
-    if (delta_latency.count > 0) {
-      std::cout << "Encode Latency (Delta):   mean=" << delta_latency.mean_ms
-                << " ms | p50=" << delta_latency.p50_ms
-                << " ms | p90=" << delta_latency.p90_ms
-                << " ms | p99=" << delta_latency.p99_ms
-                << " ms | max=" << delta_latency.max_ms << " ms" << std::endl;
-    }
-    std::cout << "--------------------------------------------------"
-              << std::endl;
-    std::cout << "Stream Bitrate:           " << achieved_bitrate_kbps
-              << " kbps (target: " << encoder_config_.bitrate_kbps << " kbps)"
-              << std::endl;
-    std::cout << "Total Encoded Size:       " << all_size_stats.total_bytes
-              << " bytes (" << (all_size_stats.total_bytes / 1024.0) << " KiB)"
-              << std::endl;
-    std::cout << "Frame Size (All):         avg=" << all_size_stats.avg_bytes
-              << " B | max=" << all_size_stats.max_bytes << " B" << std::endl;
-    if (kf_size_stats.count > 0) {
-      std::cout << "Frame Size (Key):         avg=" << kf_size_stats.avg_bytes
-                << " B | max=" << kf_size_stats.max_bytes << " B" << std::endl;
-    }
-    if (delta_size_stats.count > 0) {
-      std::cout << "Frame Size (Delta):       avg="
-                << delta_size_stats.avg_bytes
-                << " B | max=" << delta_size_stats.max_bytes << " B"
-                << std::endl;
-    }
-    if (all_qp_stats.count > 0) {
-      std::cout << "Quantizer / QP (All):     avg=" << all_qp_stats.avg_qp
-                << " | min=" << all_qp_stats.min_qp
-                << " | max=" << all_qp_stats.max_qp << std::endl;
-    }
-    if (delta_qp_stats.count > 0) {
-      std::cout << "Quantizer / QP (Delta):   avg=" << delta_qp_stats.avg_qp
-                << " | min=" << delta_qp_stats.min_qp
-                << " | max=" << delta_qp_stats.max_qp << std::endl;
-    }
-    std::cout << "=================================================="
-              << std::endl;
-
-    std::cout.copyfmt(old_state);
-
-    base::DictValue result;
-    result.Set("encoder_name", encoder_config_.name);
-    result.Set("codec", CodecToString(encoder_config_.codec));
-    result.Set("profile", encoder_config_.profile == Profile::k1 ? 1 : 0);
-    result.Set("color_space", encoder_config_.color_space == ColorSpace::kI444
-                                  ? "I444"
-                                  : "I420");
-    result.Set("encoder_speed", encoder_config_.encoder_speed);
-    result.Set("use_active_map", encoder_config_.use_active_map);
-    result.Set("target_bitrate_kbps", encoder_config_.bitrate_kbps);
-    result.Set("scenario", runtime_params_.scenario);
-    result.Set("width", runtime_params_.size.width());
-    result.Set("height", runtime_params_.size.height());
-    result.Set("target_fps", runtime_params_.fps);
-
-    result.Set("frames_encoded", static_cast<int>(frame_metrics_.size()));
-    result.Set("keyframes_encoded", static_cast<int>(kf_latency.count));
-    result.Set("delta_frames_encoded", static_cast<int>(delta_latency.count));
-    result.Set("updated_area_percent", updated_area_pct);
-    result.Set("wall_clock_time_ms", wall_clock_ms);
-    result.Set("wall_clock_fps", wall_clock_fps);
-    result.Set("encoder_time_ms", all_latency.total_ms);
-    result.Set("encoder_fps", encoder_fps);
-    result.Set("achieved_bitrate_kbps", achieved_bitrate_kbps);
-    result.Set("total_encoded_bytes",
-               static_cast<double>(all_size_stats.total_bytes));
-
-    auto latency_to_dict = [](const LatencyStats& s) {
-      base::DictValue d;
-      d.Set("count", static_cast<int>(s.count));
-      d.Set("total_ms", s.total_ms);
-      d.Set("mean_ms", s.mean_ms);
-      d.Set("p50_ms", s.p50_ms);
-      d.Set("p90_ms", s.p90_ms);
-      d.Set("p99_ms", s.p99_ms);
-      d.Set("max_ms", s.max_ms);
-      return d;
-    };
-    result.Set("latency_all", latency_to_dict(all_latency));
-    result.Set("latency_keyframe", latency_to_dict(kf_latency));
-    result.Set("latency_delta", latency_to_dict(delta_latency));
-
-    auto size_to_dict = [](const SizeStats& s) {
-      base::DictValue d;
-      d.Set("count", static_cast<int>(s.count));
-      d.Set("total_bytes", static_cast<double>(s.total_bytes));
-      d.Set("avg_bytes", s.avg_bytes);
-      d.Set("max_bytes", static_cast<double>(s.max_bytes));
-      return d;
-    };
-    result.Set("frame_size_all", size_to_dict(all_size_stats));
-    result.Set("frame_size_keyframe", size_to_dict(kf_size_stats));
-    result.Set("frame_size_delta", size_to_dict(delta_size_stats));
-
-    auto qp_to_dict = [](const QuantizerStats& s) {
-      base::DictValue d;
-      d.Set("count", static_cast<int>(s.count));
-      d.Set("avg_qp", s.avg_qp);
-      d.Set("min_qp", s.min_qp);
-      d.Set("max_qp", s.max_qp);
-      return d;
-    };
-    result.Set("quantizer_all", qp_to_dict(all_qp_stats));
-    result.Set("quantizer_delta", qp_to_dict(delta_qp_stats));
-
-    return result;
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> encode_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  std::unique_ptr<WebrtcVideoEncoder> warmup_encoder_;
   std::unique_ptr<WebrtcVideoEncoder> encoder_;
   bool encoder_initialized_ = false;
 
@@ -736,12 +766,8 @@ class EncoderBenchmark {
   int frames_to_encode_ = 0;
   int frames_encoded_ = 0;
   bool top_off_active_ = false;
-  int64_t total_pixels_ = 0;
-  int64_t updated_pixels_ = 0;
-  std::vector<FrameMetric> frame_metrics_;
+  RunResults run_results_;
   base::RepeatingClosure quit_closure_;
-  base::TimeTicks start_time_;
-  base::TimeTicks end_time_;
 };
 
 void PrintHelp(const char* executable_name) {
