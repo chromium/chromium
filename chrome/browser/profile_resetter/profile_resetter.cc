@@ -134,7 +134,9 @@ void ProfileResetter::ResetSettings(
     base::OnceClosure callback) {
   // TODO(b/364615847) remove master_settings parameter, it is only used in
   // tests.
-  CHECK(brandcode_.empty() || config_fetcher_, base::NotFatalUntil::M163);
+  // TODO(crbug.com/580636758): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(brandcode_.empty() || config_fetcher_);
   if (config_fetcher_ && config_fetcher_->IsActive()) {
     // Reset once the prefs are fetched.
     config_fetcher_->SetCallback(base::BindOnce(
