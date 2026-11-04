@@ -53,7 +53,7 @@ class DummyServiceFactory final
 
   // RefcountedProfileKeyedServiceFactoryIOS:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final {
+      ProfileIOS& profile) const final {
     return base::MakeRefCounted<DummyService>();
   }
 };

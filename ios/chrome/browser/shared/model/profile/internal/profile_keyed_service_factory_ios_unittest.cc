@@ -46,7 +46,7 @@ class DummyServiceFactory final : public ProfileKeyedServiceFactoryIOS {
 
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final {
+      ProfileIOS& profile) const final {
     return std::make_unique<DummyService>();
   }
 };
