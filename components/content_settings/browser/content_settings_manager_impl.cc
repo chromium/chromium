@@ -152,6 +152,10 @@ bool ContentSettingsManagerImpl::EvaluateStorageAccessPermission(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // A browser context without cookie settings gets no storage access.
+  if (!cookie_settings_) {
+    return false;
+  }
   GURL url = origin.GetURL();
 
   // TODO(crbug.com/40247160): Consider whether the following check should
@@ -224,9 +228,7 @@ ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     scoped_refptr<CookieSettings> cookie_settings)
     : delegate_(std::move(delegate)),
       render_process_id_(render_process_id),
-      cookie_settings_(std::move(cookie_settings)) {
-  CHECK(cookie_settings_);
-}
+      cookie_settings_(std::move(cookie_settings)) {}
 
 ContentSettingsManagerImpl::ContentSettingsManagerImpl(
     const ContentSettingsManagerImpl& other)
