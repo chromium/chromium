@@ -244,6 +244,11 @@ enum class ActionButtonsVisibility {
 @property(nonatomic, assign, readwrite)
     ActionButtonsVisibility actionButtonsVisibility;
 
+// When set to YES, hides the content below the title and the action buttons,
+// and displays a centered activity indicator while waiting for content to load.
+// Defaults to NO.
+@property(nonatomic, assign) BOOL contentLoading;
+
 // Determines the font text style to use for the title.
 - (UIFontTextStyle)titleLabelFontTextStyle;
 

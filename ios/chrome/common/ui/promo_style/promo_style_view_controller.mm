@@ -90,6 +90,8 @@ UIImage* ArrowDownImage() {
 // This view contains only the header image.
 @property(nonatomic, strong) UIImageView* headerImageView;
 @property(nonatomic, strong) UITextView* disclaimerView;
+@property(nonatomic, strong, readonly)
+    UIActivityIndicatorView* contentLoadingSpinner;
 // Read/Write override.
 @property(nonatomic, assign, readwrite) BOOL didReachBottom;
 
@@ -120,11 +122,16 @@ UIImage* ArrowDownImage() {
   // label string of the primary button) which corresponds to the moment where
   // the layout reflects the latest updates.
   BOOL _canUpdateViewsOnScroll;
+  // YES if `updateViewsForInitialScrollState` was deferred because
+  // `contentLoading` was YES.
+  BOOL _initialScrollUpdateDeferredByLoading;
   // Indicate that the view should scroll to the bottom at the end of the next
   // layout.
   BOOL _shouldScrollToBottom;
   // Backup of the primary action string to restore it after "Read More" state.
   NSString* _originalPrimaryActionString;
+  // Spinner displayed while `_contentLoading` is YES.
+  UIActivityIndicatorView* _contentLoadingSpinner;
 }
 
 @synthesize actionButtonsVisibility = _actionButtonsVisibility;
@@ -412,6 +419,10 @@ UIImage* ArrowDownImage() {
     [self handleDidReachBottomOfContent];
   }
 
+  if (self.contentLoading) {
+    [self updateUIForContentLoading];
+  }
+
   NSArray<UITrait>* traits = @[
     UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
     UITraitPreferredContentSizeCategory.class
@@ -422,6 +433,7 @@ UIImage* ArrowDownImage() {
 
 - (void)viewWillDisappear:(BOOL)animated {
   _canUpdateViewsOnScroll = NO;
+  _initialScrollUpdateDeferredByLoading = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -484,6 +496,8 @@ UIImage* ArrowDownImage() {
   }
 }
 
+#pragma mark - Accessors
+
 - (void)setActionButtonsVisibility:
     (ActionButtonsVisibility)actionButtonsVisibility {
   if (_actionButtonsVisibility == actionButtonsVisibility) {
@@ -494,7 +508,7 @@ UIImage* ArrowDownImage() {
 
   // On hidden visibility, hide the entire button stack view and the disclaimer
   // view above it.
-  if (actionButtonsVisibility == ActionButtonsVisibility::kHidden) {
+  if ([self shouldHideButtonsAndDisclaimer]) {
     self.disclaimerView.hidden = YES;
     return;
   }
@@ -516,7 +530,15 @@ UIImage* ArrowDownImage() {
   }
 }
 
-#pragma mark - Accessors
+- (void)setContentLoading:(BOOL)contentLoading {
+  if (_contentLoading == contentLoading) {
+    return;
+  }
+  _contentLoading = contentLoading;
+  if (self.viewLoaded) {
+    [self updateUIForContentLoading];
+  }
+}
 
 - (void)setBannerName:(NSString*)bannerName {
   if ([_bannerName isEqualToString:bannerName]) {
@@ -690,6 +712,28 @@ UIImage* ArrowDownImage() {
   return _dismissButton;
 }
 
+// Helper to create the activity indicator shown when `contentLoading` is YES.
+- (UIActivityIndicatorView*)contentLoadingSpinner {
+  if (!_contentLoadingSpinner) {
+    _contentLoadingSpinner = [[UIActivityIndicatorView alloc]
+        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    _contentLoadingSpinner.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_contentLoadingSpinner];
+    UILayoutGuide* layoutGuide = [[UILayoutGuide alloc] init];
+    [self.view addLayoutGuide:layoutGuide];
+    AddSameConstraintsToSides(layoutGuide, self.view,
+                              LayoutSides::kLeading | LayoutSides::kTrailing);
+    AddSameCenterConstraints(_contentLoadingSpinner, layoutGuide);
+    [NSLayoutConstraint activateConstraints:@[
+      [layoutGuide.topAnchor
+          constraintEqualToAnchor:self.titleLabel.bottomAnchor],
+      [layoutGuide.bottomAnchor
+          constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+    ]];
+  }
+  return _contentLoadingSpinner;
+}
+
 #pragma mark - ButtonStackActionDelegate
 
 - (void)didTapPrimaryActionButton {
@@ -763,27 +807,57 @@ UIImage* ArrowDownImage() {
   [self updateBannerAspectRatioConstraint];
 }
 
-// Sets the button styles based on `actionButtonsVisibility`.
+// Returns YES if the action buttons and disclaimer should be hidden based on
+// `actionButtonsVisibility` and `contentLoading`.
+- (BOOL)shouldHideButtonsAndDisclaimer {
+  return self.contentLoading ||
+         (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
+}
+
+// Sets the button styles based on `actionButtonsVisibility` and
+// `contentLoading`.
 - (void)updateButtonStyles {
+  self.configuration.hideButtons = [self shouldHideButtonsAndDisclaimer];
   switch (self.actionButtonsVisibility) {
     case ActionButtonsVisibility::kDefault:
     case ActionButtonsVisibility::kRegularButtonsShown:
-      self.configuration.hideButtons = NO;
       self.configuration.primaryButtonStyle = ChromeButtonStylePrimary;
       self.configuration.secondaryButtonStyle = ChromeButtonStyleSecondary;
       self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
       break;
     case ActionButtonsVisibility::kEquallyWeightedButtonShown:
-      self.configuration.hideButtons = NO;
       self.configuration.primaryButtonStyle = ChromeButtonStyleTertiary;
       self.configuration.secondaryButtonStyle = ChromeButtonStyleTertiary;
       self.configuration.tertiaryButtonStyle = ChromeButtonStyleTertiary;
       break;
     case ActionButtonsVisibility::kHidden:
-      self.configuration.hideButtons = YES;
       break;
   }
   [self reloadConfiguration];
+}
+
+// Updates the visibility of the content below the title, the action buttons,
+// and the loading spinner based on `contentLoading`.
+- (void)updateUIForContentLoading {
+  self.subtitleLabel.hidden = self.contentLoading;
+  self.specificContentView.hidden = self.contentLoading;
+  self.disclaimerView.hidden = [self shouldHideButtonsAndDisclaimer];
+  self.scrollEnabled = !self.contentLoading;
+  [self updateButtonStyles];
+
+  if (self.contentLoading) {
+    [self.contentLoadingSpinner startAnimating];
+  } else {
+    [self.contentLoadingSpinner stopAnimating];
+    if (_initialScrollUpdateDeferredByLoading) {
+      // Flush the pending layout changes from unhiding the content and action
+      // buttons so `_scrollView` has its final frame before evaluating the
+      // initial scroll state.
+      _initialScrollUpdateDeferredByLoading = NO;
+      [self.view layoutIfNeeded];
+      [self updateViewsForInitialScrollState];
+    }
+  }
 }
 
 // Creates and returns the full header image view based on the `headerImageType`
@@ -968,6 +1042,13 @@ UIImage* ArrowDownImage() {
 // Updates views based on the initial scroll state. This should be
 // done only once all the view layouts are fully done.
 - (void)updateViewsForInitialScrollState {
+  if (self.contentLoading) {
+    // Defer the initial scroll state update until `contentLoading` becomes NO
+    // and the content and action buttons are visible.
+    _initialScrollUpdateDeferredByLoading = YES;
+    return;
+  }
+
   _canUpdateViewsOnScroll = YES;
 
   // At this point, the scroll view has computed its content height. If

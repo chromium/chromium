@@ -37,8 +37,8 @@
 using AccountPreviewPreference =
     signin::AccountPreviewDataService::AccountPreviewPreference;
 
-// Fake consumer which records the email of the selected identity and whether
-// UI interaction is enabled.
+// Fake consumer which records the email of the selected identity and the
+// content loading state.
 @interface FakeFullscreenSigninScreenConsumer
     : NSObject <FullscreenSigninScreenConsumer>
 @property(nonatomic, assign) BOOL hasPlatformPolicies;
@@ -48,18 +48,12 @@ using AccountPreviewPreference =
 @property(nonatomic, copy) NSString* currentPrimaryIdentityEmail;
 @property(nonatomic, copy) NSString* targetIdentityEmail;
 @property(nonatomic, copy) NSString* selectedEmail;
-@property(nonatomic, assign) BOOL UIEnabled;
+@property(nonatomic, copy) NSString* selectedEmailWhenContentLoadingStopped;
+@property(nonatomic, assign) BOOL contentLoading;
+@property(nonatomic, assign) BOOL wasContentLoading;
 @end
 
 @implementation FakeFullscreenSigninScreenConsumer
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _UIEnabled = YES;
-  }
-  return self;
-}
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
                               email:(NSString*)email
@@ -74,7 +68,16 @@ using AccountPreviewPreference =
 }
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
-  _UIEnabled = UIEnabled;
+  // No-op.
+}
+
+- (void)setContentLoading:(BOOL)contentLoading {
+  if (contentLoading) {
+    self.wasContentLoading = YES;
+  } else if (_contentLoading) {
+    self.selectedEmailWhenContentLoadingStopped = self.selectedEmail;
+  }
+  _contentLoading = contentLoading;
 }
 
 @end
@@ -184,7 +187,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
 
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 }
 
 // Tests that the FRE preferred account feature does not select the preferred
@@ -205,6 +208,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
     FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
         signin_metrics::AccessPoint::kFullscreenSigninPromo);
     EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
+    EXPECT_FALSE(consumer_.contentLoading);
     [mediator disconnect];
   }
 
@@ -218,6 +222,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
     FullscreenSigninScreenMediator* mediator = CreateMediatorWithConsumer(
         signin_metrics::AccessPoint::kFullscreenSigninPromo);
     EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
+    EXPECT_FALSE(consumer_.contentLoading);
   }
 }
 
@@ -235,12 +240,15 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
   EXPECT_NSEQ(preferred_identity_.userEmail, consumer_.selectedEmail);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_NSEQ(preferred_identity_.userEmail,
+              consumer_.selectedEmailWhenContentLoadingStopped);
+  EXPECT_TRUE(consumer_.wasContentLoading);
+  EXPECT_FALSE(consumer_.contentLoading);
 }
 
-// Tests that the default identity is selected and UI interaction is disabled
+// Tests that the default identity is selected and content loading is shown
 // while the preferred account is being computed, and that the preferred
-// identity is selected and UI interaction re-enabled once computed before the
+// identity is selected and content loading stopped once computed before the
 // timeout.
 TEST_F(FullscreenSigninScreenMediatorTest,
        SelectsPreferredIdentityOnceComputed) {
@@ -252,14 +260,16 @@ TEST_F(FullscreenSigninScreenMediatorTest,
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
   EXPECT_NSEQ(default_identity_.userEmail, consumer_.selectedEmail);
-  EXPECT_FALSE(consumer_.UIEnabled);
+  EXPECT_TRUE(consumer_.contentLoading);
 
   account_preview_data_service_.RunPendingPreferredAccountRequests(
       CreatePreference(preferred_identity_.gaiaId));
 
   EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
   EXPECT_NSEQ(preferred_identity_.userEmail, consumer_.selectedEmail);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_NSEQ(preferred_identity_.userEmail,
+              consumer_.selectedEmailWhenContentLoadingStopped);
+  EXPECT_FALSE(consumer_.contentLoading);
 }
 
 // Tests that the preferred account is ignored if it finishes computing after
@@ -275,10 +285,10 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
-  EXPECT_FALSE(consumer_.UIEnabled);
+  EXPECT_TRUE(consumer_.contentLoading);
 
   task_environment_.FastForwardBy(base::Seconds(3));
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 
   account_preview_data_service_.RunPendingPreferredAccountRequests(
       CreatePreference(preferred_identity_.gaiaId));
@@ -299,7 +309,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
 
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 }
 
 // Tests that the preferred account is not requested when there are no accounts
@@ -318,11 +328,11 @@ TEST_F(FullscreenSigninScreenMediatorTest,
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
 
   EXPECT_EQ(nil, mediator.selectedIdentity);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 }
 
-// Tests that the preferred account is ignored and UI is re-enabled once the
-// mediator is disconnected.
+// Tests that the preferred account is ignored and the loading state is hidden
+// once the mediator is disconnected.
 TEST_F(FullscreenSigninScreenMediatorTest,
        IgnoresPreferredAccountAfterDisconnect) {
   base::test::ScopedFeatureList feature_list(
@@ -330,10 +340,10 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   account_preview_data_service_.set_defer_preferred_account_requests(true);
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
-  EXPECT_FALSE(consumer_.UIEnabled);
+  EXPECT_TRUE(consumer_.contentLoading);
 
   [mediator disconnect];
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 
   account_preview_data_service_.RunPendingPreferredAccountRequests(
       CreatePreference(preferred_identity_.gaiaId));
@@ -367,9 +377,9 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   EXPECT_NSEQ(third_identity, mediator.selectedIdentity);
 }
 
-// Tests that waiting for the preferred account stops, UI is re-enabled, and
-// the pending callback is cancelled if all accounts on the device are removed
-// while waiting.
+// Tests that waiting for the preferred account stops, the loading state is
+// hidden, and the pending callback is cancelled if all accounts on the device
+// are removed while waiting.
 TEST_F(FullscreenSigninScreenMediatorTest,
        StopsWaitingWhenAllAccountsRemovedInFRE) {
   base::test::ScopedFeatureList feature_list(
@@ -377,7 +387,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   account_preview_data_service_.set_defer_preferred_account_requests(true);
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
-  EXPECT_FALSE(consumer_.UIEnabled);
+  EXPECT_TRUE(consumer_.contentLoading);
 
   GetSystemIdentityManager()->ForgetIdentityFromOtherApplication(
       default_identity_);
@@ -385,7 +395,7 @@ TEST_F(FullscreenSigninScreenMediatorTest,
       preferred_identity_);
 
   EXPECT_EQ(nil, mediator.selectedIdentity);
-  EXPECT_TRUE(consumer_.UIEnabled);
+  EXPECT_FALSE(consumer_.contentLoading);
 
   // Re-adding identities and completing the pending request should not select
   // `preferred_identity_` because the request was cancelled.

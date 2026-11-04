@@ -54,3 +54,14 @@ source_set("utils") {
   ]
   frameworks = [ "Foundation.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "promo_style_view_controller_unittest.mm" ]
+  deps = [
+    ":promo_style",
+    "//ios/chrome/common/ui/button_stack",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

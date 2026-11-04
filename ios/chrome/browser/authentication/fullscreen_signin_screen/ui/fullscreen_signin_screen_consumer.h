@@ -64,6 +64,9 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 - (void)noIdentityAvailable;
 // Sets the UI as interactable or not.
 - (void)setUIEnabled:(BOOL)UIEnabled;
+// Notifies the consumer whether the screen content is loading while waiting for
+// the preferred account.
+- (void)setContentLoading:(BOOL)contentLoading;
 
 @end
 

@@ -446,9 +446,7 @@ enum class SigninScreenState {
           preference) {
     [weakSelf onPreferredAccountForFRERetrieved:preference];
   }));
-  // TODO(crbug.com/571469358): Replace blocking UI interaction with a loading
-  // spinner while waiting for the preferred account.
-  [self.consumer setUIEnabled:NO];
+  [self.consumer setContentLoading:YES];
   _preferredAccountTimer.Start(
       FROM_HERE, switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get(),
       base::BindOnce(^{
@@ -487,9 +485,7 @@ enum class SigninScreenState {
 - (void)stopWaitingForPreferredAccount {
   _preferredAccountCallback.Cancel();
   _preferredAccountTimer.Stop();
-  // TODO(crbug.com/571469358): Replace blocking UI interaction with a loading
-  // spinner while waiting for the preferred account.
-  [self.consumer setUIEnabled:YES];
+  [self.consumer setContentLoading:NO];
 }
 
 - (bool)selectedIdentityIsValid {
