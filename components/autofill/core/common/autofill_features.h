@@ -347,6 +347,8 @@ BASE_DECLARE_FEATURE_PARAM(
     kAutofillLabelSensitiveAutocompleteMigrationGeneration);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillMergeAddressAndAutocompleteEmailSuggestions);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillMergeTriggerFormExtractionFunctions);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillModelPredictions);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(bool, kAutofillModelPredictionsAreActive);

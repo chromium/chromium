@@ -896,6 +896,12 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kAutofillMergeAddressAndAutocompleteEmailSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: When enabled, `ContentAutofillDriver` calls
+// `mojom::AutofillAgent::TriggerFormExtractionWithResponse()` instead of
+// `mojom::AutofillAgent::TriggerFormExtraction()`.
+BASE_FEATURE(kAutofillMergeTriggerFormExtractionFunctions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
 // TODO(crbug.com/40276177): Remove when launched.

@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "components/autofill/content/browser/bad_message.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -336,7 +338,15 @@ void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     return;
   }
-  GetAutofillAgent()->TriggerFormExtraction(force);
+  // TODO(crbug.com/581683357): Merge TriggerFormExtractionWithResponse() and
+  // TriggerFormExtraction() when the feature is cleaned up.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillMergeTriggerFormExtractionFunctions)) {
+    GetAutofillAgent()->TriggerFormExtractionWithResponse(force,
+                                                          base::DoNothing());
+  } else {
+    GetAutofillAgent()->TriggerFormExtraction(force);
+  }
 }
 
 void ContentAutofillDriver::TriggerFormExtractionInAllFrames(

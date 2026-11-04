@@ -4,12 +4,16 @@
 
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace autofill {
 
-MockAutofillAgent::MockAutofillAgent() = default;
+MockAutofillAgent::MockAutofillAgent() {
+  ON_CALL(*this, TriggerFormExtractionWithResponse)
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(true));
+}
 MockAutofillAgent::~MockAutofillAgent() = default;
 
 void MockAutofillAgent::BindForTesting(content::RenderFrameHost* rfh) {

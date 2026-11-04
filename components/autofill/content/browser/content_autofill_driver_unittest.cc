@@ -107,7 +107,10 @@ MATCHER(EqualsFillData, "") {
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
-  FakeAutofillAgent() = default;
+  FakeAutofillAgent() {
+    ON_CALL(*this, TriggerFormExtractionWithResponse)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(true));
+  }
 
   ~FakeAutofillAgent() override = default;
 
