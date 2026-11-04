@@ -19,6 +19,7 @@ VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableInputProtection);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableTouchDragCursorSync);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltipInViews);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kLabelDefaultTooltipFastPath);
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kSkipRedundantSetNativeThemeUpdate);
 #if BUILDFLAG(IS_MAC)
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kMacActivateWidgetOnFocusRequest);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs);

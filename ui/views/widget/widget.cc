@@ -1909,12 +1909,26 @@ void Widget::NotifyPaintAsActiveChanged() {
 }
 
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
+  if (!native_widget_initialized_) {
+    native_theme_ = native_theme;
+    return;
+  }
+
+  const bool skip_redundant = base::FeatureList::IsEnabled(
+      features::kSkipRedundantSetNativeThemeUpdate);
   const bool is_update = native_theme_ && (native_theme_ != native_theme);
+  const ui::NativeTheme* const old_effective_theme =
+      skip_redundant ? GetNativeTheme() : nullptr;
   native_theme_ = native_theme;
   UpdateThemeObservation();
 
+  ui::NativeTheme* const new_effective_theme = GetNativeTheme();
+  if (skip_redundant && new_effective_theme == old_effective_theme) {
+    return;
+  }
+
   if (is_update) {
-    OnNativeThemeUpdated(native_theme);
+    OnNativeThemeUpdated(new_effective_theme);
   } else {
     ThemeChanged();
   }
@@ -2711,18 +2725,26 @@ void Widget::ResetLastColorProviderKey() {
 }
 
 void Widget::UpdateThemeObservation() {
-  native_theme_observation_.Reset();
   if (!native_widget_initialized_ || is_destroying_ ||
       widget_destroying_handled_) {
+    native_theme_observation_.Reset();
     return;
   }
 
   // When kThemeChangeOptimization is enabled, child widgets without an
   // explicit `native_theme_` inherit theme updates via
   // `parent_theme_observer_` instead of observing `NativeTheme` directly.
-  if (!base::FeatureList::IsEnabled(::features::kThemeChangeOptimization) ||
-      !parent_ || native_theme_) {
-    native_theme_observation_.Observe(GetNativeTheme());
+  ui::NativeTheme* const theme_to_observe =
+      (!base::FeatureList::IsEnabled(::features::kThemeChangeOptimization) ||
+       !parent_ || native_theme_)
+          ? GetNativeTheme()
+          : nullptr;
+  if (!theme_to_observe ||
+      !native_theme_observation_.IsObservingSource(theme_to_observe)) {
+    native_theme_observation_.Reset();
+    if (theme_to_observe) {
+      native_theme_observation_.Observe(theme_to_observe);
+    }
   }
 }
 

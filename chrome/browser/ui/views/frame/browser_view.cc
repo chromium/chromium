@@ -5231,6 +5231,13 @@ void BrowserView::AddedToWidget() {
       kFallbackPopupAnchorElementId, *this);
 
   initialized_ = true;
+  // `View::AddChildViewAtImpl()` runs `PropagateThemeChanged()` before
+  // `AddedToWidget()`, so the initial `OnThemeChanged()` returned early before
+  // `initialized_` was set.
+  if (base::FeatureList::IsEnabled(
+          views::features::kSkipRedundantSetNativeThemeUpdate)) {
+    FrameColorsChanged();
+  }
 }
 
 void BrowserView::RemovedFromWidget() {

@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
+#include "ui/views/views_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -216,10 +217,22 @@ void BrowserWidget::InitBrowserWidget() {
     }
   }
 
+#if BUILDFLAG(IS_LINUX)
+  // Pre-select the Linux native theme before `Init()` so initial view
+  // attachment uses the final `NativeTheme`.
+  if (base::FeatureList::IsEnabled(
+          views::features::kSkipRedundantSetNativeThemeUpdate)) {
+    SelectNativeTheme();
+  }
+#endif
+
   Init(std::move(params));
 
 #if BUILDFLAG(IS_LINUX)
-  SelectNativeTheme();
+  if (!base::FeatureList::IsEnabled(
+          views::features::kSkipRedundantSetNativeThemeUpdate)) {
+    SelectNativeTheme();
+  }
 #else
   SetNativeTheme(ui::NativeTheme::GetInstanceForNativeUi());
 #endif
@@ -552,7 +565,7 @@ void BrowserWidget::SelectNativeTheme() {
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/40771982.
   const auto* linux_ui_theme =
-      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
+      ui::LinuxUiTheme::GetForProfile(browser_view_->GetProfile());
   SetNativeTheme(linux_ui_theme &&
                          !browser_view_->AppUsesWindowControlsOverlay()
                      ? linux_ui_theme->GetNativeTheme()

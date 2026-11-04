@@ -7103,6 +7103,11 @@ class ThemeChangeTrackingView : public View {
 BEGIN_METADATA(ThemeChangeTrackingView)
 END_METADATA
 
+class TestSetNativeThemeWidget : public Widget {
+ public:
+  using Widget::SetNativeTheme;
+};
+
 }  // namespace
 
 // TODO(crbug.com/555907780): Re-enable this test on Mac.
@@ -7169,6 +7174,110 @@ TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
 
   // Calling ThemeChanged() again should not short-circuit when disabled.
   widget->ThemeChanged();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+}
+
+// Tests that `Widget::SetNativeTheme()` skips a redundant `ThemeChanged()` pass
+// when the effective `NativeTheme` does not change.
+TEST_F(WidgetTest, SetNativeThemeSkipsRedundantThemeChanged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSkipRedundantSetNativeThemeUpdate},
+      /*disabled_features=*/{::features::kThemeChangeOptimization});
+
+  auto widget = std::make_unique<TestSetNativeThemeWidget>();
+  widget->Init(
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* tracking_view =
+      widget->SetContentsView(std::make_unique<ThemeChangeTrackingView>());
+
+  const int initial_count = tracking_view->theme_changed_count();
+  EXPECT_GT(initial_count, 0);
+
+  // Calling `SetNativeTheme(nullptr)` when `native_theme_` is already `nullptr`
+  // should not trigger `ThemeChanged()`, and should keep observing the
+  // effective `NativeTheme`.
+  widget->SetNativeTheme(nullptr);
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count);
+  widget->GetNativeTheme()->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+
+  const int count_after_notify = tracking_view->theme_changed_count();
+  // Calling `SetNativeTheme()` with the same `NativeTheme` that
+  // `GetNativeTheme()` already returns should not trigger another
+  // `ThemeChanged()` pass.
+  widget->SetNativeTheme(widget->GetNativeTheme());
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify);
+
+  // Calling `SetNativeTheme()` again with the same already-set `NativeTheme`
+  // should also not trigger `ThemeChanged()`.
+  widget->SetNativeTheme(widget->GetNativeTheme());
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify);
+
+  // Resetting to `nullptr` when `native_theme_` equals the fallback
+  // `GetNativeTheme()` keeps the same effective theme and should not trigger a
+  // theme update.
+  widget->SetNativeTheme(nullptr);
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify);
+
+  // Assigning a different `NativeTheme` while `native_theme_` is `nullptr`
+  // should trigger a theme update.
+  ASSERT_NE(widget->GetNativeTheme(), ui::NativeTheme::GetInstanceForWeb());
+  widget->SetNativeTheme(ui::NativeTheme::GetInstanceForWeb());
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify + 1);
+
+  // Updating from one non-null `NativeTheme` to another (`is_update`) should
+  // also trigger a theme update.
+  widget->SetNativeTheme(ui::NativeTheme::GetInstanceForNativeUi());
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify + 2);
+
+  // Resetting from a non-default `NativeTheme` back to `nullptr` changes the
+  // effective theme, triggers a theme update, and switches observation back to
+  // the fallback `GetNativeTheme()`.
+  widget->SetNativeTheme(ui::NativeTheme::GetInstanceForWeb());
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify + 3);
+  widget->SetNativeTheme(nullptr);
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify + 4);
+  widget->GetNativeTheme()->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(tracking_view->theme_changed_count(), count_after_notify + 5);
+
+  // Calling `SetNativeTheme()` before `Init()` should record the theme without
+  // crashing or double-observing during `Init()`, and skip a redundant
+  // post-`Init()` `SetNativeTheme()` with the same theme.
+  auto pre_init_widget = std::make_unique<TestSetNativeThemeWidget>();
+  pre_init_widget->SetNativeTheme(ui::NativeTheme::GetInstanceForWeb());
+  pre_init_widget->Init(
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  EXPECT_EQ(pre_init_widget->GetNativeTheme(),
+            ui::NativeTheme::GetInstanceForWeb());
+  auto* pre_init_tracking_view = pre_init_widget->SetContentsView(
+      std::make_unique<ThemeChangeTrackingView>());
+  const int pre_init_count = pre_init_tracking_view->theme_changed_count();
+  pre_init_widget->SetNativeTheme(ui::NativeTheme::GetInstanceForWeb());
+  EXPECT_EQ(pre_init_tracking_view->theme_changed_count(), pre_init_count);
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+  EXPECT_EQ(pre_init_tracking_view->theme_changed_count(), pre_init_count + 1);
+}
+
+// Tests that `Widget::SetNativeTheme()` still triggers `ThemeChanged()` when
+// `kSkipRedundantSetNativeThemeUpdate` is disabled.
+TEST_F(WidgetTest, SetNativeThemeDoesNotShortCircuitWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kSkipRedundantSetNativeThemeUpdate,
+                             ::features::kThemeChangeOptimization});
+
+  auto widget = std::make_unique<TestSetNativeThemeWidget>();
+  widget->Init(
+      CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto* tracking_view =
+      widget->SetContentsView(std::make_unique<ThemeChangeTrackingView>());
+
+  const int initial_count = tracking_view->theme_changed_count();
+  EXPECT_GT(initial_count, 0);
+
+  widget->SetNativeTheme(widget->GetNativeTheme());
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
 }
 

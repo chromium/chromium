@@ -470,7 +470,7 @@ void LocationBarView::Init() {
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, profile_, omnibox_controller_.get(), font_list));
 
-  SkColor icon_color = color_provider->GetColor(kColorOmniboxResultsIcon);
+  SkColor icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> models =
       ContentSettingImageModel::GenerateContentSettingImageModels();

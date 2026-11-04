@@ -56,6 +56,12 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
 // out yet).
 BASE_FEATURE(kLabelDefaultTooltipFastPath, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `Widget::SetNativeTheme()` skips triggering a redundant
+// `ThemeChanged()` pass if the widget's effective `NativeTheme` did not change.
+// TODO(crbug.com/40280130): Remove this flag once the behavior is stable.
+BASE_FEATURE(kSkipRedundantSetNativeThemeUpdate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC)
 // When enabled, focusing a View in an inactive Widget makes the Widget's window
 // key (i.e. activates it), matching the behavior on other platforms. This is a
