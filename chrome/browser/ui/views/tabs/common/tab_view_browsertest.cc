@@ -756,26 +756,43 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, LogsTabCloseMetrics_SplitView) {
 
 IN_PROC_BROWSER_TEST_P(TabViewTest,
                        SplitTabsAnchorHoverCardToParentSplitViewContainer) {
+  TabHoverCardController::set_disable_animations_for_testing(true);
+  base::ScopedClosureRunner reset_animations(base::BindOnce(
+      &TabHoverCardController::set_disable_animations_for_testing, false));
   AppendSplitTab();
-
-  // Get the view for both tabs in the split.
-  // Note: tab at index 0 is a normal tab.
   tabs::TabInterface* tab_1 = tab_strip_model()->GetTabAtIndex(1);
   tabs::TabInterface* tab_2 = tab_strip_model()->GetTabAtIndex(2);
-
   TabCollectionNode* split_tab_node =
       unpinned_collection_node()->GetChildNodeOfType(
           TabCollectionNode::Type::SPLIT);
   SplitTabView* split_tab_view =
       views::AsViewClass<SplitTabView>(split_tab_node->view());
-
   TabView* tab_1_view = views::AsViewClass<TabView>(
       split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
-  ASSERT_EQ(tab_1_view->GetAnchor().GetIfView(), split_tab_view);
-
   TabView* tab_2_view = views::AsViewClass<TabView>(
       split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
-  ASSERT_EQ(tab_2_view->GetAnchor().GetIfView(), split_tab_view);
+  views::View* expected_anchor_1 =
+      GetParam() == TabStripOrientation::kVertical
+          ? static_cast<views::View*>(split_tab_view)
+          : static_cast<views::View*>(tab_1_view);
+  views::View* expected_anchor_2 =
+      GetParam() == TabStripOrientation::kVertical
+          ? static_cast<views::View*>(split_tab_view)
+          : static_cast<views::View*>(tab_2_view);
+
+  hover_card_controller()->UpdateHoverCard(
+      tab_1_view, TabSlotController::HoverCardUpdateType::kHover);
+
+  ASSERT_TRUE(hover_card_controller()->hover_card_for_testing());
+  EXPECT_EQ(hover_card_controller()->hover_card_for_testing()->GetAnchorView(),
+            expected_anchor_1);
+
+  hover_card_controller()->UpdateHoverCard(
+      tab_2_view, TabSlotController::HoverCardUpdateType::kHover);
+
+  ASSERT_TRUE(hover_card_controller()->hover_card_for_testing());
+  EXPECT_EQ(hover_card_controller()->hover_card_for_testing()->GetAnchorView(),
+            expected_anchor_2);
 }
 
 IN_PROC_BROWSER_TEST_P(TabViewTest,

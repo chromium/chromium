@@ -1051,7 +1051,7 @@ views::BubbleBorder::Arrow TabView::GetAnchorPosition() const {
 }
 
 views::BubbleAnchor TabView::GetAnchor() {
-  if (split_ && !collapsed_) {
+  if (orientation_ == TabStripOrientation::kVertical && split_ && !collapsed_) {
     return views::BubbleAnchor(parent());
   }
   return views::BubbleAnchor(this);
