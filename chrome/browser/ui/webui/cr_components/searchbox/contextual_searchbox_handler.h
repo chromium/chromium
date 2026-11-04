@@ -246,6 +246,12 @@ class ContextualSearchboxHandler
     return screenshare_controller_.get();
   }
 
+  // Whether the page waits for the Drive picker, which runs for the browser
+  // window that embeds the WebUI.
+  bool IsDriveUploadPending() const {
+    return !drive_upload_click_callback_.is_null();
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   bool has_drive_picker_deactivation_blocker_for_testing() const {
     return drive_picker_deactivation_blocker_ != nullptr;

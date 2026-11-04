@@ -639,3 +639,13 @@ void OmniboxPopupUI::AttachToWindow(OmniboxController* omnibox_controller) {
         ->AttachToOmniboxController(omnibox_controller);
   }
 }
+
+bool OmniboxPopupUI::CanMoveToAnotherWindow() const {
+  if (popup_aim_handler_ && popup_aim_handler_->preserve_context_on_close()) {
+    return false;
+  }
+  if (omnibox_handler_ && omnibox_handler_->IsDriveUploadPending()) {
+    return false;
+  }
+  return !composebox_handler_ || !composebox_handler_->IsDriveUploadPending();
+}

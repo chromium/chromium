@@ -52,6 +52,10 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // value is reset to false when the popup is shown again.
   void SetPreserveContextOnClose(bool preserve_context_on_close);
 
+  // Whether the page keeps its context on the next close. Mirrors the page,
+  // which resets it when the popup is shown or context is added.
+  bool preserve_context_on_close() const { return preserve_context_on_close_; }
+
   // Forwards a `ClearPopup()` call to the page. `callback` is called
   // with the final input text from the page and whether a query was submitted
   // from the page since it was last shown.
@@ -75,6 +79,7 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   std::string cached_draft_text_;
+  bool preserve_context_on_close_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_

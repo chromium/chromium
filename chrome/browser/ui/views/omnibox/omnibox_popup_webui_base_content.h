@@ -78,6 +78,12 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Leaves this content without a WebContents; the caller destroys it.
   std::unique_ptr<ContentsWrapper> ReleaseContentsWrapper();
 
+  // Returns whether `ReleaseContentsWrapper()` may move the WebContents to
+  // another browser window now. Errs toward false: the page must be loaded,
+  // and no file dialog, context menu, permission request or other work for
+  // this window may be pending.
+  virtual bool CanReleaseContentsWrapper();
+
   // views::View:
   void AddedToWidget() override;
 
@@ -237,6 +243,11 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   std::unique_ptr<OmniboxPopupDeactivationBlocker>
       file_chooser_deactivation_blocker_;
+
+  // Whether a file dialog opened by the page is open. Unlike
+  // `file_chooser_deactivation_blocker_`, set even when
+  // `omnibox::kOmniboxKeepOpenOnFileSelection` is disabled.
+  bool file_chooser_open_ = false;
 
   base::WeakPtrFactory<OmniboxPopupWebUIBaseContent> weak_factory_{this};
 };

@@ -171,6 +171,23 @@ OmniboxPopupWebUIBaseContent::ReleaseContentsWrapper() {
   return std::move(contents_wrapper_);
 }
 
+bool OmniboxPopupWebUIBaseContent::CanReleaseContentsWrapper() {
+  if (!contents_wrapper_ || file_chooser_open_ || context_menu_) {
+    return false;
+  }
+  content::WebContents* web_contents = contents_wrapper_->web_contents();
+  if (!web_contents || web_contents->IsLoading() || web_contents->IsCrashed()) {
+    return false;
+  }
+  if (auto* permission_manager =
+          permissions::PermissionRequestManager::FromWebContents(web_contents);
+      permission_manager && permission_manager->IsRequestInProgress()) {
+    return false;
+  }
+  OmniboxPopupUI* webui_controller = contents_wrapper_->GetWebUIController();
+  return webui_controller && webui_controller->CanMoveToAnotherWindow();
+}
+
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
   views::WebView::AddedToWidget();
   // In shadow mode this view spans the shadow margin as well, so rounding it
@@ -288,6 +305,8 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
                  "prefix", GetMetricPrefix());
     base::UmaHistogramBoolean(
         base::StrCat({GetMetricPrefix(), ".CrashRecovery"}), true);
+    // A file dialog opened by the crashed page no longer reports back here.
+    file_chooser_open_ = false;
     LoadContent();
   } else {
     base::UmaHistogramBoolean(
@@ -719,6 +738,7 @@ void OmniboxPopupWebUIBaseContent::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     const blink::mojom::FileChooserParams& params) {
+  file_chooser_open_ = true;
   // Prevent focus-loss events from closing the popup when the file dialog
   // opens.
   if (popup_presenter_) {
@@ -738,6 +758,7 @@ void OmniboxPopupWebUIBaseContent::RunFileChooser(
 }
 
 void OmniboxPopupWebUIBaseContent::OnFileChooserClosed() {
+  file_chooser_open_ = false;
   if (popup_presenter_) {
     popup_presenter_->OnFileSelectionClosed();
   }

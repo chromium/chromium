@@ -171,3 +171,20 @@ TEST_F(OmniboxPopupAimHandlerTest, OnContextMenuClosed) {
   handler_->OnContextMenuClosed();
   page_.FlushForTesting();
 }
+
+// The handler mirrors the page, which keeps its context on close until the
+// popup is shown again or context is added.
+TEST_F(OmniboxPopupAimHandlerTest, PreserveContextOnClose) {
+  EXPECT_FALSE(handler_->preserve_context_on_close());
+
+  handler_->SetPreserveContextOnClose(true);
+  EXPECT_TRUE(handler_->preserve_context_on_close());
+  handler_->OnPopupShown(std::make_unique<SearchboxContextData::Context>());
+  EXPECT_FALSE(handler_->preserve_context_on_close());
+
+  handler_->SetPreserveContextOnClose(true);
+  auto context = std::make_unique<SearchboxContextData::Context>();
+  context->text = "added context";
+  handler_->AddContext(std::move(context));
+  EXPECT_FALSE(handler_->preserve_context_on_close());
+}

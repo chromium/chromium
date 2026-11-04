@@ -63,6 +63,7 @@ void OmniboxAimPopupWebUIContent::Clear() {
   set_is_shown(false);
   auto* handler = popup_aim_handler();
   if (handler) {
+    clear_in_flight_ = true;
     // Pass the original web contents captured during ShowUI to handle
     // underlying changes to referenced web contents due to async events.
     handler->ClearPopup(
@@ -79,10 +80,16 @@ void OmniboxAimPopupWebUIContent::OnContextMenuClosed() {
   }
 }
 
+bool OmniboxAimPopupWebUIContent::CanReleaseContentsWrapper() {
+  return !clear_in_flight_ &&
+         OmniboxPopupWebUIBaseContent::CanReleaseContentsWrapper();
+}
+
 void OmniboxAimPopupWebUIContent::OnClearCallback(
     base::WeakPtr<content::WebContents> original_web_contents,
     const std::string& input,
     bool query_submitted) {
+  clear_in_flight_ = false;
   // Now that the WebUI has painted, it is safe to detach and cleanup.
   Detach();
 
@@ -232,8 +239,10 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
   OmniboxPopupWebUIBaseContent::ShowUI();
 
   // Start each session with a clean slate. `OnClearCallback()` normally clears
-  // this, but it never runs if the handler went away before `Clear()`.
+  // these, but it never runs if the handler went away before `Clear()` or the
+  // page went away before replying.
   draft_applied_on_close_ = false;
+  clear_in_flight_ = false;
 
   // Capture the web contents when UI is first shown.
   active_web_contents_ = location_bar()->GetWebContents()

@@ -68,11 +68,13 @@ void OmniboxPopupAimHandler::OnPopupShown(
   auto page_context = ToSearchContext(std::move(context));
   CHECK(page_context);
   page_->OnPopupShown(std::move(page_context));
+  preserve_context_on_close_ = false;
 }
 
 void OmniboxPopupAimHandler::SetPreserveContextOnClose(
     bool preserve_context_on_close) {
   page_->SetPreserveContextOnClose(preserve_context_on_close);
+  preserve_context_on_close_ = preserve_context_on_close;
 }
 
 void OmniboxPopupAimHandler::ClearPopup(
@@ -87,6 +89,7 @@ void OmniboxPopupAimHandler::AddContext(
     return;
   }
   page_->AddContext(std::move(search_context));
+  preserve_context_on_close_ = false;
 }
 
 void OmniboxPopupAimHandler::FocusInput() {

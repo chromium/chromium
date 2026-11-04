@@ -62,6 +62,7 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // flow via the popup state change; `draft_applied_on_close_` skips 5c.
   void Clear() override;
   void OnContextMenuClosed() override;
+  bool CanReleaseContentsWrapper() override;
 
   // Hands `input` to the omnibox, replacing its text. Under Full WebUI this
   // also restores focus by reopening the full popup, unless `query_submitted`
@@ -116,6 +117,10 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // Prevents `OnClearCallback()` from re-applying a draft that `CloseUI()`
   // already transferred.
   bool draft_applied_on_close_ = false;
+
+  // Whether a `ClearPopup()` reply is pending. The reply applies the draft to
+  // this window's omnibox.
+  bool clear_in_flight_ = false;
 
   base::WeakPtrFactory<OmniboxAimPopupWebUIContent> weak_factory_{this};
 };

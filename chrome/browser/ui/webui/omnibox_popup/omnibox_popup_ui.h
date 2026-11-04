@@ -189,6 +189,11 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void DetachFromWindow();
   void AttachToWindow(OmniboxController* omnibox_controller);
 
+  // Returns whether the handlers hold no work for the current window that a
+  // move would lose: AI Mode context kept for this window's next show, or a
+  // Drive picker waiting for the user.
+  bool CanMoveToAnotherWindow() const;
+
  private:
   // Called when the Lens icon anchor is shown in any WebUI; triggers the AskG
   // Lens icon IPH if `element` belongs to this popup.
