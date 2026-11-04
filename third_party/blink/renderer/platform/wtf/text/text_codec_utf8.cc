@@ -562,10 +562,12 @@ std::string TextCodecUtf8::EncodeCommon(base::span<const CharType> characters) {
   // (2x).
   CHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 3);
   const wtf_size_t length = static_cast<wtf_size_t>(characters.size());
-  Vector<uint8_t> bytes(length * 3);
+  std::string result;
+  result.resize(length * 3);
 
   wtf_size_t i = 0;
   wtf_size_t bytes_written = 0;
+  auto destination = base::as_writable_byte_span(result);
   while (i < length) {
     UChar32 character;
     U16_NEXT(characters, i, length, character);
@@ -574,10 +576,11 @@ std::string TextCodecUtf8::EncodeCommon(base::span<const CharType> characters) {
     // U+FFFD (REPLACEMENT CHARACTER) here.
     if (0xD800 <= character && character <= 0xDFFF)
       character = uchar::kReplacementCharacter;
-    U8_APPEND_UNSAFE(bytes, bytes_written, character);
+    U8_APPEND_UNSAFE(destination, bytes_written, character);
   }
 
-  return std::string(reinterpret_cast<char*>(bytes.data()), bytes_written);
+  result.resize(bytes_written);
+  return result;
 }
 
 template <typename CharType>

@@ -5834,6 +5834,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.TextEncoder.Encode.FastPathResult"
+    enum="TextEncoderFastPathResult" expires_after="2027-11-01">
+  <owner>tjaneczko@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Captures the execution path taken during TextEncoder.encode(). Recorded on
+    every call to TextEncoder.encode(). When kTextEncoderFastPath is disabled,
+    records Disabled. When enabled, records whether the input was empty, 8-bit
+    ASCII (direct buffer copy), short string (stack buffer), or long string
+    (heap fallback).
+  </summary>
+</histogram>
+
+<histogram name="Blink.TextEncoder.Encode.InputLength" units="characters"
+    expires_after="2027-11-01">
+  <owner>tjaneczko@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The length in UTF-16 code units of strings passed to TextEncoder.encode().
+    Recorded on every call to TextEncoder.encode().
+  </summary>
+</histogram>
+
 <histogram name="Blink.UpdateViewportIntersection.RemoteFrameNeedsUpdate"
     enum="BooleanYesNo" expires_after="2026-03-01">
   <owner>lizeb@chromium.org</owner>

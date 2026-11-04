@@ -571,6 +571,20 @@ class BlinkPerfBase64(_BlinkPerfBenchmark):
 
 
 @benchmark.Info(
+  emails=['yyanagisawa@chromium.org'],
+  component='Blink>Encoding',
+  documentation_url='https://bit.ly/blink-perf-benchmarks',
+)
+class BlinkPerfEncoding(_BlinkPerfBenchmark):
+  SUBDIR = 'encoding'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.encoding'
+
+
+@benchmark.Info(
   emails=['futhark@chromium.org', 'andruud@chromium.org'],
   documentation_url='https://bit.ly/blink-perf-benchmarks',
   component='Blink>CSS',

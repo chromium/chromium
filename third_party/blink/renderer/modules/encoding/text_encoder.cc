@@ -30,7 +30,10 @@
 
 #include "third_party/blink/renderer/modules/encoding/text_encoder.h"
 
+#include <array>
+
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
@@ -44,6 +47,29 @@ namespace blink {
 // buffer.
 BASE_FEATURE(kThrowExceptionWhenTextEncodeOOM,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls if TextEncode will use fast paths for short strings (direct
+// ASCII copy and stack-buffer encoding) to avoid heap allocation overhead.
+BASE_FEATURE(kTextEncoderFastPath, base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+NotShared<DOMUint8Array> CreateDOMUint8Array(
+    base::span<const uint8_t> bytes,
+    ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
+    DOMUint8Array* result_array = DOMUint8Array::CreateOrNull(bytes);
+    if (!result_array) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
+                                        "Failed to allocate buffer.");
+      return NotShared<DOMUint8Array>();
+    }
+    return NotShared<DOMUint8Array>(result_array);
+  }
+  return NotShared<DOMUint8Array>(DOMUint8Array::Create(bytes));
+}
+
+}  // namespace
 
 TextEncoder* TextEncoder::Create(ExecutionContext* context,
                                  ExceptionState& exception_state) {
@@ -66,25 +92,58 @@ String TextEncoder::encoding() const {
 
 NotShared<DOMUint8Array> TextEncoder::encode(const String& input,
                                              ExceptionState& exception_state) {
+  base::UmaHistogramCounts100000("Blink.TextEncoder.Encode.InputLength",
+                                 input.length());
+
+  if (base::FeatureList::IsEnabled(kTextEncoderFastPath)) {
+    if (input.empty()) {
+      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
+                                    TextEncoderFastPathResult::kEmpty);
+      return CreateDOMUint8Array({}, exception_state);
+    }
+
+    if (input.Is8Bit() && input.ContainsOnlyAsciiOrEmpty()) {
+      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
+                                    TextEncoderFastPathResult::kAscii8Bit);
+      return CreateDOMUint8Array(input.Span8(), exception_state);
+    }
+
+    // Short non-ASCII strings can be encoded directly into a stack buffer to
+    // avoid intermediate std::string heap allocation.
+    // The maximum UTF-8 expansion per UTF-16 code unit is 3 bytes (surrogates
+    // take 2 code units and at most 4 bytes).
+    constexpr size_t kStackBufferSize = 256;
+    if (input.length() <= kStackBufferSize / 3) {
+      base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
+                                    TextEncoderFastPathResult::kShortNonAscii);
+      std::array<uint8_t, kStackBufferSize> stack_buffer;
+      TextCodec::EncodeIntoResult encode_into_result =
+          VisitCharacters(input, [this, &stack_buffer](auto chars) {
+            return codec_->EncodeInto(chars, base::span(stack_buffer));
+          });
+      CHECK_EQ(encode_into_result.code_units_read, input.length());
+      return CreateDOMUint8Array(
+          base::span(stack_buffer).first(encode_into_result.bytes_written),
+          exception_state);
+    }
+
+    base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
+                                  TextEncoderFastPathResult::kLongString);
+  } else {
+    base::UmaHistogramEnumeration("Blink.TextEncoder.Encode.FastPathResult",
+                                  TextEncoderFastPathResult::kDisabled);
+  }
+
   // Note that the UnencodableHandling here is never used since the
   // only possible encoding is UTF-8, which will use
   // U+FFFD-replacement rather than ASCII fallback substitution when
   // unencodable sequences (for instance, unpaired UTF-16 surrogates)
   // are present in the input.
-  std::string result = VisitCharacters(input, [this](auto chars) {
+  String non_null_input = input.IsNull() ? g_empty_string : input;
+  std::string result = VisitCharacters(non_null_input, [this](auto chars) {
     return codec_->Encode(chars, UnencodableHandling::kNone);
   });
-  if (base::FeatureList::IsEnabled(kThrowExceptionWhenTextEncodeOOM)) {
-    NotShared<DOMUint8Array> result_array(
-        DOMUint8Array::CreateOrNull(base::as_byte_span(result)));
-    if (result_array.IsNull()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
-                                        "Failed to allocate buffer.");
-    }
-    return result_array;
-  }
-  return NotShared<DOMUint8Array>(
-      DOMUint8Array::Create(base::as_byte_span(result)));
+  return CreateDOMUint8Array(base::as_byte_span(result), exception_state);
 }
 
 TextEncoderEncodeIntoResult* TextEncoder::encodeInto(

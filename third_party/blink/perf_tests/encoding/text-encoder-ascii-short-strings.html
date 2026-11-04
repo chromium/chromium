@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<!--
+  Benchmark: TextEncoder.encode performance on short ASCII strings.
+  To test with the fast path enabled:
+    --enable-features=TextEncoderFastPath
+-->
+  <title>TextEncoder Performance on Short ASCII Strings</title>
+</head>
+<body>
+<script src="../resources/runner.js"></script>
+<script>
+const encoder = new TextEncoder();
+
+const SHORT_ASCII_1 = "a";
+const SHORT_ASCII_4 = "test";
+const SHORT_ASCII_16 = "short_string_16b";
+const SHORT_ASCII_64 = "this_is_a_sixty_four_byte_ascii_string_used_for_benchmarking_abc";
+
+// Reduced iteration count to 50 to minimize GC noise during measurement.
+const INNER_LOOP_COUNT = 50;
+
+PerfTestRunner.measureRunsPerSecond({
+  description: "Measures TextEncoder.encode performance on short ASCII strings (1-64 chars). Run with --enable-features=TextEncoderFastPath to test the optimization.",
+  run: function() {
+    // Return values are intentionally not consumed to keep the benchmark focused purely
+    // on encoding performance without adding JS property access overhead.
+    // (V8 does not dead-code eliminate Web IDL API calls).
+    for (let i = 0; i < INNER_LOOP_COUNT; ++i) {
+      encoder.encode(SHORT_ASCII_1);
+      encoder.encode(SHORT_ASCII_4);
+      encoder.encode(SHORT_ASCII_16);
+      encoder.encode(SHORT_ASCII_64);
+    }
+  }
+});
+</script>
+</body>
+</html>

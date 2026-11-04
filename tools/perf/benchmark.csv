@@ -4,6 +4,7 @@ Googlers can view additional information about internal perf infrastructure at,h
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_blink_perf.base64,csharrison@chromium.org,Blink>Internals>WTF,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.display_locking,"vmpstr@chromium.org, pdr@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
+UNSCHEDULED_blink_perf.encoding,yyanagisawa@chromium.org,Blink>Encoding,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.loading,"pmeenan@chromium.org, kouhei@chromium.org",Blink>Loader,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.performance_apis,sullivan@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all

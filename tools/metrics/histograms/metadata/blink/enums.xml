@@ -8949,6 +8949,18 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="Browser injected speculation rules failed parsing"/>
 </enum>
 
+<!-- LINT.IfChange(TextEncoderFastPathResult) -->
+
+<enum name="TextEncoderFastPathResult">
+  <int value="0" label="Empty string"/>
+  <int value="1" label="8-bit ASCII direct copy"/>
+  <int value="2" label="Short string stack buffer (&lt;= 85 code units)"/>
+  <int value="3" label="Heap fallback (string &gt; 85 code units)"/>
+  <int value="4" label="Disabled (kTextEncoderFastPath feature flag disabled)"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/encoding/text_encoder.h:TextEncoderFastPathResult) -->
+
 <enum name="ViewTransitionSkipReason">
   <int value="0" label="Expected"/>
   <int value="1" label="UserSkipped"/>
