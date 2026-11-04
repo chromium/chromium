@@ -895,6 +895,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac26-arm64-rel.interactive_ui_tests.filter"
         ],
+        "enable_rts_filtering": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

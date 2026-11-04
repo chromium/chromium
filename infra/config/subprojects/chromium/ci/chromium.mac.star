@@ -648,6 +648,7 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac26-arm64-rel.interactive_ui_tests.filter",
                 ],
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 16,
                 ),
