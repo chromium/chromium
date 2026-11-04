@@ -1806,6 +1806,27 @@
             ]
         }
     ],
+    "AutofillAiWalletReminderAndDisclosureNotice": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableWalletDisclosureNoticePublicPass",
+                        "AutofillEnableWalletReminderNoticePublicPass"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAiWalletServerProvidedDeepLink": [
         {
             "platforms": [
