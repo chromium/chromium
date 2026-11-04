@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -157,8 +158,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         int testColor = 0x99aabbcc;
         mCoordinator.onCustomButtonClick(
                 mActivity, CustomButtonParamsImpl.createShareButton(mActivity, testColor));
-        verify(mShareDelegate)
-                .share(any(), eq(false), eq(ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON));
+        verify(mShareDelegate).share(any(), eq(false), eq(ShareOrigin.CUSTOM_TAB_SHARE_BUTTON));
     }
 
     @Test

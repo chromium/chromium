@@ -45,6 +45,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
@@ -580,9 +581,8 @@ public class CustomTabToolbarButtonsViewBinder
 
     private static void sideSheetMaximizeButtonCallback(PropertyModel model) {
         var data = model.get(SIDE_SHEET_MAXIMIZE_BUTTON);
-        var newData =
-                new CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData(
-                        data.visible, !data.maximized, data.callback);
+        SideSheetMaximizeButtonData newData =
+                new SideSheetMaximizeButtonData(data.visible, !data.maximized, data.callback);
         model.set(SIDE_SHEET_MAXIMIZE_BUTTON, newData);
         data.callback.onClick();
     }

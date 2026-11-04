@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.share.ShareHelper;
+import org.chromium.components.browser_ui.share.ShareHelper.ShareSourceAndroid;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
@@ -249,10 +250,7 @@ public class CustomTabToolbarCoordinator {
                 && supplier.get() != null) {
             RecordUserAction.record("CustomTabs.ToolbarShareClicked");
             supplier.get()
-                    .share(
-                            tab,
-                            /* shareDirectly= */ false,
-                            ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON);
+                    .share(tab, /* shareDirectly= */ false, ShareOrigin.CUSTOM_TAB_SHARE_BUTTON);
         } else if (params.getType() == CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON) {
             RecordUserAction.record("CustomTabs.ToolbarOpenInBrowserClicked");
             // Need to notify *before* opening in browser, to ensure engagement signal will be fired
@@ -269,7 +267,7 @@ public class CustomTabToolbarCoordinator {
         Resources resources = mActivity.getResources();
         if (mIntentDataProvider.shouldEnableEmbeddedMediaExperience()
                 && TextUtils.equals(params.getDescription(), resources.getString(R.string.share))) {
-            ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
+            ShareHelper.recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
             RecordUserAction.record("CustomTabsCustomActionButtonClick.DownloadsUI.Share");
         }
     }

@@ -55,6 +55,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OnColorSchemeChangedObserver;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -113,6 +114,7 @@ public class CustomTabToolbarUnitTest {
     private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private OnColorSchemeChangedObserver mColorSchemeChangedObserver;
 
     private final View mParentView = new View(ContextUtils.getApplicationContext());
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
@@ -388,8 +390,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testOnTintChanged_NotifiesColorSchemeChanged() {
-        var observer = Mockito.mock(CustomTabToolbar.OnColorSchemeChangedObserver.class);
-        mToolbar.setOnColorSchemeChangedObserver(observer);
+        mToolbar.setOnColorSchemeChangedObserver(mColorSchemeChangedObserver);
 
         int initialColor = mToolbar.getBackground().getColor();
         var tint =
@@ -402,7 +403,8 @@ public class CustomTabToolbarUnitTest {
                 BrandedColorScheme.LIGHT_BRANDED_THEME,
                 mOmniboxResourceProvider.getBrandedColorScheme());
         assertEquals(tint, ImageViewCompat.getImageTintList(mSecurityIcon));
-        verify(observer).onColorSchemeChanged(initialColor, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        verify(mColorSchemeChangedObserver)
+                .onColorSchemeChanged(initialColor, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OnColorSchemeChangedObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.OnNewWidthMeasuredListener;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -61,7 +62,7 @@ import java.util.function.Supplier;
 class CustomTabToolbarButtonsMediator
         implements OnNewWidthMeasuredListener,
                 ConfigurationChangedObserver,
-                CustomTabToolbar.OnColorSchemeChangedObserver {
+                OnColorSchemeChangedObserver {
     private final PropertyModel mModel;
     private final CustomTabToolbar mView;
     private final Activity mActivity;

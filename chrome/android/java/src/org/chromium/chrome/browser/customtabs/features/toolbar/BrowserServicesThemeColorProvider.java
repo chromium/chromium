@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -44,7 +46,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class BrowserServicesThemeColorProvider extends ThemeColorProvider
-        implements TopResumedActivityChangedObserver, DesktopWindowStateManager.AppHeaderObserver {
+        implements TopResumedActivityChangedObserver, AppHeaderObserver {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -86,8 +88,8 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     private boolean mIsTopResumedActivity;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
-    private final TabObserverRegistrar.CustomTabTabObserver mTabObserver =
-            new TabObserverRegistrar.CustomTabTabObserver() {
+    private final CustomTabTabObserver mTabObserver =
+            new CustomTabTabObserver() {
                 @Override
                 protected void onObservingDifferentTab(Tab tab) {
                     updateTheme();
@@ -315,7 +317,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     }
 
     @VisibleForTesting
-    TabObserverRegistrar.CustomTabTabObserver getTabObserver() {
+    CustomTabTabObserver getTabObserver() {
         return mTabObserver;
     }
 }

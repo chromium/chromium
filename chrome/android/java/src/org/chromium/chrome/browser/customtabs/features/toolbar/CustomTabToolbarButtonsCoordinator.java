@@ -19,7 +19,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -233,7 +233,7 @@ public class CustomTabToolbarButtonsCoordinator
     private static CloseButtonData getCloseButtonData(
             boolean visible,
             @Nullable Drawable icon,
-            @CustomTabsIntent.CloseButtonPosition int closeButtonPosition,
+            @CloseButtonPosition int closeButtonPosition,
             View.OnClickListener clickListener) {
         return new CloseButtonData(visible, icon, closeButtonPosition, clickListener);
     }
