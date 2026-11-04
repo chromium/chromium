@@ -3552,8 +3552,11 @@ Node* PaintLayerScrollableArea::GetSnapEventTargetAlongAxis(
     return nullptr;
   }
   Node* node = GetSnapTargetAlongAxis(ids.value(), axis);
-  if (node && node->IsPseudoElement()) {
-    node = node->parentElement();
+  if (!node || !node->isConnected()) {
+    return nullptr;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(node)) {
+    return &pseudo_element->UltimateOriginatingElement();
   }
   return node;
 }
