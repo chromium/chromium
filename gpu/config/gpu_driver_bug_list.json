@@ -3560,6 +3560,18 @@
       "features": [
         "max_num_hw_video_decoders_10"
       ]
+    },
+    {
+      "id": 509,
+      "description": "Limits the number of simultaneous accelerated video decoders to 15 on Qualcomm.",
+      "cr_bugs": [318426433, 326295895],
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "freedreno",
+      "features": [
+        "max_num_hw_video_decoders_15"
+      ]
     }
   ]
 }

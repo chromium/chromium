@@ -140,6 +140,9 @@ int GetMaxNumDecoderInstances(const gpu::GpuDriverBugWorkarounds& workarounds) {
   if (workarounds.max_num_hw_video_decoders_10) {
     return 10;
   }
+  if (workarounds.max_num_hw_video_decoders_15) {
+    return 15;
+  }
   return kDefaultMaxNumDecoderInstances;
 }
 
@@ -233,6 +236,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 
   CreateDecoderFunctionCB create_decoder_function_cb;
   bool uses_oop_video_decoder = false;
+  int max_decoder_instances = GetMaxNumDecoderInstances(workarounds);
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   if (oop_video_decoder) {
     DCHECK(!frame_pool);
@@ -254,6 +258,14 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
         if (IsV4L2DecoderStateful()) {
           create_decoder_function_cb =
               base::BindOnce(&V4L2StatefulVideoDecoder::Create);
+          // Legacy implementations limited the maximum number of simultaneous
+          // stateful decoder instances to 15 [1]. Maintain that legacy behavior
+          // while respecting any GPU workaround that lowers the limit. Future
+          // device-specific limitations should be handled via GPU workarounds
+          // in GetMaxNumDecoderInstances().
+          // [1]
+          // https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/v4l2_stateful_video_decoder.cc;l=1226-1248;drc=bbd9b346363f4125cbc83a0373a3ab8c87f97583
+          max_decoder_instances = std::min(max_decoder_instances, 15);
         } else {
           create_decoder_function_cb =
               base::BindOnce(&V4L2VideoDecoder::Create);
@@ -266,7 +278,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   }
 
   std::unique_ptr<DecoderReservation> decoder_reservation =
-      DecoderReservation::Take(GetMaxNumDecoderInstances(workarounds));
+      DecoderReservation::Take(max_decoder_instances);
   if (!decoder_reservation) {
     return nullptr;
   }
