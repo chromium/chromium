@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserv
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchDismissalReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabSearchOverlayCoordinator.TabSearchEntryPoint;
@@ -408,7 +409,10 @@ public class TabSearchOverlayTest {
                 () -> {
                     ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     TabModel tabModel = cta.getTabModelSelector().getModel(/* incognito= */ false);
-                    tabModel.mergeTabsToGroup(tab2.getId(), tab1.getId());
+                    tabModel.mergeListOfTabsToGroup(
+                            List.of(tab2),
+                            tab1,
+                            TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                     tabModel.setTabGroupTitle(tab1.getTabGroupId(), tabGroupTitle);
                 });
 

@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.transit.CallbackCondition;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
@@ -425,19 +427,26 @@ public class ChromeTabUtils {
     /**
      * Groups together two tabs.
      *
-     * @param tab1 First tab to group.
-     * @param tab2 Second tab to group.\
+     * @param sourceTab Source tab (or group) to merge.
+     * @param destinationTab Destination tab to merge into.
      */
-    public static void mergeTabsToGroup(Tab tab1, Tab tab2) {
+    public static void mergeTabsToGroup(Tab sourceTab, Tab destinationTab) {
         Assert.assertTrue(ThreadUtils.runningOnUiThread());
 
         // Verify that the two tabs do not belong with different models.
-        Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
-        final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
-        final TabModel tabModel = selector.getModel(tab1.isIncognito());
+        Assert.assertEquals(sourceTab.isIncognito(), destinationTab.isIncognito());
+        final TabModelSelector selector = getTabModelSelector(sourceTab.getWindowAndroid());
+        final TabModel tabModel = selector.getModel(sourceTab.isIncognito());
 
-        tabModel.mergeTabsToGroup(tab1.getId(), tab2.getId());
-        Assert.assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
+        Token sourceTabGroupId = sourceTab.getTabGroupId();
+        List<Tab> tabsToMerge =
+                sourceTabGroupId != null
+                        ? tabModel.getTabsInGroup(sourceTabGroupId)
+                        : List.of(sourceTab);
+        tabModel.mergeListOfTabsToGroup(
+                tabsToMerge, destinationTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        Assert.assertNotNull(destinationTab.getTabGroupId());
+        Assert.assertEquals(sourceTab.getTabGroupId(), destinationTab.getTabGroupId());
     }
 
     /**

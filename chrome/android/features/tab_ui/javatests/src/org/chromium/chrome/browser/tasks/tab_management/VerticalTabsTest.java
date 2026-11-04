@@ -63,6 +63,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -322,8 +323,7 @@ public class VerticalTabsTest {
         assertNotNull("Tab 1 should exist.", tab1);
         assertNotNull("Tab 2 should exist.", tab2);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         assertTabInGroup(selector, tab1, "Tab 1 should be part of a tab group.");
         assertTabInGroup(selector, tab2, "Tab 2 should be part of a tab group.");
@@ -338,8 +338,7 @@ public class VerticalTabsTest {
         Tab tab1 = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tab2 = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         assertTabInGroup(selector, tab1, "Tab 1 should be part of a group.");
 
@@ -369,8 +368,7 @@ public class VerticalTabsTest {
         Tab tab1 = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tab2 = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         String testTitle = TEST_GROUP_TITLE;
         ThreadUtils.runOnUiThreadBlocking(
@@ -392,8 +390,7 @@ public class VerticalTabsTest {
         Tab tab1 = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tab2 = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         @TabGroupColorId int targetColorId = TabGroupColorId.CYAN;
         ThreadUtils.runOnUiThreadBlocking(
@@ -418,8 +415,7 @@ public class VerticalTabsTest {
         Tab tab1 = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tab2 = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         assertTabInGroup(selector, tab1, "Tab 1 should be in a group.");
 
@@ -763,13 +759,11 @@ public class VerticalTabsTest {
         Tab tab2 = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tab3 = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab1, tab2));
 
         assertTabInGroup(selector, tab1, "Tab 1 should be in a group.");
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tab3.getId(), tab1.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tab3, tab1));
 
         assertTabInGroup(selector, tab3, "Tab 3 should be merged into Tab 1's group.");
     }
@@ -786,8 +780,8 @@ public class VerticalTabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId());
-                    selector.getCurrentModel().mergeTabsToGroup(tab3.getId(), tab1.getId());
+                    ChromeTabUtils.mergeTabsToGroup(tab1, tab2);
+                    ChromeTabUtils.mergeTabsToGroup(tab3, tab1);
                 });
 
         CriteriaHelper.pollUiThread(
@@ -825,8 +819,7 @@ public class VerticalTabsTest {
         Tab tabB = createTabOnUiThread(cta, /* incognito= */ false);
         Tab tabC = createTabOnUiThread(cta, /* incognito= */ false);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> selector.getCurrentModel().mergeTabsToGroup(tabA.getId(), tabB.getId()));
+        ThreadUtils.runOnUiThreadBlocking(() -> ChromeTabUtils.mergeTabsToGroup(tabA, tabB));
 
         assertTabInGroup(selector, tabA, "Tab A and B should be in a group.");
 
@@ -864,8 +857,8 @@ public class VerticalTabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    selector.getCurrentModel().mergeTabsToGroup(tab1.getId(), tab2.getId());
-                    selector.getCurrentModel().mergeTabsToGroup(tab3.getId(), tab1.getId());
+                    ChromeTabUtils.mergeTabsToGroup(tab1, tab2);
+                    ChromeTabUtils.mergeTabsToGroup(tab3, tab1);
                 });
 
         assertTabInGroup(selector, tab3, "All 3 tabs should be in a group initially.");
@@ -1122,7 +1115,7 @@ public class VerticalTabsTest {
         // (index 3).
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.mergeTabsToGroup(tab2.getId(), tab3.getId());
+                    ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
                     model.setTabGroupCollapsed(tab2.getTabGroupId(), true);
                 });
 
