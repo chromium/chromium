@@ -112,7 +112,9 @@ Study CreateTestStudy(const std::vector<Study::Experiment>& experiments) {
   auto* platforms = study.mutable_filter()->mutable_platform();
   for (int p = static_cast<int>(Study_Platform_Platform_MIN);
        p <= static_cast<int>(Study_Platform_Platform_MAX); ++p) {
-    platforms->Add(static_cast<Study_Platform>(p));
+    if (Study_Platform_IsValid(p)) {
+      platforms->Add(static_cast<Study_Platform>(p));
+    }
   }
 
   return study;
@@ -870,6 +872,7 @@ TEST(GetMaxLimitedEntropyInBits, IsPlatformSpecific) {
   EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_CHROMEOS), 16.0);
   EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_ANDROID_WEBVIEW), 1.0);
   EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_LINUX), 1.0);
+  EXPECT_EQ(GetMaxLimitedEntropyInBits(Study::PLATFORM_ANDROID_DESKTOP), 1.0);
 }
 
 }  // namespace variations

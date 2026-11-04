@@ -202,7 +202,9 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy() {
   auto* platforms = study->mutable_filter()->mutable_platform();
   for (int p = static_cast<int>(Study_Platform_Platform_MIN);
        p <= static_cast<int>(Study_Platform_Platform_MAX); ++p) {
-    platforms->Add(static_cast<Study_Platform>(p));
+    if (Study_Platform_IsValid(p)) {
+      platforms->Add(static_cast<Study_Platform>(p));
+    }
   }
 
   // Add 256 experiment arms, this uses an additional 8 bits of entropy. This

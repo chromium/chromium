@@ -53,6 +53,8 @@ std::string PlatformToString(variations::Study::Platform platform) {
       return "ChromeOS";
     case variations::Study::PLATFORM_ANDROID:
       return "Android";
+    case variations::Study::PLATFORM_ANDROID_DESKTOP:
+      return "Android Desktop";
     case variations::Study::PLATFORM_IOS:
       return "iOS";
     case variations::Study::PLATFORM_ANDROID_WEBVIEW:

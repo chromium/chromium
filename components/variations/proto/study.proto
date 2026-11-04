@@ -243,6 +243,7 @@ message Study {
     PLATFORM_ANDROID = 4;
     PLATFORM_IOS = 5;
     PLATFORM_ANDROID_WEBVIEW = 6;
+    PLATFORM_ANDROID_DESKTOP = 10;
     PLATFORM_FUCHSIA = 7;
     // PLATFORM_ANDROID_WEBLAYER was sunsetted and reserved.
     // Tracking bug: b/305377215
