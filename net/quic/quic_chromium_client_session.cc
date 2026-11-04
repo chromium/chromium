@@ -2501,9 +2501,9 @@ void QuicChromiumClientSession::MigrateSessionOnWriteError(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_TRIGGERED, "trigger",
       "WriteError");
   pending_migrate_session_on_write_error_ = true;
-  MigrateWithoutProbing(
+  MaybeMigrateWithoutProbing(
       QuicMigrationAttemptCause::kOnWriteError, new_network,
-      ToIPEndPoint(connection()->peer_address()),
+      connection()->peer_address(),
       /*close_session_on_error=*/false,
       base::BindOnce(
           &QuicChromiumClientSession::FinishMigrateSessionOnWriteError,
@@ -3122,14 +3122,14 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
   if (!base::FeatureList::IsEnabled(
           features::kQuicAlwaysCancelPreExistingProbingOnMigration)) {
     // When enabled, cancellation for any probe happens within
-    // MigrateWithoutProbing.
+    // MaybeMigrateWithoutProbing.
     MaybeCancelSpecificInFlightProbe(network, peer_address(),
                                      ProbingCancellationReason::kSuperseded,
                                      migration_cause);
   }
   pending_migrate_network_immediately_ = true;
-  MigrateWithoutProbing(
-      migration_cause, network, ToIPEndPoint(connection()->peer_address()),
+  MaybeMigrateWithoutProbing(
+      migration_cause, network, connection()->peer_address(),
       /*close_session_on_error=*/true,
       base::BindOnce(
           &QuicChromiumClientSession::FinishMigrateNetworkImmediately,
@@ -4288,10 +4288,10 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   }
 }
 
-void QuicChromiumClientSession::MigrateWithoutProbing(
+void QuicChromiumClientSession::MaybeMigrateWithoutProbing(
     QuicMigrationAttemptCause migration_cause,
     handles::NetworkHandle network,
-    IPEndPoint peer_address,
+    const quic::QuicSocketAddress& peer_address,
     bool close_session_on_error,
     MigrationCallback migration_callback) {
   quic_connection_migration_attempted_ = true;
@@ -4345,28 +4345,48 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
     MaybeCancelAnyInFlightProbe(migration_cause);
   }
 
-  // Create and configure socket on `network`.
+  MigrateWithoutProbing(
+      CreateMigrationAttemptContext(migration_cause, network, peer_address),
+      close_session_on_error, std::move(migration_callback));
+}
+
+std::unique_ptr<QuicMigrationAttemptContext>
+QuicChromiumClientSession::CreateMigrationAttemptContext(
+    QuicMigrationAttemptCause cause,
+    handles::NetworkHandle target_network,
+    const quic::QuicSocketAddress& target_peer_address) {
+  CHECK(session_pool_);
+  // Create socket on `target_network`.
   // TODO(crbug.com/518753285): Once we no longer bindToNetwork via
   // `ConnectAndConfigureSocket`, bind the socket via this `CreateSocket` call,
-  // by passing in `network` instead of `handles::kInvalidNetworkHandle`.
-  std::unique_ptr<DatagramClientSocket> socket(session_pool_->CreateSocket(
-      handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
+  // by passing in `target_network` instead of `handles::kInvalidNetworkHandle`.
+  std::unique_ptr<DatagramClientSocket> socket = session_pool_->CreateSocket(
+      handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source());
   DatagramClientSocket* socket_ptr = socket.get();
-
   RecordUnusedConnectionIdsAtMigrationAttempt();
-
-  auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
-      migration_cause, GetCurrentNetwork(), network,
-      ToQuicSocketAddress(peer_address),
+  return std::make_unique<QuicMigrationAttemptContext>(
+      cause, GetCurrentNetwork(), target_network, target_peer_address,
       std::make_unique<QuicChromiumPacketReader>(
           std::move(socket), clock_, this, yield_after_packets_,
           yield_after_duration_, net_log_),
       std::make_unique<QuicChromiumPacketWriter>(socket_ptr, task_runner_),
       CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
+}
+
+void QuicChromiumClientSession::MigrateWithoutProbing(
+    std::unique_ptr<QuicMigrationAttemptContext> migration_context,
+    bool close_session_on_error,
+    MigrationCallback migration_callback) {
+  CHECK(migration_context);
+  CHECK(session_pool_);
 
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
+  DatagramClientSocket* socket_ptr = migration_context->reader()->socket();
+  IPEndPoint peer_address =
+      ToIPEndPoint(migration_context->target_peer_address());
+  handles::NetworkHandle network = migration_context->target_network();
   QuicSessionPool::ConnectAndConfigureCallback connect_callback =
       base::BindOnce(&QuicChromiumClientSession::FinishMigrateWithoutProbing,
                      weak_factory_.GetWeakPtr(), std::move(migration_context),

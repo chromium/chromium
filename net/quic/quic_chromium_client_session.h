@@ -913,16 +913,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // then, OnWriteUnblocked() will be invoked to send packet after migration.
   void WriteToNewSocket();
 
-  // Migrates session over to use |peer_address| and |network|.
-  // If |network| is handles::kInvalidNetworkHandle, default network is used. If
-  // the migration fails and |close_session_on_error| is true, session will be
-  // closed.
   using MigrationCallback = base::OnceCallback<void(MigrationResult)>;
-  void MigrateWithoutProbing(QuicMigrationAttemptCause migration_cause,
-                             handles::NetworkHandle network,
-                             IPEndPoint peer_address,
-                             bool close_session_on_error,
-                             MigrationCallback migration_callback);
   // Helper to finish session migration once a socket has been opened. Always
   // called asynchronously.
   void FinishMigrateWithoutProbing(
@@ -1055,6 +1046,28 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void CloseAllHandles(int net_error);
   void CancelAllRequests(int net_error);
   void NotifyRequestsOfConfirmation(int net_error);
+
+  // Performs pre-migration checks and, if eligible, initiates an immediate
+  // migration to `peer_address` and `network` via `MigrateWithoutProbing`.
+  // If `network` is handles::kInvalidNetworkHandle, default network is used. If
+  // the migration fails and `close_session_on_error` is true, session will be
+  // closed.
+  void MaybeMigrateWithoutProbing(QuicMigrationAttemptCause migration_cause,
+                                  handles::NetworkHandle network,
+                                  const quic::QuicSocketAddress& peer_address,
+                                  bool close_session_on_error,
+                                  MigrationCallback migration_callback);
+  void MigrateWithoutProbing(
+      std::unique_ptr<QuicMigrationAttemptContext> migration_context,
+      bool close_session_on_error,
+      MigrationCallback migration_callback);
+
+  // Creates a new socket, packet reader, and packet writer, and wraps them in a
+  // `QuicMigrationAttemptContext` for a new migration attempt.
+  std::unique_ptr<QuicMigrationAttemptContext> CreateMigrationAttemptContext(
+      QuicMigrationAttemptCause cause,
+      handles::NetworkHandle target_network,
+      const quic::QuicSocketAddress& target_peer_address);
 
   // Probe on <network, peer_address>.
   // If <network, peer_addres> is identical to the current path, the probe
