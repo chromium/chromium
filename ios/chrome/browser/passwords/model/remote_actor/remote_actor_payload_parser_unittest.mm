@@ -13,7 +13,9 @@
 #import "crypto/aead.h"
 #import "crypto/random.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_keychain_util.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/test/remote_actor_test_util.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/test/scoped_keychain_access_group_override.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -258,11 +260,82 @@ TEST_F(RemoteActorPayloadParserTest, MissingRequiredField) {
 // Tests that parsing fails with kMissingKeyInKeychain when keychain lookup
 // returns nullopt.
 TEST_F(RemoteActorPayloadParserTest, KeychainRetrievalMissingKey) {
+  ScopedRemoteActorKeychainAccessGroupOverrideForTesting access_group_override(
+      nil);
+  DeleteRemoteActorSharedSymmetricKeyForTesting(
+      nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService);
+
   base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
       result = ParseRemoteActorPayload("payload", "nonce");
 
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), RemoteActorParsingError::kMissingKeyInKeychain);
+}
+
+// Tests that the Keychain symmetric key is deleted upon successful decryption
+// to prevent replay attacks.
+TEST_F(RemoteActorPayloadParserTest, DeletesKeychainKeyOnSuccessfulDecryption) {
+  ScopedRemoteActorKeychainAccessGroupOverrideForTesting access_group_override(
+      nil);
+  std::vector<uint8_t> key = CreateRandomKey();
+  ASSERT_TRUE(SetRemoteActorSharedSymmetricKeyForTesting(
+      key, nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService));
+
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  std::optional<std::pair<std::string, std::string>> encrypted_payload =
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
+  ASSERT_TRUE(encrypted_payload.has_value());
+
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      result = ParseRemoteActorPayload(encrypted_payload->first,
+                                       encrypted_payload->second);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->gaia_id(), kTestGaiaId);
+  EXPECT_EQ(result->domain(), kTestDomain);
+  EXPECT_EQ(result->task_id(), kTestTaskId);
+
+  // Key should be deleted after successful decryption, blocking replays.
+  EXPECT_FALSE(GetRemoteActorSharedSymmetricKey().has_value());
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      replay_result = ParseRemoteActorPayload(encrypted_payload->first,
+                                              encrypted_payload->second);
+  ASSERT_FALSE(replay_result.has_value());
+  EXPECT_EQ(replay_result.error(),
+            RemoteActorParsingError::kMissingKeyInKeychain);
+}
+
+// Tests that the Keychain symmetric key is preserved when decryption fails so
+// a forged URL cannot discard a pending handoff key.
+TEST_F(RemoteActorPayloadParserTest, PreservesKeychainKeyOnFailedDecryption) {
+  ScopedRemoteActorKeychainAccessGroupOverrideForTesting access_group_override(
+      nil);
+  std::vector<uint8_t> key = CreateRandomKey();
+  ASSERT_TRUE(SetRemoteActorSharedSymmetricKeyForTesting(
+      key, nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService));
+
+  RemoteActorPasswordUploadRequest original_request = CreateValidRequest();
+  std::optional<std::pair<std::string, std::string>> encrypted_payload =
+      CreateEncryptedRemoteActorPayloadForTesting(original_request, key);
+  ASSERT_TRUE(encrypted_payload.has_value());
+
+  std::string raw_ciphertext;
+  ASSERT_TRUE(base::Base64Decode(encrypted_payload->first, &raw_ciphertext));
+  // Flip all bits in the first byte to corrupt the ciphertext and trigger an
+  // AEAD authentication/decryption failure.
+  raw_ciphertext[0] ^= 0xFF;
+  std::string tampered_payload = base::Base64Encode(raw_ciphertext);
+
+  base::expected<RemoteActorPasswordUploadRequest, RemoteActorParsingError>
+      failed_result =
+          ParseRemoteActorPayload(tampered_payload, encrypted_payload->second);
+  ASSERT_FALSE(failed_result.has_value());
+  EXPECT_EQ(failed_result.error(), RemoteActorParsingError::kDecryptionFailed);
+
+  // Key should still be present in Keychain.
+  EXPECT_EQ(GetRemoteActorSharedSymmetricKey(), key);
+
+  DeleteRemoteActorSharedSymmetricKeyForTesting(
+      nil, kRemoteActorKeychainAccount, kRemoteActorKeychainService);
 }
 
 }  // namespace

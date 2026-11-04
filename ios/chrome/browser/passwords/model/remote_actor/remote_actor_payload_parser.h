@@ -41,11 +41,14 @@ ParseRemoteActorPayload(std::string_view base64_payload,
                         base::span<const uint8_t> key);
 
 // Parses and decrypts `base64_payload` with the 12-byte `base64_nonce` by
-// retrieving the symmetric key from the shared Keychain.
+// retrieving the symmetric key from the shared Keychain. Upon successful
+// decryption and parsing, deletes the symmetric key from the Keychain to
+// prevent replay attacks (preserving the key on failure).
 //
-// Note: Because this function calls `GetRemoteActorSharedSymmetricKey()`, it
-// performs synchronous Keychain IPC and must be called on a background sequence
-// that allows blocking (e.g., with `base::MayBlock()`).
+// Note: Because this function calls `GetRemoteActorSharedSymmetricKey()` and
+// `DeleteRemoteActorSharedSymmetricKey()`, it performs synchronous Keychain IPC
+// and must be called on a background sequence that allows blocking (e.g., with
+// `base::MayBlock()`).
 base::expected<remote_actor::proto::RemoteActorPasswordUploadRequest,
                RemoteActorParsingError>
 ParseRemoteActorPayload(std::string_view base64_payload,
