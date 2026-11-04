@@ -137,7 +137,6 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   bool GetShouldDownloadFaviconsOnNavigation(JNIEnv* env);
-  void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,
                          const base::android::JavaRef<jobject>& message);
   // Delivers a SharedArrayBuffer message from the embedding application to the
@@ -334,7 +333,7 @@ class AwContents : public FindHelper::Listener,
   // details.
   void SetPendingWebContentsForPopup(
       std::unique_ptr<content::WebContents> pending);
-  int64_t ReleasePopupAwContents(JNIEnv* env);
+  jni_zero::JniUniquePtr<AwContents> ReleasePopupAwContents(JNIEnv* env);
 
   void ScrollTo(JNIEnv* env, int32_t x, int32_t y);
   void RestoreScrollAfterTransition(JNIEnv* env, int32_t x, int32_t y);
