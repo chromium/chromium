@@ -267,8 +267,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   browsing_data::RecordDeleteBrowsingDataAction(
       browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
-  settings_utils::MaybeNotifySettingsElementActivated(
-      web_ui(), settings::kClearBrowsingDataDialogOkButtonElementId);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kClearBrowsingDataDialogOkClickedEventId);
 
   int period_selected = args_list[2].GetInt();
 

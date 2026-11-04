@@ -29,15 +29,15 @@ void SettingsTelemetryHandler::RegisterMessages() {
 void SettingsTelemetryHandler::HandleNavCategoryClicked(
     const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
-  settings_utils::MaybeNotifySettingsElementActivated(
-      web_ui(), settings::kSettingsNavCategoryClickedId);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kSettingsNavCategoryClickedEventId);
 }
 
 void SettingsTelemetryHandler::HandleSearchQueryEntered(
     const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
-  settings_utils::MaybeNotifySettingsElementActivated(
-      web_ui(), settings::kSettingsSearchQueryEnteredId);
+  settings_utils::MaybeNotifySettingsCustomEvent(
+      web_ui(), settings::kSettingsSearchQueryEnteredEventId);
 }
 
 }  // namespace settings

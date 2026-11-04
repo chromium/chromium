@@ -13,10 +13,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service_factory.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/webui/settings/settings_element_ids.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -314,7 +317,31 @@ TEST_F(CriticalUserJourneyServiceTest,
                                1);
 }
 
-TEST_F(CriticalUserJourneyServiceTest,
+// Tests the production journeys registered by `CriticalUserJourneyRegistry`.
+// Unlike `CriticalUserJourneyServiceTest`, this fixture does not install
+// `TestCriticalUserJourneyService`, so production journeys are only driven
+// through the `CriticalUserJourneyService` that `TestingProfile` creates via
+// `CriticalUserJourneyServiceFactory`.
+class CriticalUserJourneyProductionJourneysTest : public testing::Test {
+ public:
+  CriticalUserJourneyProductionJourneysTest() {
+    feature_list_.InitAndEnableFeature(kCriticalUserJourneyService);
+  }
+  ~CriticalUserJourneyProductionJourneysTest() override = default;
+
+  void SetUp() override {
+    testing::Test::SetUp();
+    HatsServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating(&BuildMockHatsService));
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
+TEST_F(CriticalUserJourneyProductionJourneysTest,
        SettingsGlowupJourneysHaveDistinctNamesAndOneBasedSteps) {
   CriticalUserJourneyRegistry registry;
   registry.AddJourneys();
@@ -325,9 +352,27 @@ TEST_F(CriticalUserJourneyServiceTest,
     if (name.starts_with("Settings")) {
       settings_journey_names.push_back(name);
       ASSERT_FALSE(journey->steps().empty());
-      for (size_t i = 0; i < journey->steps().size(); ++i) {
-        EXPECT_EQ(journey->steps()[i]->metric_id, static_cast<int>(i + 1))
-            << "Journey " << name << " step " << i << " must be 1-based";
+      int expected_metric_id = 1;
+      for (const auto& step : journey->steps()) {
+        if (step->type == ui::InteractionSequence::StepType::kSubsequence) {
+          EXPECT_FALSE(step->branches.empty());
+          for (const auto& branch : step->branches) {
+            ASSERT_FALSE(branch->steps().empty());
+            for (const auto& branch_step : branch->steps()) {
+              EXPECT_EQ(branch_step->type,
+                        ui::InteractionSequence::StepType::kCustomEvent);
+              EXPECT_EQ(branch_step->metric_id, expected_metric_id++)
+                  << "Journey " << name
+                  << " branch step must have sequential 1-based metric_id";
+            }
+          }
+        } else {
+          EXPECT_EQ(step->type,
+                    ui::InteractionSequence::StepType::kCustomEvent);
+          EXPECT_EQ(step->metric_id, expected_metric_id++)
+              << "Journey " << name
+              << " step must have sequential 1-based metric_id";
+        }
       }
     }
   }
@@ -339,6 +384,43 @@ TEST_F(CriticalUserJourneyServiceTest,
                                             "SettingsSitesDashboardJourney",
                                             "SettingsClearBrowsingDataJourney",
                                             "SettingsAppearanceThemesJourney"));
+}
+
+TEST_F(CriticalUserJourneyProductionJourneysTest,
+       SettingsSearchEngineJourneyCompletesOnEitherBranch) {
+  // `TestingProfile` already creates and initializes a
+  // `CriticalUserJourneyService` via `CriticalUserJourneyServiceFactory`.
+  ASSERT_TRUE(CriticalUserJourneyServiceFactory::GetForProfile(&profile_));
+
+  base::HistogramTester histograms;
+  ui::test::TestElement test_element(kBrowserViewElementId, kTestContext);
+  test_element.Show();
+
+  // Branch 1: Navigate to search engine settings, then change default engine.
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &test_element, settings::kSearchEngineNavClickedEventId);
+  base::RunLoop().RunUntilIdle();
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &test_element, settings::kDefaultSearchEngineChangedEventId);
+  base::RunLoop().RunUntilIdle();
+
+  // Branch 2: Navigate to search engine settings, then toggle search shortcuts.
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &test_element, settings::kSearchEngineNavClickedEventId);
+  base::RunLoop().RunUntilIdle();
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      &test_element, settings::kSearchShortcutsToggledEventId);
+  base::RunLoop().RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "CriticalUserJourney.SettingsSearchEngineJourney.Result",
+      CriticalUserJourneySession::JourneyResult::kCompleted, 2);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.SettingsSearchEngineJourney.StepReached", 1, 2);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.SettingsSearchEngineJourney.StepReached", 2, 1);
+  histograms.ExpectBucketCount(
+      "CriticalUserJourney.SettingsSearchEngineJourney.StepReached", 3, 1);
 }
 
 }  // namespace metrics

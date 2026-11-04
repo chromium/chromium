@@ -11,8 +11,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "components/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "url/gurl.h"
@@ -29,62 +30,33 @@ bool FixupAndValidateStartupPage(const std::string& url_string,
   return valid;
 }
 
+void MaybeNotifySettingsCustomEvent(content::WebContents* web_contents,
+                                    ui::CustomElementEventType event_type) {
+  if (!base::FeatureList::IsEnabled(metrics::kSettingsGlowupJourneys)) {
+    return;
+  }
+  // Unit tests (e.g., `SiteSettingsHandlerTest`, `SearchEnginesHandlerTest`)
+  // run with a detached `TestWebUI` without a `WebContents` or
+  // `BrowserWindowInterface`.
+  if (!web_contents) {
+    return;
+  }
+  BrowserWindowInterface* const browser =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (!browser) {
+    return;
+  }
+  BrowserElements* const browser_elements = BrowserElements::From(browser);
+  if (!browser_elements) {
+    return;
+  }
+  browser_elements->NotifyEvent(kBrowserViewElementId, event_type);
+}
+
 void MaybeNotifySettingsCustomEvent(content::WebUI* web_ui,
                                     ui::CustomElementEventType event_type) {
   CHECK(web_ui);
-  if (!base::FeatureList::IsEnabled(metrics::kSettingsGlowupJourneys)) {
-    return;
-  }
-  // May be null in unit tests using TestWebUI without a WebContents or tab.
-  if (!web_ui->GetWebContents()) {
-    return;
-  }
-  tabs::TabInterface* const tab =
-      tabs::TabInterface::MaybeGetFromContents(web_ui->GetWebContents());
-  if (!tab) {
-    return;
-  }
-  CHECK(tab->GetBrowserWindowInterface());
-  ui::ElementContext context =
-      BrowserElements::From(tab->GetBrowserWindowInterface())->GetContext();
-  ui::TrackedElement* const browser_element =
-      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
-          kBrowserViewElementId, context);
-  CHECK(browser_element);
-  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(browser_element,
-                                                                event_type);
-}
-
-void MaybeNotifySettingsElementActivated(content::WebUI* web_ui,
-                                         ui::ElementIdentifier element_id) {
-  CHECK(web_ui);
-  if (!base::FeatureList::IsEnabled(metrics::kSettingsGlowupJourneys)) {
-    return;
-  }
-  // May be null in unit tests using TestWebUI without a WebContents or tab.
-  if (!web_ui->GetWebContents()) {
-    return;
-  }
-  tabs::TabInterface* const tab =
-      tabs::TabInterface::MaybeGetFromContents(web_ui->GetWebContents());
-  if (!tab) {
-    return;
-  }
-  CHECK(tab->GetBrowserWindowInterface());
-  ui::ElementContext context =
-      BrowserElements::From(tab->GetBrowserWindowInterface())->GetContext();
-  ui::TrackedElement* tracked_element =
-      ui::ElementTracker::GetElementTracker()->GetUniqueElement(element_id,
-                                                                context);
-  if (!tracked_element) {
-    tracked_element =
-        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
-            element_id);
-  }
-  if (tracked_element) {
-    ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
-        tracked_element);
-  }
+  MaybeNotifySettingsCustomEvent(web_ui->GetWebContents(), event_type);
 }
 
 }  // namespace settings_utils

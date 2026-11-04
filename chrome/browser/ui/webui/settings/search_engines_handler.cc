@@ -599,7 +599,7 @@ void SearchEnginesHandler::SetDefaultSearchEngine(
     std::optional<bool> save_guest_choice) {
   list_controller_.MakeDefaultTemplateURL(id, choice_made_location);
   settings_utils::MaybeNotifySettingsCustomEvent(
-      web_ui(), settings::kDefaultSearchEngineChangedId);
+      web_ui(), settings::kDefaultSearchEngineChangedEventId);
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 
   if (save_guest_choice.has_value()) {

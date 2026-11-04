@@ -3,37 +3,40 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/settings_element_ids.h"
+
 #include "ui/base/interaction/element_tracker.h"
 
 namespace settings {
 
-// Navigational IA
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsPageLoadedId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsNavCategoryClickedId);
+// Custom element event types for Settings Critical User Journey (CUJ) tracking.
+
+// Navigational Information Architecture (IA)
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingsPageLoadedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingsNavCategoryClickedEventId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingStateChangedEventId);
 
 // Supercharged Search
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsSearchBoxElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSettingsSearchQueryEnteredId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingsSearchBoxShownEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingsSearchQueryEnteredEventId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSettingsSearchResultClickedEventId);
 
 // Dedicated Search Engine & Shortcuts
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSearchEngineNavMenuItemId);
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kDefaultSearchEngineChangedId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSearchEngineNavClickedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kDefaultSearchEngineChangedEventId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSearchShortcutsToggledEventId);
 
 // Sites Dashboard & Site Permissions
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSitesNavMenuItemId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSitePermissionCategoryElementId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSitesNavClickedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSitePermissionCategoryClickedEventId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSitePermissionChangedEventId);
 
-// Clear Browsing Data Baseline
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kClearBrowsingDataElementId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kClearBrowsingDataDialogOkButtonElementId);
+// Clear Browsing Data (CBD) Baseline
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kClearBrowsingDataClickedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kClearBrowsingDataDialogOkClickedEventId);
 
-// Appearance & GM3 Themes
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppearanceNavMenuItemId);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppearanceColorTileSelectedId);
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kAppearanceThemeChangedId);
+// Appearance & Material 3 (GM3) Themes
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kAppearanceNavClickedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kAppearanceColorTileSelectedEventId);
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kAppearanceThemeChangedEventId);
 
 }  // namespace settings

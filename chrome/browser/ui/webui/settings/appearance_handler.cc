@@ -79,7 +79,7 @@ void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
         base::NotFatalUntil::M162);
   ThemeServiceFactory::GetForProfile(profile_)->UseTheme(system_theme);
   settings_utils::MaybeNotifySettingsCustomEvent(
-      web_ui(), settings::kAppearanceThemeChangedId);
+      web_ui(), settings::kAppearanceThemeChangedEventId);
 }
 
 void AppearanceHandler::OpenCustomizeChrome(const base::ListValue& args) {
