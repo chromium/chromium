@@ -23,8 +23,8 @@ source_set("actor_types") {
   ]
 }
 
-source_set("actuation_worklog_data_source") {
-  sources = [ "actuation_worklog_data_source.h" ]
+source_set("actor_task_data_source") {
+  sources = [ "actor_task_data_source.h" ]
   public_deps = [ ":actor_types" ]
 }
 

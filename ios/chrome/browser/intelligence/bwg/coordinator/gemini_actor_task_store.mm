@@ -174,7 +174,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   // Null once disconnected or if the task couldn't be observed.
   raw_ptr<actor::ActorService> _actorService;
   // Observers of the worklog.
-  CRBProtocolObservers<ActuationWorklogDataSourceObserver>* _observers;
+  CRBProtocolObservers<ActorTaskDataSourceObserver>* _observers;
   // Title of the task.
   NSString* _taskTitle;
   // Current state of the task.
@@ -205,10 +205,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
     _taskID = taskID;
     _taskState = actor::ActorTaskState::kInit;
     _observers =
-        static_cast<CRBProtocolObservers<ActuationWorklogDataSourceObserver>*>(
+        static_cast<CRBProtocolObservers<ActorTaskDataSourceObserver>*>(
             [CRBProtocolObservers
-                observersWithProtocol:@protocol(
-                                          ActuationWorklogDataSourceObserver)]);
+                observersWithProtocol:@protocol(ActorTaskDataSourceObserver)]);
     _items = [NSMutableArray array];
     if (actorService && actorService->AddTaskUpdatesObserver(taskID, self)) {
       _actorService = actorService;
@@ -231,30 +230,30 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   _interventionCompletion = nil;
 }
 
-#pragma mark - ActuationWorklogDataSource
+#pragma mark - ActorTaskDataSource
 
-- (void)addObserver:(id<ActuationWorklogDataSourceObserver>)observer {
+- (void)addObserver:(id<ActorTaskDataSourceObserver>)observer {
   CHECK(observer);
   if (actor::ContainsObserver(_observers, observer)) {
     return;
   }
   [_observers addObserver:observer];
-  [observer worklogDataSource:self
-       didAttachWithTaskTitle:_taskTitle
-                    taskState:_taskState
-                        items:[_items copy]
-               latestToolType:_latestToolType];
+  [observer taskDataSource:self
+      didAttachWithTaskTitle:_taskTitle
+                   taskState:_taskState
+                       items:[_items copy]
+              latestToolType:_latestToolType];
   if (_intervention) {
-    [observer worklogDataSource:self didUpdateIntervention:_intervention];
+    [observer taskDataSource:self didUpdateIntervention:_intervention];
   }
   if (_suggestions) {
-    [observer worklogDataSource:self
-           didUpdateSuggestions:_suggestions
-                        forItem:_suggestionsItem];
+    [observer taskDataSource:self
+        didUpdateSuggestions:_suggestions
+                     forItem:_suggestionsItem];
   }
 }
 
-- (void)removeObserver:(id<ActuationWorklogDataSourceObserver>)observer {
+- (void)removeObserver:(id<ActorTaskDataSourceObserver>)observer {
   [_observers removeObserver:observer];
 }
 
@@ -375,7 +374,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                                                               action:action]];
 }
 
-#pragma mark - ActuationWorklogActionHandler
+#pragma mark - ActorTaskActionHandler
 
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action {
   void (^completion)(InterventionActionIdentifier) = _interventionCompletion;
@@ -398,7 +397,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   _selectedSuggestion = suggestion;
   _items[_items.count - 1] = item;
   _suggestionsItem = item;
-  [_observers worklogDataSource:self didReplaceLastItem:item];
+  [_observers taskDataSource:self didReplaceLastItem:item];
 }
 
 #pragma mark - Private
@@ -436,14 +435,14 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
           toolType:(std::optional<actor::ToolType>)toolType {
   [_items addObject:item];
   _latestToolType = toolType;
-  [_observers worklogDataSource:self didAppendItem:item toolType:toolType];
+  [_observers taskDataSource:self didAppendItem:item toolType:toolType];
 }
 
 // Notifies the observers of the current title and state of the task.
 - (void)notifyTaskTitleOrStateUpdated {
-  [_observers worklogDataSource:self
-             didUpdateTaskTitle:_taskTitle
-                      taskState:_taskState];
+  [_observers taskDataSource:self
+          didUpdateTaskTitle:_taskTitle
+                   taskState:_taskState];
 }
 
 // Sets the pending intervention and notifies the observers.
@@ -452,7 +451,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
     return;
   }
   _intervention = intervention;
-  [_observers worklogDataSource:self didUpdateIntervention:intervention];
+  [_observers taskDataSource:self didUpdateIntervention:intervention];
 }
 
 // Clears the pending intervention and drops its completion without calling it.
@@ -466,9 +465,9 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
                forItem:(ActuationWorklogItem*)item {
   _suggestions = [suggestions copy];
   _suggestionsItem = item;
-  [_observers worklogDataSource:self
-           didUpdateSuggestions:_suggestions
-                        forItem:item];
+  [_observers taskDataSource:self
+        didUpdateSuggestions:_suggestions
+                     forItem:item];
 }
 
 @end

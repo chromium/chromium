@@ -142,9 +142,8 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 @property(nonatomic, weak) FakeGeminiContainerConsumer* consumer;
 @property(nonatomic, readonly) std::vector<actor::ActorTaskId> startedTaskIDs;
 @property(nonatomic, readonly) std::vector<actor::ActorTaskId> stoppedTaskIDs;
-@property(nonatomic, weak, readonly) id<ActuationWorklogDataSource>
-    startedDataSource;
-@property(nonatomic, weak, readonly) id<ActuationWorklogActionHandler>
+@property(nonatomic, weak, readonly) id<ActorTaskDataSource> startedDataSource;
+@property(nonatomic, weak, readonly) id<ActorTaskActionHandler>
     startedActionHandler;
 @property(nonatomic, readonly) BOOL actuationActiveOnStart;
 @property(nonatomic, readonly) BOOL actuationActiveOnStop;
@@ -153,9 +152,8 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 @implementation FakeGeminiContainerMediatorDelegate
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
     didStartActuationTaskWithID:(actor::ActorTaskId)taskID
-                     dataSource:(id<ActuationWorklogDataSource>)dataSource
-                  actionHandler:
-                      (id<ActuationWorklogActionHandler>)actionHandler {
+                     dataSource:(id<ActorTaskDataSource>)dataSource
+                  actionHandler:(id<ActorTaskActionHandler>)actionHandler {
   _startedTaskIDs.push_back(taskID);
   _startedDataSource = dataSource;
   _startedActionHandler = actionHandler;

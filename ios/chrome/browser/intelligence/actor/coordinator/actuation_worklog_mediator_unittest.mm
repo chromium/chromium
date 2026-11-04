@@ -16,9 +16,9 @@
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/public/actuation_worklog_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -183,11 +183,10 @@ ActorFormSuggestion* CreateCredentialSuggestion(
 // Data source publishing a worklog driven by the tests, and recording the
 // resolved interventions. Once it knows the task title, its worklog starts with
 // a first step, as after a task registration.
-@interface FakeActuationWorklogDataSource
-    : NSObject <ActuationWorklogActionHandler, ActuationWorklogDataSource>
+@interface FakeActorTaskDataSource
+    : NSObject <ActorTaskActionHandler, ActorTaskDataSource>
 // Attached observer, if any.
-@property(nonatomic, weak, readonly) id<ActuationWorklogDataSourceObserver>
-    observer;
+@property(nonatomic, weak, readonly) id<ActorTaskDataSourceObserver> observer;
 // Action the latest intervention was resolved with, if any.
 @property(nonatomic, strong, readonly)
     ActuationInterventionAction* resolvedAction;
@@ -210,7 +209,7 @@ ActorFormSuggestion* CreateCredentialSuggestion(
                   forItem:(ActuationWorklogItem*)item;
 @end
 
-@implementation FakeActuationWorklogDataSource {
+@implementation FakeActorTaskDataSource {
   NSString* _taskTitle;
   actor::ActorTaskState _taskState;
   NSMutableArray<ActuationWorklogItem*>* _items;
@@ -233,16 +232,16 @@ ActorFormSuggestion* CreateCredentialSuggestion(
   return self;
 }
 
-- (void)addObserver:(id<ActuationWorklogDataSourceObserver>)observer {
+- (void)addObserver:(id<ActorTaskDataSourceObserver>)observer {
   _observer = observer;
-  [observer worklogDataSource:self
-       didAttachWithTaskTitle:_taskTitle
-                    taskState:_taskState
-                        items:[_items copy]
-               latestToolType:_latestToolType];
+  [observer taskDataSource:self
+      didAttachWithTaskTitle:_taskTitle
+                   taskState:_taskState
+                       items:[_items copy]
+              latestToolType:_latestToolType];
 }
 
-- (void)removeObserver:(id<ActuationWorklogDataSourceObserver>)observer {
+- (void)removeObserver:(id<ActorTaskDataSourceObserver>)observer {
   if (_observer == observer) {
     _observer = nil;
   }
@@ -250,33 +249,31 @@ ActorFormSuggestion* CreateCredentialSuggestion(
 
 - (void)changeTaskState:(actor::ActorTaskState)taskState {
   _taskState = taskState;
-  [_observer worklogDataSource:self
-            didUpdateTaskTitle:_taskTitle
-                     taskState:taskState];
+  [_observer taskDataSource:self
+         didUpdateTaskTitle:_taskTitle
+                  taskState:taskState];
 }
 
 - (void)appendItem:(ActuationWorklogItem*)item
           toolType:(std::optional<actor::ToolType>)toolType {
   [_items addObject:item];
   _latestToolType = toolType;
-  [_observer worklogDataSource:self didAppendItem:item toolType:toolType];
+  [_observer taskDataSource:self didAppendItem:item toolType:toolType];
 }
 
 - (void)replaceLastItem:(ActuationWorklogItem*)item {
   _items[_items.count - 1] = item;
   _latestToolType = std::nullopt;
-  [_observer worklogDataSource:self didReplaceLastItem:item];
+  [_observer taskDataSource:self didReplaceLastItem:item];
 }
 
 - (void)updateIntervention:(ActuationInterventionData*)intervention {
-  [_observer worklogDataSource:self didUpdateIntervention:intervention];
+  [_observer taskDataSource:self didUpdateIntervention:intervention];
 }
 
 - (void)updateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
                   forItem:(ActuationWorklogItem*)item {
-  [_observer worklogDataSource:self
-          didUpdateSuggestions:suggestions
-                       forItem:item];
+  [_observer taskDataSource:self didUpdateSuggestions:suggestions forItem:item];
 }
 
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action {
@@ -321,8 +318,8 @@ class ActuationWorklogMediatorTest : public PlatformTest {
 
   // Starts observing `task_id` through a new data source.
   void StartObservingTask(actor::ActorTaskId task_id) {
-    data_source_ = [[FakeActuationWorklogDataSource alloc]
-        initWithTaskTitle:@(kTaskTitle)];
+    data_source_ =
+        [[FakeActorTaskDataSource alloc] initWithTaskTitle:@(kTaskTitle)];
     StartObservingDataSource(task_id);
   }
 
@@ -365,7 +362,7 @@ class ActuationWorklogMediatorTest : public PlatformTest {
   actor::ActorTaskId task_id_;
   FakeActuationWorklogConsumer* fake_consumer_;
   FakeActuationSuggestionsConsumer* fake_suggestions_consumer_;
-  FakeActuationWorklogDataSource* data_source_;
+  FakeActorTaskDataSource* data_source_;
   ActuationWorklogMediator* mediator_;
 };
 
@@ -388,7 +385,7 @@ TEST_F(ActuationWorklogMediatorTest, TestAttachDisplaysWorklog) {
 // displayed as a chip.
 TEST_F(ActuationWorklogMediatorTest, TestAttachMidTaskReplaysWorklog) {
   data_source_ =
-      [[FakeActuationWorklogDataSource alloc] initWithTaskTitle:@(kTaskTitle)];
+      [[FakeActorTaskDataSource alloc] initWithTaskTitle:@(kTaskTitle)];
   ExecuteTool(kClick, @"Step A");
   ExecuteTool(kNavigate, @"Step B");
 
@@ -407,7 +404,7 @@ TEST_F(ActuationWorklogMediatorTest, TestAttachMidTaskReplaysWorklog) {
 // Tests that attaching to a finished task displays it as done.
 TEST_F(ActuationWorklogMediatorTest, TestAttachToFinishedTaskDisplaysDone) {
   data_source_ =
-      [[FakeActuationWorklogDataSource alloc] initWithTaskTitle:@(kTaskTitle)];
+      [[FakeActorTaskDataSource alloc] initWithTaskTitle:@(kTaskTitle)];
   ChangeState(kFinished);
 
   StartObservingDataSource(task_id_);
@@ -484,7 +481,7 @@ TEST_F(ActuationWorklogMediatorTest, TestDisconnectResetsConsumer) {
 // Tests that nothing is displayed until the data source knows the task title.
 TEST_F(ActuationWorklogMediatorTest,
        TestAttachWithoutTaskTitleDisplaysNothing) {
-  data_source_ = [[FakeActuationWorklogDataSource alloc] initWithTaskTitle:nil];
+  data_source_ = [[FakeActorTaskDataSource alloc] initWithTaskTitle:nil];
   StartObservingDataSource(task_id_);
 
   EXPECT_EQ(fake_consumer_.headerContentVariants, nil);

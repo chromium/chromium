@@ -9,8 +9,8 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/public/actuation_worklog_data_source.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -76,7 +76,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 
 }  // namespace
 
-@interface ActuationWorklogMediator () <ActuationWorklogDataSourceObserver>
+@interface ActuationWorklogMediator () <ActorTaskDataSourceObserver>
 @end
 
 @implementation ActuationWorklogMediator {
@@ -85,9 +85,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   // Currently observed task ID.
   std::optional<actor::ActorTaskId> _currentTaskId;
   // Source of the worklog of the observed task.
-  __weak id<ActuationWorklogDataSource> _dataSource;
+  __weak id<ActorTaskDataSource> _dataSource;
   // Handler of the user actions on the worklog of the observed task.
-  __weak id<ActuationWorklogActionHandler> _actionHandler;
+  __weak id<ActorTaskActionHandler> _actionHandler;
   // Latest task update, displayed as the current step in the minimized header.
   NSString* _latestEmittedTaskUpdate;
   // Title of the observed task.
@@ -108,9 +108,8 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 #pragma mark - Public
 
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource
-                   actionHandler:
-                       (id<ActuationWorklogActionHandler>)actionHandler {
+                      dataSource:(id<ActorTaskDataSource>)dataSource
+                   actionHandler:(id<ActorTaskActionHandler>)actionHandler {
   if (_currentTaskId == taskID) {
     return;
   }
@@ -220,9 +219,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
            subtitle:_taskTitle];
 }
 
-#pragma mark - ActuationWorklogDataSourceObserver
+#pragma mark - ActorTaskDataSourceObserver
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
     didAttachWithTaskTitle:(NSString*)taskTitle
                  taskState:(actor::ActorTaskState)taskState
                      items:(NSArray<ActuationWorklogItem*>*)items
@@ -242,35 +241,35 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   }
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-       didUpdateTaskTitle:(NSString*)taskTitle
-                taskState:(actor::ActorTaskState)taskState {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didUpdateTaskTitle:(NSString*)taskTitle
+             taskState:(actor::ActorTaskState)taskState {
   [self applyTaskTitle:taskTitle taskState:taskState];
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-            didAppendItem:(ActuationWorklogItem*)item
-                 toolType:(std::optional<actor::ToolType>)toolType {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+         didAppendItem:(ActuationWorklogItem*)item
+              toolType:(std::optional<actor::ToolType>)toolType {
   [self displayItem:item toolType:toolType animated:YES];
   [self updateHeaderContent];
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-       didReplaceLastItem:(ActuationWorklogItem*)item {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didReplaceLastItem:(ActuationWorklogItem*)item {
   [self.consumer setLastItem:item chip:nil];
   // Only the suggestions card is replaced, after a reselection.
   [self.suggestionsConsumer
       updateActiveWorklogItemForReselectedSuggestion:item];
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
     didUpdateIntervention:(ActuationInterventionData*)intervention {
   [self.consumer setIntervention:intervention];
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-     didUpdateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-                  forItem:(ActuationWorklogItem*)item {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didUpdateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+                 forItem:(ActuationWorklogItem*)item {
   if (suggestions) {
     [self.suggestionsConsumer setSuggestions:suggestions
                         forActiveWorklogItem:item];

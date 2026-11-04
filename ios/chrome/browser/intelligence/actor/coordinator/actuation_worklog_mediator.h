@@ -15,10 +15,10 @@ namespace actor {
 class ActorService;
 }  // namespace actor
 
+@protocol ActorTaskActionHandler;
+@protocol ActorTaskDataSource;
 @protocol ActuationSuggestionsConsumer;
-@protocol ActuationWorklogActionHandler;
 @protocol ActuationWorklogConsumer;
-@protocol ActuationWorklogDataSource;
 
 // Translates the worklog of an `ActorTask` into displayable timeline items and
 // action chips for an `ActuationWorklogConsumer`.
@@ -41,9 +41,8 @@ class ActorService;
 // published by `dataSource`, replacing any previously observed task. The user
 // actions on the worklog are forwarded to `actionHandler`.
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource
-                   actionHandler:
-                       (id<ActuationWorklogActionHandler>)actionHandler;
+                      dataSource:(id<ActorTaskDataSource>)dataSource
+                   actionHandler:(id<ActorTaskActionHandler>)actionHandler;
 
 // Stops observing the current task and resets the worklog. No-op if no task is
 // observed.

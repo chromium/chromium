@@ -30,9 +30,8 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-// Records the worklog published by an `ActuationWorklogDataSource`.
-@interface FakeWorklogDataSourceObserver
-    : NSObject <ActuationWorklogDataSourceObserver>
+// Records the worklog published by an `ActorTaskDataSource`.
+@interface FakeTaskDataSourceObserver : NSObject <ActorTaskDataSourceObserver>
 @property(nonatomic, copy) NSString* taskTitle;
 @property(nonatomic, assign) actor::ActorTaskState taskState;
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogItem*>* items;
@@ -43,9 +42,9 @@
 @property(nonatomic, strong) ActuationWorklogItem* suggestionsItem;
 @end
 
-@implementation FakeWorklogDataSourceObserver
+@implementation FakeTaskDataSourceObserver
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
     didAttachWithTaskTitle:(NSString*)taskTitle
                  taskState:(actor::ActorTaskState)taskState
                      items:(NSArray<ActuationWorklogItem*>*)items
@@ -57,34 +56,34 @@
   _latestToolType = latestToolType;
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-       didUpdateTaskTitle:(NSString*)taskTitle
-                taskState:(actor::ActorTaskState)taskState {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didUpdateTaskTitle:(NSString*)taskTitle
+             taskState:(actor::ActorTaskState)taskState {
   _taskTitle = [taskTitle copy];
   _taskState = taskState;
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-            didAppendItem:(ActuationWorklogItem*)item
-                 toolType:(std::optional<actor::ToolType>)toolType {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+         didAppendItem:(ActuationWorklogItem*)item
+              toolType:(std::optional<actor::ToolType>)toolType {
   [_items addObject:item];
   _latestToolType = toolType;
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-       didReplaceLastItem:(ActuationWorklogItem*)item {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didReplaceLastItem:(ActuationWorklogItem*)item {
   _items[_items.count - 1] = item;
   _latestToolType = std::nullopt;
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
     didUpdateIntervention:(ActuationInterventionData*)intervention {
   _intervention = intervention;
 }
 
-- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
-     didUpdateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-                  forItem:(ActuationWorklogItem*)item {
+- (void)taskDataSource:(id<ActorTaskDataSource>)dataSource
+    didUpdateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+                 forItem:(ActuationWorklogItem*)item {
   _suggestions = [suggestions copy];
   _suggestionsItem = item;
 }
@@ -177,7 +176,7 @@ class GeminiActorTaskStoreTest : public PlatformTest {
     task_id_ = CreateTask();
     store_ = [[GeminiActorTaskStore alloc] initWithTaskID:task_id_
                                              actorService:actor_service_];
-    observer_ = [[FakeWorklogDataSourceObserver alloc] init];
+    observer_ = [[FakeTaskDataSourceObserver alloc] init];
   }
 
   void TearDown() override {
@@ -240,7 +239,7 @@ class GeminiActorTaskStoreTest : public PlatformTest {
   raw_ptr<actor::ActorService> actor_service_ = nullptr;
   actor::ActorTaskId task_id_;
   GeminiActorTaskStore* store_;
-  FakeWorklogDataSourceObserver* observer_;
+  FakeTaskDataSourceObserver* observer_;
 };
 
 // Tests that an observer attached before the registration receives an empty
@@ -329,8 +328,8 @@ TEST_F(GeminiActorTaskStoreTest, LateObserverReceivesWorklog) {
            didChangeState:kPausedByUser
                 fromState:kActing];
 
-  FakeWorklogDataSourceObserver* lateObserver =
-      [[FakeWorklogDataSourceObserver alloc] init];
+  FakeTaskDataSourceObserver* lateObserver =
+      [[FakeTaskDataSourceObserver alloc] init];
   [store_ addObserver:lateObserver];
 
   EXPECT_EQ(lateObserver.attachCount, 1u);
@@ -433,8 +432,8 @@ TEST_F(GeminiActorTaskStoreTest, LateObserverReceivesPendingIntervention) {
       selectFromSuggestions:@[ suggestion ]
           completionHandler:nil];
 
-  FakeWorklogDataSourceObserver* lateObserver =
-      [[FakeWorklogDataSourceObserver alloc] init];
+  FakeTaskDataSourceObserver* lateObserver =
+      [[FakeTaskDataSourceObserver alloc] init];
   [store_ addObserver:lateObserver];
 
   ASSERT_NE(lateObserver.intervention, nil);
@@ -677,8 +676,8 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionReplacesCard) {
   EXPECT_NSEQ(observer_.items[0].accessoryItem.title, @"user2@example.com");
 
   // A late observer receives the replaced card as the suggestions card.
-  FakeWorklogDataSourceObserver* lateObserver =
-      [[FakeWorklogDataSourceObserver alloc] init];
+  FakeTaskDataSourceObserver* lateObserver =
+      [[FakeTaskDataSourceObserver alloc] init];
   [store_ addObserver:lateObserver];
   EXPECT_EQ(lateObserver.items.lastObject, observer_.items[0]);
   EXPECT_EQ(lateObserver.suggestionsItem, observer_.items[0]);

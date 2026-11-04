@@ -80,9 +80,8 @@
 #pragma mark - Public
 
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource
-                   actionHandler:
-                       (id<ActuationWorklogActionHandler>)actionHandler {
+                      dataSource:(id<ActorTaskDataSource>)dataSource
+                   actionHandler:(id<ActorTaskActionHandler>)actionHandler {
   [_mediator startObservingTaskWithID:taskID
                            dataSource:dataSource
                         actionHandler:actionHandler];
