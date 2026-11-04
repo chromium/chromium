@@ -10,6 +10,8 @@ source_set("ui") {
     "ttc_view_controller.mm",
     "ttc_voice_plate_consumer.h",
     "ttc_voice_plate_mutator.h",
+    "ttc_waveform_view.h",
+    "ttc_waveform_view.mm",
   ]
   deps = [
     "//base",
@@ -19,5 +21,19 @@ source_set("ui") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "QuartzCore.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_waveform_view_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }
