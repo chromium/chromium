@@ -306,68 +306,6 @@ void BtmRedirectContext::ReportIssue(const GURL& final_url) {
   redirectors_.clear();
 }
 
-std::optional<std::pair<size_t, BtmRedirect*>>
-BtmRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
-  // Iterate in reverse order to obtain the most recent occurrence of the site.
-  for (int ind = redirects_.size() - 1; ind >= 0; ind--) {
-    if (redirects_.at(ind)->site == site) {
-      return std::make_pair(static_cast<size_t>(ind), redirects_.at(ind).get());
-    }
-  }
-  return std::nullopt;
-}
-
-bool BtmRedirectContext::SiteHadUserActivationOrAuthn(
-    const std::string& site) const {
-  if ((initial_url_had_interaction_) && site == GetSiteForBtm(initial_url_)) {
-    return true;
-  }
-
-  for (const auto& redirect : redirects_) {
-    if (redirect->site == site &&
-        (redirect->has_sticky_activation ||
-         redirect->web_authn_assertion_request_succeeded)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-std::set<std::string> BtmRedirectContext::AllSitesWithUserActivationOrAuthn()
-    const {
-  std::set<std::string> sites;
-
-  if (initial_url_had_interaction_) {
-    sites.insert(GetSiteForBtm(initial_url_));
-  }
-
-  for (const auto& redirect : redirects_) {
-    if (redirect->has_sticky_activation ||
-        redirect->web_authn_assertion_request_succeeded) {
-      sites.insert(redirect->site);
-    }
-  }
-
-  return sites;
-}
-
-base::span<const BtmRedirectPtr>
-BtmRedirectContext::GetServerRedirectsSinceLastPrimaryPageChange() const {
-  size_t index = size();
-  for (; index > 0; --index) {
-    const BtmRedirect& redirect = *redirects_.at(index - 1);
-    if (redirect.redirect_type != BtmRedirectType::kServer) {
-      break;
-    }
-  }
-
-  // For all i in [index, size()), redirects_[i] is a server redirect.
-  // Either i=0, or redirects_[i-1] is a client redirect.
-
-  return base::span(redirects_).subspan(index);
-}
-
 void BtmRedirectContext::HandleUncommitted(
     BtmNavigationStart navigation_start,
     std::vector<BtmRedirectPtr> server_redirects) {
@@ -391,8 +329,7 @@ void BtmRedirectContext::HandleUncommitted(
             temp_context.AppendClientRedirect(std::move(client_redirect));
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url);
-            temp_context.EndChain(std::move(final_url), final_source_id,
-                                  /*current_page_has_interaction=*/false);
+            temp_context.EndChain(std::move(final_url), final_source_id);
           },
           [&](std::pair<GURL, ukm::SourceId>
                   previous_nav_last_committed_url_and_source_id) {
@@ -412,8 +349,7 @@ void BtmRedirectContext::HandleUncommitted(
             temp_context.EndChain(
                 /*final_url=*/url,
                 /*final_source_id=*/
-                source_id,
-                /*current_page_has_interaction=*/false);
+                source_id);
           },
       },
       std::move(navigation_start));
@@ -423,8 +359,7 @@ void BtmRedirectContext::AppendCommitted(
     BtmNavigationStart navigation_start,
     std::vector<BtmRedirectPtr> server_redirects,
     const GURL& final_url,
-    ukm::SourceId final_source_id,
-    bool current_page_has_interaction) {
+    ukm::SourceId final_source_id) {
   // If there was a client-side redirect before
   // `BtmBounceDetector::client_bounce_detection_timer_` timedout, grow the
   // chain. Otherwise, end it.
@@ -435,14 +370,13 @@ void BtmRedirectContext::AppendCommitted(
             // the in-progress redirect chain.
             AppendClientRedirect(std::move(client_redirect));
           },
-          [this, current_page_has_interaction](
-              std::pair<GURL, ukm::SourceId>
-                  previous_nav_last_committed_url_and_source_id) {
+          [this](std::pair<GURL, ukm::SourceId>
+                     previous_nav_last_committed_url_and_source_id) {
             auto& [url, source_id] =
                 previous_nav_last_committed_url_and_source_id;
             // The committed navigation began *without* a client redirect, so
             // end the in-progress redirect chain and start a new one.
-            EndChain(url, source_id, current_page_has_interaction);
+            EndChain(url, source_id);
           },
       },
       std::move(navigation_start));
@@ -453,8 +387,7 @@ void BtmRedirectContext::AppendCommitted(
 }
 
 void BtmRedirectContext::EndChain(GURL final_url,
-                                  ukm::SourceId final_source_id,
-                                  bool current_page_has_interaction) {
+                                  ukm::SourceId final_source_id) {
   if (!initial_url_.is_empty()) {
     auto chain = std::make_unique<BtmRedirectChain>(
         initial_url_, initial_source_id_, final_url, final_source_id,
@@ -463,7 +396,6 @@ void BtmRedirectContext::EndChain(GURL final_url,
     handler_.Run(std::move(redirects_), std::move(chain));
   }
 
-  initial_url_had_interaction_ = current_page_has_interaction;
   initial_url_ = std::move(final_url);
   redirects_.clear();
 }
@@ -893,17 +825,11 @@ void RedirectChainDetector::OnCookiesAccessed(
 
 void BtmBounceDetector::OnClientSiteDataAccessed(const GURL& url,
                                                  CookieOperation op) {
-  auto now = clock_->Now();
-
   if (client_detection_state_ &&
       GetSiteForBtm(url) == client_detection_state_->current_site) {
     client_detection_state_->site_data_access_type =
         client_detection_state_->site_data_access_type |
         ToBtmDataAccessType(op);
-
-    if (op == CookieOperation::kChange) {
-      client_detection_state_->last_storage_time = now;
-    }
   }
 }
 
@@ -926,7 +852,6 @@ void BtmWebContentsObserver::PrimaryPageChanged(Page& page) {
   last_committed_site_ = GetSiteForBtm(web_contents()->GetLastCommittedURL());
   btm_service_->AddOpenSite(last_committed_site_.value());
 
-  last_storage_timestamp_.reset();
   last_interaction_timestamp_.reset();
 }
 
@@ -939,23 +864,11 @@ void RedirectChainDetector::DidFinishNavigation(
 
   BtmNavigationHandleImpl btm_handle(navigation_handle);
   detector_.DidFinishNavigation(&btm_handle);
-
-  if (navigation_handle->HasCommitted()) {
-    for (auto& observer : observers_) {
-      observer.OnNavigationCommitted(navigation_handle);
-    }
-  }
 }
 
 void BtmBounceDetector::DidFinishNavigation(
     BtmNavigationHandle* navigation_handle) {
   base::TimeTicks now = tick_clock_->NowTicks();
-
-  bool current_page_has_interaction =
-      client_detection_state_ &&
-      (client_detection_state_->last_activation_time.has_value() ||
-       client_detection_state_->last_successful_web_authn_assertion_time
-           .has_value());
 
   // Starts the timer to detect further client redirects.
   client_bounce_detection_timer_.Reset();
@@ -1046,8 +959,7 @@ void BtmBounceDetector::DidFinishNavigation(
     committed_redirect_context_.AppendCommitted(
         std::move(server_state->navigation_start), std::move(redirects),
         navigation_handle->GetURL(),
-        navigation_handle->GetNextPageUkmSourceId(),
-        current_page_has_interaction);
+        navigation_handle->GetNextPageUkmSourceId());
   } else {
     // For uncommitted navigations, treat the last URL visited as a server
     // redirect, so it is considered a potential tracker.
@@ -1161,19 +1073,12 @@ void RedirectChainDetector::WebContentsDestroyed() {
 void BtmBounceDetector::BeforeDestruction() {
   committed_redirect_context_.EndChain(
       delegate_->GetLastCommittedURL(),
-      /*final_source_id=*/delegate_->GetLastCommittedSourceId(),
-      /*current_page_has_interaction=*/false);
+      /*final_source_id=*/delegate_->GetLastCommittedSourceId());
 }
 
 void BtmBounceDetector::OnClientBounceDetectionTimeout() {
-  bool current_page_has_interaction =
-      client_detection_state_ &&
-      (client_detection_state_->last_activation_time.has_value() ||
-       client_detection_state_->last_successful_web_authn_assertion_time
-           .has_value());
   committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL(),
-                                       delegate_->GetLastCommittedSourceId(),
-                                       current_page_has_interaction);
+                                       delegate_->GetLastCommittedSourceId());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RedirectChainDetector);

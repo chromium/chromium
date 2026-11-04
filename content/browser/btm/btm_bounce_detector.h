@@ -71,7 +71,6 @@ class ClientBounceDetectionState {
   std::string current_site;
   base::TimeTicks page_load_time;
   std::optional<base::Time> last_activation_time;
-  std::optional<base::Time> last_storage_time;
   std::optional<base::Time> last_successful_web_authn_assertion_time;
   BtmDataAccessType site_data_access_type = BtmDataAccessType::kUnknown;
 };
@@ -85,10 +84,6 @@ using BtmNavigationStart =
 // stored redirect chain to avoid boundless memory use. Past this limit,
 // redirects are trimmed from the front of the list.
 constexpr size_t kBtmRedirectChainMax = 1000;
-
-// When checking the history of the current tab for sites following the
-// first-party site, this is the maximum number of navigation entries to check.
-inline constexpr int kAllSitesFollowingFirstPartyLookbackLength = 10;
 
 // A redirect-chain-in-progress. It grows by calls to Append() and restarts by
 // calls to EndChain(). Runs a `BtmRedirectChainHandler` when the chain is
@@ -115,17 +110,14 @@ class CONTENT_EXPORT BtmRedirectContext {
   void AppendCommitted(BtmNavigationStart navigation_start,
                        std::vector<BtmRedirectPtr> server_redirects,
                        const GURL& final_url,
-                       ukm::SourceId final_source_id,
-                       bool current_page_has_interaction);
+                       ukm::SourceId final_source_id);
 
   // Terminates the in-progress redirect chain, ending it with `final_url`, and
   // passing it to the `BtmRedirectChainHandler` iff the chain is valid. It
   // also starts a fresh redirect chain with `final_url` and `final_source_id`
   // whilst clearing the state of the terminated chain. NOTE: A chain is valid
   // if it has a non-empty `initial_url_`.
-  void EndChain(GURL final_url,
-                ukm::SourceId final_source_id,
-                bool current_page_has_interaction);
+  void EndChain(GURL final_url, ukm::SourceId final_source_id);
 
   // Reports a BTM issue to the inspector (e.g., DevTools).
   void ReportIssue(const GURL& final_url);
@@ -137,8 +129,6 @@ class CONTENT_EXPORT BtmRedirectContext {
   [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
 
   size_t size() const { return redirects_.size(); }
-
-  const GURL& GetInitialURLForTesting() const { return initial_url_; }
 
   void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     handler_ = handler;
@@ -153,22 +143,6 @@ class CONTENT_EXPORT BtmRedirectContext {
   const BtmRedirect& operator[](size_t index) const {
     return *redirects_.at(index);
   }
-
-  std::optional<std::pair<size_t, BtmRedirect*>> GetRedirectInfoFromChain(
-      const std::string& site) const;
-
-  // Return whether `site` had a user activation or authentication interaction
-  // in the current redirect context.
-  bool SiteHadUserActivationOrAuthn(const std::string& site) const;
-
-  // Return all sites that had an interaction in the current redirect context.
-  std::set<std::string> AllSitesWithUserActivationOrAuthn() const;
-
-  // Returns the server redirects from the last navigation. Note that due to
-  // limitations in C++ the BtmRedirect objects are unavoidably mutable.
-  // Clients MUST NOT modify them.
-  base::span<const BtmRedirectPtr>
-  GetServerRedirectsSinceLastPrimaryPageChange() const;
 
  private:
   void AppendClientRedirect(BtmRedirectPtr client_redirect);
@@ -185,9 +159,6 @@ class CONTENT_EXPORT BtmRedirectContext {
   // chain.
   GURL initial_url_;
   ukm::SourceId initial_source_id_;
-  // Whether the initial_url_ had a user activation or web authentication
-  // interaction while loaded.
-  bool initial_url_had_interaction_;
 
   // TODO(amaliev): Make redirects_ a circular queue to handle the memory bound
   // more gracefully.
@@ -401,10 +372,6 @@ class CONTENT_EXPORT RedirectChainDetector
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when a navigation has committed and the redirect context has been
-    // updated. (If you override WebContentsObserver::DidFinishNavigation()
-    // directly, you could be called before the context has been updated.)
-    virtual void OnNavigationCommitted(NavigationHandle* navigation_handle) {}
     // Called when any redirect chain ends, including ones that end with an
     // uncommitted navigation.
     virtual void OnRedirectChainEnded(const std::vector<BtmRedirectPtr>&,
@@ -550,7 +517,6 @@ class CONTENT_EXPORT BtmWebContentsObserver
   BtmIssueReportingCallback issue_reporting_callback_;
 
   std::optional<std::string> last_committed_site_;
-  std::optional<base::Time> last_storage_timestamp_;
   std::optional<base::Time> last_interaction_timestamp_;
 
   base::WeakPtrFactory<BtmWebContentsObserver> weak_factory_{this};

@@ -549,50 +549,6 @@ TEST_F(BtmStorageTest, RemoveByTimeInteractionOnly) {
   EXPECT_FALSE(state2.was_loaded());  // removed
 }
 
-TEST_F(BtmStorageTest, RemovePopupEventsByTime) {
-  std::string site1 = GetSiteForBtm(GURL("https://example1.com"));
-  std::string site2 = GetSiteForBtm(GURL("https://example2.com"));
-  std::string site3 = GetSiteForBtm(GURL("https://example3.com"));
-  base::Time delete_begin = base::Time::FromSecondsSinceUnixEpoch(3);
-  base::Time delete_end = base::Time::FromSecondsSinceUnixEpoch(5);
-
-  ASSERT_TRUE(storage_.WritePopup(
-      site1, site2, /*access_id=*/1u, base::Time::FromSecondsSinceUnixEpoch(2),
-      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
-  ASSERT_TRUE(storage_.WritePopup(site1, site3, /*access_id=*/2u,
-                                  base::Time::FromSecondsSinceUnixEpoch(4),
-                                  /*is_current_interaction=*/true,
-                                  /*is_authentication_interaction=*/false));
-  ASSERT_TRUE(storage_.WritePopup(site2, site3, /*access_id=*/3u,
-                                  base::Time::FromSecondsSinceUnixEpoch(6),
-                                  /*is_current_interaction=*/false,
-                                  /*is_authentication_interaction=*/false));
-
-  storage_.RemoveEvents(delete_begin, delete_end, nullptr,
-                        BtmEventRemovalType::kHistory);
-
-  // Verify that only the second popup event (with timestamp 4) was cleared.
-
-  std::optional<PopupsStateValue> popup1 = storage_.ReadPopup(site1, site2);
-  ASSERT_TRUE(popup1.has_value());
-  EXPECT_EQ(popup1.value().access_id, 1u);
-  EXPECT_EQ(popup1.value().last_popup_time,
-            base::Time::FromSecondsSinceUnixEpoch(2));
-  EXPECT_TRUE(popup1.value().is_current_interaction);
-  EXPECT_TRUE(popup1.value().is_authentication_interaction);
-
-  std::optional<PopupsStateValue> popup2 = storage_.ReadPopup(site1, site3);
-  ASSERT_FALSE(popup2.has_value());
-
-  std::optional<PopupsStateValue> popup3 = storage_.ReadPopup(site2, site3);
-  ASSERT_TRUE(popup3.has_value());
-  EXPECT_EQ(popup3.value().access_id, 3u);
-  EXPECT_EQ(popup3.value().last_popup_time,
-            base::Time::FromSecondsSinceUnixEpoch(6));
-  EXPECT_FALSE(popup3.value().is_current_interaction);
-  EXPECT_FALSE(popup3.value().is_authentication_interaction);
-}
-
 TEST_F(BtmStorageTest, RemoveByTimeBounces) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");

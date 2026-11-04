@@ -130,14 +130,6 @@ struct StateValue {
   TimestampRange web_authn_assertion_times;
 };
 
-// Values for a 1P/3P site pair in the `popups` table.
-struct PopupsStateValue {
-  uint64_t access_id;
-  base::Time last_popup_time;
-  bool is_current_interaction;
-  bool is_authentication_interaction;
-};
-
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.user_activation_times, lhs.bounce_times,
                   lhs.web_authn_assertion_times) ==
@@ -154,10 +146,6 @@ CONTENT_EXPORT int64_t BucketizeBtmBounceDelay(base::TimeDelta delta);
 // and may change.
 CONTENT_EXPORT std::string GetSiteForBtm(const GURL& url);
 CONTENT_EXPORT std::string GetSiteForBtm(const url::Origin& origin);
-
-// Returns true iff `web_contents` contains an iframe whose committed URL
-// belongs to the same site as `url`.
-bool HasSameSiteIframe(WebContents* web_contents, const GURL& url);
 
 CONTENT_EXPORT bool HasCHIPS(
     const net::CookieAccessResultList& cookie_access_result_list);
@@ -285,12 +273,6 @@ enum class BtmDeletionAction {
   kIgnored = 4,
   kExcepted = 5,
   kMaxValue = kExcepted,
-};
-
-enum class BtmDatabaseTable {
-  kBounces = 1,
-  kPopups = 2,
-  kMaxValue = kPopups,
 };
 
 }  // namespace content

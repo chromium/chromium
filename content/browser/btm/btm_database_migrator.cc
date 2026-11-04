@@ -75,6 +75,11 @@ bool MigrateBtmSchemaToLatestVersion(sql::Database& db,
           return false;
         }
         break;
+      case 12:
+        if (!migrator.MigrateSchemaVersionFrom11To12()) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -413,6 +418,21 @@ bool BtmDatabaseMigrator::MigrateSchemaVersionFrom10To11() {
   return meta_table_->SetVersionNumber(11) &&
          meta_table_->SetCompatibleVersionNumber(
              std::min(11, BtmDatabase::kMinCompatibleSchemaVersion));
+}
+
+bool BtmDatabaseMigrator::MigrateSchemaVersionFrom11To12() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(db_->HasActiveTransactions(), base::NotFatalUntil::M158);
+
+  static constexpr char kDropPopupsTableSql[] = "DROP TABLE IF EXISTS popups";
+  CHECK(db_->IsSQLValid(kDropPopupsTableSql), base::NotFatalUntil::M158);
+  if (!db_->Execute(kDropPopupsTableSql)) {
+    return false;
+  }
+
+  return meta_table_->SetVersionNumber(12) &&
+         meta_table_->SetCompatibleVersionNumber(
+             std::min(12, BtmDatabase::kMinCompatibleSchemaVersion));
 }
 
 }  // namespace content

@@ -126,12 +126,12 @@ TEST_P(BtmDatabaseErrorHistogramsTest, kRead_EmptySite_InDb) {
   ASSERT_TRUE(db_->ExecuteSqlForTesting(
       "INSERT INTO "
       "bounces(site,first_bounce_time,last_bounce_time) VALUES ('',1,5)"));
-  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 1u);
+  EXPECT_EQ(db_->GetEntryCount(), 1u);
   EXPECT_EQ(db_->Read(""), std::nullopt);
   histograms.ExpectUniqueSample("Privacy.DIPS.DIPSErrorCodes",
                                 BtmErrorCode::kRead_EmptySite_InDb, 1);
   // Verify the entry was deleted during the read attempt.
-  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces), 0u);
+  EXPECT_EQ(db_->GetEntryCount(), 0u);
 }
 
 TEST_P(BtmDatabaseErrorHistogramsTest, Read_EmptySite_NotInDb) {
@@ -273,7 +273,7 @@ TEST_P(BtmDatabaseAllColumnTest, DeleteBounce) {
   EXPECT_TRUE(db_->Read(site).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kBounces, site));
+  EXPECT_TRUE(db_->RemoveRow(site));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site).has_value());
@@ -295,7 +295,7 @@ TEST_P(BtmDatabaseAllColumnTest, DeleteSeveralBounces) {
   EXPECT_TRUE(db_->Read(site2).has_value());
 
   // Delete site's entry in bounces.
-  EXPECT_TRUE(db_->RemoveRows(BtmDatabaseTable::kBounces, {site1, site2}));
+  EXPECT_TRUE(db_->RemoveRows({site1, site2}));
 
   // Query the bounces for site, making sure there is no state now.
   EXPECT_FALSE(db_->Read(site1).has_value());
@@ -316,143 +316,6 @@ TEST_P(BtmDatabaseAllColumnTest, ReadBounce) {
   EXPECT_FALSE(
       db_->Read(GetSiteForBtm(GURL("https://www.not-in-db.com/"))).has_value());
 }
-
-// Verifies actions on the `popups` table of the BTM database.
-class BtmDatabasePopupsTest : public BtmDatabaseTest,
-                              public testing::WithParamInterface<bool> {
- public:
-  BtmDatabasePopupsTest() : BtmDatabaseTest(GetParam()) {}
-};
-
-// Test adding entries in the `popups` table of the BtmDatabase.
-TEST_P(BtmDatabasePopupsTest, AddPopup) {
-  const std::string opener_site =
-      GetSiteForBtm(GURL("http://www.youtube.com/"));
-  const std::string popup_site =
-      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
-  uint64_t access_id = 123;
-  base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
-  bool is_current_interaction = true;
-  bool is_authentication_interaction = true;
-
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              is_current_interaction,
-                              is_authentication_interaction));
-
-  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
-  ASSERT_TRUE(popups_state_value.has_value());
-  EXPECT_EQ(popups_state_value.value().access_id, access_id);
-  EXPECT_EQ(popups_state_value.value().last_popup_time, popup_time);
-  EXPECT_EQ(popups_state_value.value().is_current_interaction,
-            is_current_interaction);
-  EXPECT_EQ(popups_state_value.value().is_authentication_interaction,
-            is_authentication_interaction);
-}
-
-// Test updating entries in the `popups` table of the BtmDatabase.
-TEST_P(BtmDatabasePopupsTest, UpdatePopup) {
-  const std::string opener_site =
-      GetSiteForBtm(GURL("http://www.youtube.com/"));
-  const std::string popup_site =
-      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
-  uint64_t first_access_id = 123;
-  uint64_t second_access_id = 456;
-  base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
-  base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
-
-  // Write the initial entry and verify it was added to the db.
-  EXPECT_TRUE(db_->WritePopup(
-      opener_site, popup_site, first_access_id, first_popup_time,
-      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
-  auto popups_state_value = db_->ReadPopup(opener_site, popup_site);
-  EXPECT_EQ(popups_state_value.value_or(PopupsStateValue()).last_popup_time,
-            first_popup_time);
-  EXPECT_EQ(popups_state_value.value().is_authentication_interaction, true);
-
-  // Update the entry with a new popup time of t = 2, is_current_interaction =
-  // false, and is_authentication_interaction = false.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, second_access_id,
-                              second_popup_time,
-                              /*is_current_interaction=*/false,
-                              /*is_authentication_interaction=*/false));
-
-  // Verify the new entry.
-  popups_state_value = db_->ReadPopup(opener_site, popup_site);
-  ASSERT_TRUE(popups_state_value.has_value());
-  EXPECT_EQ(popups_state_value.value().access_id, second_access_id);
-  EXPECT_EQ(popups_state_value.value().last_popup_time, second_popup_time);
-  EXPECT_EQ(popups_state_value.value().is_current_interaction, false);
-  EXPECT_EQ(popups_state_value.value().is_authentication_interaction, false);
-}
-
-// Test deleting an entry from the `popups` table of the BtmDatabase. An entry
-// should be deleted if the input site matches either opener_site or
-// popup_site.
-TEST_P(BtmDatabasePopupsTest, DeletePopup) {
-  const std::string opener_site =
-      GetSiteForBtm(GURL("http://www.youtube.com/"));
-  const std::string popup_site =
-      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
-  uint64_t access_id = 123;
-  base::Time popup_time = Time::FromSecondsSinceUnixEpoch(1);
-
-  // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              /*is_current_interaction=*/true,
-                              /*is_authentication_interaction=*/false));
-  EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
-
-  // Delete the entry in db by opener_site, and verify.
-  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kPopups, opener_site));
-  EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
-
-  // Write the popup to db, and verify.
-  EXPECT_TRUE(db_->WritePopup(opener_site, popup_site, access_id, popup_time,
-                              /*is_current_interaction=*/true,
-                              /*is_authentication_interaction=*/false));
-  EXPECT_TRUE(db_->ReadPopup(opener_site, popup_site).has_value());
-
-  // Delete the entry in db by popup_site, and verify.
-  EXPECT_TRUE(db_->RemoveRow(BtmDatabaseTable::kPopups, popup_site));
-  EXPECT_FALSE(db_->ReadPopup(opener_site, popup_site).has_value());
-}
-
-// Test deleting many entries from the `popups` table of the BtmDatabase.
-TEST_P(BtmDatabasePopupsTest, DeleteSeveralPopups) {
-  // Add popups to db.
-  const std::string opener_site_1 =
-      GetSiteForBtm(GURL("http://www.youtube.com/"));
-  const std::string opener_site_2 =
-      GetSiteForBtm(GURL("http://www.picasa.com/"));
-  const std::string popup_site =
-      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
-  EXPECT_TRUE(db_->WritePopup(
-      opener_site_1, popup_site,
-      /*access_id=*/123, Time::FromSecondsSinceUnixEpoch(1),
-      /*is_current_interaction=*/true, /*is_authentication_interaction=*/true));
-  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456,
-                              Time::FromSecondsSinceUnixEpoch(2),
-                              /*is_current_interaction=*/true,
-                              /*is_authentication_interaction=*/false));
-
-  // Verify that both sites are in the `popups` table.
-  EXPECT_TRUE(db_->ReadPopup(opener_site_1, popup_site).has_value());
-  EXPECT_TRUE(db_->ReadPopup(opener_site_2, popup_site).has_value());
-
-  // Delete site's entry in `popups`.
-  EXPECT_TRUE(db_->RemoveRows(BtmDatabaseTable::kBounces,
-                              {opener_site_1, opener_site_2}));
-
-  // Verify that both sites are deleted from the `popups` table.
-  EXPECT_FALSE(db_->Read(opener_site_1).has_value());
-  EXPECT_FALSE(db_->Read(opener_site_2).has_value());
-}
-
-// Test the `ReadRecentPopupsWithInteraction` function which retrieves a list of
-// `popups` table entries with recent popup timestamps.
-
-INSTANTIATE_TEST_SUITE_P(All, BtmDatabasePopupsTest, ::testing::Bool());
 
 TEST_P(BtmDatabaseAllColumnTest, ErrorHistograms_OpenEndedRange_NullStart) {
   base::HistogramTester histograms;
@@ -542,20 +405,20 @@ TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
   LoadDatabase();
 
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetAllSitesForTesting(),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
   AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get());
   EXPECT_EQ(db_->ClearExpiredRows(), 0u);
   EXPECT_THAT(
-      db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetAllSitesForTesting(),
       testing::UnorderedElementsAre("case1.test", "case2.test", "case3.test",
                                     "case4.test", "case5.test", "case6.test"));
 
   AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() + tiny_delta);
   EXPECT_EQ(db_->ClearExpiredRows(), 4u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
+  EXPECT_THAT(db_->GetAllSitesForTesting(),
               testing::UnorderedElementsAre("case2.test", "case6.test"));
 
   // Time travel to a point by which all interactions and WAAs should've
@@ -563,8 +426,7 @@ TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromBouncesTable) {
   AdvanceTimeTo(dummy_time + features::kBtmInteractionTtl.Get() +
                 tiny_delta * 2);
   EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
-              testing::ElementsAre("case6.test"));
+  EXPECT_THAT(db_->GetAllSitesForTesting(), testing::ElementsAre("case6.test"));
 }
 
 TEST_P(BtmDatabaseInteractionTest, ReadWithExpiredRows) {
@@ -603,52 +465,6 @@ TEST_P(BtmDatabaseInteractionTest, ReadWithExpiredRows) {
   EXPECT_EQ(db_->Read("case4.test"), std::nullopt);
   EXPECT_EQ(db_->Read("case5.test"), std::nullopt);
   EXPECT_TRUE(db_->Read("case6.test").has_value());
-}
-
-TEST_P(BtmDatabaseInteractionTest, ClearExpiredRowsFromPopupsTable) {
-  // Add popups to db.
-  const std::string opener_site_1 =
-      GetSiteForBtm(GURL("http://www.youtube.com/"));
-  const std::string opener_site_2 =
-      GetSiteForBtm(GURL("http://www.picasa.com/"));
-  const std::string popup_site =
-      GetSiteForBtm(GURL("http://www.doubleclick.net/"));
-  const base::Time first_popup_time = Time::FromSecondsSinceUnixEpoch(1);
-  const base::Time second_popup_time = Time::FromSecondsSinceUnixEpoch(2);
-
-  EXPECT_TRUE(db_->WritePopup(opener_site_1, popup_site,
-                              /*access_id=*/123, first_popup_time,
-                              /*is_current_interaction=*/true,
-                              /*is_authentication_interaction=*/false));
-  EXPECT_TRUE(db_->WritePopup(opener_site_2, popup_site,
-                              /*access_id=*/456, second_popup_time,
-                              /*is_current_interaction=*/true,
-                              /*is_authentication_interaction=*/false));
-
-  // Advance to just before the first popup expires.
-  AdvanceTimeTo(first_popup_time + BtmDatabase::kPopupTtl - tiny_delta);
-
-  // Verify that both sites are present.
-  EXPECT_EQ(db_->ClearExpiredRows(), 0u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
-              testing::UnorderedElementsAre("youtube.com", "doubleclick.net",
-                                            "picasa.com", "doubleclick.net"));
-
-  // Advance to after the first popup expires.
-  AdvanceTimeTo(first_popup_time + BtmDatabase::kPopupTtl + tiny_delta);
-
-  // Verify that only the first popup was removed from the db.
-  EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
-              testing::UnorderedElementsAre("picasa.com", "doubleclick.net"));
-
-  // Advance to after the second popup expires.
-  AdvanceTimeTo(second_popup_time + BtmDatabase::kPopupTtl + tiny_delta);
-
-  // Verify that both popups were removed from the db.
-  EXPECT_EQ(db_->ClearExpiredRows(), 1u);
-  EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
-              testing::IsEmpty());
 }
 
 TEST_P(BtmDatabaseInteractionTest, FilterSites) {
@@ -1044,20 +860,10 @@ TEST_P(BtmDatabaseQueryTest, ProtectedByWaaThenInteraction) {
 
 INSTANTIATE_TEST_SUITE_P(All, BtmDatabaseQueryTest, ::testing::Bool());
 
-// A test class that verifies BtmDatabase garbage collection behavior for both
-// tables.
-class BtmDatabaseGarbageCollectionTest
-    : public BtmDatabaseTest,
-      public testing::WithParamInterface<BtmDatabaseTable> {
+// A test class that verifies BtmDatabase garbage collection behavior.
+class BtmDatabaseGarbageCollectionTest : public BtmDatabaseTest {
  public:
-  BtmDatabaseGarbageCollectionTest() : BtmDatabaseTest(true) {
-    table_ = GetParam();
-  }
-
-  explicit BtmDatabaseGarbageCollectionTest(BtmDatabaseTable table)
-      : BtmDatabaseTest(true) {
-    table_ = table;
-  }
+  BtmDatabaseGarbageCollectionTest() : BtmDatabaseTest(true) {}
 
   void SetUp() override {
     BtmDatabaseTest::SetUp();
@@ -1077,14 +883,7 @@ class BtmDatabaseGarbageCollectionTest
   void AddEntry(const std::string& site,
                 TimestampRange interaction_times,
                 TimestampRange waa_times) {
-    if (table_ == BtmDatabaseTable::kBounces) {
-      ASSERT_TRUE(db_->Write(site, interaction_times, {}, waa_times));
-    } else {
-      ASSERT_TRUE(db_->WritePopup(site, "doubleclick.net", /*access_id=*/123,
-                                  interaction_times->second,
-                                  /*is_current_interaction=*/true,
-                                  /*is_authentication_interaction=*/false));
-    }
+    ASSERT_TRUE(db_->Write(site, interaction_times, {}, waa_times));
   }
 
   void BloatBouncesForGC(int num_recent_entries, int num_old_entries) {
@@ -1108,53 +907,28 @@ class BtmDatabaseGarbageCollectionTest
                                   Now() + tiny_delta * 2};
 
     for (int i = 1; i <= 3; i++) {
-      if (table_ == BtmDatabaseTable::kBounces) {
-        ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
-                               ToRange(times[(i + 1) % 3]), {},
-                               ToRange(times[(i) % 3])));
-      } else {
-        ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
-                                    "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3],
-                                    /*is_current_interaction=*/true,
-                                    /*is_authentication_interaction=*/false));
-      }
+      ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
+                             ToRange(times[(i + 1) % 3]), {},
+                             ToRange(times[(i) % 3])));
       for (auto& time : times) {
         time += tiny_delta * 3;
       }
     }
     for (int i = 3; i <= 6; i++) {
-      if (table_ == BtmDatabaseTable::kBounces) {
-        ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
-                               ToRange(times[(i + 1) % 3]), {},
-                               ToRange(times[i % 3])));
-      } else {
-        ASSERT_TRUE(db_->WritePopup(base::StringPrintf("entry%d.test", 7 - i),
-                                    "doubleclick.net", /*access_id=*/123,
-                                    times[(i + 1) % 3],
-                                    /*is_current_interaction=*/true,
-                                    /*is_authentication_interaction=*/false));
-      }
+      ASSERT_TRUE(db_->Write(base::StringPrintf("entry%d.test", 7 - i),
+                             ToRange(times[(i + 1) % 3]), {},
+                             ToRange(times[i % 3])));
       for (auto& time : times) {
         time += tiny_delta * 3;
       }
     }
-    if (table_ == BtmDatabaseTable::kBounces) {
-      EXPECT_THAT(
-          db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
-          testing::ElementsAre("entry1.test", "entry2.test", "entry3.test",
-                               "entry4.test", "entry5.test", "entry6.test"));
-    } else {
-      EXPECT_THAT(
-          db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
-          testing::IsSupersetOf({"entry1.test", "entry2.test", "entry3.test",
-                                 "entry4.test", "entry5.test", "entry6.test"}));
-    }
+    EXPECT_THAT(
+        db_->GetAllSitesForTesting(),
+        testing::ElementsAre("entry1.test", "entry2.test", "entry3.test",
+                             "entry4.test", "entry5.test", "entry6.test"));
   }
 
  protected:
-  BtmDatabaseTable table_;
-
   base::Time recent_interaction;
   base::Time old_interaction;
   base::Time storage = Time::FromSecondsSinceUnixEpoch(2);
@@ -1162,30 +936,30 @@ class BtmDatabaseGarbageCollectionTest
 
 // More than |max_entries_| entries with recent user interaction; garbage
 // collection should purge down to |max_entries_| - |purge_entries_| entries.
-TEST_P(BtmDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
+TEST_F(BtmDatabaseGarbageCollectionTest, RemovesRecentOverMax) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
                     /*num_old_entries=*/0);
 
   EXPECT_EQ(db_->GarbageCollect(),
             db_->GetMaxEntries() + db_->GetPurgeEntries());
 
-  EXPECT_EQ(db_->GetEntryCount(GetParam()),
+  EXPECT_EQ(db_->GetEntryCount(),
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
-TEST_P(BtmDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
+TEST_F(BtmDatabaseGarbageCollectionTest, RemovesExpired_RemovesRecent_GT_Max) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries() * 2,
                     /*num_old_entries=*/db_->GetMaxEntries());
 
   EXPECT_EQ(db_->GarbageCollect(),
             db_->GetMaxEntries() * 2 + db_->GetPurgeEntries());
-  EXPECT_EQ(db_->GetEntryCount(GetParam()),
+  EXPECT_EQ(db_->GetEntryCount(),
             db_->GetMaxEntries() - db_->GetPurgeEntries());
 }
 
 // Less than |max_entries_| entries, none of which are expired;
 // no entries should be garbage collected.
-TEST_P(BtmDatabaseGarbageCollectionTest, PreservesUnderMax) {
+TEST_F(BtmDatabaseGarbageCollectionTest, PreservesUnderMax) {
   BloatBouncesForGC(
       /*num_recent_entries=*/(db_->GetMaxEntries() - db_->GetPurgeEntries()) /
           2,
@@ -1193,63 +967,43 @@ TEST_P(BtmDatabaseGarbageCollectionTest, PreservesUnderMax) {
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
 
-  EXPECT_EQ(db_->GetEntryCount(GetParam()),
+  EXPECT_EQ(db_->GetEntryCount(),
             (db_->GetMaxEntries() - db_->GetPurgeEntries()) / 2);
 }
 
 // Exactly |max_entries_| entries, none of which are expired;
 // no entries should be garbage collected.
-TEST_P(BtmDatabaseGarbageCollectionTest, PreservesMax) {
+TEST_F(BtmDatabaseGarbageCollectionTest, PreservesMax) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
                     /*num_old_entries=*/0);
 
   EXPECT_EQ(db_->GarbageCollect(), static_cast<size_t>(0));
-  EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
 }
 
-TEST_P(BtmDatabaseGarbageCollectionTest, RemovesExpired_PreserveRecent_LE_Max) {
+TEST_F(BtmDatabaseGarbageCollectionTest, RemovesExpired_PreserveRecent_LE_Max) {
   BloatBouncesForGC(/*num_recent_entries=*/db_->GetMaxEntries(),
                     /*num_old_entries=*/db_->GetMaxEntries());
 
   EXPECT_EQ(db_->GarbageCollect(), db_->GetMaxEntries());
-  EXPECT_EQ(db_->GetEntryCount(GetParam()), db_->GetMaxEntries());
+  EXPECT_EQ(db_->GetEntryCount(), db_->GetMaxEntries());
 }
 
-TEST_P(BtmDatabaseGarbageCollectionTest, GarbageCollectOldest) {
+TEST_F(BtmDatabaseGarbageCollectionTest, GarbageCollectOldest) {
   LoadDatabase();
 
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(GetParam()),
+      db_->GetGarbageCollectOldestSitesForTesting(),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 
-  EXPECT_EQ(db_->GarbageCollectOldest(GetParam(), 3), static_cast<size_t>(3));
-  if (GetParam() == BtmDatabaseTable::kBounces) {
-    EXPECT_THAT(
-        db_->GetAllSitesForTesting(BtmDatabaseTable::kBounces),
-        testing::ElementsAre("entry1.test", "entry2.test", "entry3.test"));
-  } else {
-    EXPECT_THAT(db_->GetAllSitesForTesting(BtmDatabaseTable::kPopups),
-                testing::ElementsAre("entry1.test", "doubleclick.net",
-                                     "entry2.test", "doubleclick.net",
-                                     "entry3.test", "doubleclick.net"));
-  }
+  EXPECT_EQ(db_->GarbageCollectOldest(3), static_cast<size_t>(3));
+  EXPECT_THAT(
+      db_->GetAllSitesForTesting(),
+      testing::ElementsAre("entry1.test", "entry2.test", "entry3.test"));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         BtmDatabaseGarbageCollectionTest,
-                         ::testing::Values(BtmDatabaseTable::kBounces,
-                                           BtmDatabaseTable::kPopups));
-
-// These tests only apply to the `bounces` table.
-class BtmDatabaseBounceTableGarbageCollectionTest
-    : public BtmDatabaseGarbageCollectionTest {
- public:
-  BtmDatabaseBounceTableGarbageCollectionTest()
-      : BtmDatabaseGarbageCollectionTest(BtmDatabaseTable::kBounces) {}
-};
-
-TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseGarbageCollectionTest,
        GarbageCollectOldest_NullStorageTimes) {
   LoadDatabase();
 
@@ -1259,12 +1013,12 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
              state->user_activation_times, state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
+TEST_F(BtmDatabaseGarbageCollectionTest,
        GarbageCollectOldest_NullInteractionTimes) {
   LoadDatabase();
 
@@ -1274,13 +1028,12 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
              state->web_authn_assertion_times);
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
 
-TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
-       GarbageCollectOldest_NullWaaTimes) {
+TEST_F(BtmDatabaseGarbageCollectionTest, GarbageCollectOldest_NullWaaTimes) {
   LoadDatabase();
 
   for (int i = 1; i <= 6; i++) {
@@ -1289,7 +1042,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
              state->user_activation_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
@@ -1298,8 +1051,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
 // shouldn't alter the oldest site ordering of the garbage collection. In this
 // explicit case we only have user interaction times; we should expect the same
 // behavior for the other times.
-TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
-       GarbageCollectOldest_SingleNonNull) {
+TEST_F(BtmDatabaseGarbageCollectionTest, GarbageCollectOldest_SingleNonNull) {
   LoadDatabase();
 
   for (int i = 1; i <= 6; i++) {
@@ -1308,7 +1060,7 @@ TEST_F(BtmDatabaseBounceTableGarbageCollectionTest,
              state->user_activation_times, {});
   }
   EXPECT_THAT(
-      db_->GetGarbageCollectOldestSitesForTesting(BtmDatabaseTable::kBounces),
+      db_->GetGarbageCollectOldestSitesForTesting(),
       testing::ElementsAre("entry6.test", "entry5.test", "entry4.test",
                            "entry3.test", "entry2.test", "entry1.test"));
 }
@@ -1375,8 +1127,7 @@ TEST_F(BtmDatabaseHistogramTest, ErrorMetrics) {
              {{Time::FromSecondsSinceUnixEpoch(1),
                Time::FromSecondsSinceUnixEpoch(1)}},
              {}, {});
-  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces),
-            static_cast<size_t>(1));
+  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(1));
 
   // Corrupt the database.
   db_.reset();
@@ -1391,8 +1142,7 @@ TEST_F(BtmDatabaseHistogramTest, ErrorMetrics) {
   histograms().ExpectUniqueSample("Privacy.DIPS.DatabaseInit", 1, 2);
 
   // No data should be present as the database should have been razed.
-  EXPECT_EQ(db_->GetEntryCount(BtmDatabaseTable::kBounces),
-            static_cast<size_t>(0));
+  EXPECT_EQ(db_->GetEntryCount(), static_cast<size_t>(0));
 
   // Verify that the corruption error was reported.
   EXPECT_TRUE(expecter.SawExpectedErrors());
@@ -1537,12 +1287,7 @@ class BtmDatabaseInitializationTest : public testing::Test {
   }
 
   void ValidatePopupsTableMatchesLatestSchemaVersion(sql::Database* db) {
-    EXPECT_TRUE(db->DoesTableExist("popups"));
-    EXPECT_TRUE(db->DoesColumnExist("popups", "opener_site"));
-    EXPECT_TRUE(db->DoesColumnExist("popups", "popup_site"));
-    EXPECT_TRUE(db->DoesColumnExist("popups", "access_id"));
-    EXPECT_TRUE(db->DoesColumnExist("popups", "last_popup_time"));
-    EXPECT_TRUE(db->DoesColumnExist("popups", "is_current_interaction"));
+    EXPECT_FALSE(db->DoesTableExist("popups"));
   }
 
   void ValidateConfigTableMatchesLatestSchemaVersion(sql::Database* db) {

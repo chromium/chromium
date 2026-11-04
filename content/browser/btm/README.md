@@ -5,9 +5,6 @@ feature.
 BTM aims to mitigate the privacy impact of "bounce tracking," a technique used
 to track users across websites without relying on third-party cookies (3PCs).
 
-For historical reasons, some of the code in this directory is also used to
-support mitigations against using popups to simulate 3PCs.
-
 ## What is bounce tracking?
 
 Bounce tracking involves redirecting users through a tracker website, often

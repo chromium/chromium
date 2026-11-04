@@ -50,12 +50,8 @@ reviewer.
   <variant name="GetSitesThatUsedStorage" summary="GetSitesThatUsedStorage"/>
   <variant name="Init" summary="Init"/>
   <variant name="Read" summary="Read"/>
-  <variant name="ReadPopup" summary="ReadPopup"/>
-  <variant name="ReadRecentPopupsWithInteraction"
-      summary="ReadRecentPopupsWithInteraction"/>
   <variant name="RemoveRows" summary="RemoveRows"/>
   <variant name="Write" summary="Write"/>
-  <variant name="WritePopup" summary="WritePopup"/>
 </variants>
 
 <variants name="DIPSRedirectType">

@@ -10,9 +10,8 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/cookie_access_details.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/canonical_cookie.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -153,34 +152,6 @@ std::string GetSiteForBtm(const url::Origin& origin) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? origin.host() : domain;
-}
-
-bool HasSameSiteIframe(WebContents* web_contents, const GURL& url) {
-  const auto popup_site = net::SiteForCookies::FromUrl(url);
-  bool found = false;
-
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
-      [&](RenderFrameHost* frame) {
-        if (frame->IsInPrimaryMainFrame()) {
-          // Continue to look at children of the main frame.
-          return RenderFrameHost::FrameIterationAction::kContinue;
-        }
-
-        // Note: For future first-party checks, consider using schemeful site
-        // comparisons. More specs are moving to schemeful, although this is
-        // different from how cookie access is currently classified.
-        if (popup_site.IsFirstPartyWithSchemefulMode(
-                frame->GetLastCommittedURL(), /*compute_schemefully=*/false)) {
-          // We found a same-site iframe -- break out of the ForEach loop.
-          found = true;
-          return RenderFrameHost::FrameIterationAction::kStop;
-        }
-
-        // Not same-site, so skip children and go to the next sibling iframe.
-        return RenderFrameHost::FrameIterationAction::kSkipChildren;
-      });
-
-  return found;
 }
 
 bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {

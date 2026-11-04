@@ -6108,9 +6108,9 @@ data/accessibility/html/multi-selectable-expected-blink.txt
 data/accessibility/html/multi-selectable-expected-fuchsia.txt
 data/accessibility/html/multi-selectable-expected-win.txt
 data/accessibility/html/multi-selectable.html
-data/accessibility/html/name-calc-focusable-expected-blink.txt
 data/accessibility/html/name-calc-focusable-description-list-expected-blink.txt
 data/accessibility/html/name-calc-focusable-description-list.html
+data/accessibility/html/name-calc-focusable-expected-blink.txt
 data/accessibility/html/name-calc-focusable-list-expected-blink.txt
 data/accessibility/html/name-calc-focusable-list.html
 data/accessibility/html/name-calc-focusable.html
@@ -7751,6 +7751,8 @@ data/browsing_data/worker_setup.html
 data/browsing_data/worker_test.html
 data/btm/v1.sql
 data/btm/v10.sql
+data/btm/v11.sql
+data/btm/v12.sql
 data/btm/v2.sql
 data/btm/v3.sql
 data/btm/v4.sql

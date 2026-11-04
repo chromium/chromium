@@ -71,6 +71,10 @@ class CONTENT_EXPORT BtmDatabaseMigrator {
   // removes the rows that became empty after the v9 to v10 migration.
   bool MigrateSchemaVersionFrom10To11();
 
+  // Migrates from v11 to v12 of the BTM database schema. This migration drops
+  // the unused `popups` table.
+  bool MigrateSchemaVersionFrom11To12();
+
   BtmDatabaseMigrator(const BtmDatabaseMigrator&) = delete;
   BtmDatabaseMigrator& operator=(const BtmDatabaseMigrator&) = delete;
 

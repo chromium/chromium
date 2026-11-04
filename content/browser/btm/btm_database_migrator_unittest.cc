@@ -191,12 +191,7 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV1ToLatestVersion) {
     EXPECT_FALSE(db.DoesColumnExist("bounces", "first_site_storage_time"));
     EXPECT_FALSE(db.DoesColumnExist("bounces", "last_site_storage_time"));
 
-    ASSERT_TRUE(db.DoesTableExist("popups"));
-    EXPECT_TRUE(db.DoesColumnExist("popups", "opener_site"));
-    EXPECT_TRUE(db.DoesColumnExist("popups", "popup_site"));
-    EXPECT_TRUE(db.DoesColumnExist("popups", "access_id"));
-    EXPECT_TRUE(db.DoesColumnExist("popups", "last_popup_time"));
-    EXPECT_TRUE(db.DoesColumnExist("popups", "is_current_interaction"));
+    EXPECT_FALSE(db.DoesTableExist("popups"));
 
     ASSERT_TRUE(db.DoesTableExist("config"));
     EXPECT_TRUE(db.DoesColumnExist("config", "key"));
@@ -733,6 +728,43 @@ TEST_F(BtmDatabaseMigrationTest, MigrateV10ToV11) {
 
     EXPECT_EQ(GetDatabaseVersion(&db), 11);
     EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 11);
+  }
+}
+
+TEST_F(BtmDatabaseMigrationTest, MigrateV11ToV12) {
+  ASSERT_TRUE(LoadDatabase("v11.sql"));
+
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(db_path()));
+
+    // Verify pre-migration conditions.
+
+    ASSERT_EQ(GetDatabaseVersion(&db), 11);
+    ASSERT_EQ(GetDatabaseLastCompatibleVersion(&db), 11);
+    ASSERT_TRUE(db.DoesTableExist("popups"));
+    const std::string bounces_before = DbBouncesToString(&db);
+    const std::string config_before = DbConfigToString(&db);
+
+    // Migrate.
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&db, 11, 11));
+
+    sql::Transaction transaction(&db);
+    ASSERT_TRUE(transaction.Begin());
+    BtmDatabaseMigrator migrator(&db, &meta_table);
+    ASSERT_TRUE(migrator.MigrateSchemaVersionFrom11To12());
+    ASSERT_TRUE(transaction.Commit());
+
+    // Verify the `popups` table is dropped and other tables are untouched.
+
+    EXPECT_FALSE(db.DoesTableExist("popups"));
+    EXPECT_EQ(DbBouncesToString(&db), bounces_before);
+    EXPECT_EQ(DbConfigToString(&db), config_before);
+
+    EXPECT_EQ(GetDatabaseVersion(&db), 12);
+    EXPECT_EQ(GetDatabaseLastCompatibleVersion(&db), 12);
   }
 }
 
