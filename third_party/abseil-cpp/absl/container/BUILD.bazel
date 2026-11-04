@@ -440,6 +440,7 @@ cc_library(
     ],
     deps = [
         "//absl/base:config",
+        "//absl/base:core_headers",
         "//absl/hash",
         "//absl/memory",
         "//absl/meta:type_traits",
@@ -654,6 +655,7 @@ cc_library(
         "//absl:__subpackages__",
     ],
     deps = [
+        ":container_memory",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -1342,7 +1344,6 @@ cc_binary(
         "//absl/base:raw_logging_internal",
         "//absl/hash",
         "//absl/log",
-        "//absl/memory",
         "//absl/random",
         "//absl/strings:cord",
         "//absl/strings:str_format",

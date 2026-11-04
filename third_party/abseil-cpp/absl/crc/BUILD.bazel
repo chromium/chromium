@@ -206,7 +206,6 @@ cc_binary(
     visibility = ["//visibility:private"],
     deps = [
         ":crc32c",
-        "//absl/memory",
         "//absl/strings:string_view",
         "@google_benchmark//:benchmark_main",
     ],

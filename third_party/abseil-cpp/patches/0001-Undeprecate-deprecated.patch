@@ -185,6 +185,19 @@ index 8385bf9bef1ab..5bccfc51db78f 100644
  
  // ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS
  //
+--- a/third_party/abseil-cpp/absl/base/attributes.h
++++ b/third_party/abseil-cpp/absl/base/attributes.h
+@@ -323,9 +323,7 @@
+ // ABSL_ATTRIBUTE_RETURNS_NONNULL
+ //
+ // Tells the compiler that a particular function never returns a null pointer.
+-#if ABSL_HAVE_CPP_ATTRIBUTE(gnu::returns_nonnull)
+-#define ABSL_ATTRIBUTE_RETURNS_NONNULL [[gnu::returns_nonnull]]
+-#elif ABSL_HAVE_ATTRIBUTE(returns_nonnull)
++#if ABSL_HAVE_ATTRIBUTE(returns_nonnull)
+ #define ABSL_ATTRIBUTE_RETURNS_NONNULL __attribute__((returns_nonnull))
+ #else
+ #define ABSL_ATTRIBUTE_RETURNS_NONNULL
 diff --git a/third_party/abseil-cpp/absl/base/attributes.h b/third_party/abseil-cpp/absl/base/attributes.h
 index 5bccfc51db78f..00a3eb033aba4 100644
 --- a/third_party/abseil-cpp/absl/base/attributes.h

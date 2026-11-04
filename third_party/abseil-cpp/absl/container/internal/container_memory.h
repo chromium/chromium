@@ -25,6 +25,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/hash/hash.h"
 #include "absl/memory/memory.h"
@@ -42,6 +43,40 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
+
+// We only allow a maximum of 1 SOO element, which makes the implementation
+// much simpler. Complications with multiple SOO elements include:
+// - Satisfying the guarantee that erasing one element doesn't invalidate
+//   iterators to other elements means we would probably need actual SOO
+//   control bytes.
+// - In order to prevent user code from depending on iteration order for small
+//   tables, we would need to randomize the iteration order somehow.
+constexpr size_t HashtableSooCapacity() { return 1; }
+
+// HashtableTypeInfo bundles the numeric properties of a raw_hash_set<T, ...>
+// instantiation. It is defined here (rather than in raw_hash_set.h) so that
+// hashtablez sampling can receive a pointer to it instead of several separate
+// size arguments.
+struct HashtableTypeInfo {
+  // 8 bytes
+  uint32_t slot_size;
+  // `alignof(slot_type) - 1`. Storing the mask instead of the alignment lets
+  // `AlignUpToMask` compute `(offset + mask) & ~mask` without negation.
+  uint16_t slot_align_mask;
+  bool soo_enabled;
+  bool is_hashtablez_enabled : 1;
+  // True if `alignof(slot_type) > alignof(size_t)` or the allocator is not
+  // `std::allocator`. When true, the policy object is an instance of
+  // `CustomAllocPolicy`.
+  bool is_custom_alloc : 1;
+  // 8 bytes
+  uint32_t key_size;
+  uint32_t value_size;
+
+  constexpr uint8_t soo_capacity() const {
+    return static_cast<uint8_t>(soo_enabled ? HashtableSooCapacity() : 0);
+  }
+};
 
 template <size_t Alignment>
 struct alignas(Alignment) AlignedType {
@@ -537,7 +572,9 @@ struct map_slot_policy {
 // Useful for usage with policy traits.
 template <class Hash, bool kIsAbsl, size_t kSeedShift>
 struct HashElement {
-  HashElement(const Hash& h, size_t s) : hash(h), seed(s >> kSeedShift) {}
+  HashElement(type_traits_internal::AddConstRefIfExpensiveToCopy<Hash> h,
+              size_t s)
+      : hash(h), seed(s >> kSeedShift) {}
 
   template <class K, class... Args>
   size_t operator()(const K& key, Args&&...) const {
@@ -550,9 +587,8 @@ struct HashElement {
     // NOLINTNEXTLINE(clang-diagnostic-sign-conversion)
     return hash(key) ^ seed;
   }
-  // TODO(ezb): try using AddConstRefIfExpensiveToCopy and
-  // ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS for `hash`/`eq` functor members.
-  const Hash& hash;
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
+  type_traits_internal::AddConstRefIfExpensiveToCopy<Hash> hash;
   size_t seed;
 };
 
@@ -567,7 +603,8 @@ struct HashKey {
   static size_t GetHash(void* data, size_t seed) {
     return (*static_cast<const HashKey*>(data))(seed);
   }
-  const Hash& hash;
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
+  type_traits_internal::AddConstRefIfExpensiveToCopy<Hash> hash;
   type_traits_internal::AddConstRefIfExpensiveToCopy<Key> key;
 };
 
@@ -580,7 +617,8 @@ struct EqualElement {
     ABSL_SWISSTABLE_IGNORE_UNINITIALIZED_RETURN(eq(lhs, rhs));
   }
   type_traits_internal::AddConstRefIfExpensiveToCopy<K1> rhs;
-  const KeyEqual& eq;
+  ABSL_ATTRIBUTE_NO_UNIQUE_ADDRESS
+  type_traits_internal::AddConstRefIfExpensiveToCopy<KeyEqual> eq;
 };
 
 // Type erased function for computing hash of the slot.
@@ -601,18 +639,15 @@ template <class Fn, class T, bool kIsAbsl, size_t kSeedShift>
 size_t TypeErasedDerefAndApplyToSlotFn(const void* fn, void* slot_ptr,
                                        size_t seed) {
   const auto* f = static_cast<const Fn*>(fn);
-  const T* slot = *static_cast<T**>(slot_ptr);
+  const T* slot;
+  // We use memcpy to avoid a strict-aliasing violation when this is called from
+  // NodeHashMapPolicy::get_hash_slot_fn(). In that case, slot_ptr has type
+  // `std::pair<const T, mapped_type>**`, which is not safe to dereference as
+  // `const T**`. Note that it is safe to dereference `slot` afterwards because
+  // `IsLayoutCompatible` guarantees that `std::pair<const T, mapped_type>` is
+  // standard-layout.
+  std::memcpy(&slot, slot_ptr, sizeof(slot));
   return HashElement<Fn, kIsAbsl, kSeedShift>{*f, seed}(*slot);
-}
-
-// Type erased function to apply `Fn` to data inside of the `slot_ptr->first`.
-// The data is expected to have type `T`.
-template <class Fn, class T, bool kIsAbsl, size_t kSeedShift>
-size_t TypeErasedDerefAndApplyToSlotFirstFn(const void* fn, void* slot_ptr,
-                                            size_t seed) {
-  const auto* f = static_cast<const Fn*>(fn);
-  const T* slot = *static_cast<T**>(slot_ptr);
-  return HashElement<Fn, kIsAbsl, kSeedShift>{*f, seed}(slot->first);
 }
 
 }  // namespace container_internal

@@ -139,7 +139,6 @@ cc_binary(
     visibility = ["//visibility:private"],
     deps = [
         ":hash",
-        "//absl/base:core_headers",
         "//absl/container:flat_hash_set",
         "//absl/random",
         "//absl/strings:cord",

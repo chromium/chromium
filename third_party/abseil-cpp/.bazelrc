@@ -45,10 +45,6 @@ build:windows-base --per_file_copt=external/.*@/w,/O1
 build:windows-base --host_per_file_copt=external/.*@/w,/O1
 
 common:windows-msvc --config=windows-base
-test:ci-windows-msvc --config=windows-msvc
-
-# Avoid building benchmarks in MSVC, as an optimization for our slowest builds.
-test:ci-windows-msvc --build_tests_only
 
 common:windows-clangcl --config=windows-base
 build:windows-clangcl --compiler=clang-cl
@@ -100,6 +96,8 @@ build:remote-cache --remote_download_regex=.*symbolize_test\.pdb$
 build:remote-cache --remote_retries=20 --remote_retry_max_delay=60s
 # Use more parallel jobs for remote cache lookups and tests.
 build:remote-cache --jobs=HOST_CPUS*4
+# Avoid building benchmarks on non-RBE CI builds (macOS and Windows).
+test:remote-cache --build_tests_only
 
 build:remote-base --define=EXECUTOR=remote
 build:remote-base --remote_timeout=1200 --bes_timeout=600s

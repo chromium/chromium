@@ -35,7 +35,7 @@ struct SpinLockProfilingTestPeer {
   // True once a waiter has marked itself as about to sleep in the lock word.
   static bool HasSleeper(const SpinLock& l) {
     return (l.lockword_.load(std::memory_order_relaxed) &
-            SpinLock::kSpinLockSleeper) != 0;
+            SpinLock::kWaitTimeMask) != 0;
   }
 };
 
@@ -46,9 +46,6 @@ std::atomic<int64_t> lock_profiler_calls{0};
 std::atomic<int64_t> lock_profiler_cycles{0};
 std::atomic<int64_t> unlock_profiler_calls{0};
 std::atomic<int64_t> unlock_profiler_cycles{0};
-// Number of times the unlock profiler ran for an acquisition whose lock
-// profiler had not yet run.
-std::atomic<int64_t> unlock_before_lock_calls{0};
 
 void LockProfiler(const void* lock, int64_t wait_cycles) {
   if (lock != profiled_lock) return;
@@ -58,9 +55,6 @@ void LockProfiler(const void* lock, int64_t wait_cycles) {
 
 void UnlockProfiler(const void* lock, int64_t wait_cycles) {
   if (lock != profiled_lock) return;
-  if (lock_profiler_calls.load(std::memory_order_relaxed) == 0) {
-    unlock_before_lock_calls.fetch_add(1, std::memory_order_relaxed);
-  }
   unlock_profiler_calls.fetch_add(1, std::memory_order_relaxed);
   unlock_profiler_cycles.fetch_add(wait_cycles, std::memory_order_relaxed);
 }
@@ -74,7 +68,6 @@ class SpinLockProfiling : public ::testing::Test {
     lock_profiler_cycles.store(0, std::memory_order_relaxed);
     unlock_profiler_calls.store(0, std::memory_order_relaxed);
     unlock_profiler_cycles.store(0, std::memory_order_relaxed);
-    unlock_before_lock_calls.store(0, std::memory_order_relaxed);
   }
 
   void TearDown() override { profiled_lock = nullptr; }
@@ -85,9 +78,10 @@ TEST_F(SpinLockProfiling, ContentionProfilers) {
   profiled_lock = &spinlock;
 
   // Hold the lock until a waiter is about to sleep on it, then keep holding
-  // it for kContendedHoldCycles so that the waiter's wait is comfortably above
-  // the reporting threshold.
+  // it for kContendedHoldCycles so that both the waiter's wait and the
+  // holder's contended hold are comfortably above the reporting threshold.
   constexpr int64_t kContendedHoldCycles = int64_t{1} << 20;
+  constexpr int64_t kWaiterHoldCycles = int64_t{1} << 12;
   Notification held;
   std::thread holder([&] {
     spinlock.lock();
@@ -97,12 +91,17 @@ TEST_F(SpinLockProfiling, ContentionProfilers) {
     }
     const int64_t end = CycleClock::Now() + kContendedHoldCycles;
     while (CycleClock::Now() < end) {
+      // Keep holding the lock while the waiter sleeps on it.
     }
     spinlock.unlock();
   });
   held.WaitForNotification();
   // Causes contention, since `holder` already holds the lock.
   spinlock.lock();
+  const int64_t end = CycleClock::Now() + kWaiterHoldCycles;
+  while (CycleClock::Now() < end) {
+    // Hold the lock long enough for this hold to be reported as well.
+  }
   spinlock.unlock();
   holder.join();
   profiled_lock = nullptr;
@@ -111,14 +110,12 @@ TEST_F(SpinLockProfiling, ContentionProfilers) {
   EXPECT_EQ(1, lock_profiler_calls.load(std::memory_order_relaxed));
   EXPECT_GE(lock_profiler_cycles.load(std::memory_order_relaxed),
             kContendedHoldCycles);
-  // The waiter's release reported the wait stored in the lock word by its
-  // acquisition.  The holder's acquisition was uncontended.
-  EXPECT_EQ(1, unlock_profiler_calls.load(std::memory_order_relaxed));
+  // The holder's release reported the contended portion of its hold.  The
+  // waiter slept, so it cannot know whether other sleepers remain and its own
+  // hold is also reported as contended.
+  EXPECT_EQ(2, unlock_profiler_calls.load(std::memory_order_relaxed));
   EXPECT_GE(unlock_profiler_cycles.load(std::memory_order_relaxed),
             kContendedHoldCycles);
-  // An acquisition is reported by the lock profiler before its release is
-  // reported by the unlock profiler.
-  EXPECT_EQ(0, unlock_before_lock_calls.load(std::memory_order_relaxed));
 }
 
 TEST_F(SpinLockProfiling, UncontendedAcquisitionsAreNotReported) {

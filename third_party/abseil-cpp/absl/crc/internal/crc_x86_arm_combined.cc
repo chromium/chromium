@@ -516,7 +516,15 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
   // are combined in the end.
   static constexpr size_t kMaxStreams = 3;
   // When copying, at most kMaxCopyStreams streams are used in total.
-  static constexpr size_t kMaxCopyStreams = 3;
+  static constexpr size_t kMaxCopyStreams = 2;
+  // On AArch64, full-cache-line stores engage hardware write-streaming, and
+  // software destination prefetches force unnecessary DRAM reads.
+#if defined(__aarch64__)
+  static constexpr bool kShouldPrefetchDst = false;
+#else
+  static constexpr bool kShouldPrefetchDst = true;
+#endif
+  static constexpr size_t kDstPrefetchHorizon = 2 * ABSL_CACHELINE_SIZE;
 };
 
 template <size_t num_crc_streams, size_t num_pclmul_streams,
@@ -789,9 +797,15 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreams
       // Prefetch data for next iterations.
       for (size_t j = 0; j < kNumActiveCrcStreams; ++j) {
         PrefetchToLocalCache(crc_streams[j] + kPrefetchHorizon);
+        if constexpr (copy_type == CopyType::kTemporal && kShouldPrefetchDst) {
+          PrefetchToLocalCache(dst_crc_streams[j] + kDstPrefetchHorizon);
+        }
       }
       for (size_t j = 0; j < kNumActivePclmulStreams; ++j) {
         PrefetchToLocalCache(pclmul_streams[j] + kPrefetchHorizon);
+        if constexpr (copy_type == CopyType::kTemporal && kShouldPrefetchDst) {
+          PrefetchToLocalCache(dst_pclmul_streams[j] + kDstPrefetchHorizon);
+        }
       }
 
       const uint8_t* pclmul_copy[kMaxStreams];
