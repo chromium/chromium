@@ -1164,7 +1164,9 @@ void RequestHandler::ShowSingleIdpFailureDialog() {
   url::Origin idp_origin =
       url::Origin::Create(idp_info->provider->config->config_url);
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
-  CHECK(render_frame_host().GetPage().IsPrimary(), base::NotFatalUntil::M163);
+  // TODO(crbug.com/580416512): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(render_frame_host().GetPage().IsPrimary());
 
   fetch_data_ = FetchData();
 
