@@ -242,6 +242,7 @@ source_set("test_support") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/policy:impl",
     "//chrome/browser/policy/messaging_layer/storage_selector",
+    "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:testing_browser_process",
@@ -300,7 +301,6 @@ source_set("test_support") {
 
     deps += [
       "//chrome/browser/preloading:test_support",
-      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",

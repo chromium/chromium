@@ -83,10 +83,10 @@ namespace policy {
 
 // Take over policy management from UserPolicySigninService to avoid conflicts
 void ShutdownUserPolicySigninService(Profile* profile) {
-  // Shutdown `UserPolicySigninService` if needed for Dasher-based profiles, so
-  // this class can be the only sign in service controlling
+  // Shutdown `UserPolicySigninService` if needed for Dasher-based OIDC
+  // profiles, so this class can be the only sign in service controlling
   // UserCloudPolicyManager.
-  if (!IsDasherlessProfile(profile)) {
+  if (IsOidcManagedProfile(profile) && !IsDasherlessProfile(profile)) {
     auto* user_policy_signin_service =
         UserPolicySigninServiceFactory::GetForProfile(profile);
     // Only one sign in service should be managing policies, so we need to
@@ -171,6 +171,11 @@ void UserPolicyOidcSigninService::
 void UserPolicyOidcSigninService::OnPolicyFetched(CloudPolicyClient* client) {}
 
 void UserPolicyOidcSigninService::ResetGaiaPolicyManagement() {
+  if (!IsOidcManagedProfile(profile_)) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Refusing to reset GAIA policy management for non-OIDC profile.";
+    return;
+  }
   // GAIA-related services are already unavailable for Dasherless profiles, no
   // op.
   if (!IsDasherlessProfile(profile_)) {
@@ -189,6 +194,12 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     bool switch_to_entry,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
+  if (!IsOidcManagedProfile(profile_) || dm_token.empty()) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Aborting OIDC policy fetch for non-OIDC profile or empty DM token.";
+    std::move(callback).Run(false);
+    return;
+  }
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),

@@ -80,9 +80,12 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support",
       "//chrome/test/base:profile_lifecycle_test_utils",
+      "//components/device_signals/core/browser:pref_names",
       "//components/enterprise:test_support",
       "//components/policy/test_support",
+      "//components/prefs",
       "//content/test:test_support",
+      "//google_apis",
       "//testing/gmock",
       "//ui/base:ozone_buildflags",
     ]

@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_CLOUD_POLICY_TEST_UTILS_H_
 #define CHROME_BROWSER_POLICY_CLOUD_CLOUD_POLICY_TEST_UTILS_H_
 
+class Profile;
+
 namespace policy {
 
+class CloudPolicyStore;
 class PolicyMap;
 
 // Fills in the PolicyMap with all of the default policies for an enterprise
@@ -14,6 +17,10 @@ class PolicyMap;
 // this routine will not overwrite them (it only adds entries that do not
 // currently exist in the map).
 void GetExpectedDefaultPolicy(PolicyMap* policy_map);
+
+// Returns the active `CloudPolicyStore` for `profile`, or nullptr if `profile`
+// or its `CloudPolicyManager` is null.
+CloudPolicyStore* GetCloudPolicyStore(Profile* profile);
 
 }  // namespace policy
 

@@ -501,6 +501,7 @@ void OidcAuthenticationSigninInterceptor::OnProfileSwitchChoice(
           .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS,
                signin::SigninChoiceErrorType::kNoError);
     }
+    Reset();
     return;
   }
 
@@ -538,6 +539,22 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     // TODO(b/328055055): Replace this confusing check when bool
     // IsDasherlessManagement is replaced with an Enum.
     dasher_based_ = !new_profile_entry->IsDasherlessManagement();
+    RecordOidcProfileCreationFunnelStep(
+        OidcProfileCreationFunnelStep::kProfileCreated, dasher_based_);
+
+    // If switching to an existing non-OIDC (GAIA) profile matched by email,
+    // complete the profile switch without modifying device signals consent or
+    // resetting GAIA policy management.
+    if (!IsValidOidcToken(
+            new_profile_entry->GetProfileManagementOidcTokens())) {
+      RecordOidcProfileCreationResult(
+          OidcProfileCreationResult::kSwitchedToExistingProfile, dasher_based_);
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Switched to existing non-OIDC profile; skipping OIDC policy "
+             "fetch.";
+      FinalizeSigninInterception();
+      return;
+    }
 
     if (dm_token_.empty()) {
       VLOG_POLICY(2, OIDC_ENROLLMENT)
@@ -548,20 +565,23 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
       if (dm_token_.empty()) {
         LOG_POLICY(ERROR, OIDC_ENROLLMENT)
             << "No OIDC recovery token to re-register during profile switch.";
+        HandleError(OidcProfileCreationResult::kFailedToFetchPolicy,
+                    dasher_based_);
+        return;
       }
     }
     if (client_id_.empty()) {
       client_id_ = new_profile->GetPrefs()->GetString(
           enterprise_signin::prefs::kPolicyRecoveryClientId);
     }
-  }
 
-  RecordOidcProfileCreationFunnelStep(
-      OidcProfileCreationFunnelStep::kProfileCreated, dasher_based_);
-  new_profile->GetPrefs()->SetBoolean(
-      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
+    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched successfully";
+  } else {
+    RecordOidcProfileCreationFunnelStep(
+        OidcProfileCreationFunnelStep::kProfileCreated, dasher_based_);
+    new_profile->GetPrefs()->SetBoolean(
+        device_signals::prefs::kDeviceSignalsPermanentConsentReceived, true);
 
-  if (!switch_to_entry_) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Created new OIDC-managed profile with preset profile ID: "
         << preset_profile_id_;
@@ -592,8 +612,6 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
         enterprise_signin::prefs::kPolicyRecoveryToken, dm_token_);
     new_profile->GetPrefs()->SetString(
         enterprise_signin::prefs::kPolicyRecoveryClientId, client_id_);
-  } else {
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched sucessfully";
   }
 
   VLOG_POLICY(2, OIDC_ENROLLMENT)

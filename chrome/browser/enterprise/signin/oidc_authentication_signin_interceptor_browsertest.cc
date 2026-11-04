@@ -29,6 +29,7 @@
 #include "chrome/browser/enterprise/signin/oidc_metrics_utils.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -45,10 +46,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/device_signals/core/browser/pref_names.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
@@ -65,8 +68,10 @@
 #include "components/policy/test_support/request_handler_for_policy.h"
 #include "components/policy/test_support/signature_provider.h"
 #include "components/policy/test_support/test_server_helpers.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -242,17 +247,8 @@ class FakeUserPolicyOidcSigninService
         DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH) {
       auto policy_data = std::make_unique<enterprise_management::PolicyData>();
       policy_data->set_gaia_id(kExampleGaiaId.ToString());
-      if (test_profile_->GetProfileCloudPolicyManager()) {
-        test_profile_->GetProfileCloudPolicyManager()
-            ->core()
-            ->store()
-            ->set_policy_data_for_testing(std::move(policy_data));
-      } else {
-        test_profile_->GetUserCloudPolicyManager()
-            ->core()
-            ->store()
-            ->set_policy_data_for_testing(std::move(policy_data));
-      }
+      GetCloudPolicyStore(test_profile_)
+          ->set_policy_data_for_testing(std::move(policy_data));
       std::move(captured_callback_).Run(will_policy_fetch_succeed_);
     }
   }
@@ -419,6 +415,40 @@ class OidcAuthenticationSigninInterceptorTest
     chrome::AddTabAt(browser(), url, -1, true);
   }
 
+  void ExpectProfileSwitchBubble(SigninInterceptionResult result) {
+    EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _))
+        .WillOnce(
+            [result](
+                content::WebContents*,
+                const WebSigninInterceptor::Delegate::BubbleParameters& params,
+                base::OnceCallback<void(SigninInterceptionResult)> callback) {
+              EXPECT_EQ(params.interception_type,
+                        WebSigninInterceptor::SigninInterceptionType::
+                            kProfileSwitchForced);
+              std::move(callback).Run(result);
+              return nullptr;
+            });
+  }
+
+  Profile& CreateGaiaProfileWithEmail(const std::string& email) {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    Profile& gaia_profile = profiles::testing::CreateProfileSync(
+        profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+    ProfileAttributesEntry* entry =
+        profile_manager->GetProfileAttributesStorage()
+            .GetProfileAttributesWithPath(gaia_profile.GetPath());
+    EXPECT_NE(entry, nullptr);
+    if (entry) {
+      entry->SetAuthInfo(kExampleGaiaId, base::UTF8ToUTF16(email),
+                         /*is_consented_primary_account=*/false);
+    }
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_gaia_id(kExampleGaiaId.ToString());
+    GetCloudPolicyStore(&gaia_profile)
+        ->set_policy_data_for_testing(std::move(policy_data));
+    return gaia_profile;
+  }
+
   // Test if profile is correctly created (or not created) by the interceptor
   // class with supplied arguments.
   void TestProfileCreationOrSwitch(
@@ -517,15 +547,7 @@ class OidcAuthenticationSigninInterceptorTest
             expected_enrollment_result) &&
         std::get<OidcProfileCreationResult>(expected_enrollment_result) ==
             OidcProfileCreationResult::kSwitchedToExistingProfile) {
-      EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _))
-          .Times(1)
-          .WillRepeatedly(
-              [](content::WebContents*,
-                 const WebSigninInterceptor::Delegate::BubbleParameters&,
-                 base::OnceCallback<void(SigninInterceptionResult)> callback) {
-                std::move(callback).Run(SigninInterceptionResult::kAccepted);
-                return nullptr;
-              });
+      ExpectProfileSwitchBubble(SigninInterceptionResult::kAccepted);
     } else if (expect_dialog_to_show) {
       EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
           .Times(1)
@@ -602,6 +624,8 @@ class OidcAuthenticationSigninInterceptorTest
       EXPECT_EQ(added_profile_->GetPrefs()->GetString(
                     enterprise_signin::prefs::kPolicyRecoveryClientId),
                 kExampleClientId);
+      EXPECT_TRUE(added_profile_->GetPrefs()->GetBoolean(
+          device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
 
       if (will_policy_fetch_succeed_) {
         CoreAccountId account_id =
@@ -740,6 +764,11 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
       /*expect_profile_created=*/true,
       /*expected_number_of_windows=*/2, GetLastFunnelStepForSuccess());
 
+  // Clear permanent device signals consent before switching to verify that
+  // switching to an existing profile does not silently re-grant consent.
+  added_profile_->GetPrefs()->SetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived, false);
+
   AddTabToCurrentBrowser(GURL("http://foo/1"));
 
   TestProfileCreationOrSwitch(
@@ -753,6 +782,27 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
       signin::SigninChoice::SIGNIN_CHOICE_CONTINUE,
       /*expect_dialog_to_show=*/false,
       signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
+
+  EXPECT_FALSE(added_profile_->GetPrefs()->GetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+
+  // If the recovery token is missing on a subsequent switch, the switch must
+  // abort without clearing cached policies or granting device signals consent.
+  added_profile_->GetPrefs()->ClearPref(
+      enterprise_signin::prefs::kPolicyRecoveryToken);
+  ExpectProfileSwitchBubble(SigninInterceptionResult::kAccepted);
+  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
+                              kExampleSubjectIdentifier,
+                              /*expect_profile_created=*/false,
+                              /*expected_number_of_windows=*/0,
+                              OidcProfileCreationFunnelStep::kProfileCreated,
+                              OidcProfileCreationResult::kFailedToFetchPolicy,
+                              RegistrationResult::kNoRegistrationExpected,
+                              signin::SigninChoice::SIGNIN_CHOICE_CONTINUE,
+                              /*expect_dialog_to_show=*/false);
+  EXPECT_FALSE(added_profile_->GetPrefs()->GetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  EXPECT_TRUE(GetCloudPolicyStore(added_profile_)->has_policy());
 }
 
 IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
@@ -861,32 +911,13 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
       /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
 
   // Manually remove the fetched policies to simulate policy loss.
-  if (is_3p_identity_synced()) {
-    added_profile_->GetUserCloudPolicyManager()
-        ->core()
-        ->store()
-        ->set_policy_data_for_testing(nullptr);
-  } else {
-    added_profile_->GetProfileCloudPolicyManager()
-        ->core()
-        ->store()
-        ->set_policy_data_for_testing(nullptr);
-  }
+  GetCloudPolicyStore(added_profile_)->set_policy_data_for_testing(nullptr);
 
   policy::UserPolicyOidcSigninServiceFactory::GetForProfile(added_profile_)
       ->AttemptToRestorePolicy();
 
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return is_3p_identity_synced()
-               ? added_profile_->GetUserCloudPolicyManager()
-                     ->core()
-                     ->store()
-                     ->has_policy()
-               : added_profile_->GetProfileCloudPolicyManager()
-                     ->core()
-                     ->store()
-                     ->has_policy();
-  }));
+  ASSERT_TRUE(base::test::RunUntil(
+      [this]() { return GetCloudPolicyStore(added_profile_)->has_policy(); }));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1026,6 +1057,59 @@ IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
   // Finalize without creating new profile (cancellation or failure)
   interceptor_->FinalizeSigninInterceptionForTesting();
   EXPECT_TRUE(callback_called);
+}
+
+IN_PROC_BROWSER_TEST_P(OidcAuthenticationSigninInterceptorTest,
+                       SwitchToExistingGaiaProfileByEmail) {
+  number_of_windows_ = 1;
+  Profile& gaia_profile = CreateGaiaProfileWithEmail(kExampleUserEmail);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const size_t num_profiles_before = profile_manager->GetNumberOfProfiles();
+
+  EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _)).Times(0);
+  AddTabToCurrentBrowser(GURL("about:blank"));
+
+  // Declining the switch must run `oidc_callback` and reset interception state
+  // so a subsequent interception can proceed.
+  ExpectProfileSwitchBubble(SigninInterceptionResult::kDeclined);
+  bool declined_callback_called = false;
+  ASSERT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, kExampleUserEmail,
+      base::BindLambdaForTesting(
+          [&declined_callback_called]() { declined_callback_called = true; })));
+  EXPECT_TRUE(declined_callback_called);
+  CheckFunnelAndResultHistogram(OidcInterceptionFunnelStep::kConsetDialogShown,
+                                OidcInterceptionResult::kConsetDialogRejected,
+                                RegistrationResult::kNoRegistrationExpected);
+
+  // Accepting the switch must switch to `gaia_profile` without granting device
+  // signals consent, clearing GAIA policies, or starting an OIDC policy fetch.
+  ExpectProfileSwitchBubble(SigninInterceptionResult::kAccepted);
+  bool accepted_callback_called = false;
+  ASSERT_TRUE(interceptor_->MaybeInterceptOidcAuthentication(
+      web_contents(), kExampleOidcTokens, kExampleIssuerIdentifier,
+      kExampleSubjectIdentifier, kExampleUserEmail,
+      base::BindLambdaForTesting(
+          [&accepted_callback_called]() { accepted_callback_called = true; })));
+
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return histogram_tester_->GetBucketCount(
+               "Enterprise.OidcEnrollment.ProfileCreation.Result.Dasher-based",
+               OidcProfileCreationResult::kSwitchedToExistingProfile) >= 1;
+  }));
+
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), num_profiles_before);
+  EXPECT_FALSE(gaia_profile.GetPrefs()->GetBoolean(
+      device_signals::prefs::kDeviceSignalsPermanentConsentReceived));
+  EXPECT_TRUE(GetCloudPolicyStore(&gaia_profile)->has_policy());
+  EXPECT_FALSE(accepted_callback_called);
+  histogram_tester_->ExpectBucketCount(
+      "Enterprise.OidcEnrollment.ProfileCreation.Funnel.Dasher-based",
+      OidcProfileCreationFunnelStep::kProfileCreated, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Enterprise.OidcEnrollment.ProfileCreation.Funnel.Dasher-based",
+      OidcProfileCreationFunnelStep::kPolicyFetchStarted, 0);
 }
 
 }  // namespace policy
