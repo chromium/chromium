@@ -120,9 +120,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   content::BluetoothDelegate* GetBluetoothDelegate() override;
 
   bool IsRendererProcessPriorityEnabled() override;
-
   bool IsClipboardPasteAllowed(
       content::RenderFrameHost* render_frame_host) override;
+  bool IsHandledURL(const GURL& url) override;
 
  private:
   class StubBadgeService;

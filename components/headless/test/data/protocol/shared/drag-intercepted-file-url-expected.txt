@@ -1,0 +1,20 @@
+Tests that disallowed URLs are filtered when dragging.
+dragData: {
+    dragOperationsMask : -1
+    items : [
+        [0] : {
+            data : about:blank#blocked
+            mimeType : text/uri-list
+            title : Drag Me!
+        }
+        [1] : {
+            data : file:///foo/bar
+            mimeType : text/plain
+        }
+        [2] : {
+            baseURL : <string>
+            data : <a href="file:///foo/bar">Drag Me!</a>
+            mimeType : text/html
+        }
+    ]
+}

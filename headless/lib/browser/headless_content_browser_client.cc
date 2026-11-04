@@ -13,6 +13,7 @@
 #include "base/base_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
@@ -59,6 +60,8 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/core/app/crash_switches.h"  // nogncheck
@@ -553,6 +556,24 @@ bool HeadlessContentBrowserClient::IsRendererProcessPriorityEnabled() {
   // Since there is no visible window in headless, the renderer process priority
   // policy, which is mostly based on visibility, is not needed.
   return false;
+}
+
+bool HeadlessContentBrowserClient::IsHandledURL(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
+      url::kHttpScheme,
+      url::kHttpsScheme,
+      url::kWsScheme,
+      url::kWssScheme,
+      url::kBlobScheme,
+      url::kFileSystemScheme,
+      url::kDataScheme,
+      url::kFileScheme,
+  });
+
+  return kProtocolList.contains(url.scheme());
 }
 
 std::unique_ptr<content::DigitalIdentityProvider>

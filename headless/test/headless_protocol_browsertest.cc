@@ -303,6 +303,9 @@ HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
 
 HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
 
+HEADLESS_PROTOCOL_TEST(DragInterceptedFileURL,
+                       "shared/drag-intercepted-file-url.js")
+
 HEADLESS_PROTOCOL_TEST(InputClipboardOps, "shared/input-clipboard-ops.js")
 
 HEADLESS_PROTOCOL_TEST(ClipboardPasteAllowed,

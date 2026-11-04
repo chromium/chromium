@@ -29,11 +29,14 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobars_switches.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -1008,6 +1011,36 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, HasValidBluetoothDelegate) {
   auto* delegate =
       content::GetContentClientForTesting()->browser()->GetBluetoothDelegate();
   EXPECT_TRUE(delegate);
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, IsHandledURL) {
+  auto* browser_client = content::GetContentClientForTesting()->browser();
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("http://example.com")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("https://example.com")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("ws://example.com")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("wss://example.com")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("data:text/html,hello")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("blob:http://example.com/1")));
+  EXPECT_TRUE(browser_client->IsHandledURL(
+      GURL("filesystem:http://example.com/temporary/a.txt")));
+  EXPECT_TRUE(browser_client->IsHandledURL(GURL("file:///etc/hosts")));
+  EXPECT_FALSE(browser_client->IsHandledURL(GURL("mailto:test@example.com")));
+  EXPECT_FALSE(browser_client->IsHandledURL(GURL("custom-scheme://example")));
+  EXPECT_FALSE(browser_client->IsHandledURL(GURL()));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  HeadlessBrowserContext* browser_context = browser()->CreateBrowserContext();
+  HeadlessWebContents* web_contents = browser_context->CreateWebContents(
+      embedded_test_server()->GetURL("/hello.html"));
+  ASSERT_TRUE(WaitForLoad(web_contents));
+
+  content::RenderFrameHost* main_frame =
+      HeadlessWebContentsImpl::From(web_contents)
+          ->web_contents()
+          ->GetPrimaryMainFrame();
+  int process_id = main_frame->GetProcess()->GetDeprecatedID();
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+  EXPECT_FALSE(policy->CanRequestURL(process_id, GURL("file:///etc/passwd")));
 }
 
 // Infobar tests -------------------------------------------------------------
