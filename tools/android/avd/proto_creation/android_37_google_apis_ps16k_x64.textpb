@@ -30,6 +30,13 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # The guest can't open the emulator's UWB virtio port, so
+  # android.hardware.uwb-service crash-loops (~every 5s) and floods tests with
+  # tombstones. See crbug.com/571651034.
+  advanced_features {
+    key: "Uwb"
+    value: "off"
+  }
   # 4GB RAM for 34+ API AVDs
   ram_size: 4096
 }
