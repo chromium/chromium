@@ -205,6 +205,7 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
   _titleLabel.isAccessibilityElement = YES;
+  _titleLabel.accessibilityTraits |= UIAccessibilityTraitButton;
   _titleLabel.accessibilityIdentifier =
       kAssistantAIMTitleLabelAccessibilityIdentifier;
   [self updateTitleAlpha];
