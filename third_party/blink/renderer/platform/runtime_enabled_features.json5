@@ -6666,6 +6666,13 @@
       status: "stable",
     },
     {
+      // Instance SMIL animation elements (animate, animateTransform,
+      // animateMotion, set) into the 'use' element shadow tree, instead of
+      // dropping them. crbug.com/40853412
+      name: "SvgUseInstanceAnimations",
+      status: "stable",
+    },
+    {
       name: "SvgUseNestedResourceDocuments",
       status: "stable",
     },

@@ -52,16 +52,25 @@ class AnimationTargetsMutationsForbidden {
 
  public:
   explicit AnimationTargetsMutationsForbidden(SMILTimeContainer* time_container)
-#if DCHECK_IS_ON()
-      : flag_reset_(&time_container->prevent_animation_targets_changes_, true)
-#endif
-  {
+      : time_container_(time_container) {
+    // Instance pending <use> shadow trees up front, so that a style recalc
+    // within the scope cannot create or remove timed elements. The update
+    // that runs within the scope covers any rescheduled elements, so no
+    // frame update needs to be requested (see Reschedule()).
+    {
+      base::AutoReset<bool> updating_intervals_scope(
+          &time_container->is_updating_intervals_, true);
+      time_container->GetDocument().UpdateUseShadowTreesIfNeeded();
+    }
+    DCHECK(time_container->AnimationTargetsMutationsAllowed());
+    time_container_->animation_targets_mutations_forbidden_ = true;
+  }
+  ~AnimationTargetsMutationsForbidden() {
+    time_container_->animation_targets_mutations_forbidden_ = false;
   }
 
  private:
-#if DCHECK_IS_ON()
-  base::AutoReset<bool> flag_reset_;
-#endif
+  SMILTimeContainer* time_container_;
 };
 
 class SMILTimeContainer::TimingUpdate {
@@ -180,8 +189,7 @@ SMILTimeContainer::~SMILTimeContainer() {
 void SMILTimeContainer::Schedule(SVGSMILElement* animation) {
   DCHECK_EQ(animation->TimeContainer(), this);
   DCHECK(animation->HasValidTarget());
-  DCHECK(AnimationTargetsMutationsAllowed());
-
+  CHECK(AnimationTargetsMutationsAllowed());
   animated_targets_.insert(animation->targetElement());
   // Enter the element into the queue with the "latest" possible time. The
   // timed element will update its position in the queue when (re)evaluating
@@ -191,9 +199,8 @@ void SMILTimeContainer::Schedule(SVGSMILElement* animation) {
 
 void SMILTimeContainer::Unschedule(SVGSMILElement* animation) {
   DCHECK_EQ(animation->TimeContainer(), this);
-  DCHECK(AnimationTargetsMutationsAllowed());
+  CHECK(AnimationTargetsMutationsAllowed());
   DCHECK(animated_targets_.Contains(animation->targetElement()));
-
   animated_targets_.erase(animation->targetElement());
   priority_queue_.Remove(animation);
 }
@@ -508,11 +515,11 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
     TimingUpdate& update) {
   DCHECK(GetDocument().IsActive());
   DCHECK(!wakeup_timer_.IsActive());
+  AnimationTargetsMutationsForbidden scope(this);
   // If the priority queue is empty, there are no timed elements to process and
   // no animations to apply, so we are done.
   if (priority_queue_.IsEmpty())
     return false;
-  AnimationTargetsMutationsForbidden scope(this);
   UpdateTimedElements(update);
   bool disable_throttling = ApplyTimedEffects(update.TargetTime());
   DCHECK(!wakeup_timer_.IsActive());

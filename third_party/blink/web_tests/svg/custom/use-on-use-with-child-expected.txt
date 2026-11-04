@@ -4,6 +4,7 @@ The instance tree of use element zoomplus:
                 this = [object Text]
                 id = useRim this = [object SVGUseElement]
                      this = [object Text]
+                     this = [object SVGSetElement]
                      this = [object Text]
                 this = [object Text]
 

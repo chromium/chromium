@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -80,6 +81,22 @@ bool IsDescendantOfSvgUseElement(const Element& element) {
     }
   }
   return false;
+}
+
+// Instance times from these origins apply to an animation element and all
+// its <use> instances, per
+// https://svgwg.org/svg2-draft/struct.html#UseAnimations.
+bool OriginIsSharedWithInstances(SMILTimeOrigin origin) {
+  switch (origin) {
+    case SMILTimeOrigin::kScript:
+    case SMILTimeOrigin::kEvent:
+    case SMILTimeOrigin::kLinkActivation:
+      return true;
+    case SMILTimeOrigin::kAttribute:
+    case SMILTimeOrigin::kSyncBase:
+    case SMILTimeOrigin::kRepeat:
+      return false;
+  }
 }
 
 }  // namespace
@@ -207,9 +224,13 @@ class ConditionEventListener final : public NativeEventListener {
   void Invoke(ExecutionContext*, Event*) override {
     if (!animation_)
       return;
+    // An event observed implicitly on the target element triggers only this
+    // animation element, while an event-base referenced by 'id' is shared
+    // with the element's <use> instances.
     animation_->AddInstanceTimeAndUpdate(
         condition_->GetBeginOrEnd(),
-        animation_->Elapsed() + condition_->Offset(), SMILTimeOrigin::kEvent);
+        animation_->Elapsed() + condition_->Offset(), SMILTimeOrigin::kEvent,
+        /*propagate_to_instances=*/condition_->HasExplicitBase());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -340,10 +361,20 @@ void SVGSMILElement::BuildPendingResource() {
   ClearResourceAndEventBaseReferences();
   DisconnectConditions();
 
-  // Ignore timed elements that are inserted into a <use> shadow tree. This is
-  // currently possible via a cloned event handler.
-  if (!isConnected() || IsDescendantOfSvgUseElement(*this)) {
+  if (!isConnected()) {
     // Reset the target element if we are no longer in the document.
+    SetTargetElement(nullptr);
+    return;
+  }
+  // A timed element inside a <use> shadow tree must resolve its target within
+  // that same tree, so that the one-to-one relationship between animation
+  // elements and target elements is preserved and the animation cannot reach
+  // out of the shadow tree. See
+  // https://svgwg.org/svg2-draft/struct.html#UseAnimations. Such an element
+  // can also appear via a cloned event handler; when the feature is disabled
+  // it is ignored, as the per-tree targeting below is gated on the feature.
+  if (!RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled() &&
+      IsDescendantOfSvgUseElement(*this)) {
     SetTargetElement(nullptr);
     return;
   }
@@ -353,7 +384,15 @@ void SVGSMILElement::BuildPendingResource() {
   if (href.empty()) {
     target = parentElement();
   } else {
-    target = SVGURIReference::ObserveTarget(target_id_observer_, *this, href);
+    // Resolve the target in this element's own tree scope. For an instance in
+    // a <use> shadow tree this is the shadow tree, not the referenced
+    // element's originating scope, keeping the target in the same node tree.
+    const AtomicString id =
+        SVGURIReference::FragmentIdentifierFromIRIString(href, GetTreeScope());
+    target = SVGURIReference::ObserveTarget(
+        target_id_observer_, GetTreeScope(), id,
+        BindRepeating(&SVGElement::BuildPendingResource,
+                      WrapWeakPersistent(this)));
   }
   auto* svg_target = DynamicTo<SVGElement>(target);
 
@@ -404,6 +443,16 @@ Node::InsertionNotificationRequest SVGSMILElement::InsertedInto(
   // must be evaluated."
   if (!FastHasAttribute(svg_names::kBeginAttr) && begin_times_.IsEmpty())
     begin_times_.Append(SMILTime(), SMILTimeOrigin::kAttribute);
+
+  // An instance generated while its corresponding element has shared begin or
+  // end times (begun by script, link activation or an 'id'-referenced
+  // event-base) must line up with the corresponding element. See
+  // https://svgwg.org/svg2-draft/struct.html#UseAnimations.
+  if (RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled()) {
+    if (SVGElement* corresponding = CorrespondingElement()) {
+      ImportInstanceTimes(To<SVGSMILElement>(*corresponding));
+    }
+  }
 
   BuildPendingResource();
   return kInsertionDone;
@@ -918,9 +967,43 @@ void SVGSMILElement::AddInstanceTime(BeginOrEnd begin_or_end,
   instance_lists_have_changed_ = true;
 }
 
+void SVGSMILElement::ImportInstanceTimes(const SVGSMILElement& corresponding) {
+  // Shared-origin times can only exist on a running timeline, which is then
+  // the same timeline as this element's, so the times apply verbatim.
+  for (BeginOrEnd begin_or_end : {kBegin, kEnd}) {
+    const SMILInstanceTimeList& list = begin_or_end == kBegin
+                                           ? corresponding.begin_times_
+                                           : corresponding.end_times_;
+    for (const SMILTimeWithOrigin& instance_time : list.AsSpan()) {
+      if (!OriginIsSharedWithInstances(instance_time.Origin())) {
+        continue;
+      }
+      AddInstanceTime(begin_or_end, instance_time.Time(),
+                      instance_time.Origin());
+    }
+  }
+}
+
+void SVGSMILElement::PropagateInstanceTimeToInstances(BeginOrEnd begin_or_end,
+                                                      SMILTime time,
+                                                      SMILTimeOrigin origin) {
+  if (!RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled()) {
+    return;
+  }
+  if (!OriginIsSharedWithInstances(origin) || !MayHaveInstances()) {
+    return;
+  }
+  HeapHashSet<WeakMember<SVGElement>> instances = InstancesForElement();
+  for (SVGElement* element : instances) {
+    To<SVGSMILElement>(element)->AddInstanceTimeAndUpdate(begin_or_end, time,
+                                                          origin);
+  }
+}
+
 void SVGSMILElement::AddInstanceTimeAndUpdate(BeginOrEnd begin_or_end,
                                               SMILTime time,
-                                              SMILTimeOrigin origin) {
+                                              SMILTimeOrigin origin,
+                                              bool propagate_to_instances) {
   // Ignore new instance times for 'end' if the element is not active
   // and the origin is script.
   if (begin_or_end == kEnd && GetActiveState() == kInactive &&
@@ -928,6 +1011,9 @@ void SVGSMILElement::AddInstanceTimeAndUpdate(BeginOrEnd begin_or_end,
     return;
   AddInstanceTime(begin_or_end, time, origin);
   InstanceListChanged();
+  if (propagate_to_instances) {
+    PropagateInstanceTimeToInstances(begin_or_end, time, origin);
+  }
 }
 
 SMILTime SVGSMILElement::RepeatingDuration() const {

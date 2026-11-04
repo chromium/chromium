@@ -50,9 +50,11 @@ const CSSValue* SVGAnimatedPath::CssValue() const {
   DCHECK(HasPresentationAttributeMapping());
   const SVGAnimatedPath* path = this;
   // If this is a <use> instance, return the referenced path to maximize
-  // geometry sharing.
-  if (const SVGElement* element = ContextElement()->CorrespondingElement()) {
-    path = To<SVGPathElement>(element)->GetPath();
+  // geometry sharing, unless the path of the instance is being animated.
+  if (!IsAnimating()) {
+    if (const SVGElement* element = ContextElement()->CorrespondingElement()) {
+      path = To<SVGPathElement>(element)->GetPath();
+    }
   }
   const cssvalue::CSSPathValue& path_value = path->CurrentValue()->PathValue();
   if (path_value.GetStylePath()->ByteStream().IsEmpty())

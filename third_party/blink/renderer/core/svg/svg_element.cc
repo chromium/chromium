@@ -182,6 +182,11 @@ String SVGElement::title() const {
 template <typename T>
 static void ForSelfAndInstances(SVGElement* element, T callback) {
   callback(element);
+  // Animations cloned into the <use> shadow tree apply their results to the
+  // instance elements directly.
+  if (RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled()) {
+    return;
+  }
   for (SVGElement* instance : element->InstancesForElement())
     callback(instance);
 }

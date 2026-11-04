@@ -148,7 +148,10 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
  protected:
   enum BeginOrEnd { kBegin, kEnd };
 
-  void AddInstanceTimeAndUpdate(BeginOrEnd, SMILTime, SMILTimeOrigin);
+  void AddInstanceTimeAndUpdate(BeginOrEnd,
+                                SMILTime,
+                                SMILTimeOrigin,
+                                bool propagate_to_instances = true);
 
   void SetTargetElement(SVGElement*);
 
@@ -204,6 +207,10 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
   void AddInstanceTime(BeginOrEnd begin_or_end,
                        SMILTime time,
                        SMILTimeOrigin origin);
+  void ImportInstanceTimes(const SVGSMILElement& corresponding);
+  void PropagateInstanceTimeToInstances(BeginOrEnd begin_or_end,
+                                        SMILTime time,
+                                        SMILTimeOrigin origin);
   void InstanceListChanged();
   void IntervalStateChanged();
 
@@ -226,6 +233,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
 
     Type GetType() const { return type_; }
     BeginOrEnd GetBeginOrEnd() const { return begin_or_end_; }
+    bool HasExplicitBase() const { return !base_id_.empty(); }
     const AtomicString& GetName() const { return name_; }
     SMILTime Offset() const { return offset_; }
     unsigned Repeat() const { return repeat_; }

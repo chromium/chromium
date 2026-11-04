@@ -313,8 +313,28 @@ static bool IsDisallowedElement(const Element& element) {
                           svg_names::kTextPathTag, svg_names::kTitleTag,
                           svg_names::kTSpanTag,    svg_names::kUseTag,
                       }));
-  return !allowed_element_tags.Contains<SVGAttributeHashTranslator>(
-      element.TagQName());
+  if (!allowed_element_tags.Contains<SVGAttributeHashTranslator>(
+          element.TagQName())) {
+    // SMIL animation elements, and the <mpath> an <animateMotion> may
+    // contain, are instanced into the use-element shadow tree per
+    // https://svgwg.org/svg2-draft/struct.html#UseAnimations. Dropping them
+    // leaves animations of an externally referenced SVG dead, since that
+    // document has no view to drive its own SMIL timeline.
+    if (RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled()) {
+      DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, animation_element_tags,
+                          ({
+                              svg_names::kAnimateTag,
+                              svg_names::kAnimateTransformTag,
+                              svg_names::kAnimateMotionTag,
+                              svg_names::kMPathTag,
+                              svg_names::kSetTag,
+                          }));
+      return !animation_element_tags.Contains<SVGAttributeHashTranslator>(
+          element.TagQName());
+    }
+    return true;
+  }
+  return false;
 }
 
 void SVGUseElement::ScheduleShadowTreeRecreation() {

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_TIME_CONTAINER_H_
 
-#include "base/dcheck_is_on.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -150,19 +149,13 @@ class CORE_EXPORT SMILTimeContainer final
 
   Member<SVGSVGElement> owner_svg_element_;
 
-#if DCHECK_IS_ON()
   friend class AnimationTargetsMutationsForbidden;
-  // This boolean will catch any attempts to mutate (schedule/unschedule)
-  // |scheduled_animations_| when it is set to true.
-  bool prevent_animation_targets_changes_ = false;
-#endif
+  // Set while |animated_targets_| and |priority_queue_| are being
+  // iterated; (un)scheduling timed elements is forbidden while set.
+  bool animation_targets_mutations_forbidden_ = false;
 
   bool AnimationTargetsMutationsAllowed() const {
-#if DCHECK_IS_ON()
-    return !prevent_animation_targets_changes_;
-#else
-    return true;
-#endif
+    return !animation_targets_mutations_forbidden_;
   }
 };
 

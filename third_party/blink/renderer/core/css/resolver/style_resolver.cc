@@ -1341,16 +1341,17 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
     // Now check SMIL animation override style.
     auto* svg_element = DynamicTo<SVGElement>(element);
     if (include_smil_properties && svg_element) {
-      if (SVGElement* corresponding = svg_element->CorrespondingElement()) {
-        // According to the spec[1], animations that are cloned into the <use>
-        // shadow tree, should run in that tree, while animations applied to
-        // the referenced element which are not cloned should have an instance
-        // in the <use> tree as if it was cloned.
-        //
-        // We apply the animations from the referenced subtree for now.
-        //
-        // [1] https://svgwg.org/svg2-draft/struct.html#UseAnimations
-        svg_element = corresponding;
+      // Animations cloned into the <use> shadow tree run on the instance
+      // elements, so an instance uses its own SMIL properties rather than the
+      // referenced element's. See
+      // https://svgwg.org/svg2-draft/struct.html#UseAnimations.
+      if (!RuntimeEnabledFeatures::SvgUseInstanceAnimationsEnabled()) {
+        // Take SMIL properties from the referenced element. The animations are
+        // not cloned into the <use> shadow tree, so the instance has none of
+        // its own.
+        if (SVGElement* corresponding = svg_element->CorrespondingElement()) {
+          svg_element = corresponding;
+        }
       }
       collector.AddElementStyleProperties(
           svg_element->AnimatedSMILStyleProperties(), CascadeOrigin::kAuthor,
