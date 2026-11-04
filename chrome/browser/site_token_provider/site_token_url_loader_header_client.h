@@ -47,6 +47,9 @@ class SiteTokenURLLoaderHeaderClient
       const network::ResourceRequest& request,
       mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver)
       override;
+  void OnLoaderFailedWithRemoteEndpoint(
+      int32_t request_id,
+      const net::IPEndPoint& remote_endpoint) override;
 
  private:
   static void Create(

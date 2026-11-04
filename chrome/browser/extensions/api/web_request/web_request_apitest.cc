@@ -10332,4 +10332,56 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestFileUrlRedirectApiTest,
   EXPECT_EQ(ext1_redirect_url, child_frame->GetLastCommittedURL());
 }
 
+// Tests that `details.ip` is populated in `webRequest.onErrorOccurred` when a
+// request connects to a remote endpoint and then fails before HTTP response
+// headers are received (https://crbug.com/41070013).
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       OnErrorOccurred_IncludesResolvedIp) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  const GURL close_socket_url =
+      embedded_test_server()->GetURL("example.com", "/close-socket");
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "WebRequest onErrorOccurred IP Test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": ["<all_urls>"],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onErrorOccurred.addListener(
+             (details) => {
+               if (details.url === $1) {
+                 chrome.test.sendMessage(
+                     details.error + ':' + (details.ip || ''));
+               }
+             },
+             {urls: [$1]});
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     content::JsReplace(kBackgroundJs, close_socket_url));
+
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener error_listener;
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("fetch($1).catch(() => {});", close_socket_url)));
+
+  ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+  EXPECT_EQ("net::ERR_EMPTY_RESPONSE:127.0.0.1", error_listener.message());
+}
+
 }  // namespace extensions

@@ -74,6 +74,7 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/address_family.h"
+#include "net/base/address_list.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
@@ -9360,6 +9361,11 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
       mojo::PendingReceiver<mojom::TrustedHeaderClient> receiver) override {
     header_client_.Bind(std::move(receiver));
   }
+  void OnLoaderFailedWithRemoteEndpoint(
+      int32_t request_id,
+      const net::IPEndPoint& remote_endpoint) override {
+    on_loader_failed_remote_endpoint_ = remote_endpoint;
+  }
 
   void set_on_before_send_headers_result(int result) {
     header_client_.set_on_before_send_headers_result(result);
@@ -9373,12 +9379,22 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
     return header_client_.get_on_headers_received_ssl_info();
   }
 
+  std::optional<net::IPEndPoint> get_on_loader_failed_remote_endpoint() {
+    receiver_.FlushForTesting();
+    return on_loader_failed_remote_endpoint_;
+  }
+
+  void ClearOnLoaderFailedRemoteEndpoint() {
+    on_loader_failed_remote_endpoint_.reset();
+  }
+
   void AddRequestHeaderToSet(std::string name, std::string value) {
     header_client_.AddRequestHeaderToSet(std::move(name), std::move(value));
   }
 
  private:
   TestHeaderClient header_client_;
+  std::optional<net::IPEndPoint> on_loader_failed_remote_endpoint_;
   mojo::Receiver<mojom::TrustedURLLoaderHeaderClient> receiver_;
 };
 
@@ -9572,6 +9588,147 @@ TEST_F(NetworkContextTest, HeaderClientFailsRequest) {
   }
 }
 
+TEST_F(NetworkContextTest, HeaderClientReceivesRemoteEndpointOnError) {
+  net::EmbeddedTestServer test_server;
+  // `/set-header?Content-Length: 10000` uses `BasicHttpResponse`, which adds
+  // its own `Content-Length` header and fails during header parsing with
+  // `ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH`. Use `RawHttpResponse` so
+  // headers succeed and reading the body fails with
+  // `ERR_CONTENT_LENGTH_MISMATCH`.
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/truncated-body") {
+          return std::make_unique<net::test_server::RawHttpResponse>(
+              "HTTP/1.1 200 OK\r\nContent-Length: 10000\r\n", "body");
+        }
+        return nullptr;
+      }));
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  net::AddressList address_list;
+  ASSERT_TRUE(test_server.GetAddressList(&address_list));
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  // Resetting the `URLLoader` pipe after a redirect (triggering
+  // `OnMojoDisconnect`) should not notify `header_client` of a failure.
+  {
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = OriginatingProcessId::browser();
+    params->is_orb_enabled = false;
+    TestURLLoaderHeaderClient header_client(
+        params->header_client.InitWithNewPipeAndPassReceiver());
+    network_context->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    ResourceRequest redirect_request;
+    redirect_request.url = test_server.GetURL("/server-redirect?/echo");
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 1 /* request_id */,
+        mojom::kURLLoadOptionNone, redirect_request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilRedirectReceived();
+    loader_factory.reset();
+    loader.reset();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return network_context->num_url_loader_factories_for_testing() == 0u;
+    }));
+    EXPECT_FALSE(
+        header_client.get_on_loader_failed_remote_endpoint().has_value());
+  }
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  TestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Following a redirect that fails before connecting (with `ERR_UNSAFE_PORT`)
+  // should not notify `header_client` of a remote endpoint.
+  {
+    ResourceRequest redirect_request;
+    redirect_request.url =
+        test_server.GetURL("/server-redirect?http://127.0.0.1:7/");
+    mojo::Remote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.BindNewPipeAndPassReceiver(), 1 /* request_id */,
+        mojom::kURLLoadOptionNone, redirect_request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilRedirectReceived();
+    loader->FollowRedirect(/*headers_update_params=*/{},
+                           /*new_url=*/std::nullopt);
+    client.RunUntilComplete();
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_UNSAFE_PORT);
+    EXPECT_FALSE(
+        header_client.get_on_loader_failed_remote_endpoint().has_value());
+  }
+
+  // Even without `kURLLoadOptionUseHeaderClient`, `header_client` should be
+  // notified of the resolved remote endpoint before `OnComplete()` when the
+  // request fails before receiving headers after connecting.
+  {
+    ResourceRequest request;
+    request.url = test_server.GetURL("/close-socket");
+
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 1 /* request_id */,
+        mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_EMPTY_RESPONSE);
+    ASSERT_TRUE(
+        header_client.get_on_loader_failed_remote_endpoint().has_value());
+    EXPECT_EQ(
+        net::AddressList(*header_client.get_on_loader_failed_remote_endpoint()),
+        address_list);
+  }
+
+  // `header_client` should also be notified of the resolved remote endpoint
+  // when reading the response body fails.
+  {
+    header_client.ClearOnLoaderFailedRemoteEndpoint();
+    ResourceRequest request;
+    request.url = test_server.GetURL("/truncated-body");
+
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 1 /* request_id */,
+        mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+    std::string response_body;
+    EXPECT_TRUE(mojo::BlockingCopyToString(client.response_body_release(),
+                                           &response_body));
+    EXPECT_EQ(response_body, "body");
+    EXPECT_EQ(client.completion_status().error_code,
+              net::ERR_CONTENT_LENGTH_MISMATCH);
+    ASSERT_TRUE(
+        header_client.get_on_loader_failed_remote_endpoint().has_value());
+    EXPECT_EQ(
+        net::AddressList(*header_client.get_on_loader_failed_remote_endpoint()),
+        address_list);
+  }
+}
+
 class HangingTestURLLoaderHeaderClient
     : public mojom::TrustedURLLoaderHeaderClient {
  public:
@@ -9656,6 +9813,9 @@ class HangingTestURLLoaderHeaderClient
       mojo::PendingReceiver<mojom::TrustedHeaderClient> receiver) override {
     header_client_.Bind(std::move(receiver));
   }
+  void OnLoaderFailedWithRemoteEndpoint(
+      int32_t request_id,
+      const net::IPEndPoint& remote_endpoint) override {}
 
   void CallOnBeforeSendHeadersCallback() {
     header_client_.CallOnBeforeSendHeadersCallback();

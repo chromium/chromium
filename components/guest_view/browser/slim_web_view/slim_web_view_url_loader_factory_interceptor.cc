@@ -198,6 +198,15 @@ class URLLoaderFactoryProxy
     }
   }
 
+  void OnLoaderFailedWithRemoteEndpoint(
+      int32_t request_id,
+      const net::IPEndPoint& remote_endpoint) override {
+    if (target_url_loader_header_client_) {
+      target_url_loader_header_client_->OnLoaderFailedWithRemoteEndpoint(
+          request_id, remote_endpoint);
+    }
+  }
+
  private:
   using SelfDeletingURLLoaderFactory::DisconnectReceiversAndDestroy;
 

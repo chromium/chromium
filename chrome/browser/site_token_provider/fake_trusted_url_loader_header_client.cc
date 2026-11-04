@@ -85,6 +85,10 @@ void FakeTrustedURLLoaderHeaderClient::OnLoaderForCorsPreflightCreated(
   // the pipe.
 }
 
+void FakeTrustedURLLoaderHeaderClient::OnLoaderFailedWithRemoteEndpoint(
+    int32_t request_id,
+    const net::IPEndPoint& remote_endpoint) {}
+
 int FakeTrustedURLLoaderHeaderClient::observed_request_count() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return observed_request_count_;

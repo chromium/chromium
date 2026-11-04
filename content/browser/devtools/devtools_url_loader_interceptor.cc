@@ -732,6 +732,9 @@ class DevToolsURLLoaderFactoryProxy
       const network::ResourceRequest& request,
       mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver)
       override;
+  void OnLoaderFailedWithRemoteEndpoint(
+      int32_t request_id,
+      const net::IPEndPoint& remote_endpoint) override;
 
   void OnProxyBindingError();
   void OnTargetFactoryError();
@@ -951,6 +954,15 @@ void DevToolsURLLoaderFactoryProxy::OnLoaderForCorsPreflightCreated(
     // and allows the preflight to proceed unmodified.
     mojo::MakeSelfOwnedReceiver(std::make_unique<NoOpHeaderClient>(),
                                 std::move(receiver));
+  }
+}
+
+void DevToolsURLLoaderFactoryProxy::OnLoaderFailedWithRemoteEndpoint(
+    int32_t request_id,
+    const net::IPEndPoint& remote_endpoint) {
+  if (target_url_loader_header_client_) {
+    target_url_loader_header_client_->OnLoaderFailedWithRemoteEndpoint(
+        request_id, remote_endpoint);
   }
 }
 

@@ -354,6 +354,7 @@ URLLoader::URLLoader(
       factory_params_(context.GetFactoryParams()),
       coep_reporter_(context.GetCoepReporter()),
       dip_reporter_(context.GetDipReporter()),
+      url_loader_header_client_(context.GetUrlLoaderHeaderClient()),
       request_id_(request_id),
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
@@ -1190,6 +1191,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   ReportFlaggedResponseCookies(!delay_cookie_call);
 
   if (net_error != net::OK) {
+    MaybeNotifyHeaderClientOfFailure(net_error);
     NotifyCompleted(net_error);
     // |this| may have been deleted.
     return;
@@ -1766,6 +1768,9 @@ void URLLoader::DidRead(int num_bytes,
       CHECK(!into_slop_bucket);
       CompletePendingWrite(num_bytes == 0);
     }
+    if (num_bytes < 0) {
+      MaybeNotifyHeaderClientOfFailure(num_bytes);
+    }
     // If we are reading into the SlopBucket then notification of completion
     // will be postponed until the data has been forwarded to the mojo data
     // pipe.
@@ -1972,6 +1977,25 @@ void URLLoader::ContinueWithoutCertificate() {
 void URLLoader::CancelRequest() {
   client_cert_responder_receiver_.reset();
   url_request_->CancelWithError(net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+}
+
+void URLLoader::MaybeNotifyHeaderClientOfFailure(int net_error) {
+  DCHECK_LT(net_error, 0);
+  if (!url_loader_header_client_ ||
+      (options_ & mojom::kURLLoadOptionAsCorsPreflight)) {
+    return;
+  }
+  net::IPEndPoint remote_endpoint;
+  if (!url_request_->GetTransactionRemoteEndpoint(&remote_endpoint)) {
+    net::ConnectionAttempts attempts = url_request_->GetConnectionAttempts();
+    if (!attempts.empty() && attempts.back().result == net_error) {
+      remote_endpoint = attempts.back().endpoint;
+    }
+  }
+  if (!remote_endpoint.address().empty()) {
+    url_loader_header_client_->OnLoaderFailedWithRemoteEndpoint(
+        request_id_, remote_endpoint);
+  }
 }
 
 void URLLoader::NotifyCompleted(int error_code) {

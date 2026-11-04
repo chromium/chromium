@@ -224,6 +224,11 @@ interface TrustedURLLoaderHeaderClient {
   OnLoaderForCorsPreflightCreated(
       URLRequest request,
       pending_receiver<TrustedHeaderClient> header_client);
+
+  // Called when a URLLoader fails after resolving a remote endpoint, before
+  // `URLLoaderClient::OnComplete()` is dispatched.
+  OnLoaderFailedWithRemoteEndpoint(
+      int32 request_id, IPEndPoint remote_endpoint);
 };
 
 struct HttpAuthStaticNetworkContextParams {

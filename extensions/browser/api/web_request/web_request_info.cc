@@ -382,7 +382,9 @@ void WebRequestInfo::AddResponseInfoFromResourceResponse(
   if (response_headers) {
     response_code = response_headers->response_code();
   }
-  response_ip = response.remote_endpoint.ToStringWithoutPort();
+  if (!response.remote_endpoint.address().empty()) {
+    response_ip = response.remote_endpoint.ToStringWithoutPort();
+  }
   response_from_cache = response.was_fetched_via_cache;
 }
 

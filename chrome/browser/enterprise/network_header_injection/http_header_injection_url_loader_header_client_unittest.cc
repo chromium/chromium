@@ -41,6 +41,10 @@ class MockTrustedURLLoaderHeaderClient
       (const network::ResourceRequest& request,
        mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver),
       (override));
+  MOCK_METHOD(void,
+              OnLoaderFailedWithRemoteEndpoint,
+              (int32_t request_id, const net::IPEndPoint& remote_endpoint),
+              (override));
 
   void Bind(mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
                 receiver) {

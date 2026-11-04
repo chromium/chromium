@@ -101,6 +101,15 @@ void SiteTokenURLLoaderHeaderClient::OnLoaderForCorsPreflightCreated(
   }
 }
 
+void SiteTokenURLLoaderHeaderClient::OnLoaderFailedWithRemoteEndpoint(
+    int32_t request_id,
+    const net::IPEndPoint& remote_endpoint) {
+  if (target_client_.is_bound()) {
+    target_client_->OnLoaderFailedWithRemoteEndpoint(request_id,
+                                                     remote_endpoint);
+  }
+}
+
 void SiteTokenURLLoaderHeaderClient::OnTargetDisconnect() {
   target_client_.reset();
 }

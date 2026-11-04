@@ -380,6 +380,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void DidRead(int num_bytes,
                bool completed_synchronously,
                bool into_slop_bucket);
+  void MaybeNotifyHeaderClientOfFailure(int net_error);
   void NotifyCompleted(int error_code);
   void OnMojoDisconnect();
   void OnResponseBodyStreamConsumerClosed(MojoResult result);
@@ -496,6 +497,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // The following also belong to URLLoaderFactory and outlives this loader.
   const raw_ptr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
   const raw_ptr<mojom::DocumentIsolationPolicyReporter> dip_reporter_;
+  const raw_ptr<mojom::TrustedURLLoaderHeaderClient> url_loader_header_client_;
 
   const int32_t request_id_;
   const int keepalive_request_size_;
