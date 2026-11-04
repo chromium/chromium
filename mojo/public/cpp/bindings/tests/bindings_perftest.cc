@@ -257,7 +257,7 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
 TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
   MessagePipe pipe;
   scoped_refptr<internal::MultiplexRouter> router =
-      internal::MultiplexRouter::Create(
+      internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle0), internal::MultiplexRouter::SINGLE_INTERFACE,
           true, base::SingleThreadTaskRunner::GetCurrentDefault());
   CounterReceiver receiver;
@@ -273,6 +273,7 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
     base::TimeTicks start_time = base::TimeTicks::Now();
     for (size_t j = 0; j < kIterations[i]; ++j) {
       Message message(0, 0, 8, 0, nullptr);
+      message.payload_buffer()->Allocate(8);
       bool result =
           router->SimulateReceivingMessageForTesting(message.TakeMojoMessage());
       DCHECK(result);

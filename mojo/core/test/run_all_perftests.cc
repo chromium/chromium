@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/perf_test_suite.h"
@@ -11,7 +10,7 @@
 #include "mojo/public/tests/test_support_private.h"
 
 int main(int argc, char** argv) {
-  CHECK(base::CommandLine::Init(argc, argv));
+  base::PerfTestSuite test(argc, argv);
   const auto& cmd = *base::CommandLine::ForCurrentProcess();
   auto features = std::make_unique<base::FeatureList>();
   features->InitFromCommandLine(
@@ -19,7 +18,6 @@ int main(int argc, char** argv) {
       cmd.GetSwitchValueASCII(switches::kDisableFeatures));
   base::FeatureList::SetInstance(std::move(features));
 
-  base::PerfTestSuite test(argc, argv);
   mojo::core::test::ScopedMojoSupport mojo_support;
   return test.Run();
 }
