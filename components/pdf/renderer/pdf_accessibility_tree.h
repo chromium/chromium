@@ -86,6 +86,25 @@ enum class ListStartReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityListStartReason)
 
+// LINT.IfChange(PdfAccessibilityListEndReason)
+// Heuristic conditions that ended a list.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ListEndReason {
+  kPageEnd = 0,
+  kNewListMarker = 1,
+  kShallowerMarker = 2,
+  kOutdent = 3,
+  kOutOfSequenceMarker = 4,
+  kGraphic = 5,
+  kHeaderFooter = 6,
+  kParagraph = 7,
+  kHeading = 8,
+
+  kMaxValue = kHeading,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PdfAccessibilityListEndReason)
+
 // LINT.IfChange(HeaderFooterRepetition)
 // How a heuristically detected header or footer's text repeats across pages in
 // an untagged PDF. Headers are compared only with headers, and footers only

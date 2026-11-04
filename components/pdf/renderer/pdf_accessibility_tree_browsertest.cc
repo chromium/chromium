@@ -5458,9 +5458,12 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
       "Accessibility.PdfHeuristics.ListMaxNestingDepth", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.TopLevelUnorderedListItemCount", 5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5484,9 +5487,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
                      {"First item line 1First item line 2", "Second item"},
                      "• ");
   CheckParagraph(page->GetChildAtIndex(1u), "Following paragraph");
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kParagraph,
+      1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByOutdent) {
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {::features::kPdfAccessibilityHeuristicEnhancements},
@@ -5504,6 +5511,128 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByOutdent) {
 
   CheckUnorderedList(page->GetChildAtIndex(0u), {"Indented item"}, "• ");
   CheckParagraph(page->GetChildAtIndex(1u), "Outdented paragraph");
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kOutdent, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicListTerminatedByNewListMarker) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // An item in column 1, followed by a marker in column 2 (> 4em to the right).
+  // The second marker starts a new list, ending the first with kNewListMarker.
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Column 1 item", "•", "Column 2 item"},
+                                {
+                                    gfx::RectF(30.0f, 100.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 96.0f, 80.0f, 12.0f),
+                                    gfx::RectF(330.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(345.0f, 40.0f, 80.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Column 1 item"}, "• ");
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"Column 2 item"}, "• ");
+
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kNewListMarker, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
+  histogram_tester.ExpectTotalCount("Accessibility.PdfHeuristics.ListEndReason",
+                                    2);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicListTerminatedByHeaderFooter) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item", "1"}, {
+                              gfx::RectF(100.0f, 204.0f, 4.0f, 4.0f),
+                              gfx::RectF(115.0f, 200.0f, 100.0f, 12.0f),
+                              gfx::RectF(100.0f, 960.0f, 20.0f, 12.0f),
+                          });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item"}, "• ");
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter,
+            page->GetChildAtIndex(1u)->GetRole());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kHeaderFooter,
+      1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicListTerminatedByGraphic) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  page_info_.bounds = gfx::Rect(0, 0, 200, 200);
+  chrome_pdf::AccessibilityFormGraphicInfo graphic;
+  graphic.bounds = gfx::RectF(50.0f, 60.0f, 100.0f, 40.0f);
+  graphic.text_range.index = 2;
+  graphic.text_range.count = 1;
+  page_objects_.graphics.push_back(graphic);
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"•", "Item before graphic", "Graphic text"},
+                                {
+                                    gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+                                    gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),
+                                    gfx::RectF(60.0f, 70.0f, 100.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item before graphic"}, "• ");
+  EXPECT_EQ(ax::mojom::Role::kFigure, page->GetChildAtIndex(1u)->GetRole());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kGraphic, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicListTerminatedByHeading) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"•", "Item 1", "•", "Item 2", "Heading", "Body text."},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 40.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 61.0f, 4.0f, 4.0f),
+          gfx::RectF(45.0f, 57.0f, 100.0f, 12.0f),
+          gfx::RectF(30.0f, 74.0f, 60.0f, 12.0f),
+          gfx::RectF(30.0f, 91.0f, 100.0f, 12.0f),
+      },
+      {},
+      {CreateNormalStyle(), CreateNormalStyle(), CreateNormalStyle(),
+       CreateNormalStyle(), CreateBoldStyle(), CreateNormalStyle()});
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "• ");
+  EXPECT_EQ(ax::mojom::Role::kHeading, page->GetChildAtIndex(1u)->GetRole());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kHeading, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest,
@@ -5780,6 +5909,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedList) {
       ListStartReason::kUnorderedMarker, 2);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.ListMaxNestingDepth", 2, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kShallowerMarker, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
+  histogram_tester.ExpectTotalCount("Accessibility.PdfHeuristics.ListEndReason",
+                                    2);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicNestedUnorderedListThreeLevels) {
@@ -6831,6 +6967,16 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicListTypeChangeStartsNewSublist) {
       "Accessibility.PdfHeuristics.NestedOrderedListItemCount", 2, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.TopLevelOrderedListItemCount", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kNewListMarker, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kShallowerMarker, 1);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.ListEndReason", ListEndReason::kPageEnd, 1);
+  histogram_tester.ExpectTotalCount("Accessibility.PdfHeuristics.ListEndReason",
+                                    3);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListRequiresSequence) {
@@ -7197,6 +7343,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListOutOfSequenceEndsItem) {
   CheckParagraph(page->GetChildAtIndex(1u), "4.C");
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.TopLevelOrderedListItemCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.ListEndReason",
+      ListEndReason::kOutOfSequenceMarker, 1);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicOrderedListFirstLineIndent) {

@@ -24160,6 +24160,22 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeadingClassifier) -->
 
+<!-- LINT.IfChange(PdfAccessibilityListEndReason) -->
+
+<enum name="PdfAccessibilityListEndReason">
+  <int value="0" label="Page end"/>
+  <int value="1" label="New list marker"/>
+  <int value="2" label="Shallower list marker (sublist ends)"/>
+  <int value="3" label="Outdented non-list text"/>
+  <int value="4" label="Out-of-sequence marker"/>
+  <int value="5" label="Graphic"/>
+  <int value="6" label="Header or footer"/>
+  <int value="7" label="Paragraph"/>
+  <int value="8" label="Heading"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:PdfAccessibilityListEndReason) -->
+
 <!-- LINT.IfChange(PdfAccessibilityListStartReason) -->
 
 <enum name="PdfAccessibilityListStartReason">

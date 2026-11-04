@@ -2625,6 +2625,17 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.ListEndReason"
+    enum="PdfAccessibilityListEndReason" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the reason a list ended in an untagged PDF document. Recorded once
+    per list (including nested lists) when it ends.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.ListMaxNestingDepth"
     units="levels" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>
