@@ -16,10 +16,10 @@
 
 #include <cstddef>
 
-#include "tensorflow/lite/builtin_ops.h"
-#include "tensorflow/lite/c/builtin_op_data.h"
-#include "tensorflow/lite/c/c_api.h"
-#include "tensorflow/lite/c/c_api_opaque.h"
+#include "tensorflow/lite/builtin_ops.h"        // from @litert
+#include "tensorflow/lite/c/builtin_op_data.h"  // from @litert
+#include "tensorflow/lite/c/c_api.h"            // from @litert
+#include "tensorflow/lite/c/c_api_opaque.h"     // from @litert
 
 namespace mediapipe {
 namespace {

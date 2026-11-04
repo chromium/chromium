@@ -25,19 +25,19 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_set.h"
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/match.h"
-#include "absl/strings/numbers.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
-#include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
+#include "absl/container/flat_hash_set.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"           // from @com_google_absl
+#include "absl/log/absl_log.h"             // from @com_google_absl
+#include "absl/memory/memory.h"            // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status_macros.h"     // from @com_google_absl
+#include "absl/strings/ascii.h"            // from @com_google_absl
+#include "absl/strings/match.h"            // from @com_google_absl
+#include "absl/strings/numbers.h"          // from @com_google_absl
+#include "absl/strings/str_cat.h"          // from @com_google_absl
+#include "absl/strings/str_join.h"         // from @com_google_absl
+#include "absl/strings/str_split.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/dynamic_message.h"
 #include "google/protobuf/io/coded_stream.h"
@@ -50,7 +50,6 @@
 #include "mediapipe/framework/deps/proto_descriptor.pb.h"
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/calculator_graph_template.pb.h"
 #include "mediapipe/framework/tool/proto_util_lite.h"
 
@@ -1424,7 +1423,7 @@ void SerializeField(const Message* message, const FieldDescriptor* field,
   ABSL_CHECK(DeterministicallySerialize(*message, &message_bytes));
   ProtoUtilLite::FieldAccess access(
       field->number(), static_cast<ProtoUtilLite::FieldType>(field->type()));
-  MEDIAPIPE_CHECK_OK(access.SetMessage(message_bytes));
+  ABSL_CHECK_OK(access.SetMessage(message_bytes));
   *result = *access.mutable_field_values();
 }
 
@@ -1525,7 +1524,7 @@ void StowFieldValue(Message* message, TemplateExpression* expression,
   const Reflection* reflection = message->GetReflection();
   const Descriptor* descriptor = message->GetDescriptor();
   ProtoUtilLite::ProtoPath path;
-  MEDIAPIPE_CHECK_OK(ProtoPathSplit(expression->path(), &path));
+  ABSL_CHECK_OK(ProtoPathSplit(expression->path(), &path));
   int field_number = path[path.size() - 1].field_id;
   const FieldDescriptor* field = descriptor->FindFieldByNumber(field_number);
 
@@ -1738,7 +1737,7 @@ class TemplateParser::Parser::MediaPipeParserImpl
       *args = {""};
     } else {
       constexpr char kPlaceholderValue[] = "1";
-      MEDIAPIPE_CHECK_OK(
+      ABSL_CHECK_OK(
           ProtoUtilLite::Serialize({kPlaceholderValue}, field_type, args));
     }
   }
@@ -1751,9 +1750,9 @@ class TemplateParser::Parser::MediaPipeParserImpl
     ProtoUtilLite::FieldValue message_bytes;
     ABSL_CHECK(message->SerializePartialToString(&message_bytes));
     int count;
-    MEDIAPIPE_CHECK_OK(ProtoUtilLite::GetFieldCount(
+    ABSL_CHECK_OK(ProtoUtilLite::GetFieldCount(
         message_bytes, {{field->number(), 0}}, field_type, &count));
-    MEDIAPIPE_CHECK_OK(ProtoUtilLite::ReplaceFieldRange(
+    ABSL_CHECK_OK(ProtoUtilLite::ReplaceFieldRange(
         &message_bytes, {{field->number(), count}}, 0, field_type, args));
     ABSL_CHECK(message->ParsePartialFromString(message_bytes));
   }

@@ -25,10 +25,13 @@
 // the parameters in between calls to ProcessBlock().
 //
 
-
 #ifndef AUDIO_DSP_LOUDNESS_BACKGROUND_LEVEL_DETECTOR_H_
 #define AUDIO_DSP_LOUDNESS_BACKGROUND_LEVEL_DETECTOR_H_
 
+#include <cstdint>
+#include <vector>
+
+#include "audio/dsp/eigen_types.h"
 #include "audio/dsp/envelope_detector.h"
 #include "audio/linear_filters/biquad_filter.h"
 #include "audio/linear_filters/ladder_filter.h"
@@ -95,10 +98,13 @@ class BackgroundLevelDetector {
   // Process a block of multi-channel data with the level detector. The two
   // outputs can be accessed using MostRecentInstantaneousLevel() and
   // MostRecentBackgroundLevel(). Filter must be initialized.
-  bool ProcessBlock(const Eigen::ArrayXXf& input);
+  template <typename Input>
+  bool ProcessBlock(Input&& input) {
+    return ProcessBlockWrapped(WrapContainer(std::forward<Input>(input)));
+  }
 
   // Gets the most recently processed samples of the instantaneous level
-  // measurement in DBFS, corresponding to the samples from the same time
+  // measurement in dBFS, corresponding to the samples from the same time
   // as the samples from GetBackgroundLevelEstimate().
   const Eigen::ArrayXXf& GetInstantaneousLevelEstimate() const {
     return fast_envelope_;
@@ -132,7 +138,7 @@ class BackgroundLevelDetector {
   // Must be on the range (0, 1].
   void SetTransientSensitivity(float sensitivity);
 
-  // Must be positive. Resonable values are less that a few seconds.
+  // Must be positive. Reasonable values are less that a few seconds.
   void SetTransientRejectionTime(float transient_rejection_time_seconds);
 
   // Check the current value of the parameters.
@@ -141,6 +147,14 @@ class BackgroundLevelDetector {
   }
 
  private:
+  template <typename WrappedInput>
+  bool ProcessBlockWrapped(WrappedInput&& input) {
+    ABSL_DCHECK_EQ(input.rows(), num_channels_);
+    return ProcessBlockInternal(input.HoldReadOnly().AsArray(num_channels_));
+  }
+
+  bool ProcessBlockInternal(Eigen::Map<const Eigen::ArrayXXf> input);
+
   BackgroundLevelDetectorParams params_;
   int num_channels_;
   double sample_rate_hz_;
@@ -168,7 +182,7 @@ class BackgroundLevelDetector {
   // There is an initial burn-in period in which the background filter moves
   // much faster to forget the zero initial condition and move toward the signal
   // level.
-  std::vector<uint8 /* bool */> burn_in_stage_;
+  std::vector<uint8_t /* bool */> burn_in_stage_;
   float burn_in_background_coeff_;
 };
 }  // namespace audio_dsp

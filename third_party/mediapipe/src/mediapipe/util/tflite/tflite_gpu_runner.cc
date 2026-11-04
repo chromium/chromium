@@ -19,29 +19,28 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/absl_log.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "mediapipe/framework/port/canonical_errors.h"
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/status/statusor.h"       // from @com_google_absl
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/gpu/gl_base.h"
-#include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/core/interpreter_builder.h"
-#include "tensorflow/lite/delegates/gpu/api.h"
-#include "tensorflow/lite/delegates/gpu/common/data_type.h"
-#include "tensorflow/lite/delegates/gpu/common/model.h"
-#include "tensorflow/lite/delegates/gpu/common/model_builder.h"
-#include "tensorflow/lite/delegates/gpu/gl/api2.h"
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/model.h"
-#include "tensorflow/lite/model_builder.h"
+#include "tensorflow/lite/core/api/op_resolver.h"                // from @litert
+#include "tensorflow/lite/core/interpreter_builder.h"            // from @litert
+#include "tensorflow/lite/delegates/gpu/api.h"                   // from @litert
+#include "tensorflow/lite/delegates/gpu/common/data_type.h"      // from @litert
+#include "tensorflow/lite/delegates/gpu/common/model.h"          // from @litert
+#include "tensorflow/lite/delegates/gpu/common/model_builder.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/api2.h"               // from @litert
+#include "tensorflow/lite/interpreter.h"                         // from @litert
+#include "tensorflow/lite/model.h"                               // from @litert
+#include "tensorflow/lite/model_builder.h"                       // from @litert
 
 // This code should be enabled as soon as TensorFlow version, which mediapipe
 // uses, will include this module.
 #if defined(__ANDROID__) || defined(MEDIAPIPE_CHROMIUMOS)
-#include "tensorflow/lite/delegates/gpu/cl/api.h"
+#include "tensorflow/lite/delegates/gpu/cl/api.h"  // from @litert
 #endif
 
 namespace tflite {

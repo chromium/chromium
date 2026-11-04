@@ -1,0 +1,8 @@
+# Work around .sframe linker errors with GCC 15 and GNU ld 2.45+.
+# The assembler generates .sframe sections with broken relocations for
+# COMDAT sections, causing link failures. Disable .sframe generation.
+# See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=119066
+build --copt=-Wa,--gsframe=no
+
+# Suppress signed-unsigned comparison warnings from dependencies.
+build --copt=-Wno-sign-compare

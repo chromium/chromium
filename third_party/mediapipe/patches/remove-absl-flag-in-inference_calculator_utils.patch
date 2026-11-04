@@ -18,13 +18,13 @@ index 0ad860c5480ec..c4d1dea48f354 100644
  #include <string>
  #include <vector>
  
--#include "absl/flags/flag.h"
- #include "absl/status/status.h"
- #include "absl/status/status_macros.h"
- #include "absl/status/statusor.h"
+-#include "absl/flags/flag.h"            // from @com_google_absl
+ #include "absl/status/status.h"         // from @com_google_absl
+ #include "absl/status/status_macros.h"  // from @com_google_absl
+ #include "absl/status/statusor.h"       // from @com_google_absl
 @@ -37,10 +36,6 @@
- #include "tensorflow/lite/portable_type_to_tflitetype.h"
- #include "tensorflow/lite/string_util.h"
+ #include "tensorflow/lite/portable_type_to_tflitetype.h"  // from @litert
+ #include "tensorflow/lite/string_util.h"                  // from @litert
  
 -ABSL_FLAG(int, xnnpack_default_num_threads, 0,
 -          "Default number of xnnpack threads to use. If unset, determines a "
@@ -50,13 +50,13 @@ index 481f9baf6b101..25a1b5214fb1e 100644
  #include <cstdint>
  #include <string>
  
--#include "absl/flags/declare.h"
- #include "absl/status/status.h"
- #include "absl/status/statusor.h"
+-#include "absl/flags/declare.h"    // from @com_google_absl
+ #include "absl/status/status.h"    // from @com_google_absl
+ #include "absl/status/statusor.h"  // from @com_google_absl
  #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
 @@ -29,8 +28,6 @@
- #include "tensorflow/lite/interpreter.h"
- #include "tensorflow/lite/util.h"
+ #include "tensorflow/lite/interpreter.h"  // from @litert
+ #include "tensorflow/lite/util.h"         // from @litert
  
 -ABSL_DECLARE_FLAG(int, xnnpack_default_num_threads);
 -

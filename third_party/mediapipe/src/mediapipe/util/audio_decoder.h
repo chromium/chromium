@@ -20,11 +20,11 @@
 #include <string>
 #include <vector>
 
-#include "absl/flags/flag.h"
-#include "absl/time/time.h"
+#include "absl/flags/flag.h"     // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/time/time.h"      // from @com_google_absl
 #include "mediapipe/framework/formats/time_series_header.pb.h"
 #include "mediapipe/framework/packet.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/util/audio_decoder.pb.h"
 

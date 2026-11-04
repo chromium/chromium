@@ -546,6 +546,7 @@ third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils
 third_party/mediapipe/src/mediapipe/tasks/cc/text/custom_ops/sentencepiece
 third_party/mediapipe/src/mediapipe/util/tflite/operations
 third_party/mediapipe/src/third_party
+third_party/mediapipe/src/third_party/com_google_audio_tools
 third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/portable
 third_party/mediapipe/src/third_party/com_google_audio_tools/external
 third_party/metrics_proto

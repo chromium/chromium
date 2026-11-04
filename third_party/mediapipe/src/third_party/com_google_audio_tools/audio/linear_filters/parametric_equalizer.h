@@ -93,7 +93,7 @@ class ParametricEqualizerParams {
 
   // Filters for boosting or attenuating specific frequencies.
   std::vector<EqualizerFilterParams> all_stages_;
-  std::vector<uint8 /* bool */> stages_enabled_;
+  std::vector<uint8_t /* bool */> stages_enabled_;
 };
 
 

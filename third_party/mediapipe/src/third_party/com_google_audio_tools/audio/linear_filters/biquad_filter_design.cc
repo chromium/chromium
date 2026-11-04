@@ -96,7 +96,7 @@ BiquadFilterCoefficients RangedBandpassBiquadFilterCoefficients(
   CheckArgumentsBandEdges(sample_rate_hz, lower_passband_edge_hz,
                           upper_passband_edge_hz);
   // Prewarp the band edges rather than warping the transform to match at
-  // one frequeny.
+  // one frequency.
   const double omega_1 = BilinearPrewarp(lower_passband_edge_hz,
                                          sample_rate_hz);
   const double omega_2 = BilinearPrewarp(upper_passband_edge_hz,
@@ -113,7 +113,7 @@ BiquadFilterCoefficients RangedBandstopBiquadFilterCoefficients(
   CheckArgumentsBandEdges(sample_rate_hz, lower_stopband_edge_hz,
                           upper_stopband_edge_hz);
   // Prewarp the band edges rather than warping the transform to match at
-  // one frequeny.
+  // one frequency.
   const double omega_1 = BilinearPrewarp(lower_stopband_edge_hz,
                                          sample_rate_hz);
   const double omega_2 = BilinearPrewarp(upper_stopband_edge_hz,

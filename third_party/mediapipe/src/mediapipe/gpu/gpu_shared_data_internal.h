@@ -27,11 +27,12 @@
 #include <string>
 #include <utility>
 
-#include "absl/base/thread_annotations.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
-#include "absl/synchronization/mutex.h"
-#include "absl/types/span.h"
+#include "absl/base/thread_annotations.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"           // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/statusor.h"          // from @com_google_absl
+#include "absl/synchronization/mutex.h"    // from @com_google_absl
+#include "absl/types/span.h"               // from @com_google_absl
 #include "mediapipe/framework/calculator_context.h"
 #include "mediapipe/framework/calculator_node.h"
 #include "mediapipe/framework/executor.h"
@@ -174,7 +175,7 @@ struct GpuSharedData {
   static std::shared_ptr<GpuResources> CreateGpuResourcesOrDie(
       PlatformGlContext external_context) {
     auto status_or_resources = GpuResources::Create(external_context);
-    MEDIAPIPE_CHECK_OK(status_or_resources.status())
+    ABSL_CHECK_OK(status_or_resources.status())
         << ": could not create GpuResources";
     return std::move(status_or_resources).value();
   }

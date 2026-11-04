@@ -16,7 +16,8 @@
 
 #include <cmath>
 
-#include "absl/types/optional.h"
+#include "absl/status/status.h"   // from @com_google_absl
+#include "absl/types/optional.h"  // from @com_google_absl
 #include "mediapipe/calculators/util/detections_to_rects_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/calculator_options.pb.h"
@@ -24,7 +25,6 @@
 #include "mediapipe/framework/formats/location_data.pb.h"
 #include "mediapipe/framework/formats/rect.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 

@@ -15,8 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "absl/strings/str_format.h"
-#include "absl/types/span.h"
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"    // from @com_google_absl
+#include "absl/types/span.h"            // from @com_google_absl
 #include "mediapipe/calculators/tflite/tflite_tensors_to_segmentation_calculator.pb.h"
 #include "mediapipe/framework/calculator_context.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -26,18 +28,18 @@
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/resource_util.h"
-#include "tensorflow/lite/interpreter.h"
+#include "tensorflow/lite/interpreter.h"  // from @litert
 
 #if !defined(MEDIAPIPE_DISABLE_GL_COMPUTE)
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/shader_util.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_buffer.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_texture.h"
-#include "tensorflow/lite/delegates/gpu/gl_delegate.h"
-#endif  // !MEDIAPIPE_DISABLE_GPU
+#include "tensorflow/lite/delegates/gpu/gl/gl_buffer.h"   // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"   // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_texture.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl_delegate.h"    // from @litert
+#endif                                           // !MEDIAPIPE_DISABLE_GPU
 
 namespace {
 constexpr int kWorkgroupSize = 8;  // Block size for GPU shader.

@@ -15,8 +15,8 @@
 #ifndef MEDIAPIPE_UTIL_TFLITE_OPERATIONS_TRANSPOSE_CONV_BIAS_H_
 #define MEDIAPIPE_UTIL_TFLITE_OPERATIONS_TRANSPOSE_CONV_BIAS_H_
 
-#include "tensorflow/lite/kernels/internal/types.h"
-#include "tensorflow/lite/kernels/kernel_util.h"
+#include "tensorflow/lite/kernels/internal/types.h"  // from @litert
+#include "tensorflow/lite/kernels/kernel_util.h"     // from @litert
 
 namespace mediapipe {
 namespace tflite_operations {

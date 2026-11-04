@@ -15,12 +15,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "mediapipe/framework/port/canonical_errors.h"
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "mediapipe/framework/profiler/profiler_resource_util.h"
 
 namespace mediapipe {
 
-StatusOr<std::string> GetDefaultTraceLogDirectory() {
+absl::StatusOr<std::string> GetDefaultTraceLogDirectory() {
   // Get the Documents directory. iOS apps can write files to this directory.
   NSURL* documents_directory_url = [[[NSFileManager defaultManager]
       URLsForDirectory:NSDocumentDirectory

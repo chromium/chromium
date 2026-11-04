@@ -19,14 +19,15 @@ limitations under the License.
 #include <cstring>
 #include <functional>
 
-#include "absl/status/statusor.h"
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "contrib/minizip/ioapi.h"
 #include "contrib/minizip/zip.h"
-#include "flatbuffers/flatbuffers.h"
+#include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "mediapipe/tasks/cc/common.h"
 #include "mediapipe/tasks/cc/metadata/utils/zip_writable_mem_file.h"
 #include "mediapipe/tasks/metadata/metadata_schema_generated.h"
-#include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/schema/schema_generated.h"  // from @litert
 
 namespace mediapipe {
 namespace tasks {

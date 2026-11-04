@@ -19,21 +19,21 @@
 #include <memory>
 #include <vector>
 
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/gpu/gl_base.h"
-#include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/delegates/gpu/api.h"
-#include "tensorflow/lite/delegates/gpu/common/model.h"
-#include "tensorflow/lite/delegates/gpu/common/shape.h"
-#include "tensorflow/lite/delegates/gpu/gl/api2.h"
-#include "tensorflow/lite/model.h"
-#include "tensorflow/lite/model_builder.h"
+#include "tensorflow/lite/core/api/op_resolver.h"        // from @litert
+#include "tensorflow/lite/delegates/gpu/api.h"           // from @litert
+#include "tensorflow/lite/delegates/gpu/common/model.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/common/shape.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/api2.h"       // from @litert
+#include "tensorflow/lite/model.h"                       // from @litert
+#include "tensorflow/lite/model_builder.h"               // from @litert
 
 #if defined(__ANDROID__) || defined(MEDIAPIPE_CHROMIUMOS)
-#include "tensorflow/lite/delegates/gpu/cl/api.h"
+#include "tensorflow/lite/delegates/gpu/cl/api.h"  // from @litert
 #endif  // defined(__ANDROID__) || defined(MEDIAPIPE_CHROMIUMOS)
 
 namespace tflite {

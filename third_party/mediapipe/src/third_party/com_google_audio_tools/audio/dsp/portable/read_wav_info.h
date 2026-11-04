@@ -44,6 +44,7 @@ struct ReadWavInfo {
   enum EncodingType {
     kPcm16Encoding,
     kPcm24Encoding,
+    kPcm32Encoding,
     kMuLawEncoding,
     kIeeeFloat32Encoding,
     kIeeeFloat64Encoding,
@@ -63,5 +64,4 @@ typedef struct ReadWavInfo ReadWavInfo;
 }  /* extern "C" */
 #endif
 
-/* NOLINTNEXTLINE(build/header_guard) */
 #endif  /* AUDIO_DSP_PORTABLE_READ_WAV_INFO_H_ */

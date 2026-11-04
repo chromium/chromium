@@ -20,8 +20,8 @@ limitations under the License.
 #include <iostream>
 #include <vector>
 
-#include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
-#include "tensorflow/lite/kernels/kernel_util.h"
+#include "tensorflow/lite/kernels/internal/tensor_ctypes.h"  // from @litert
+#include "tensorflow/lite/kernels/kernel_util.h"             // from @litert
 
 namespace mediapipe::tflite_operations {
 namespace kmeans_embedding_lookup_op {

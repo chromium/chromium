@@ -21,9 +21,9 @@
 
 #include <memory>
 
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "mediapipe/calculators/tensor/image_to_tensor_converter.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/statusor.h"
 
 namespace mediapipe {
 

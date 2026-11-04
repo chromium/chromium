@@ -16,17 +16,17 @@
 
 #include "audio/dsp/testing_util.h"
 
-#include <cmath>
 #include <complex>
 #include <deque>
 #include <initializer_list>
+#include <limits>
 #include <list>
+#include <vector>
 
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "absl/types/span.h"
-
-#include "audio/dsp/porting.h"  // auto-added.
-
+#include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 namespace {
@@ -83,7 +83,7 @@ TYPED_TEST(FloatArrayNearContainerTypeTest, DoesNotMatchWrongOrder) {
 
 TYPED_TEST(FloatArrayNearContainerTypeTest, DoesNotMatchNaNs) {
   typedef TypeParam ContainerType;
-  auto test_values = {1.0f, MathLimits<float>::kNaN};
+  auto test_values = {1.0f, std::numeric_limits<float>::quiet_NaN()};
   ContainerType test_container(test_values);
 
   EXPECT_THAT(test_container,
@@ -156,7 +156,7 @@ TYPED_TEST(FloatArrayEqContainerTypeTest, DoesNotMatchWrongOrder) {
 
 TYPED_TEST(FloatArrayEqContainerTypeTest, DoesNotMatchNaNs) {
   typedef TypeParam ContainerType;
-  auto reference_values = {1.0f, MathLimits<float>::kNaN};
+  auto reference_values = {1.0f, std::numeric_limits<float>::quiet_NaN()};
   ContainerType reference_container(reference_values);
   const Matcher<ContainerType> m = FloatArrayEq(reference_container);
   EXPECT_FALSE(m.Matches(reference_container));
@@ -165,8 +165,8 @@ TYPED_TEST(FloatArrayEqContainerTypeTest, DoesNotMatchNaNs) {
 
 TYPED_TEST(FloatArrayEqContainerTypeTest, HandlesInfinities) {
   typedef TypeParam ContainerType;
-  auto reference_values =
-      {1.0f, MathLimits<float>::kPosInf, MathLimits<float>::kNegInf};
+  auto reference_values = {1.0f, std::numeric_limits<float>::infinity(),
+                           -std::numeric_limits<float>::infinity()};
   ContainerType reference_container(reference_values);
   const Matcher<ContainerType> m = FloatArrayEq(reference_container);
   EXPECT_TRUE(m.Matches(reference_container));

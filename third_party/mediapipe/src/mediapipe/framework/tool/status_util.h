@@ -18,9 +18,9 @@
 #include <string>
 #include <vector>
 
-#include "absl/base/macros.h"
-#include "absl/strings/string_view.h"
-#include "mediapipe/framework/port/status.h"
+#include "absl/base/macros.h"          // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 
 namespace mediapipe {
 namespace tool {

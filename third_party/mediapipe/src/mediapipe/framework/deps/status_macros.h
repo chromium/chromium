@@ -11,14 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// Helper macros and methods to return and propagate errors with
-// `absl::Status`.
-//
-// The owners of mediapipe do not endorse use of these macros as a good
-// programming practice, and would prefer that you write the equivalent C++
-// directly. The macros are provided and supported for those that disagree,
-// with the goal of having a single, consistent, and robust implementation.
 
 #ifndef MEDIAPIPE_DEPS_STATUS_MACROS_H_
 #define MEDIAPIPE_DEPS_STATUS_MACROS_H_
@@ -29,7 +21,7 @@
 #include "absl/status/status.h"
 #include "absl/status/status_macros.h"
 #include "mediapipe/framework/deps/source_location.h"
-#include "mediapipe/framework/deps/status_builder.h"
+#include "mediapipe/framework/port/status_builder.h"
 
 // Evaluates an expression that produces a `absl::Status`. If the status
 // is not ok, returns it from the current function.

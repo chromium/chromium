@@ -491,8 +491,8 @@ class RationalFactorResampler: public Resampler<ValueType> {
   // which is
   //   o = ceil((fd * (a - num_taps + 1) - p) / fn).
   int ComputeOutputSizeFromCurrentState(int input_size) {
-    const int64 min_consumed_input =
-        static_cast<int64>(delayed_input_.size()) + input_size - num_taps_ + 1;
+    const int64_t min_consumed_input =
+        static_cast<int64_t>(delayed_input_.size()) + input_size - num_taps_ + 1;
     if (min_consumed_input <= 0) {
       return 0;
     }

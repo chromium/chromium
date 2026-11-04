@@ -15,12 +15,12 @@
 #include "mediapipe/util/tflite/operations/transform_tensor_bilinear.h"
 
 #include "tensorflow/lite/delegates/gpu/common/mediapipe/transform_tensor_bilinear.h"  // from @litert
-#include "tensorflow/lite/delegates/gpu/common/types.h"
-#include "tensorflow/lite/kernels/internal/common.h"
-#include "tensorflow/lite/kernels/internal/compatibility.h"
-#include "tensorflow/lite/kernels/internal/tensor.h"
-#include "tensorflow/lite/kernels/padding.h"
-#include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/delegates/gpu/common/types.h"      // from @litert
+#include "tensorflow/lite/kernels/internal/common.h"         // from @litert
+#include "tensorflow/lite/kernels/internal/compatibility.h"  // from @litert
+#include "tensorflow/lite/kernels/internal/tensor.h"         // from @litert
+#include "tensorflow/lite/kernels/padding.h"                 // from @litert
+#include "tensorflow/lite/schema/schema_generated.h"         // from @litert
 
 namespace mediapipe {
 namespace tflite_operations {

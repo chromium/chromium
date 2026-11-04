@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 // Class for generating spectrogram slices from a waveform.
 // http://goto/waveform-erase Used in conjunction with the class
 // InverseSpectrogram.  Initialize() should be called before calls to
@@ -36,23 +35,59 @@
 #define AUDIO_DSP_SPECTROGRAM_SPECTROGRAM_H_
 
 #include <complex>
-#include <deque>
+#include <memory>
 #include <optional>
 #include <vector>
 
-#include "glog/logging.h"
-#include "third_party/fft2d/fft.h"
+#include "third_party/eigen3/Eigen/Core"
+#include "third_party/pffft/src/pffft.h"
 
-#include "audio/dsp/porting.h"  // auto-added.
 
 
 namespace audio_dsp {
-using std::vector;
 
-class Spectrogram {
+namespace internal {
+
+// FFT implementations for Spectrogram.
+template <typename Scalar>
+struct SpectrogramFftImpl;
+
+template <>
+struct SpectrogramFftImpl<float> {
+  explicit SpectrogramFftImpl(int fft_length);
+  ~SpectrogramFftImpl();
+  void Reset();
+  void Process(int fft_length, int window_length, int output_frequency_channels,
+               const float* input_queue, const Eigen::ArrayXf& window);
+
+  PFFFT_Setup* setup;
+  Eigen::ArrayXf fft_input_output;
+  std::vector<float> real_input;
+  // Aligned buffers for pffft.
+  float* pffft_in;
+  float* pffft_out;
+};
+
+template <>
+struct SpectrogramFftImpl<double> {
+  explicit SpectrogramFftImpl(int fft_length);
+  ~SpectrogramFftImpl() = default;
+  void Reset();
+  void Process(int fft_length, int window_length, int output_frequency_channels,
+               const double* input_queue, const Eigen::ArrayXd& window);
+
+  Eigen::ArrayXd fft_input_output;
+  std::vector<int> integer_working_area;
+  std::vector<double> double_working_area;
+};
+
+}  // namespace internal
+
+template <typename Scalar = double>
+class SpectrogramT {
  public:
-  Spectrogram() : initialized_(false) {}
-  ~Spectrogram() {}
+  SpectrogramT() : initialized_(false) {}
+  ~SpectrogramT() = default;
 
   // Initializes the class with a given window length and step length
   // (both in samples). Internally a Hann window is used as the window
@@ -60,11 +95,14 @@ class Spectrogram {
   // are possible. window_length must be greater than 1 and step
   // length must be greater than 0. fft_length defines the fft length which must
   // be greater than window_length and a power of 2.
+  // Note: SpectrogramT<float> requires a transform size of at least 32
+  // (a limitation due to pffft). SpectrogramT<double> supports any
+  // power-of-two size.
   bool Initialize(int window_length, int step_length,
                   std::optional<int> fft_length = std::nullopt);
 
   // Initialize with an explicit window instead of a length.
-  bool Initialize(const std::vector<double>& window, int step_length,
+  bool Initialize(const std::vector<Scalar>& window, int step_length,
                   std::optional<int> fft_length = std::nullopt);
 
   // Re-initializes/resets the internal sample buffer to the state before any
@@ -82,15 +120,15 @@ class Spectrogram {
   // The template parameters can be float or double.
   template <class InputSample, class OutputSample>
   bool ComputeComplexSpectrogram(
-      const vector<InputSample>& input,
-      vector<vector<std::complex<OutputSample>>>* output);
+      const std::vector<InputSample>& input,
+      std::vector<std::vector<std::complex<OutputSample>>>* output);
 
   // This function works as the one above, but returns the power
   // (the L2 norm, or the squared magnitude) of each complex value.
   template <class InputSample, class OutputSample>
   bool ComputeSquaredMagnitudeSpectrogram(
-      const vector<InputSample>& input,
-      vector<vector<OutputSample>>* output);
+      const std::vector<InputSample>& input,
+      std::vector<std::vector<OutputSample>>* output);
 
   // Allow templating of a single function name that emits complex values or
   // magnitude depending on the type of the output pointer.  This allows
@@ -98,24 +136,27 @@ class Spectrogram {
   // code.
   template <class InputSample, class OutputSample>
   bool ComputeSpectrogram(
-      const vector<InputSample>& input,
-      vector<vector<std::complex<OutputSample>>>* output);
+      const std::vector<InputSample>& input,
+      std::vector<std::vector<std::complex<OutputSample>>>* output) {
+    return ComputeComplexSpectrogram(input, output);
+  }
   template <class InputSample, class OutputSample>
-  bool ComputeSpectrogram(
-      const vector<InputSample>& input,
-      vector<vector<OutputSample>>* output);
+  bool ComputeSpectrogram(const std::vector<InputSample>& input,
+                          std::vector<std::vector<OutputSample>>* output) {
+    return ComputeSquaredMagnitudeSpectrogram(input, output);
+  }
 
   // Return reference to the window function used internally.
-  const vector<double>& GetWindow() const { return window_; }
+  typedef Eigen::Array<Scalar, Eigen::Dynamic, 1> ArrayX;
+  const ArrayX& GetWindow() const { return window_; }
 
   // Return the number of frequency channels in the spectrogram.
   int output_frequency_channels() const { return output_frequency_channels_; }
 
  private:
   template <class InputSample>
-  bool GetNextWindowOfSamples(const vector<InputSample>& input,
+  bool GetNextWindowOfSamples(const std::vector<InputSample>& input,
                               int* input_start);
-  void ProcessCoreFFT();
 
   int fft_length_;
   int output_frequency_channels_;
@@ -124,17 +165,19 @@ class Spectrogram {
   bool initialized_;
   int samples_to_next_step_;
 
-  vector<double> window_;
-  vector<double> fft_input_output_;
-  std::deque<double> input_queue_;
+  ArrayX window_;
+  std::vector<Scalar> input_queue_;
 
   // Working data areas for the FFT routines.
-  vector<int> fft_integer_working_area_;
-  vector<double> fft_double_working_area_;
+  std::unique_ptr<internal::SpectrogramFftImpl<Scalar>> fft_impl_;
 
-  Spectrogram(const Spectrogram&) = delete;
-  Spectrogram& operator=(const Spectrogram&) = delete;
+  SpectrogramT(const SpectrogramT&) = delete;
+  SpectrogramT& operator=(const SpectrogramT&) = delete;
 };
+
+// For backward compatibility and convenience.
+using Spectrogram = SpectrogramT<double>;
+using SpectrogramFloat = SpectrogramT<float>;
 
 }  // namespace audio_dsp
 

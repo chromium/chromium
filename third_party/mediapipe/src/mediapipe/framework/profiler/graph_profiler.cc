@@ -18,18 +18,18 @@
 #include <list>
 #include <memory>
 
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/strings/substitute.h"
-#include "absl/synchronization/mutex.h"
-#include "absl/time/time.h"
+#include "absl/log/absl_check.h"         // from @com_google_absl
+#include "absl/log/absl_log.h"           // from @com_google_absl
+#include "absl/status/status.h"          // from @com_google_absl
+#include "absl/status/status_macros.h"   // from @com_google_absl
+#include "absl/strings/substitute.h"     // from @com_google_absl
+#include "absl/synchronization/mutex.h"  // from @com_google_absl
+#include "absl/time/time.h"              // from @com_google_absl
 #include "mediapipe/framework/port/advanced_proto_lite_inc.h"
-#include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/framework/port/proto_ns.h"
 #include "mediapipe/framework/port/re2.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/profiler/profiler_resource_util.h"
 #include "mediapipe/framework/tool/name_util.h"
 #include "mediapipe/framework/tool/tag_map.h"
@@ -392,7 +392,7 @@ std::set<int> GraphProfiler::GetBackEdgeIds(
     }
     std::string tag;
     int index;
-    MEDIAPIPE_CHECK_OK(
+    ABSL_CHECK_OK(
         tool::ParseTagIndex(input_stream_info.tag_index(), &tag, &index))
         << absl::Substitute("Cannot parse TAG or index for the backedge \"$0\"",
                             input_stream_info.tag_index());
@@ -706,7 +706,7 @@ absl::Status GraphProfiler::CaptureProfile(
   previous_log_end_time_ = end_time;
 
   // Record the latest CalculatorProfiles.
-  Status status;
+  absl::Status status;
   std::vector<CalculatorProfile> profiles;
   status.Update(GetCalculatorProfiles(&profiles));
   for (CalculatorProfile& p : profiles) {

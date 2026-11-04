@@ -8,17 +8,16 @@
 #include <string_view>
 #include <vector>
 
-#include "absl/container/btree_map.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_join.h"
+#include "absl/container/btree_map.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"       // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/strings/str_join.h"     // from @com_google_absl
 #include "fstream"
 #include "map"
 #include "mediapipe/framework/calculator_profile.pb.h"
 #include "mediapipe/framework/port/advanced_proto_inc.h"
-#include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/re2.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 namespace reporter {
@@ -107,7 +106,7 @@ typedef std::map<std::pair<int64_t, std::pair<int32_t, int32_t>>,
 // Maps node IDs to names.
 typedef std::map<int32_t, std::string> NameLookup;
 
-Reporter::Reporter() { MEDIAPIPE_CHECK_OK(set_columns({"*"})); }
+Reporter::Reporter() { ABSL_CHECK_OK(set_columns({"*"})); }
 
 int64_t RecursePacketStartTime(
     const PacketKeyToCalcTrace& output_trace_lookup,

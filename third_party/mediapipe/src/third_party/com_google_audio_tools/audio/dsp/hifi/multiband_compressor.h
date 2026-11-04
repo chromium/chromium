@@ -18,14 +18,13 @@
 #ifndef AUDIO_DSP_HIFI_MULTIBAND_COMPRESSOR_H_
 #define AUDIO_DSP_HIFI_MULTIBAND_COMPRESSOR_H_
 
+#include <vector>
+
 #include "audio/dsp/hifi/dynamic_range_control.h"
 #include "audio/dsp/hifi/multi_crossover_filter.h"
 #include "audio/linear_filters/crossover.h"
 #include "glog/logging.h"
 #include "third_party/eigen3/Eigen/Core"
-
-#include "audio/dsp/porting.h"  // auto-added.
-
 
 namespace audio_dsp {
 
@@ -155,8 +154,7 @@ class MultibandCompressor {
   MultiCrossoverFilter<float> band_splitter_;
   // Gain control for each band.
   std::vector<DynamicRangeControl> per_band_drc_;
-
-  Eigen::ArrayXXf workspace_;
+  std::vector<Eigen::ArrayXXf> filtered_output_;
 };
 
 }  // namespace audio_dsp

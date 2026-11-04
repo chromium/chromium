@@ -1,3 +1,20 @@
+# Copyright 2020-2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_test.bzl", "cc_test")
+
 # Description:
 #   Utilities for generic linear filtering.
 #
@@ -46,6 +63,7 @@ cc_library(
         "//audio/dsp:porting",
         "@com_github_glog_glog//:glog",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:span",
     ],
 )
 
@@ -226,6 +244,8 @@ cc_library(
     srcs = ["fir_filter.cc"],
     hdrs = ["fir_filter.h"],
     deps = [
+        "//audio/dsp:decibels",
+        "//audio/dsp:window_functions",
         "//third_party/eigen3",
         "@com_github_glog_glog//:glog",
     ],
@@ -237,6 +257,8 @@ cc_test(
     srcs = ["fir_filter_test.cc"],
     deps = [
         ":fir_filter",
+        "//audio/dsp:decibels",
+        "//audio/dsp:kiss_fft",
         "//audio/dsp:testing_util",
         "//third_party/eigen3",
         "@com_github_glog_glog//:glog",
@@ -257,6 +279,7 @@ cc_library(
         "//third_party/eigen3",
         "@com_github_glog_glog//:glog",
         "@com_google_absl//absl/base:core_headers",
+        "@com_google_absl//absl/types:span",
     ],
 )
 

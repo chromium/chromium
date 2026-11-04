@@ -68,6 +68,37 @@ MathUtil::QuadraticRootType MathUtil::RealRootsForQuadratic(
   return kTwoRealRoots;
 }
 
+// static
+bool MathUtil::RealRootsForCubic(long double a,
+                                 long double b,
+                                 long double c,
+                                 long double *r1,
+                                 long double *r2,
+                                 long double *r3) {
+  long double p = b - a * a / 3.0;
+  long double q = c - a * b / 3.0 + 2.0 * a * a * a / 27.0;
+  long double delta = q * q / 4.0 + p * p * p / 27.0;
+
+  if (delta > 0.0) {
+    return false;
+  }
+
+  long double r = std::sqrt(-p * p * p / 27.0);
+  if (r == 0.0) {
+    *r1 = *r2 = *r3 = -a / 3.0;
+    return true;
+  }
+
+  long double phi = std::acos(std::max<long double>(-1.0, std::min<long double>(1.0, -q / (2.0 * r))));
+  long double sqrt_neg_p_3 = std::sqrt(-p / 3.0);
+
+  *r1 = 2.0 * sqrt_neg_p_3 * std::cos(phi / 3.0) - a / 3.0;
+  *r2 = 2.0 * sqrt_neg_p_3 * std::cos((phi + 2.0 * M_PI) / 3.0) - a / 3.0;
+  *r3 = 2.0 * sqrt_neg_p_3 * std::cos((phi + 4.0 * M_PI) / 3.0) - a / 3.0;
+
+  return true;
+}
+
 namespace util {
 bool Demangle(const char *mangled, char *out, int out_size) {
   // We're not even going to attempt to demangle. This is just to get the
@@ -76,7 +107,7 @@ bool Demangle(const char *mangled, char *out, int out_size) {
   return true;
 }
 
-string Demangle(const char *mangled) {
+std::string Demangle(const char *mangled) {
   return {};
 }
 }  // namespace util

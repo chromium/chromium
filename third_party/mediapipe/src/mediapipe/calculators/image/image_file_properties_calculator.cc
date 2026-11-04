@@ -14,11 +14,11 @@
 
 #include <memory>
 
-#include "exif.h"
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "exif.h"                       // from @easyexif
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_file_properties.pb.h"
-#include "mediapipe/framework/port/canonical_errors.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 

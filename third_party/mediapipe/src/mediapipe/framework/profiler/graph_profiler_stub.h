@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-#include "mediapipe/framework/port/status.h"
+#include "absl/status/status.h"  // from @com_google_absl
 #include "mediapipe/framework/timestamp.h"
 
 namespace mediapipe {

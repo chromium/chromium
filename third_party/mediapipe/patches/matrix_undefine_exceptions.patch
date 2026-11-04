@@ -23,4 +23,4 @@ index 13a6576157186..0eed6fed87841 100644
 +
  #include <string>
  
- #include "Eigen/Core"
+ #include "Eigen/Core"  // from @eigen

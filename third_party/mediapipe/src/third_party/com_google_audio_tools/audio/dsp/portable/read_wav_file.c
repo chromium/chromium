@@ -1,10 +1,21 @@
-/* For details on the WAV file format, see for instance
- * http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html.
+/* Copyright 2019, 2021-2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include "audio/dsp/portable/read_wav_file.h"
 
-#include <limits.h>
+#include <errno.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -63,7 +74,8 @@ int16_t* Read16BitWavFile(const char* file_name, size_t* num_samples,
   ReadWavInfo info;
 
   if (!f) {
-    LOG_ERROR("Error: Failed to open \"%s\" for reading.\n", file_name);
+    LOG_ERROR("Error: Failed to open \"%s\" for reading: %s\n", file_name,
+              strerror(errno));
     return NULL;
   }
   if (!ReadWavHeaderGeneric(&w, &info)) {
@@ -108,19 +120,30 @@ static void InPlaceFloatToInt32Conversion(size_t num_elements, void* input) {
   ABSL_CHECK(sizeof(int32_t) == 4);
   ABSL_CHECK(sizeof(float) == 4);
 
-  const float kLowest = INT32_MIN;
-  const float kMax = INT32_MAX;
-  const float normalizer = -kLowest;
   unsigned char* bytes = input;
   size_t i;
   for (i = 0; i < num_elements; ++i, bytes += 4) {
-    float input_float = 0;
-    memcpy(&input_float, bytes, 4);
-    float normalized = input_float * normalizer;
-    float clipped = normalized > kMax ? kMax : normalized;
-    clipped = clipped < kLowest ? kLowest : clipped;
-    if (clipped != clipped /* isnan(clipped) */) { clipped = 0; }
-    int32_t input_int = (int32_t)clipped;
+    float sample_f32;
+    memcpy(&sample_f32, bytes, 4);
+
+    int32_t input_int;
+    if (sample_f32 != sample_f32 /* isnan(sample_f32) */) {
+      input_int = 0;
+    } else {
+      sample_f32 *= 2147483648.0f;  /* Scale [-1, 1] to int32_t range. */
+      /* Beware that 32-bit float cannot represent INT32_MAX exactly,
+       * (float)INT32_MAX = 2147483648.0f, which is off by one and would
+       * overflow if casted to int32_t.
+       */
+      if (sample_f32 >= (float)INT32_MAX) {
+        input_int = INT32_MAX;
+      } else if (sample_f32 <= (float)INT32_MIN) {
+        input_int = INT32_MIN;
+      } else {
+        input_int = (int32_t)sample_f32;
+      }
+    }
+
     memcpy(bytes, &input_int, 4);
   }
 }
@@ -138,7 +161,8 @@ int32_t* ReadWavFile(const char* file_name, size_t* num_samples,
   ReadWavInfo info;
 
   if (!f) {
-    LOG_ERROR("Error: Failed to open \"%s\" for reading.\n", file_name);
+    LOG_ERROR("Error: Failed to open \"%s\" for reading: %s\n", file_name,
+              strerror(errno));
     return NULL;
   }
   if (!ReadWavHeaderGeneric(&w, &info)) {

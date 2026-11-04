@@ -198,6 +198,8 @@
 #ifndef AUDIO_DSP_RESAMPLER_Q_H_
 #define AUDIO_DSP_RESAMPLER_Q_H_
 
+#include <algorithm>
+#include <cstdint>
 #include <cstring>
 #include <type_traits>
 #include <vector>
@@ -205,8 +207,9 @@
 #include "audio/dsp/eigen_types.h"
 #include "audio/dsp/resampler.h"
 #include "audio/dsp/types.h"
+#include "absl/base/optimization.h"
 #include "absl/log/absl_check.h"
-#include "absl/meta/type_traits.h"
+#include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
 
 #include "audio/dsp/porting.h"  // auto-added.
@@ -281,7 +284,7 @@ std::vector<ValueType> QResampleSignal(float input_sample_rate,
                                        const QResamplerParams& params,
                                        absl::Span<const ValueType> input) {
   ABSL_CHECK_GE(num_channels, 1);
-  ABSL_CHECK_EQ(static_cast<int>(input.size()) % num_channels, 0);
+  ABSL_CHECK_EQ(input.size() % num_channels, 0);
   const int num_input_frames = input.size() / num_channels;
 
   QResampler<ValueType> resampler(
@@ -338,15 +341,14 @@ class QResampler
   // Initializes (or reinitializes) the resampler.
   bool Init(float input_sample_rate, float output_sample_rate,
             int num_channels = 1, const QResamplerParams& params = {}) {
+    num_channels_ = num_channels;
     if (!filters_.Init(input_sample_rate, output_sample_rate, params) ||
         num_channels <= 0) {
-      num_channels_ = 1;
       valid_ = false;
       return false;
     }
 
     delayed_input_.resize(num_channels, filters_.num_taps() - 1);
-    num_channels_ = num_channels;
     valid_ = true;
     this->Reset();
     return true;
@@ -446,7 +448,7 @@ class QResampler
       return 0;
     }
     return static_cast<int>(
-        (static_cast<int64>(min_consumed_input) * factor_denominator() -
+        (static_cast<int64_t>(min_consumed_input) * factor_denominator() -
          phase_ + factor_numerator() - 1) /
         factor_numerator());
   }
@@ -474,7 +476,7 @@ class QResampler
       return 0;
     }
     return static_cast<int>(
-               (static_cast<int64>(num_output_frames - 1) * factor_numerator() +
+               (static_cast<int64_t>(num_output_frames - 1) * factor_numerator() +
                 phase_) /
                factor_denominator()) +
            filters_.num_taps() - delayed_input_frames_;
@@ -547,12 +549,12 @@ class QResampler
     ABSL_CHECK(valid_);
     int num_input_frames;
     // Validate input shape.
-    if /*constexpr*/ (Input::Dims == 1) {
+    if constexpr (Input::Dims == 1) {
       ABSL_CHECK_EQ(input.size() % num_channels_, 0)
           << "Input size must be divisible by num_channels = " << num_channels_
           << ", got: " << input.size();
       num_input_frames = input.size() / num_channels_;
-    } else if /*constexpr*/ (Input::IsVectorAtCompileTime) {
+    } else if constexpr (Input::IsVectorAtCompileTime) {
       ABSL_CHECK_EQ(num_channels_, 1)
           << "Eigen vector type allowed only for num_channels = 1.";
       num_input_frames = input.size();
@@ -563,13 +565,13 @@ class QResampler
 
     const int num_output_frames = NextNumOutputFrames(num_input_frames);
     // Resize or validate output shape.
-    if /*constexpr*/ (Output::Dims == 1) {
+    if constexpr (Output::Dims == 1) {
       ABSL_CHECK(output.resize(num_channels_ * num_output_frames))
           << "Expected output.size() == num_channels * num_output_frames == "
           << num_channels_ << " * " << num_output_frames
           << ", got: " << output.size()
           << ". Use NextNumOutputFrames() to get the correct output size.";
-    } else if /*constexpr*/ (Output::IsVectorAtCompileTime) {
+    } else if constexpr (Output::IsVectorAtCompileTime) {
       ABSL_CHECK_EQ(num_channels_, 1)
           << "Eigen vector type allowed only for num_channels = 1.";
       ABSL_CHECK(output.resize(num_output_frames))
@@ -602,7 +604,7 @@ class QResampler
           (Output::Dims == 1) ? Eigen::Dynamic : Output::RowsAtCompileTime;
       constexpr int kRows = (kInRows != Eigen::Dynamic) ? kInRows : kOutRows;
 
-      if /*constexpr*/ (kRows != Eigen::Dynamic) {
+      if constexpr (kRows != Eigen::Dynamic) {
         Impl::ProcessSamplesGeneric(
             filters_,
             mapped_delayed_input<kRows>(),
@@ -661,7 +663,7 @@ namespace qresampler_internal {
 // definition of ProcessSamplesGeneric().
 template <typename ValueTypeOrImpl, typename>
 struct UnpackTemplateArg {
-  using ValueType = typename absl::decay_t<ValueTypeOrImpl>;
+  using ValueType = typename std::decay_t<ValueTypeOrImpl>;
   using CoeffType = typename RealType<ValueType>::Type;
 
   // Resampling implementation.
@@ -795,7 +797,7 @@ struct UnpackTemplateArg {
 
 template <typename ValueTypeOrImpl>
 struct UnpackTemplateArg<
-    ValueTypeOrImpl, typename absl::void_t<typename ValueTypeOrImpl::ValueType>>
+    ValueTypeOrImpl, typename std::void_t<typename ValueTypeOrImpl::ValueType>>
     : public ValueTypeOrImpl {};
 
 template <typename CoeffType /* either float or double */>
@@ -826,7 +828,7 @@ class QResamplerFilters {
   // Gets the max possible output size for the given max input size.
   int MaxOutputFrames(int max_input_frames) const {
     return static_cast<int>(
-        (static_cast<int64>(max_input_frames) * factor_denominator_ +
+        (static_cast<int64_t>(max_input_frames) * factor_denominator_ +
          factor_numerator_ - 1) /
         factor_numerator_);
   }
@@ -837,7 +839,7 @@ class QResamplerFilters {
       return 0;
     }
     return static_cast<int>(
-               (static_cast<int64>(num_output_frames - 1) * factor_numerator_ +
+               (static_cast<int64_t>(num_output_frames - 1) * factor_numerator_ +
                 factor_denominator_ - 1) /
                factor_denominator_) +
            num_taps_;

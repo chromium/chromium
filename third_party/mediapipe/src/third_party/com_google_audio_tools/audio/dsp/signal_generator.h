@@ -22,12 +22,14 @@
 #include <cmath>
 #include <complex>
 #include <random>
+#include <type_traits>
 #include <vector>
 
+#include "audio/linear_filters/biquad_filter.h"
+#include "audio/linear_filters/biquad_filter_coefficients.h"
 #include "glog/logging.h"
 #include "third_party/eigen3/Eigen/Core"
 
-#include "audio/dsp/porting.h"  // auto-added.
 
 
 namespace audio_dsp {
@@ -90,12 +92,52 @@ template <typename Scalar>
 Eigen::Array<Scalar, Eigen::Dynamic, 1> GenerateWhiteGaussianNoise(
     int n, Scalar mean, Scalar stddev) {
   Eigen::Array<Scalar, Eigen::Dynamic, 1> noise(n);
+  if (stddev == Scalar(0)) {
+    noise.setConstant(mean);
+    return noise;
+  }
   std::mt19937 gen(0 /* seed */);
   std::normal_distribution<Scalar> d(mean, stddev);
   for (int i = 0; i < n; ++i) {
     noise(i) = d(gen);
   }
   return noise;
+}
+
+namespace internal {
+
+// Returns a filter that converts white noise to pink noise. The
+// filter_t60_samples value is the number of samples until the impulse
+// response of the filter hits t60. This many samples should be removed from
+// the resultant filtered audio to remove transient effects.
+linear_filters::BiquadFilterCascadeCoefficients PinkNoiseCoeffs(
+    int* filter_t60_samples);
+
+}  // namespace internal
+
+// Computes a pink noise signal with a specified RMS value. Pink noise features
+// a 3dB/octave rolloff.
+template <typename Scalar>
+Eigen::Array<Scalar, Eigen::Dynamic, 1> GeneratePinkNoise(
+    int length_samples, Scalar noise_rms) {
+  int filter_t60_samples;
+  auto coeffs = internal::PinkNoiseCoeffs(&filter_t60_samples);
+  int total_length = filter_t60_samples + length_samples;
+  Eigen::Array<Scalar, Eigen::Dynamic, 1> signal =
+      GenerateWhiteGaussianNoise(total_length, 0.0f, 1.0f);
+  // Make the signal pink and trim off the transient.
+  linear_filters::BiquadFilterCascade<Scalar> neg3db_per_octave;
+  Eigen::Array<Scalar, Eigen::Dynamic, 1> pink =
+      Eigen::ArrayXf::Zero(total_length);
+  neg3db_per_octave.Init(1, coeffs);
+  neg3db_per_octave.ProcessBlock(signal, &pink);
+  Eigen::Array<Scalar, Eigen::Dynamic, 1> pink_trimmed =
+      pink.tail(length_samples);
+
+  Scalar actual_rms = std::sqrt(pink_trimmed.square().mean());
+  pink_trimmed *= noise_rms / actual_rms;
+
+  return pink_trimmed;
 }
 
 }  // namespace audio_dsp

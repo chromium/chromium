@@ -14,24 +14,27 @@
 
 #include "mediapipe/framework/deps/ret_check.h"
 
+#include "absl/status/status.h"          // from @com_google_absl
+#include "absl/status/status_builder.h"  // from @com_google_absl
+#include "absl/types/source_location.h"  // from @com_google_absl
+
 namespace mediapipe {
 
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location) {
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location) {
   // TODO Implement LogWithStackTrace().
-  return mediapipe::InternalErrorBuilder(location)
+  return absl::StatusBuilder(absl::StatusCode::kInternal, location)
          << "RET_CHECK failure (" << location.file_name() << ":"
          << location.line() << ") ";
 }
 
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location, const char* condition) {
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location,
+                                         const char* condition) {
   return mediapipe::RetCheckFailSlowPath(location) << condition;
 }
 
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location, const char* condition,
-    const absl::Status& status) {
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location,
+                                         const char* condition,
+                                         const absl::Status& status) {
   return mediapipe::RetCheckFailSlowPath(location)
          << condition << " returned " << status << " ";
 }

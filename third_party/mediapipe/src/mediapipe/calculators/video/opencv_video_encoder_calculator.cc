@@ -18,8 +18,9 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_log.h"
-#include "absl/strings/str_split.h"
+#include "absl/log/absl_log.h"       // from @com_google_absl
+#include "absl/status/status.h"      // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "mediapipe/calculators/video/opencv_video_encoder_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -30,7 +31,6 @@
 #include "mediapipe/framework/port/opencv_video_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/source_location.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/framework/tool/status_util.h"
 

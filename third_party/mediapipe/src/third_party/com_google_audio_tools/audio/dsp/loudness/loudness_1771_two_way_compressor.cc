@@ -15,8 +15,16 @@
  */
 
 #include "audio/dsp/loudness/loudness_1771_two_way_compressor.h"
+
+#include <algorithm>
+#include <cmath>
+#include <memory>
+
+#include "audio/dsp/attack_release_envelope.h"
+#include "audio/dsp/decibels.h"
+#include "audio/dsp/hifi/dynamic_range_control_functions.h"
 #include "glog/logging.h"
-#include "absl/memory/memory.h"
+#include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 
@@ -75,9 +83,10 @@ bool Loudness1771TwoWayCompressor::Init(
 
   if (!loudness_meter_.Init(params_.streaming_loudness_params, num_channels_,
                             sample_rate_hz_)) {
+    num_channels_ = 0;   // So subsequent processing calls will fail.
     return false;
   }
-  envelope_ = absl::make_unique<AttackReleaseEnvelope>(
+  envelope_ = std::make_unique<AttackReleaseEnvelope>(
       params_.attack_s, params_.release_s, sample_rate_hz_);
 
   int lookahead_samples = std::round(params_.lookahead_s * sample_rate_hz_);
@@ -92,18 +101,19 @@ void Loudness1771TwoWayCompressor::Reset() {
   envelope_->Reset();
 }
 
-void Loudness1771TwoWayCompressor::ComputeGainFromDetectedSignal(
+void Loudness1771TwoWayCompressor::ApplyAttackReleaseInLinearDomain(
     VectorType* data_ptr) {
-  // Most of the computation happens in-place on *data_ptr.
   VectorType& data = *data_ptr;
   for (int i = 0; i < data.rows(); ++i) {
     // Occasionally a negative will come up due to numerical imprecision.
     // Apply attack/release smoothing.
     data[i] = std::max(1e-12f, envelope_->Output(data[i]));
   }
+}
 
-  PowerRatioToDecibels(data, &data);
-
+void Loudness1771TwoWayCompressor::ComputeGainInDecibelDomain(
+    VectorType* data_ptr) {
+  VectorType& data = *data_ptr;
   // Store the gain computation in temporary workspace in order to preserve the
   // loudness measurements for computing gain changes. A second workspace
   // variable is needed because data is actually workspace_ under typical use.
@@ -119,8 +129,19 @@ void Loudness1771TwoWayCompressor::ComputeGainFromDetectedSignal(
   // Compute only the gain changes.
   gain_computation_workspace -= data;
   gain_computation_workspace += params_.output_gain_db;
+  data = gain_computation_workspace;
+}
 
-  DecibelsToAmplitudeRatio(gain_computation_workspace, &data /* linear gain */);
+void Loudness1771TwoWayCompressor::ComputeGainFromDetectedSignal(
+    const Eigen::ArrayXf& loudness, VectorType* gain_ptr) {
+  DecibelsToPowerRatio(loudness, gain_ptr);
+
+  VectorType& data = *gain_ptr;
+  // Most of the computation happens in-place on *data_ptr.
+  ApplyAttackReleaseInLinearDomain(gain_ptr);
+  PowerRatioToDecibels(data, &data);
+  ComputeGainInDecibelDomain(gain_ptr);
+  DecibelsToAmplitudeRatio(data, &data /* linear gain */);
   ABSL_DCHECK(data.allFinite());
 }
 

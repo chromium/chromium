@@ -17,12 +17,12 @@
 #include "audio/dsp/spectral_processor.h"
 
 #include <algorithm>
-#include <cstdlib>
-#include <cstring>
 #include <vector>
 
 #include "audio/dsp/number_util.h"
 #include "absl/types/span.h"
+#include "third_party/eigen3/Eigen/Core"
+#include "glog/logging.h"
 
 namespace audio_dsp {
 
@@ -82,11 +82,19 @@ using ::std::vector;
 
 namespace {
 static int GreatestCommonDivisorWithHopSize(std::vector<int> all_sizes,
-                                     int hop_size) {
+                                            int hop_size) {
   all_sizes.push_back(hop_size);
   return GreatestCommonDivisor(all_sizes);
 }
 }  // namespace
+
+SpectralProcessorParams MakeParamsFromDeprecatedArgs(Span<const float> window,
+                                                     int hop_size) {
+  SpectralProcessorParams params(window.size());
+  params.hop_size = hop_size;
+  std::copy_n(window.begin(), window.size(), params.window.begin());
+  return params;
+}
 
 SpectralProcessor::SpectralProcessor(int num_in_channels, int num_out_channels,
                                      int chunk_length, Span<const float> window,
@@ -100,42 +108,70 @@ SpectralProcessor::SpectralProcessor(
     int num_in_channels, int num_out_channels,
     const std::vector<int>& possible_chunk_lengths, Span<const float> window,
     int block_length, int hop_size, Callback* block_processor)
+    : SpectralProcessor(
+          num_in_channels, num_out_channels, possible_chunk_lengths,
+          MakeParamsFromDeprecatedArgs(window, hop_size), block_processor) {
+  ABSL_CHECK_EQ(block_length, window.size());
+}
+
+SpectralProcessor::SpectralProcessor(
+    int num_in_channels, int num_out_channels,
+    const std::vector<int>& possible_chunk_lengths,
+    const SpectralProcessorParams& params, Callback* block_processor)
     : num_in_channels_(num_in_channels),
       num_out_channels_(num_out_channels),
-      hop_size_(hop_size),
-      block_length_(block_length),
+      hop_size_(params.hop_size),
+      block_length_(params.block_length),
+      fft_length_(params.fft_length),
       max_chunk_length_(*std::max_element(possible_chunk_lengths.begin(),
                                           possible_chunk_lengths.end())),
       block_processor_(block_processor),
       position_in_output_(0),
       // See notes above. This latency computation has a simple result, but
       // the derivation is a bit complicated.
-      initial_delay_(block_length_ - GreatestCommonDivisorWithHopSize(
-                                         possible_chunk_lengths, hop_size)),
-      out_overflow_(num_out_channels_, (max_chunk_length_ + block_length_)),
-      window_(block_length_),
-      transformer_(block_length_, true),
+      initial_delay_(block_length_ -
+                     GreatestCommonDivisorWithHopSize(possible_chunk_lengths,
+                                                      params.hop_size)),
+      out_overflow_(Eigen::ArrayXXf::Zero(num_out_channels_,
+                                          (max_chunk_length_ + block_length_))),
+      window_(Eigen::ArrayXf::Zero(fft_length_)),
+      transformer_(fft_length_, true),
       time_workspace_(ArrayXXf::Zero(
-          block_length_, std::max(num_in_channels_, num_out_channels))),
+          fft_length_, std::max(num_in_channels_, num_out_channels))),
       unprocessed_block_workspace_(
-          ArrayXXf::Zero(num_in_channels, block_length_)),
+          ArrayXXf::Zero(num_in_channels, fft_length_)),
       processed_block_workspace_(
-          ArrayXXf::Zero(num_out_channels_, block_length_)),
-      in_fft_workspace_(RowMajorArrayXXcf(num_in_channels_,
-                                          transformer_.GetTransformedSize())),
-      out_fft_workspace_(RowMajorArrayXXcf(num_out_channels_,
-                                           transformer_.GetTransformedSize())) {
+          ArrayXXf::Zero(num_out_channels_, fft_length_)),
+      in_fft_workspace_(RowMajorArrayXXcf::Zero(
+          num_in_channels_, transformer_.GetTransformedSize())),
+      out_fft_workspace_(RowMajorArrayXXcf::Zero(
+          num_out_channels_, transformer_.GetTransformedSize())) {
   ABSL_CHECK_GT(num_in_channels_, 0);
   ABSL_CHECK_GT(block_length_, 0);
+  ABSL_CHECK_GE(params.window.size(), block_length_);
+  ABSL_CHECK_GE(fft_length_, block_length_);
   ABSL_CHECK_GT(max_chunk_length_, 0);
-  ABSL_CHECK_EQ(window.size(), block_length_);
   ABSL_CHECK(block_processor_);
-  window_ = Map<const ArrayXf>(window.data(), block_length_);
+  // Make a (possibly) zero-padded window.
+  std::copy_n(params.window.begin(), block_length_, window_.begin());
   Reset();
 }
 
+SpectralProcessor::SpectralProcessor(int num_in_channels, int num_out_channels,
+                                     int chunk_length,
+                                     const SpectralProcessorParams& params,
+                                     Callback* block_processor)
+    : SpectralProcessor(num_in_channels, num_out_channels,
+                        std::vector<int>{chunk_length}, params,
+                        block_processor) {}
+
 void SpectralProcessor::Reset() {
   out_overflow_.setZero();
+  time_workspace_.setZero();
+  unprocessed_block_workspace_.setZero();
+  processed_block_workspace_.setZero();
+  in_fft_workspace_.setZero();
+  out_fft_workspace_.setZero();
   in_circular_buffer_.Init(num_in_channels_ *
                            (max_chunk_length_ + block_length_));
 
@@ -162,14 +198,17 @@ void SpectralProcessor::ProcessChunk(const Map<const ArrayXXf>& input,
 
   in_circular_buffer_.Write(
       Span<const float>(input.data(), num_in_channels_ * this_chunk_length));
-
-  while (in_circular_buffer_.NumReadableEntries() >=
-         num_in_channels_ * block_length_) {
-    // Read and deinterleave (transpose) a block.
-    in_circular_buffer_.Peek(Span<float>(unprocessed_block_workspace_.data(),
-                                         unprocessed_block_workspace_.size()));
+  const int samples_to_read = num_in_channels_ * block_length_;
+  while (in_circular_buffer_.NumReadableEntries() >= samples_to_read) {
+    // If there is zero padding, the final portion of the unprocessed block will
+    // be zero. We zero the block as a safety measure, but nothing in the
+    // code actually writes nonzero entries to this portion.
+    unprocessed_block_workspace_.setZero();
+    in_circular_buffer_.Peek(
+        Span<float>(unprocessed_block_workspace_.data(), samples_to_read));
     in_circular_buffer_.Advance(num_in_channels_ * hop_size_);
 
+    // The returned block has already trimmed off the zero padding.
     const Map<const ArrayXXf> processed_block =
         WindowAndProcessInFrequencyDomain(unprocessed_block_workspace_);
 
@@ -189,12 +228,13 @@ void SpectralProcessor::ProcessChunk(const Map<const ArrayXXf>& input,
 const Map<const ArrayXXf> SpectralProcessor::WindowAndProcessInFrequencyDomain(
     const ArrayXXf& input) {
   ABSL_CHECK_EQ(input.rows(), num_in_channels());
-  ABSL_CHECK_EQ(input.cols(), block_length_);
+  ABSL_CHECK_EQ(input.cols(), fft_length_);
 
   // Window and transform the input.
-  Map<ArrayXXf> input_block(time_workspace_.data(), block_length_,
+  Map<ArrayXXf> input_block(time_workspace_.data(), fft_length_,
                             num_in_channels());
   input_block = input.transpose();
+
   input_block.colwise() *= window_;
 
   for (int i = 0; i < num_in_channels_; ++i) {
@@ -206,7 +246,7 @@ const Map<const ArrayXXf> SpectralProcessor::WindowAndProcessInFrequencyDomain(
                                      &out_fft_workspace_);
 
   // Transform and window the output.
-  Map<ArrayXXf> output_block(time_workspace_.data(), block_length_,
+  Map<ArrayXXf> output_block(time_workspace_.data(), fft_length_,
                              num_out_channels());
   for (int i = 0; i < num_out_channels_; ++i) {
     transformer_.InverseTransform(out_fft_workspace_.row(i).data(),

@@ -1,3 +1,18 @@
+/* Copyright 2019, 2021, 2023 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "audio/dsp/portable/fast_fun.h"
 
 #include <math.h>
@@ -5,15 +20,13 @@
 
 #include "audio/dsp/portable/fast_fun_compute_tables.h"
 #include "audio/dsp/portable/logging.h"
+#include "audio/dsp/portable/math_constants.h"
 
-#ifndef M_LN2
-#define M_LN2 0.693147180559945309417 /* log(2) */
-#endif                                /* M_LN2 */
-
-static double RandUniform() { return (double)rand() / RAND_MAX; }
+static double RandUniform(void) { return (double)rand() / RAND_MAX; }
 
 /* Compare FastLog2 with math.h. */
-void TestFastLog2Accuracy() {
+static void TestFastLog2Accuracy(void) {
+  puts("TestFastLog2Accuracy");
   /* An arbitrary spot check at x=4.2. */
   ABSL_CHECK(fabs(FastLog2(4.2) - log(4.2) / M_LN2) <= 0.002);
 
@@ -42,7 +55,8 @@ void TestFastLog2Accuracy() {
 }
 
 /* Compare FastExp2 with math.h. */
-void TestFastExp2Accuracy() {
+static void TestFastExp2Accuracy(void) {
+  puts("TestFastExp2Accuracy");
   /* An arbitrary spot check at x=4.2. */
   ABSL_CHECK(fabs(FastExp2(4.2) / exp(4.2 * M_LN2) - 1) <= 6e-4);
 
@@ -70,7 +84,8 @@ void TestFastExp2Accuracy() {
 }
 
 /* Compare FastPow with math.h. */
-void TestFastPowAccuracy() {
+static void TestFastPowAccuracy(void) {
+  puts("TestFastPowAccuracy");
   double max_rel_error = 0.0;
 
   /* Check x^y over a 2-D grid of points 0.1 <= x <= 50, -2 <= y <= 2. */
@@ -92,7 +107,8 @@ void TestFastPowAccuracy() {
 }
 
 /* Compare FastTanh with math.h. */
-void TestFastTanhAccuracy() {
+static void TestFastTanhAccuracy(void) {
+  puts("TestFastTanhAccuracy");
   /* Determined by testing 1 million random points uniformly in [-12, 12]. */
   const double kThreshold = 0.0008;
   double max_abs_error = 0.0;
@@ -118,8 +134,38 @@ void TestFastTanhAccuracy() {
   ABSL_CHECK(FastTanh(-1000.0f) == -1.0f);
 }
 
+/* Compare FastSigmoid with math.h. */
+static void TestFastSigmoidAccuracy(void) {
+  puts("TestFastSigmoidAccuracy");
+  /* Determined by testing 1 million random points uniformly in [-12, 12]. */
+  const double kThreshold = 0.0004;
+  double max_abs_error = 0.0;
+  int i;
+
+  for (i = 0; i < 1000000; ++i) {
+    const double x = 12.0 * (2 * RandUniform() - 1);
+    const double y = 1.0 / (1.0 + exp(-x));
+
+    const double abs_error = fabs(FastSigmoid(x) - y);
+    if (abs_error > max_abs_error) {
+      max_abs_error = abs_error;
+      if (abs_error >= kThreshold) {
+        printf("x=%g: FastSigmoid(x)=%g 1/(1+exp(-x))=%g\n",
+               x, FastSigmoid(x), y);
+      }
+    }
+  }
+
+  ABSL_CHECK(max_abs_error < kThreshold);
+
+  ABSL_CHECK(FastSigmoid(0.0f) == 0.5f);
+  ABSL_CHECK(FastSigmoid(1000.0f) == 1.0f); /* Check large arguments. */
+  ABSL_CHECK(FastSigmoid(-1000.0f) == 0.0f);
+}
+
 /* Finite differences of FastLog2 are close to exact derivative. */
-void TestFastLog2DerivativeAccuracy() {
+static void TestFastLog2DerivativeAccuracy(void) {
+  puts("TestFastLog2DerivativeAccuracy");
   double dlog2_max_rel_error = 0.0;
   int i;
 
@@ -143,7 +189,8 @@ void TestFastLog2DerivativeAccuracy() {
 }
 
 /* Finite differences of FastExp2 are close to exact derivative. */
-void TestFastExp2DerivativeAccuracy() {
+static void TestFastExp2DerivativeAccuracy(void) {
+  puts("TestFastExp2DerivativeAccuracy");
   double dexp2_max_rel_error = 0.0;
   int i;
 
@@ -167,7 +214,8 @@ void TestFastExp2DerivativeAccuracy() {
 }
 
 /* Checks that FastLog2 is monotonically increasing. */
-void TestFastLog2Monotonicity() {
+static void TestFastLog2Monotonicity(void) {
+  puts("TestFastLog2Monotonicity");
   float x;
   float prev_value = FastLog2(1e-3f / 1.2f);
   for (x = 1e-3f; x <= 1e3f; x *= 1.2f) { /* About 80 steps. */
@@ -178,7 +226,8 @@ void TestFastLog2Monotonicity() {
 }
 
 /* Checks that FastExp2 is monotonically increasing. */
-void TestFastExp2Monotonicity() {
+static void TestFastExp2Monotonicity(void) {
+  puts("TestFastExp2Monotonicity");
   float x;
   float prev_value = FastExp2(-8.2f);
   for (x = -8; x <= 8; x += 0.2f) { /* About 80 steps. */
@@ -189,7 +238,8 @@ void TestFastExp2Monotonicity() {
 }
 
 /* Checks that FastTanh is monotonically increasing. */
-void TestFastTanhMonotonicity() {
+static void TestFastTanhMonotonicity(void) {
+  puts("TestFastMonotonicity");
   float x;
   float prev_value = FastTanh(-8.2f);
   for (x = -8; x <= 8; x += 0.2f) { /* About 80 steps. */
@@ -200,7 +250,8 @@ void TestFastTanhMonotonicity() {
 }
 
 /* Checks that FastTanh is close to having odd symmetry about x=0. */
-void TestFastTanhOddSymmetry() {
+static void TestFastTanhOddSymmetry(void) {
+  puts("TestFastTanhOddSymmetry");
   double max_error = 0.0;
   int i;
 
@@ -218,7 +269,8 @@ void TestFastTanhOddSymmetry() {
 }
 
 /* Tests that hardcoded lookup tables agree with table computation functions. */
-void TestCheckTables() {
+static void TestCheckTables(void) {
+  puts("TestCheckTables");
   int i;
   {
     float table[256];
@@ -237,7 +289,7 @@ void TestCheckTables() {
 }
 
 /* Prints lookup tables. Called if the program runs with --print_tables. */
-void PrintTables() {
+static void PrintTables(void) {
   int i;
   {
     float table[256];
@@ -275,6 +327,7 @@ int main(int argc, char** argv) {
   TestFastExp2Accuracy();
   TestFastPowAccuracy();
   TestFastTanhAccuracy();
+  TestFastSigmoidAccuracy();
   TestFastLog2DerivativeAccuracy();
   TestFastExp2DerivativeAccuracy();
   TestFastLog2Monotonicity();

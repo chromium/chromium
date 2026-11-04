@@ -9,11 +9,11 @@ Change-Id: I889974f0ee47e53d5302f688e88df803bd11861c
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h b/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
-index 85881c9e8e82..050d621afb11 100644
+index b737fd9bb5f8..a204aa76be21 100644
 --- a/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
 +++ b/third_party/mediapipe/src/mediapipe/tasks/cc/text/tokenizers/sentencepiece_tokenizer.h
-@@ -25,7 +25,7 @@ limitations under the License.
- #include "absl/strings/string_view.h"
+@@ -25,7 +25,7 @@
+ #include "absl/strings/string_view.h"  // from @com_google_absl
  #include "mediapipe/framework/port/logging.h"
  #include "mediapipe/tasks/cc/text/tokenizers/tokenizer.h"
 -#include "sentencepiece/src/sentencepiece_processor.h"  // from @com_google_sentencepiece

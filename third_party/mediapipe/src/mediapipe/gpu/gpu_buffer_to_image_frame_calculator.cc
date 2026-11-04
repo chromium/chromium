@@ -17,12 +17,12 @@
 #include <memory>
 #include <utility>
 
-#include "absl/status/status.h"
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl  // IWYU pragma: keep
 #include "mediapipe/framework/api3/calculator.h"
 #include "mediapipe/framework/api3/calculator_context.h"
 #include "mediapipe/framework/api3/calculator_contract.h"
 #include "mediapipe/framework/formats/image_frame.h"
-#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/gpu/gpu_buffer_format.h"
 

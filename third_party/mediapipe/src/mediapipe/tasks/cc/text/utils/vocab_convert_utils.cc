@@ -7,19 +7,19 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_set.h"
-#include "absl/container/node_hash_map.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
+#include "absl/container/flat_hash_set.h"  // from @com_google_absl
+#include "absl/container/node_hash_map.h"  // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status_macros.h"     // from @com_google_absl
+#include "absl/status/statusor.h"          // from @com_google_absl
+#include "absl/strings/str_cat.h"          // from @com_google_absl
+#include "absl/strings/str_split.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
 #include "mediapipe/framework/deps/file_path.h"
 #include "mediapipe/framework/port/file_helpers.h"
 #include "mediapipe/util/resource_util.h"
-#include "nlohmann/json.hpp"  // from @com_github_nlohmann_json
-#include "nlohmann/json_fwd.hpp"
+#include "nlohmann/json.hpp"            // from @com_github_nlohmann_json
+#include "nlohmann/json_fwd.hpp"        // from @com_github_nlohmann_json
 #include "sentencepiece/src/builder.h"  // from @com_google_sentencepiece
 #include "sentencepiece/src/sentencepiece_model.pb.h"  // from @com_google_sentencepiece
 

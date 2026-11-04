@@ -30,35 +30,82 @@
 #define AUDIO_DSP_SPECTROGRAM_INVERSE_SPECTROGRAM_H_
 
 #include <complex>
-#include <deque>
+#include <memory>
 #include <vector>
+
+#include "third_party/eigen3/Eigen/Core"
+#include "third_party/pffft/src/pffft.h"
 
 namespace audio_dsp {
 
-class InverseSpectrogram {
+namespace internal {
+
+// FFT implementations for InverseSpectrogram.
+template <typename Scalar>
+struct InverseSpectrogramFftImpl;
+
+template <>
+struct InverseSpectrogramFftImpl<float> {
+  explicit InverseSpectrogramFftImpl(int fft_length);
+  ~InverseSpectrogramFftImpl();
+
+  // Template to support different input complex types.
+  template <typename Slice>
+  void Process(const Slice& slice, int fft_length, int frame_size, int overlap,
+               bool with_window_function, const Eigen::ArrayXf& window_function,
+               std::vector<float>& working_output);
+
+  PFFFT_Setup* setup;
+  Eigen::ArrayXf fft_input_output;
+  // Aligned buffers for pffft.
+  float* pffft_in;
+  float* pffft_out;
+};
+
+template <>
+struct InverseSpectrogramFftImpl<double> {
+  explicit InverseSpectrogramFftImpl(int fft_length);
+
+  template <typename Slice>
+  void Process(const Slice& slice, int fft_length, int frame_size, int overlap,
+               bool with_window_function, const Eigen::ArrayXd& window_function,
+               std::vector<double>& working_output);
+
+  Eigen::ArrayXd fft_input_output;
+  std::vector<int> integer_working_area;
+  std::vector<double> fft_double_working_area;
+};
+
+}  // namespace internal
+
+template <typename Scalar = double>
+class InverseSpectrogramT {
  public:
   // Computes a window that can be used in an InverseSpectrogram.
   // Constructs a window that is equal to the forward window with a further
   // pointwise amplitude correction.
   // Args:
-  //  - forward_window: should be the same window used for the forward transform
+  //  - analysis_window: should be the same window used in the forward transform
   //  (Spectrogram).
   //  - step_length: should be the same step length used for the forward
   //  transform (Spectrogram).
   // Returns a window suitable for reconstruction original waveform, assuming it
   // was supplied to this class's Initialize method.
   // Should be similar to TensorFlow's tf.signal.inverse_stft_window_fn.
-  static std::vector<double> GenerateSynthesisWindow(
-      const std::vector<double>& analysis_window, int step_length);
+  static std::vector<Scalar> GenerateSynthesisWindow(
+      const std::vector<Scalar>& analysis_window, int step_length);
 
-  InverseSpectrogram() : initialized_(false),
-                         at_least_one_frame_processed_(false) {}
-  ~InverseSpectrogram() {}
+  InverseSpectrogramT()
+      : initialized_(false), at_least_one_frame_processed_(false) {}
+  ~InverseSpectrogramT() = default;
 
   // Initializes the class to expect input spectrogram data generated
   // with a given FFT length and step length (both in samples).
   // Returns true on success, after which calls to Process() are
   // possible.
+  // Note: InverseSpectrogramT<float> requires a transform size of at least 32
+  // (a limitation due to pffft). InverseSpectrogramT<double> supports any
+  // power-of-two size.
   bool Initialize(int fft_length, int step_length);
 
   // Initialize with an explicit synthesis window function instead of a
@@ -67,8 +114,11 @@ class InverseSpectrogram {
   // the output of a FFT with that FFT-length and step-length (both in samples).
   // For perfect reconstruction the synthesis window should be the normalized
   // analysis window which was used to create the spectrogram. It can be created
-  // with the GenerateSynthesisWindow function.
-  bool Initialize(const std::vector<double>& window, int step_length);
+  // with the GenerateSynthesisWindow static method above.
+  // Note: InverseSpectrogramT<float> requires a transform size of at least 32
+  // (a limitation due to pffft). InverseSpectrogramT<double> supports any
+  // power-of-two size.
+  bool Initialize(const std::vector<Scalar>& window, int step_length);
 
   // Processes an arbitrary number of spectrogram frames from input,
   // placing the results in output. Process() may be called repeatedly
@@ -77,9 +127,14 @@ class InverseSpectrogram {
   // The template is instantiated for the 4 combinations of float and
   // double input and output samples.  It always goes from complex spectrum
   // input to real waveform output.
-  template <class InputSample, class OutputSample>
-  bool Process(const std::vector<std::vector<std::complex<InputSample>>>& input,
-               std::vector<OutputSample>* output);
+  //
+  // InputContainer must be one of
+  //   - vector<vector<complex<float>>>,
+  //   - vector<vector<complex<double>>>,
+  //   - Eigen::MatrixXcf.
+  // OutputSample must be either float or double.
+  template <class InputContainer, class OutputSample>
+  bool Process(const InputContainer& input, std::vector<OutputSample>* output);
 
   // After the end of a sequence of frames has been processed by
   // Process(), any remaining audio data buffered internally by the
@@ -90,18 +145,10 @@ class InverseSpectrogram {
   template <class OutputSample>
   bool Flush(std::vector<OutputSample>* output);
 
- protected:
+ private:
   // Initializes the class assuming that the fft_length_, frame_size_ and
   // step_length_ have been initialized and are valid values.
   bool InternalInitialize();
-
-  // Returns the value of the window function for a given sample number.
-  // For initialization without window a rect window of ones will be used. The
-  // window is padded with zeros to fill the whole FFT length.
-  double WindowValue(int sample_number) const;
-
- private:
-  void ProcessCoreFFT();
 
   int fft_length_;
   int frame_size_;   // In samples.
@@ -113,18 +160,20 @@ class InverseSpectrogram {
   bool with_window_function_;
   // Used as a synthesis window (after the inverse-FFT). For weighted overlap
   // add (WOLA).
-  std::vector<double> window_function_;
-  std::vector<double> fft_input_output_;
-  std::deque<double>
-      working_output_;  // A queue to do waveform overlap-add into.
+  typedef Eigen::Array<Scalar, Eigen::Dynamic, 1> ArrayX;
+  ArrayX window_function_;
+  // A queue to do waveform overlap-add into.
+  std::vector<Scalar> working_output_;
 
-  // Working data areas for the FFT routines.
-  std::vector<int> fft_integer_working_area_;
-  std::vector<double> fft_double_working_area_;
+  std::unique_ptr<internal::InverseSpectrogramFftImpl<Scalar>> fft_impl_;
 
-  InverseSpectrogram(const InverseSpectrogram&) = delete;
-  InverseSpectrogram& operator=(const InverseSpectrogram&) = delete;
+  InverseSpectrogramT(const InverseSpectrogramT&) = delete;
+  InverseSpectrogramT& operator=(const InverseSpectrogramT&) = delete;
 };
+
+// For backward compatibility and convenience.
+using InverseSpectrogram = InverseSpectrogramT<double>;
+using InverseSpectrogramFloat = InverseSpectrogramT<float>;
 
 }  // namespace audio_dsp
 

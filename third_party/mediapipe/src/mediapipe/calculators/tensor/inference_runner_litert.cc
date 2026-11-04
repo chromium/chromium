@@ -20,29 +20,29 @@
 #include <utility>
 #include <vector>
 
-#include "absl/algorithm/container.h"
-#include "absl/base/nullability.h"
-#include "absl/log/absl_log.h"
-#include "absl/log/log.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_format.h"  // IWYU pragma: keep
-#include "absl/strings/str_join.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/span.h"
-#include "litert/cc/litert_buffer_ref.h"                     // from @litert
-#include "litert/cc/litert_common.h"                         // from @litert
-#include "litert/cc/litert_compiled_model.h"                 // from @litert
-#include "litert/cc/litert_environment.h"                    // from @litert
-#include "litert/cc/litert_environment_options.h"            // from @litert
-#include "litert/cc/litert_layout.h"                         // from @litert
-#include "litert/cc/litert_macros.h"                         // from @litert
-#include "litert/cc/litert_model_types.h"                    // from @litert
-#include "litert/cc/litert_options.h"                        // from @litert
-#include "litert/cc/litert_ranked_tensor_type.h"             // from @litert
-#include "litert/cc/litert_tensor_buffer.h"                  // from @litert
+#include "absl/algorithm/container.h"   // from @com_google_absl
+#include "absl/base/nullability.h"      // from @com_google_absl
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/log/log.h"               // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/status/statusor.h"       // from @com_google_absl
+#include "absl/strings/str_cat.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl  // IWYU pragma: keep
+#include "absl/strings/str_join.h"                 // from @com_google_absl
+#include "absl/strings/string_view.h"              // from @com_google_absl
+#include "absl/types/span.h"                       // from @com_google_absl
+#include "litert/cc/litert_buffer_ref.h"           // from @litert
+#include "litert/cc/litert_common.h"               // from @litert
+#include "litert/cc/litert_compiled_model.h"       // from @litert
+#include "litert/cc/litert_environment.h"          // from @litert
+#include "litert/cc/litert_environment_options.h"  // from @litert
+#include "litert/cc/litert_layout.h"               // from @litert
+#include "litert/cc/litert_macros.h"               // from @litert
+#include "litert/cc/litert_model_types.h"          // from @litert
+#include "litert/cc/litert_options.h"              // from @litert
+#include "litert/cc/litert_ranked_tensor_type.h"   // from @litert
+#include "litert/cc/litert_tensor_buffer.h"        // from @litert
 #include "litert/cc/litert_tensor_buffer_requirements.h"     // from @litert
 #include "litert/cc/litert_tensor_buffer_types.h"            // from @litert
 #include "litert/cc/options/litert_cpu_options.h"            // from @litert
@@ -68,8 +68,8 @@
 
 #if MEDIAPIPE_METAL_ENABLED
 #include "mediapipe/framework/formats/tensor_mtl_buffer_view.h"
-#include "tensorflow/lite/delegates/gpu/metal/metal_device.h"
-#endif  // MEDIAPIPE_METAL_ENABLED
+#include "tensorflow/lite/delegates/gpu/metal/metal_device.h"  // from @litert
+#endif                                                // MEDIAPIPE_METAL_ENABLED
 #if MEDIAPIPE_OPENGL_ES_VERSION >= MEDIAPIPE_OPENGL_ES_31
 #include "mediapipe/gpu/gl_context.h"
 #endif
@@ -180,6 +180,26 @@ absl::StatusOr<litert::qualcomm::QualcommOptions::LogLevel> ToLiteRtLogLevel(
     default:
       return absl::InvalidArgumentError(absl::StrCat(
           "Unsupported Qualcomm log level ", static_cast<int>(mp_log_level)));
+  }
+}
+
+absl::StatusOr<litert::qualcomm::QualcommOptions::HtpPdSession>
+ToLiteRtHtpPdSession(
+    InferenceCalculatorOptions::Delegate::LiteRt::Npu::Qualcomm::HtpPdSession
+        mp_pd_session) {
+  using HtpPdSession = litert::qualcomm::QualcommOptions::HtpPdSession;
+  using QualcommDelegateOptions =
+      InferenceCalculatorOptions::Delegate::LiteRt::Npu::Qualcomm;
+  switch (mp_pd_session) {
+    case QualcommDelegateOptions::HTP_PD_SESSION_UNSPECIFIED:
+    case QualcommDelegateOptions::HTP_PD_SESSION_UNSIGNED:
+      return HtpPdSession::kUnsigned;
+    case QualcommDelegateOptions::HTP_PD_SESSION_SIGNED:
+      return HtpPdSession::kSigned;
+    default:
+      return absl::InvalidArgumentError(
+          absl::StrCat("Unsupported Qualcomm HTP PD session ",
+                       static_cast<int>(mp_pd_session)));
   }
 }
 
@@ -709,6 +729,12 @@ InferenceRunnerLiteRt::Create(
         LITERT_ASSIGN_OR_RETURN(auto log_level,
                                 ToLiteRtLogLevel(qualcomm_proto.log_level()));
         qualcomm_options.SetLogLevel(log_level);
+      }
+      if (qualcomm_proto.has_htp_pd_session()) {
+        LITERT_ASSIGN_OR_RETURN(
+            auto htp_pd_session,
+            ToLiteRtHtpPdSession(qualcomm_proto.htp_pd_session()));
+        qualcomm_options.SetHtpPdSession(htp_pd_session);
       }
     }
   }
@@ -1373,7 +1399,16 @@ InferenceRunnerLiteRt::CreateCpuOutputTensorBufferFromMpTensor(
                           litert::TensorBuffer::CreateFromHostMemory(
                               *environment_, tensor_type, output_tensor_data,
                               output_tensor_size_bytes));
-  mp_output_tensor_views.push_back(std::move(output_tensor_view));
+  if (mp_output_tensor.ready_as_ahwb()) {
+    // An AHardwareBuffer is mapped to the CPU only while its view is alive, so
+    // keep the view until inference completes.
+    mp_output_tensor_views.push_back(std::move(output_tensor_view));
+  }
+  // Otherwise the tensor's CPU buffer stays valid without the view. Releasing
+  // the view here avoids holding the locks of all outputs at once, which
+  // records a lock order that downstream calculators may violate. AHWB-backed
+  // outputs (e.g. when a downstream calculator reads the tensor as a GPU
+  // buffer) still keep their views above and thus still record that order.
   return output_buffer;
 }
 
@@ -1606,10 +1641,15 @@ InferenceRunnerLiteRt::CreateMpOutputTensors(
                           CreateOutputRankedTensorType(
                               model_tensor_type, output_tensor_layouts[i]));
 
+    // Attach the model's output quantization so that quantized outputs can be
+    // dequantized downstream, as with the legacy TFLite runners.
+    LITERT_ASSIGN_OR_RETURN(const litert::SimpleTensor& model_tensor,
+                            signature.OutputTensor(static_cast<size_t>(i)));
     ABSL_ASSIGN_OR_RETURN(
         Tensor mp_output_tensor,
         CreateTensorFromLiteRtRankedTensorType(
-            tensor_type, memory_manager_, LITERT_HOST_MEMORY_BUFFER_ALIGNMENT));
+            tensor_type, memory_manager_, LITERT_HOST_MEMORY_BUFFER_ALIGNMENT,
+            GetMpQuantizationParameters(model_tensor)));
     mp_output_tensors.push_back(std::move(mp_output_tensor));
   }
   return mp_output_tensors;

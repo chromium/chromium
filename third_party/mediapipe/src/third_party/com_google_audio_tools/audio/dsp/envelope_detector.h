@@ -26,7 +26,6 @@
 #include "audio/linear_filters/biquad_filter.h"
 #include "third_party/eigen3/Eigen/Core"
 
-#include "audio/dsp/porting.h"  // auto-added.
 
 
 namespace audio_dsp {
@@ -73,7 +72,18 @@ class EnvelopeDetector {
   // of envelope_cutoff_hz_ or small blocks of input samples, this
   // may not produce samples at every call.
   // You must initialize first. Returns true when successful.
-  bool ProcessBlock(const Eigen::ArrayXXf& input, Eigen::ArrayXXf* output);
+  template <typename Input, typename Output>
+  bool ProcessBlock(Input&& input, Output&& output) {
+    ABSL_DCHECK_EQ(input.rows(), num_channels_);
+    auto in = WrapContainer(std::forward<Input>(input));
+    int out_cols = input.cols();
+    if (envelope_sample_rate_hz_ != sample_rate_hz_) {
+      out_cols = downsampler_.NextNumOutputFrames(input.cols());
+    }
+    auto out = WrapContainer(DerefIfPointer(std::forward<Output>(output)));
+    out.resize(num_channels_, out_cols);
+    return ProcessBlockWrapped(in, out);
+  }
 
   // Returns an array containing the smoothed energy at each channel for the
   // most recently processed samples.
@@ -82,6 +92,15 @@ class EnvelopeDetector {
   }
 
  private:
+  template <typename WrappedInput, typename WrappedOutput>
+  bool ProcessBlockWrapped(WrappedInput&& input, WrappedOutput&& output) {
+    return ProcessBlockInternal(input.HoldReadOnly().AsArray(num_channels_),
+                                output.HoldWriteOnly().AsArray(num_channels_));
+  }
+
+  bool ProcessBlockInternal(Eigen::Map<const Eigen::ArrayXXf> input,
+                            Eigen::Map<Eigen::ArrayXXf> output);
+
   int num_channels_;
   float sample_rate_hz_;
 

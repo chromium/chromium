@@ -26,7 +26,7 @@
 #include "absl/strings/str_format.h"
 #include "third_party/eigen3/Eigen/Core"
 
-#include "audio/dsp/porting.h"  // auto-added.
+
 
 
 namespace audio_dsp {
@@ -60,7 +60,7 @@ template <typename TypeParam>
 class SignalGeneratorTypedTest : public ::testing::Test {};
 
 // Different arithmetic ValueType types to test.
-typedef ::testing::Types<float, double, int16, int32, int64> TestTypes;
+typedef ::testing::Types<float, double, int16_t, int32_t, int64_t> TestTypes;
 TYPED_TEST_SUITE(SignalGeneratorTypedTest, TestTypes);
 
 // Test SignalGenerator for different template args.
@@ -152,6 +152,16 @@ TEST(SignalGeneratorTest, GenerateWhiteGaussianNoise) {
       for (float stddev : {0.0f, 0.1f, 1.0f, 10.0f}) {
         TestGaussianNoise(n, mean, stddev);
       }
+    }
+  }
+}
+TEST(SignalGeneratorTest, PinkNoiseRMSTest) {
+  for (int size : {10, 100, 4000}) {
+    for (float signal_rms : {0.1f, 1.0f, 10.0f}) {
+      Eigen::ArrayXf pink = GeneratePinkNoise(size, signal_rms);
+      ASSERT_EQ(pink.size(), size);
+      // Test the RMS.
+      ASSERT_NEAR(std::sqrt(pink.square().mean()), signal_rms, 1e-5f);
     }
   }
 }

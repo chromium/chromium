@@ -15,7 +15,10 @@
  */
 
 #include "audio/dsp/loudness/streaming_loudness_1771.h"
+
+#include "audio/linear_filters/biquad_filter_coefficients.h"
 #include "audio/linear_filters/perceptual_filter_design.h"
+#include "glog/logging.h"
 
 namespace audio_dsp {
 
@@ -28,8 +31,9 @@ bool StreamingLoudness1771::Init(const StreamingLoudnessParams& params,
   params_ = params;
 
   if (params.channel_weights.size() != num_channels) {
-    LOG(ERROR) << "The number of channel weights does not match the number of "
-                  "channels.";
+    LOG(ERROR) << "The number of channel weights in the params, "
+               << params.channel_weights.size() << ", does not match the "
+               << "number in this Init,  " << num_channels;
     return false;
   }
 
@@ -38,6 +42,7 @@ bool StreamingLoudness1771::Init(const StreamingLoudnessParams& params,
 
   k_weighting_filter_.Init(num_channels, perceptual_filter_coefficients);
   averaging_filter_.Init(1, params_.averaging_coefficients);
+  initialized_ = true;
 
   return true;
 }

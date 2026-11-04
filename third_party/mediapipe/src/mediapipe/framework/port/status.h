@@ -15,6 +15,19 @@
 #ifndef MEDIAPIPE_PORT_STATUS_H_
 #define MEDIAPIPE_PORT_STATUS_H_
 
-#include "mediapipe/framework/deps/status.h"
+#include "absl/base/attributes.h"  // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
+
+namespace mediapipe {
+
+using Status ABSL_DEPRECATED("Use absl::Status directly") = absl::Status;
+
+ABSL_DEPRECATED("Use absl::OkStatus directly")
+inline absl::Status OkStatus() { return absl::OkStatus(); }
+
+using StatusCode ABSL_DEPRECATED("Use absl::StatusCode directly") =
+    absl::StatusCode;
+
+}  // namespace mediapipe
 
 #endif  // MEDIAPIPE_PORT_STATUS_H_

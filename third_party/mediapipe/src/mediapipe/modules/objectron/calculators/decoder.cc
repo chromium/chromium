@@ -17,14 +17,12 @@
 #include <limits>
 #include <vector>
 
-#include "Eigen/Core"
-#include "Eigen/Dense"
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/status/status.h"
-#include "mediapipe/framework/port/canonical_errors.h"
+#include "Eigen/Core"             // from @eigen
+#include "Eigen/Dense"            // from @eigen
+#include "absl/log/absl_check.h"  // from @com_google_absl
+#include "absl/log/absl_log.h"    // from @com_google_absl
+#include "absl/status/status.h"   // from @com_google_absl
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/modules/objectron/calculators/annotation_data.pb.h"
 #include "mediapipe/modules/objectron/calculators/box.h"
 #include "mediapipe/modules/objectron/calculators/epnp.h"

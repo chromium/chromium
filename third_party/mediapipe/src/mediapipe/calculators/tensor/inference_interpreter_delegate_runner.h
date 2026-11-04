@@ -18,13 +18,13 @@
 #include <memory>
 #include <vector>
 
-#include "absl/status/statusor.h"
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "mediapipe/calculators/tensor/inference_runner.h"
 #include "mediapipe/calculators/tensor/tflite_delegate_ptr.h"
 #include "mediapipe/framework/api2/packet.h"
 #include "mediapipe/util/tflite/tflite_model_loader.h"
-#include "tensorflow/lite/c/c_api_types.h"
-#include "tensorflow/lite/core/api/op_resolver.h"
+#include "tensorflow/lite/c/c_api_types.h"         // from @litert
+#include "tensorflow/lite/core/api/op_resolver.h"  // from @litert
 
 namespace mediapipe {
 

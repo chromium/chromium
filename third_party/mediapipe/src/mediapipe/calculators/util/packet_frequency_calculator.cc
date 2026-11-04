@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/time/time.h"
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/time/time.h"      // from @com_google_absl
 #include "mediapipe/calculators/util/packet_frequency.pb.h"
 #include "mediapipe/calculators/util/packet_frequency_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/calculator_options.pb.h"
-#include "mediapipe/framework/port/canonical_errors.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/timestamp.h"
 
 namespace {

@@ -17,9 +17,9 @@
 // indices. Details of the modification is marked below in the code.
 #include "mediapipe/util/tflite/operations/max_pool_argmax.h"
 
-#include "tensorflow/lite/kernels/internal/common.h"
-#include "tensorflow/lite/kernels/internal/tensor.h"
-#include "tensorflow/lite/kernels/padding.h"
+#include "tensorflow/lite/kernels/internal/common.h"  // from @litert
+#include "tensorflow/lite/kernels/internal/tensor.h"  // from @litert
+#include "tensorflow/lite/kernels/padding.h"          // from @litert
 
 namespace mediapipe {
 namespace tflite_operations {

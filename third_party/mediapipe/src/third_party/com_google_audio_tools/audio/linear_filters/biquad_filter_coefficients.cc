@@ -18,8 +18,11 @@
 
 #include <limits>
 
+#include "audio/dsp/porting.h"
+
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
+#include "absl/types/span.h"
 
 namespace linear_filters {
 
@@ -28,16 +31,16 @@ using ::std::vector;
 
 namespace {
 
-bool IsFirstOrder(const vector<double>& poly) {
+bool IsFirstOrder(absl::Span<const double> poly) {
   return std::abs(poly[2]) <= 1e-10 && std::abs(poly[1]) > 1e-10;
 }
 
-bool IsZeroOrder(const vector<double>& poly) {
+bool IsZeroOrder(absl::Span<const double> poly) {
   return std::abs(poly[1]) <= 1e-10 && std::abs(poly[2]) <= 1e-10;
 }
 
 // Find a zero order set of poles and a zero order set of zeros to combine.
-bool FindZeroOrderPoly(const vector<BiquadFilterCoefficients>& coeffs,
+bool FindZeroOrderPoly(absl::Span<const BiquadFilterCoefficients> coeffs,
                        int* a_index, int* b_index, double* gain) {
   int n_stages = coeffs.size();
   *a_index = 0;
@@ -59,7 +62,7 @@ bool FindZeroOrderPoly(const vector<BiquadFilterCoefficients>& coeffs,
 }
 
 // Find pair of biquads that are both first order.
-bool FindPairOfFirstOrderBiquads(const vector<BiquadFilterCoefficients>& coeffs,
+bool FindPairOfFirstOrderBiquads(absl::Span<const BiquadFilterCoefficients> coeffs,
                                  int* index, int* index2, bool use_A) {
   auto pred = [&](const BiquadFilterCoefficients& biquad) {
     if (use_A) {
@@ -82,8 +85,8 @@ bool FindPairOfFirstOrderBiquads(const vector<BiquadFilterCoefficients>& coeffs,
 }
 
 
-std::vector<double> Convolve(const vector<double>& x,
-                             const vector<double>& y) {
+std::vector<double> Convolve(absl::Span<const double> x,
+                             absl::Span<const double> y) {
   std::vector<double> result(x.size() + y.size() - 1);
   for (int i = 0; i < x.size(); ++i) {
     for (int j = 0; j < y.size(); ++j) {
@@ -105,7 +108,7 @@ std::vector<double> Convolve(const vector<double>& x,
 // Create k and v coefficients for a ladder filter.
 
 void MakeLadderCoefficientsFromTransferFunction(
-    const vector<double>& coeffs_b, const vector<double>& coeffs_a,
+    absl::Span<const double> coeffs_b, absl::Span<const double> coeffs_a,
     vector<double>* coeffs_k_ptr, vector<double>* coeffs_v_ptr) {
   vector<double>& coeffs_k = *coeffs_k_ptr;
   vector<double>& coeffs_v = *coeffs_v_ptr;

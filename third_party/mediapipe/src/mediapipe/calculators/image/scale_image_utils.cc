@@ -18,11 +18,11 @@
 
 #include <string>
 
-#include "absl/log/absl_check.h"
-#include "absl/strings/str_split.h"
+#include "absl/log/absl_check.h"     // from @com_google_absl
+#include "absl/status/status.h"      // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 namespace scale_image {

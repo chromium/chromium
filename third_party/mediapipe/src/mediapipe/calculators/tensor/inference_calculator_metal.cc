@@ -21,9 +21,11 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_log.h"
-#include "absl/memory/memory.h"
-#include "absl/strings/str_format.h"
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/memory/memory.h"         // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/strings/str_format.h"    // from @com_google_absl
 #include "mediapipe/calculators/tensor/inference_calculator.h"
 #include "mediapipe/calculators/tensor/inference_io_mapper.h"
 #include "mediapipe/calculators/tensor/tensor_span.h"
@@ -33,10 +35,10 @@
 #include "mediapipe/gpu/MPPMetalUtil.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/util/tflite/config.h"
-#include "tensorflow/lite/delegates/gpu/common/shape.h"
-#include "tensorflow/lite/delegates/gpu/metal/buffer_convert.h"
-#include "tensorflow/lite/delegates/gpu/metal_delegate.h"
-#include "tensorflow/lite/delegates/gpu/metal_delegate_internal.h"
+#include "tensorflow/lite/delegates/gpu/common/shape.h"             // from @litert
+#include "tensorflow/lite/delegates/gpu/metal/buffer_convert.h"     // from @litert
+#include "tensorflow/lite/delegates/gpu/metal_delegate.h"           // from @litert
+#include "tensorflow/lite/delegates/gpu/metal_delegate_internal.h"  // from @litert
 
 namespace {
 
@@ -318,8 +320,7 @@ absl::Status InferenceCalculatorMetalImpl::CreateConverters(
                                      isFloat16:allow_precision_loss_
                                convertToPBHWC4:true];
   if (converter_to_BPHWC4_ == nil) {
-    return mediapipe::InternalError(
-        "Error initializating input buffer converter");
+    return absl::InternalError("Error initializating input buffer converter");
   }
   // Create converter for GPU output.
   converter_from_BPHWC4_ =

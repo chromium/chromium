@@ -17,8 +17,8 @@
 #include <random>
 #include <vector>
 
-#include "absl/log/absl_check.h"
-#include "benchmark/benchmark.h"
+#include "absl/log/absl_check.h"  // from @com_google_absl
+#include "benchmark/benchmark.h"  // from @com_google_benchmark
 #include "mediapipe/calculators/audio/time_series_framer_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"

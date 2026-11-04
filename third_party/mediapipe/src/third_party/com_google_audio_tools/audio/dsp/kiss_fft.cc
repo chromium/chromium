@@ -28,6 +28,7 @@
 #include <complex>
 #include <memory>
 
+#include "absl/log/die_if_null.h"
 #include "glog/logging.h"
 #include "third_party/kissfft/kiss_fft_float.h"
 

@@ -19,12 +19,12 @@
 #include <unordered_set>
 #include <utility>
 
-#include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
-#include "absl/types/span.h"
-#include "absl/types/variant.h"
-#include "mediapipe/framework/port/canonical_errors.h"
+#include "absl/status/status.h"          // from @com_google_absl
+#include "absl/status/status_builder.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"        // from @com_google_absl
+#include "absl/strings/str_join.h"       // from @com_google_absl
+#include "absl/types/span.h"             // from @com_google_absl
+#include "absl/types/variant.h"          // from @com_google_absl
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/source_location.h"
@@ -299,11 +299,11 @@ absl::Status ValidatePacketSet(const PacketTypeSet& packet_type_set,
     if (!status.ok()) {
       std::pair<std::string, int> tag_index =
           packet_type_set.TagAndIndexFromId(id);
-      errors.push_back(
-          mediapipe::StatusBuilder(status, MEDIAPIPE_LOC).SetPrepend()
-          << "Packet \"" << packet_type_set.TagMap()->Names()[id.value()]
-          << "\" with tag \"" << tag_index.first << "\" and index "
-          << tag_index.second << " failed validation.  ");
+      errors.push_back(absl::StatusBuilder(status, MEDIAPIPE_LOC).SetPrepend()
+                       << "Packet \""
+                       << packet_type_set.TagMap()->Names()[id.value()]
+                       << "\" with tag \"" << tag_index.first << "\" and index "
+                       << tag_index.second << " failed validation.  ");
     }
   }
   if (!errors.empty()) {

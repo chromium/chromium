@@ -1,3 +1,5 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
 # Description:
 #   Eigen is a C++ template library for linear algebra: vectors,
 #   matrices, and related algorithms.
@@ -21,6 +23,8 @@ cc_library(
         "Eigen/QR",
         "Eigen/SVD",
     ],
+    include_prefix = "third_party/eigen3",
+    strip_include_prefix = "",
     visibility = ["//visibility:public"],
     deps = [
         "@eigen_archive//:eigen",

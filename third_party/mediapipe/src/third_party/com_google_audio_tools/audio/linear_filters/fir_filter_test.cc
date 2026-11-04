@@ -16,10 +16,15 @@
 
 #include "audio/linear_filters/fir_filter.h"
 
+#include <algorithm>
+#include <cmath>
 #include <random>
+#include <vector>
 
+#include "audio/dsp/decibels.h"
+#include "audio/dsp/kiss_fft.h"
 #include "audio/dsp/testing_util.h"
-#include "glog/logging.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "third_party/eigen3/Eigen/Core"
 
@@ -232,6 +237,137 @@ TEST(FirFilterTest, RandomBlockSizes) {
   fir_expected.Init(kernel);
   fir_expected.ProcessBlock(all_data, &expected);
   EXPECT_THAT(actual, EigenArrayNear(expected, 1e-5));
+}
+
+TEST(FirModelingTest, FitsSmallResponse) {
+  Eigen::ArrayXf frequencies(1);
+  frequencies[0] = 1000;
+  Eigen::ArrayXf transfer_function_db(1);
+  transfer_function_db[0] = 4;
+
+  // The impulse is centered because the filter length is odd. With an even
+  // filter the impulse is split across two bins.
+  Eigen::ArrayXf fir = FirFromMagnitudeTransferFunction(
+      frequencies, transfer_function_db, 48000, 11);
+
+  // Flat input, expect a sinc out. This sinc will be bin-aligned so it will
+  // look like an impulse.
+  Eigen::ArrayXf expected = Eigen::ArrayXf::Zero(11);
+  expected[5] = audio_dsp::DecibelsToAmplitudeRatio(transfer_function_db[0]);
+  EXPECT_THAT(fir, audio_dsp::EigenArrayNear(expected, 1e-5));
+}
+
+TEST(FirModelingTest, FitsSmallResponseEven) {
+  Eigen::ArrayXf frequencies(1);
+  frequencies[0] = 1000;
+  Eigen::ArrayXf transfer_function_db(1);
+  transfer_function_db[0] = 4;
+
+  // The impulse is centered because the filter length is odd. With an even
+  // filter the impulse is split across two bins.
+  const int N = 10;
+  constexpr float kSampleRate = 48000;
+  Eigen::ArrayXf fir = FirFromMagnitudeTransferFunction(
+      frequencies, transfer_function_db, kSampleRate, N);
+
+  // Flat input, expect a sinc out.
+  const int N_padded = 128;
+  fir.conservativeResize(N_padded);
+  fir.tail(N_padded - N).setZero();
+  audio_dsp::RealFFTTransformer transformer(N_padded, true);
+  Eigen::ArrayXcf out(transformer.GetTransformedSize());
+  transformer.ForwardTransform(fir.data(), out.data());
+  Eigen::ArrayXf result_mag = out.abs();
+  audio_dsp::AmplitudeRatioToDecibels(result_mag, &result_mag);
+  // The high frequencies don't fit well for even length filters.
+  int limit_checks = 45;
+  EXPECT_THAT(
+      result_mag.head(limit_checks),
+      audio_dsp::EigenArrayNear(
+          Eigen::ArrayXf::Constant(limit_checks, transfer_function_db[0]),
+          2e-1f));
+}
+
+TEST(FirModelingTest, NyquistAndDCSpecsProduceSameResult) {
+  const int N = 11;
+  constexpr float kSampleRate = 48000;
+  Eigen::ArrayXf frequencies(1);
+  frequencies[0] = 1000;
+  Eigen::ArrayXf transfer_function_db(1);
+  transfer_function_db[0] = 4;
+
+  Eigen::ArrayXf at1k = FirFromMagnitudeTransferFunction(
+      (Eigen::ArrayXf(1) << 1000).finished(), transfer_function_db, kSampleRate, N);
+  EXPECT_THAT(FirFromMagnitudeTransferFunction(
+                  (Eigen::ArrayXf(1) << 0).finished(), transfer_function_db,
+                  kSampleRate, N),
+              audio_dsp::EigenArrayNear(at1k, 1e-6f));
+  EXPECT_THAT(FirFromMagnitudeTransferFunction(
+                  (Eigen::ArrayXf(1) << kSampleRate / 2).finished(), transfer_function_db,
+                  kSampleRate, N),
+              audio_dsp::EigenArrayNear(at1k, 1e-6f));
+}
+
+TEST(FirModelingTest, FitsMoreComplexResponse) {
+  Eigen::ArrayXf frequencies(3);
+  frequencies << 100, 3000, 10000;
+  Eigen::ArrayXf transfer_function_db(3);
+  transfer_function_db << 15, 9, 2;
+  const int N = 21;
+  constexpr float kSampleRate = 48000;
+
+  Eigen::ArrayXf fir = FirFromMagnitudeTransferFunction(
+      frequencies, transfer_function_db, kSampleRate, N);
+  const int N_padded = 128;
+  fir.conservativeResize(N_padded);
+  fir.tail(N_padded - N).setZero();
+  audio_dsp::RealFFTTransformer transformer(N_padded, true);
+  Eigen::ArrayXcf out(transformer.GetTransformedSize());
+  transformer.ForwardTransform(fir.data(), out.data());
+  Eigen::ArrayXf result_mag = out.abs();
+  audio_dsp::AmplitudeRatioToDecibels(result_mag, &result_mag);
+  EXPECT_NEAR(result_mag[std::round(N_padded * frequencies[0] / kSampleRate)],
+              transfer_function_db[0], 2.0f);
+  EXPECT_NEAR(result_mag[std::round(N_padded * frequencies[1] / kSampleRate)],
+              transfer_function_db[1], 2.0f);
+  EXPECT_NEAR(result_mag[std::round(N_padded * frequencies[2] / kSampleRate)],
+              transfer_function_db[2], 1.0f);
+}
+
+TEST(FirModelingTest, FitsResponseWithManyPoints) {
+  Eigen::ArrayXf frequencies = Eigen::ArrayXf::LinSpaced(100, 0, 24000);
+  Eigen::ArrayXf transfer_function_db =
+      25 * Eigen::ArrayXf::LinSpaced(100, 0, 2 * M_PI).cos();
+  const int N = 61;
+  constexpr float kSampleRate = 48000;
+
+  Eigen::ArrayXf fir = FirFromMagnitudeTransferFunction(
+      frequencies, transfer_function_db, kSampleRate, N);
+
+  const int N_padded = 128;
+  fir.conservativeResize(N_padded);
+  fir.tail(N_padded - N).setZero();
+  audio_dsp::RealFFTTransformer transformer(N_padded, true);
+  Eigen::ArrayXcf out(transformer.GetTransformedSize());
+  transformer.ForwardTransform(fir.data(), out.data());
+  Eigen::ArrayXf result_mag = out.abs();
+  audio_dsp::AmplitudeRatioToDecibels(result_mag, &result_mag);
+  for (int i = 0; i < frequencies.size(); ++i) {
+    ASSERT_NEAR(result_mag[std::round(N_padded * frequencies[i] / kSampleRate)],
+                transfer_function_db[i], 3.5f);
+  }
+}
+
+TEST(FirModelingTest, LinearPhaseSymmetricFilter) {
+  Eigen::ArrayXf frequencies = Eigen::ArrayXf::LinSpaced(100, 0, 24000);
+  Eigen::ArrayXf transfer_function_db = Eigen::ArrayXf::Random(100);
+  const int N = 60;
+  constexpr float kSampleRate = 48000;
+
+  Eigen::ArrayXf fir = FirFromMagnitudeTransferFunction(
+      frequencies, transfer_function_db, kSampleRate, N);
+
+  EXPECT_THAT(fir, audio_dsp::EigenArrayNear(fir.reverse(), 1e-4f));
 }
 
 }  // namespace

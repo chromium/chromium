@@ -13,9 +13,9 @@ index 4c8ba21ad6a6f..3374566c55536 100644
 +++ b/third_party/mediapipe/src/mediapipe/calculators/tensor/inference_calculator_cpu.cc
 @@ -33,7 +33,6 @@
  #if defined(MEDIAPIPE_ANDROID)
- #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
- #endif  // ANDROID
--#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
+ #include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"      // from @litert
+ #endif                                                  // ANDROID
+-#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"  // from @litert
  
  namespace mediapipe {
  namespace api2 {

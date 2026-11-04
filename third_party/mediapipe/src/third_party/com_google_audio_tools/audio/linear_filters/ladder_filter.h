@@ -57,10 +57,8 @@
 #include "audio/linear_filters/biquad_filter_design.h"
 #include "audio/linear_filters/filter_traits.h"
 #include "glog/logging.h"
+#include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
-
-#include "audio/dsp/porting.h"  // auto-added.
-
 
 namespace linear_filters {
 
@@ -148,14 +146,14 @@ class LadderFilter {
   // Convert a rational transfer function of arbitrary order to coefficients
   // for a ladder filter.
   void InitFromTransferFunction(int num_channels,
-                                const std::vector<double>& coeffs_b,
-                                const std::vector<double>& coeffs_a);
+                                absl::Span<const double> coeffs_b,
+                                absl::Span<const double> coeffs_a);
 
   // Change filter coefficients without resetting the state of the filter.
   // The passed-in coefficients must be such that the order of the filter does
   // not change.
-  void ChangeCoeffsFromTransferFunction(const std::vector<double>& coeffs_b,
-                                        const std::vector<double>& coeffs_a);
+  void ChangeCoeffsFromTransferFunction(absl::Span<const double> coeffs_b,
+                                        absl::Span<const double> coeffs_a);
 
   // Clears the state but not the computed coefficients.
   void Reset();

@@ -1,8 +1,8 @@
 #include "mediapipe/framework/vlog_utils.h"
 
-#include "absl/log/absl_log.h"
-#include "absl/strings/str_split.h"  // IWYU pragma: keep
-#include "absl/strings/string_view.h"
+#include "absl/log/absl_log.h"       // from @com_google_absl
+#include "absl/strings/str_split.h"  // from @com_google_absl  // IWYU pragma: keep
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {

@@ -73,6 +73,26 @@ void ComputePeriodicSamples(const WindowFunction& window,
   std::reverse_copy(samples->begin() + half, samples->end(),
                     samples->begin() + 1);
 }
+
+template <typename ValueType>
+void ComputeShiftedPeriodicSamples(const WindowFunction& window,
+                                   int num_samples,
+                                   std::vector<ValueType>* samples) {
+  ABSL_CHECK_GE(num_samples, 2);
+  ABSL_CHECK(samples != nullptr);
+  samples->resize(num_samples);
+  const int half = num_samples / 2;
+
+  const double dx = (2.0 * window.radius()) / num_samples;
+  const double half_dx = (dx / 2);
+  const double x0 = (num_samples % 2 == 1) ? 0.0 : half_dx;
+
+  for (int n = 0; n < num_samples - half; ++n) {
+    (*samples)[half + n] = window.Eval(x0 + dx * n);
+  }
+  // Make the left half of the samples by reverse copy.
+  std::reverse_copy(samples->begin() + half, samples->end(), samples->begin());
+}
 }  // namespace
 
 void WindowFunction::GetSymmetricSamples(int num_samples,
@@ -93,6 +113,16 @@ void WindowFunction::GetPeriodicSamples(int num_samples,
 void WindowFunction::GetPeriodicSamples(int num_samples,
                                         std::vector<double>* samples) const {
   ComputePeriodicSamples(*this, num_samples, samples);
+}
+
+void WindowFunction::GetPeriodicShiftedSamples(
+    int num_samples, std::vector<float>* samples) const {
+  ComputeShiftedPeriodicSamples(*this, num_samples, samples);
+}
+
+void WindowFunction::GetPeriodicShiftedSamples(
+    int num_samples, std::vector<double>* samples) const {
+  ComputeShiftedPeriodicSamples(*this, num_samples, samples);
 }
 
 void WindowFunction::MemoizeSamples() const {

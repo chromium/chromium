@@ -18,7 +18,7 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/log/absl_log.h"
+#include "absl/log/absl_log.h"  // from @com_google_absl
 #include "mediapipe/tasks/c/core/base_options.h"
 #include "mediapipe/tasks/cc/core/base_options.h"
 #include "mediapipe/tasks/cc/core/host_environment.h"
@@ -29,6 +29,7 @@ namespace {
 mediapipe::tasks::core::BaseOptions::Delegate CppConvertToDelegate(
     const MpDelegate& in) {
   switch (in) {
+    case MP_DELEGATE_DEFAULT:
     case MP_DELEGATE_CPU:
       return mediapipe::tasks::core::BaseOptions::Delegate::CPU;
     case MP_DELEGATE_GPU:

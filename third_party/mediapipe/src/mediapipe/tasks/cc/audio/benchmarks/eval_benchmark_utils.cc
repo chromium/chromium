@@ -30,22 +30,22 @@ limitations under the License.
 #include <variant>
 #include <vector>
 
-#include "absl/flags/flag.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "absl/strings/ascii.h"
-#include "absl/strings/match.h"
-#include "absl/strings/numbers.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
-#include "absl/time/clock.h"
-#include "absl/time/time.h"
-#include "absl/types/span.h"
-#include "flatbuffers/buffer.h"
-#include "flatbuffers/flatbuffer_builder.h"
-#include "flatbuffers/vector.h"
+#include "absl/flags/flag.h"                 // from @com_google_absl
+#include "absl/status/status.h"              // from @com_google_absl
+#include "absl/status/status_macros.h"       // from @com_google_absl
+#include "absl/status/statusor.h"            // from @com_google_absl
+#include "absl/strings/ascii.h"              // from @com_google_absl
+#include "absl/strings/match.h"              // from @com_google_absl
+#include "absl/strings/numbers.h"            // from @com_google_absl
+#include "absl/strings/str_cat.h"            // from @com_google_absl
+#include "absl/strings/str_split.h"          // from @com_google_absl
+#include "absl/strings/string_view.h"        // from @com_google_absl
+#include "absl/time/clock.h"                 // from @com_google_absl
+#include "absl/time/time.h"                  // from @com_google_absl
+#include "absl/types/span.h"                 // from @com_google_absl
+#include "flatbuffers/buffer.h"              // from @flatbuffers
+#include "flatbuffers/flatbuffer_builder.h"  // from @flatbuffers
+#include "flatbuffers/vector.h"              // from @flatbuffers
 #include "mediapipe/tasks/cc/audio/audio_transcriber/audio_transcriber.h"
 #include "mediapipe/tasks/cc/audio/audio_transcriber/mediapipe_asr_processor.h"
 #include "mediapipe/tasks/cc/audio/text_to_speech/mediapipe_tts_session.h"
@@ -67,7 +67,7 @@ limitations under the License.
 #include "runtime/proto/text2speech_model_type.pb.h"       // from @litert_lm
 #include "runtime/proto/text2speech_session_config.pb.h"   // from @litert_lm
 #include "schema/core/litertlm_header_schema_generated.h"  // from @litert_lm
-#include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/schema/schema_generated.h"                // from @litert
 
 ABSL_FLAG(std::string, cache_dir,
           std::string(mediapipe::tasks::audio::benchmarks::kDefaultCacheDir),

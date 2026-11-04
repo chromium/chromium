@@ -18,10 +18,12 @@
 #include <memory>
 #include <unordered_set>
 
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/memory/memory.h"
-#include "absl/strings/numbers.h"
+#include "absl/log/absl_check.h"        // from @com_google_absl
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/memory/memory.h"         // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/strings/numbers.h"       // from @com_google_absl
 #include "mediapipe/calculators/video/box_detector_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -30,7 +32,6 @@
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/opencv_features2d_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/util/resource_util.h"
 #include "mediapipe/util/tracking/box_detector.h"
 #include "mediapipe/util/tracking/box_tracker.h"
@@ -402,7 +403,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
 absl::Status BoxDetectorCalculator::Close(CalculatorContext* cc) {
   if (write_index_) {
     BoxDetectorIndex index = box_detector_->ObtainBoxDetectorIndex();
-    MEDIAPIPE_CHECK_OK(mediapipe::file::SetContents(
+    ABSL_CHECK_OK(mediapipe::file::SetContents(
         cc->InputSidePackets().Tag(kOutputIndexFilenameTag).Get<std::string>(),
         index.SerializeAsString()));
   }

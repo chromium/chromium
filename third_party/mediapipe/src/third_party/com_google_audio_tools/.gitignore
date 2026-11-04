@@ -1,0 +1,3 @@
+# Ignore Bazel cruft.
+MODULE.bazel.lock
+/bazel-*

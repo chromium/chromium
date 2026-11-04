@@ -138,7 +138,6 @@ cc_library(
         ":file_path",
         ":mmapped_file",
         ":platform_strings",
-        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/base:config",
         "@com_google_absl//absl/cleanup",
         "@com_google_absl//absl/status",
@@ -158,7 +157,6 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":platform_strings",
-        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
     ],
@@ -293,14 +291,14 @@ cc_library(
     ],
     deps = [
         ":registration_token",
-        "//mediapipe/framework/port:status",
-        "//mediapipe/framework/port:statusor",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/meta:type_traits",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/synchronization",
     ],
@@ -323,31 +321,8 @@ cc_library(
 
     # Use this library through "mediapipe/framework/port:source_location".
     visibility = ["//mediapipe/framework/port:__pkg__"],
-)
-
-cc_library(
-    name = "status",
-    srcs = [
-        "status.cc",
-        "status_builder.cc",
-    ],
-    hdrs = [
-        "canonical_errors.h",
-        "status.h",
-        "status_builder.h",
-        "status_macros.h",
-    ],
-
-    # Use this library through "mediapipe/framework/port:status".
-    visibility = ["//mediapipe/framework/port:__pkg__"],
     deps = [
-        ":source_location",
-        "@com_google_absl//absl/base:core_headers",
-        "@com_google_absl//absl/log:absl_log",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/status",
-        "@com_google_absl//absl/status:status_macros",
-        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:source_location",
     ],
 )
 
@@ -369,13 +344,13 @@ cc_library(
     # Use this library through "mediapipe/framework/port:gtest_main".
     visibility = ["//mediapipe/framework/port:__pkg__"],
     deps = [
-        ":status",
-        "//mediapipe/framework/port:status",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:status_builder",
         "@com_google_absl//absl/status:status_macros",
+        "@com_google_absl//absl/status:status_matchers",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:string_view",
         "@com_google_googletest//:gtest",
     ],
 )
@@ -396,11 +371,12 @@ cc_library(
     # Use this library through "mediapipe/framework/port:ret_check".
     visibility = ["//mediapipe/framework/port:__pkg__"],
     deps = [
-        ":status",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:status_builder",
         "@com_google_absl//absl/status:status_macros",
         "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/types:source_location",
     ],
 )
 
@@ -504,29 +480,6 @@ cc_test(
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/synchronization",
         "@com_google_absl//absl/time",
-    ],
-)
-
-cc_test(
-    name = "status_builder_test",
-    size = "small",
-    srcs = ["status_builder_test.cc"],
-    linkstatic = 1,
-    deps = [
-        ":status",
-        "//mediapipe/framework/port:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "status_test",
-    size = "small",
-    srcs = ["status_test.cc"],
-    linkstatic = 1,
-    deps = [
-        ":status",
-        ":status_matchers",
-        "//mediapipe/framework/port:gtest_main",
     ],
 )
 

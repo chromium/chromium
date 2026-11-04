@@ -19,21 +19,59 @@
 
 #include <complex>
 #include <memory>
+#include <vector>
 
 #include "audio/dsp/circular_buffer.h"
 #include "audio/dsp/kiss_fft.h"
+#include "audio/dsp/window_functions.h"
+#include "absl/base/attributes.h"
+#include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 // This module performs a streaming short-time-Fourier-transform (STFT) on the
 // input stream.  Each STFT vector is passed to the block processor.  The output
 // of that module is inverse-STFT'd and then written into output buffer.
-// Framing is done on the signal such that the streaming block size need
-// not be equal to the FFT block size.
-// chunk_length: The number of time domain frames passed to ProcessChunk.
-// block_length: The length of the FFT, in frames.
-// hop_size: The shift in the input frames before taking the next FFT block.
-// num_time_domain_frames: Equal in value to block_length, renamed for clarity.
+// chunk_length: The length of the time domain input to ProcessChunk in frames
+//               (frames, referring to a group of samples collected at the same
+//               time i.e. a frame has size 2 for stereo audio). Due to
+//               internal buffering this need not be the same size as the STFT
+//               length.
+// block_length: The number of time domain frames in each STFT segment,
+//               not counting zero padding.
+// fft_length:   The length of each STFT, in frames, with zero padding if
+//               fft_length > block_length.
+// hop_size:     The number of frames to step per segment. The overlap between
+//               adjacent segments is `block_length - hop_size`
+
+// The SpectralProcessorParams define the aspects of the system that are
+// dependent on the processing details and not properties might change
+// as the host audio system is reconfigured.
+struct SpectralProcessorParams {
+  // Configures the overlap for half the block size.
+  SpectralProcessorParams(int block_size, const WindowFunction& window_fun) {
+    block_length = block_size;
+    fft_length = block_length;
+    window.resize(block_length);
+    window_fun.GetPeriodicSamples(block_length, &window);
+    hop_size = block_length / 2;
+  }
+
+  // Uses a rectangular window and no overlap.
+  explicit SpectralProcessorParams(int block_size)
+      : SpectralProcessorParams(block_size, CosineWindow()) {}
+
+  // If you set this manually, note that only the first block_length entries
+  // will be considered.
+  std::vector<float> window;
+  // This is the amount of time domain frames contained in each FFT, though
+  // with zero padding, the FFT length may be larger than this.
+  int block_length;
+  int hop_size;
+  // Must be at least block_length in size. This is the size of the FFT that
+  // will be performed.
+  int fft_length;
+};
 
 class SpectralProcessor {
  public:
@@ -46,27 +84,39 @@ class SpectralProcessor {
 
     // The spectra are stored as rows in in_block and out_block. The ith
     // channel's DC bin is stored at in_block(i, 0). They are contiguous in
-    // memory since the structure is row major. num_time_domain_frames
-    // corresponds to the number of *time domain* samples prior to taking the
-    // FFT since multiple values of N block sizes may map to the same number of
-    // columns in in_block/out_block.
+    // memory since the structure is row major. fft_length
+    // corresponds to the number of *time domain* frames from the (with possible
+    // zero padding) prior to taking the FFT since multiple values of N block
+    // sizes may map to the same number of columns in in_block/out_block.
     virtual void ProcessSTFTBlock(const RowMajorArrayXXcf& in_block,
-                                  int num_time_domain_frames,
+                                  int fft_length,
                                   RowMajorArrayXXcf* out_block) = 0;
   };
 
   // num_in_channels and num_out_channels specify the number of audio streams
-  // that will be used at streaming time. chunk_length is the number of
+  // that will be used at streaming time. max_chunk_length is the number of
   // frames (samples per channel) that will be passed to ProcessChunk(). The
   // samples will be windowed before and after the spectral transform by window.
-  // The transform will have length block_length and a hop size of hop_size.
-  // Power of two block lengths will be fastest, though block_length may be any
+  // The transform will have take place on params.block_length samples from the
+  // input, padded up to a length of params.fft_length and a hop
+  // size of params.hop_size. Power of two FFT lengths will be fastest, though
+  // params.block_length and params.fft_length may be any
   // positive integer.
-  SpectralProcessor(int num_in_channels, int num_out_channels,
-                    int chunk_length, absl::Span<const float> window,
-                    int block_length, int hop_size, Callback* block_processor);
+  SpectralProcessor(int num_in_channels, int num_out_channels, int chunk_length,
+                    const SpectralProcessorParams& params,
+                    Callback* block_processor);
 
-  // Supports variable input chunk sizes.
+  SpectralProcessor(int num_in_channels, int num_out_channels,
+                    const std::vector<int>& possible_chunk_lengths,
+                    const SpectralProcessorParams& params,
+                    Callback* block_processor);
+
+  ABSL_DEPRECATED("Use the SpectralProcessorParams constructor.")
+  SpectralProcessor(int num_in_channels, int num_out_channels, int chunk_length,
+                    absl::Span<const float> window, int block_length,
+                    int hop_size, Callback* block_processor);
+
+  ABSL_DEPRECATED("Use the SpectralProcessorParams constructor.")
   SpectralProcessor(int num_in_channels, int num_out_channels,
                     const std::vector<int>& possible_chunk_lengths,
                     absl::Span<const float> window, int block_length,
@@ -125,6 +175,7 @@ class SpectralProcessor {
   const int num_out_channels_;
   const int hop_size_;
   const int block_length_;
+  const int fft_length_;  // With added zero padding.
   const int max_chunk_length_;
   Callback* const block_processor_;
 

@@ -201,6 +201,7 @@ source_set("com_google_audio_tools") {
   deps = [
     ":com_google_audio_tools_portable",
     ":mediapipe_shims",
+    "//third_party/pffft",
   ]
 
   if (is_win) {
@@ -375,7 +376,6 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/delegating_executor.cc",
     "src/mediapipe/framework/delegating_executor.h",
     "src/mediapipe/framework/demangle.h",
-    "src/mediapipe/framework/deps/canonical_errors.h",
     "src/mediapipe/framework/deps/clock.cc",
     "src/mediapipe/framework/deps/clock.h",
     "src/mediapipe/framework/deps/file_helpers.cc",
@@ -400,10 +400,6 @@ tflite_static_library("mediapipe_core") {
     "src/mediapipe/framework/deps/ret_check.h",
     "src/mediapipe/framework/deps/safe_int.h",
     "src/mediapipe/framework/deps/source_location.h",
-    "src/mediapipe/framework/deps/status.cc",
-    "src/mediapipe/framework/deps/status.h",
-    "src/mediapipe/framework/deps/status_builder.cc",
-    "src/mediapipe/framework/deps/status_builder.h",
     "src/mediapipe/framework/deps/status_macros.h",
     "src/mediapipe/framework/deps/strong_int.h",
     "src/mediapipe/framework/deps/threadpool.h",

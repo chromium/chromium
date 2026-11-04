@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2019, 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #ifndef AUDIO_DSP_PORTABLE_SERIALIZE_H_
 #define AUDIO_DSP_PORTABLE_SERIALIZE_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -97,6 +98,44 @@ static void BigEndianWriteS64(int64_t value, uint8_t* bytes);
 static void BigEndianWriteF32(float value, uint8_t* bytes);
 /* Serializes a 64-bit float value to bytes in big endian order. */
 static void BigEndianWriteF64(double value, uint8_t* bytes);
+
+/* Fletcher checksums. These checksums approach the error detecting ability of
+ * CRCs of the same size, but are cheaper and simpler to compute. Fletcher
+ * checksums are position-dependent, meaning that reordering the bytes usually
+ * changes the checksum. [https://en.wikipedia.org/wiki/Fletcher%27s_checksum]
+ */
+
+/* Computes an 8-bit "Fletcher-8" checksum:
+ *
+ *   sum1 = (init1 + D0 + D1 + ...) % 15,
+ *   sum2 = ((init2 + init1 + D0) + (init2 + init1 + D0 + D1) + ...) % 15,
+ *   checksum = (sum2 << 4) | sum1,
+ *
+ * where D0, D1, etc. are data bytes and init1 and init2 derive from `init`.
+ * Fletcher's original work did not consider an 8-bit size, but one can be
+ * defined in a similar manner. See Mark Adler's SO post for discussion:
+ * https://stackoverflow.com/a/13497669/13223986
+ *
+ * The `init` arg specifies an initial checksum for starting the two sums. A
+ * good starting value is 1. This arg is useful for incrementally computing a
+ * checksum over multiple calls:
+ *
+ *   uint8_t checksum = 1;
+ *   while (fgets(line, sizeof(line), f)) {  // Read lines from a text file.
+ *      checksum = Fletcher8(line, strlen(line), checksum);
+ *   }
+ */
+uint8_t Fletcher8(const uint8_t* data, size_t size, uint8_t init);
+/* Computes the 16-bit Fletcher-16 checksum:
+ *
+ *   sum1 = (init1 + D0 + D1 + ...) % 255,
+ *   sum2 = ((init2 + init1 + D0) + (init2 + init1 + D0 + D1) + ...) % 255,
+ *   checksum = (sum2 << 8) | sum1.
+ *
+ * The `init` arg is used as described above for Fletcher8. A good starting
+ * value for `init` is 1.
+ */
+uint16_t Fletcher16(const uint8_t* data, size_t size, uint16_t init);
 
 
 /* Implementation details only below this line. ----------------------------- */

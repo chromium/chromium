@@ -21,11 +21,11 @@
 #include <tuple>
 #include <vector>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "absl/strings/str_cat.h"
+#include "absl/memory/memory.h"         // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/status/statusor.h"       // from @com_google_absl
+#include "absl/strings/str_cat.h"       // from @com_google_absl
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_calculator.pb.h"
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_converter.h"
 #include "mediapipe/calculators/tensor/tensors_to_segmentation_converter_gl_buffer.h"
@@ -41,12 +41,12 @@
 #include "mediapipe/gpu/gpu_origin.pb.h"
 #include "mediapipe/gpu/gpu_origin_utils.h"
 #include "mediapipe/gpu/shader_util.h"
-#include "tensorflow/lite/delegates/gpu/common/data_type.h"
-#include "tensorflow/lite/delegates/gpu/common/types.h"
-#include "tensorflow/lite/delegates/gpu/gl/converters/util.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_texture.h"
+#include "tensorflow/lite/delegates/gpu/common/data_type.h"    // from @litert
+#include "tensorflow/lite/delegates/gpu/common/types.h"        // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/converters/util.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"       // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"        // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_texture.h"       // from @litert
 
 namespace mediapipe {
 namespace {

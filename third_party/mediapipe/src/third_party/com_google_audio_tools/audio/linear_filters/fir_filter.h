@@ -17,6 +17,8 @@
 #ifndef AUDIO_LINEAR_FILTERS_FIR_FILTER_H_
 #define AUDIO_LINEAR_FILTERS_FIR_FILTER_H_
 
+#include <algorithm>
+
 #include "glog/logging.h"
 #include "third_party/eigen3/Eigen/Core"
 
@@ -104,6 +106,21 @@ class FirFilter {
   Eigen::ArrayXXf state_;
   Eigen::ArrayXXf workspace_;
 };
+
+// Given a measured frequency response, possibly with nonuniform frequency
+// sampling, generate an FIR filter that approximates that transfer function.
+// It is assumed that above and below the upper and lower limits of measured
+// frequencies that the transfer function takes the same value as those
+// respective limits.
+// frequencies_hz is assumed to be sorted.
+// The returned filter is linear-phase (symmetric).
+//
+// An odd filter length is recommended as it allows better performance near
+// Nyquist.
+Eigen::ArrayXf FirFromMagnitudeTransferFunction(
+    const Eigen::ArrayXf& frequencies_hz,
+    const Eigen::ArrayXf& transfer_function_db, float sample_rate_hz,
+    int filter_length);
 
 }  // namespace linear_filters
 

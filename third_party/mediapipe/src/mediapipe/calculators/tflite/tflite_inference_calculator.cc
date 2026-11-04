@@ -17,9 +17,11 @@
 #include <string>
 #include <vector>
 
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/memory/memory.h"
+#include "absl/log/absl_check.h"        // from @com_google_absl
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/memory/memory.h"         // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
 #include "mediapipe/calculators/tflite/tflite_inference_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/logging.h"
@@ -31,10 +33,10 @@
 #endif  // !__EMSCRIPTEN__ || __EMSCRIPTEN_PTHREADS__
 
 #include "mediapipe/util/tflite/tflite_model_loader.h"
-#include "tensorflow/lite/error_reporter.h"
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/model.h"
+#include "tensorflow/lite/error_reporter.h"    // from @litert
+#include "tensorflow/lite/interpreter.h"       // from @litert
+#include "tensorflow/lite/kernels/register.h"  // from @litert
+#include "tensorflow/lite/model.h"             // from @litert
 
 #if defined(MEDIAPIPE_ANDROID)
 #include "mediapipe/util/android/file/base/file.h"
@@ -46,11 +48,11 @@
 #include "mediapipe/gpu/gl_calculator_helper.h"
 #include "mediapipe/gpu/gpu_buffer.h"
 #include "mediapipe/util/tflite/tflite_gpu_runner.h"
-#include "tensorflow/lite/delegates/gpu/common/shape.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_buffer.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"
-#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"
-#include "tensorflow/lite/delegates/gpu/gl_delegate.h"
+#include "tensorflow/lite/delegates/gpu/common/shape.h"   // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_buffer.h"   // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_program.h"  // from @litert
+#include "tensorflow/lite/delegates/gpu/gl/gl_shader.h"   // from @litert
+#include "tensorflow/lite/delegates/gpu/gl_delegate.h"    // from @litert
 #endif  // MEDIAPIPE_TFLITE_GL_INFERENCE
 
 #if MEDIAPIPE_TFLITE_METAL_INFERENCE
@@ -61,18 +63,18 @@
 #import "mediapipe/gpu/MPPMetalHelper.h"
 #include "mediapipe/gpu/MPPMetalUtil.h"
 #include "mediapipe/gpu/gpu_buffer.h"
-#include "tensorflow/lite/delegates/gpu/common/shape.h"
-#include "tensorflow/lite/delegates/gpu/metal/buffer_convert.h"
-#include "tensorflow/lite/delegates/gpu/metal_delegate.h"
-#include "tensorflow/lite/delegates/gpu/metal_delegate_internal.h"
+#include "tensorflow/lite/delegates/gpu/common/shape.h"             // from @litert
+#include "tensorflow/lite/delegates/gpu/metal/buffer_convert.h"     // from @litert
+#include "tensorflow/lite/delegates/gpu/metal_delegate.h"           // from @litert
+#include "tensorflow/lite/delegates/gpu/metal_delegate_internal.h"  // from @litert
 #endif  // MEDIAPIPE_TFLITE_METAL_INFERENCE
 
 #if !defined(MEDIAPIPE_EDGE_TPU)
-#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"
-#endif  // !EDGETPU
+#include "tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h"  // from @litert
+#endif                                                  // !EDGETPU
 #if defined(MEDIAPIPE_ANDROID)
-#include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
-#endif  // ANDROID
+#include "tensorflow/lite/delegates/nnapi/nnapi_delegate.h"  // from @litert
+#endif                                              // ANDROID
 
 namespace {
 // Commonly used to compute the number of blocks to launch in a kernel.

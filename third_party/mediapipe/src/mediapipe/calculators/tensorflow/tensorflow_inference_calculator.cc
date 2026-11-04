@@ -20,12 +20,13 @@
 #include <unordered_set>
 #include <vector>
 
-#include "absl/base/thread_annotations.h"
-#include "absl/log/absl_check.h"
-#include "absl/memory/memory.h"
-#include "absl/status/status_macros.h"
-#include "absl/strings/str_split.h"
-#include "absl/synchronization/mutex.h"
+#include "absl/base/thread_annotations.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"           // from @com_google_absl
+#include "absl/memory/memory.h"            // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status_macros.h"     // from @com_google_absl
+#include "absl/strings/str_split.h"        // from @com_google_absl
+#include "absl/synchronization/mutex.h"    // from @com_google_absl
 #include "mediapipe/calculators/tensorflow/tensorflow_inference_calculator.pb.h"
 #include "mediapipe/calculators/tensorflow/tensorflow_session.h"
 #include "mediapipe/framework/calculator_context.h"
@@ -35,15 +36,14 @@
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/status_util.h"
-#include "tensorflow/core/framework/tensor.h"
-#include "tensorflow/core/framework/tensor_shape.h"
-#include "tensorflow/core/framework/tensor_util.h"
+#include "tensorflow/core/framework/tensor.h"        // from @org_tensorflow
+#include "tensorflow/core/framework/tensor_shape.h"  // from @org_tensorflow
+#include "tensorflow/core/framework/tensor_util.h"   // from @org_tensorflow
 
 #if !defined(MEDIAPIPE_MOBILE) && !defined(__APPLE__)
-#include "tensorflow/core/profiler/lib/traceme.h"
+#include "tensorflow/core/profiler/lib/traceme.h"  // from @org_tensorflow
 #endif
 
 namespace tf = ::tensorflow;

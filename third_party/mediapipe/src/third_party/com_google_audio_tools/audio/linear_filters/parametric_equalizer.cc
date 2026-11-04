@@ -243,7 +243,7 @@ void ParametricEqualizerParams::ClearAllGains() {
 
 int ParametricEqualizerParams::GetNumEnabledStages() const {
   int num_stages = 0;
-  for (uint8 enabled : stages_enabled_) {
+  for (uint8_t enabled : stages_enabled_) {
     num_stages += enabled == true;
   }
   return num_stages;

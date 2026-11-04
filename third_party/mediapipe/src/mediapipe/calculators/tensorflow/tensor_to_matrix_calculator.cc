@@ -15,16 +15,16 @@
 // Calculator converts from one-dimensional Tensor of DT_FLOAT to Matrix
 // OR from (batched) two-dimensional Tensor of DT_FLOAT to Matrix.
 
-#include "absl/log/absl_check.h"
-#include "absl/status/status_macros.h"
+#include "absl/log/absl_check.h"        // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
 #include "mediapipe/calculators/tensorflow/tensor_to_matrix_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/time_series_header.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
-#include "tensorflow/core/framework/tensor.h"
-#include "tensorflow/core/framework/types.h"
+#include "tensorflow/core/framework/tensor.h"  // from @org_tensorflow
+#include "tensorflow/core/framework/types.h"   // from @org_tensorflow
 
 namespace mediapipe {
 

@@ -15,11 +15,10 @@
 #include <memory>
 #include <vector>
 
-#include "absl/base/macros.h"
-#include "absl/strings/string_view.h"
+#include "absl/base/macros.h"          // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/canonical_errors.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/source.pb.h"
 
 namespace mediapipe {

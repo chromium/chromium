@@ -39,14 +39,15 @@
 #include <vector>
 
 #include "glog/logging.h"
+#include "absl/types/span.h"
 
-#include "audio/dsp/porting.h"  // auto-added.
+
 
 
 namespace linear_filters {
 
 void MakeLadderCoefficientsFromTransferFunction(
-    const std::vector<double>& coeffs_b, const std::vector<double>& coeffs_a,
+    absl::Span<const double> coeffs_b, absl::Span<const double> coeffs_a,
     std::vector<double>* coeffs_k_ptr, std::vector<double>* coeffs_v_ptr);
 
 // Use bisection to find the maximum of an arbitrary function over some range.

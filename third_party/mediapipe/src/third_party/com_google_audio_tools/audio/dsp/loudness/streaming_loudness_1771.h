@@ -16,7 +16,7 @@
 
 // A filter based on ITU-R BS.1771-1: Requirements for
 // loudness and true-peak indicating meters. For a detailed description of the
-// algorithm, please refer to Annex 2 of the reccommendation
+// algorithm, please refer to Annex 2 of the recommendation
 // (https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.1771-1-201201-I!!PDF-E.pdf)
 //
 // In contrast to loudness measurements made with ITU-R BS.1770, this filter
@@ -34,12 +34,16 @@
 #ifndef AUDIO_DSP_LOUDNESS_STREAMING_LOUDNESS_1771_H_
 #define AUDIO_DSP_LOUDNESS_STREAMING_LOUDNESS_1771_H_
 
+#include <cstddef>
 #include <vector>
 
 #include "audio/dsp/decibels.h"
 #include "audio/linear_filters/biquad_filter.h"
 #include "audio/linear_filters/biquad_filter_coefficients.h"
 #include "audio/linear_filters/discretization.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
+#include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 
@@ -125,7 +129,6 @@ struct StreamingLoudnessParams {
                                        sample_rate_hz);
   }
 
-  // TODO: Move this function to biquad_filter_design.
   // Calculate the coefficients to configure a biquad filter as a first-order
   // lowpass filter.
   //
@@ -162,10 +165,11 @@ struct StreamingLoudnessParams {
 // loudness levels at the sample rate of the audio.
 class StreamingLoudness1771 {
  public:
-  StreamingLoudness1771() {}
+  StreamingLoudness1771()
+      : initialized_(false) {}
 
   // sample_rate_hz is the audio sample rate. A return value of false indicates
-  // an error in inialization.
+  // an error in initialization.
   bool Init(const StreamingLoudnessParams& params, int num_channels,
             float sample_rate_hz);
 
@@ -210,7 +214,12 @@ class StreamingLoudness1771 {
   // assumed to be interleaved multi-channel audio samples where the number of
   // channels is specified by the call to Init.
   // See ProcessBlock for details.
-  std::vector<float> ProcessVector(const std::vector<float>& input) {
+  absl::StatusOr<std::vector<float>> ProcessVector(
+      const std::vector<float>& input) {
+    if (!initialized_) {
+      return absl::UnavailableError(
+          "Instance must be initialized by first calling Init().");
+    }
     const size_t num_channels = params_.channel_weights.size();
     const size_t num_frames = input.size() / num_channels;
     Eigen::Map<const Eigen::ArrayXXf> input_block(
@@ -222,6 +231,7 @@ class StreamingLoudness1771 {
   }
 
  private:
+  bool initialized_;
   StreamingLoudnessParams params_;
   linear_filters::BiquadFilterCascade<Eigen::ArrayXf> k_weighting_filter_;
 

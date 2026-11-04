@@ -17,10 +17,10 @@
 
 #include <map>
 
-#include "absl/types/variant.h"
+#include "absl/status/status.h"  // from @com_google_absl
+#include "absl/types/variant.h"  // from @com_google_absl
 #include "mediapipe/framework/formats/detection.pb.h"
-#include "mediapipe/framework/port/status.h"
-#include "tensorflow/core/framework/tensor.h"
+#include "tensorflow/core/framework/tensor.h"  // from @org_tensorflow
 
 namespace mediapipe {
 

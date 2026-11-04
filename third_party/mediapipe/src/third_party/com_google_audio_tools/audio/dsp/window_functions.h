@@ -57,7 +57,7 @@
 #include <string>
 #include <vector>
 
-#include "audio/dsp/porting.h"  // auto-added.
+
 
 
 namespace audio_dsp {
@@ -92,6 +92,13 @@ class WindowFunction {
   // 'symmetric'. This is preferred for 50%-overlap spectrograms.
   void GetPeriodicSamples(int num_samples, std::vector<float>* samples) const;
   void GetPeriodicSamples(int num_samples, std::vector<double>* samples) const;
+
+  // Similar to GetPeriodicSamples, but the samples are shifted by half a
+  // period. This is useful for computing the window with a non-zero endpoints.
+  void GetPeriodicShiftedSamples(int num_samples,
+                                 std::vector<float>* samples) const;
+  void GetPeriodicShiftedSamples(int num_samples,
+                                 std::vector<double>* samples) const;
 
   // The radius parameter scales the nonzero support of the window function; it
   // is nonzero in the interval [-radius, radius]. Note that the radius does not

@@ -16,8 +16,14 @@
 
 #include "audio/dsp/loudness/background_level_detector.h"
 
+#include <algorithm>
+
 #include "audio/dsp/decibels.h"
 #include "audio/linear_filters/biquad_filter_design.h"
+#include "audio/linear_filters/discretization.h"
+#include "audio/linear_filters/perceptual_filter_design.h"
+#include "glog/logging.h"
+#include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 
@@ -74,7 +80,8 @@ void BackgroundLevelDetector::Reset() {
   transient_counters_.setZero();
 }
 
-bool BackgroundLevelDetector::ProcessBlock(const ArrayXXf& input) {
+bool BackgroundLevelDetector::ProcessBlockInternal(
+    Eigen::Map<const Eigen::ArrayXXf> input) {
   // Downsample and get the RMS envelope and compute the fast and slow smoothed
   // RMS envelope.
   if (!envelope_detector_.ProcessBlock(input, &fast_envelope_)) {

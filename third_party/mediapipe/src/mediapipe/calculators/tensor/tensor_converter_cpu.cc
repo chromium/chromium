@@ -18,9 +18,9 @@
 #include <cstdint>
 #include <utility>
 
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/status/statusor.h"       // from @com_google_absl
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/tensor.h"
@@ -134,8 +134,8 @@ absl::StatusOr<Tensor> ConvertImageFrameToTensorOnCpu(
 absl::StatusOr<Tensor> ConvertMatrixToTensorOnCpu(
     const Matrix& matrix, bool row_major_matrix,
     MemoryManager* memory_manager) {
-  const int height = matrix.rows();
-  const int width = matrix.cols();
+  const int height = row_major_matrix ? matrix.rows() : matrix.cols();
+  const int width = row_major_matrix ? matrix.cols() : matrix.rows();
   const int channels = 1;
   Tensor output_tensor(Tensor::ElementType::kFloat32,
                        Tensor::Shape{1, height, width, channels},

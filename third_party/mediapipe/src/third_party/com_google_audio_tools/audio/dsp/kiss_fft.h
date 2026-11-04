@@ -33,7 +33,7 @@
 #include <vector>
 
 
-#include "audio/dsp/porting.h"  // auto-added.
+
 
 
 namespace audio_dsp {

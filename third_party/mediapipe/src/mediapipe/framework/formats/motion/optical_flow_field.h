@@ -19,12 +19,12 @@
 #ifndef MEDIAPIPE_FRAMEWORK_FORMATS_MOTION_OPTICAL_FLOW_FIELD_H_
 #define MEDIAPIPE_FRAMEWORK_FORMATS_MOTION_OPTICAL_FLOW_FIELD_H_
 
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "mediapipe/framework/formats/location.h"
 #include "mediapipe/framework/formats/motion/optical_flow_field_data.pb.h"
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
-#include "mediapipe/framework/port/status.h"
-#include "tensorflow/core/framework/tensor.h"
+#include "tensorflow/core/framework/tensor.h"  // from @org_tensorflow
 
 namespace mediapipe {
 

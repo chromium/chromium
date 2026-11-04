@@ -21,11 +21,12 @@
 #include <string>
 #include <typeinfo>
 
-#include "absl/strings/str_cat.h"
+#include "absl/log/absl_check.h"   // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/time_series_header.pb.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 namespace time_series_util {
@@ -85,7 +86,7 @@ absl::Status IsMatrixShapeConsistentWithHeader(const Matrix& matrix,
 template <typename OptionsClass>
 void FillOptionsExtensionOrDie(const CalculatorOptions& options,
                                OptionsClass* extension) {
-  MEDIAPIPE_CHECK_OK(HasOptionsExtension<OptionsClass>(options));
+  ABSL_CHECK_OK(HasOptionsExtension<OptionsClass>(options));
   extension->CopyFrom(options.GetExtension(OptionsClass::ext));
 }
 

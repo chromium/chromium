@@ -20,14 +20,14 @@
 #include <string>
 #include <vector>
 
-#include "absl/base/attributes.h"
-#include "absl/base/macros.h"
+#include "absl/base/attributes.h"  // from @com_google_absl
+#include "absl/base/macros.h"      // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
 #include "mediapipe/framework/executor.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/packet_generator.pb.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/proto_ns.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/validated_graph_config.h"
 
 namespace mediapipe {

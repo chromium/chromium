@@ -20,15 +20,15 @@
 #include <utility>
 #include <vector>
 
-#include "Eigen/Core"
-#include "absl/memory/memory.h"
-#include "absl/status/status_macros.h"
+#include "Eigen/Core"                   // from @eigen
+#include "absl/memory/memory.h"         // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/status/statusor.h"       // from @com_google_absl
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/matrix_data.pb.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/modules/face_geometry/libs/mesh_3d_utils.h"
 #include "mediapipe/modules/face_geometry/libs/procrustes_solver.h"
 #include "mediapipe/modules/face_geometry/libs/validation_utils.h"

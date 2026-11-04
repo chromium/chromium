@@ -18,23 +18,21 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstring>
+#include <cstdlib>
 #include <random>
+#include <vector>
 
-#include "audio/beamer/array_util.h"
 #include "audio/dsp/signal_generator.h"
 #include "audio/dsp/testing_util.h"
 #include "audio/dsp/window_functions.h"
-#include "glog/logging.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
 
 using ::Eigen::ArrayXf;
 using ::Eigen::ArrayXXf;
-using ::absl::Span;
 
 namespace {
 
@@ -108,6 +106,33 @@ class FftCheckerCallback : public audio_dsp::SpectralProcessor::Callback {
   std::vector<float> max_bin_magnitude_;
 };
 
+SpectralProcessorParams RectangularWindowNoOverlap(int block_size) {
+  SpectralProcessorParams params(block_size);
+  params.block_length = block_size;
+  params.fft_length = block_size;
+  params.hop_size = block_size;
+  params.window.assign(block_size, 1.0f);
+  return params;
+}
+
+// Identity window for |overlap = block_length / 2|. Window is applied twice
+// to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
+SpectralProcessorParams RectangularWindowHalfOverlap(int block_size) {
+  SpectralProcessorParams params = RectangularWindowNoOverlap(block_size);
+  params.hop_size /= 2;
+  params.window.assign(block_size, std::sqrt(0.5f));
+  return params;
+}
+
+// Identity window for |overlap = block_length / 4|. Window is applied twice
+// to each block and the result is summed. (sqrt(0.25) ^ 2) * 4 = 1.
+SpectralProcessorParams RectangularWindowQuarterOverlap(int block_size) {
+  SpectralProcessorParams params = RectangularWindowNoOverlap(block_size);
+  params.hop_size /= 4;
+  params.window.assign(block_size, std::sqrt(0.25f));
+  return params;
+}
+
 }  // namespace
 
 // Makes sure the samples just get passed from input to output.
@@ -115,16 +140,11 @@ TEST(SpectralProcessorTest, WindowlessNoOverlapTest) {
   const int kChannels = 3;
   const int kChunkLength = 64;
   const int kBlockLength = 4;
-  const int kShiftAmount = 4;
   BypassCallback bypass_callback;
 
-  // Rectangular window.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], 1.0f);
-
   SpectralProcessor processor(kChannels, kChannels, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kShiftAmount, &bypass_callback);
+                              RectangularWindowNoOverlap(kBlockLength),
+                              &bypass_callback);
   Eigen::ArrayXXf in_buffer =
       Eigen::ArrayXXf::Constant(kChannels, kChunkLength, 2.0f);
   Eigen::ArrayXXf out_buffer =
@@ -141,17 +161,10 @@ TEST(SpectralProcessorTest, WindowlessNoOverlapTest) {
 TEST(SpectralProcessorTest, FiftyPercentOverlapRectangularWindowTest) {
   const int kChunkLength = 128;
   const int kBlockLength = 32;
-  const int kShiftAmount = kBlockLength / 2;
   BypassCallback bypass_callback;
+  SpectralProcessorParams params = RectangularWindowHalfOverlap(kBlockLength);
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
-  SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kShiftAmount, &bypass_callback);
+  SpectralProcessor processor(1, 1, kChunkLength, params, &bypass_callback);
   Eigen::ArrayXXf in_buffer = Eigen::ArrayXXf::Constant(1, kChunkLength, 2.0f);
   Eigen::ArrayXXf out_buffer =
       Eigen::ArrayXXf::Constant(1, kChunkLength, -1.0f);
@@ -160,28 +173,21 @@ TEST(SpectralProcessorTest, FiftyPercentOverlapRectangularWindowTest) {
 
   EXPECT_THAT(out_buffer.leftCols(processor.latency_frames()),
               EigenArrayNear(
-                  Eigen::ArrayXXf::Zero(1, processor.latency_frames()), 1e-5));
+                   Eigen::ArrayXXf::Zero(1, processor.latency_frames()), 1e-5));
   int num_filled_cols = out_buffer.cols() - processor.latency_frames();
   EXPECT_THAT(out_buffer.rightCols(num_filled_cols),
               EigenArrayNear(
-                  Eigen::ArrayXXf::Constant(1, num_filled_cols, 2.0f), 1e-5));
+                   Eigen::ArrayXXf::Constant(1, num_filled_cols, 2.0f), 1e-5));
   EXPECT_EQ(bypass_callback.block_num(), 8);
 }
 
 TEST(SpectralProcessorTest, RampTest) {
   const int kChunkLength = 128;
   const int kBlockLength = 32;
-  const int kShiftAmount = kBlockLength / 2;
   BypassCallback bypass_callback;
+  SpectralProcessorParams params = RectangularWindowHalfOverlap(kBlockLength);
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
-  SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kShiftAmount, &bypass_callback);
+  SpectralProcessor processor(1, 1, kChunkLength, params, &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
   Eigen::ArrayXXf out_buffer;
 
@@ -200,19 +206,13 @@ TEST(SpectralProcessorTest, RampTest) {
 TEST(SpectralProcessorTest, NoiseDifferentInEachChannelTest) {
   const int kChunkLength = 128;
   const int kBlockLength = 32;
-  const int kShiftAmount = kBlockLength / 2;
   const int kNumChannels = 2;
-
   BypassCallback bypass_callback;
+  SpectralProcessorParams params = RectangularWindowHalfOverlap(kBlockLength);
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
+  SpectralProcessor processor(kNumChannels, kNumChannels, kChunkLength, params,
+                              &bypass_callback);
 
-  SpectralProcessor processor(kNumChannels, kNumChannels, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kShiftAmount, &bypass_callback);
   Eigen::ArrayXXf in_buffer =
       Eigen::ArrayXXf::Random(kNumChannels, kChunkLength);
   Eigen::ArrayXXf out_buffer;
@@ -237,16 +237,11 @@ TEST(SpectralProcessorTest, ResetTest) {
   const int kFullLengthFrames = kChunkLength * kNumChunks;
 
   BypassCallback bypass_callback;
-
-  // Cosine window has the perfect reconstruction property with 50% overlap.
-  // (the window is applied twice, once before and once after the FFT).
-  std::vector<float> window(kBlockLength);
-  CosineWindow().GetPeriodicSamples(kBlockLength, &window);
+  SpectralProcessorParams params(kBlockLength, CosineWindow());
 
   // Half overlap.
-  SpectralProcessor processor(kNumChannels, kNumChannels, kChunkLength,
-                              Span<float>(window.data(), kBlockLength),
-                              kBlockLength, kBlockLength / 2, &bypass_callback);
+  SpectralProcessor processor(kNumChannels, kNumChannels, kChunkLength, params,
+                              &bypass_callback);
   Eigen::ArrayXXf in_buffer =
       Eigen::ArrayXXf::Random(kNumChannels, kFullLengthFrames);
   Eigen::ArrayXXf out_buffer(kNumChannels, kFullLengthFrames);
@@ -278,19 +273,12 @@ TEST(SpectralProcessorTest, DifferentChunkSizesProduceSameSamplesTest) {
   // same number of samples is because we are using the BypassCallback.
   const int kChunkLength = 128;
   const int kBlockLength = 32;
-  const int kShiftAmount = kBlockLength / 2;
   BypassCallback bypass_callback;
+  SpectralProcessorParams params = RectangularWindowHalfOverlap(kBlockLength);
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
-  SpectralProcessor processor1(1, 1, kChunkLength,
-                               Span<float>(window, kBlockLength), kBlockLength,
-                               kShiftAmount, &bypass_callback);
-  SpectralProcessor processor2(1, 1, kChunkLength / 2, window, kBlockLength,
-                               kShiftAmount, &bypass_callback);
+  SpectralProcessor processor1(1, 1, kChunkLength, params, &bypass_callback);
+  SpectralProcessor processor2(1, 1, kChunkLength / 2, params,
+                               &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
   Eigen::ArrayXXf out_buffer1(1, kChunkLength);
   Eigen::ArrayXXf out_buffer2(1, kChunkLength);
@@ -314,21 +302,15 @@ TEST(SpectralProcessorTest, DifferentBlockSizesProduceSameSamplesTest) {
   const int kChunkLength = 128;
   const int kBlockLengthSmall = 16;
   const int kBlockLengthBig = 64;
-
   BypassCallback bypass_callback;
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLengthBig];
-  std::fill(window, &window[kBlockLengthBig], std::sqrt(0.5f));
-
   // Half overlap.
-  SpectralProcessor processor1(
-      1, 1, kChunkLength, Span<float>(window, kBlockLengthSmall),
-      kBlockLengthSmall, kBlockLengthSmall / 2, &bypass_callback);
-  SpectralProcessor processor2(
-      1, 1, kChunkLength, Span<float>(window, kBlockLengthBig), kBlockLengthBig,
-      kBlockLengthBig / 2, &bypass_callback);
+  SpectralProcessor processor1(1, 1, kChunkLength,
+                               RectangularWindowHalfOverlap(kBlockLengthSmall),
+                               &bypass_callback);
+  SpectralProcessor processor2(1, 1, kChunkLength,
+                               RectangularWindowHalfOverlap(kBlockLengthBig),
+                               &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
   Eigen::ArrayXXf out_buffer1(1, kChunkLength);
   Eigen::ArrayXXf out_buffer2(1, kChunkLength);
@@ -347,21 +329,44 @@ TEST(SpectralProcessorTest, DifferentBlockSizesProduceSameSamplesTest) {
                      1e-4));
 }
 
+TEST(SpectralProcessorTest, DifferentZeroPaddingProduceSameSamplesTest) {
+  // The only reason we should expect different block sizes to produce the
+  // same samples is because we are using the BypassCallback.
+  const int kChunkLength = 128;
+  const int kBlockLength = 16;
+  const int kAddedZeroPadding = 64;
+  BypassCallback bypass_callback;
+  SpectralProcessorParams params = RectangularWindowHalfOverlap(kBlockLength);
+
+  // Half overlap.
+  SpectralProcessor processor1(1, 1, kChunkLength, params, &bypass_callback);
+  params.fft_length = kAddedZeroPadding;
+  SpectralProcessor processor2(1, 1, kChunkLength, params, &bypass_callback);
+  Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
+  Eigen::ArrayXXf out_buffer1(1, kChunkLength);
+  Eigen::ArrayXXf out_buffer2(1, kChunkLength);
+
+  processor1.ProcessChunk(in_buffer, &out_buffer1);
+  processor2.ProcessChunk(in_buffer, &out_buffer2);
+
+  // Zero padding does not impact latency.
+  EXPECT_EQ(processor1.latency_frames(), processor2.latency_frames());
+  int latency = processor1.latency_frames();
+  int num_filled_cols = kChunkLength - latency;
+  EXPECT_THAT(
+      out_buffer1.middleCols(latency, num_filled_cols),
+      EigenArrayNear(out_buffer2.middleCols(latency, num_filled_cols), 1e-4));
+}
+
 TEST(SpectralProcessorTest, TwentyFivePercentOverlapRampTest) {
   const int kChunkLength = 64;
   const int kBlockLength = 4;
-  const int kShiftAmount = kBlockLength / 4;
   BypassCallback bypass_callback;
 
-  // Identity window for |overlap = block_length / 4|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.25) ^ 2) * 4 = 1.
-  float window[kBlockLength];
-  // We compensate for the extra overlap by scaling down the window.
-  std::fill(window, &window[kBlockLength], std::sqrt(0.25f));
+  SpectralProcessorParams params =
+      RectangularWindowQuarterOverlap(kBlockLength);
 
-  SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kShiftAmount, &bypass_callback);
+  SpectralProcessor processor(1, 1, kChunkLength, params, &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
   Eigen::ArrayXXf out_buffer(1, kChunkLength);
 
@@ -382,12 +387,9 @@ TEST(SpectralProcessorTest, CheckFrequencyBinTest) {
   FftCheckerCallback fft_checker;
 
   // Rectangular window.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], 1.0f);
-
   SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kBlockLength, &fft_checker);
+                              RectangularWindowNoOverlap(kBlockLength),
+                              &fft_checker);
   const float kSampleRate = 100;
   const float kFrequency = 25;
   const float kAmplitude = 0.5f;
@@ -400,8 +402,8 @@ TEST(SpectralProcessorTest, CheckFrequencyBinTest) {
       Eigen::Map<ArrayXXf>(out_buffer.data(), 1, out_buffer.size()));
   EXPECT_NEAR(fft_checker.max_bin_rads_per_sample(0),
               2 * M_PI * kFrequency / kSampleRate, 0.04f);
-  EXPECT_NEAR(fft_checker.max_bin_magnitude(0),
-              kAmplitude * kBlockLength / 2, 0.02f);
+  EXPECT_NEAR(fft_checker.max_bin_magnitude(0), kAmplitude * kBlockLength / 2,
+              0.02f);
 }
 
 TEST(SpectralProcessorTest, CheckFrequencyBinMultiChannelTest) {
@@ -411,12 +413,10 @@ TEST(SpectralProcessorTest, CheckFrequencyBinMultiChannelTest) {
   FftCheckerCallback fft_checker;
 
   // Rectangular window.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], 1.0f);
-
   SpectralProcessor processor(kNumInChannels, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kBlockLength, &fft_checker);
+                              RectangularWindowNoOverlap(kBlockLength),
+                              &fft_checker);
+
   const float kSampleRate = 100;
   const float kFrequency1 = 25;
   const float kAmplitude1 = 1.0f;
@@ -428,9 +428,10 @@ TEST(SpectralProcessorTest, CheckFrequencyBinMultiChannelTest) {
       GenerateSine(kChunkLength, kSampleRate, kFrequency2, kAmplitude2);
   Eigen::ArrayXXf two_channel_in(kNumInChannels, kChunkLength);
 
-  const float* const frequency_ptrs[2] = {freq_1.data(), freq_2.data()};
-  beamer::Interleave(frequency_ptrs, kNumInChannels, kChunkLength,
-                     two_channel_in.data());
+  for (int i = 0; i < kChunkLength; ++i) {
+    two_channel_in(0, i) = freq_1[i];
+    two_channel_in(1, i) = freq_2[i];
+  }
   Eigen::ArrayXXf out_buffer(1, kChunkLength);
 
   processor.ProcessChunk(two_channel_in, &out_buffer);
@@ -451,16 +452,10 @@ TEST(SpectralProcessorTest, LargerBlocksThanChunksTest) {
   const int kBlockLength = 64;
 
   BypassCallback bypass_callback;
-
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
   // Half overlap.
   SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength), kBlockLength,
-                              kBlockLength / 2, &bypass_callback);
+                              RectangularWindowHalfOverlap(kBlockLength),
+                              &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kFullLength);
   Eigen::ArrayXXf out_buffer(1, kFullLength);
 
@@ -486,18 +481,12 @@ TEST(SpectralProcessorTest, LessInputChannelsThanOutputChannelsTest) {
   const int kBlockLength = 64;
   const int kNumInputChannels = 2;
   const int kNumOutputChannels = 3;
-
   BypassCallback bypass_callback;
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
   // Half overlap.
-  SpectralProcessor processor(kNumInputChannels, kNumOutputChannels,
-                              kChunkLength, Span<float>(window, kBlockLength),
-                              kBlockLength, kBlockLength / 2, &bypass_callback);
+  SpectralProcessor processor(
+      kNumInputChannels, kNumOutputChannels, kChunkLength,
+      RectangularWindowHalfOverlap(kBlockLength), &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(kNumInputChannels, kFullLengthFrames);
   Eigen::ArrayXXf out_buffer(kNumOutputChannels, kFullLengthFrames);
 
@@ -526,15 +515,10 @@ TEST(SpectralProcessorTest, MoreInputChannelsThanOutputChannelsTest) {
 
   BypassCallback bypass_callback;
 
-  // Identity window for |overlap = block_length / 2|. Window is applied twice
-  // to each block and the result is summed. (sqrt(0.5) ^ 2) * 2 = 1.
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], std::sqrt(0.5f));
-
   // Half overlap.
-  SpectralProcessor processor(kNumInputChannels, kNumOutputChannels,
-                              kChunkLength, Span<float>(window, kBlockLength),
-                              kBlockLength, kBlockLength / 2, &bypass_callback);
+  SpectralProcessor processor(
+      kNumInputChannels, kNumOutputChannels, kChunkLength,
+      RectangularWindowHalfOverlap(kBlockLength), &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(kNumInputChannels, kFullLengthFrames);
   Eigen::ArrayXXf out_buffer(kNumOutputChannels, kFullLengthFrames);
 
@@ -571,14 +555,11 @@ TEST(SpectralProcessorTest, CosineWindowPerfectReconstructionTest) {
 
   // Cosine window has the perfect reconstruction property with 50% overlap.
   // (the window is applied twice, once before and once after the FFT).
-  std::vector<float> window(kBlockLength);
-  CosineWindow().GetPeriodicSamples(kBlockLength, &window);
+  SpectralProcessorParams params(kBlockLength, CosineWindow());
 
   // Half overlap.
   SpectralProcessor processor(kNumInputChannels, kNumOutputChannels,
-                              kChunkLength,
-                              Span<float>(window.data(), kBlockLength),
-                              kBlockLength, kBlockLength / 2, &bypass_callback);
+                              kChunkLength, params, &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(kNumInputChannels, kFullLengthFrames);
   Eigen::ArrayXXf out_buffer(kNumOutputChannels, kFullLengthFrames);
 
@@ -615,14 +596,11 @@ TEST(SpectralProcessorTest, HammingWindowNoPerfectReconstructionTest) {
 
   // Hamming window does not have the perfect reconstruction property
   // (the window is applied twice, once before and once after the FFT).
-  std::vector<float> window(kBlockLength);
-  HammingWindow().GetPeriodicSamples(kBlockLength, &window);
+  SpectralProcessorParams params(kBlockLength, HammingWindow());
 
   // Half overlap.
   SpectralProcessor processor(kNumInputChannels, kNumOutputChannels,
-                              kChunkLength,
-                              Span<float>(window.data(), kBlockLength),
-                              kBlockLength, kBlockLength / 2, &bypass_callback);
+                              kChunkLength, params, &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(kNumInputChannels, kFullLengthFrames);
   Eigen::ArrayXXf out_buffer(kNumOutputChannels, kFullLengthFrames);
 
@@ -646,15 +624,11 @@ TEST(SpectralProcessorTest, HammingWindowNoPerfectReconstructionTest) {
 TEST(SpectralProcessorTest, NonPowerOfTwoFFTTest) {
   const int kChunkLength = 128;
   const int kBlockLength = 15;
-  const int kShiftAmount = kBlockLength;
   BypassCallback bypass_callback;
 
-  float window[kBlockLength];
-  std::fill(window, &window[kBlockLength], 1.0f);
-
   SpectralProcessor processor(1, 1, kChunkLength,
-                              Span<float>(window, kBlockLength),
-                              kBlockLength, kShiftAmount, &bypass_callback);
+                              RectangularWindowNoOverlap(kBlockLength),
+                              &bypass_callback);
   Eigen::ArrayXXf in_buffer = MakeRamp(1, kChunkLength);
   Eigen::ArrayXXf out_buffer(1, kChunkLength);
 
@@ -689,14 +663,11 @@ TEST(SpectralProcessorTest, StreamingTest) {
 
       // Cosine window has the perfect reconstruction property with 50% overlap.
       // (the window is applied twice, once before and once after the FFT).
-      std::vector<float> window(block_length);
-      CosineWindow().GetPeriodicSamples(block_length, &window);
+      SpectralProcessorParams params(block_length, CosineWindow());
 
       // Half overlap.
       SpectralProcessor processor(kNumChannels, kNumChannels, chunk_length,
-                                  Span<float>(window.data(), block_length),
-                                  block_length, block_length / 2,
-                                  &bypass_callback);
+                                  params, &bypass_callback);
       Eigen::ArrayXXf in_buffer =
           Eigen::ArrayXXf::Random(kNumChannels, kFullLengthFrames);
       Eigen::ArrayXXf out_buffer(kNumChannels, kFullLengthFrames);
@@ -734,18 +705,16 @@ TEST(SpectralProcessorTest, StreamingRandomSizesTest) {
 
       // Cosine window has the perfect reconstruction property with 50% overlap.
       // (the window is applied twice, once before and once after the FFT).
-      std::vector<float> window(block_length);
-      CosineWindow().GetPeriodicSamples(block_length, &window);
+      SpectralProcessorParams params(block_length, CosineWindow());
 
       // Prepare for all possible block sizes.
       std::vector<int> possible_sizes(max_chunk_length);
-      for (int i = 0; i < max_chunk_length; ++i) { possible_sizes[i] = i + 1; }
+      for (int i = 0; i < max_chunk_length; ++i) {
+        possible_sizes[i] = i + 1;
+      }
 
-      // Half overlap.
       SpectralProcessor processor(kNumChannels, kNumChannels, possible_sizes,
-                                  Span<float>(window.data(), block_length),
-                                  block_length, block_length / 2,
-                                  &bypass_callback);
+                                  params, &bypass_callback);
       Eigen::ArrayXXf in_buffer =
           Eigen::ArrayXXf::Random(kNumChannels, kFullLengthFrames);
       Eigen::ArrayXXf out_buffer(kNumChannels, kFullLengthFrames);

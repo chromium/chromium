@@ -20,8 +20,6 @@
 // once at the end of the stream or no more frequently than every N log2(N)
 // elements.
 //
-
-//
 // This implementation maintains a buffer of 2N elements and
 // uses fast selection (std::nth_element) to discard N smaller elements at a
 // time, which has constant average complexity per element. The buffered
@@ -55,13 +53,12 @@
 
 #include <algorithm>
 #include <functional>
+#include <iterator>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "glog/logging.h"
-
-#include "audio/dsp/porting.h"  // auto-added.
-
 
 namespace audio_dsp {
 
@@ -79,15 +76,12 @@ class BatchTopN {
         max_size_(2 * limit),
         elements_(new ElementType[max_size_]),
         indices_(new int[max_size_]),
-        index_comparator_(elements_, comparator) {
+        index_comparator_(elements_.get(), comparator) {
     ABSL_CHECK_GE(limit, 1);
     Reset();
   }
 
-  ~BatchTopN() {
-    delete [] elements_;
-    delete [] indices_;
-  }
+  ~BatchTopN() = default;
 
   int limit() const { return limit_; }
 
@@ -247,12 +241,13 @@ class BatchTopN {
     // Prune() first or using std::partial_sort instead of performing a full
     // sort. However, since current_size_ is no more than 2 * limit, a full sort
     // is usually fastest. Benchmarks support this.
-    std::sort(indices_, indices_ + current_size_, index_comparator_);
+    std::sort(indices_.get(), indices_.get() + current_size_,
+              index_comparator_);
     if (current_size_ >= limit_) {
       current_size_ = limit_;
       threshold_index_ = indices_[limit_ - 1];
     }
-    return Result(elements_, indices_, current_size_);
+    return Result(elements_.get(), indices_.get(), current_size_);
   }
 
  private:
@@ -267,10 +262,8 @@ class BatchTopN {
 
       if (current_size_ >= max_size_) {
         // Prune to the larger limit elements.
-        std::nth_element(indices_,
-                         indices_ + limit_ - 1,
-                         indices_ + current_size_,
-                         index_comparator_);
+        std::nth_element(indices_.get(), indices_.get() + limit_ - 1,
+                         indices_.get() + current_size_, index_comparator_);
         current_size_ = limit_;
         threshold_index_ = indices_[limit_ - 1];
       } else if (current_size_ == limit_) {
@@ -307,9 +300,9 @@ class BatchTopN {
   // on ElementType values directly, we maintain a buffer of int indices and
   // reorder those instead. For non-POD ElementType, swap or move probably costs
   // at least a couple integer and pointer assignments. These buffers never
-  // reallocate after construction, so we use raw pointers.
-  ElementType* elements_;  // Dynamic array of size max_size_.
-  int* indices_;  // Dynamic array of size max_size_.
+  // reallocate after construction, so we use unique_ptr.
+  std::unique_ptr<ElementType[]> elements_;  // Dynamic array of size max_size_.
+  std::unique_ptr<int[]> indices_;           // Dynamic array of size max_size_.
 
   // Comparator for reordering indices_.
   IndexComparator index_comparator_;

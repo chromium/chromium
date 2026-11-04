@@ -21,14 +21,15 @@
 #include <string>
 #include <utility>
 
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/substitute.h"
-#include "absl/types/span.h"
-#include "libyuv/scale.h"
-#include "libyuv/video_common.h"
+#include "absl/log/absl_check.h"        // from @com_google_absl
+#include "absl/log/absl_log.h"          // from @com_google_absl
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+#include "absl/strings/str_cat.h"       // from @com_google_absl
+#include "absl/strings/substitute.h"    // from @com_google_absl
+#include "absl/types/span.h"            // from @com_google_absl
+#include "libyuv/scale.h"               // from @libyuv
+#include "libyuv/video_common.h"        // from @libyuv
 #include "mediapipe/calculators/image/scale_image_calculator.pb.h"
 #include "mediapipe/calculators/image/scale_image_utils.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -43,7 +44,6 @@
 #include "mediapipe/framework/port/opencv_imgproc_inc.h"
 #include "mediapipe/framework/port/proto_ns.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/util/image_frame_util.h"
 
 namespace mediapipe {

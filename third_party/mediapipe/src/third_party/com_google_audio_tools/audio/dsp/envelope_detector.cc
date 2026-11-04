@@ -21,7 +21,6 @@
 namespace audio_dsp {
 
 using ::Eigen::ArrayXf;
-using ::Eigen::ArrayXXf;
 
 void EnvelopeDetector::Init(
     int num_channels, float sample_rate_hz, float envelope_cutoff_hz,
@@ -59,7 +58,9 @@ void EnvelopeDetector::Reset() {
   downsampler_.Reset();
 }
 
-bool EnvelopeDetector::ProcessBlock(const ArrayXXf& input, ArrayXXf* output) {
+bool EnvelopeDetector::ProcessBlockInternal(
+    Eigen::Map<const Eigen::ArrayXXf> input,
+    Eigen::Map<Eigen::ArrayXXf> output) {
   if (num_channels_ == 0) {
     LOG(WARNING) << "You must initialize!";
     return false;
@@ -71,19 +72,19 @@ bool EnvelopeDetector::ProcessBlock(const ArrayXXf& input, ArrayXXf* output) {
   if (envelope_sample_rate_hz_ == sample_rate_hz_) {
     // Bypass downsampling, which may add a few samples of delay for identity
     // resampling.
-    envelope_smoother_.ProcessBlock(workspace_, output);
+    envelope_smoother_.ProcessBlock(workspace_, &output);
   } else {
     envelope_smoother_.ProcessBlock(workspace_, &workspace_);
     // Downsample the signal.
-    downsampler_.ProcessSamples(workspace_, output);
+    downsampler_.ProcessSamples(workspace_, &output);
   }
   // Undo the square to obtain the RMS value.
-  *output = output->array().abs().sqrt();
+  output = output.abs().sqrt();
   // Store the most recent output so that we always have a level estimate,
   // even when Process didn't have enough input samples to produce any output
   // samples.
-  if (output->cols() > 0) {
-    most_recent_output_ = output->col(output->cols() - 1);
+  if (output.cols() > 0) {
+    most_recent_output_ = output.col(output.cols() - 1);
   }
   return true;
 }

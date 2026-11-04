@@ -17,14 +17,15 @@
 #include <memory>
 #include <string>
 
-#include "absl/container/flat_hash_set.h"
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
-#include "absl/strings/substitute.h"
+#include "absl/container/flat_hash_set.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"           // from @com_google_absl
+#include "absl/log/absl_log.h"             // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status_builder.h"    // from @com_google_absl
+#include "absl/status/status_macros.h"     // from @com_google_absl
+#include "absl/strings/str_cat.h"          // from @com_google_absl
+#include "absl/strings/str_join.h"         // from @com_google_absl
+#include "absl/strings/substitute.h"       // from @com_google_absl
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/calculator_base.h"
 #include "mediapipe/framework/graph_service_manager.h"
@@ -226,19 +227,19 @@ absl::Status NodeTypeInfo::Initialize(
   absl::Status status = ValidatePacketTypeSet(contract_.Inputs());
   if (!status.ok()) {
     statuses.push_back(
-        mediapipe::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
+        absl::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
         << "For input streams of " << contract_.GetNodeName() << " ");
   }
   status = ValidatePacketTypeSet(contract_.Outputs());
   if (!status.ok()) {
     statuses.push_back(
-        mediapipe::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
+        absl::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
         << "For output streams of " << contract_.GetNodeName() << " ");
   }
   status = ValidatePacketTypeSet(contract_.InputSidePackets());
   if (!status.ok()) {
     statuses.push_back(
-        mediapipe::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
+        absl::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
         << "For input side packets of " << contract_.GetNodeName() << " ");
   }
   if (!statuses.empty()) {
@@ -1045,8 +1046,7 @@ absl::Status ValidatedGraphConfig::ValidateRequiredSidePackets(
           input_side_packets_[index].packet_type->Validate(iter->second);
       if (!status.ok()) {
         statuses.push_back(
-            mediapipe::StatusBuilder(std::move(status), MEDIAPIPE_LOC)
-                .SetPrepend()
+            absl::StatusBuilder(std::move(status), MEDIAPIPE_LOC).SetPrepend()
             << "Side packet \"" << required_item.first
             << "\" failed validation: ");
       }

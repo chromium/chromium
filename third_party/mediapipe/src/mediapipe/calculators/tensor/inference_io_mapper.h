@@ -19,15 +19,15 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
+#include "absl/container/flat_hash_map.h"  // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/statusor.h"          // from @com_google_absl
 #include "mediapipe/calculators/tensor/inference_calculator.pb.h"
 #include "mediapipe/calculators/tensor/tensor_span.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/util/tflite/tflite_signature_reader.h"
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/model_builder.h"
+#include "tensorflow/lite/interpreter.h"    // from @litert
+#include "tensorflow/lite/model_builder.h"  // from @litert
 
 namespace mediapipe {
 // Maps signature names to a list of input and output tensor names in the

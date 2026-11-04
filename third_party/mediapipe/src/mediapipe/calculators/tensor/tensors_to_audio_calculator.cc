@@ -19,8 +19,8 @@
 #include <utility>
 #include <vector>
 
-#include "absl/algorithm/container.h"
-#include "absl/status/status.h"
+#include "absl/algorithm/container.h"  // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
 #include "audio/dsp/window_functions.h"
 #include "mediapipe/calculators/tensor/tensors_to_audio_calculator.pb.h"
 #include "mediapipe/framework/api2/node.h"
@@ -28,7 +28,7 @@
 #include "mediapipe/framework/formats/matrix.h"
 #include "mediapipe/framework/formats/tensor.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "pffft.h"
+#include "pffft.h"  // from @pffft
 
 namespace mediapipe {
 namespace api2 {

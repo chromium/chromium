@@ -21,12 +21,12 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
-#include "absl/strings/string_view.h"
+#include "absl/container/flat_hash_map.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
 #include "mediapipe/tasks/cc/text/tokenizers/tokenizer.h"
 #include "mediapipe/tasks/cc/text/utils/vocab_utils.h"
-#include "re2/re2.h"
-#include "tensorflow_text/core/kernels/wordpiece_tokenizer.h"
+#include "re2/re2.h"  // from @com_googlesource_code_re2
+#include "tensorflow_text/core/kernels/wordpiece_tokenizer.h"  // from @org_tensorflow_text
 
 namespace mediapipe {
 namespace tasks {

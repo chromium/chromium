@@ -58,13 +58,18 @@
 #ifndef AUDIO_DSP_LOUDNESS_LOUDNESS_1771_TWO_WAY_COMPRESSOR_H_
 #define AUDIO_DSP_LOUDNESS_LOUDNESS_1771_TWO_WAY_COMPRESSOR_H_
 
+#include <cstddef>
 #include <memory>
+#include <type_traits>
+#include <vector>
 
 #include "audio/dsp/attack_release_envelope.h"
 #include "audio/dsp/decibels.h"
 #include "audio/dsp/fixed_delay_line.h"
 #include "audio/dsp/hifi/dynamic_range_control_functions.h"
 #include "audio/dsp/loudness/streaming_loudness_1771.h"
+#include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "third_party/eigen3/Eigen/Core"
 
 namespace audio_dsp {
@@ -132,6 +137,9 @@ struct Loudness1771TwoWayCompressorParams {
 // estimation from the ITU-1771 specification for measuring loudness.
 class Loudness1771TwoWayCompressor {
  public:
+  Loudness1771TwoWayCompressor()
+      : num_channels_(0) {}
+
   // sample_rate_hz is the audio sample rate.
   // max_block_size_samples is the largest number of samples per channel that
   // may be processed at a time. The size of the block does not have any
@@ -150,16 +158,29 @@ class Loudness1771TwoWayCompressor {
   // Templating is necessary for supporting Eigen::Map output types.
   template <typename InputType, typename OutputType>
   bool ProcessBlock(const InputType& input, OutputType* output) {
-    static_assert(std::is_same<typename InputType::Scalar, float>::value,
-                  "Scalar type must be float.");
-    static_assert(std::is_same<typename OutputType::Scalar, float>::value,
-                  "Scalar type must be float.");
-
-    ABSL_CHECK_GE(input.cols(), 1);
-    ABSL_CHECK_LE(input.cols(), max_block_size_samples_);
-    ABSL_CHECK_EQ(input.rows(), num_channels_);
-    ABSL_CHECK_EQ(input.cols(), output->cols());
-    ABSL_CHECK_EQ(input.rows(), output->rows());
+    if (!std::is_same<typename InputType::Scalar, float>::value){
+      LOG(ERROR) << "Array input type must be float.";
+      return false;
+    }
+    if (!std::is_same<typename OutputType::Scalar, float>::value) {
+      LOG(ERROR) << "Array output type must be float.";
+      return false;
+    }
+    if (input.cols() < 1 || input.cols() > max_block_size_samples_) {
+      LOG(ERROR) << "Number of columns (frames) in input must be between 1 "
+                 << "and " << max_block_size_samples_
+                 <<" but received " << input.cols() << ".";
+      return false;
+    }
+    if (input.rows() != num_channels_) {
+      LOG(ERROR) << "Number of rows (channels) in input must be equal to "
+                 << num_channels_ << " but received " << input.rows() << ".";
+      return false;
+    }
+    if (input.cols() != output->cols() || input.rows() != output->rows()) {
+      LOG(ERROR) << "Size of the input and output arrays must be the same.";
+      return false;
+    }
 
     // Map the needed amount of space for computations.
     VectorType workmap = workspace_.head(input.cols());
@@ -172,9 +193,34 @@ class Loudness1771TwoWayCompressor {
     return true;
   }
 
+  // Convenience wrapper around ProcessBlock, where the signal in input is
+  // assumed to be interleaved multi-channel audio samples where the number of
+  // channels is specified by the call to Init.
+  // See ProcessBlock for details.
+  absl::StatusOr<std::vector<float>> ProcessVector(
+      const std::vector<float>& input) {
+    if (num_channels_ == 0) {
+      return absl::UnavailableError(
+          "Instance must be initialized by calling Init().");
+    }
+    const size_t num_channels = num_channels_;
+    const size_t num_frames = input.size() / num_channels;
+
+    Eigen::Map<const Eigen::ArrayXXf> input_block(
+        input.data(), num_channels, num_frames);
+
+    std::vector<float> output_block(num_channels * num_frames);
+    Eigen::Map<Eigen::ArrayXXf> output_map(output_block.data(),
+                                           num_channels, num_frames);
+    if (ProcessBlock(input_block, &output_map)) {
+      return output_block;
+    }
+    return absl::InternalError("ProcessBlock failed.  Check logs.");
+  }
+
   // Compute the gains that would be applied to the signal so that more
-  // processing can be done prior to applying them. The gains are linear.
-  // gain is a monaural signal, with length input.cols(). Note that if GainType
+  // processing can be done prior to applying them. The output gains are linear.
+  // Gain is a monaural signal, with length input.cols(). Note that if GainType
   // is not resizable, it will be presized to the right size.
   template <typename InputType, typename GainType>
   void ComputeGainSignalOnly(const InputType& input, GainType* gain) {
@@ -184,8 +230,33 @@ class Loudness1771TwoWayCompressor {
     // converted back to average power before attack/release smoothing.
     Eigen::ArrayXf loudness(gain->size());
     loudness_meter_.ProcessBlock(input, &loudness);
-    DecibelsToPowerRatio(loudness, gain);
-    ComputeGainFromDetectedSignal(gain);
+    ComputeGainFromDetectedSignal(loudness, gain);
+  }
+
+  // Convenience wrapper around ComputeGainSignalOnly, where the signal in input
+  // is assumed to be interleaved multi-channel audio samples where the number
+  // of channels is specified by the call to Init.
+  // See ComputeGainSignalOnly for details.
+  absl::StatusOr<std::vector<float>> ComputeGainSignalOnlyVector(
+      const std::vector<float>& input) {
+    if (num_channels_ == 0) {
+      return absl::UnavailableError(
+          "Instance must be initialized by calling Init().");
+    }
+    const size_t num_channels = num_channels_;
+    const size_t num_frames = input.size() / num_channels;
+    if (num_frames > max_block_size_samples_) {
+      return absl::InvalidArgumentError("Input signal is too large.");
+    }
+
+    Eigen::Map<const Eigen::ArrayXXf> input_block(
+        input.data(), num_channels, num_frames);
+
+    Eigen::ArrayXf gain(num_frames);
+    VectorType v = gain.head(num_frames);
+    ComputeGainSignalOnly(input_block, &v);
+    std::vector<float> output(gain.begin(), gain.end());
+    return output;
   }
 
  private:
@@ -214,7 +285,11 @@ class Loudness1771TwoWayCompressor {
   // Compute the linear gain to apply to the input. data_ptr is a rectified
   // signal envelope on input, and after calling this function it contains the
   // linear gain to apply to the signal.
-  void ComputeGainFromDetectedSignal(VectorType* data_ptr);
+  void ComputeGainFromDetectedSignal(const Eigen::ArrayXf& loudness,
+                                     VectorType* gain_ptr);
+
+  void ApplyAttackReleaseInLinearDomain(VectorType* data_ptr);
+  void ComputeGainInDecibelDomain(VectorType* data_ptr);
 
   int num_channels_;
   float sample_rate_hz_;

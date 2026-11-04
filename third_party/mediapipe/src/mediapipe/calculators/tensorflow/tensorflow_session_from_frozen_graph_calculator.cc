@@ -23,18 +23,18 @@
 
 #include <string>
 
-#include "absl/log/absl_log.h"
+#include "absl/log/absl_log.h"   // from @com_google_absl
+#include "absl/status/status.h"  // from @com_google_absl
 #include "mediapipe/calculators/tensorflow/tensorflow_session.h"
 #include "mediapipe/calculators/tensorflow/tensorflow_session_from_frozen_graph_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/deps/clock.h"
 #include "mediapipe/framework/deps/monotonic_clock.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/status_util.h"
-#include "tensorflow/core/framework/graph.pb.h"
-#include "tensorflow/core/framework/node_def.pb.h"
-#include "tensorflow/core/public/session_options.h"
+#include "tensorflow/core/framework/graph.pb.h"      // from @org_tensorflow
+#include "tensorflow/core/framework/node_def.pb.h"   // from @org_tensorflow
+#include "tensorflow/core/public/session_options.h"  // from @org_tensorflow
 
 #if defined(MEDIAPIPE_MOBILE)
 #include "mediapipe/util/android/file/base/helpers.h"

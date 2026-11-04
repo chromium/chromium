@@ -15,11 +15,12 @@
 #ifndef MEDIAPIPE_DEPS_RET_CHECK_H_
 #define MEDIAPIPE_DEPS_RET_CHECK_H_
 
-#include "absl/base/optimization.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/status/statusor.h"
-#include "mediapipe/framework/deps/status_builder.h"
+#include "absl/base/optimization.h"      // from @com_google_absl
+#include "absl/status/status.h"          // from @com_google_absl
+#include "absl/status/status_builder.h"  // from @com_google_absl
+#include "absl/status/status_macros.h"   // from @com_google_absl
+#include "absl/status/statusor.h"        // from @com_google_absl
+#include "absl/types/source_location.h"  // from @com_google_absl
 #include "mediapipe/framework/deps/status_macros.h"
 
 namespace mediapipe {
@@ -34,23 +35,22 @@ inline const absl::Status& AsStatus(const absl::StatusOr<T>& status_or) {
 }
 
 // Returns a StatusBuilder that corresponds to a `RET_CHECK` failure.
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location);
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location);
 
 // Returns a StatusBuilder that corresponds to a `RET_CHECK` failure.
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location, const char* condition);
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location,
+                                         const char* condition);
 
 // Returns a StatusBuilder that corresponds to a `RET_CHECK` failure.
-mediapipe::StatusBuilder RetCheckFailSlowPath(
-    mediapipe::source_location location, const char* condition,
-    const absl::Status& status);
+absl::StatusBuilder RetCheckFailSlowPath(absl::SourceLocation location,
+                                         const char* condition,
+                                         const absl::Status& status);
 
-inline StatusBuilder RetCheckImpl(const absl::Status& status,
-                                  const char* condition,
-                                  mediapipe::source_location location) {
+inline absl::StatusBuilder RetCheckImpl(const absl::Status& status,
+                                        const char* condition,
+                                        absl::SourceLocation location) {
   if (ABSL_PREDICT_TRUE(status.ok()))
-    return mediapipe::StatusBuilder(absl::OkStatus(), location);
+    return absl::StatusBuilder(absl::OkStatus(), location);
   return RetCheckFailSlowPath(location, condition, status);
 }
 
@@ -58,13 +58,14 @@ inline StatusBuilder RetCheckImpl(const absl::Status& status,
 
 #define RET_CHECK(cond)               \
   while (ABSL_PREDICT_FALSE(!(cond))) \
-  return mediapipe::RetCheckFailSlowPath(MEDIAPIPE_LOC, #cond)
+  return mediapipe::RetCheckFailSlowPath(absl::SourceLocation::current(), #cond)
 
-#define RET_CHECK_OK(status)                                                \
-  ABSL_RETURN_IF_ERROR(mediapipe::RetCheckImpl(mediapipe::AsStatus(status), \
-                                               #status, MEDIAPIPE_LOC))
+#define RET_CHECK_OK(status)                    \
+  ABSL_RETURN_IF_ERROR(mediapipe::RetCheckImpl( \
+      mediapipe::AsStatus(status), #status, absl::SourceLocation::current()))
 
-#define RET_CHECK_FAIL() return mediapipe::RetCheckFailSlowPath(MEDIAPIPE_LOC)
+#define RET_CHECK_FAIL() \
+  return mediapipe::RetCheckFailSlowPath(absl::SourceLocation::current())
 
 #define MEDIAPIPE_INTERNAL_RET_CHECK_OP(name, op, lhs, rhs) \
   RET_CHECK((lhs)op(rhs))

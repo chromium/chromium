@@ -14,9 +14,11 @@
 
 #include "mediapipe/framework/profiler/profiler_resource_util.h"
 
+#include "absl/status/statusor.h"  // from @com_google_absl
+
 namespace mediapipe {
 
-StatusOr<std::string> GetDefaultTraceLogDirectory() {
+absl::StatusOr<std::string> GetDefaultTraceLogDirectory() {
   return std::string("/tmp");
 }
 

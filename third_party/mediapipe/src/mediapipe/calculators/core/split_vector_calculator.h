@@ -19,16 +19,15 @@
 #include <type_traits>
 #include <vector>
 
+#include "absl/status/status.h"  // from @com_google_absl
 #include "mediapipe/calculators/core/split_vector_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/util/resource_util.h"
-#include "tensorflow/lite/error_reporter.h"
-#include "tensorflow/lite/interpreter.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/model.h"
+#include "tensorflow/lite/error_reporter.h"    // from @litert
+#include "tensorflow/lite/interpreter.h"       // from @litert
+#include "tensorflow/lite/kernels/register.h"  // from @litert
+#include "tensorflow/lite/model.h"             // from @litert
 
 namespace mediapipe {
 

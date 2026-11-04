@@ -14,6 +14,9 @@
 
 #include "mediapipe/gpu/gl_simple_calculator.h"
 
+#include "absl/status/status.h"         // from @com_google_absl
+#include "absl/status/status_macros.h"  // from @com_google_absl
+
 namespace mediapipe {
 
 // static

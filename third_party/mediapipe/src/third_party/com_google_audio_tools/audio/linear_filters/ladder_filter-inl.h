@@ -21,12 +21,9 @@
 #include <vector>
 
 #include "glog/logging.h"
-
 #include "audio/linear_filters/ladder_filter.h"
 #include "absl/base/optimization.h"
-
-#include "audio/dsp/porting.h"  // auto-added.
-
+#include "absl/types/span.h"
 
 namespace linear_filters {
 namespace internal {
@@ -168,8 +165,8 @@ void LadderFilter<_SampleType>::ChangeLadderCoeffs(
 template <typename _SampleType>
 void LadderFilter<_SampleType>::InitFromTransferFunction(
     int num_channels,
-    const std::vector<double>& coeffs_b,
-    const std::vector<double>& coeffs_a) {
+    absl::Span<const double> coeffs_b,
+    absl::Span<const double> coeffs_a) {
   std::vector<double> coeffs_k;
   std::vector<double> coeffs_v;
   MakeLadderCoefficientsFromTransferFunction(coeffs_b, coeffs_a,
@@ -179,8 +176,8 @@ void LadderFilter<_SampleType>::InitFromTransferFunction(
 
 template <typename _SampleType>
 void LadderFilter<_SampleType>::ChangeCoeffsFromTransferFunction(
-    const std::vector<double>& coeffs_b,
-                                      const std::vector<double>& coeffs_a) {
+    absl::Span<const double> coeffs_b,
+    absl::Span<const double> coeffs_a) {
   std::vector<double> coeffs_k;
   std::vector<double> coeffs_v;
   MakeLadderCoefficientsFromTransferFunction(coeffs_b, coeffs_a,

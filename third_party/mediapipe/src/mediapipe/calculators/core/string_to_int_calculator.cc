@@ -18,9 +18,9 @@
 #include <memory>
 #include <string>
 
-#include "absl/strings/numbers.h"
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/strings/numbers.h"  // from @com_google_absl
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/status.h"
 
 namespace mediapipe {
 

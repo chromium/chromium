@@ -8,11 +8,11 @@ diff --git a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/
 index f8007ff55531d..914cdbafcd17b 100644
 --- a/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h
 +++ b/third_party/mediapipe/src/third_party/com_google_audio_tools/audio/dsp/resampler_q.h
-@@ -205,6 +205,7 @@
- #include "audio/dsp/eigen_types.h"
+@@ -208,6 +208,7 @@
  #include "audio/dsp/resampler.h"
  #include "audio/dsp/types.h"
+ #include "absl/base/optimization.h"
 +#include "absl/log/absl_check.h"
- #include "absl/meta/type_traits.h"
+ #include "absl/types/span.h"
  #include "third_party/eigen3/Eigen/Core"
  

@@ -21,21 +21,21 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/status/statusor.h"
+#include "absl/memory/memory.h"    // from @com_google_absl
+#include "absl/status/status.h"    // from @com_google_absl
+#include "absl/status/statusor.h"  // from @com_google_absl
 #include "mediapipe/framework/api2/packet.h"
 #include "mediapipe/tasks/cc/common.h"
 #include "mediapipe/tasks/cc/core/external_file_handler.h"
 #include "mediapipe/tasks/cc/core/proto/external_file.pb.h"
 #include "mediapipe/tasks/cc/metadata/metadata_extractor.h"
 #include "mediapipe/util/tflite/error_reporter.h"
-#include "tensorflow/lite/core/api/error_reporter.h"
-#include "tensorflow/lite/core/api/op_resolver.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/model.h"
-#include "tensorflow/lite/model_builder.h"
-#include "tensorflow/lite/tools/verifier.h"
+#include "tensorflow/lite/core/api/error_reporter.h"  // from @litert
+#include "tensorflow/lite/core/api/op_resolver.h"     // from @litert
+#include "tensorflow/lite/kernels/register.h"         // from @litert
+#include "tensorflow/lite/model.h"                    // from @litert
+#include "tensorflow/lite/model_builder.h"            // from @litert
+#include "tensorflow/lite/tools/verifier.h"           // from @litert
 
 namespace mediapipe {
 namespace tasks {

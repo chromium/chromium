@@ -23,10 +23,10 @@ index a0ba58cc17d68..2b8d3c8a5b2c6 100644
  #include <utility>
  #include <vector>
 
--#include "absl/log/check.h"
--#include "absl/log/log.h"
- #include "absl/status/status.h"
- #include "absl/status/status_macros.h"
+-#include "absl/log/check.h"             // from @com_google_absl
+-#include "absl/log/log.h"               // from @com_google_absl
+ #include "absl/status/status.h"         // from @com_google_absl
+ #include "absl/status/status_macros.h"  // from @com_google_absl
  #include "mediapipe/calculators/tensor/vector_to_tensor_calculator.pb.h"
 diff --git a/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc b/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
 index ee4a86adf26b8..88ee6dddc4bf6 100644
@@ -34,12 +34,12 @@ index ee4a86adf26b8..88ee6dddc4bf6 100644
 +++ b/third_party/mediapipe/src/mediapipe/framework/input_stream_handler.cc
 @@ -22,7 +22,6 @@
 
- #include "absl/log/absl_check.h"
- #include "absl/log/absl_log.h"
--#include "absl/log/log.h"
- #include "absl/strings/str_cat.h"
- #include "absl/strings/str_join.h"
- #include "absl/strings/substitute.h"
+ #include "absl/log/absl_check.h"      // from @com_google_absl
+ #include "absl/log/absl_log.h"        // from @com_google_absl
+-#include "absl/log/log.h"             // from @com_google_absl
+ #include "absl/strings/str_cat.h"     // from @com_google_absl
+ #include "absl/strings/str_join.h"    // from @com_google_absl
+ #include "absl/strings/substitute.h"  // from @com_google_absl
 @@ -50,12 +49,12 @@ class FillInputSetLogger {
   private:
    void OutputLogs() const {
@@ -59,14 +59,15 @@ diff --git a/third_party/mediapipe/src/mediapipe/framework/validated_graph_confi
 index e5d44b1efe138..126cd9b0f1107 100644
 --- a/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc
 +++ b/third_party/mediapipe/src/mediapipe/framework/validated_graph_config.cc
-@@ -20,7 +20,6 @@
- #include "absl/container/flat_hash_set.h"
- #include "absl/log/absl_check.h"
- #include "absl/log/absl_log.h"
--#include "absl/log/log.h"
- #include "absl/status/status.h"
- #include "absl/status/status_macros.h"
- #include "absl/strings/str_cat.h"
+@@ -20,8 +20,7 @@
+ #include "absl/container/flat_hash_set.h"  // from @com_google_absl
+ #include "absl/log/absl_check.h"           // from @com_google_absl
+ #include "absl/log/absl_log.h"             // from @com_google_absl
+-#include "absl/log/log.h"                  // from @com_google_absl
+ #include "absl/status/status.h"            // from @com_google_absl
+ #include "absl/status/status_builder.h"    // from @com_google_absl
+ #include "absl/status/status_macros.h"     // from @com_google_absl
+ #include "absl/strings/str_cat.h"          // from @com_google_absl
 @@ -712,7 +711,7 @@ absl::Status ValidatedGraphConfig::AddInputStreamsForNode(
        }
      } else {
@@ -137,10 +138,10 @@ index 6faaabb3b045a..1710d4083751d 100644
 @@ -1,7 +1,6 @@
  #include "mediapipe/framework/vlog_utils.h"
 
- #include "absl/log/absl_log.h"
--#include "absl/log/log.h"
- #include "absl/strings/str_split.h"  // IWYU pragma: keep
- #include "absl/strings/string_view.h"
+ #include "absl/log/absl_log.h"       // from @com_google_absl
+-#include "absl/log/log.h"            // from @com_google_absl
+ #include "absl/strings/str_split.h"  // from @com_google_absl  // IWYU pragma: keep
+ #include "absl/strings/string_view.h"  // from @com_google_absl
  #include "mediapipe/framework/port/logging.h"
 @@ -12,12 +11,12 @@ void VlogLargeMessage(int verbose_level, absl::string_view message) {
  #if defined(MEDIAPIPE_MOBILE)

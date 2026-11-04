@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 #include "audio/linear_filters/biquad_filter_coefficients.h"
@@ -32,7 +33,6 @@
 #include "third_party/eigen3/Eigen/Core"
 
 #include "audio/dsp/porting.h"  // auto-added.
-
 
 namespace audio_dsp {
 
@@ -53,6 +53,42 @@ namespace audio_dsp {
 // see larger deviations. It is challenging to characterize the amount of
 // deviation based only on input parameters, so be sure to test carefully if
 // the perfect reconstruction property is important for your application.
+//
+// There are several examples of multiband filters and their associated
+// tolerances in the test file.
+//
+// The number of biquad filters, processed during multi-crossover filter is:
+//   order * ((bands-1)*3/4 + (bands-1)*(bands-2) / 4)
+// It can be reduced in a two-step split and merge process where samples should
+// be split, processed, and remerged. For example:
+//   filter.SplitBands(input);
+//   for (int i = 0; i < filter.num_bands(); ++i) {
+//     per_band_drc_[i].ProcessBlock(filter.FilteredOutput(i),
+//                                  &filtered_output);
+//   }
+//   filter.MergeBands(filtered_output, merged_output);
+// The number of processed biquads in this case is:
+//   order * ((bands-1)*3/4 + (bands-2) / 4)
+// If you do not need to re-merge the bands, you can use the
+// simpler ProcessBlock interface:
+//   filter.ProcessBlock(input);
+//   for (int i = 0; i < filter.num_bands(); ++i) {
+//     per_band_drc_[i].ProcessBlock(filter.FilteredOutput(i),
+//                                   &filtered_output[i]);
+//   }
+// ProcessBlock approach is simpler, but Split/Merge is faster, especially when
+// you have more frequency bands:
+// Bands Num  ProcessBlock  Split/Merge
+//  2          3             3
+//  3          8             7
+//  4         15            11
+//  5         24            15
+//  6         35            19
+//  7         48            23
+//  8         63            27
+//  9         80            31
+// 10         99            35
+
 template <typename ScalarType /* float/double */>
 class MultiCrossoverFilter {
  public:
@@ -60,21 +96,24 @@ class MultiCrossoverFilter {
       Eigen::Array<ScalarType, Eigen::Dynamic, Eigen::Dynamic>;
   using SampleBlockType = Eigen::Array<ScalarType, Eigen::Dynamic, 1>;
 
-  MultiCrossoverFilter(int num_bands, int order,
-                       linear_filters::CrossoverType type =
-                           linear_filters::kLinkwitzRiley)
+  MultiCrossoverFilter(
+      int num_bands, int order,
+      linear_filters::CrossoverType type = linear_filters::kLinkwitzRiley)
       : type_(type),
         order_(order),
         num_bands_(num_bands),
-        num_bands_with_allpass_(num_bands_ - 2),
         num_stages_(num_bands_ - 1),
         num_channels_(0 /* uninitialized */),
         sample_rate_hz_(0 /* uninitialized */),
         highpass_filters_(num_stages_),
-        lowpass_filters_(num_stages_),
-        allpass_filters_(num_bands_with_allpass_),
+        // AP filter of squared LP/HP has two times less biquads.
+        // We use allpass filters for faster LP filtering:
+        // LP = AP - HP
+        allpass_filters_(num_stages_),
+        phase_correction_filters_(num_stages_),
         filtered_output_(num_bands_) {
     ABSL_CHECK_GT(num_bands, 1);
+    ABSL_CHECK_EQ(order_ % 2, 0);
   }
 
   // crossover_frequencies_hz.size() must equal num_bands - 1 and have
@@ -94,7 +133,7 @@ class MultiCrossoverFilter {
         filter.Reset();
       }
     }
-    for (auto& stage : lowpass_filters_) {
+    for (auto& stage : phase_correction_filters_) {
       for (auto& filter : stage) {
         filter.Reset();
       }
@@ -111,9 +150,6 @@ class MultiCrossoverFilter {
 
   // crossover_frequencies_hz.size() must equal num_bands - 1 and have
   // monotonically increasing elements.
-  // Interpolation is done in the filters so that audio artifacts are not
-  // caused. During interpolation, magnitude responses are not guaranteed to sum
-  // to unity.
   void SetCrossoverFrequencies(
       const std::vector<ScalarType>& crossover_frequencies_hz) {
     SetCrossoverFrequenciesInternal(crossover_frequencies_hz, false);
@@ -121,47 +157,32 @@ class MultiCrossoverFilter {
 
   // Process a block of samples. input is a 2D Eigen array with contiguous
   // column-major data, where the number of rows equals GetNumChannels().
+  // At this point we do not apply phase correction. Corresponding phase
+  // correction is applied in MergeBands.
+  // Instead of LP we use AP-HP, that saves us 25% of CPU clocks.
   // A four-way crossover would look like this:
   // Stage:     0        1        2
-  // input --> LP_0 ----AP_0-----AP_2-------> Output band 0
-  //       \-> HP_0 --> LP_1-----AP_1-------> Output band 1
-  //                \-> HP_1 --> LP_2-------> Output band 2
-  //                         \-> HP_2-------> Output band 3
-  // Note that the high/low pass filters are numbered by stage and the allpass
-  // filters are numbered by the filter-global order in which they are designed.
-  void ProcessBlock(const ArrayBlockType& input) {
-    ABSL_DCHECK_GT(num_bands_, 1);
-    const ArrayBlockType* next_in = &input;
-    const ArrayBlockType* each_biquad_in = next_in;
+  // input --> LP_0 ------------------> Output band 0
+  //       \-> HP_0 --> LP_1----------> Output band 1
+  //                \-> HP_1 --> LP_2-> Output band 2
+  //                         \-> HP_2-> Output band 3
+  // Do not use ProcessBlock method if you use Split/Merge.
+  void SplitBands(const ArrayBlockType& input) {
+    filtered_output_[0] = input;
     for (int stage = 0; stage < num_stages_; ++stage) {
-      {  // The highpass filter processes for the next higher band.
-        const int dst_band = stage + 1;
-        each_biquad_in = next_in;
-        for (auto& filter : highpass_filters_[stage]) {
-          filter.ProcessBlock(*each_biquad_in, &filtered_output_[dst_band]);
-          each_biquad_in = &filtered_output_[dst_band];
-        }
+      filtered_output_[stage + 1] = filtered_output_[stage];
+      // The highpass filter processes.
+      for (auto& filter : highpass_filters_[stage]) {
+        filter.ProcessBlock(filtered_output_[stage + 1],
+                            &filtered_output_[stage + 1]);
       }
-      {  // The low/allpass filters processes for the current band.
-        const int dst_band = stage;
-        each_biquad_in = next_in;
-        for (auto& filter : lowpass_filters_[stage]) {
-          filter.ProcessBlock(*each_biquad_in, &filtered_output_[dst_band]);
-          each_biquad_in = &filtered_output_[dst_band];
-        }
+      // The lowpass (allpass-highpass) filters processes.
+      for (auto& filter : allpass_filters_[stage]) {
+        filter.ProcessBlock(filtered_output_[stage], &filtered_output_[stage]);
       }
-      next_in = &filtered_output_[stage + 1];
-    }
-
-    // Process the allpass filters for each band.
-    for (int band = 0; band < num_bands_with_allpass_; ++band) {
-      for (auto& filter : allpass_filters_[band]) {
-        filter.ProcessBlock(filtered_output_[band], &filtered_output_[band]);
-      }
+      filtered_output_[stage] -= filtered_output_[stage + 1];
     }
   }
-
-  int num_bands() const { return num_bands_; }
 
   // Filtered output from the filter_stage-th of the filterbank. Channels are
   // ordered by increasing passband frequency.
@@ -169,6 +190,50 @@ class MultiCrossoverFilter {
     ABSL_DCHECK_LT(band_number, num_bands_);
     return filtered_output_[band_number];
   }
+
+  // Applies phase correction to filtered output bands and merge it into
+  // |output|.
+  // A four-way merge would look like this:
+  // Stage:     0        1        2
+  // Output band 0 --> AP_1->\
+  // Output band 1 ------------>\ AP_2 ->\
+  // Output band 2 ------------------------>\
+  // Output band 3 ---------------------------> output
+  void MergeBands(std::vector<ArrayBlockType>& filtered_bands,
+                  Eigen::Map<ArrayBlockType> output) {
+    ABSL_CHECK_EQ(filtered_bands.size(), num_bands_);
+    output = filtered_bands[0];
+    for (int stage = 1; stage < num_stages_; ++stage) {
+      for (auto& filter : phase_correction_filters_[stage]) {
+        filter.ProcessBlock(output, &output);
+      }
+      output += filtered_bands[stage];
+    }
+    output += filtered_bands[num_stages_];
+  }
+
+  // Process a block of samples. input is a 2D Eigen array with contiguous
+  // column-major data, where the number of rows equals GetNumChannels().
+  // After spliting input into separate bands we apply phase correction.
+  // A four-way crossover would look like this:
+  // Stage:     0        1        2
+  // input --> LP_0 ----AP_1-----AP_2-> Output band 0
+  //       \-> HP_0 --> LP_1-----AP_2-> Output band 1
+  //                \-> HP_1 --> LP_2-> Output band 2
+  //                         \-> HP_2-> Output band 3
+  // Do not use Split/Merge method if you use ProcessBlock.
+  void ProcessBlock(const ArrayBlockType& input) {
+    SplitBands(input);
+    for (int band = 0; band < num_bands_ - 2; ++band) {
+      for (int stage = band + 1; stage < num_stages_; ++stage) {
+        for (auto& filter : phase_correction_filters_[stage]) {
+          filter.ProcessBlock(filtered_output_[band], &filtered_output_[band]);
+        }
+      }
+    }
+  }
+
+  int num_bands() const { return num_bands_; }
 
   double GetPhaseResponseAt(int band, double frequency_hz) const {
     // NOTE: When GetAllCoefficients() is being called during
@@ -182,27 +247,22 @@ class MultiCrossoverFilter {
 
   linear_filters::BiquadFilterCascadeCoefficients GetCoefficientsForBand(
       int band) const {
+    ABSL_DCHECK_LT(band, num_bands_);
     linear_filters::BiquadFilterCascadeCoefficients this_band;
-    if (band < num_bands_ - 1) {  // Highest band doesn't have a lowpass.
-      int stage = band;
-      for (int i = 0; i < lowpass_coeffs_[stage].size(); ++i) {
-        this_band.AppendBiquad(lowpass_coeffs_[stage][i]);
+
+    for (int s = 0; s < band; ++s) {
+      for (int i = 0; i < highpass_coeffs_[s].size(); ++i) {
+        this_band.AppendBiquad(highpass_coeffs_[s][i]);
       }
     }
-    // Lowest band doesn't have a highpass.
-    for (int stage = 0; stage < band; ++stage) {
-      for (int i = 0; i < highpass_coeffs_[stage].size(); ++i) {
-        this_band.AppendBiquad(highpass_coeffs_[stage][i]);
-      }
-    }
-    if (band < num_bands_with_allpass_) {
-      for (int i = 0; i < allpass_coeffs_[band].size(); ++i) {
-        this_band.AppendBiquad(allpass_coeffs_[band][i]);
+
+    for (int s = band; s < num_stages_; ++s) {
+      for (int i = 0; i < allpass_coeffs_[s].size(); ++i) {
+        this_band.AppendBiquad(allpass_coeffs_[s][i]);
       }
     }
     return this_band;
   }
-
 
   // The returned angle will be between [-pi and pi).
   template <typename T>
@@ -223,45 +283,9 @@ class MultiCrossoverFilter {
     crossover_frequencies_hz_ = crossover_frequencies_hz;
     // Compute the lowpass/highpass filter coefficients.
     allpass_coeffs_.clear();
-    // Last two bands do not have an allpass filter, they are necessarily in
-    // phase due to the definition of a Linkwitz-Reily crossover.
-    allpass_coeffs_.resize(num_bands_with_allpass_);
-    lowpass_coeffs_.clear();
-    lowpass_coeffs_.resize(num_stages_);
+    allpass_coeffs_.resize(num_stages_);
     highpass_coeffs_.clear();
     highpass_coeffs_.resize(num_stages_);
-    for (int stage = 0; stage < num_stages_; ++stage) {
-      ScalarType frequency_hz = crossover_frequencies_hz_[stage];
-      linear_filters::CrossoverFilterDesign crossover(
-          type_, order_, frequency_hz, sample_rate_hz_);
-      lowpass_coeffs_[stage] = crossover.GetLowpassCoefficients();
-      highpass_coeffs_[stage] = crossover.GetHighpassCoefficients();
-    }
-
-    // Do phase correction for each crossover frequency for this, and lower
-    // bands.
-    for (int stage = 1; stage < num_stages_; ++stage) {
-      for (int lower_band_index = stage - 1;
-           lower_band_index >= 0;
-           --lower_band_index) {
-        ScalarType frequency_hz = crossover_frequencies_hz_[lower_band_index];
-        int higher_band_index = lower_band_index + 1;
-        double lower_band_phase =
-            GetPhaseResponseAt(lower_band_index, frequency_hz);
-        double higher_band_phase =
-            GetPhaseResponseAt(higher_band_index, frequency_hz);
-        double phase_difference =
-            WrapAngle(higher_band_phase - lower_band_phase);
-        allpass_coeffs_[lower_band_index].AppendBiquad(
-            linear_filters::AllpassBiquadFilterCoefficients(
-                sample_rate_hz_, frequency_hz, phase_difference));
-      }
-    }
-    // Remove trivial stages. Note that there will still be stages which
-    // include a trivial bypass stage when that is the only stage.
-    for (auto& allpass : allpass_coeffs_) {
-      allpass.Simplify();
-    }
 
     int num_channels = num_channels_;  // Avoid passing entire "this" to lambda.
     auto InitFilter = [initial, num_channels](
@@ -276,26 +300,50 @@ class MultiCrossoverFilter {
         filter->ChangeLadderCoeffs(k, v);
       }
     };
-
-    // Apply the filter coefficients to the filter.
     for (int stage = 0; stage < num_stages_; ++stage) {
-      lowpass_filters_[stage].resize(lowpass_coeffs_[stage].size());
-      for (int bq = 0; bq < lowpass_coeffs_[stage].size(); ++bq) {
-        InitFilter(lowpass_coeffs_[stage][bq], &lowpass_filters_[stage][bq]);
-      }
-      highpass_filters_[stage].resize(highpass_coeffs_[stage].size());
-      for (int bq = 0; bq < highpass_coeffs_[stage].size(); ++bq) {
-        InitFilter(highpass_coeffs_[stage][bq], &highpass_filters_[stage][bq]);
-      }
-    }
+      ScalarType frequency_hz = crossover_frequencies_hz_[stage];
+      linear_filters::ButterworthFilterDesign filter_design =
+          linear_filters::ButterworthFilterDesign(order_ / 2);
+      allpass_coeffs_[stage] =
+          filter_design.HighpassCoefficients(sample_rate_hz_, frequency_hz);
 
-    for (int band = 0; band < num_bands_with_allpass_; ++band) {
-      // Not all bands have an allpass filter.
-      allpass_filters_[band].resize(allpass_coeffs_[band].size());
-      for (int biquad = 0; biquad < allpass_coeffs_[band].size(); ++biquad) {
-        // Non-trivial all pass stages start at index 1.
-        InitFilter(allpass_coeffs_[band][biquad],
-                   &allpass_filters_[band][biquad]);
+      for (int i = 0; i < allpass_coeffs_[stage].size(); ++i) {
+        // Square highpass.
+        highpass_coeffs_[stage].AppendBiquad(allpass_coeffs_[stage][i]);
+        highpass_coeffs_[stage].AppendBiquad(allpass_coeffs_[stage][i]);
+        // Convert highpass to allpass.
+        // We are getting allpass filter from corresponding highpass by
+        // substituting coefficient numerators with flipped denomenators.
+        // In case a cascade is first order segment, that is a[2] <= eps,
+        // we flip just zero and first order coefficients.
+        if (std::abs(allpass_coeffs_[stage][i].a[2]) <= 1e-10) {
+          allpass_coeffs_[stage][i].b[0] = -allpass_coeffs_[stage][i].a[1];
+          allpass_coeffs_[stage][i].b[1] = -allpass_coeffs_[stage][i].a[0];
+          allpass_coeffs_[stage][i].b[2] = 0;
+          allpass_coeffs_[stage][i].a[2] = 0;
+        } else {
+          allpass_coeffs_[stage][i].b[0] = allpass_coeffs_[stage][i].a[2];
+          allpass_coeffs_[stage][i].b[1] = allpass_coeffs_[stage][i].a[1];
+          allpass_coeffs_[stage][i].b[2] = allpass_coeffs_[stage][i].a[0];
+        }
+      }
+      allpass_coeffs_[stage].Simplify();
+      highpass_coeffs_[stage].Simplify();
+
+      const int highpass_size = highpass_coeffs_[stage].size();
+      const int allpass_size = allpass_coeffs_[stage].size();
+      highpass_filters_[stage].resize(highpass_size);
+      allpass_filters_[stage].resize(allpass_size);
+      phase_correction_filters_[stage].resize(allpass_size);
+
+      for (int i = 0; i < highpass_size; ++i) {
+        InitFilter(highpass_coeffs_[stage][i], &highpass_filters_[stage][i]);
+      }
+
+      for (int i = 0; i < allpass_size; ++i) {
+        InitFilter(allpass_coeffs_[stage][i], &allpass_filters_[stage][i]);
+        InitFilter(allpass_coeffs_[stage][i],
+                   &phase_correction_filters_[stage][i]);
       }
     }
   }
@@ -303,8 +351,6 @@ class MultiCrossoverFilter {
   const linear_filters::CrossoverType type_;
   const int order_;
   const int num_bands_;
-  // Last two bands don't have an allpass, they are already in phase.
-  const int num_bands_with_allpass_;  // num_bands_ - 2.
   // The number of crossovers required to implement the filterbank. See
   // diagram above ProcessBlock().
   const int num_stages_;
@@ -314,22 +360,14 @@ class MultiCrossoverFilter {
   // The successive crossover stages, processed in order, starting with the
   // first.
   using LadderFilterType = linear_filters::LadderFilter<SampleBlockType>;
-  // High/Lowpass filters coefficients are indexed by stage. The lowpass
-  // filters are shared across multiple bands.
+  // High/Allpass filters coefficients are indexed by stage.
   std::vector<linear_filters::BiquadFilterCascadeCoefficients> highpass_coeffs_;
-  std::vector<linear_filters::BiquadFilterCascadeCoefficients> lowpass_coeffs_;
-  // All pass filters are indexed by band. The i-th element in the vector
-  // is for the i-th frequency band. Some vector elements may contain only a
-  // single bypass biquad (the last two bands), but those allpass filters
-  // are not processed in ProcessBlock.
   std::vector<linear_filters::BiquadFilterCascadeCoefficients> allpass_coeffs_;
-
-  // High/Lowpass filters are indexed by stage (each band may see many stages
+  // High/Allpass filters are indexed by stage (each band may see many stages
   // of filters).
   std::vector<std::vector<LadderFilterType>> highpass_filters_;
-  std::vector<std::vector<LadderFilterType>> lowpass_filters_;
-  // Keeps adjacent bands in phase at the crossover frequencies.
   std::vector<std::vector<LadderFilterType>> allpass_filters_;
+  std::vector<std::vector<LadderFilterType>> phase_correction_filters_;
 
   // filtered_output_[i] is the filtered output for the ith stage of the
   // cascade.

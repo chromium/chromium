@@ -1,6 +1,20 @@
+/* Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "audio/dsp/portable/read_wav_file.h"
 
-#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +32,9 @@ wavefile.write("test16.wav", 48000, np.array([7, -2, 32767, -32768],
 
 Convert to 24 bit using SoX.
 sox test16.wav -b 24 test24.wav
+
+Convert to 32 bit using SoX.
+sox test16.wav -b 32 test32.wav
 
 Or convert to floating point.
 sox test16.wav -b 32 -e floating-point testfp.wav
@@ -71,6 +88,21 @@ static const uint8_t kTest24BitMonoWavFile[92] = {
 /*                                      d    a    t    a                     */
    4,  0,  0,  0,   4,   0,   0,   0,   100, 97,  116, 97,  12,  0,   0,   0,
    0,  7,  0,  0,   254, 255, 0,   255, 127, 0,   0,   128};
+
+/* A 48kHz mono WAV file with int32 samples made from
+ * int16 samples {7, -2, INT16_MAX, INT16_MIN} using SoX. SoX scales up the
+ * data by by 2^16.
+ */
+static const uint8_t kTest32BitMonoWavFile[96] = {
+/* R    I    F    F                    W    A    V    E    f    m    t    _ */
+   82, 73, 70, 70, 88,  0,   0,   0,   87,  65,  86,  69,  102, 109, 116, 32,
+   40, 0,  0,  0,  254, 255, 1,   0,   128, 187, 0,   0,   0,   238,  2,  0,
+   4,  0,  32, 0,  22,  0,   32,  0,   4,   0,   0,   0,   1,   0,    0,  0,
+/*                                                         f    a    c    t */
+   0,  0,  16, 0,  128, 0,   0,   170, 0,   56,  155, 113, 102, 97,  99,  116,
+/*                                     d    a    t    a                     */
+   4,  0,  0,  0,  4,   0,   0,   0,   100, 97,  116, 97,  16,  0,   0,   0,
+   0,  0,  7,  0,  0,   0,   254, 255, 0,   0,   255, 127, 0,   0,   0,   128};
 
 /* A 8kHz mono WAV file with mulaw samples, decoding to
    {29052, 20860, 18812, 31100, -7164, 716, -25980, -24956}
@@ -236,6 +268,33 @@ static void TestReadMonoWav24BitGeneric(void) {
   remove(wav_file_name);
 }
 
+static void TestReadMonoWav32BitGeneric(void) {
+  puts("TestReadMonoWav32BitGeneric");
+  static const int32_t kExpectedSamples[4] = {
+      7 << 16,
+      -(2 << 16),
+      2147418112,  /* = INT16_MAX << 16. */
+      -2147483648}; /* = INT16_MIN << 16. */
+  const char* wav_file_name = NULL;
+  int32_t* samples = NULL;
+  size_t num_samples;
+  int num_channels;
+  int sample_rate_hz;
+
+  wav_file_name = ABSL_CHECK_NOTNULL(tmpnam(NULL));
+  WriteBytesAsFile(wav_file_name, kTest32BitMonoWavFile, 96);
+
+  samples = ABSL_CHECK_NOTNULL(ReadWavFile(wav_file_name, &num_samples,
+                                      &num_channels, &sample_rate_hz));
+  ABSL_CHECK(num_samples == 4);
+  ABSL_CHECK(memcmp(samples, kExpectedSamples, sizeof(kExpectedSamples)) == 0);
+  ABSL_CHECK(num_channels == 1);
+  ABSL_CHECK(sample_rate_hz == 48000);
+
+  free(samples);
+  remove(wav_file_name);
+}
+
 static void TestReadMonoWavFloatGeneric(void) {
   puts("TestReadMonoWavFloatGeneric");
   /* The LSBs are going to be empty since we're reading 16 bits into a 32-bit
@@ -341,27 +400,24 @@ static void TestReadMulawWav(void) {
 
 static void TestReadMulawWavGeneric(void) {
   puts("TestReadMulawWavGeneric");
-  static const int16_t kExpected16BitSamples[8] = {
-    29052, 20860, 18812, 31100, -7164, 716, -25980, -24956
+  static const int32_t kExpectedSamples[8] = {
+    29052 * INT32_C(65536), 20860 * INT32_C(65536), 18812 * INT32_C(65536),
+    31100 * INT32_C(65536), -7164 * INT32_C(65536), 716 * INT32_C(65536),
+    -25980 * INT32_C(65536), -24956 * INT32_C(65536)
   };
-  int32_t expected_samples[8];
   const char* wav_file_name = NULL;
   int32_t* samples = NULL;
   size_t num_samples;
   int num_channels;
   int sample_rate_hz;
-  int i;
 
-  for (i = 0; i < 8; i++) {
-    expected_samples[i] = (int32_t) kExpected16BitSamples[i] << 16;
-  }
   wav_file_name = ABSL_CHECK_NOTNULL(tmpnam(NULL));
   WriteBytesAsFile(wav_file_name, kTestMulawWavFile, sizeof(kTestMulawWavFile));
 
   samples = ABSL_CHECK_NOTNULL(ReadWavFile(wav_file_name, &num_samples,
                                       &num_channels, &sample_rate_hz));
   ABSL_CHECK(num_samples == 8);
-  ABSL_CHECK(memcmp(samples, expected_samples, sizeof(int32_t) * 8) == 0);
+  ABSL_CHECK(memcmp(samples, kExpectedSamples, sizeof(int32_t) * 8) == 0);
   ABSL_CHECK(num_channels == 1);
   ABSL_CHECK(sample_rate_hz == 8000);
 
@@ -422,7 +478,10 @@ static void TestWriteReadRoundTrips(void) {
 
   for (num_channels = 1; num_channels <= 8; ++num_channels) {
     int sample_rate_hz = rand() % 100000;
-    size_t num_samples = 32 + (rand() % 100);
+    /* Internally, reading uses a 1 KB buffer. Pick a number of samples that
+     * fills the read buffer three times.
+     */
+    size_t num_samples = 1025 + (rand() % 100);
     int16_t* samples = ABSL_CHECK_NOTNULL((int16_t*) malloc(
         sizeof(int16_t) * num_samples));
     int16_t* read_samples = NULL;
@@ -460,6 +519,7 @@ int main(int argc, char** argv) {
   TestReadMonoWav16BitGeneric();
   TestReadBigWavFile();
   TestReadMonoWav24BitGeneric();
+  TestReadMonoWav32BitGeneric();
   TestReadMonoWavFloatGeneric();
   TestReadMonoWavStreaming();
   TestRead3ChannelWav();

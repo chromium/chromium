@@ -20,8 +20,8 @@
 #include <string>
 #include <utility>
 
-#include "absl/log/absl_check.h"
-#include "absl/status/status.h"
+#include "absl/log/absl_check.h"  // from @com_google_absl
+#include "absl/status/status.h"   // from @com_google_absl
 #include "mediapipe/framework/calculator_state.h"
 #include "mediapipe/framework/counter.h"
 #include "mediapipe/framework/graph_service.h"
@@ -31,7 +31,6 @@
 #include "mediapipe/framework/packet_set.h"
 #include "mediapipe/framework/port.h"
 #include "mediapipe/framework/port/any_proto.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/resources.h"
 #include "mediapipe/framework/timestamp.h"
 

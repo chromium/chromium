@@ -19,10 +19,10 @@ limitations under the License.
 #include <cstddef>
 #include <string>
 
-#include "absl/container/node_hash_map.h"
-#include "absl/strings/string_view.h"
+#include "absl/container/node_hash_map.h"  // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
 #include "mediapipe/tasks/cc/text/tokenizers/tokenizer.h"
-#include "re2/re2.h"
+#include "re2/re2.h"  // from @com_googlesource_code_re2
 
 namespace mediapipe {
 namespace tasks {

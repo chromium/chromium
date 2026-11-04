@@ -20,7 +20,7 @@ limitations under the License.
 
 #include <string>
 
-#include "tensorflow/lite/c/common.h"
+#include "tensorflow/lite/c/common.h"  // from @litert
 
 namespace mediapipe {
 namespace tasks {

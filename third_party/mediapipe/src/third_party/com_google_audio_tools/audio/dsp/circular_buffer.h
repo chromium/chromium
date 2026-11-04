@@ -23,7 +23,7 @@
 // buffer.NumReadableEntries().
 //
 // Reading and writing to the buffer advance the read and write pointers,
-// respectivley. It is assumed that the same data is not intended to be read
+// respectively. It is assumed that the same data is not intended to be read
 // from the buffer multiple times.
 //
 // https://en.wikipedia.org/wiki/Circular_buffer
@@ -93,6 +93,8 @@ class CircularBuffer {
     write_index_ = (write_index_ + num_to_write) % capacity_;
     if (num_available_data_ + num_to_write > capacity_) {
       num_available_data_ = capacity_;
+      // Update the read pointer such that it points at the oldest sample.
+      read_index_ = write_index_;
     } else {
       num_available_data_ += num_to_write;
     }
@@ -119,7 +121,7 @@ class CircularBuffer {
   // to the requested memory. The size of the two returned arrays totals
   // num_to_read, but either may have any size, even zero. The first
   // array precedes the second in terms of sequential data ordering.
-  // This function should be seen as an alterative to Read(int, vector<T>*) for
+  // This function should be seen as an alternative to Read(int, vector<T>*) for
   // those who want more control over memory management.
   std::pair<Span, Span> Read(int num_to_read) {
     auto array_slices = Peek(num_to_read);

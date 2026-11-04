@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2019-2020, 2022-2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 /* Fast log2, exp2, pow, and tanh functions in C.
  *
- * This library implements fast log2 (log base 2), exp2 (2^x), power x^y, and
- * tanh functions for 32-bit float arguments through float bit manipulations and
- * small lookup tables.
+ * This library implements fast log2 (log base 2), exp2 (2^x), power x^y, tanh,
+ * and sigmoid functions for 32-bit float arguments through float bit
+ * manipulations and small lookup tables.
  *
  * NOTE: This library assumes `float` uses 32-bit IEEE 754 floating point
- * representation. Most current machines do, but not all, which makes this
- * library somewhat non portable in spite of the "portable" directory name.
+ * representation. Most current machines do, but not all.
  *
  * You can use rules of logs and exponents to compute related functions:
  *  - Natural log: log(x) = FastLog2(x) * M_LN2.
@@ -31,33 +30,37 @@
  *  - Exponential: e^x = FastExp2(x / M_LN2).
  *  - Power of 10: 10^x = FastExp2(log2(10) * x).
  *  - Power of constant b: b^x = FastExp2(log2(b) * x).
+ *  - Square root: sqrt(x) = FastPow(x, 0.5f)
+ *    [Note: on modern x86 processors, `sqrtf()` from math.h is comparably fast,
+ *    but more accurate, compiling to a `sqrtss` SSE instruction.]
  *
  * Accuracy:
  *  - FastLog2(x) has max absolute error of about 0.003.
  *  - FastExp2(x) has max relative error of about 0.3%.
  *  - FastPow(x) has max relative error of about 0.5%.
  *  - FastTanh(x) has max absolute error of about 0.0008.
+ *  - FastSigmoid(x) has max absolute error of about 0.0004.
  *
- * Benchmarks:
- * These functions take an order of magnitude less time than those in math.h and
- * 0-10% less than the "vf" functions in //util/math/fastmath. Benchmark timings
- * of calling each function 1000 times on an Intel Skylake Xeon (3696 MHz CPUs):
+ * Benchmarks (measured by extras/benchmark/fast_fun_benchmark.cpp):
+ * These functions take an order of magnitude less time than those in math.h.
+ * Benchmark timings of calling each function 1000 times on an Intel Skylake
+ * Xeon (2000 MHz CPUs). To get the time for an individual call, divide times in
+ * the table by 1000, e.g. one FastLog2 call costs 1 ns.
  *
- *   Benchmark                    Time(ns)        CPU(ns)     Iterations
- *   -------------------------------------------------------------------
- *   BM_log2f                         7136           7136         196285
- *   BM_UtilMathFastMath_vflog2        864            864        1619595
- *   BM_FastLog2                       865            865        1621563
- *   BM_exp2f                        10394          10394         100000
- *   BM_UtilMathFastMath_vfexp2        661            661        2165138
- *   BM_FastExp2                       578            578        2414078
- *   BM_powf                         56458          56461          24811
- *   BM_UtilMathFastMath_vfpow        1784           1784         783103
- *   BM_FastPow                       1662           1662         842168
- *   BM_tanh                         17001          17001          82696
- *   BM_FastTanh                      1325           1325        1000000
- *
- * TODO: Write a benchmark that can run on nRF52.
+ * Results on SkyLake, 2023-02-20:
+ * ----------------------------------------------------------
+ * Benchmark                Time             CPU   Iterations
+ * ----------------------------------------------------------
+ * BM_FastLog2           1025 ns         1022 ns       587651
+ * BM_math_log2f         4745 ns         4737 ns       145170
+ * BM_FastExp2            761 ns          760 ns       899909
+ * BM_math_exp2f         3619 ns         3614 ns       193111
+ * BM_FastPow            2170 ns         2166 ns       323478
+ * BM_math_powf         15778 ns        15754 ns        42702
+ * BM_FastTanh           1673 ns         1671 ns       414148
+ * BM_math_tanhf        22670 ns        22632 ns        30033
+ * BM_FastSigmoid        1492 ns         1489 ns       465835
+ * BM_math_sigmoid       4907 ns         4897 ns       143939
  */
 
 #ifndef AUDIO_DSP_PORTABLE_FAST_FUN_H_
@@ -81,7 +84,7 @@ typedef char kFastFunStaticAssert_FLOAT_AND_INT32_T_MUST_HAVE_SAME_SIZE[
 extern const float kFastFunLog2Table[256];
 extern const int32_t kFastFunExp2Table[256];
 
-/* Fast log base 2, accurate to about 0.003 max abs error, ~0.9ns on Skylake.
+/* Fast log base 2, accurate to about 0.003 max abs error, ~1 ns on Skylake.
  *
  * Limitations:
  *  - x is assumed to be positive and finite.
@@ -123,7 +126,7 @@ static float FastLog2(float x) {
   return (((x_bits >> 23) & 0xFF) - 127) + kFastFunLog2Table[significand];
 }
 
-/* Fast 2^x, accurate to about 0.3% relative error, ~0.6ns on Skylake.
+/* Fast 2^x, accurate to about 0.3% relative error, ~0.8 ns on Skylake.
  *
  * Limitations:
  *  - Assumes |x| <= 126. (Otherwise, result may be nonsensical.)
@@ -167,7 +170,7 @@ static float FastExp2(float x) {
   return result;
 }
 
-/* Fast power x^y for x > 0, with about 0.5% relative error, ~1.6ns on Skylake.
+/* Fast power x^y for x > 0, with about 0.5% relative error, ~2 ns on Skylake.
  *
  * Limitations:
  *  - Assumes x is positive and finite.
@@ -181,7 +184,7 @@ static float FastExp2(float x) {
  */
 static float FastPow(float x, float y) { return FastExp2(FastLog2(x) * y); }
 
-/* Fast tanh(x), accurate to about 0.0008 max abs error, ~1.4ns on Skylake.
+/* Fast tanh(x), accurate to about 0.0008 max abs error, ~1.7 ns on Skylake.
  *
  * The result is valid for non-NaN x (even for large x). The implementation
  * comes from the relationship
@@ -195,6 +198,21 @@ static float FastTanh(float x) {
   if (x <= -9.011f) { return -1.0f; }
   const float exp_2x = FastExp2((float)(2.0 / M_LN2) * x);
   return (exp_2x - 1.0f) / (exp_2x + 1.0f);
+}
+
+/* Fast sigmoid (logistic) function, accurate to about 0.0004 max abs error,
+ * ~1.5 ns on Skylake.
+ *
+ * The result is valid for non-NaN x (even for large x). The implementation is
+ *
+ *   sigmoid(x) = 1 / (1 + exp(-x))
+ *              ~= 1 / (1 + FastExp2((-1 / M_LN2) * x).
+ */
+static float FastSigmoid(float x) {
+  /* For |x| >= 8.517, the exact value is within 0.0002 of saturating. */
+  if (x >= 8.517f) { return 1.0f; }
+  if (x <= -8.517f) { return 0.0f; }
+  return 1.0f / (1.0f + FastExp2((float)(-1.0 / M_LN2) * x));
 }
 
 #ifdef __cplusplus

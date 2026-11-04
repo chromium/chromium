@@ -16,6 +16,9 @@
 
 #include "audio/dsp/hifi/multiband_compressor.h"
 
+#include "glog/logging.h"
+#include "third_party/eigen3/Eigen/Core"
+
 namespace audio_dsp {
 
 using ::Eigen::ArrayXXf;
@@ -68,15 +71,15 @@ void MultibandCompressor::ProcessBlock(const Eigen::ArrayXXf& input,
 
 void MultibandCompressor::ProcessBlock(Map<const ArrayXXf> input,
                                        Map<ArrayXXf> output) {
-  // TODO: Do we care about the phase delay introduced by each stage?
-  band_splitter_.ProcessBlock(input);
-  workspace_.resizeLike(input);
+  band_splitter_.SplitBands(input);
+  filtered_output_.resize(band_splitter_.num_bands());
   output.setZero();
   for (int i = 0; i < band_splitter_.num_bands(); ++i) {
+    filtered_output_[i] = band_splitter_.FilteredOutput(i);
     per_band_drc_[i].ProcessBlock(band_splitter_.FilteredOutput(i),
-                                  &workspace_);
-    output += workspace_;
+                                  &filtered_output_[i]);
   }
+  band_splitter_.MergeBands(filtered_output_, output);
 }
 
 }  // namespace audio_dsp

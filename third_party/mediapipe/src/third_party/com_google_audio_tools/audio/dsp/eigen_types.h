@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@
 #define AUDIO_DSP_EIGEN_TYPES_H_
 
 #include <type_traits>
-#include <vector>
 
+#include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
-#include "absl/meta/type_traits.h"
 #include "absl/types/span.h"
 #include "third_party/eigen3/Eigen/Core"
 
-#include "audio/dsp/porting.h"  // auto-added.
+
 
 namespace audio_dsp {
 
@@ -36,16 +35,17 @@ namespace audio_dsp {
 template <typename EigenType>
 auto TransposeToRowVector(
     EigenType&& x,
-    typename std::enable_if<  // If `x` is a column vector at compile time.
-        absl::decay_t<EigenType>::ColsAtCompileTime == 1>::type* = nullptr)
-    -> decltype(x.transpose()) {
+    typename std::enable_if_t<  // If `x` is a column vector at compile time.
+        std::decay_t<EigenType>::ColsAtCompileTime == 1>* absl_nullable =
+        nullptr) {
   return x.transpose();  // Return Eigen::Transpose expression object by value.
 }
 template <typename EigenType>
 EigenType&& TransposeToRowVector(
     EigenType&& x,
-    typename std::enable_if<  // If `x` is not a column vector.
-        absl::decay_t<EigenType>::ColsAtCompileTime != 1>::type* = nullptr) {
+    typename std::enable_if_t<  // If `x` is not a column vector.
+        std::decay_t<EigenType>::ColsAtCompileTime != 1>* absl_nullable =
+        nullptr) {
   return std::forward<EigenType>(x);  // Forward the object without change.
 }
 
@@ -99,6 +99,7 @@ struct ContainerWrapperTraits { enum { Valid = false }; };
 //    * Eigen::Block: the expression objects created by
 //      .row(), .leftCols(), .block(), etc.
 //    * Eigen::CwiseNullaryOp: expression objects like Zero, Ones, and Random.
+//    * Eigen::Map
 //
 // This wrapper is useful for writing generic code in a form like:
 //
@@ -124,9 +125,6 @@ struct ContainerWrapperTraits { enum { Valid = false }; };
 //   std::vector<float> x;
 //   Foo(x);
 //
-// WARNING: The container being wrapped must live as long as the wrapper. One
-// way to ensure this is to pass the wrapper immediately into a function:
-//
 //   // `input` lives at least throughout the scope of Fun().
 //   Fun(WrapContainer(input));  // OK.
 //
@@ -143,90 +141,62 @@ struct ContainerWrapperTraits { enum { Valid = false }; };
 //   // Block expression returned by m.row(0) is destroyed after this line.
 //   auto wrapper = WrapContainer(m.row(0));  // WRONG.
 //   // (Code using wrapper.)
+//
+// SIMPLIFIED API
+// Alternatively, at a small performance penalty, a simplified API may be used
+// through the "Hold" methods. Here, the returned Eigen objects are consistently
+// Eigen::Map<Array<Scalar, Dynamic, Dynamic>> (or with const, or with Matrix),
+// instead of working with Matrix-like objects whose exact type depends on the
+// wrapped container. If the Scalar type can be fixed, this makes it possible to
+// put the generic implementation in the .cc. This interface works even for
+// blocks and expression objects, by creating a temporary backing copy when
+// needed.
+//
+// There are three "Hold" methods. The need for this is so that the holder knows
+// when to copy to and/or from the backing array:
+//
+//   `HoldReadOnly`    Container will be read but not written (an input arg)
+//   `HoldWriteOnly`   Container will be written but not read (an output arg)
+//   `HoldReadWrite`   Container will be both read and written (an in-out arg)
+//
+// The downsides are that an allocation and additional copying are sometimes
+// needed and that the generic implementation does not benefit from fixed array
+// dimensions or memory alignment. For many purposes, this may be a reasonable
+// price for simpler code. Intended use:
+//
+//   template <typename Output>
+//   void Foo(Output&& output) {  // Public interface.
+//     FooWrapped(WrapContainer(std::forward<Output>(output)));
+//   }
+//
+//   template <typename WrappedOutput>
+//   void FooWrapped(WrappedOutput&& output) {
+//     // Check or reshape dimensions...
+//     FooImpl(output.HoldWriteOnly().AsArray(rows));
+//   }
+//
+//   void FooImpl(Eigen::Map<Eigen::ArrayXXf> output);  // Implementation.
+//
+// Particularly, `FooImpl` is a regular non-template function and could be
+// defined in the .cc file.
 template <typename Container>
-auto WrapContainer(Container&& container)
-    -> decltype(internal::ContainerWrapper<
-                typename std::remove_reference<Container>::type>(
-        std::forward<Container>(container))) {
+auto WrapContainer(Container&& container) {
   return internal::ContainerWrapper<
-      typename std::remove_reference<Container>::type>(
+      typename std::remove_reference_t<Container>>(
       std::forward<Container>(container));
 }
 
 namespace internal {
 
-// A nonresizable vector at compile time.
-template <typename Container, int Case>
-struct ContainerWrapperResize1D {
-  static bool Resize(Container& c, Eigen::Index new_size) {
-    return static_cast<Eigen::Index>(c.size()) == new_size;
-  }
-};
-// A resizable vector at compile time.
-template <typename Container>
-struct ContainerWrapperResize1D<Container, 1> {
-  static bool Resize(Container& c, Eigen::Index new_size) {
-    if (ABSL_PREDICT_FALSE(static_cast<Eigen::Index>(c.size()) != new_size)) {
-      c.resize(new_size);
-    }
-    return true;
-  }
-};
-// Not a vector at compile time.
-template <typename Container>
-struct ContainerWrapperResize1D<Container, 2> {
-  static bool Resize(Container& c, Eigen::Index new_size) {
-    return false;
-  }
-};
-
-// A nonresizable 2D type.
-template <typename Container, int Case>
-struct ContainerWrapperResize2D {
-  static bool Resize(Container& c, Eigen::Index new_rows,
-                     Eigen::Index new_cols) {
-    return c.rows() == new_rows && c.cols() == new_cols;
-  }
-};
-// A resizable 2D type.
-template <typename Container>
-struct ContainerWrapperResize2D<Container, 1> {
-  static bool Resize(Container& c, Eigen::Index new_rows,
-                     Eigen::Index new_cols) {
-    if (ABSL_PREDICT_FALSE(c.rows() != new_rows || c.cols() != new_cols)) {
-      c.resize(new_rows, new_cols);
-    }
-    return true;
-  }
-};
-// Not a 2D type.
-template <typename Container>
-struct ContainerWrapperResize2D<Container, 2> {
-  static bool Resize(Container& c, Eigen::Index new_rows,
-                     Eigen::Index new_cols) {
-    return false;
-  }
-};
-
-// Not a 2D type.
-template <typename Container, bool Is2D>
-struct ContainerWrapperGetShape {
-  static Eigen::Index rows(const Container& c) { return 0; }
-  static Eigen::Index cols(const Container& c) { return 0; }
-};
-// A 2D type.
-template <typename Container>
-struct ContainerWrapperGetShape<Container, true> {
-  static Eigen::Index rows(const Container& c) { return c.rows(); }
-  static Eigen::Index cols(const Container& c) { return c.cols(); }
-};
+template <typename Container, bool ReadAccess, bool WriteAccess,
+          bool IsColMajorContiguous>
+class ContainerHolder;
 
 template <typename Container_>
 class ContainerWrapper {
  public:
-  using Container = typename std::remove_reference<Container_>::type;
-  using Traits =
-      internal::ContainerWrapperTraits<typename absl::decay_t<Container>>;
+  using Container = typename std::remove_reference_t<Container_>;
+  using Traits = ContainerWrapperTraits<typename std::decay_t<Container>>;
   static_assert(Traits::Valid, "Invalid type for ContainerWrapper.");
   enum {
     // The number of container dimensions, either 1 or 2. Returns 2 for all
@@ -242,9 +212,14 @@ class ContainerWrapper {
     ColsAtCompileTime = Traits::ColsAtCompileTime,
     // True if the container is 1D or an Eigen vector type.
     IsVectorAtCompileTime = Traits::IsVectorAtCompileTime,
+    // Whether the container data is const.
+    IsConst = Traits::IsConst || std::is_const_v<Container>,
     // Whether the container is resizable. True for non-const std::vector,
     // Eigen::Array, and Eigen::Matrix.
-    IsResizable = Traits::IsResizable && !std::is_const<Container>::value,
+    IsResizable = Traits::IsResizable && !std::is_const_v<Container>,
+    // Whether the container data is column-major and contiguous, and therefore
+    // representable with Eigen::Map with default strides.
+    IsColMajorContiguous = Traits::IsColMajorContiguous,
   };
 
   explicit ContainerWrapper(Container& c): c_(c) {}
@@ -253,23 +228,35 @@ class ContainerWrapper {
   // size accessor, works for all containers.
   Eigen::Index size() const { return static_cast<Eigen::Index>(c_.size()); }
   // rows and cols accessors, should only be used if Dims == 2.
-  Eigen::Index rows() const {
-    return ContainerWrapperGetShape<Container, Dims == 2>::rows(c_);
-  }
-  Eigen::Index cols() const {
-    return ContainerWrapperGetShape<Container, Dims == 2>::cols(c_);
-  }
+  Eigen::Index rows() const { return c_.rows(); }
+  Eigen::Index cols() const { return c_.cols(); }
 
   // Resizes a 1D container or checks the size. Returns true on success.
   bool resize(Eigen::Index new_size) {
-    return ContainerWrapperResize1D<
-      Container, IsVectorAtCompileTime ? IsResizable : 2>::Resize(c_, new_size);
+    if constexpr (!IsVectorAtCompileTime) {
+      return false;  // Fail if container is not 1D.
+    } else if constexpr (IsResizable) {
+      if (ABSL_PREDICT_FALSE(size() != new_size)) {
+        c_.resize(new_size);
+      }
+      return true;
+    } else {
+      return size() == new_size;
+    }
   }
 
   // Resizes a 2D container or checks the shape. Returns true on success.
   bool resize(Eigen::Index new_rows, Eigen::Index new_cols) {
-    return ContainerWrapperResize2D<
-      Container, (Dims == 2) ? IsResizable : 2>::Resize(c_, new_rows, new_cols);
+    if constexpr (Dims != 2) {
+      return false;  // Fail if container is not 2D.
+    } else if constexpr (IsResizable) {
+      if (ABSL_PREDICT_FALSE(rows() != new_rows || cols() != new_cols)) {
+        c_.resize(new_rows, new_cols);
+      }
+      return true;
+    } else {
+      return rows() == new_rows && cols() == new_cols;
+    }
   }
 
   template <int MapRows>
@@ -279,17 +266,140 @@ class ContainerWrapper {
   // Represent the container as an Eigen Matrix type. For Eigen types, returns
   // `container.matrix()`. Otherwise returns an Eigen::Map mapping the container
   // with `map_rows` rows.
-  Matrix<Eigen::Dynamic> AsMatrix(int map_rows) {
+  Matrix<Eigen::Dynamic> AsMatrix(int map_rows) const {
     return Traits::template AsMatrix<Eigen::Dynamic>(c_, map_rows);
   }
   // Same as above, but specifying `map_rows` at compile time.
   template <int MapRows>
-  Matrix<MapRows> AsMatrix() {
+  Matrix<MapRows> AsMatrix() const {
     return Traits::template AsMatrix<MapRows>(c_, MapRows);
+  }
+
+  // For the "simplified API" (see above). Returns a `ContainerHolder` object
+  // with a backing array when needed such that the container can be mapped as
+  // an Eigen::Map<Matrix<Scalar, Dynamic, Dynamic>>.
+  //
+  // Choose the "Hold*" variant depending on how the container will be accessed:
+  //
+  //   `HoldReadOnly`    Container will be read but not written (an input arg)
+  //   `HoldWriteOnly`   Container will be written but not read (an output arg)
+  //   `HoldReadWrite`   Container will be both read and written (an in-out arg)
+  auto HoldReadOnly() const {
+    return ContainerHolder<Container, true, false, IsColMajorContiguous>(c_);
+  }
+  auto HoldWriteOnly() const {
+    return ContainerHolder<Container, false, true, IsColMajorContiguous>(c_);
+  }
+  auto HoldReadWrite() const {
+    return ContainerHolder<Container, true, true, IsColMajorContiguous>(c_);
+  }
+
+  using BackingArray = typename Traits::BackingArray;
+  // Allocate a backing array having the same shape as the container.
+  BackingArray AllocateSameShape() {
+    if constexpr (Dims == 1) {
+      return {1, c_.size()};
+    } else {  // Dims == 2.
+      return {c_.rows(), c_.cols()};
+    }
+  }
+  // Copy the container content to `dest`, resizing `dest` if necessary.
+  void CopyTo(BackingArray& dest) {
+    Traits::Copy(c_, dest);
+  }
+  // Copy from `src` to container. Should only be used if container is mutable.
+  // The function attempts to resize the container to match `src`. Returns true
+  // on success.
+  bool CopyFrom(const BackingArray& src) {
+    if constexpr (Dims == 1) {
+      if (!resize(src.size())) { return false; }
+    } else {  // Dims == 2.
+      if (!resize(src.rows(), src.cols())) { return false; }
+    }
+    Traits::Copy(src, c_);
+    return true;
   }
 
  private:
   Container& c_;
+};
+
+template <bool Condition, typename T>
+using AddConstIf = std::conditional<Condition, const T, T>;
+
+// ContainerHolder definition when IsColMajorContiguous == false, in which case
+// a temporary backing array is used.
+template <typename Container, bool ReadAccess, bool WriteAccess,
+          bool IsColMajorContiguous>
+class ContainerHolder {
+ public:
+  using Traits = ContainerWrapperTraits<typename std::decay_t<Container>>;
+  using MapArray = Eigen::Map<typename AddConstIf<
+      Traits::IsConst || !WriteAccess,
+      typename Eigen::Array<typename Traits::Scalar, Eigen::Dynamic,
+                            Eigen::Dynamic>>::type>;
+  using MapMatrix = Eigen::Map<typename AddConstIf<
+      Traits::IsConst || !WriteAccess,
+      typename Eigen::Matrix<typename Traits::Scalar, Eigen::Dynamic,
+                             Eigen::Dynamic>>::type>;
+
+  explicit ContainerHolder(Container& c)
+      : wrapper_(c), backing_(wrapper_.AllocateSameShape()) {
+    // If data will be read from this holder, copy the container to the backing.
+    if constexpr (ReadAccess) {
+      wrapper_.CopyTo(backing_);
+    }
+  }
+
+  ~ContainerHolder() {
+    // If data was written to this holder, copy the backing to the container.
+    if constexpr (WriteAccess) {
+      wrapper_.CopyFrom(backing_);
+    }
+  }
+
+  MapArray AsArray(int map_rows) {
+    return {backing_.data(), backing_.rows(), backing_.cols()};
+  }
+
+  MapMatrix AsMatrix(int map_rows) {
+    return {backing_.data(), backing_.rows(), backing_.cols()};
+  }
+
+ private:
+  ContainerWrapper<Container> wrapper_;
+  typename Traits::BackingArray backing_;
+};
+
+// ContainerHolder for when IsColMajorContiguous == true, and Maps are made
+// directly on the container memory.
+template <typename Container, bool ReadAccess, bool WriteAccess>
+class ContainerHolder<Container, ReadAccess, WriteAccess, true> {
+ public:
+  using Traits = ContainerWrapperTraits<typename std::decay_t<Container>>;
+  using MapArray = Eigen::Map<typename AddConstIf<
+      Traits::IsConst || !WriteAccess,
+      typename Eigen::Array<typename Traits::Scalar, Eigen::Dynamic,
+                            Eigen::Dynamic>>::type>;
+  using MapMatrix = Eigen::Map<typename AddConstIf<
+      Traits::IsConst || !WriteAccess,
+      typename Eigen::Matrix<typename Traits::Scalar, Eigen::Dynamic,
+                             Eigen::Dynamic>>::type>;
+
+  explicit ContainerHolder(Container& c) : wrapper_(c) {}
+
+  MapArray AsArray(int map_rows) const {
+    auto matrix_object = wrapper_.AsMatrix(map_rows);
+    return {matrix_object.data(), matrix_object.rows(), matrix_object.cols()};
+  }
+
+  MapMatrix AsMatrix(int map_rows) const {
+    auto matrix_object = wrapper_.AsMatrix(map_rows);
+    return {matrix_object.data(), matrix_object.rows(), matrix_object.cols()};
+  }
+
+ private:
+  ContainerWrapper<Container> wrapper_;
 };
 
 // Traits ContainerWrapperTraits<C> for different container types C are defined
@@ -308,32 +418,38 @@ class ContainerWrapper {
 template <typename ValueType>
 struct ContainerWrapperTraits<absl::Span<ValueType>> {
   using Container = absl::Span<ValueType>;
-  using Scalar = typename std::remove_const<ValueType>::type;
+  using Scalar = typename std::remove_const_t<ValueType>;
   enum {
     Valid = true,
     Dims = 1,
     RowsAtCompileTime = Eigen::Dynamic,
     ColsAtCompileTime = Eigen::Dynamic,
     IsVectorAtCompileTime = true,
+    IsConst = std::is_const_v<ValueType>,
     IsResizable = false,
+    IsColMajorContiguous = true,
   };
+  using BackingArray = typename Eigen::Array<Scalar, 1, Eigen::Dynamic>;
 
   template <int MapRows>
-  static auto AsMatrix(Container& c, int map_rows)
-      -> Eigen::Map<typename std::conditional<
-          std::is_const<ValueType>::value,
-          const Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>,
-          Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>>::type> {
+  static auto AsMatrix(Container& c, int map_rows) {
     using Matrix = typename Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>;
-    return Eigen::Map<typename std::conditional<
-        std::is_const<ValueType>::value, const Matrix, Matrix>::type>(
+    return Eigen::Map<typename AddConstIf<IsConst, Matrix>::type>(
         c.data(), map_rows, c.size() / map_rows);
   }
   template <int MapRows>
-  static auto AsMatrix(const Container& c, int map_rows)
-      -> Eigen::Map<const Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>> {
+  static auto AsMatrix(const Container& c, int map_rows) {
     using Matrix = typename Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>;
     return Eigen::Map<const Matrix>(c.data(), map_rows, c.size() / map_rows);
+  }
+
+  static void Copy(const Container& src, BackingArray& dest) {
+    dest = AsMatrix(src, 1);
+  }
+  static void Copy(const BackingArray& src, Container& dest) {
+    if constexpr (!IsConst) {
+      AsMatrix(dest, 1) = src;
+    }
   }
 };
 
@@ -348,36 +464,50 @@ struct ContainerWrapperTraits<std::vector<ValueType, Allocator>> {
     RowsAtCompileTime = Eigen::Dynamic,
     ColsAtCompileTime = Eigen::Dynamic,
     IsVectorAtCompileTime = true,
+    IsConst = false,
     IsResizable = true,
+    IsColMajorContiguous = true,
   };
+  using BackingArray = typename Eigen::Array<Scalar, 1, Eigen::Dynamic>;
 
   template <int MapRows>
-  static auto AsMatrix(Container& c, int map_rows)
-      -> Eigen::Map<Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>> {
+  static auto AsMatrix(Container& c, int map_rows) {
     return Eigen::Map<Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>>(
         c.data(), map_rows, c.size() / map_rows);
   }
   template <int MapRows>
-  static auto AsMatrix(const Container& c, int map_rows)
-      -> Eigen::Map<const Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>> {
+  static auto AsMatrix(const Container& c, int map_rows) {
     return Eigen::Map<const Eigen::Matrix<Scalar, MapRows, Eigen::Dynamic>>(
         c.data(), map_rows, c.size() / map_rows);
+  }
+
+  static void Copy(const Container& src, BackingArray& dest) {
+    dest = AsMatrix(src, 1);
+  }
+  static void Copy(const BackingArray& src, Container& dest) {
+    AsMatrix(dest, 1) = src;
   }
 };
 
 // Base traits for Eigen types, reused by the definitions below.
-template <typename EigenType, bool IsResizable_>
+template <typename EigenType, bool IsResizable_, bool IsColMajorContiguous_>
 struct EigenContainerWrapperTraits {
   using Container = EigenType;
   using Scalar = typename EigenType::Scalar;
+  using CoeffReturnType = decltype(std::declval<Container&>()(0, 0));
   enum {
     Valid = true,
     Dims = 2,
     RowsAtCompileTime = Container::RowsAtCompileTime,
     ColsAtCompileTime = Container::ColsAtCompileTime,
     IsVectorAtCompileTime = Container::IsVectorAtCompileTime,
+    IsConst = std::is_const_v<std::remove_reference_t<CoeffReturnType>> ||
+              !std::is_lvalue_reference_v<CoeffReturnType>,
     IsResizable = IsResizable_,
+    IsColMajorContiguous = IsColMajorContiguous_,
   };
+  using BackingArray =
+      typename Eigen::Array<Scalar, RowsAtCompileTime, ColsAtCompileTime>;
 
   template <int UnusedMapRows>
   static decltype(std::declval<Container&>().matrix()) AsMatrix(
@@ -389,6 +519,9 @@ struct EigenContainerWrapperTraits {
       const Container& c, int) {
     return c.matrix();
   }
+
+  template <typename Src, typename Dest>
+  static void Copy(const Src& src, Dest& dest) { dest = src; }
 };
 
 // Traits specializations for specific Eigen types.
@@ -397,31 +530,50 @@ struct EigenContainerWrapperTraits {
 template <typename Scalar, int Rows, int Cols, int Options>
 struct ContainerWrapperTraits<Eigen::Array<Scalar, Rows, Cols, Options>>
     : public EigenContainerWrapperTraits<
-          Eigen::Array<Scalar, Rows, Cols, Options>, /*IsResizable=*/true> {};
+          Eigen::Array<Scalar, Rows, Cols, Options>, /*IsResizable=*/true,
+          /*IsColMajorContiguous=*/!(Options & Eigen::RowMajor)> {};
 // Eigen::Matrix.
 template <typename Scalar, int Rows, int Cols, int Options>
 struct ContainerWrapperTraits<Eigen::Matrix<Scalar, Rows, Cols, Options>>
     : public EigenContainerWrapperTraits<
-          Eigen::Matrix<Scalar, Rows, Cols, Options>, /*IsResizable=*/true> {};
+          Eigen::Matrix<Scalar, Rows, Cols, Options>, /*IsResizable=*/true,
+          /*IsColMajorContiguous=*/!(Options & Eigen::RowMajor)> {};
 // Eigen::VectorBlock.
 template <typename VectorType, int BlockSize>
 struct ContainerWrapperTraits<Eigen::VectorBlock<VectorType, BlockSize>>
     : public EigenContainerWrapperTraits<
           Eigen::VectorBlock<VectorType, BlockSize>,
-          /*IsResizable=*/false> {};
+          /*IsResizable=*/false,
+          // Vector block is col-major contiguous if inner stride == 1.
+          /*IsColMajorContiguous=*/
+          Eigen::VectorBlock<VectorType, BlockSize>::InnerStrideAtCompileTime ==
+              1> {};
 // Eigen::Block.
 template <typename XprType, int BlockRows, int BlockCols, bool InnerPanel>
 struct ContainerWrapperTraits<
     Eigen::Block<XprType, BlockRows, BlockCols, InnerPanel>>
     : public EigenContainerWrapperTraits<
           Eigen::Block<XprType, BlockRows, BlockCols, InnerPanel>,
-          /*IsResizable=*/false> {};
+          /*IsResizable=*/false, /*IsColMajorContiguous=*/false> {};
 // Eigen::CwiseNullaryOp.
 template <typename NullaryOp, typename PlainObjectType>
 struct ContainerWrapperTraits<Eigen::CwiseNullaryOp<NullaryOp, PlainObjectType>>
     : public EigenContainerWrapperTraits<
           Eigen::CwiseNullaryOp<NullaryOp, PlainObjectType>,
-          /*IsResizable=*/false> {};
+          /*IsResizable=*/false,
+          /*IsColMajorContiguous=*/false> {};
+// Eigen::Map.
+template <typename PlainObjectType, int MapOptions, typename StrideType>
+struct ContainerWrapperTraits<
+    Eigen::Map<PlainObjectType, MapOptions, StrideType>>
+    : EigenContainerWrapperTraits<
+          Eigen::Map<PlainObjectType, MapOptions, StrideType>,
+          /*IsResizable=*/false,
+          // Map with default strides is col-major and contiguous provided the
+          // `PlainObjectType` is either col-major or a vector.
+          /*IsColMajorContiguous=*/
+          !PlainObjectType::IsRowMajor ||
+              PlainObjectType::IsVectorAtCompileTime> {};
 
 }  // namespace internal
 

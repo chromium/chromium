@@ -24,17 +24,18 @@
 #include <utility>
 #include <vector>
 
-#include "absl/container/flat_hash_set.h"
-#include "absl/log/absl_check.h"
-#include "absl/log/absl_log.h"
-#include "absl/status/status.h"
-#include "absl/status/status_macros.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/str_join.h"
-#include "absl/strings/string_view.h"
-#include "absl/strings/substitute.h"
-#include "absl/synchronization/mutex.h"
-#include "absl/time/time.h"
+#include "absl/container/flat_hash_set.h"  // from @com_google_absl
+#include "absl/log/absl_check.h"           // from @com_google_absl
+#include "absl/log/absl_log.h"             // from @com_google_absl
+#include "absl/status/status.h"            // from @com_google_absl
+#include "absl/status/status_builder.h"    // from @com_google_absl
+#include "absl/status/status_macros.h"     // from @com_google_absl
+#include "absl/strings/str_cat.h"          // from @com_google_absl
+#include "absl/strings/str_join.h"         // from @com_google_absl
+#include "absl/strings/string_view.h"      // from @com_google_absl
+#include "absl/strings/substitute.h"       // from @com_google_absl
+#include "absl/synchronization/mutex.h"    // from @com_google_absl
+#include "absl/time/time.h"                // from @com_google_absl
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/calculator_base.h"
 #include "mediapipe/framework/counter_factory.h"
@@ -55,7 +56,6 @@
 #include "mediapipe/framework/port/map_util.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/source_location.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
 #include "mediapipe/framework/scheduler.h"
 #include "mediapipe/framework/status_handler.h"
@@ -171,7 +171,7 @@ CalculatorGraph::CalculatorGraph(CalculatorContext* cc)
 CalculatorGraph::CalculatorGraph(CalculatorGraphConfig config)
     : CalculatorGraph() {
   counter_factory_ = std::make_unique<BasicCounterFactory>();
-  MEDIAPIPE_CHECK_OK(Initialize(std::move(config)));
+  ABSL_CHECK_OK(Initialize(std::move(config)));
 }
 
 // Defining the destructor here lets us use incomplete types in the header;
@@ -409,8 +409,8 @@ absl::Status CalculatorGraph::InitializeExecutors() {
                          validated_graph_->Package(),
                          executor_config.type(), executor_config.options()));
     // clang-format on
-    MEDIAPIPE_CHECK_OK(SetExecutorInternal(
-        executor_config.name(), std::shared_ptr<Executor>(executor)));
+    ABSL_CHECK_OK(SetExecutorInternal(executor_config.name(),
+                                      std::shared_ptr<Executor>(executor)));
   }
 #ifdef __EMSCRIPTEN__
   // Emscripten runs the application single threaded and therefore requires to
@@ -437,7 +437,7 @@ absl::Status CalculatorGraph::InitializeDefaultExecutor(
   // If specified, run synchronously on the calling thread.
   if (use_application_thread) {
     use_application_thread_ = true;
-    MEDIAPIPE_CHECK_OK(SetExecutorInternal(
+    ABSL_CHECK_OK(SetExecutorInternal(
         "", std::make_shared<internal::DelegatingExecutor>(
                 std::bind(&internal::Scheduler::AddApplicationThreadTask,
                           &scheduler_, std::placeholders::_1))));
@@ -1207,8 +1207,8 @@ void CalculatorGraph::CallStatusHandlers(GraphRunState graph_run_state,
         tool::FillPacketSet(packet_type_set, current_run_side_packets_,
                             nullptr);
     if (!packet_set_statusor.ok()) {
-      RecordError(mediapipe::StatusBuilder(
-                      std::move(packet_set_statusor).status(), MEDIAPIPE_LOC)
+      RecordError(absl::StatusBuilder(std::move(packet_set_statusor).status(),
+                                      MEDIAPIPE_LOC)
                       .SetPrepend()
                   << "Skipping run of " << handler_type << ": ");
       continue;
@@ -1228,8 +1228,7 @@ void CalculatorGraph::CallStatusHandlers(GraphRunState graph_run_state,
           handler_config.options(), *packet_set_statusor.value(), status);
     }
     if (!handler_result.ok()) {
-      mediapipe::StatusBuilder builder(std::move(handler_result),
-                                       MEDIAPIPE_LOC);
+      absl::StatusBuilder builder(std::move(handler_result), MEDIAPIPE_LOC);
       builder.SetPrepend() << handler_type;
       if (graph_run_state == GraphRunState::PRE_RUN) {
         builder << "::HandlePreRunStatus failed: ";
@@ -1470,7 +1469,7 @@ void CalculatorGraph::CleanupAfterRun(absl::Status* status) {
     GetCombinedErrors(status);
     ABSL_CHECK(!status->ok());
   } else {
-    MEDIAPIPE_CHECK_OK(*status);
+    ABSL_CHECK_OK(*status);
   }
 
   for (auto& node : nodes_) {

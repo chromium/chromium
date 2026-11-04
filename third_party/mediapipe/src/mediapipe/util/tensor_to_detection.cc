@@ -14,14 +14,13 @@
 
 #include "mediapipe/util/tensor_to_detection.h"
 
-#include "absl/strings/str_format.h"
-#include "absl/types/variant.h"
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
+#include "absl/types/variant.h"       // from @com_google_absl
 #include "mediapipe/framework/formats/location.h"
 #include "mediapipe/framework/formats/location_opencv.h"
-#include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/map_util.h"
-#include "mediapipe/framework/port/status.h"
-#include "tensorflow/core/framework/tensor_types.h"
+#include "tensorflow/core/framework/tensor_types.h"  // from @org_tensorflow
 
 namespace mediapipe {
 
@@ -57,12 +56,12 @@ Detection TensorToDetection(float box_ymin, float box_xmin, float box_ymax,
   return detection;
 }
 
-Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
-                           const ::tensorflow::Tensor& boxes,
-                           const ::tensorflow::Tensor& scores,
-                           const ::tensorflow::Tensor& classes,
-                           const std::map<int, std::string>& label_map,
-                           std::vector<Detection>* detections) {
+absl::Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
+                                 const ::tensorflow::Tensor& boxes,
+                                 const ::tensorflow::Tensor& scores,
+                                 const ::tensorflow::Tensor& classes,
+                                 const std::map<int, std::string>& label_map,
+                                 std::vector<Detection>* detections) {
   const ::tensorflow::Tensor empty_keypoints = ::tensorflow::Tensor(
       ::tensorflow::DT_FLOAT, ::tensorflow::TensorShape({0, 0, 0}));
   const ::tensorflow::Tensor empty_masks = ::tensorflow::Tensor(
@@ -72,15 +71,15 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
                              /*mask_threshold=*/0.0f, label_map, detections);
 }
 
-Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
-                           const ::tensorflow::Tensor& boxes,
-                           const ::tensorflow::Tensor& scores,
-                           const ::tensorflow::Tensor& classes,
-                           const ::tensorflow::Tensor& keypoints,
-                           const ::tensorflow::Tensor& masks,
-                           float mask_threshold,
-                           const std::map<int, std::string>& label_map,
-                           std::vector<Detection>* detections) {
+absl::Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
+                                 const ::tensorflow::Tensor& boxes,
+                                 const ::tensorflow::Tensor& scores,
+                                 const ::tensorflow::Tensor& classes,
+                                 const ::tensorflow::Tensor& keypoints,
+                                 const ::tensorflow::Tensor& masks,
+                                 float mask_threshold,
+                                 const std::map<int, std::string>& label_map,
+                                 std::vector<Detection>* detections) {
   int num_boxes = -1;
   if (num_detections.dims() > 0 && num_detections.dim_size(0) != 0) {
     if (num_detections.dtype() != tf::DT_INT32) {
@@ -90,12 +89,12 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
       num_boxes = num_detections.scalar<int32_t>()();
     }
     if (boxes.dim_size(0) < num_boxes) {
-      return InvalidArgumentError(
+      return absl::InvalidArgumentError(
           "First dimension of boxes tensor must be at least num_boxes");
     }
 
     if (classes.dim_size(0) != 0 && classes.dim_size(0) < num_boxes) {
-      return InvalidArgumentError(
+      return absl::InvalidArgumentError(
           "First dimension of classes tensor must be at least num_boxes");
     }
 
@@ -103,23 +102,23 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
     // If num_detections is not present, the number of boxes is determined by
     // the first dimension of the box tensor.
     if (boxes.dim_size(0) <= 0) {
-      return InvalidArgumentError("Box tensor is empty");
+      return absl::InvalidArgumentError("Box tensor is empty");
     }
     num_boxes = boxes.dim_size(0);
   }
 
   if (scores.dim_size(0) < num_boxes) {
-    return InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "First dimension of scores tensor must be at least num_boxes");
   }
   if (keypoints.dim_size(0) != 0 && keypoints.dim_size(0) < num_boxes) {
-    return InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "First dimension of keypoint tensors must be at least num_boxes");
   }
   int num_keypoints = keypoints.dim_size(1);
 
   if (masks.dim_size(0) != 0 && masks.dim_size(0) < num_boxes) {
-    return InvalidArgumentError(
+    return absl::InvalidArgumentError(
         "First dimension of the masks tensor should be at least num_boxes");
   }
 
@@ -137,7 +136,7 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
       // If class tensor is missing, we will sort the scores of all classes for
       // each box and keep the top.
       if (scores.dims() != 2) {
-        return InvalidArgumentError(
+        return absl::InvalidArgumentError(
             "Score tensor must have 2 dimensions where the last dimension has "
             "the scores for each class");
       }
@@ -154,7 +153,8 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
       // If class tensor and score tensor are both present, we use the them
       // directly.
       if (scores.dims() != 1) {
-        return InvalidArgumentError("Score tensor has more than 1 dimensions");
+        return absl::InvalidArgumentError(
+            "Score tensor has more than 1 dimensions");
       }
       score = score_vec(i);
       class_id = static_cast<int>(classes_vec(i));
@@ -170,7 +170,7 @@ Status TensorsToDetections(const ::tensorflow::Tensor& num_detections,
                             boxes_mat(i, 3), score, class_id);
     } else {
       if (!mediapipe::ContainsKey(label_map, class_id)) {
-        return InvalidArgumentError(StrFormat(
+        return absl::InvalidArgumentError(StrFormat(
             "Input label_map does not contain entry for integer label: %d",
             class_id));
       }
