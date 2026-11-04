@@ -1544,6 +1544,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 SafeBrowsingFeatures.PRIORITIZE_SAFE_BROWSING_NAVIGATION_CALLBACKS,
                 "Prioritizes Safe Browsing database lookup callbacks for navigation requests."),
+        Flag.baseFeature(
+                "YieldToLooperPeriodically",
+                "When enabled, periodically yield to Android Looper in MessagePumpAndroid."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
