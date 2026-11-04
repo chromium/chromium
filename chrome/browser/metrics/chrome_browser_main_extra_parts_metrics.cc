@@ -110,6 +110,8 @@
 #include "chrome/browser/metrics/key_credential_manager_support_reporter_win.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/win/cloud_synced_folder_checker.h"
+#include "chrome/browser/win/storage_durability.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -866,6 +868,13 @@ void MaybeRecordOneDriveSyncMetrics() {
                             status.documents_synced());
 }
 
+void RecordStorageDurabilityMetrics() {
+  base::FilePath user_data_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+    storage_durability::RecordStorageDurabilityMetrics(user_data_dir);
+  }
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
@@ -935,6 +944,8 @@ void RecordStartupMetrics() {
   RecordAppCompatMetrics();
 
   MaybeRecordOneDriveSyncMetrics();
+
+  RecordStorageDurabilityMetrics();
 
   if (base::win::OSInfo::Kernel32Version() < base::win::Version::WIN11) {
     base::win::HardwareEvaluationResult result =
