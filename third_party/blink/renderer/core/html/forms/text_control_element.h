@@ -377,11 +377,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // zero-length String. Null String means the field doesn't have any data yet,
   // and zero-length String is a valid data.
   String value_before_first_user_edit_;
-  bool last_change_was_user_edit_;
-
-  unsigned cached_selection_start_;
-  unsigned cached_selection_end_;
-  TextFieldSelectionDirection cached_selection_direction_;
 
   // Value to display in the text element without actually changing its
   // `Value()`. This is introduced to be able to display information on an
@@ -406,6 +401,11 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // Holds OpaqueRange instances that observe this text control.
   HeapVector<Member<OpaqueRange>> opaque_ranges_;
+
+  unsigned cached_selection_start_;
+  unsigned cached_selection_end_;
+  TextFieldSelectionDirection cached_selection_direction_;
+  bool last_change_was_user_edit_;
 
   // RAII helper that temporarily skips SetValue()'s automatic OpaqueRange
   // full-value diff for this scope. The flag is restored on destruction.

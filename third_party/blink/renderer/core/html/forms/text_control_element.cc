@@ -145,9 +145,9 @@ void AppendText(const String& value,
 TextControlElement::TextControlElement(const QualifiedName& tag_name,
                                        Document& doc)
     : HTMLFormControlElementWithState(tag_name, doc),
-      last_change_was_user_edit_(false),
       cached_selection_start_(0),
-      cached_selection_end_(0) {
+      cached_selection_end_(0),
+      last_change_was_user_edit_(false) {
   cached_selection_direction_ =
       doc.GetFrame() && doc.GetFrame()
                             ->GetEditor()
