@@ -298,6 +298,22 @@ GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
   }
 }
 
+bool IsTerminalTaskUpdateState(TaskUpdate::State state) {
+  switch (state) {
+    case TaskUpdate::State::kComplete:
+    case TaskUpdate::State::kStopped:
+    case TaskUpdate::State::kFailed:
+      return true;
+    case TaskUpdate::State::kUnknown:
+    case TaskUpdate::State::kStarting:
+    case TaskUpdate::State::kRunning:
+    case TaskUpdate::State::kPaused:
+    case TaskUpdate::State::kYield:
+    case TaskUpdate::State::kResumed:
+      return false;
+  }
+}
+
 }  // namespace
 
 // Handles every request for one context id, and owns the session that those
@@ -336,9 +352,17 @@ class ExperimentalTriggeringUpdatesHandler
 
   ~ExperimentalTriggeringUpdatesHandler() override {
     RemovePendingTask();
-    if (is_actuation_started_ && !outcome_recorded_) {
-      RecordOutcome(GlicExperimentalTriggeringExecutionOutcome::
-                        kDestroyedBeforeCompletion);
+    if (is_actuation_started_) {
+      if (!terminal_update_sent_) {
+        HandleTerminalUpdate(
+            TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
+            GlicExperimentalTriggeringExecutionOutcome::
+                kDestroyedBeforeCompletion,
+            "Experimental triggering handler destroyed before completion.");
+      } else if (!outcome_recorded_) {
+        RecordOutcome(GlicExperimentalTriggeringExecutionOutcome::
+                          kDestroyedBeforeCompletion);
+      }
     }
   }
 
@@ -391,6 +415,9 @@ class ExperimentalTriggeringUpdatesHandler
     if (!request.task_metadata.has_value()) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kMissingTaskMetadata);
+      if (cleanup_runner) {
+        terminal_update_sent_ = true;
+      }
       return CreateResponseMessage(
           context_id_, TaskUpdate::State::kFailed,
           TaskUpdate::DataType::kErrorMessage,
@@ -404,53 +431,53 @@ class ExperimentalTriggeringUpdatesHandler
           *request.task_metadata->sender_sequence_number;
     }
 
-    return std::visit(
+    std::optional<ExperimentalTriggeringResponse> response = std::visit(
         absl::Overload{
             [&](const TaskMetadataUpdated&)
                 -> std::optional<ExperimentalTriggeringResponse> {
-              return ProcessTaskMetadataUpdated(
-                  request, std::move(cleanup_runner), std::move(result_logger));
+              return ProcessTaskMetadataUpdated(request, cleanup_runner,
+                                                std::move(result_logger));
             },
             [&](const TriggerActuationRequest&)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessTriggerOrContinueActuationRequest(
-                  request, prepared_tab, std::move(cleanup_runner),
+                  request, prepared_tab, cleanup_runner,
                   std::move(result_logger));
             },
             [&](const ContinueActuationRequest&)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessTriggerOrContinueActuationRequest(
-                  request, prepared_tab, std::move(cleanup_runner),
+                  request, prepared_tab, cleanup_runner,
                   std::move(result_logger));
             },
             [&](const StopActuationRequest&)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessStopActuationRequest(&*request.task_metadata,
-                                                 std::move(cleanup_runner),
+                                                 cleanup_runner,
                                                  std::move(result_logger));
             },
             [&](const DeviceOptInRequest&)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessDeviceOptInRequest(&*request.task_metadata,
-                                               std::move(cleanup_runner),
+                                               cleanup_runner,
                                                std::move(result_logger));
             },
             [&](const GetScreenshotRequest& payload)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessGetScreenshotRequest(
-                  payload, &*request.task_metadata, std::move(cleanup_runner),
+                  payload, &*request.task_metadata, cleanup_runner,
                   std::move(result_logger));
             },
             [&](const ExecuteActionsRequest& payload)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessExecuteActionsRequest(
-                  payload, &*request.task_metadata, std::move(cleanup_runner),
+                  payload, &*request.task_metadata, cleanup_runner,
                   std::move(result_logger));
             },
             [&](const SubmitConfirmation& payload)
                 -> std::optional<ExperimentalTriggeringResponse> {
               return ProcessSubmitConfirmation(payload, &*request.task_metadata,
-                                               std::move(cleanup_runner),
+                                               cleanup_runner,
                                                std::move(result_logger));
             },
             [&](const RequestPayloadNotSet&)
@@ -479,6 +506,16 @@ class ExperimentalTriggeringUpdatesHandler
             },
         },
         request.payload);
+
+    // If `cleanup_runner` is still armed, tearing down this handler on scope
+    // exit must not emit a duplicate best-effort `kFailed` update when a
+    // terminal `TaskUpdate` is already being returned synchronously.
+    if (cleanup_runner && response.has_value() &&
+        response->task_update.has_value() &&
+        IsTerminalTaskUpdateState(response->task_update->state)) {
+      terminal_update_sent_ = true;
+    }
+    return response;
   }
 
   void OnUpdate(mojom::ExperimentalTriggeringUpdatePtr update,
@@ -704,7 +741,14 @@ class ExperimentalTriggeringUpdatesHandler
       }
       RemovePendingTask();
       // Superseded by some other (non experimental triggering) invocation.
+      // Preserve existing ExecutionOutcome semantics while still notifying the
+      // remote caller so it does not stall waiting for a terminal update.
       outcome_recorded_ = true;
+      HandleTerminalUpdate(TaskUpdate::State::kFailed,
+                           TaskUpdate::DataType::kErrorMessage,
+                           GlicInvokeErrorToOutcome(error, client_connected_),
+                           base::StrCat({"Glic invocation failed: ",
+                                         GlicInvokeErrorToString(error)}));
       CleanupAsync();
       return;
     }
@@ -763,7 +807,7 @@ class ExperimentalTriggeringUpdatesHandler
   ProcessTriggerOrContinueActuationRequest(
       const ExperimentalTriggeringRequest& request,
       tabs::TabInterface* prepared_tab,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     if (!coordinator_) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
@@ -911,7 +955,7 @@ class ExperimentalTriggeringUpdatesHandler
   std::optional<ExperimentalTriggeringResponse> ProcessGetScreenshotRequest(
       const GetScreenshotRequest& screenshot_req,
       const TaskMetadata* task_metadata,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     // Like `ProcessSubmitConfirmation`, failures are reported as a
     // `ScreenshotResult` rather than a failed `TaskUpdate`: being unable to
@@ -1023,7 +1067,7 @@ class ExperimentalTriggeringUpdatesHandler
   std::optional<ExperimentalTriggeringResponse> ProcessSubmitConfirmation(
       const SubmitConfirmation& confirmation_req,
       const TaskMetadata* task_metadata,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     // Unlike actuation requests, delivery failures are reported as a
     // `ConfirmationResult` rather than a failed `TaskUpdate`. A confirmation
@@ -1110,7 +1154,7 @@ class ExperimentalTriggeringUpdatesHandler
 
   std::optional<ExperimentalTriggeringResponse> ProcessTaskMetadataUpdated(
       const ExperimentalTriggeringRequest& request,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     if (!instance_) {
       result_logger.set_result(
@@ -1143,7 +1187,7 @@ class ExperimentalTriggeringUpdatesHandler
 
   std::optional<ExperimentalTriggeringResponse> ProcessStopActuationRequest(
       const TaskMetadata* request_metadata,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     // Stopping ends the session, so this tears the handler down even when it
     // has live work and OnRequest() left `cleanup_runner` unarmed.
@@ -1192,7 +1236,7 @@ class ExperimentalTriggeringUpdatesHandler
   std::optional<ExperimentalTriggeringResponse> ProcessExecuteActionsRequest(
       const ExecuteActionsRequest& request,
       const TaskMetadata* task_metadata,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     if (!base::FeatureList::IsEnabled(
             features::kGlicExperimentalTriggeringScriptTools) ||
@@ -1338,7 +1382,7 @@ class ExperimentalTriggeringUpdatesHandler
 
   std::optional<ExperimentalTriggeringResponse> ProcessDeviceOptInRequest(
       const TaskMetadata* task_metadata,
-      base::ScopedClosureRunner cleanup_runner,
+      base::ScopedClosureRunner& cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
     if (!coordinator_) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
