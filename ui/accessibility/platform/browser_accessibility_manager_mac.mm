@@ -351,7 +351,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
-      CHECK(wrapper->IsTextField(), base::NotFatalUntil::M163);
+      // TODO(crbug.com/579983703): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(wrapper->IsTextField());
       mac_notification = NSAccessibilityValueChangedNotification;
       if (!text_edits_.empty()) {
         std::u16string deleted_text;
