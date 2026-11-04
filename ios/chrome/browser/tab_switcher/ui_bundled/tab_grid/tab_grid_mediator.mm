@@ -35,7 +35,7 @@
   // Preference service from the application context.
   raw_ptr<PrefService> _prefService;
   // Feature engagement tracker.
-  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
   // Identity manager providing AccountInfo capabilities.
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer to track changes to Family Link user state.
@@ -69,9 +69,10 @@
 }
 
 - (void)disconnect {
-  _prefService = nil;
+  _prefService = nullptr;
   _familyLinkUserCapabilitiesObserver.reset();
-  _identityManager = nil;
+  _identityManager = nullptr;
+  _engagementTracker = nullptr;
   _consumer = nil;
 
   [_modeHolder removeObserver:self];
