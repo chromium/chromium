@@ -24,6 +24,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -117,7 +118,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   // Called from `SharedDictionaryManagerOnDisk` when dictionary has been
   // deleted.
   void OnDictionaryDeleted(
-      const std::set<base::UnguessableToken>& disk_cache_key_tokens);
+      const absl::flat_hash_set<base::UnguessableToken>& disk_cache_key_tokens);
 
  protected:
   ~SharedDictionaryStorageOnDisk() override;

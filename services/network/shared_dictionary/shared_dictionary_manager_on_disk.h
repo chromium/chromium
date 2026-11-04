@@ -21,6 +21,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class GURL;
 
@@ -171,11 +172,11 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void MaybePostCacheEvictionTask();
 
   void OnDictionaryDeleted(
-      const std::set<base::UnguessableToken>& disk_cache_key_tokens,
+      const absl::flat_hash_set<base::UnguessableToken>& disk_cache_key_tokens,
       bool need_to_doom_disk_cache_entries);
 
-  const std::set<base::UnguessableToken>& writing_disk_cache_key_tokens()
-      const {
+  const absl::flat_hash_set<base::UnguessableToken>&
+  writing_disk_cache_key_tokens() const {
     return writing_disk_cache_key_tokens_;
   }
 
@@ -199,7 +200,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   std::unique_ptr<SerializedTask> running_serialized_task_;
   std::deque<std::unique_ptr<SerializedTaskInfo>> pending_serialized_task_info_;
 
-  std::set<base::UnguessableToken> writing_disk_cache_key_tokens_;
+  absl::flat_hash_set<base::UnguessableToken> writing_disk_cache_key_tokens_;
 
   bool mismatching_entry_deletion_task_posted_ = false;
   bool cache_eviction_task_queued_ = false;

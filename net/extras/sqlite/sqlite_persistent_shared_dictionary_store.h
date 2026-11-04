@@ -7,7 +7,6 @@
 
 #include <map>
 #include <optional>
-#include <set>
 #include <vector>
 
 #include "base/byte_size.h"
@@ -21,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
 namespace base {
@@ -56,7 +56,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     RegisterDictionaryResult(
         int64_t primary_key_in_database,
         std::optional<base::UnguessableToken> replaced_disk_cache_key_token,
-        std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
+        absl::flat_hash_set<base::UnguessableToken>
+            evicted_disk_cache_key_tokens,
         uint64_t total_dictionary_size,
         uint64_t total_dictionary_count);
     ~RegisterDictionaryResult();
@@ -71,8 +72,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
         const {
       return replaced_disk_cache_key_token_;
     }
-    const std::set<base::UnguessableToken>& evicted_disk_cache_key_tokens()
-        const {
+    const absl::flat_hash_set<base::UnguessableToken>&
+    evicted_disk_cache_key_tokens() const {
       return evicted_disk_cache_key_tokens_;
     }
     uint64_t total_dictionary_size() const { return total_dictionary_size_; }
@@ -81,7 +82,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
    private:
     int64_t primary_key_in_database_;
     std::optional<base::UnguessableToken> replaced_disk_cache_key_token_;
-    std::set<base::UnguessableToken> evicted_disk_cache_key_tokens_;
+    absl::flat_hash_set<base::UnguessableToken> evicted_disk_cache_key_tokens_;
     uint64_t total_dictionary_size_;
     uint64_t total_dictionary_count_;
   };
@@ -95,7 +96,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>,
       Error>;
   using UnguessableTokenSetOrError =
-      base::expected<std::set<base::UnguessableToken>, Error>;
+      base::expected<absl::flat_hash_set<base::UnguessableToken>, Error>;
   using UsageInfoOrError =
       base::expected<std::vector<SharedDictionaryUsageInfo>, Error>;
   using OriginListOrError = base::expected<std::vector<url::Origin>, Error>;
@@ -155,7 +156,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetAllDiskCacheKeyTokens(
       base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void DeleteDictionariesByDiskCacheKeyTokens(
-      std::set<base::UnguessableToken> disk_cache_key_tokens,
+      absl::flat_hash_set<base::UnguessableToken> disk_cache_key_tokens,
       base::OnceCallback<void(Error)> callback);
   void UpdateDictionaryLastFetchTime(const int64_t primary_key_in_database,
                                      const base::Time last_fetch_time,

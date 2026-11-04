@@ -29,6 +29,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
@@ -371,15 +372,14 @@ void SharedDictionaryStorageOnDisk::OnSharedDictionaryDeleted(
 }
 
 void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
-    const std::set<base::UnguessableToken>& disk_cache_key_tokens) {
+    const absl::flat_hash_set<base::UnguessableToken>& disk_cache_key_tokens) {
   std::erase_if(dictionaries_, [&disk_cache_key_tokens](const auto& it) {
-    return disk_cache_key_tokens.find(it.first) != disk_cache_key_tokens.end();
+    return disk_cache_key_tokens.contains(it.first);
   });
 
   for (auto& it1 : dictionary_info_map_) {
     std::erase_if(it1.second, [&disk_cache_key_tokens](const auto& it2) {
-      return disk_cache_key_tokens.find(it2.second.disk_cache_key_token()) !=
-             disk_cache_key_tokens.end();
+      return disk_cache_key_tokens.contains(it2.second.disk_cache_key_token());
     });
   }
   std::erase_if(dictionary_info_map_,

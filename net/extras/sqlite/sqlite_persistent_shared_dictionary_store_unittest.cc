@@ -5,6 +5,7 @@
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 
 #include <optional>
+#include <set>
 #include <tuple>
 
 #include "base/byte_size.h"
@@ -28,6 +29,7 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -553,9 +555,9 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return origins;
   }
 
-  std::set<base::UnguessableToken> ClearAllDictionaries() {
+  absl::flat_hash_set<base::UnguessableToken> ClearAllDictionaries() {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->ClearAllDictionaries(base::BindLambdaForTesting(
         [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
                 result) {
@@ -567,12 +569,12 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> ClearDictionaries(
+  absl::flat_hash_set<base::UnguessableToken> ClearDictionaries(
       const base::Time start_time,
       const base::Time end_time,
       base::RepeatingCallback<bool(const GURL&)> url_matcher) {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->ClearDictionaries(
         start_time, end_time, std::move(url_matcher),
         base::BindLambdaForTesting([&](SQLitePersistentSharedDictionaryStore::
@@ -585,10 +587,10 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> ClearDictionariesForIsolationKey(
+  absl::flat_hash_set<base::UnguessableToken> ClearDictionariesForIsolationKey(
       const SharedDictionaryIsolationKey& isolation_key) {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->ClearDictionariesForIsolationKey(
         isolation_key,
         base::BindLambdaForTesting([&](SQLitePersistentSharedDictionaryStore::
@@ -601,10 +603,10 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> DeleteExpiredDictionaries(
+  absl::flat_hash_set<base::UnguessableToken> DeleteExpiredDictionaries(
       const base::Time now) {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->DeleteExpiredDictionaries(
         now,
         base::BindLambdaForTesting([&](SQLitePersistentSharedDictionaryStore::
@@ -617,13 +619,13 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> ProcessEviction(
+  absl::flat_hash_set<base::UnguessableToken> ProcessEviction(
       std::optional<base::ByteSize> cache_max_size,
       std::optional<base::ByteSize> size_low_watermark,
       uint64_t cache_max_count,
       uint64_t count_low_watermark) {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->ProcessEviction(
         cache_max_size, size_low_watermark, cache_max_count,
         count_low_watermark,
@@ -637,9 +639,9 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return tokens;
   }
 
-  std::set<base::UnguessableToken> GetAllDiskCacheKeyTokens() {
+  absl::flat_hash_set<base::UnguessableToken> GetAllDiskCacheKeyTokens() {
     base::RunLoop run_loop;
-    std::set<base::UnguessableToken> tokens;
+    absl::flat_hash_set<base::UnguessableToken> tokens;
     store_->GetAllDiskCacheKeyTokens(base::BindLambdaForTesting(
         [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
                 result) {
@@ -653,7 +655,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
 
   SQLitePersistentSharedDictionaryStore::Error
   DeleteDictionariesByDiskCacheKeyTokens(
-      std::set<base::UnguessableToken> disk_cache_key_tokens) {
+      absl::flat_hash_set<base::UnguessableToken> disk_cache_key_tokens) {
     base::RunLoop run_loop;
     SQLitePersistentSharedDictionaryStore::Error error_out;
     store_->DeleteDictionariesByDiskCacheKeyTokens(
@@ -864,7 +866,7 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
   base::Time latest_response_time = std::max(dictionary_info1.response_time(),
                                              dictionary_info2.response_time());
 
-  std::set<base::UnguessableToken> registered_tokens;
+  absl::flat_hash_set<base::UnguessableToken> registered_tokens;
 
   if (isolation_key1 == isolation_key2) {
     if (expect_merged) {
@@ -1350,7 +1352,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   // dict2.size() + dict3.size() + dict4.size() exceeds `max_size_per_site`. So
   // the oldest dictionary `dict2` must be evicted.
   EXPECT_THAT(result4.evicted_disk_cache_key_tokens(),
-              ElementsAreArray({dict2.disk_cache_key_token()}));
+              UnorderedElementsAreArray({dict2.disk_cache_key_token()}));
   EXPECT_THAT(GetAllDictionaries(),
               ElementsAre(Pair(isolation_key1, ElementsAreArray({dict1})),
                           Pair(isolation_key2, ElementsAreArray({dict3})),
@@ -1446,7 +1448,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   // The dictionary count on "https://top-frame-site2.test" exceeds
   // `max_count_per_site`. So the oldest dictionary `dict2` must be evicted.
   EXPECT_THAT(result4.evicted_disk_cache_key_tokens(),
-              ElementsAreArray({dict2.disk_cache_key_token()}));
+              UnorderedElementsAreArray({dict2.disk_cache_key_token()}));
   EXPECT_THAT(GetAllDictionaries(),
               ElementsAre(Pair(isolation_key1, ElementsAreArray({dict1})),
                           Pair(isolation_key2, ElementsAreArray({dict3})),
@@ -1543,7 +1545,7 @@ TEST_F(
   // The dictionary count on "https://top-frame-site2.test" exceeds
   // `max_count_per_site`. So the oldest dictionary `dict2` must be evicted.
   EXPECT_THAT(result4.evicted_disk_cache_key_tokens(),
-              ElementsAreArray({dict2.disk_cache_key_token()}));
+              UnorderedElementsAreArray({dict2.disk_cache_key_token()}));
   EXPECT_THAT(GetAllDictionaries(),
               ElementsAre(Pair(isolation_key1, ElementsAreArray({dict1})),
                           Pair(isolation_key2, ElementsAreArray({dict3})),
@@ -2439,7 +2441,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ClearDictionaries) {
                                 base::RepeatingCallback<bool(const GURL&)>())
                   .empty());
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ClearDictionaries(base::Time::Now() - base::Seconds(3),
                         base::Time::Now() - base::Seconds(1),
                         base::RepeatingCallback<bool(const GURL&)>());
@@ -2551,13 +2553,13 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
                    GURL("https://c2.example/"), GURL("https://c3.example/")}));
 
   // Deletes dict3.
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ClearDictionaries(base::Time::Now() - base::Seconds(3),
                         base::Time::Now() - base::Seconds(1),
                         base::BindRepeating([](const GURL& url) {
                           return url == GURL("https://c3.example/");
                         }));
-  EXPECT_THAT(tokens, ElementsAreArray({token3}));
+  EXPECT_THAT(tokens, UnorderedElementsAreArray({token3}));
 
   // Check the remaining dictionaries.
   EXPECT_THAT(GetAllDictionaries(),
@@ -2651,7 +2653,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   // Deletes dictionaries for `isolation_key1`.
   EXPECT_THAT(ClearDictionariesForIsolationKey(isolation_key1),
-              ElementsAreArray({token1}));
+              UnorderedElementsAreArray({token1}));
 
   // Check the remaining dictionaries.
   EXPECT_THAT(GetAllDictionaries(),
@@ -2784,7 +2786,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, DeleteExpiredDictionaries) {
   // No matching dictionaries to be deleted.
   EXPECT_TRUE(DeleteExpiredDictionaries(now + base::Seconds(99)).empty());
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       DeleteExpiredDictionaries(now + base::Seconds(100));
   // The dict1 and dict2 must be deleted.
   EXPECT_THAT(tokens, UnorderedElementsAreArray({token1, token2}));
@@ -2833,7 +2835,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionSizeExceeded) {
   //   dict4: size=7000 last_used_time=now+3
   //   dict2: size=3000 last_used_time=now+4
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(base::ByteSize(15000), base::ByteSize(10000), 10, 9);
   // The dict1 and dict3 must be deleted.
   EXPECT_THAT(tokens,
@@ -2859,7 +2861,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   //   dict4: size=7000 last_used_time=now+3
   //   dict2: size=3000 last_used_time=now+4
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(base::ByteSize(15000), base::ByteSize(10000), 10, 1);
   // The dict1 and dict3 and dict4 must be deleted.
   EXPECT_THAT(tokens,
@@ -2887,7 +2889,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   //   dict4: size=7000 last_used_time=now+3
   //   dict2: size=3000 last_used_time=now+4
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(base::ByteSize(20000), base::ByteSize(20000), 3, 2);
   // The dict1 and dict3 must be deleted.
   EXPECT_THAT(tokens,
@@ -2914,7 +2916,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   //   dict4: size=7000 last_used_time=now+3
   //   dict2: size=3000 last_used_time=now+4
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(base::ByteSize(20000), base::ByteSize(3000), 3, 2);
   // The dict1 and dict3 and dict4 must be deleted.
   EXPECT_THAT(tokens,
@@ -2944,7 +2946,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   EXPECT_TRUE(ProcessEviction(std::nullopt, std::nullopt, 4, 2).empty());
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(std::nullopt, std::nullopt, 3, 2);
   // The dict1 and dict3 and dict4 must be deleted.
   EXPECT_THAT(tokens,
@@ -2965,7 +2967,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionZeroMaxSize) {
       RegisterSharedDictionariesForProcessEvictionTest(store_.get(),
                                                        isolation_key_);
   // Evict with cache_max_size = 0 bytes (which should delete all dictionaries).
-  std::set<base::UnguessableToken> tokens = ProcessEviction(
+  absl::flat_hash_set<base::UnguessableToken> tokens = ProcessEviction(
       /*cache_max_size=*/base::ByteSize(0),
       /*size_low_watermark=*/base::ByteSize(0), 4, 4);
   EXPECT_THAT(
@@ -3011,7 +3013,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, ProcessEvictionDeletesAll) {
   //   dict1: size=1000 last_used_time=now
   //   dict2: size=3000 last_used_time=now+1
 
-  std::set<base::UnguessableToken> tokens =
+  absl::flat_hash_set<base::UnguessableToken> tokens =
       ProcessEviction(base::ByteSize(1000), base::ByteSize(900), 10, 9);
   // The dict1 and dict2 must be deleted.
   EXPECT_THAT(tokens, UnorderedElementsAreArray({token1, token2}));
@@ -3039,7 +3041,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, GetAllDiskCacheKeyTokens) {
       /*primary_key_in_database=*/std::nullopt);
   RegisterDictionary(isolation_key_, dict1);
 
-  EXPECT_THAT(GetAllDiskCacheKeyTokens(), ElementsAreArray({token1}));
+  EXPECT_THAT(GetAllDiskCacheKeyTokens(), UnorderedElementsAreArray({token1}));
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(
@@ -3077,7 +3079,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   auto result1 = RegisterDictionary(isolation_key_, dict1);
   dict1.set_primary_key_in_database(result1.primary_key_in_database());
 
-  EXPECT_THAT(GetAllDiskCacheKeyTokens(), ElementsAreArray({token1}));
+  EXPECT_THAT(GetAllDiskCacheKeyTokens(), UnorderedElementsAreArray({token1}));
 
   auto token2 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict2 = SharedDictionaryInfo(

@@ -8,8 +8,10 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <set>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -475,7 +477,7 @@ class SQLitePersistentCookieStore::Backend
 
   // Load all cookies for a set of domains/hosts. The error recovery code
   // assumes |key| includes all related domains within an eTLD + 1.
-  bool LoadCookiesForDomains(const std::set<std::string>& key);
+  bool LoadCookiesForDomains(const std::vector<std::string>& key);
 
   void DeleteTopFrameSiteKeys(
       const absl::flat_hash_set<std::string>& top_frame_site_keys);
@@ -519,7 +521,7 @@ class SQLitePersistentCookieStore::Backend
   std::vector<std::unique_ptr<CanonicalCookie>> cookies_ GUARDED_BY(lock_);
 
   // Map of domain keys(eTLD+1) to domains/hosts that are to be loaded from DB.
-  std::map<std::string, std::set<std::string>> keys_to_load_;
+  std::map<std::string, std::vector<std::string>> keys_to_load_;
 
   // If false, we should filter out session cookies when reading the DB.
   bool restore_old_session_cookies_;
@@ -844,14 +846,11 @@ bool SQLitePersistentCookieStore::Backend::DoInitializeDatabase() {
     return false;
   }
 
-  std::vector<std::string> host_keys;
-  while (smt.Step())
-    host_keys.push_back(smt.ColumnString(0));
-
   // Build a map of domain keys (always eTLD+1) to domains.
-  for (const auto& domain : host_keys) {
+  while (smt.Step()) {
+    std::string domain = smt.ColumnString(0);
     std::string key = CookieMonster::GetKey(domain);
-    keys_to_load_[key].insert(domain);
+    keys_to_load_[std::move(key)].push_back(std::move(domain));
   }
 
   if (!restore_old_session_cookies_)
@@ -893,7 +892,7 @@ void SQLitePersistentCookieStore::Backend::ChainLoadCookies(
 }
 
 bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
-    const std::set<std::string>& domains) {
+    const std::vector<std::string>& domains) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   sql::Statement smt, delete_statement;
@@ -1532,6 +1531,12 @@ void SQLitePersistentCookieStore::Backend::FinishedLoadingCookies(
   TRACE_EVENT("loading",
               "SQLitePersistentCookieStore::Backend::FinishedLoadingCookies",
               perfetto::Flow::FromPointer(this));
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  // Only clear on failure; `FinishedLoadingCookies` is also called after
+  // single-key loads when other keys remain in `keys_to_load_`.
+  if (!success) {
+    keys_to_load_.clear();
+  }
   PostClientTask(FROM_HERE,
                  base::BindOnce(&Backend::NotifyLoadCompleteInForeground, this,
                                 std::move(loaded_callback), success));

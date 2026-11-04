@@ -27,6 +27,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace network {
 namespace {
@@ -326,8 +327,8 @@ class SharedDictionaryManagerOnDisk::MismatchingEntryDeletionTask
 
   raw_ptr<SharedDictionaryManagerOnDisk> manager_;
   base::OnceCallback<void(int)> callback_;
-  std::set<base::UnguessableToken> disk_cache_key_tokens_;
-  std::set<base::UnguessableToken> writing_disk_cache_key_tokens_;
+  absl::flat_hash_set<base::UnguessableToken> disk_cache_key_tokens_;
+  absl::flat_hash_set<base::UnguessableToken> writing_disk_cache_key_tokens_;
   std::unique_ptr<disk_cache::Backend::Iterator> disk_cache_iterator_;
   uint32_t invalid_disk_cache_entry_count_ = 0;
   uint32_t metadata_missing_dictionary_count_ = 0;
@@ -823,7 +824,7 @@ void SharedDictionaryManagerOnDisk::MaybeStartSerializedTask() {
 }
 
 void SharedDictionaryManagerOnDisk::OnDictionaryDeleted(
-    const std::set<base::UnguessableToken>& disk_cache_key_tokens,
+    const absl::flat_hash_set<base::UnguessableToken>& disk_cache_key_tokens,
     bool need_to_doom_disk_cache_entries) {
   if (disk_cache_key_tokens.empty()) {
     return;
