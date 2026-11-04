@@ -147,8 +147,7 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
   }
 
   chromeos::VpnService* service() {
-    return static_cast<chromeos::VpnService*>(
-        chromeos::VpnServiceFactory::GetForBrowserContext(profile()));
+    return chromeos::VpnServiceFactory::GetForBrowserContext(profile());
   }
 
   virtual void OnPlatformMessage(const std::string& configuration_name,

@@ -16,7 +16,6 @@ source_set("vpn_provider") {
     "vpn_service.h",
     "vpn_service_factory.cc",
     "vpn_service_factory.h",
-    "vpn_service_interface.h",
   ]
 
   deps = [

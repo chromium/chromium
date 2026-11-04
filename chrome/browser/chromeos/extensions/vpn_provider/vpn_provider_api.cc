@@ -12,6 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chromeos/ash/experiences/extensions/common/api/vpn_provider.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -180,7 +181,7 @@ ExtensionFunction::ResponseAction VpnProviderCreateConfigFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnServiceInterface* service =
+  chromeos::VpnService* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -207,7 +208,7 @@ ExtensionFunction::ResponseAction VpnProviderDestroyConfigFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnServiceInterface* service =
+  chromeos::VpnService* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -233,7 +234,7 @@ ExtensionFunction::ResponseAction VpnProviderSetParametersFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnServiceInterface* service =
+  chromeos::VpnService* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -266,7 +267,7 @@ ExtensionFunction::ResponseAction VpnProviderSendPacketFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnServiceInterface* service =
+  chromeos::VpnService* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));
@@ -295,7 +296,7 @@ VpnProviderNotifyConnectionStateChangedFunction::Run() {
     return RespondNow(Error("Invalid arguments."));
   }
 
-  chromeos::VpnServiceInterface* service =
+  chromeos::VpnService* service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context());
   if (!service) {
     return RespondNow(Error("Invalid profile."));

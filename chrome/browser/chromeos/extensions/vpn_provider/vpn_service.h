@@ -10,14 +10,15 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_interface.h"
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 
@@ -38,42 +39,70 @@ class ExtensionRegistry;
 namespace chromeos {
 
 // The class manages the VPN configurations.
-class VpnService : public extensions::api::VpnServiceInterface,
+class VpnService : public KeyedService,
                    public ash::NetworkConfigurationObserver,
                    public ash::NetworkStateHandlerObserver,
                    public extensions::ExtensionRegistryObserver {
  public:
+  using SuccessCallback = base::OnceClosure;
+  using FailureCallback =
+      base::OnceCallback<void(const std::string& error_name,
+                              const std::string& error_message)>;
+
   explicit VpnService(content::BrowserContext*);
   ~VpnService() override;
 
   VpnService(const VpnService&) = delete;
   VpnService& operator=(const VpnService&) = delete;
 
-  // extensions::api::VpnServiceInterface:
-  void SendShowAddDialogToExtension(const std::string& extension_id) override;
+  // Sends UIEvent.showAddDialog to the extension with `extension_id`.
+  void SendShowAddDialogToExtension(const std::string& extension_id);
+
+  // Sends UIEvent.showConfigureDialog for `configuration_name` to
+  // the extension with `extension_id`.
   void SendShowConfigureDialogToExtension(
       const std::string& extension_id,
-      const std::string& configuration_name) override;
+      const std::string& configuration_name);
+
+  // Creates a new VPN configuration with `configuration_name` as the name and
+  // attaches it to the extension with id `extension_id`.
+  // Calls `success` or `failure` based on the outcome.
   void CreateConfiguration(const std::string& extension_id,
                            const std::string& configuration_name,
                            SuccessCallback success,
-                           FailureCallback failure) override;
+                           FailureCallback failure);
+
+  // Destroys the VPN configuration with `configuration_id` after verifying
+  // that it belongs to the extension with id `extension_id`. Calls `success` or
+  // `failure` based on the outcome.
   void DestroyConfiguration(const std::string& extension_id,
                             const std::string& configuration_id,
                             SuccessCallback success,
-                            FailureCallback failure) override;
+                            FailureCallback failure);
+
+  // Set `parameters` for the active VPN configuration after verifying that it
+  // belongs to the extension with id `extension_id`.
+  // Calls `success` or `failure` based on the outcome.
   void SetParameters(const std::string& extension_id,
                      base::DictValue parameters,
                      SuccessCallback success,
-                     FailureCallback failure) override;
+                     FailureCallback failure);
+
+  // Sends an IP packet contained in `data` to the active VPN configuration
+  // after verifying that it belongs to the extension with id `extension_id`.
+  // Calls `success` or `failure` based on the outcome.
   void SendPacket(const std::string& extension_id,
                   const std::vector<char>& data,
                   SuccessCallback success,
-                  FailureCallback failure) override;
+                  FailureCallback failure);
+
+  // Notifies new connection state to the active VPN configuration after
+  // verifying that it belongs to the extension with id `extension_id`.
+  // Calls `success` or `failure` based on the outcome.
   void NotifyConnectionStateChanged(const std::string& extension_id,
                                     bool connection_success,
                                     SuccessCallback success,
-                                    FailureCallback failure) override;
+                                    FailureCallback failure);
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;

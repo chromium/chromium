@@ -15,9 +15,9 @@
 namespace chromeos {
 
 // static
-VpnServiceInterface* VpnServiceFactory::GetForBrowserContext(
+VpnService* VpnServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<VpnServiceInterface*>(
+  return static_cast<VpnService*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
