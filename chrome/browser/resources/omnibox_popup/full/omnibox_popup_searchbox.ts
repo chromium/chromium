@@ -323,7 +323,8 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor permanentDisplayText_: string = '';
   protected accessor aimButtonIconOnly_: boolean = false;
   // True during an active IME (Input Method Editor) text composition session.
-  // Used to suppress intermediate selection updates until composition finishes.
+  // Used to suppress intermediate selection updates until composition finishes,
+  // and to end the composition before showing another tab's text.
   private isComposing_: boolean = false;
   // True if the user has typed directly into the WebUI DOM input element since
   // the last `onSetInputState_` invocation.
@@ -1420,6 +1421,18 @@ export class OmniboxPopupSearchboxElement extends
     if (state.isTabSwitch) {
       performance.mark(
           'OmniboxPopupSearchboxElement::onSetInputState_:TabSwitch');
+    }
+
+    // Like `OmniboxViewViews::SaveStateToTab()`, end any IME composition
+    // before showing another tab's text, so that the IME doesn't keep composing
+    // into it. This compares tab IDs since `isTabSwitch` is false for a new tab
+    // that focuses the omnibox. There's no web API to end a composition, but
+    // blurring the input does it: Blink commits the composition, whose text is
+    // already in the old tab's draft, and the browser cancels the IME's
+    // composition. The input is refocused below if the new tab's omnibox is
+    // focused.
+    if (this.isComposing_ && state.tabId !== this.tabId_) {
+      this.$.input.blur();
     }
     this.hasReceivedInitialInputState_ = true;
 
