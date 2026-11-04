@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CONTAINER_NODE_H_
 
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -94,7 +95,19 @@ using NodeVector = HeapVector<Member<Node>, kInitialNodeVectorSize>;
 // firstChild, lastChild) use web-style naming to shadow the corresponding
 // methods on Node. This is a performance optimization, as it avoids a virtual
 // dispatch if the type is statically known to be ContainerNode.
+//
+// ContainerNode ends with a 32-bit member. The MSVC ABI does not place derived
+// class members in base class tail padding, so on 64-bit Windows ContainerNode
+// is packed to 4 bytes to let Element's first member fill that space. Its
+// members stay naturally aligned, since the MSVC ABI places polymorphic bases
+// first.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(push, 4)
+#endif
 class CORE_EXPORT ContainerNode : public Node {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#pragma pack(pop)
+#endif
  public:
   ~ContainerNode() override;
 
