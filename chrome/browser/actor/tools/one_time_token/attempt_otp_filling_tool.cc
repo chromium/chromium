@@ -133,10 +133,7 @@ mojom::ActionResultPtr GetResultFromFormFillingStatus(
   }
 }
 
-// Returns the metrics event for a `FormFillingContextStatus` that failed the
-// time-of-use check in `TimeOfUseValidation()`, before the OTP is retrieved.
-// `GetBeforeFillingMetricsEvent()` covers the later checks right before
-// filling.
+// Returns the metrics event for a given `FormFillingContextStatus`.
 AttemptOtpFillingToolEvent GetMetricsEventFromFormFillingStatus(
     autofill::FormFillingContextStatus status) {
   switch (status) {
@@ -148,27 +145,6 @@ AttemptOtpFillingToolEvent GetMetricsEventFromFormFillingStatus(
       return AttemptOtpFillingToolEvent::kFormFillingStatusFormNotFound;
     case autofill::FormFillingContextStatus::kTabNotAvailable:
       return AttemptOtpFillingToolEvent::kFormFillingStatusTabNotAvailable;
-  }
-}
-
-// Returns the metrics event for a `FormFillingContextStatus` that failed the
-// check right before filling the OTP, i.e. after the OTP is retrieved
-// (`OnOtpRetrieved()`) or after the user confirms it
-// (`OnGmailOtpConfirmationResponse()`). Uses the *BeforeFilling buckets so
-// these failures are distinguishable from the time-of-use failures recorded
-// via `GetMetricsEventFromFormFillingStatus()`.
-AttemptOtpFillingToolEvent GetBeforeFillingMetricsEvent(
-    autofill::FormFillingContextStatus status) {
-  switch (status) {
-    case autofill::FormFillingContextStatus::kSecure:
-      // Guaranteed by the caller's IsOk() check.
-      NOTREACHED();
-    case autofill::FormFillingContextStatus::kInsecureContext:
-      return AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling;
-    case autofill::FormFillingContextStatus::kFormNotFound:
-      return AttemptOtpFillingToolEvent::kFormNotFoundBeforeFilling;
-    case autofill::FormFillingContextStatus::kTabNotAvailable:
-      return AttemptOtpFillingToolEvent::kTabNotAvailableBeforeFilling;
   }
 }
 
@@ -666,19 +642,18 @@ void AttemptOtpFillingTool::OnOtpRetrieved(
 
   std::string retrieved_otp = result.value();
 
-  autofill::FormFillingContextStatus status =
+  mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
-                                      trigger_field_ids_);
-  mojom::ActionResultPtr validation_result =
-      GetResultFromFormFillingStatus(status);
+                                      trigger_field_ids_));
   if (!IsOk(*validation_result)) {
     LogJournalEvent("AttemptOtpFillingTool::OnOtpRetrieved",
                     JournalDetailsBuilder()
                         .AddError("Form filling context validation failed")
                         .Build());
-    RecordAttemptOtpFillingEvent(GetBeforeFillingMetricsEvent(status));
+    RecordAttemptOtpFillingEvent(
+        AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling);
     std::move(callback).Run(std::move(validation_result));
     return;
   }
@@ -849,19 +824,18 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
   RecordGmailOtpConfirmationDialogInteraction(
       GmailOtpConfirmationDialogInteraction::kPermissionGranted);
 
-  autofill::FormFillingContextStatus status =
+  mojom::ActionResultPtr validation_result = GetResultFromFormFillingStatus(
       tool_delegate()
           .GetActorOneTimeTokenFillingService()
           .ValidateFormFillingContext(actor_surface_handle_.GetTabHandle(),
-                                      trigger_field_ids_);
-  mojom::ActionResultPtr validation_result =
-      GetResultFromFormFillingStatus(status);
+                                      trigger_field_ids_));
   if (!IsOk(*validation_result)) {
     LogJournalEvent("AttemptOtpFillingTool::OnGmailOtpConfirmationResponse",
                     JournalDetailsBuilder()
                         .AddError("Form filling context validation failed")
                         .Build());
-    RecordAttemptOtpFillingEvent(GetBeforeFillingMetricsEvent(status));
+    RecordAttemptOtpFillingEvent(
+        AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling);
     std::move(callback).Run(std::move(validation_result));
     return;
   }

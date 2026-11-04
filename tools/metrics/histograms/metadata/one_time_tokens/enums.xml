@@ -124,8 +124,6 @@ found in the LICENSE file.
   <int value="25" label="CancelledDuringOtpRetrieval"/>
   <int value="26" label="CancelledDuringConfirmationDialog"/>
   <int value="27" label="CancelledDuringFillOtp"/>
-  <int value="28" label="FormNotFoundBeforeFilling"/>
-  <int value="29" label="TabNotAvailableBeforeFilling"/>
   <int value="30" label="GmailOtpSenderDomainMismatch"/>
   <int value="31" label="OtpRetrievalTimeout"/>
 </enum>

@@ -1385,66 +1385,6 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
       AttemptOtpFillingToolEvent::kFormFillingNotSecureBeforeFilling, 1);
 }
 
-TEST_F(AttemptOtpFillingToolTest, Invoke_FormNotFoundBeforeFilling) {
-  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
-      .WillOnce(Return(CreateValidLoginContext()));
-  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
-  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      // `TimeOfUseValidation()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
-      // `OnOtpRetrieved()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kFormNotFound));
-  EXPECT_CALL(delegate().mock_otp_service(), FillOtp).Times(0);
-  PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool({target});
-  SetAutofillGmailOtpFillingEnabled(prefs(), true);
-  SetupSuccessfulTimeOfUseValidation(tool, target);
-
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
-
-  EXPECT_EQ(mojom::ActionResultCode::kFormFillingFieldNotFound,
-            future.Take()->code);
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kFormNotFoundBeforeFilling, 1);
-}
-
-TEST_F(AttemptOtpFillingToolTest,
-       Invoke_TabNotAvailableBeforeFillingAfterConfirmation) {
-  EXPECT_CALL(delegate().mock_otp_service(), GetLoginContextOrigin())
-      .WillOnce(Return(std::nullopt));
-  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<4>("123456"));
-  // `OnGmailOtpConfirmationResponse()` calls `ValidateFormFillingContext()`,
-  // and this test fails that check.
-  EXPECT_CALL(delegate().mock_otp_service(), ValidateFormFillingContext)
-      // `TimeOfUseValidation()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
-      // `OnOtpRetrieved()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kSecure))
-      // `OnGmailOtpConfirmationResponse()`
-      .WillOnce(Return(autofill::FormFillingContextStatus::kTabNotAvailable));
-  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog("123456", _))
-      .WillOnce(RunOnceCallback<1>(
-          webui::mojom::GmailOtpConfirmationResult::NewResponse(
-              webui::mojom::GmailOtpConfirmationResponse::New(
-                  /*permission_granted=*/true))));
-  EXPECT_CALL(delegate().mock_otp_service(), FillOtp).Times(0);
-  PageTarget target(gfx::Point(10, 10));
-  AttemptOtpFillingTool tool = CreateTool({target}, /*for_signin=*/true);
-  SetupSuccessfulTimeOfUseValidation(tool, target);
-
-  TestFuture<ActionResultPtr> future;
-  tool.Invoke(future.GetCallback());
-
-  EXPECT_EQ(mojom::ActionResultCode::kTabWentAway, future.Take()->code);
-  histogram_tester_.ExpectBucketCount(
-      kAttemptOtpFillingToolHistogram,
-      AttemptOtpFillingToolEvent::kTabNotAvailableBeforeFilling, 1);
-}
-
 // `Invoke()` returns `kOk` when all conditions are met using a `DomNode`
 // target.
 TEST_F(AttemptOtpFillingToolTest, Invoke_DomNode_HappyPath) {
