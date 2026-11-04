@@ -21,6 +21,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/test",
   "+crypto",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+net/test",
   "+services/network/public",

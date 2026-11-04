@@ -5,11 +5,14 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -19,9 +22,12 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/net_errors.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -62,11 +68,24 @@ class TestInterstitialPage : public SecurityInterstitialPage {
 
   void OnInterstitialClosing() override {}
 
+  void CommandReceived(const std::string& command) override {
+    last_command_received_ = command;
+    command_received_count_++;
+  }
+
+  const std::optional<std::string>& last_command_received() const {
+    return last_command_received_;
+  }
+
+  int command_received_count() const { return command_received_count_; }
+
  protected:
   void PopulateInterstitialStrings(base::DictValue& load_time_data) override {}
 
  private:
   raw_ptr<bool> destroyed_tracker_;
+  std::optional<std::string> last_command_received_;
+  int command_received_count_ = 0;
 };
 
 class SecurityInterstitialTabHelperTest
@@ -484,6 +503,151 @@ TEST_F(SecurityInterstitialTabHelperTest,
 
   helper->FrameDeleted(committed_handle2->GetFrameTreeNodeId());
   EXPECT_TRUE(committed_blocking_page2_destroyed);
+}
+
+// Tests that an inactive main frame in BackForwardCache cannot send commands to
+// an active interstitial committed in the same FrameTreeNode, while the active
+// main frame can.
+TEST_F(SecurityInterstitialTabHelperTest,
+       InactiveMainFrameCannotSendInterstitialCommands) {
+  base::test::ScopedFeatureList bfcache_feature_list;
+  bfcache_feature_list.InitWithFeaturesAndParameters(
+      content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+      content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.test/"));
+  content::RenderFrameHostWrapper rfh_a(main_rfh());
+
+  auto navigation_b = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://b.test/"), web_contents());
+  navigation_b->Start();
+
+  bool blocking_page_destroyed = false;
+  auto blocking_page = std::make_unique<TestInterstitialPage>(
+      web_contents(), GURL("https://b.test/"), &blocking_page_destroyed);
+  TestInterstitialPage* blocking_page_raw = blocking_page.get();
+  SecurityInterstitialTabHelper::AssociateBlockingPage(
+      navigation_b->GetNavigationHandle(), std::move(blocking_page));
+
+  // Bind a receiver to `rfh_a` while it is still active, before it enters
+  // BackForwardCache.
+  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
+      pre_bound_inactive_remote;
+  SecurityInterstitialTabHelper::BindInterstitialCommands(
+      pre_bound_inactive_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      rfh_a.get());
+
+  navigation_b->Fail(net::ERR_CERT_DATE_INVALID);
+  navigation_b->CommitErrorPage();
+
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  ASSERT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ASSERT_FALSE(rfh_a->IsActive());
+  ASSERT_TRUE(main_rfh()->IsActive());
+  ASSERT_EQ(rfh_a->GetFrameTreeNodeId(), main_rfh()->GetFrameTreeNodeId());
+  ASSERT_FALSE(blocking_page_destroyed);
+
+  // Commands sent from the inactive frame using a pre-bound remote or a newly
+  // bound remote must be ignored.
+  pre_bound_inactive_remote->Proceed();
+  pre_bound_inactive_remote.FlushForTesting();
+  EXPECT_EQ(blocking_page_raw->command_received_count(), 0);
+
+  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
+      post_bound_inactive_remote;
+  SecurityInterstitialTabHelper::BindInterstitialCommands(
+      post_bound_inactive_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      rfh_a.get());
+  post_bound_inactive_remote->Proceed();
+  post_bound_inactive_remote.FlushForTesting();
+  EXPECT_EQ(blocking_page_raw->command_received_count(), 0);
+
+  // Commands sent from the active frame hosting the interstitial are processed.
+  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
+      active_remote;
+  SecurityInterstitialTabHelper::BindInterstitialCommands(
+      active_remote.BindNewEndpointAndPassDedicatedReceiver(), main_rfh());
+  active_remote->Proceed();
+  active_remote.FlushForTesting();
+  EXPECT_EQ(blocking_page_raw->command_received_count(), 1);
+  EXPECT_EQ(
+      blocking_page_raw->last_command_received(),
+      base::NumberToString(
+          security_interstitials::SecurityInterstitialCommand::CMD_PROCEED));
+
+  blocking_page_raw = nullptr;
+  DeleteContents();
+  EXPECT_TRUE(blocking_page_destroyed);
+}
+
+// Tests that a subframe with a committed interstitial cannot send commands
+// while its page is in BackForwardCache, and can send commands again once
+// restored from BackForwardCache.
+TEST_F(SecurityInterstitialTabHelperTest,
+       InactiveSubframeCannotSendInterstitialCommandsUntilRestored) {
+  base::test::ScopedFeatureList bfcache_feature_list;
+  bfcache_feature_list.InitWithFeaturesAndParameters(
+      content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+      content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.test/"));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+
+  auto subframe_nav = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://sub.test/"), subframe);
+  subframe_nav->Start();
+
+  bool blocking_page_destroyed = false;
+  auto blocking_page = std::make_unique<TestInterstitialPage>(
+      web_contents(), GURL("https://sub.test/"), &blocking_page_destroyed);
+  TestInterstitialPage* blocking_page_raw = blocking_page.get();
+  SecurityInterstitialTabHelper::AssociateBlockingPage(
+      subframe_nav->GetNavigationHandle(), std::move(blocking_page));
+  subframe_nav->Commit();
+  content::RenderFrameHostWrapper subframe_wrapper(
+      subframe_nav->GetFinalRenderFrameHost());
+
+  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
+      subframe_remote;
+  SecurityInterstitialTabHelper::BindInterstitialCommands(
+      subframe_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      subframe_wrapper.get());
+
+  // Navigate the main frame cross-site so the page and its subframe enter
+  // BackForwardCache.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://b.test/"));
+  ASSERT_FALSE(subframe_wrapper.IsDestroyed());
+  ASSERT_EQ(subframe_wrapper->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  ASSERT_FALSE(subframe_wrapper->IsActive());
+  ASSERT_FALSE(blocking_page_destroyed);
+
+  subframe_remote->Proceed();
+  subframe_remote.FlushForTesting();
+  EXPECT_EQ(blocking_page_raw->command_received_count(), 0);
+
+  // Restore the page from BackForwardCache and verify the active subframe can
+  // send commands again.
+  content::NavigationSimulator::GoBack(web_contents());
+  ASSERT_FALSE(subframe_wrapper.IsDestroyed());
+  ASSERT_TRUE(subframe_wrapper->IsActive());
+
+  subframe_remote->Proceed();
+  subframe_remote.FlushForTesting();
+  EXPECT_EQ(blocking_page_raw->command_received_count(), 1);
+  EXPECT_EQ(
+      blocking_page_raw->last_command_received(),
+      base::NumberToString(
+          security_interstitials::SecurityInterstitialCommand::CMD_PROCEED));
+
+  blocking_page_raw = nullptr;
+  DeleteContents();
+  EXPECT_TRUE(blocking_page_destroyed);
 }
 
 }  // namespace security_interstitials

@@ -156,6 +156,7 @@ source_set("unit_tests") {
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//net:",
     "//net:test_support",
     "//services/network:test_support",
