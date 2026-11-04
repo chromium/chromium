@@ -1495,7 +1495,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           prefs::kAddressBarSettingsNewBadgeShownCount, INT_MAX);
       break;
     case SettingsItemTypeAutofillAndPasswords:
-      // TODO(crbug.com/500341282): Add user metric for this item.
       [self showAutofillAndPasswords];
       break;
     case SettingsItemTypeNotifications:
