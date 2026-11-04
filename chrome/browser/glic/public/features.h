@@ -257,6 +257,11 @@ BASE_DECLARE_FEATURE(kGlicVoice);
 // 380x567dp.
 BASE_DECLARE_FEATURE(kGlicExperimentalOptInDialogNonScrollable);
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the native FRE on Android.
+BASE_DECLARE_FEATURE(kGlicNativeFreAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kGlicActionFirstFRE);
 
 BASE_DECLARE_FEATURE(kGlicWarmOnNudge);

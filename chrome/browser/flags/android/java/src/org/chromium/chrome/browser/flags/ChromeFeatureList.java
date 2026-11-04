@@ -686,6 +686,7 @@ public abstract class ChromeFeatureList {
     public static final String GLIC_BACKGROUND_TRIGGERING = "GlicBackgroundTriggering";
     public static final String GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE =
             "GlicExperimentalOptInDialogNonScrollable";
+    public static final String GLIC_NATIVE_FRE_ANDROID = "GlicNativeFreAndroid";
     public static final String GLIC_NO_WEBVIEW = "GlicNoWebview";
     public static final String GLIC_SHARE_IMAGE = "GlicShareImage";
     public static final String GLIC_VOICE = "GlicVoice";
