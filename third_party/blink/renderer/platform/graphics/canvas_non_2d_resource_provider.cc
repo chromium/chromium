@@ -274,24 +274,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
       }
 
-      std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
-      if (is_software_) {
-        // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE_ONLY to the shared
-        // image usage flag here since mailbox will be used for CPU writes by
-        // the client. But doing that stops us from using CompoundImagebacking
-        // as many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE_ONLY.
-        // TODO(https://crbug.com/40280504): Add that usage flag back here once
-        // the issue is resolved.
-        buffer_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-        if (base::FeatureList::IsEnabled(kAppendCpuUsages)) {
-          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_CPU_READ |
-                                      gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
-        }
-      }
-
       gpu::ImageInfo image_info(size, format, shared_image_usage_flags,
                                 color_space, kTopLeft_GrSurfaceOrigin,
-                                alpha_type, buffer_usage,
+                                alpha_type, /*buffer_usage=*/std::nullopt,
                                 /*is_software=*/false);
 
       std::optional<base::TimeDelta> expiration_time =
@@ -303,8 +288,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
           gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
-          image_info, sii,
-          !is_software_ ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
+          image_info, sii, "CanvasResourceRaster",
           is_single_buffered ? 0 : kMaxRecycledCanvasResources,
           expiration_time);
     }
