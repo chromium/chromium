@@ -412,7 +412,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return;
     }
     // AutoSuggestedTabContext is routed differently for Ask Google entry points
-    // when opening a side panel to cobrowse.
+    // (except homework action chip) when opening a side panel to cobrowse.
     // TODO(crbug.com/486707842): Move check to the
     // Contextual Tasks embedder.
     const isOmniboxAskG = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
@@ -420,8 +420,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const isUpdatedEntryPoint =
         this.contextualTasksUpdatedEntryPointsEnabled_ &&
         (invocationSource === 'ContentAreaContextMenuPageAskGoogle' ||
-         invocationSource === 'AppMenuAskGoogle' ||
-         invocationSource === 'HomeworkActionChip');
+         invocationSource === 'AppMenuAskGoogle');
     const askGAndPageAction =
         (isOmniboxAskG || isUpdatedEntryPoint) && this.isSidePanel;
 

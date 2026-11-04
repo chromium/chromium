@@ -1237,7 +1237,6 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
              of ['OmniboxPageAction',
                  'ContentAreaContextMenuPageAskGoogle',
                  'AppMenuAskGoogle',
-                 'HomeworkActionChip',
     ]) {
       test(
           `${source} with ask-G in the side panel uploads immediately ` +
@@ -1275,6 +1274,17 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
             assertEquals(1, innerComposebox.attachedContext.size);
           });
     }
+
+    test(
+        'HomeworkActionChip in the side panel keeps default semantics ' +
+            'with updated entry points enabled',
+        async () => {
+          loadTimeData.overrideValues({
+            webUIOmniboxAskGAboutThisPageEnabled: true,
+            contextualTasksUpdatedEntryPointsEnabled: true,
+          });
+          await assertDefaultAutoTabSemantics('HomeworkActionChip', true);
+        });
 
     test('delays the upload outside the side panel', async () => {
       await mountApp();
