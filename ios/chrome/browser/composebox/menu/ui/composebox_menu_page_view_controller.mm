@@ -626,12 +626,6 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
   cell.isAccessibilityElement = YES;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
 
-  if (IsToolType(item.type)) {
-    cell.accessibilityTraits |= UIAccessibilityTraitToggleButton;
-  } else {
-    cell.accessibilityTraits &= ~UIAccessibilityTraitToggleButton;
-  }
-
   if (item.disabled) {
     configuration.textProperties.color =
         [UIColor colorNamed:kTextSecondaryColor];

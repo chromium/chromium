@@ -18,15 +18,3 @@ ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
       return ComposeboxMenuItemType::kUnknown;
   }
 }
-
-bool IsToolType(ComposeboxMenuItemType type) {
-  switch (type) {
-    case ComposeboxMenuItemType::kAIM:
-    case ComposeboxMenuItemType::kCreateImage:
-    case ComposeboxMenuItemType::kDeepSearch:
-    case ComposeboxMenuItemType::kCanvas:
-      return true;
-    default:
-      return false;
-  }
-}
