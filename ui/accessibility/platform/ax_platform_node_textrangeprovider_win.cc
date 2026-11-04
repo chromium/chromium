@@ -652,8 +652,9 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
         GetAppendedNewLinesCountInRange(find_start, find_length,
                                         appended_newlines_indices);
     const int max_end_offset = end_ancestor_position->text_offset();
-    CHECK(start_offset <= end_offset && end_offset <= max_end_offset,
-          base::NotFatalUntil::M163);
+    // TODO(crbug.com/580278606): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(start_offset <= end_offset && end_offset <= max_end_offset);
 
     AXPositionInstance start =
         AXNodePosition::CreateTextPosition(*anchor, start_offset,
