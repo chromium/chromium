@@ -48,8 +48,8 @@
 
   raw_ptr<WebStateList> _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
-  raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
-  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged> _loadingNotifier;
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  raw_ptr<UrlLoadingNotifierBrowserAgent> _loadingNotifier;
 
   // YES if browsing in incognito.
   BOOL _incognito;
@@ -90,12 +90,14 @@
 
   _loadingNotifier->RemoveObserver(_loadingObserverBridge.get());
   _loadingObserverBridge.reset();
+  _loadingNotifier = nullptr;
 
   _webStateList->RemoveObserver(_webStateListObserverBridge.get());
   _webStateListObserverBridge.reset();
 
   _webStateList = nullptr;
   _ntpCoordinator = nil;
+  _tracker = nullptr;
   self.consumer = nil;
 }
 
