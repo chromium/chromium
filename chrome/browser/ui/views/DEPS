@@ -10,6 +10,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "chrome_web_contents_view_delegate_views_unittest\\.cc": [
+    "+ash/clipboard/test_support/mock_clipboard_history_controller.h",
+  ],
   "browser_user_education_service\\.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],

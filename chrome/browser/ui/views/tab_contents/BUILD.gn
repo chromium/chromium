@@ -80,8 +80,16 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base/clipboard:clipboard_test_support",
     "//ui/views",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash:test_support",
+      "//testing/gmock",
+    ]
+  }
 }
 
 source_set("browser_tests") {
