@@ -1070,7 +1070,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testOnMove_GroupHeader_Downward() {
         Token groupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
@@ -1104,7 +1103,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     public void testOnMove_GroupHeader_Upward() {
         Token groupId = new Token(1L, 2L);
         when(mTab1.getTabGroupId()).thenReturn(groupId);
-        mPropertyModel.set(TabProperties.TAB_ID, 1);
         mPropertyModel.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
         setItemViewType(mViewHolder, TabProperties.UiType.TAB_GROUP);
         mTargetPropertyModel.set(TabProperties.TAB_ID, 2);

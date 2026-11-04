@@ -311,7 +311,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -373,7 +372,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -434,7 +432,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -494,7 +491,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -555,7 +551,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -615,7 +610,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -676,7 +670,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -760,7 +753,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, true)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -800,7 +792,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, true)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -845,7 +836,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -907,7 +897,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, false)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 
@@ -1847,7 +1836,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
                                 TabListModel.CardProperties.ModelType.TAB_GROUP)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, groupId)
                         .with(TabProperties.IS_COLLAPSED, true)
-                        .with(TabProperties.TAB_ID, 20)
                         .build();
         addMainListItem(headerModel, TabProperties.UiType.TAB_GROUP, 0, 0, 300, 50);
 

@@ -210,7 +210,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
     public void testReorderKeyboardFocusedItem_TabGroupHeader() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_ID, TAB_ID_1)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, headerModel));
@@ -232,7 +231,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
     public void testReorderKeyboardFocusedItem_ChildTab_UngroupUp() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_ID, TAB_ID_1)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         PropertyModel childModel1 =
@@ -252,8 +250,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
         focusItem(mRecyclerView, 1);
 
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(mTab1, mTab2));
-
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ true));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), /* trailing= */ false, false);
     }
@@ -262,7 +258,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
     public void testReorderKeyboardFocusedItem_ChildTab_UngroupDown() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_ID, TAB_ID_1)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         PropertyModel childModel1 =
@@ -288,8 +283,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
         focusItem(mRecyclerView, 2);
 
-        when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
-
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);
     }
@@ -298,7 +291,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
     public void testReorderKeyboardFocusedItem_ChildTabAtEndOfList_UngroupsDown() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_ID, TAB_ID_1)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, GROUP_ID)
                         .build();
         PropertyModel childModel1 =
@@ -317,8 +309,6 @@ public class VerticalTabKeyboardHandlerUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB, childModel2));
 
         focusItem(mRecyclerView, 2);
-
-        when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab1, mTab2));
 
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), /* trailing= */ true, false);

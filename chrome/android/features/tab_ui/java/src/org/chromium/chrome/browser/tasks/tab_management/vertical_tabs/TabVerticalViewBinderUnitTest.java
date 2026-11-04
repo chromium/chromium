@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -1767,13 +1768,12 @@ public class TabVerticalViewBinderUnitTest {
         TabActionButtonData actionButtonData =
                 new TabActionButtonData(TabActionButtonType.OVERFLOW, mCloseListener);
 
-        mModel.set(TabProperties.TAB_ID, 123);
         mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         menuButton.performClick();
-        verify(mCloseListener).run(any(View.class), eq(123), any());
+        verify(mCloseListener).run(any(View.class), anyInt(), any());
     }
 
     @Test
@@ -2947,21 +2947,6 @@ public class TabVerticalViewBinderUnitTest {
 
         assertEquals(View.VISIBLE, headerView.getVisibility());
         assertEquals(1.0f, headerView.getAlpha(), 0.0f);
-    }
-
-    @Test
-    public void testBindTabGroupHeader_TabIdUpdateDoesNotResetVisibilityAndAlpha() {
-        // E.g. a header collapsed and hidden by an in-flight group drag, while its representative
-        // TAB_ID is updated in place.
-        ViewGroup headerView = inflateGroupHeaderView();
-        headerView.setVisibility(View.GONE);
-        headerView.setAlpha(0f);
-
-        mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.TAB_ID);
-
-        assertEquals(View.GONE, headerView.getVisibility());
-        assertEquals(0f, headerView.getAlpha(), 0.0f);
     }
 
     @Test
