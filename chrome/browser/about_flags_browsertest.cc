@@ -63,7 +63,8 @@ void SimulateTextType(content::WebContents* contents,
       base::StringPrintf(
           "var parent = "
           "document.querySelector('flags-app').shadowRoot.getElementById('%s');"
-          "var textarea = parent.getElementsByTagName('textarea')[0];"
+          "var textarea = "
+          "parent.shadowRoot.querySelector('textarea');"
           "textarea.focus();"
           "textarea.value = `%s`;"
           "textarea.dispatchEvent(new Event('change'));",
@@ -96,7 +97,7 @@ std::string GetOriginListText(content::WebContents* contents,
                  "document.querySelector('flags-app').shadowRoot."
                  "getElementById('%s');"
                  "var s = "
-                 "k.getElementsByClassName('experiment-origin-list-value')[0];"
+                 "k.shadowRoot.querySelector('.experiment-origin-list-value');"
                  "s.value;",
                  experiment_id))
       .ExtractString();
@@ -111,7 +112,7 @@ bool IsDropdownEnabled(content::WebContents* contents,
                  "document.querySelector('flags-app').shadowRoot."
                  "getElementById('%s');"
                  "var s = "
-                 "k.getElementsByClassName('experiment-enable-disable')[0];"
+                 "k.shadowRoot.querySelector('.experiment-enable-disable');"
                  "s.value == 'enabled';",
                  experiment_id))
       .ExtractBool();
@@ -195,7 +196,6 @@ class AboutFlagsBrowserTest : public InProcessBrowserTest,
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 
-  bool expiration_enabled_ = true;
   std::string unexpire_name_;
 
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
@@ -232,8 +232,10 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_OriginFlagDisabled) {
             GetOriginListText(contents, kFlagName));
 }
 
-// Flaky. http://crbug.com/40651256
-IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_OriginFlagDisabled) {
+// Verifies that text entered into an origin-list flag's textarea in
+// `PRE_OriginFlagDisabled` persists after restart without modifying the
+// command-line switch, since the flag remains disabled.
+IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, OriginFlagDisabled) {
   // Even though the feature is disabled, the switch is set directly via command
   // line.
   EXPECT_EQ(
@@ -291,8 +293,10 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_OriginFlagEnabled) {
             GetOriginListText(contents, kFlagName));
 }
 
-// Flaky. http://crbug.com/40651256
-IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_OriginFlagEnabled) {
+// Verifies that an origin-list flag enabled in `PRE_OriginFlagEnabled`
+// persists across browser restarts and correctly applies the sanitized
+// origin list switch to the command line.
+IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, OriginFlagEnabled) {
 #if !BUILDFLAG(IS_CHROMEOS)
   // On non-ChromeOS, the command line is modified after restart.
   EXPECT_EQ(
@@ -333,6 +337,9 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, ExpiryHidesFlag) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_ExpiredFlagDoesntApply) {
+  // Simulate the flag not being expired in the previous milestone so that it
+  // can be enabled via `chrome://flags` before restart.
+  flags::testing::SetFlagExpiration(kExpiredFlagName, CHROME_VERSION_MAJOR + 1);
   NavigateToFlagsPage();
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -342,8 +349,9 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, PRE_ExpiredFlagDoesntApply) {
   ToggleEnableDropdown(contents, kExpiredFlagName, true);
 }
 
-// Flaky everywhere: https://crbug.com/40107269
-IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, DISABLED_ExpiredFlagDoesntApply) {
+// Verifies that an expired flag enabled in `PRE_ExpiredFlagDoesntApply` is
+// hidden on `chrome://flags` after restart and its switch is not applied.
+IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, ExpiredFlagDoesntApply) {
   NavigateToFlagsPage();
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
