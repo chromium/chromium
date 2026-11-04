@@ -36,6 +36,7 @@ semantics {
     "An OAuth2 access token identifying and authenticating the "
     "Google account, and the URL to be checked."
   destination: GOOGLE_OWNED_SERVICE
+  api_service_name: "kidsmanagement-pa.googleapis.com"
   internal {
     contacts {
       email: "chrome-kids-eng@google.com"
@@ -73,6 +74,7 @@ semantics {
     "The request is authenticated with an OAuth2 access token "
     "identifying the Google account. No other information is sent."
   destination: GOOGLE_OWNED_SERVICE
+  api_service_name: "kidsmanagement-pa.googleapis.com"
   user_data {
     type: NONE
   }
@@ -114,6 +116,7 @@ semantics {
     "that identifies the Google account and contains the URL that "
     "the user requests access to."
   destination: GOOGLE_OWNED_SERVICE
+  api_service_name: "kidsmanagement-pa.googleapis.com"
   user_data {
     type: NONE
   }
