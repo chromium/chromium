@@ -345,7 +345,18 @@
     },
     {
       name: "AIEmbeddingsAPI",
-      status: "test",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
+      origin_trial_feature_name: "AISemanticEmbedderAPI",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
+      origin_trial_allows_third_party: true,
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "AIEmbeddingsAPIForWorkers",

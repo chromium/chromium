@@ -52,6 +52,12 @@ constexpr char kAIProofreaderAPIOTToken[] =
     "A9PazZj3aC9GgJwZeSihxBYq1GguLymuBZwBaIJ9Yuv7UpOduOHvbli80DtMyZORkxog5FY1A0"
     "53xLH8voAcIQQAAABXeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6MzIxMjMiLCAiZmVhdHVy"
     "ZSI6ICJBSVByb29mcmVhZGVyQVBJIiwgImV4cGlyeSI6IDIwMjQxNzQ0NDR9";
+constexpr char kAISemanticEmbedderAPIOTToken[] =
+    "A3f+VrXKQxs0G2TDdG829xxG58P1lwedW20/"
+    "JL+"
+    "ZrJnsA1Nw4xM0SsC0Oh6QTZPaGoGpeVkTZFxLmwKltFa4ggsAAABceyJvcmlnaW4iOiAiaHR0c"
+    "HM6Ly9hLnRlc3Q6MzIxMjMiLCAiZmVhdHVyZSI6ICJBSVNlbWFudGljRW1iZWRkZXJBUEkiLCA"
+    "iZXhwaXJ5IjogMjA1MjQ2NDU0Nn0=";
 
 // Execute script on the current Window and yield the posted message.
 constexpr char kRunWindowCheck[] = R"JS(
@@ -72,9 +78,10 @@ constexpr char kCheckExposed[] = R"JS(
     } catch (e) { self.postMessage(e.name); }
     )JS";
 
-// Check if FooAPI.availability() yields a string and post an OK/error message.
+// Check if FooAPI.availability(options) yields a string and post an OK/error
+// message.
 constexpr char kCheckAvailability[] = R"JS(
-    try { %s.availability().then(a => {
+    try { %s.availability(%s).then(a => {
               self.postMessage(typeof(a) == 'string' ? 'OK' : 'NO'); });
     } catch (e) { self.postMessage(e.name); }
     )JS";
@@ -114,7 +121,16 @@ std::string DescribeTestVariant(const testing::TestParamInfo<Variant> info) {
 
 // Get the names of all the APIs tested in this suite.
 std::vector<std::string> GetAPINames() {
-  return {"LanguageModel", "Rewriter", "Proofreader", "Summarizer", "Writer"};
+  return {"LanguageModel", "Rewriter", "Proofreader",
+          "Summarizer",    "Writer",   "SemanticEmbedder"};
+}
+
+// Returns the options passed to the API's availability(). SemanticEmbedder
+// gets an embeddingSpace, which availability() ignores until the
+// embedding-space CL makes it required; the other APIs need no options.
+std::string_view GetAvailabilityOptions(std::string_view name) {
+  return name == "SemanticEmbedder" ? "{embeddingSpace: 'embeddinggemma-300m'}"
+                                    : "";
 }
 
 // Returns whether the API is enabled by default.
@@ -124,7 +140,8 @@ bool IsAPIEnabledByDefault(std::string_view name) {
 
 // Returns whether the API name matches those currently in origin trial.
 bool IsAPIInOT(std::string_view name) {
-  return name == "Rewriter" || name == "Writer" || name == "Proofreader";
+  return name == "Rewriter" || name == "Writer" || name == "Proofreader" ||
+         name == "SemanticEmbedder";
 }
 
 // Injects an Origin Trial `token` into the page.
@@ -152,12 +169,14 @@ class MAYBE_AIOnDeviceBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (IsAPIFlagEnabled(GetParam())) {
       command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                      "AIPromptAPI,AIPromptAPIMultimodalInput,"
+                                      "AIEmbeddingsAPI,AIPromptAPI,"
+                                      "AIPromptAPIMultimodalInput,"
                                       "AIProofreadingAPI,AIRewriterAPI,"
                                       "AISummarizationAPI,AIWriterAPI");
     }
     if (IsAPIWorkerFlagEnabled(GetParam())) {
       command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                      "AIEmbeddingsAPIForWorkers,"
                                       "AIPromptAPIForWorkers,"
                                       "AIRewriterAPIForWorkers,"
                                       "AISummarizationAPIForWorkers,"
@@ -171,6 +190,7 @@ class MAYBE_AIOnDeviceBrowserTest
     base::flat_map<base::test::FeatureRef, bool> feature_states;
     feature_states[optimization_guide::kOptimizationGuideManifestBroker] = true;
     if (IsAPIKillSwitchTriggered(GetParam())) {
+      feature_states[blink::features::kAIEmbeddingsAPI] = false;
       feature_states[blink::features::kAIPromptAPI] = false;
       feature_states[blink::features::kAIPromptAPIMultimodalInput] = false;
       feature_states[blink::features::kAIProofreadingAPI] = false;
@@ -199,6 +219,7 @@ class MAYBE_AIOnDeviceBrowserTest
       InjectOTToken(tab, kAIWriterAPIOTToken);
       InjectOTToken(tab, kAIPromptAPIMultimodalInputOTToken);
       InjectOTToken(tab, kAIProofreaderAPIOTToken);
+      InjectOTToken(tab, kAISemanticEmbedderAPIOTToken);
     }
   }
 
@@ -252,7 +273,8 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AIOnDeviceBrowserTest, ExposedToWindowOrWorker) {
 IN_PROC_BROWSER_TEST_P(MAYBE_AIOnDeviceBrowserTest, AvailableInWindowOrWorker) {
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   for (const auto& name : GetAPINames()) {
-    auto check = absl::StrFormat(kCheckAvailability, name);
+    auto check =
+        absl::StrFormat(kCheckAvailability, name, GetAvailabilityOptions(name));
     SCOPED_TRACE(testing::Message() << "Checking " << name);
     EXPECT_EQ(ExpectExposedToWindow(name) ? "OK" : "ReferenceError",
               content::EvalJs(tab, absl::StrFormat(kRunWindowCheck, check)));

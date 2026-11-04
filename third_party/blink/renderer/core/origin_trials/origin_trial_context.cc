@@ -523,6 +523,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kAIProofreadingAPI);
   }
 
+  if (trial_name == "AISemanticEmbedderAPI") {
+    return base::FeatureList::IsEnabled(features::kAIEmbeddingsAPI);
+  }
+
   if (trial_name == "WebMCP") {
     return base::FeatureList::IsEnabled(blink::features::kWebMCP);
   }
