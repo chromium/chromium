@@ -4,7 +4,12 @@
 
 #include "extensions/browser/api/management/management_api.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/auto_reset.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,6 +29,8 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/management/management_api_constants.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
@@ -32,9 +39,17 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
+#include "net/base/host_port_pair.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/network_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
@@ -437,6 +452,201 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
     SetEnabled(true, true, std::string(), source_extension);
     EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(kId));
   }
+}
+
+class ExtensionManagementWebstoreBrowserTest
+    : public ExtensionManagementApiBrowserTest {
+ public:
+  ExtensionManagementWebstoreBrowserTest() = default;
+  ~ExtensionManagementWebstoreBrowserTest() override = default;
+
+ protected:
+  // ExtensionManagementApiBrowserTest:
+  void SetUp() override {
+    UseHttpsTestServer();
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {"chromewebstore.google.com"};
+    embedded_test_server()->SetSSLConfig(cert_config);
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/extensions");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ExtensionManagementApiBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        network::switches::kHostResolverRules,
+        "MAP chromewebstore.google.com " +
+            embedded_test_server()->host_port_pair().ToString());
+    ExtensionManagementApiBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionManagementApiBrowserTest::SetUpOnMainThread();
+
+    // Greylist an unpacked target extension so each test starts with
+    // `target_id_` disabled with `disable_reason::DISABLE_GREYLIST`.
+    target_dir_.emplace();
+    target_dir_->WriteManifest(R"({
+      "name": "Target Extension",
+      "version": "1.0",
+      "manifest_version": 3
+    })");
+    const Extension* target_extension =
+        LoadExtension(target_dir_->UnpackedPath());
+    ASSERT_TRUE(target_extension);
+    target_id_ = target_extension->id();
+
+    extension_registrar()->GreylistExtensionForTest(
+        target_id_, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
+    ASSERT_TRUE(
+        extension_registry()->disabled_extensions().Contains(target_id_));
+    ASSERT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+        target_id_, disable_reason::DISABLE_GREYLIST));
+  }
+
+  // Navigates the active `content::WebContents` to a newly loaded caller
+  // extension page with the `"management"` permission:
+  // - Returns the navigated `content::WebContents` on success.
+  // - Returns `nullptr` on failure.
+  content::WebContents* LoadAndNavigateToCallerExtension() {
+    caller_dir_.emplace();
+    caller_dir_->WriteManifest(R"({
+      "name": "Caller Extension",
+      "version": "1.0",
+      "manifest_version": 3,
+      "permissions": ["management"]
+    })");
+    caller_dir_->WriteFile(/*filename=*/FILE_PATH_LITERAL("page.html"),
+                           /*contents=*/"<html></html>");
+    const Extension* caller_extension =
+        LoadExtension(caller_dir_->UnpackedPath());
+    if (!caller_extension) {
+      return nullptr;
+    }
+
+    content::WebContents* web_contents = GetActiveWebContents();
+    if (!web_contents ||
+        !NavigateToURL(web_contents,
+                       caller_extension->GetResourceURL("page.html"))) {
+      return nullptr;
+    }
+    return web_contents;
+  }
+
+  // Evaluates `chrome.management.setEnabled(extension_id, enabled)` in
+  // `web_contents` with a transient user gesture:
+  // - Returns `"succeeded"` when the promise resolves.
+  // - Returns the error message when the promise rejects.
+  content::EvalJsResult EvalSetEnabled(content::WebContents* web_contents,
+                                       const ExtensionId& extension_id,
+                                       bool enabled) {
+    constexpr char kSetEnabledScript[] = R"(
+      (async () => {
+        try {
+          await chrome.management.setEnabled($1, $2);
+          return 'succeeded';
+        } catch (e) {
+          return e.message;
+        }
+      })();
+    )";
+    return content::EvalJs(
+        web_contents,
+        content::JsReplace(kSetEnabledScript, extension_id, enabled));
+  }
+
+  // Returns the `ExtensionId` of the greylisted target extension loaded in
+  // `SetUpOnMainThread()`.
+  const ExtensionId& target_id() const { return target_id_; }
+
+ private:
+  std::optional<TestExtensionDir> target_dir_;
+  std::optional<TestExtensionDir> caller_dir_;
+  ExtensionId target_id_;
+};
+
+// Verifies the pre-fix issue (https://crbug.com/514533069) when an extension
+// with the `"management"` permission calls `chrome.management.setEnabled()`
+// with a transient user gesture on a greylisted target.
+IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
+                       SetEnabledGreylistedExtension_ExtensionCaller) {
+  content::WebContents* web_contents = LoadAndNavigateToCallerExtension();
+  ASSERT_TRUE(web_contents);
+
+  // `EvalSetEnabled()` runs the script with a transient user gesture.
+  EXPECT_EQ("succeeded",
+            EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
+  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+      target_id(), disable_reason::DISABLE_GREYLIST));
+}
+
+// Verifies the pre-fix issue (https://crbug.com/514533069) when the Chrome Web
+// Store web page (`mojom::ContextType::kWebPage`) calls
+// `chrome.management.setEnabled()` with a transient user gesture on a
+// greylisted target.
+IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
+                       SetEnabledGreylistedExtension_Webstore) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      GURL("https://chromewebstore.google.com/webstore/mock_store.html")));
+
+  // `EvalSetEnabled()` runs the script with a transient user gesture.
+  EXPECT_EQ("succeeded",
+            EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
+  EXPECT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+      target_id(), disable_reason::DISABLE_GREYLIST));
+}
+
+// Verifies `chrome.management.setEnabled()` when called from
+// chrome://extensions WebUI (`mojom::ContextType::kWebUi`) on a greylisted
+// target.
+IN_PROC_BROWSER_TEST_F(ExtensionManagementWebstoreBrowserTest,
+                       SetEnabledGreylistedExtension_ExtensionsWebUiAllowed) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://extensions")));
+
+  // Manual re-enablement from chrome://extensions is permitted.
+  EXPECT_EQ("succeeded",
+            EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
+}
+
+// Verifies the pre-fix issue (https://crbug.com/514533069) when only the Safe
+// Browsing greylist state in `ExtensionPrefs` marks the target as greylisted.
+// Manual re-enablement clears `disable_reason::DISABLE_GREYLIST` but keeps that
+// state, and disabling via `chrome.management.setEnabled()` does not restore
+// the disable reason. A `"management"`-permission extension can then re-enable
+// the target even though it is still on the greylist.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionManagementWebstoreBrowserTest,
+    SetEnabledGreylistedExtension_ReEnableAfterDisableWhileGreylisted) {
+  // Simulate prior manual re-enablement, which clears
+  // `disable_reason::DISABLE_GREYLIST` while keeping the Safe Browsing greylist
+  // state in `ExtensionPrefs`.
+  EnableExtension(target_id());
+  ASSERT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
+
+  content::WebContents* web_contents = LoadAndNavigateToCallerExtension();
+  ASSERT_TRUE(web_contents);
+
+  // Disabling the target from the caller extension succeeds without restoring
+  // `disable_reason::DISABLE_GREYLIST`.
+  ASSERT_EQ("succeeded",
+            EvalSetEnabled(web_contents, target_id(), /*enabled=*/false));
+  ASSERT_TRUE(
+      extension_registry()->disabled_extensions().Contains(target_id()));
+  ASSERT_FALSE(ExtensionPrefs::Get(profile())->HasDisableReason(
+      target_id(), disable_reason::DISABLE_GREYLIST));
+
+  // Before the fix, re-enabling from the caller extension succeeds while the
+  // target remains on the greylist.
+  EXPECT_EQ("succeeded",
+            EvalSetEnabled(web_contents, target_id(), /*enabled=*/true));
+  EXPECT_TRUE(extension_registry()->enabled_extensions().Contains(target_id()));
 }
 
 }  // namespace extensions
