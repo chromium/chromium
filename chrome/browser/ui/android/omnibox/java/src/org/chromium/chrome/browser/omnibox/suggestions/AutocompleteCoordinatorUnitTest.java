@@ -214,8 +214,8 @@ public class AutocompleteCoordinatorUnitTest {
     public void testOmtOverlay_notCreatedWhenFeatureDisabled() {
         AutocompleteCoordinator coordinator = createCoordinatorWithSuggestionsStub();
 
-        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
         RobolectricUtil.runAllBackgroundAndUi();
+        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
 
         assertNotNull(container);
         OmniboxSuggestionsDropdown dropdown =
@@ -234,8 +234,8 @@ public class AutocompleteCoordinatorUnitTest {
     public void testOmtOverlay_createdAndDestroyedWhenFeatureEnabled() throws Exception {
         AutocompleteCoordinator coordinator = createCoordinatorWithSuggestionsStub();
 
-        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
         RobolectricUtil.runAllBackgroundAndUi();
+        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
 
         assertNotNull(container);
         OmniboxSuggestionsDropdown dropdown =

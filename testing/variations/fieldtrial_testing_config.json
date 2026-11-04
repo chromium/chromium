@@ -12814,6 +12814,21 @@
             ]
         }
     ],
+    "OmniboxEarlyInflation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxEarlyInflation"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxEverywhere": [
         {
             "platforms": [

@@ -240,6 +240,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                     mContainer = holder.container;
                     mDropdown = holder.dropdown;
                 });
+        if (OmniboxFeatures.sEarlyInflation.isEnabled()) {
+            mViewProvider.inflate();
+        }
     }
 
     /** Clean up resources used by this class. */
