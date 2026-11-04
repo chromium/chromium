@@ -362,6 +362,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void disclaimerShowsOnStartup() {
         waitForDisclaimerVisible();
         final boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity());
@@ -401,6 +402,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void disclaimerCannotBeSuppressed() {
         waitForDisclaimerVisible();
 
@@ -683,6 +685,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void signoutHidesDisclaimer() {
         waitForDisclaimerVisible();
 
@@ -795,6 +798,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Test
     @LargeTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void acknowledgmentPersistsAcrossSignouts() {
         acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
@@ -808,6 +812,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void acknowledgmentIsPerAccount() {
         acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
@@ -831,6 +836,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     // successful /ListAccounts. Test devices are offline, so this feature is needed to treat the
     // empty cookie jar as fresh; otherwise the acknowledgment is never cleared.
     @EnableFeatures(SigninFeatures.SKIP_LIST_ACCOUNTS_WITHOUT_GAIA_COOKIES)
+    @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)
     public void removesAcknowledgmentWhenAccountIsRemoved() {
         // Accept the disclaimer shown on startup.
         acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);

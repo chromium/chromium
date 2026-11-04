@@ -201,6 +201,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_STARTUP_PROMOS})
     public void testForcedSignin() {
         mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
@@ -243,6 +244,7 @@ public class TabbedRootUiCoordinatorTest {
     @LargeTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     @Add({@Policies.Item(key = "BrowserSignin", string = "2")})
+    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_STARTUP_PROMOS})
     public void testForcedSigninWhenSigninNotAllowed() {
         mSigninTestRule.addAccountThenSigninAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
@@ -329,7 +331,10 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @CommandLineFlags.Remove({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ChromeSwitches.DISABLE_STARTUP_PROMOS
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testMaybeShowGlicPromo_WouldTrigger_ToolbarNotPinned() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -373,7 +378,10 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @CommandLineFlags.Remove({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ChromeSwitches.DISABLE_STARTUP_PROMOS
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testMaybeShowGlicPromo_WouldTrigger_ToolbarPinned() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -418,7 +426,10 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @CommandLineFlags.Remove({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ChromeSwitches.DISABLE_STARTUP_PROMOS
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testMaybeShowGlicPromo_WouldNotTrigger() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -462,7 +473,10 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @CommandLineFlags.Remove({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ChromeSwitches.DISABLE_STARTUP_PROMOS
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testMaybeShowGlicPromo_DisabledByParam() {
         mPage = mActivityTestRule.startOnBlankPage();
@@ -507,7 +521,10 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Remove({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+    @CommandLineFlags.Remove({
+        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        ChromeSwitches.DISABLE_STARTUP_PROMOS
+    })
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testMaybeShowGlicPromo_GlicDisabledByFlags_ResetsPref() {
         mPage = mActivityTestRule.startOnBlankPage();

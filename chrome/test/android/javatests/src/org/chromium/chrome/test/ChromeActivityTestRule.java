@@ -29,6 +29,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -38,6 +39,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -69,6 +71,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -82,6 +85,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *   <li>Sets up an {@link EmbeddedTestServer}.
  *   <li>Disables the offline indicator.
  *   <li>Disables IPH (In-Product Help).
+ *   <li>Disables startup promos, unless the test method is annotated with
+ *       {@code @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS)}.
  *   <li>Slows down PulseDrawable animations.
  * </ul>
  *
@@ -96,12 +101,27 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     private final EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
+    // Whether the test method opted out of disabling startup promos.
+    private boolean mKeepStartupPromosEnabled;
+    // Whether this rule appended DISABLE_STARTUP_PROMOS and needs to remove it in after().
+    private boolean mAddedDisableStartupPromosSwitch;
+
     protected ChromeActivityTestRule(Class<T> activityClass) {
         super(activityClass);
     }
 
     @Override
     public Statement apply(final Statement base, Description description) {
+        // Besides cancelling annotation-added flags, @CommandLineFlags.Remove of
+        // DISABLE_STARTUP_PROMOS on the test method opts out of the default added by this rule.
+        // @CommandLineFlags.Remove only applies to methods, so this has no effect when the rule is
+        // used as a @ClassRule.
+        CommandLineFlags.Remove removeFlags =
+                description.getAnnotation(CommandLineFlags.Remove.class);
+        mKeepStartupPromosEnabled =
+                removeFlags != null
+                        && Arrays.asList(removeFlags.value())
+                                .contains(ChromeSwitches.DISABLE_STARTUP_PROMOS);
         Statement testServerStatement = mTestServerRule.apply(base, description);
         return super.apply(testServerStatement, description);
     }
@@ -112,6 +132,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
         disableOfflineIndicator();
         disableIph();
+        disableStartupPromos();
         slowDownPulseDrawableAnimations();
     }
 
@@ -134,6 +155,20 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         TrackerFactory.setTrackerForTests(sDisabledTracker);
     }
 
+    private void disableStartupPromos() {
+        // Startup promos (e.g. sign-in, default browser, Glic, enterprise disclaimer) can show on
+        // top of the UI under test and cause flakiness. Tests that need them can opt out with
+        // @CommandLineFlags.Remove(ChromeSwitches.DISABLE_STARTUP_PROMOS).
+        //
+        // When the Activity is reused across batched tests, the switch is absent between after()
+        // and the next before(), so promos evaluated in that window are not suppressed.
+        if (mKeepStartupPromosEnabled) return;
+        CommandLine commandLine = CommandLine.getInstance();
+        if (commandLine.hasSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS)) return;
+        commandLine.appendSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS);
+        mAddedDisableStartupPromosSwitch = true;
+    }
+
     private void slowDownPulseDrawableAnimations() {
         // Reduce PulseDrawable frame rate to keep UI Thread MessageQueue from being busy most of
         // the time, which causes Espresso's ViewInteraction#check() and #perform() to fail with
@@ -153,6 +188,26 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
 
     @Override
     protected void after() {
+        try {
+            hideBottomSheets();
+            super.after();
+            // Activity is finish()'ed in super.after(), and CCT activities sometimes trigger
+            // creation of spare tabs in their onDestroy() (https://crrev.com/c/5597549).
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        WarmupManager.getInstance().destroySpareTab();
+                    });
+        } finally {
+            // Switches appended directly (not via annotations) are not reset by CommandLineFlags
+            // between tests, so remove it here to not leak into later tests in the same process.
+            if (mAddedDisableStartupPromosSwitch) {
+                CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS);
+                mAddedDisableStartupPromosSwitch = false;
+            }
+        }
+    }
+
+    private void hideBottomSheets() {
         // Hide any open bottom sheet (and clear queued ones) so their observers fire and tear
         // down attached mediators (e.g. AccountPickerBottomSheetCoordinator). Otherwise those
         // observers stay registered with process-wide singletons (e.g. AccountManagerFacade) and
@@ -171,13 +226,6 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                         });
             }
         }
-        super.after();
-        // Activity is finish()'ed in super.after(), and CCT activities sometimes trigger creation
-        // of spare tabs in their onDestroy() (https://crrev.com/c/5597549).
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WarmupManager.getInstance().destroySpareTab();
-                });
     }
 
     /** Return the timeout limit for Chrome activty start in tests */
