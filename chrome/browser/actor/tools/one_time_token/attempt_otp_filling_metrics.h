@@ -51,6 +51,8 @@ enum class AttemptOtpFillingToolEvent {
   kCancelledDuringOtpRetrieval = 25,
   kCancelledDuringConfirmationDialog = 26,
   kCancelledDuringFillOtp = 27,
+  kFormNotFoundBeforeFilling = 28,
+  kTabNotAvailableBeforeFilling = 29,
   // OTP retrieval timed out after a received token was rejected for its sender
   // domain.
   kGmailOtpSenderDomainMismatch = 30,
