@@ -100,7 +100,9 @@ TEST_F(ContextualTasksOnboardingBubbleViewTest, OnboardingVariantProperties) {
   EXPECT_EQ(delegate->background_color(), SK_ColorWHITE);
   EXPECT_EQ(delegate->fixed_width(), 288);
   EXPECT_EQ(delegate->margins(), gfx::Insets(16));
-  EXPECT_EQ(delegate->GetCornerRadius(), 8);
+  EXPECT_EQ(delegate->corner_radius(), 8);
+  EXPECT_EQ(delegate->GetCornerRadius(),
+            views::Widget::IsWindowCompositingSupported() ? 8 : 0);
   EXPECT_FALSE(delegate->adjust_if_offscreen());
   auto* frame_view = static_cast<views::BubbleFrameView*>(
       bubble_widget_->non_client_view()->frame_view());
