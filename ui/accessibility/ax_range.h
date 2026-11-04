@@ -267,7 +267,9 @@ class AXRange final {
           (current_start_->GetAnchor() != iterator_end_->GetAnchor())
               ? current_start_->CreatePositionAtEndOfAnchor()
               : iterator_end_->Clone();
-      CHECK_LE(*current_end, *iterator_end_, base::NotFatalUntil::M163);
+      // TODO(crbug.com/580669503): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK_LE(*current_end, *iterator_end_);
 
       AXRange current_leaf_text_range(current_start_->AsTextPosition(),
                                       current_end->AsTextPosition());
