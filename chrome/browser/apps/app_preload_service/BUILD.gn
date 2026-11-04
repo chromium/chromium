@@ -113,7 +113,6 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//components/services/app_service",
     "//components/user_manager",
     "//components/webapps/browser:constants",

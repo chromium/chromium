@@ -293,7 +293,6 @@ if (is_win) {
     public_deps = [
       "//base",
       "//chrome/browser/profiles:profile",
-      "//chrome/test:test_support_ui",
       "//chrome/test/accessibility/ax_client:launcher",
       "//chrome/test/accessibility/ax_client:mojom",
       "//mojo/public/cpp/bindings",

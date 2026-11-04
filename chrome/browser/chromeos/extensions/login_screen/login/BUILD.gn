@@ -72,7 +72,6 @@ source_set("browser_tests") {
     "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/common:constants",
     "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",

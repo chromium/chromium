@@ -13,11 +13,13 @@ static_library("test_support") {
     "fake_origin_test_server_mixin.cc",
     "fake_origin_test_server_mixin.h",
   ]
-
+  public_deps = [
+    "//chrome/test/base:mixin_based_in_process_browser_test",
+    "//net:test_support",
+  ]
   deps = [
     "//base",
     "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/test:test_support_ui",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
