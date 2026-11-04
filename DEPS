@@ -4052,7 +4052,7 @@ deps = {
 
   'src/third_party/widevine/scripts': {
       'url': Var('chrome_git') + '/chrome/deps/widevine/scripts.git' + '@' +
-        '6a0f9d00e79c6453d33dcccaf7c4e701e0eba4e8',
+        'a2b93a103b75f443196b4d0b5da31c38addf7a12',
       'condition': 'checkout_src_internal',
   },
 
