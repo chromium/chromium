@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
@@ -19,6 +20,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -261,6 +263,14 @@
 namespace autofill {
 
 namespace {
+
+ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting&
+GetDeviceAuthAvailabilityCheckerFactoryForTesting() {
+  static base::NoDestructor<
+      ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting>
+      factory;
+  return *factory;
+}
 
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
@@ -1286,6 +1296,16 @@ void ChromeAutofillClient::HideTouchToFillAutofillNotice() {
 }
 #endif
 
+// static
+base::AutoReset<
+    ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting>
+ChromeAutofillClient::SetDeviceAuthAvailabilityCheckerFactoryForTesting(
+    DeviceAuthAvailabilityCheckerFactoryForTesting factory) {
+  CHECK_IS_TEST();
+  return base::AutoReset<DeviceAuthAvailabilityCheckerFactoryForTesting>(
+      &GetDeviceAuthAvailabilityCheckerFactoryForTesting(), std::move(factory));
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -1303,6 +1323,10 @@ ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
 
 std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
 ChromeAutofillClient::GetDeviceAuthAvailabilityChecker() const {
+  if (const DeviceAuthAvailabilityCheckerFactoryForTesting& factory =
+          GetDeviceAuthAvailabilityCheckerFactoryForTesting()) {
+    return factory.Run();
+  }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
   return ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker();
@@ -1459,7 +1483,8 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                                        base::FeatureList::IsEnabled(
                                            features::kAutofillAmbientAutofill)
                                    ? GetEntityDataManager()
-                                   : nullptr) {
+                                   : nullptr;
+      edm && edm->ShouldUpdateReauthAvailability()) {
     edm->SetReauthAvailability(SupportsDeviceReauth(*this));
   }
 }

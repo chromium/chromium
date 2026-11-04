@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -40,6 +41,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
@@ -57,13 +59,17 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -143,12 +149,12 @@ using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::Le;
 using ::testing::MockFunction;
+using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
-using ::testing::UnorderedElementsAre;
 
 class MockPersonalContextEligibilityService
     : public personal_context::PersonalContextEligibilityService {
@@ -1428,6 +1434,134 @@ TEST_F(ChromeAutofillClientTest,
   client()->ShowGmailOtpOptInBubble(u"user@gmail.com", future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
+}
+
+class ChromeAutofillClientReauthAvailabilityTest : public testing::Test {
+ protected:
+  using CheckerFactory =
+      ChromeAutofillClient::DeviceAuthAvailabilityCheckerFactoryForTesting;
+
+  std::unique_ptr<TestingProfile> BuildProfileWithEntityDataManager() {
+    return TestingProfile::Builder()
+        .AddTestingFactory(
+            AutofillEntityDataManagerFactory::GetInstance(),
+            base::BindRepeating(
+                [](AutofillWebDataServiceTestHelper* helper,
+                   content::BrowserContext* context)
+                    -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<EntityDataManager>(
+                      Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                      nullptr, helper->autofill_webdata_service(), nullptr,
+                      nullptr, nullptr, GeoIpCountryCode("US"));
+                },
+                base::Unretained(&webdata_helper_)))
+        .Build();
+  }
+
+  void SetCanAuthenticate(bool can_authenticate) {
+    ON_CALL(checker_factory_, Run).WillByDefault([can_authenticate]() {
+      auto checker = std::make_unique<
+          NiceMock<device_reauth::MockDeviceAuthAvailabilityChecker>>();
+      ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+          .WillByDefault(Return(can_authenticate));
+      return checker;
+    });
+  }
+
+  std::unique_ptr<content::WebContents> CreateWebContentsAndVerifyReauth(
+      Profile* profile,
+      int expected_queries,
+      bool expected_reauth) {
+    EXPECT_CALL(checker_factory_, Run).Times(expected_queries);
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+    EXPECT_EQ(AutofillEntityDataManagerFactory::GetForProfile(profile)
+                  ->GetReauthAvailability(),
+              expected_reauth);
+    testing::Mock::VerifyAndClearExpectations(&checker_factory_);
+    return web_contents;
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  test::AutofillUnitTestEnvironment autofill_environment_{
+      {.disable_server_communication = true}};
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
+  TestAutofillClientInjector<TestChromeAutofillClient>
+      test_autofill_client_injector_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      {features::kAutofillAiWalletPrivatePasses,
+       password_manager::features::kDeviceReauthRefactor},
+      {}};
+  base::MockCallback<CheckerFactory> checker_factory_;
+  base::AutoReset<CheckerFactory> reset_checker_factory_{
+      ChromeAutofillClient::SetDeviceAuthAvailabilityCheckerFactoryForTesting(
+          checker_factory_.Get())};
+};
+
+TEST_F(ChromeAutofillClientReauthAvailabilityTest,
+       QueriesReauthAvailabilityOncePerProfileWithinCacheDuration) {
+  auto profile1 = BuildProfileWithEntityDataManager();
+  auto profile2 = BuildProfileWithEntityDataManager();
+  EntityDataManager* edm1 =
+      AutofillEntityDataManagerFactory::GetForProfile(profile1.get());
+  EntityDataManager* edm2 =
+      AutofillEntityDataManagerFactory::GetForProfile(profile2.get());
+  ASSERT_TRUE(edm1);
+  ASSERT_TRUE(edm2);
+  ASSERT_NE(edm1, edm2);
+  EXPECT_EQ(edm1->GetReauthAvailability(), std::nullopt);
+  EXPECT_EQ(edm2->GetReauthAvailability(), std::nullopt);
+
+  SetCanAuthenticate(true);
+  auto wc1 = CreateWebContentsAndVerifyReauth(profile1.get(), 1, true);
+  auto wc2 = CreateWebContentsAndVerifyReauth(profile1.get(), 0, true);
+  // Incognito profiles share the original profile's `EntityDataManager`.
+  auto incognito_wc = CreateWebContentsAndVerifyReauth(
+      profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true), 0, true);
+
+  SetCanAuthenticate(false);
+  auto p2_wc1 = CreateWebContentsAndVerifyReauth(profile2.get(), 1, false);
+  auto p2_wc2 = CreateWebContentsAndVerifyReauth(profile2.get(), 0, false);
+}
+
+TEST_F(ChromeAutofillClientReauthAvailabilityTest,
+       RequeriesReauthAvailabilityAfterCacheDurationExpires) {
+  auto profile = BuildProfileWithEntityDataManager();
+
+  SetCanAuthenticate(true);
+  auto wc1 = CreateWebContentsAndVerifyReauth(profile.get(), 1, true);
+
+  // Throttled before `kReauthAvailabilityCacheDuration` elapses.
+  SetCanAuthenticate(false);
+  task_environment_.FastForwardBy(
+      EntityDataManager::kReauthAvailabilityCacheDuration / 2);
+  auto wc2 = CreateWebContentsAndVerifyReauth(profile.get(), 0, true);
+
+  // Refreshed once the cache duration expires.
+  task_environment_.FastForwardBy(
+      EntityDataManager::kReauthAvailabilityCacheDuration / 2);
+  auto wc3 = CreateWebContentsAndVerifyReauth(profile.get(), 1, false);
+}
+
+TEST_F(ChromeAutofillClientReauthAvailabilityTest,
+       QueriesReauthAvailabilityWithAmbientAutofillEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAutofillAmbientAutofill,
+       password_manager::features::kDeviceReauthRefactor},
+      {features::kAutofillAiWalletPrivatePasses});
+
+  auto profile = BuildProfileWithEntityDataManager();
+  EXPECT_EQ(AutofillEntityDataManagerFactory::GetForProfile(profile.get())
+                ->GetReauthAvailability(),
+            std::nullopt);
+
+  SetCanAuthenticate(true);
+  auto wc1 = CreateWebContentsAndVerifyReauth(profile.get(), 1, true);
+  auto wc2 = CreateWebContentsAndVerifyReauth(profile.get(), 0, true);
 }
 }  // namespace
 }  // namespace autofill

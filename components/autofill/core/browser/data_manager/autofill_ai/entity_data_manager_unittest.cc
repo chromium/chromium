@@ -118,6 +118,8 @@ class EntityDataManagerTestBase : public testing::Test {
     return histogram_tester_;
   }
 
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
   // Recreating the EntityDataManager in the middle of the test is discouraged
   // because this prevents any other code from keeping a pointer to the
   // EntityDataManager.
@@ -347,6 +349,27 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, ValidateEntityReauthRequirements) {
   WaitUntilIdle();
   ASSERT_THAT(GetEntityInstances(),
               UnorderedElementsAre(local_private_pass, public_pass));
+}
+
+// Tests that `ShouldUpdateReauthAvailability()` returns true when unset or
+// after `kReauthAvailabilityCacheDuration` has elapsed, and false within the
+// cache duration.
+TEST_F(EntityDataManagerTest_InitiallyEmpty, ShouldUpdateReauthAvailability) {
+  EXPECT_TRUE(entity_data_manager().ShouldUpdateReauthAvailability());
+
+  entity_data_manager().SetReauthAvailability(true);
+  EXPECT_FALSE(entity_data_manager().ShouldUpdateReauthAvailability());
+
+  task_environment().FastForwardBy(
+      EntityDataManager::kReauthAvailabilityCacheDuration / 2);
+  EXPECT_FALSE(entity_data_manager().ShouldUpdateReauthAvailability());
+
+  task_environment().FastForwardBy(
+      EntityDataManager::kReauthAvailabilityCacheDuration / 2);
+  EXPECT_TRUE(entity_data_manager().ShouldUpdateReauthAvailability());
+
+  entity_data_manager().SetReauthAvailability(true);
+  EXPECT_FALSE(entity_data_manager().ShouldUpdateReauthAvailability());
 }
 
 class EntityDataManagerTest_InitiallyPopulated

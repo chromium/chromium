@@ -176,9 +176,18 @@ class EntityDataManager
     observers_.RemoveObserver(observer);
   }
 
+  // Minimum interval between re-querying device re-auth availability per
+  // profile across tab creations.
+  static constexpr base::TimeDelta kReauthAvailabilityCacheDuration =
+      base::Seconds(15);
+
   // Updates the re-auth availability and `EnforceEntityReauthRequirements()` if
   // the availability has changed.
   void SetReauthAvailability(bool reauth_available);
+
+  // Returns true if re-auth availability is unset or older than
+  // `kReauthAvailabilityCacheDuration`.
+  bool ShouldUpdateReauthAvailability() const;
 
   std::optional<bool> GetReauthAvailability() const {
     return reauth_availability_;
@@ -243,6 +252,11 @@ class EntityDataManager
   // Indicates whether the device support biometric or lockscreen re-auth.
   // Nullopt means that the availability of re-auth is unknown.
   std::optional<bool> reauth_availability_;
+
+  // Timestamp of the last `SetReauthAvailability()` call, used to throttle
+  // redundant OS re-auth availability queries across tab creations. Null if
+  // `SetReauthAvailability()` has not been called yet.
+  base::TimeTicks last_reauth_availability_check_;
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.

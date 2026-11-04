@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -56,6 +57,10 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 class ToastController;
+
+namespace device_reauth {
+class DeviceAuthAvailabilityChecker;
+}
 
 namespace optimization_guide {
 class RemoteModelExecutor;
@@ -385,6 +390,17 @@ class ChromeAutofillClient : public ContentAutofillClient {
       std::unique_ptr<AutofillSnackbarControllerImpl>
           autofill_snackbar_controller_impl);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Test override factory invoked on each `GetDeviceAuthAvailabilityChecker()`
+  // call instead of querying the OS. Pass a non-null callback to
+  // `SetDeviceAuthAvailabilityCheckerFactoryForTesting()` and keep the
+  // returned `base::AutoReset` alive for the duration of the test.
+  using DeviceAuthAvailabilityCheckerFactoryForTesting =
+      base::RepeatingCallback<
+          std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>()>;
+  static base::AutoReset<DeviceAuthAvailabilityCheckerFactoryForTesting>
+  SetDeviceAuthAvailabilityCheckerFactoryForTesting(
+      DeviceAuthAvailabilityCheckerFactoryForTesting factory);
 
   // ContentAutofillClient:
   std::unique_ptr<AutofillManager> CreateManager(

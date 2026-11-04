@@ -405,11 +405,18 @@ void EntityDataManager::NotifyEntityInstancesChanged() {
 }
 
 void EntityDataManager::SetReauthAvailability(bool reauth_available) {
+  last_reauth_availability_check_ = base::TimeTicks::Now();
   if (reauth_availability_ == reauth_available) {
     return;
   }
   reauth_availability_ = reauth_available;
   EnforceEntityReauthRequirements();
+}
+
+bool EntityDataManager::ShouldUpdateReauthAvailability() const {
+  return last_reauth_availability_check_.is_null() ||
+         base::TimeTicks::Now() - last_reauth_availability_check_ >=
+             kReauthAvailabilityCacheDuration;
 }
 
 void EntityDataManager::EnforceEntityReauthRequirements() {
