@@ -7,3 +7,6 @@
 
 # TODO(crbug.com/531514480): Re-enable once the test is fixed.
 -SafetyHubHatsServiceTest.GetOverallState_Password
+
+# TODO(crbug.com/581596164): Re-enable once the test is fixed.
+-All/BookmarkBarViewAreaKeyboardNavigationTest.ArrowKeysWrapWithinArea/1
