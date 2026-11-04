@@ -183,6 +183,8 @@ IN_PROC_BROWSER_TEST_P(TabStripViewBrowserTest,
 
   histogram_tester.ExpectTotalCount("TabStrip.Vertical.TimeToSwitch",
                                     is_horizontal() ? 0 : 1);
+  histogram_tester.ExpectTotalCount("TabStrip.TimeToSwitch",
+                                    is_horizontal() ? 1 : 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
