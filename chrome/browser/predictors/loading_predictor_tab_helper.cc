@@ -10,6 +10,7 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
@@ -36,7 +37,9 @@
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -71,6 +74,33 @@ void GetInitiatorIds(content::NavigationHandle* navigation_handle,
       frame_id = initiator_rfh->GetGlobalId();
     }
   }
+}
+
+// Returns true if `navigation_handle` is a session history navigation whose
+// initiator has an enforced or report-only Connection-Allowlist. The URL of a
+// history navigation comes from the session history entry rather than from the
+// initiator, so speculative requests made on its behalf must not be checked
+// against (and reported to) the initiator's Connection-Allowlist, as that would
+// disclose the history entry's URL and its predicted subresources to the
+// initiator's reporting endpoint.
+bool IsHistoryNavigationFromConnectionAllowlistInitiator(
+    content::NavigationHandle* navigation_handle) {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) ||
+      !navigation_handle->IsHistory() ||
+      !navigation_handle->GetInitiatorFrameToken().has_value()) {
+    return false;
+  }
+  content::RenderFrameHost* initiator_rfh =
+      content::RenderFrameHost::FromFrameToken(
+          content::GlobalRenderFrameHostToken(
+              navigation_handle->GetInitiatorProcessId(),
+              *navigation_handle->GetInitiatorFrameToken()));
+  if (!initiator_rfh || !initiator_rfh->HasPolicyContainerHost()) {
+    return false;
+  }
+  const network::ConnectionAllowlists& allowlists =
+      initiator_rfh->GetConnectionAllowlists();
+  return allowlists.enforced.has_value() || allowlists.report_only.has_value();
 }
 
 // Called only for subresources.
@@ -386,6 +416,13 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   // destination host would leak (e.g. via its DNS resolution) even though the
   // navigation is blocked. See https://github.com/WICG/connection-allowlists.
   if (navigation_handle->IsBlockedByConnectionAllowlist()) {
+    return;
+  }
+
+  // Likewise skip history navigations initiated by a document with a
+  // Connection-Allowlist, so that the speculative requests made for them don't
+  // queue reports to the initiator that reveal the session history entry.
+  if (IsHistoryNavigationFromConnectionAllowlistInitiator(navigation_handle)) {
     return;
   }
 

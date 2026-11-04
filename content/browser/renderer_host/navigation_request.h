@@ -2255,9 +2255,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // Checks whether this navigation is allowed based on the connection
   // allowlist header, if present. Side effect:
-  // - If a CA is configured to send reports and the request violates the CA,
-  //   a report will be sent.
-  bool IsAllowedByConnectionAllowlist(bool is_redirect);
+  // - If `should_report` is true, the navigation is not a history navigation,
+  //   and a CA is configured to send reports, a report will be sent when the
+  //   request violates the CA.
+  bool IsAllowedByConnectionAllowlist(bool is_redirect, bool should_report);
 
   // Checks if the specified CSP context's relevant CSP directive
   // allows the navigation. This is called to perform the frame-src check.
