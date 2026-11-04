@@ -421,7 +421,8 @@ LeastSquaresVelocityTrackerStrategy::LeastSquaresVelocityTrackerStrategy(
     : degree_(degree),
       weighting_(weighting),
       restriction_(restriction) {
-  DCHECK_LT(degree_, static_cast<uint32_t>(Estimator::kMaxDegree));
+  CHECK_LT(degree_, static_cast<uint32_t>(Estimator::kMaxDegree),
+           base::NotFatalUntil::M163);
   Clear();
 }
 
@@ -495,8 +496,8 @@ static bool SolveLeastSquares(base::span<const float> x,
   constexpr uint32_t M_ARRAY_LENGTH =
       LeastSquaresVelocityTrackerStrategy::kHistorySize;
   constexpr uint32_t N_ARRAY_LENGTH = Estimator::kMaxDegree;
-  DCHECK_LE(m, M_ARRAY_LENGTH);
-  DCHECK_LE(n, N_ARRAY_LENGTH);
+  CHECK_LE(m, M_ARRAY_LENGTH, base::NotFatalUntil::M163);
+  CHECK_LE(n, N_ARRAY_LENGTH, base::NotFatalUntil::M163);
 
   // Expand the X vector to a matrix A, pre-multiplied by the weights.
   std::array<std::array<float, M_ARRAY_LENGTH>, N_ARRAY_LENGTH>
@@ -638,7 +639,7 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
     if (SolveLeastSquares(time, x, w, m, n, out_estimator->xcoeff, &xdet) &&
         SolveLeastSquares(time, y, w, m, n, out_estimator->ycoeff, &ydet)) {
       if (restriction_ == RESTRICTION_ALIGNED_DIRECTIONS) {
-        DCHECK(first_movement);
+        CHECK(first_movement, base::NotFatalUntil::M163);
         float dx = newest_movement.GetPosition(id).x -
                    first_movement->GetPosition(id).x;
         float dy = newest_movement.GetPosition(id).y -
@@ -739,7 +740,8 @@ float LeastSquaresVelocityTrackerStrategy::ChooseWeight(uint32_t index) const {
 IntegratingVelocityTrackerStrategy::IntegratingVelocityTrackerStrategy(
     uint32_t degree)
     : degree_(degree) {
-  DCHECK_LT(degree_, static_cast<uint32_t>(Estimator::kMaxDegree));
+  CHECK_LT(degree_, static_cast<uint32_t>(Estimator::kMaxDegree),
+           base::NotFatalUntil::M163);
 }
 
 IntegratingVelocityTrackerStrategy::~IntegratingVelocityTrackerStrategy() {}

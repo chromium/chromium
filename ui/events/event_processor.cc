@@ -19,7 +19,7 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
   // dispatched, then dispatch a copy of the event instead. We expect event
   // target to be already set if event phase is after EP_PREDISPATCH.
   bool dispatch_original_event = event->phase() == EP_PREDISPATCH;
-  DCHECK(dispatch_original_event || event->target());
+  CHECK(dispatch_original_event || event->target(), base::NotFatalUntil::M163);
   Event* event_to_dispatch = event;
   std::unique_ptr<Event> event_copy;
   if (!dispatch_original_event) {
@@ -32,7 +32,7 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
   EventTarget* target = nullptr;
   if (!event_to_dispatch->handled()) {
     EventTarget* root = GetRootForEvent(event_to_dispatch);
-    DCHECK(root);
+    CHECK(root, base::NotFatalUntil::M163);
     EventTargeter* targeter = root->GetEventTargeter();
     base::WeakPtr<EventTargeter> weak_targeter;
     if (targeter) {
@@ -46,7 +46,7 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
       else
         target = targeter->FindTargetForEvent(root, event_to_dispatch);
     }
-    DCHECK(targeter);
+    CHECK(targeter, base::NotFatalUntil::M163);
     // FindTargetForEvent may dispatch event, which may delete the event
     // processor or targeter.
     // TODO(crbug.com/40232309): Remove these returns and change this to DCHECK.
@@ -100,7 +100,7 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
           break;
         }
 
-        DCHECK(targeter);
+        CHECK(targeter, base::NotFatalUntil::M163);
         target = targeter->FindNextBestTarget(target, event_to_dispatch);
       }
     }

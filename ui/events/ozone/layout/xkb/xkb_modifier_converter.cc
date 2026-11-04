@@ -53,7 +53,7 @@ XkbModifierConverter XkbModifierConverter::CreateFromKeymap(
   names.reserve(num_mods);
   for (xkb_mod_index_t i = 0; i < num_mods; ++i) {
     const char* name = xkb_keymap_mod_get_name(keymap, i);
-    DCHECK(name);
+    CHECK(name, base::NotFatalUntil::M163);
     names.push_back(name);
   }
   return XkbModifierConverter(names);

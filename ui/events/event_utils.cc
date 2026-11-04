@@ -235,7 +235,7 @@ void ConvertEventLocationToTargetWindowLocation(
   if (current_window_origin == target_window_origin)
     return;
 
-  DCHECK(located_event);
+  CHECK(located_event, base::NotFatalUntil::M163);
   gfx::Vector2d offset = current_window_origin - target_window_origin;
   gfx::PointF location_in_pixel_in_host =
       located_event->location_f() + gfx::Vector2dF(offset);

@@ -46,7 +46,7 @@ MicrophoneMuteSwitchEventConverterEvdev::
                           devinfo.version()),
       input_device_fd_(std::move(fd)),
       dispatcher_(dispatcher) {
-  DCHECK(devinfo.IsMicrophoneMuteSwitchDevice());
+  CHECK(devinfo.IsMicrophoneMuteSwitchDevice(), base::NotFatalUntil::M163);
 }
 
 MicrophoneMuteSwitchEventConverterEvdev::

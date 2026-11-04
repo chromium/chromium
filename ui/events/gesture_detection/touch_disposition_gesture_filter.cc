@@ -141,8 +141,8 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
 }
 
 int GetGestureTypeIndex(EventType type) {
-  DCHECK_GE(type, EventType::kGestureTypeStart);
-  DCHECK_LE(type, EventType::kGestureTypeEnd);
+  CHECK_GE(type, EventType::kGestureTypeStart, base::NotFatalUntil::M163);
+  CHECK_LE(type, EventType::kGestureTypeEnd, base::NotFatalUntil::M163);
   return std::to_underlying(type) -
          std::to_underlying(EventType::kGestureTypeStart);
 }
@@ -175,7 +175,7 @@ TouchDispositionGestureFilter::TouchDispositionGestureFilter(
       needs_show_press_event_(false),
       needs_fling_ending_event_(false),
       needs_scroll_ending_event_(false) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M163);
   if (base::FeatureList::IsEnabled(
           features::kCompensateGestureScrollUpdateLatency)) {
     scroll_update_compensator_.emplace(
@@ -224,14 +224,16 @@ TouchDispositionGestureFilter::OnGesturePacket(
   // |TOUCH_TIMEOUT| packets don't wait for an ack, they are dispatched
   // as soon as they reach the head of the queue, in |SendAckedEvents|.
   if (!Tail().empty()) {
-    DCHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT)
-            || (packet.unique_touch_event_id() !=
-                    Tail().back().unique_touch_event_id()));
+    CHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT) ||
+              (packet.unique_touch_event_id() !=
+               Tail().back().unique_touch_event_id()),
+          base::NotFatalUntil::M163);
   }
   if (!Head().empty()) {
-    DCHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT) ||
-           packet.unique_touch_event_id() !=
-               Head().front().unique_touch_event_id());
+    CHECK((packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT) ||
+              packet.unique_touch_event_id() !=
+                  Head().front().unique_touch_event_id(),
+          base::NotFatalUntil::M163);
   }
 
   Tail().push(packet);
@@ -261,8 +263,9 @@ void TouchDispositionGestureFilter::OnTouchEventAck(
     if (sequences_.size() == 1 && Tail().size() == 1)
       SendAckedEvents(event_latency_metadata);
   } else {
-    DCHECK(!Head().empty());
-    DCHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id);
+    CHECK(!Head().empty(), base::NotFatalUntil::M163);
+    CHECK_EQ(Head().front().unique_touch_event_id(), unique_touch_event_id,
+             base::NotFatalUntil::M163);
     Head().front().Ack(event_consumed, is_source_touch_event_set_blocking);
     SendAckedEvents(event_latency_metadata);
   }
@@ -278,10 +281,10 @@ void TouchDispositionGestureFilter::SendAckedEvents(
       PopGestureSequence();
     GestureSequence& sequence = Head();
 
-    DCHECK_NE(sequence.front().gesture_source(),
-              GestureEventDataPacket::UNDEFINED);
-    DCHECK_NE(sequence.front().gesture_source(),
-              GestureEventDataPacket::INVALID);
+    CHECK_NE(sequence.front().gesture_source(),
+             GestureEventDataPacket::UNDEFINED, base::NotFatalUntil::M163);
+    CHECK_NE(sequence.front().gesture_source(), GestureEventDataPacket::INVALID,
+             base::NotFatalUntil::M163);
 
     GestureEventDataPacket::GestureSource source =
         sequence.front().gesture_source();
@@ -318,7 +321,8 @@ void TouchDispositionGestureFilter::SendAckedEvents(
 
     FilterAndSendPacket(packet);
   }
-  DCHECK(touch_packet_for_current_ack_handled || !client_);
+  CHECK(touch_packet_for_current_ack_handled || !client_,
+        base::NotFatalUntil::M163);
 }
 
 bool TouchDispositionGestureFilter::IsEmpty() const {
@@ -362,8 +366,10 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
 
   for (size_t i = 0; i < packet.gesture_count(); ++i) {
     const GestureEventData& gesture = packet.gesture(i);
-    DCHECK_GE(gesture.details.type(), EventType::kGestureTypeStart);
-    DCHECK_LE(gesture.details.type(), EventType::kGestureTypeEnd);
+    CHECK_GE(gesture.details.type(), EventType::kGestureTypeStart,
+             base::NotFatalUntil::M163);
+    CHECK_LE(gesture.details.type(), EventType::kGestureTypeEnd,
+             base::NotFatalUntil::M163);
     if (state_.Filter(gesture.details.type())) {
       CancelTapIfNecessary(packet);
 
@@ -388,7 +394,7 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
       SendGesture(gesture, packet);
       // We should not have a timeout gesture and other gestures in the same
       // packet.
-      DCHECK_EQ(1U, packet.gesture_count());
+      CHECK_EQ(1U, packet.gesture_count(), base::NotFatalUntil::M163);
       return;
     }
     if (gesture.type() == EventType::kGestureScrollUpdate &&
@@ -417,7 +423,7 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
     if (gesture.type() == EventType::kGestureEnd) {
       // Make sure there is at most one EventType::kGestureEnd event in each
       // packet.
-      DCHECK_EQ(-1, gesture_end_index);
+      CHECK_EQ(-1, gesture_end_index, base::NotFatalUntil::M163);
       gesture_end_index = static_cast<int>(i);
       continue;
     }
@@ -442,8 +448,9 @@ void TouchDispositionGestureFilter::SendGesture(
     const GestureEventData& event,
     const GestureEventDataPacket& packet_being_sent) {
   TRACE_EVENT("input", "TouchDispositionGestureFilter::SendGesture");
-  DCHECK(event.unique_touch_event_id ==
-         packet_being_sent.unique_touch_event_id());
+  CHECK(
+      event.unique_touch_event_id == packet_being_sent.unique_touch_event_id(),
+      base::NotFatalUntil::M163);
 
   // TODO(jdduke): Factor out gesture stream reparation code into a standalone
   // utility class.
@@ -455,7 +462,7 @@ void TouchDispositionGestureFilter::SendGesture(
       CancelFlingIfNecessary(packet_being_sent);
       break;
     case EventType::kGestureTapDown:
-      DCHECK(!needs_tap_ending_event_);
+      CHECK(!needs_tap_ending_event_, base::NotFatalUntil::M163);
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
       needs_show_press_event_ = true;
@@ -472,11 +479,11 @@ void TouchDispositionGestureFilter::SendGesture(
       needs_show_press_event_ = false;
       break;
     case EventType::kGestureTap:
-      DCHECK(needs_tap_ending_event_);
+      CHECK(needs_tap_ending_event_, base::NotFatalUntil::M163);
       if (needs_show_press_event_) {
         SendGesture(GestureEventData(EventType::kGestureShowPress, event),
                     packet_being_sent);
-        DCHECK(!needs_show_press_event_);
+        CHECK(!needs_show_press_event_, base::NotFatalUntil::M163);
       }
       needs_tap_ending_event_ = false;
       break;
@@ -535,7 +542,7 @@ void TouchDispositionGestureFilter::CancelTapIfNecessary(
       CreateGesture(EventType::kGestureTapCancel, ending_event_motion_event_id_,
                     ending_event_primary_tool_type_, packet_being_sent),
       packet_being_sent);
-  DCHECK(!needs_tap_ending_event_);
+  CHECK(!needs_tap_ending_event_, base::NotFatalUntil::M163);
 }
 
 void TouchDispositionGestureFilter::CancelFlingIfNecessary(
@@ -547,7 +554,7 @@ void TouchDispositionGestureFilter::CancelFlingIfNecessary(
                             ending_event_motion_event_id_,
                             ending_event_primary_tool_type_, packet_being_sent),
               packet_being_sent);
-  DCHECK(!needs_fling_ending_event_);
+  CHECK(!needs_fling_ending_event_, base::NotFatalUntil::M163);
 }
 
 void TouchDispositionGestureFilter::EndScrollIfNecessary(
@@ -566,24 +573,24 @@ void TouchDispositionGestureFilter::EndScrollIfNecessary(
   }
 
   SendGesture(gesture, packet_being_sent);
-  DCHECK(!needs_scroll_ending_event_);
+  CHECK(!needs_scroll_ending_event_, base::NotFatalUntil::M163);
 }
 
 void TouchDispositionGestureFilter::PopGestureSequence() {
-  DCHECK(Head().empty());
+  CHECK(Head().empty(), base::NotFatalUntil::M163);
   state_ = GestureHandlingState();
   sequences_.pop();
 }
 
 TouchDispositionGestureFilter::GestureSequence&
 TouchDispositionGestureFilter::Head() {
-  DCHECK(!sequences_.empty());
+  CHECK(!sequences_.empty(), base::NotFatalUntil::M163);
   return sequences_.front();
 }
 
 TouchDispositionGestureFilter::GestureSequence&
 TouchDispositionGestureFilter::Tail() {
-  DCHECK(!sequences_.empty());
+  CHECK(!sequences_.empty(), base::NotFatalUntil::M163);
   return sequences_.back();
 }
 

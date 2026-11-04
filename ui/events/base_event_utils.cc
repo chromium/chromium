@@ -37,7 +37,7 @@ uint32_t GetNextTouchEventId() {
   uint32_t id = g_next_event_id.GetNext();
   if (id == 0)
     id = g_next_event_id.GetNext();
-  DCHECK_NE(0U, id);
+  CHECK_NE(0U, id, base::NotFatalUntil::M163);
   return id;
 }
 

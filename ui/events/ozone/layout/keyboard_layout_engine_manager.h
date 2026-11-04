@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) KeyboardLayoutEngineManager {
     // Must run in a context with a KeyboardLayoutEngine.
     // Hint: Tests can use ui::ScopedKeyboardLayout to create one.
     // (production code should instead call InitializeForUI).
-    DCHECK(keyboard_layout_engine_);
+    CHECK(keyboard_layout_engine_, base::NotFatalUntil::M163);
     return keyboard_layout_engine_;
   }
 

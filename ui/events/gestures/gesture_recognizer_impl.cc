@@ -175,8 +175,8 @@ void GestureRecognizerImpl::TransferEventsTo(
   //   |current_consumer| to |new_consumer|.
   // NOTE: This currently doesn't synthesize touch press events on
   // |new_consumer|, so the event stream it sees is still invalid.
-  DCHECK(current_consumer);
-  DCHECK(new_consumer);
+  CHECK(current_consumer, base::NotFatalUntil::M163);
+  CHECK(new_consumer, base::NotFatalUntil::M163);
   // The new consumer can be deleted while canceling active touches.
   // See ash_unittests DragDropControllerTest.TabletSplitViewDragTwoBrowserTabs
   // for an example where this happens.

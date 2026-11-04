@@ -64,7 +64,7 @@ ScaleGestureDetector::ScaleGestureDetector(const Config& config,
       anchored_scale_start_y_(0),
       anchored_scale_mode_(ANCHORED_SCALE_MODE_NONE),
       event_before_or_above_starting_gesture_event_(false) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M163);
 
   span_slop_ = config.span_slop;
   min_span_ = config.min_scaling_span;
@@ -362,8 +362,9 @@ float ScaleGestureDetector::CalculateAngle(const MotionEvent& event,
                                            int action_index,
                                            float focus_x,
                                            float focus_y) const {
-  DCHECK_GE(action_index, 0);
-  DCHECK_LT(action_index, static_cast<int>(event.GetPointerCount()));
+  CHECK_GE(action_index, 0, base::NotFatalUntil::M163);
+  CHECK_LT(action_index, static_cast<int>(event.GetPointerCount()),
+           base::NotFatalUntil::M163);
   const float delta_x = event.GetX(action_index) - focus_x;
   const float delta_y = event.GetY(action_index) - focus_y;
   if (delta_x != 0.f && delta_y != 0.f) {

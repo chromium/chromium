@@ -537,7 +537,8 @@ void DeviceDataManagerX11::GetScrollOffsets(const x11::Event& xev,
 void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
                                                  double* x_offset,
                                                  double* y_offset) {
-  DCHECK_NE(SCROLL_TYPE_NO_SCROLL, GetScrollClassDeviceDetail(x11_event));
+  CHECK_NE(SCROLL_TYPE_NO_SCROLL, GetScrollClassDeviceDetail(x11_event),
+           base::NotFatalUntil::M163);
 
   *x_offset = 0;
   *y_offset = 0;
@@ -678,7 +679,7 @@ bool DeviceDataManagerX11::NormalizeData(x11::Input::DeviceId deviceid,
   double min_value;
   if (GetDataRange(deviceid, type, &min_value, &max_value)) {
     *value = (*value - min_value) / (max_value - min_value);
-    DCHECK(*value >= 0.0 && *value <= 1.0);
+    CHECK(*value >= 0.0 && *value <= 1.0, base::NotFatalUntil::M163);
     return true;
   }
   return false;
@@ -825,7 +826,8 @@ double DeviceDataManagerX11::ExtractAndUpdateScrollOffset(
 
 void DeviceDataManagerX11::SetDisabledKeyboardAllowedKeys(
     std::unique_ptr<std::set<KeyboardCode>> excepted_keys) {
-  DCHECK(!excepted_keys.get() || !blocked_keyboard_allowed_keys_.get());
+  CHECK(!excepted_keys.get() || !blocked_keyboard_allowed_keys_.get(),
+        base::NotFatalUntil::M163);
   blocked_keyboard_allowed_keys_ = std::move(excepted_keys);
 }
 

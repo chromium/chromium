@@ -52,7 +52,8 @@ class GestureDetector::TimeoutGestureHandler {
  public:
   TimeoutGestureHandler(const Config& config, GestureDetector* gesture_detector)
       : gesture_detector_(gesture_detector) {
-    DCHECK(config.shortpress_timeout <= config.longpress_timeout);
+    CHECK(config.shortpress_timeout <= config.longpress_timeout,
+          base::NotFatalUntil::M163);
 
     timeout_callbacks_[SHOW_PRESS] = &GestureDetector::OnShowPressTimeout;
     timeout_delays_[SHOW_PRESS] = config.showpress_timeout;
@@ -158,7 +159,7 @@ GestureDetector::GestureDetector(
       listener_(listener),
       double_tap_listener_(optional_double_tap_listener),
       velocity_tracker_(config.velocity_tracker_strategy) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M163);
   Init(config);
 }
 
@@ -288,7 +289,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
           handled |= double_tap_listener_->OnDoubleTapEvent(ev);
         } else {
           // This is a first tap.
-          DCHECK(double_tap_timeout_.is_positive());
+          CHECK(double_tap_timeout_.is_positive(), base::NotFatalUntil::M163);
           timeout_handler_->AddTimeoutToStart(TAP);
         }
       } else {
@@ -330,7 +331,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
       const float scroll_y = last_focus_y_ - focus_y;
       if (is_double_tapping_) {
         // Give the move events of the double-tap.
-        DCHECK(double_tap_listener_);
+        CHECK(double_tap_listener_, base::NotFatalUntil::M163);
         handled |= double_tap_listener_->OnDoubleTapEvent(ev);
       } else if (all_pointers_within_slop_regions_) {
         if (!IsWithinSlopForTap(ev)) {
@@ -402,7 +403,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
       {
         if (is_double_tapping_ && should_process_double_tap) {
           // Finally, give the up event of the double-tap.
-          DCHECK(double_tap_listener_);
+          CHECK(double_tap_listener_, base::NotFatalUntil::M163);
           handled |= double_tap_listener_->OnDoubleTapEvent(ev);
         } else if (all_pointers_within_slop_regions_ &&
                    maximum_pointer_count_ == 1) {
@@ -461,7 +462,7 @@ void GestureDetector::SetDoubleTapListener(
   if (double_tap_listener == double_tap_listener_)
     return;
 
-  DCHECK(!is_double_tapping_);
+  CHECK(!is_double_tapping_, base::NotFatalUntil::M163);
 
   // Null'ing the double-tap listener should flush an active tap timeout.
   if (!double_tap_listener) {
@@ -475,7 +476,7 @@ void GestureDetector::SetDoubleTapListener(
 }
 
 void GestureDetector::Init(const Config& config) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M163);
 
   // Using a small epsilon when comparing slop distances allows pixel
   // perfect slop determination when using fractional DIP coordinates
@@ -493,14 +494,14 @@ void GestureDetector::Init(const Config& config) {
   double_tap_slop_square_ = double_tap_slop * double_tap_slop;
   double_tap_timeout_ = config.double_tap_timeout;
   double_tap_min_time_ = config.double_tap_min_time;
-  DCHECK(double_tap_min_time_ < double_tap_timeout_);
+  CHECK(double_tap_min_time_ < double_tap_timeout_, base::NotFatalUntil::M163);
   min_fling_velocity_ = config.minimum_fling_velocity;
   max_fling_velocity_ = config.maximum_fling_velocity;
 
   swipe_enabled_ = config.swipe_enabled;
   min_swipe_velocity_ = config.minimum_swipe_velocity;
-  DCHECK_GT(config.maximum_swipe_deviation_angle, 0);
-  DCHECK_LE(config.maximum_swipe_deviation_angle, 45);
+  CHECK_GT(config.maximum_swipe_deviation_angle, 0, base::NotFatalUntil::M163);
+  CHECK_LE(config.maximum_swipe_deviation_angle, 45, base::NotFatalUntil::M163);
   const float maximum_swipe_deviation_angle =
       std::clamp(config.maximum_swipe_deviation_angle, 0.001f, 45.0f);
   min_swipe_direction_component_ratio_ =
@@ -511,7 +512,7 @@ void GestureDetector::Init(const Config& config) {
                                     config.two_finger_tap_max_separation;
   two_finger_tap_timeout_ = config.two_finger_tap_timeout;
 
-  DCHECK_GE(config.single_tap_repeat_interval, 1);
+  CHECK_GE(config.single_tap_repeat_interval, 1, base::NotFatalUntil::M163);
   single_tap_repeat_interval_ = config.single_tap_repeat_interval;
   stylus_button_accelerated_longpress_enabled_ =
       config.stylus_button_accelerated_longpress_enabled;
@@ -647,7 +648,7 @@ bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) const {
 
     int source_index =
         source_pointer_down_event->FindPointerIndexOfId(pointer_id);
-    DCHECK_GE(source_index, 0);
+    CHECK_GE(source_index, 0, base::NotFatalUntil::M163);
     if (source_index < 0)
       return false;
 

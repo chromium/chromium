@@ -19,8 +19,8 @@ ScopedKeyboardLayoutEngine::ScopedKeyboardLayoutEngine(
 }
 
 ScopedKeyboardLayoutEngine::~ScopedKeyboardLayoutEngine() {
-  DCHECK_EQ(KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
-            keyboard_layout_engine_.get());
+  CHECK_EQ(KeyboardLayoutEngineManager::GetKeyboardLayoutEngine(),
+           keyboard_layout_engine_.get(), base::NotFatalUntil::M163);
   KeyboardLayoutEngineManager::ResetKeyboardLayoutEngine();
 }
 

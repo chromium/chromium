@@ -41,7 +41,7 @@ bool InputDeviceEquals(const ui::InputDevice& a, const ui::InputDevice& b) {
 DeviceDataManager* DeviceDataManager::instance_ = nullptr;
 
 DeviceDataManager::DeviceDataManager() {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = this;
 }
 
@@ -93,7 +93,7 @@ void DeviceDataManager::ClearTouchDeviceAssociations() {
 
 void DeviceDataManager::UpdateTouchInfoFromTransform(
     const ui::TouchDeviceTransform& touch_device_transform) {
-  DCHECK_GE(touch_device_transform.device_id, 0);
+  CHECK_GE(touch_device_transform.device_id, 0, base::NotFatalUntil::M163);
 
   touch_map_[touch_device_transform.device_id] = touch_device_transform;
   for (TouchscreenDevice& touchscreen_device : touchscreen_devices_) {

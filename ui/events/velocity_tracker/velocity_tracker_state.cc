@@ -31,7 +31,7 @@ void VelocityTrackerState::AddMovement(const MotionEvent& event) {
 
 void VelocityTrackerState::ComputeCurrentVelocity(int32_t units,
                                                   float max_velocity) {
-  DCHECK_GE(max_velocity, 0);
+  CHECK_GE(max_velocity, 0, base::NotFatalUntil::M163);
 
   BitSet32 id_bits(velocity_tracker_.GetCurrentPointerIdBits());
   calculated_id_bits_ = id_bits;
@@ -76,7 +76,7 @@ float VelocityTrackerState::GetYVelocity(int32_t id) const {
 void VelocityTrackerState::GetVelocity(int32_t id,
                                        float* out_vx,
                                        float* out_vy) const {
-  DCHECK(out_vx || out_vy);
+  CHECK(out_vx || out_vy, base::NotFatalUntil::M163);
   if (id == ACTIVE_POINTER_ID)
     id = velocity_tracker_.GetActivePointerId();
 

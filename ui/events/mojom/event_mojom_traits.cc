@@ -397,7 +397,7 @@ StructTraits<ui::mojom::EventDataView, EventUniquePtr>::properties(
 bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
     ui::mojom::EventDataView event,
     EventUniquePtr* out) {
-  DCHECK(!out->get());
+  CHECK(!out->get(), base::NotFatalUntil::M163);
 
   base::TimeTicks time_stamp;
   if (!event.ReadTimeStamp(&time_stamp))

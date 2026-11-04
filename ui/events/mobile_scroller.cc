@@ -205,8 +205,8 @@ MobileScroller::~MobileScroller() {}
 bool MobileScroller::ComputeScrollOffset(base::TimeTicks time,
                                          gfx::Vector2dF* offset,
                                          gfx::Vector2dF* velocity) {
-  DCHECK(offset);
-  DCHECK(velocity);
+  CHECK(offset, base::NotFatalUntil::M163);
+  CHECK(velocity, base::NotFatalUntil::M163);
   if (!ComputeScrollOffsetInternal(time)) {
     *offset = gfx::Vector2dF(GetFinalX(), GetFinalY());
     *velocity = gfx::Vector2dF();
@@ -233,7 +233,7 @@ void MobileScroller::StartScroll(float start_x,
                                  float dy,
                                  base::TimeTicks start_time,
                                  base::TimeDelta duration) {
-  DCHECK_GT(duration, base::TimeDelta());
+  CHECK_GT(duration, base::TimeDelta(), base::NotFatalUntil::M163);
   mode_ = SCROLL_MODE;
   finished_ = false;
   duration_ = duration;
@@ -256,7 +256,7 @@ void MobileScroller::Fling(float start_x,
                            float min_y,
                            float max_y,
                            base::TimeTicks start_time) {
-  DCHECK(velocity_x || velocity_y);
+  CHECK(velocity_x || velocity_y, base::NotFatalUntil::M163);
 
   // Continue a scroll or fling in progress.
   if (flywheel_enabled_ && !finished_) {
@@ -276,7 +276,7 @@ void MobileScroller::Fling(float start_x,
 
   velocity_ = velocity;
   duration_ = GetSplineFlingDuration(velocity);
-  DCHECK_GT(duration_, base::TimeDelta());
+  CHECK_GT(duration_, base::TimeDelta(), base::NotFatalUntil::M163);
   duration_seconds_reciprocal_ = 1.0 / duration_.InSecondsF();
   start_time_ = start_time;
   curr_time_ = start_time_;

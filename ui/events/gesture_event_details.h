@@ -65,7 +65,7 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
 
   int touch_points() const { return touch_points_; }
   void set_touch_points(int touch_points) {
-    DCHECK_GT(touch_points, 0);
+    CHECK_GT(touch_points, 0, base::NotFatalUntil::M163);
     touch_points_ = touch_points;
   }
 
@@ -80,248 +80,250 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   void set_bounding_box(const gfx::RectF& box) { bounding_box_ = box; }
 
   float scroll_x_hint() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return scroll_begin_rails_mode() == GestureScrollRailsMode::kVertical
                ? 0.0f
                : data_.scroll_begin.x_hint;
   }
 
   float scroll_y_hint() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return scroll_begin_rails_mode() == GestureScrollRailsMode::kHorizontal
                ? 0.0f
                : data_.scroll_begin.y_hint;
   }
 
   float scroll_x_hint_unconstrained() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return data_.scroll_begin.x_hint;
   }
 
   float scroll_y_hint_unconstrained() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return data_.scroll_begin.y_hint;
   }
 
   ui::ScrollGranularity scroll_begin_units() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return data_.scroll_begin.delta_hint_units;
   }
 
   ui::GestureScrollRailsMode scroll_begin_rails_mode() const {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     return data_.scroll_begin.rails_mode;
   }
 
   void set_scroll_begin_rails_mode(ui::GestureScrollRailsMode rails_mode) {
-    DCHECK_EQ(EventType::kGestureScrollBegin, type_);
+    CHECK_EQ(EventType::kGestureScrollBegin, type_, base::NotFatalUntil::M163);
     data_.scroll_begin.rails_mode = rails_mode;
   }
 
   float scroll_x() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return scroll_update_rails_mode() == GestureScrollRailsMode::kVertical
                ? 0.0f
                : data_.scroll_update.x;
   }
 
   float scroll_y() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return scroll_update_rails_mode() == GestureScrollRailsMode::kHorizontal
                ? 0.0f
                : data_.scroll_update.y;
   }
 
   void set_scroll_x(float x) {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     data_.scroll_update.x = x;
   }
 
   void set_scroll_y(float y) {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     data_.scroll_update.y = y;
   }
 
   // TODO(crbug.com/535432422): Remove unconstrained deltas once
   // kApplyScrollRailingInRenderer is enabled by default.
   float scroll_x_unconstrained() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return data_.scroll_update.x_unconstrained;
   }
 
   float scroll_y_unconstrained() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return data_.scroll_update.y_unconstrained;
   }
 
   void set_scroll_x_unconstrained(float x) {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     data_.scroll_update.x_unconstrained = x;
   }
 
   void set_scroll_y_unconstrained(float y) {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     data_.scroll_update.y_unconstrained = y;
   }
 
   ui::GestureScrollRailsMode scroll_update_rails_mode() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return data_.scroll_update.rails_mode;
   }
 
   void set_scroll_update_rails_mode(ui::GestureScrollRailsMode rails_mode) {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     data_.scroll_update.rails_mode = rails_mode;
   }
 
   ui::ScrollGranularity scroll_update_units() const {
-    DCHECK_EQ(EventType::kGestureScrollUpdate, type_);
+    CHECK_EQ(EventType::kGestureScrollUpdate, type_, base::NotFatalUntil::M163);
     return data_.scroll_update.delta_units;
   }
 
   float scroll_x_compensated() const {
-    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    CHECK_EQ(EventType::kGestureScrollEnd, type_, base::NotFatalUntil::M163);
     return data_.scroll_end.x_compensated;
   }
 
   float scroll_y_compensated() const {
-    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    CHECK_EQ(EventType::kGestureScrollEnd, type_, base::NotFatalUntil::M163);
     return data_.scroll_end.y_compensated;
   }
 
   ui::ScrollGranularity scroll_end_units() const {
-    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    CHECK_EQ(EventType::kGestureScrollEnd, type_, base::NotFatalUntil::M163);
     return data_.scroll_end.delta_units;
   }
 
   float velocity_x() const {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     return fling_rails_mode() == GestureScrollRailsMode::kVertical
                ? 0.0f
                : data_.fling_velocity.x;
   }
 
   float velocity_y() const {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     return fling_rails_mode() == GestureScrollRailsMode::kHorizontal
                ? 0.0f
                : data_.fling_velocity.y;
   }
 
   float velocity_x_unconstrained() const {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     return data_.fling_velocity.x;
   }
 
   float velocity_y_unconstrained() const {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     return data_.fling_velocity.y;
   }
 
   ui::GestureScrollRailsMode fling_rails_mode() const {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     return data_.fling_velocity.rails_mode;
   }
 
   void set_fling_rails_mode(ui::GestureScrollRailsMode rails_mode) {
-    DCHECK_EQ(EventType::kScrollFlingStart, type_);
+    CHECK_EQ(EventType::kScrollFlingStart, type_, base::NotFatalUntil::M163);
     data_.fling_velocity.rails_mode = rails_mode;
   }
 
   float first_finger_width() const {
-    DCHECK_EQ(EventType::kGestureTwoFingerTap, type_);
+    CHECK_EQ(EventType::kGestureTwoFingerTap, type_, base::NotFatalUntil::M163);
     return data_.first_finger_enclosing_rectangle.width;
   }
 
   float first_finger_height() const {
-    DCHECK_EQ(EventType::kGestureTwoFingerTap, type_);
+    CHECK_EQ(EventType::kGestureTwoFingerTap, type_, base::NotFatalUntil::M163);
     return data_.first_finger_enclosing_rectangle.height;
   }
 
   float scale() const {
-    DCHECK_EQ(EventType::kGesturePinchUpdate, type_);
+    CHECK_EQ(EventType::kGesturePinchUpdate, type_, base::NotFatalUntil::M163);
     return data_.pinch_update.scale;
   }
 
   float pinch_angle() const {
-    DCHECK_EQ(EventType::kGesturePinchUpdate, type_);
+    CHECK_EQ(EventType::kGesturePinchUpdate, type_, base::NotFatalUntil::M163);
     return data_.pinch_update.angle;
   }
 
   bool swipe_left() const {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     return data_.swipe.left;
   }
 
   bool swipe_right() const {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     return data_.swipe.right;
   }
 
   bool swipe_up() const {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     return data_.swipe.up;
   }
 
   bool swipe_down() const {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     return data_.swipe.down;
   }
 
   void set_swipe_left(bool swipe) {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     data_.swipe.left = swipe;
   }
 
   void set_swipe_right(bool swipe) {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     data_.swipe.right = swipe;
   }
 
   void set_swipe_up(bool swipe) {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     data_.swipe.up = swipe;
   }
 
   void set_swipe_down(bool swipe) {
-    DCHECK_EQ(EventType::kGestureSwipe, type_);
+    CHECK_EQ(EventType::kGestureSwipe, type_, base::NotFatalUntil::M163);
     data_.swipe.down = swipe;
   }
 
   int tap_count() const {
-    DCHECK(type_ == EventType::kGestureTap ||
-           type_ == EventType::kGestureTapUnconfirmed ||
-           type_ == EventType::kGestureDoubleTap);
+    CHECK(type_ == EventType::kGestureTap ||
+              type_ == EventType::kGestureTapUnconfirmed ||
+              type_ == EventType::kGestureDoubleTap,
+          base::NotFatalUntil::M163);
     return data_.tap_count;
   }
 
   void set_tap_count(int tap_count) {
-    DCHECK_GE(tap_count, 0);
-    DCHECK(type_ == EventType::kGestureTap ||
-           type_ == EventType::kGestureTapUnconfirmed ||
-           type_ == EventType::kGestureDoubleTap);
+    CHECK_GE(tap_count, 0, base::NotFatalUntil::M163);
+    CHECK(type_ == EventType::kGestureTap ||
+              type_ == EventType::kGestureTapUnconfirmed ||
+              type_ == EventType::kGestureDoubleTap,
+          base::NotFatalUntil::M163);
     data_.tap_count = tap_count;
   }
 
   int tap_down_count() const {
-    DCHECK_EQ(EventType::kGestureTapDown, type_);
+    CHECK_EQ(EventType::kGestureTapDown, type_, base::NotFatalUntil::M163);
     return data_.tap_down_count;
   }
 
   void set_tap_down_count(int tap_down_count) {
-    DCHECK_GE(tap_down_count, 0);
-    DCHECK_EQ(EventType::kGestureTapDown, type_);
+    CHECK_GE(tap_down_count, 0, base::NotFatalUntil::M163);
+    CHECK_EQ(EventType::kGestureTapDown, type_, base::NotFatalUntil::M163);
     data_.tap_down_count = tap_down_count;
   }
 
   void set_scale(float scale) {
-    DCHECK_GE(scale, 0.0f);
-    DCHECK_EQ(type_, EventType::kGesturePinchUpdate);
+    CHECK_GE(scale, 0.0f, base::NotFatalUntil::M163);
+    CHECK_EQ(type_, EventType::kGesturePinchUpdate, base::NotFatalUntil::M163);
     data_.pinch_update.scale = scale;
   }
 
   void set_pinch_angle(float angle) {
-    DCHECK_EQ(type_, EventType::kGesturePinchUpdate);
+    CHECK_EQ(type_, EventType::kGesturePinchUpdate, base::NotFatalUntil::M163);
     data_.pinch_update.angle = angle;
   }
 

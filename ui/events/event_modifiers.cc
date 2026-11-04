@@ -37,7 +37,8 @@ EventModifiers::EventModifiers() = default;
 EventModifiers::~EventModifiers() = default;
 
 void EventModifiers::UpdateModifier(unsigned int modifier, bool down) {
-  DCHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS));
+  CHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS),
+           base::NotFatalUntil::M163);
 
   if (down) {
     modifiers_down_[modifier]++;
@@ -52,7 +53,8 @@ void EventModifiers::UpdateModifier(unsigned int modifier, bool down) {
 }
 
 void EventModifiers::UpdateModifierLock(unsigned int modifier, bool down) {
-  DCHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS));
+  CHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS),
+           base::NotFatalUntil::M163);
 
   if (down)
     modifier_flags_locked_ ^= kEventFlagFromModifiers[modifier];
@@ -61,7 +63,8 @@ void EventModifiers::UpdateModifierLock(unsigned int modifier, bool down) {
 }
 
 void EventModifiers::SetModifierLock(unsigned int modifier, bool locked) {
-  DCHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS));
+  CHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS),
+           base::NotFatalUntil::M163);
 
   if (locked)
     modifier_flags_locked_ |= kEventFlagFromModifiers[modifier];

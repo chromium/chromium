@@ -102,9 +102,9 @@ PhysicsBasedFlingCurve::PhysicsBasedFlingCurve(
       curve_duration_(CalculateDurationAndConfigureControlPoints(velocity)),
       bezier_(p1_.x(), p1_.y(), p2_.x(), p2_.y()),
       previous_time_delta_(base::TimeDelta()) {
-  DCHECK(!velocity.IsZero());
-  DCHECK(!std::isnan(velocity.x()));
-  DCHECK(!std::isnan(velocity.y()));
+  CHECK(!velocity.IsZero(), base::NotFatalUntil::M163);
+  CHECK(!std::isnan(velocity.x()), base::NotFatalUntil::M163);
+  CHECK(!std::isnan(velocity.y()), base::NotFatalUntil::M163);
 }
 
 PhysicsBasedFlingCurve::~PhysicsBasedFlingCurve() = default;
@@ -112,8 +112,8 @@ PhysicsBasedFlingCurve::~PhysicsBasedFlingCurve() = default;
 bool PhysicsBasedFlingCurve::ComputeScrollOffset(base::TimeTicks time,
                                                  gfx::Vector2dF* offset,
                                                  gfx::Vector2dF* velocity) {
-  DCHECK(offset);
-  DCHECK(velocity);
+  CHECK(offset, base::NotFatalUntil::M163);
+  CHECK(velocity, base::NotFatalUntil::M163);
 
   const base::TimeDelta elapsed_time = time - start_timestamp_;
   if (elapsed_time.is_negative()) {

@@ -11,7 +11,7 @@ bool StructTraits<
     ui::mojom::EventLatencyMetadataDataView,
     ui::EventLatencyMetadata>::Read(ui::mojom::EventLatencyMetadataDataView in,
                                     ui::EventLatencyMetadata* out) {
-  DCHECK(out != nullptr);
+  CHECK(out != nullptr, base::NotFatalUntil::M163);
 
   if (!in.ReadArrivedInBrowserMainTimestamp(
           &out->arrived_in_browser_main_timestamp) ||

@@ -156,7 +156,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     const MotionEvent::Action action = event.GetAction();
     if (action == MotionEvent::Action::DOWN) {
       current_down_action_event_time_ = event.GetEventTime();
-      DCHECK(gesture_provider_->current_down_event());
+      CHECK(gesture_provider_->current_down_event(), base::NotFatalUntil::M163);
       current_down_action_unique_touch_event_id_ =
           gesture_provider_->current_down_event()->GetUniqueEventId();
       current_longpress_time_ = base::TimeTicks();
@@ -198,30 +198,30 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   void UpdateStateForEventPost(GestureEventData gesture) {
     switch (gesture.type()) {
       case EventType::kGestureLongPress:
-        DCHECK(!IsScaleGestureDetectionInProgress());
+        CHECK(!IsScaleGestureDetectionInProgress(), base::NotFatalUntil::M163);
         current_longpress_time_ = gesture.time;
         break;
       case EventType::kGestureLongTap:
         current_longpress_time_ = base::TimeTicks();
         break;
       case EventType::kGestureScrollBegin:
-        DCHECK(!scroll_event_sent_);
+        CHECK(!scroll_event_sent_, base::NotFatalUntil::M163);
         scroll_event_sent_ = true;
         break;
       case EventType::kGestureScrollEnd:
-        DCHECK(scroll_event_sent_);
+        CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
         scroll_event_sent_ = false;
         break;
       case EventType::kScrollFlingStart:
-        DCHECK(scroll_event_sent_);
+        CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
         scroll_event_sent_ = false;
         break;
       case EventType::kGesturePinchBegin:
-        DCHECK(!pinch_event_sent_);
+        CHECK(!pinch_event_sent_, base::NotFatalUntil::M163);
         pinch_event_sent_ = true;
         break;
       case EventType::kGesturePinchEnd:
-        DCHECK(pinch_event_sent_);
+        CHECK(pinch_event_sent_, base::NotFatalUntil::M163);
         pinch_event_sent_ = false;
         break;
       case EventType::kGestureShowPress:
@@ -239,16 +239,17 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   // `should_update` indicates whether sending `gesture` should update the
   // internal states.
   void SendImpl(GestureEventData gesture, bool should_update) {
-    DCHECK(!gesture.time.is_null());
+    CHECK(!gesture.time.is_null(), base::NotFatalUntil::M163);
     // The only valid events that should be sent without an active touch
     // sequence are SHOW_PRESS, TAP and TAP_CANCEL, potentially triggered by
     // the double-tap delay timing out or being cancelled.
-    DCHECK(!current_down_action_event_time_.is_null() ||
-           gesture.type() == EventType::kGestureTap ||
-           gesture.type() == EventType::kGestureShowPress ||
-           gesture.type() == EventType::kGestureTapCancel ||
-           gesture.type() == EventType::kGestureBegin ||
-           gesture.type() == EventType::kGestureEnd);
+    CHECK(!current_down_action_event_time_.is_null() ||
+              gesture.type() == EventType::kGestureTap ||
+              gesture.type() == EventType::kGestureShowPress ||
+              gesture.type() == EventType::kGestureTapCancel ||
+              gesture.type() == EventType::kGestureBegin ||
+              gesture.type() == EventType::kGestureEnd,
+          base::NotFatalUntil::M163);
 
     if (gesture.primary_tool_type == MotionEvent::ToolType::UNKNOWN ||
         gesture.primary_tool_type == MotionEvent::ToolType::FINGER) {
@@ -260,13 +261,13 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     // Sending one gesture event may trigger propagation of another.
     switch (gesture.type()) {
       case EventType::kGestureScrollEnd:
-        DCHECK(scroll_event_sent_);
+        CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
         if (pinch_event_sent_)
           SendImpl(GestureEventData(EventType::kGesturePinchEnd, gesture),
                    should_update);
         break;
       case EventType::kGesturePinchBegin:
-        DCHECK(!pinch_event_sent_);
+        CHECK(!pinch_event_sent_, base::NotFatalUntil::M163);
         if (!scroll_event_sent_ &&
             !scale_gesture_detector_.InAnchoredScaleMode()) {
           SendImpl(GestureEventData(EventType::kGestureScrollBegin, gesture),
@@ -395,7 +396,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
   // GestureListener implementation.
   bool OnDown(const MotionEvent& e, int tap_down_count) override {
-    DCHECK_GE(tap_down_count, 0);
+    CHECK_GE(tap_down_count, 0, base::NotFatalUntil::M163);
     GestureEventDetails tap_details =
         CreateTouchGestureDetails(EventType::kGestureTapDown);
     tap_details.set_tap_down_count(tap_down_count);
@@ -458,7 +459,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
                          e1.GetRawY(), e2.GetPointerCount(),
                          GetBoundingBox(e2, scroll_details.type()),
                          e2.GetFlags()));
-      DCHECK(scroll_event_sent_);
+      CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
     }
     scroll_focus_point_.SetPoint(scroll_focus_point_.x() - raw_distance_x,
                                  scroll_focus_point_.y() - raw_distance_y);
@@ -498,7 +499,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     if (!velocity_x && !velocity_y)
       return true;
 
-    DCHECK(scroll_event_sent_);
+    CHECK(scroll_event_sent_, base::NotFatalUntil::M163);
     if (!scroll_event_sent_) {
       // The native side needs a EventType::kGestureScrollBegin before
       // EventType::kScrollFlingStart to send the fling to the correct target.
@@ -623,14 +624,14 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   void OnShortPress(const MotionEvent& e) override {
-    DCHECK(!IsDoubleTapInProgress());
+    CHECK(!IsDoubleTapInProgress(), base::NotFatalUntil::M163);
     GestureEventDetails short_press_details =
         CreateTouchGestureDetails(EventType::kGestureShortPress);
     Send(CreateGesture(short_press_details, e));
   }
 
   void OnLongPress(const MotionEvent& e) override {
-    DCHECK(!IsDoubleTapInProgress());
+    CHECK(!IsDoubleTapInProgress(), base::NotFatalUntil::M163);
     SetIgnoreSingleTap(true);
     GestureEventDetails long_press_details =
         CreateTouchGestureDetails(EventType::kGestureLongPress);
@@ -693,7 +694,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   GestureEventData CreateTapGesture(EventType type,
                                     const MotionEvent& event,
                                     int tap_count) const {
-    DCHECK_GE(tap_count, 0);
+    CHECK_GE(tap_count, 0, base::NotFatalUntil::M163);
     GestureEventDetails details = CreateTouchGestureDetails(type);
     details.set_tap_count(tap_count);
     return CreateGesture(details, event);
@@ -713,7 +714,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       if (type == EventType::kGestureShowPress ||
           type == EventType::kGestureTap ||
           type == EventType::kGestureTapUnconfirmed) {
-        DCHECK_EQ(0U, i);
+        CHECK_EQ(0U, i, base::NotFatalUntil::M163);
         diameter = max_diameter_before_show_press_;
         x = tap_down_point_.x();
         y = tap_down_point_.y();
@@ -733,7 +734,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   void SetDoubleTapEnabled(bool enabled) {
-    DCHECK(!IsDoubleTapInProgress());
+    CHECK(!IsDoubleTapInProgress(), base::NotFatalUntil::M163);
     gesture_detector_.SetDoubleTapListener(enabled ? this : NULL);
   }
 
@@ -810,7 +811,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       const MotionEvent& secondary_pointer_down) {
     // If there are more than two down pointers, tapping is not possible,
     // so Slop region is not deducted.
-    DCHECK(ev2.GetPointerCount() < 3);
+    CHECK(ev2.GetPointerCount() < 3, base::NotFatalUntil::M163);
 
     gfx::Vector2dF delta(0, 0);
     for (size_t i = 0; i < ev2.GetPointerCount(); i++) {
@@ -823,7 +824,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         continue;
       int source_index =
           source_pointer_down_event->FindPointerIndexOfId(pointer_id);
-      DCHECK_GE(source_index, 0);
+      CHECK_GE(source_index, 0, base::NotFatalUntil::M163);
       if (source_index < 0)
         continue;
       float dx = source_pointer_down_event->GetX(source_index) - ev2.GetX(i);
@@ -891,10 +892,11 @@ GestureProvider::GestureProvider(const Config& config,
       double_tap_support_for_platform_(
           config.double_tap_support_for_platform_enabled),
       gesture_begin_end_types_enabled_(config.gesture_begin_end_types_enabled) {
-  DCHECK(client);
-  DCHECK(!config.min_gesture_bounds_length ||
-         !config.max_gesture_bounds_length ||
-         config.min_gesture_bounds_length <= config.max_gesture_bounds_length);
+  CHECK(client, base::NotFatalUntil::M163);
+  CHECK(
+      !config.min_gesture_bounds_length || !config.max_gesture_bounds_length ||
+          config.min_gesture_bounds_length <= config.max_gesture_bounds_length,
+      base::NotFatalUntil::M163);
   TRACE_EVENT0("input", "GestureProvider::InitGestureDetectors");
   gesture_listener_ =
       std::make_unique<GestureListenerImpl>(config, client, this);
@@ -909,7 +911,7 @@ bool GestureProvider::OnTouchEvent(const MotionEvent& event) {
                "GestureProvider::OnTouchEvent",
                "action",
                GetMotionEventActionName(event.GetAction()));
-  DCHECK_NE(0u, event.GetPointerCount());
+  CHECK_NE(0u, event.GetPointerCount(), base::NotFatalUntil::M163);
 
   // We record the histograms before the |CanHandle()| call below because we
   // want to check the event stream before gesture processing takes place.  For

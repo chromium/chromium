@@ -67,8 +67,8 @@ void GestureProviderAura::OnTouchEventAck(
     uint32_t unique_touch_event_id,
     bool event_consumed,
     bool is_source_touch_event_set_blocking) {
-  DCHECK(pending_gestures_.empty());
-  DCHECK(!handling_event_);
+  CHECK(pending_gestures_.empty(), base::NotFatalUntil::M163);
+  CHECK(!handling_event_, base::NotFatalUntil::M163);
   handling_event_ = true;
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
   scoped_refptr<FilteredGestureProvider> gesture_provider(

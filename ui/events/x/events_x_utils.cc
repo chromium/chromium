@@ -167,9 +167,10 @@ int GetEventFlagsFromXState(uint32_t state) {
 
 int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   auto* xievent = x11_event.As<x11::Input::DeviceEvent>();
-  DCHECK(xievent);
-  DCHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
-         xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
+  CHECK(xievent, base::NotFatalUntil::M163);
+  CHECK(xievent->opcode == x11::Input::DeviceEvent::KeyPress ||
+            xievent->opcode == x11::Input::DeviceEvent::KeyRelease,
+        base::NotFatalUntil::M163);
   bool is_repeat =
       static_cast<bool>(xievent->flags & x11::Input::KeyEventFlags::KeyRepeat);
   uint32_t state = ui::GetXI2StateFromEvent(*xievent);
@@ -243,7 +244,8 @@ ui::EventType GetTouchEventType(const x11::Event& x11_event) {
     default:;
   }
 
-  DCHECK(ui::TouchFactory::GetInstance()->IsTouchDevice(event->sourceid));
+  CHECK(ui::TouchFactory::GetInstance()->IsTouchDevice(event->sourceid),
+        base::NotFatalUntil::M163);
   switch (event->opcode) {
     case x11::Input::DeviceEvent::ButtonPress:
       return ui::EventType::kTouchPressed;
@@ -272,7 +274,7 @@ double GetParamFromXEvent(const x11::Event& xev,
 
 void ScaleTouchRadius(const x11::Event& x11_event, double* radius) {
   auto* xiev = x11_event.As<x11::Input::DeviceEvent>();
-  DCHECK(xiev);
+  CHECK(xiev, base::NotFatalUntil::M163);
   ui::DeviceDataManagerX11::GetInstance()->ApplyTouchRadiusScale(
       static_cast<uint16_t>(xiev->sourceid), radius);
 }
@@ -626,7 +628,7 @@ gfx::Point EventSystemLocationFromXEvent(const x11::Event& xev) {
 
 int EventButtonFromXEvent(const x11::Event& xev) {
   auto* xievent = xev.As<x11::Input::DeviceEvent>();
-  DCHECK(xievent);
+  CHECK(xievent, base::NotFatalUntil::M163);
   int button = xievent->detail;
 
   return (xievent->sourceid == xievent->deviceid)

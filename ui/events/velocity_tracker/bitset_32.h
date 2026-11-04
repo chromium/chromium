@@ -24,7 +24,7 @@ struct BitSet32 {
 
   // Gets the value associated with a particular bit index.
   static inline uint32_t value_for_bit(uint32_t n) {
-    DCHECK_LE(n, 31U);
+    CHECK_LE(n, 31U, base::NotFatalUntil::M163);
     return 0x80000000 >> n;
   }
 
@@ -92,7 +92,7 @@ struct BitSet32 {
   // Gets the index of the specified bit in the set, which is the number of
   // marked bits that appear before the specified bit.
   inline uint32_t get_index_of_bit(uint32_t n) const {
-    DCHECK_LE(n, 31U);
+    CHECK_LE(n, 31U, base::NotFatalUntil::M163);
     return popcnt(value & ~(0xffffffffUL >> n));
   }
 

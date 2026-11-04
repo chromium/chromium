@@ -88,7 +88,7 @@ uint8_t GetKeyboardImeFlags(const KeyEvent& event) {
   if (it == properties->end()) {
     return 0;
   }
-  DCHECK_EQ(1u, it->second.size());
+  CHECK_EQ(1u, it->second.size(), base::NotFatalUntil::M163);
   return it->second[0];
 }
 

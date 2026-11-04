@@ -39,7 +39,7 @@ void FilteredGestureProvider::UpdateConfig(
 
 FilteredGestureProvider::TouchHandlingResult
 FilteredGestureProvider::OnTouchEvent(const MotionEvent& event) {
-  DCHECK(!handling_event_);
+  CHECK(!handling_event_, base::NotFatalUntil::M163);
   base::AutoReset<bool> handling_event(&handling_event_, true);
 
   pending_gesture_packet_ = GestureEventDataPacket::FromTouch(event);

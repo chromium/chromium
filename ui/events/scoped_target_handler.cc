@@ -20,7 +20,7 @@ ScopedTargetHandler::ScopedTargetHandler(EventTarget* target,
 
 ScopedTargetHandler::~ScopedTargetHandler() {
   EventHandler* handler = target_->SetTargetHandler(original_handler_);
-  DCHECK_EQ(this, handler);
+  CHECK_EQ(this, handler, base::NotFatalUntil::M163);
 }
 
 void ScopedTargetHandler::OnEvent(Event* event) {

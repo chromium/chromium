@@ -64,7 +64,7 @@ void InputDeviceObserverWin::OnRegistryKeyChanged() {
 }
 
 bool InputDeviceObserverWin::IsSlateModeEnabled() {
-  DCHECK(registry_key_.Valid());
+  CHECK(registry_key_.Valid(), base::NotFatalUntil::M163);
   DWORD slate_enabled = 0;
   return registry_key_.ReadValueDW(L"ConvertibleSlateMode", &slate_enabled) ==
              ERROR_SUCCESS &&

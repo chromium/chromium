@@ -41,7 +41,7 @@ FlingCurve::FlingCurve(const gfx::Vector2dF& velocity,
       previous_timestamp_(start_timestamp_),
       time_offset_(0),
       position_offset_(0) {
-  DCHECK(!velocity.IsZero());
+  CHECK(!velocity.IsZero(), base::NotFatalUntil::M163);
   float max_start_velocity = std::max(fabs(velocity.x()), fabs(velocity.y()));
   if (max_start_velocity > GetVelocityAtTime(0))
     max_start_velocity = GetVelocityAtTime(0);
@@ -59,8 +59,8 @@ FlingCurve::~FlingCurve() {
 bool FlingCurve::ComputeScrollOffset(base::TimeTicks time,
                                      gfx::Vector2dF* offset,
                                      gfx::Vector2dF* velocity) {
-  DCHECK(offset);
-  DCHECK(velocity);
+  CHECK(offset, base::NotFatalUntil::M163);
+  CHECK(velocity, base::NotFatalUntil::M163);
   base::TimeDelta elapsed_time = time - start_timestamp_;
   if (elapsed_time.is_negative()) {
     *offset = gfx::Vector2dF();
@@ -88,7 +88,7 @@ bool FlingCurve::ComputeScrollOffset(base::TimeTicks time,
 
 bool FlingCurve::ComputeScrollDeltaAtTime(base::TimeTicks current,
                                           gfx::Vector2dF* delta) {
-  DCHECK(delta);
+  CHECK(delta, base::NotFatalUntil::M163);
   if (current <= previous_timestamp_) {
     *delta = gfx::Vector2dF();
     return true;

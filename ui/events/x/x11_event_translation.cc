@@ -129,14 +129,14 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
           GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
 #endif
 
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   event->SetProperties(GetEventPropertiesFromXEvent(event_type, x11_event));
   event->InitializeNative();
   return event;
 }
 
 void SetEventSourceDeviceId(MouseEvent* event, const x11::Event& xev) {
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   if (auto* xiev = xev.As<x11::Input::DeviceEvent>())
     event->set_source_device_id(static_cast<uint16_t>(xiev->sourceid));
 }
@@ -166,7 +166,7 @@ std::unique_ptr<MouseEvent> CreateMouseEvent(EventType type,
       EventFlagsFromXEvent(x11_event),
       GetChangedMouseButtonFlagsFromXEvent(x11_event), details);
 
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   SetEventSourceDeviceId(event.get(), x11_event);
   event->SetProperties(GetEventPropertiesFromXEvent(type, x11_event));
   event->InitializeNative();
@@ -184,7 +184,7 @@ std::unique_ptr<MouseWheelEvent> CreateMouseWheelEvent(
       EventSystemLocationFromXEvent(x11_event), EventTimeFromXEvent(x11_event),
       EventFlagsFromXEvent(x11_event), button_flags);
 
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   event->InitializeNative();
   return event;
 }
@@ -229,7 +229,7 @@ std::unique_ptr<ScrollEvent> CreateScrollEvent(EventType type,
       EventFlagsFromXEvent(xev), x_offset, y_offset, x_offset_ordinal,
       y_offset_ordinal, finger_count);
 
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   // We need to filter zero scroll offset here. Because MouseWheelEventQueue
   // assumes we'll never get a zero scroll offset event and we need delta to
   // determine which element to scroll on phaseBegan.

@@ -130,7 +130,7 @@ void MotionEventAura::CleanupRemovedTouchPoints(const TouchEvent& event) {
     return;
   }
 
-  DCHECK(GetPointerCount());
+  CHECK(GetPointerCount(), base::NotFatalUntil::M163);
   int index_to_delete = GetIndexFromId(event.pointer_details().id);
   set_action_index(-1);
   set_action(MotionEvent::Action::NONE);
@@ -139,7 +139,7 @@ void MotionEventAura::CleanupRemovedTouchPoints(const TouchEvent& event) {
 }
 
 int MotionEventAura::GetSourceDeviceId(size_t pointer_index) const {
-  DCHECK_LT(pointer_index, GetPointerCount());
+  CHECK_LT(pointer_index, GetPointerCount(), base::NotFatalUntil::M163);
   return pointer(pointer_index).source_device_id;
 }
 
@@ -157,7 +157,7 @@ void MotionEventAura::UpdateTouch(const TouchEvent& touch) {
 }
 
 void MotionEventAura::UpdateCachedAction(const TouchEvent& touch) {
-  DCHECK(GetPointerCount());
+  CHECK(GetPointerCount(), base::NotFatalUntil::M163);
   switch (touch.type()) {
     case EventType::kTouchPressed:
       if (GetPointerCount() == 1) {

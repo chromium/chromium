@@ -61,7 +61,7 @@ GestureEventDataPacket::GestureEventDataPacket(
       tool_type_(tool_type),
       ack_state_(AckState::PENDING),
       unique_touch_event_id_(unique_touch_event_id) {
-  DCHECK_NE(gesture_source_, UNDEFINED);
+  CHECK_NE(gesture_source_, UNDEFINED, base::NotFatalUntil::M163);
 }
 
 GestureEventDataPacket::GestureEventDataPacket(
@@ -92,7 +92,8 @@ GestureEventDataPacket& GestureEventDataPacket::operator=(
 }
 
 void GestureEventDataPacket::Push(const GestureEventData& original_gesture) {
-  DCHECK_NE(EventType::kUnknown, original_gesture.type());
+  CHECK_NE(EventType::kUnknown, original_gesture.type(),
+           base::NotFatalUntil::M163);
   GestureEventData gesture(original_gesture);
   gesture.unique_touch_event_id = unique_touch_event_id_;
   gestures_.push_back(gesture);
@@ -118,7 +119,8 @@ GestureEventDataPacket GestureEventDataPacket::FromTouchTimeout(
 
 void GestureEventDataPacket::Ack(bool event_consumed,
                                  bool is_source_touch_event_set_blocking) {
-  DCHECK_EQ(static_cast<int>(ack_state_), static_cast<int>(AckState::PENDING));
+  CHECK_EQ(static_cast<int>(ack_state_), static_cast<int>(AckState::PENDING),
+           base::NotFatalUntil::M163);
   ack_state_ = event_consumed ? AckState::CONSUMED : AckState::UNCONSUMED;
   for (auto& gesture : gestures_) {
     gesture.details.set_is_source_touch_event_set_blocking(

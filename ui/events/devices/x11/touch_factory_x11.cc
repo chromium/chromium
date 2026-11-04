@@ -264,7 +264,7 @@ bool TouchFactory::IsMultiTouchDevice(x11::Input::DeviceId deviceid) const {
 
 EventPointerType TouchFactory::GetTouchDevicePointerType(
     x11::Input::DeviceId deviceid) const {
-  DCHECK(IsTouchDevice(deviceid));
+  CHECK(IsTouchDevice(deviceid), base::NotFatalUntil::M163);
   return touch_device_list_.find(deviceid)->second.pointer_type;
 }
 

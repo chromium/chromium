@@ -54,8 +54,8 @@ GestureEventData::GestureEventData(const GestureEventDetails& details,
       raw_y(raw_y),
       flags(flags),
       unique_touch_event_id(unique_touch_event_id) {
-  DCHECK_GE(motion_event_id, 0);
-  DCHECK_NE(0U, touch_point_count);
+  CHECK_GE(motion_event_id, 0, base::NotFatalUntil::M163);
+  CHECK_NE(0U, touch_point_count, base::NotFatalUntil::M163);
   this->details.set_primary_pointer_type(ToEventPointerType(primary_tool_type));
   this->details.set_primary_unique_touch_event_id(
       details.primary_unique_touch_event_id());

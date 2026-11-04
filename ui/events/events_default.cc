@@ -33,23 +33,26 @@ EventType EventTypeFromNative(const PlatformEvent& native_event) {
 gfx::Point EventSystemLocationFromNative(const PlatformEvent& native_event) {
   const ui::LocatedEvent* e =
       static_cast<const ui::LocatedEvent*>(native_event);
-  DCHECK(e->IsMouseEvent() || e->IsTouchEvent() || e->IsGestureEvent() ||
-         e->IsScrollEvent());
+  CHECK(e->IsMouseEvent() || e->IsTouchEvent() || e->IsGestureEvent() ||
+            e->IsScrollEvent(),
+        base::NotFatalUntil::M163);
   return e->location();
 }
 
 gfx::PointF EventLocationFromNative(const PlatformEvent& native_event) {
   const ui::LocatedEvent* e =
       static_cast<const ui::LocatedEvent*>(native_event);
-  DCHECK(e->IsMouseEvent() || e->IsTouchEvent() || e->IsGestureEvent() ||
-         e->IsScrollEvent());
+  CHECK(e->IsMouseEvent() || e->IsTouchEvent() || e->IsGestureEvent() ||
+            e->IsScrollEvent(),
+        base::NotFatalUntil::M163);
   return e->location_f();
 }
 
 int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& native_event) {
   const ui::MouseEvent* event =
       static_cast<const ui::MouseEvent*>(native_event);
-  DCHECK(event->IsMouseEvent() || event->IsScrollEvent());
+  CHECK(event->IsMouseEvent() || event->IsScrollEvent(),
+        base::NotFatalUntil::M163);
   return event->changed_button_flags();
 }
 
@@ -57,7 +60,8 @@ PointerDetails GetMousePointerDetailsFromNative(
     const PlatformEvent& native_event) {
   const ui::MouseEvent* event =
       static_cast<const ui::MouseEvent*>(native_event);
-  DCHECK(event->IsMouseEvent() || event->IsScrollEvent());
+  CHECK(event->IsMouseEvent() || event->IsScrollEvent(),
+        base::NotFatalUntil::M163);
   PointerDetails pointer_detail = event->pointer_details();
   pointer_detail.id = kPointerIdMouse;
   return pointer_detail;
@@ -65,7 +69,8 @@ PointerDetails GetMousePointerDetailsFromNative(
 
 const gfx::Vector2dF& GetMouseMovementFromNative(
     const PlatformEvent& native_event) {
-  DCHECK(native_event->IsMouseEvent() || native_event->IsScrollEvent());
+  CHECK(native_event->IsMouseEvent() || native_event->IsScrollEvent(),
+        base::NotFatalUntil::M163);
   const ui::MouseEvent* event =
       static_cast<const ui::MouseEvent*>(native_event);
   return event->movement();
@@ -73,33 +78,33 @@ const gfx::Vector2dF& GetMouseMovementFromNative(
 
 KeyboardCode KeyboardCodeFromNative(const PlatformEvent& native_event) {
   const ui::KeyEvent* event = static_cast<const ui::KeyEvent*>(native_event);
-  DCHECK(event->IsKeyEvent());
+  CHECK(event->IsKeyEvent(), base::NotFatalUntil::M163);
   return event->key_code();
 }
 
 DomCode CodeFromNative(const PlatformEvent& native_event) {
   const ui::KeyEvent* event = static_cast<const ui::KeyEvent*>(native_event);
-  DCHECK(event->IsKeyEvent());
+  CHECK(event->IsKeyEvent(), base::NotFatalUntil::M163);
   return event->code();
 }
 
 bool IsCharFromNative(const PlatformEvent& native_event) {
   const ui::KeyEvent* event = static_cast<const ui::KeyEvent*>(native_event);
-  DCHECK(event->IsKeyEvent());
+  CHECK(event->IsKeyEvent(), base::NotFatalUntil::M163);
   return event->is_char();
 }
 
 gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& native_event) {
   const ui::MouseWheelEvent* event =
       static_cast<const ui::MouseWheelEvent*>(native_event);
-  DCHECK(event->type() == EventType::kMousewheel);
+  CHECK(event->type() == EventType::kMousewheel, base::NotFatalUntil::M163);
   return event->offset();
 }
 
 gfx::Vector2d GetMouseWheelTick120ths(const PlatformEvent& native_event) {
   const ui::MouseWheelEvent* event =
       static_cast<const ui::MouseWheelEvent*>(native_event);
-  DCHECK_EQ(event->type(), EventType::kMousewheel);
+  CHECK_EQ(event->type(), EventType::kMousewheel, base::NotFatalUntil::M163);
   return event->tick_120ths();
 }
 
@@ -119,7 +124,7 @@ PointerDetails GetTouchPointerDetailsFromNative(
     const PlatformEvent& native_event) {
   const ui::TouchEvent* event =
       static_cast<const ui::TouchEvent*>(native_event);
-  DCHECK(event->IsTouchEvent());
+  CHECK(event->IsTouchEvent(), base::NotFatalUntil::M163);
   return event->pointer_details();
 }
 
@@ -132,7 +137,7 @@ bool GetScrollOffsets(const PlatformEvent& native_event,
                       EventMomentumPhase* momentum_phase) {
   const ui::ScrollEvent* event =
       static_cast<const ui::ScrollEvent*>(native_event);
-  DCHECK(event->IsScrollEvent());
+  CHECK(event->IsScrollEvent(), base::NotFatalUntil::M163);
   if (x_offset)
     *x_offset = event->x_offset();
   if (y_offset)
@@ -157,7 +162,7 @@ bool GetFlingData(const PlatformEvent& native_event,
                   bool* is_cancel) {
   const ui::ScrollEvent* event =
       static_cast<const ui::ScrollEvent*>(native_event);
-  DCHECK(event->IsScrollEvent());
+  CHECK(event->IsScrollEvent(), base::NotFatalUntil::M163);
   if (vx)
     *vx = event->x_offset();
   if (vy)

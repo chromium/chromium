@@ -170,7 +170,7 @@ TouchEvent CreateTouchEventDraft(
   auto event_type = GetEventTypeFromTouchEventPhase(sample->phase().value());
 
   // TODO(crbug.com/40808970): Consider packing device_id field into PointerId.
-  DCHECK_LE(interaction->pointer_id(), 31U);
+  CHECK_LE(interaction->pointer_id(), 31U, base::NotFatalUntil::M163);
   PointerDetails pointer_details(EventPointerType::kTouch,
                                  interaction->pointer_id());
   // View parameters can change mid-interaction; apply transform on the fly.
@@ -433,9 +433,10 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
         // for each one.
         for (int button = EF_LEFT_MOUSE_BUTTON; button <= EF_RIGHT_MOUSE_BUTTON;
              button = button << 1) {
-          DCHECK(button == EF_LEFT_MOUSE_BUTTON ||
-                 button == EF_MIDDLE_MOUSE_BUTTON ||
-                 button == EF_RIGHT_MOUSE_BUTTON);
+          CHECK(button == EF_LEFT_MOUSE_BUTTON ||
+                    button == EF_MIDDLE_MOUSE_BUTTON ||
+                    button == EF_RIGHT_MOUSE_BUTTON,
+                base::NotFatalUntil::M163);
           bool prev_down = previous_buttons & button;
           bool curr_down = pressed_buttons & button;
 
