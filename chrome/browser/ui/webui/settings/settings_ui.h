@@ -46,6 +46,7 @@ class CustomizeColorSchemeModeHandler;
 
 namespace settings_search {
 class SettingsSearchHandler;
+class SettingsSearchRegistry;
 }  // namespace settings_search
 
 namespace settings {
@@ -199,6 +200,10 @@ class SettingsUI
       mojo::PendingReceiver<settings_search::mojom::SettingsSearchHandler>
           handler) override;
 
+  // Declared in this order so that the handler is destroyed before the
+  // registry it searches.
+  std::unique_ptr<settings_search::SettingsSearchRegistry>
+      settings_search_registry_;
   std::unique_ptr<settings_search::SettingsSearchHandler>
       settings_search_handler_;
   mojo::Receiver<settings_search::mojom::SettingsSearchHandlerFactory>

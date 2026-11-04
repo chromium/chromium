@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/search/settings_search_handler.h"
 
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/settings/search/mojom/setting_id.mojom.h"
 #include "chrome/browser/ui/webui/settings/search/mojom/settings_search.mojom.h"
 #include "chrome/browser/ui/webui/settings/search/settings_search_item.h"
+#include "chrome/browser/ui/webui/settings/search/settings_search_registry.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,8 +63,11 @@ std::vector<std::unique_ptr<SettingsSearchItem>> MakeAppearanceItems() {
 class SettingsSearchHandlerTest : public testing::Test {
  protected:
   void CreateHandler(std::vector<std::unique_ptr<SettingsSearchItem>> items) {
+    for (auto& item : items) {
+      registry_.AddItem(std::move(item));
+    }
     handler_ = std::make_unique<SettingsSearchHandler>(
-        remote_.BindNewPipeAndPassReceiver(), std::move(items));
+        remote_.BindNewPipeAndPassReceiver(), &registry_);
   }
 
   void CreateHandlerWithTitle(const std::u16string& title) {
@@ -80,12 +85,15 @@ class SettingsSearchHandlerTest : public testing::Test {
     return future.Take();
   }
 
+  SettingsSearchRegistry& registry() { return registry_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       {features::kWebuiRefresh2026, features::kSettingsRefresh2026,
        features::kSettingsSearch2026},
       /*disabled_features=*/{}};
   base::test::TaskEnvironment task_environment_;
+  SettingsSearchRegistry registry_;
   mojo::Remote<mojom::SettingsSearchHandler> remote_;
   std::unique_ptr<SettingsSearchHandler> handler_;
 };
@@ -154,11 +162,41 @@ TEST_F(SettingsSearchHandlerTest, ItemWithoutBreadcrumbs) {
   EXPECT_THAT(results[0]->breadcrumbs, IsEmpty());
 }
 
+TEST_F(SettingsSearchHandlerTest, ReflectsRegistryChanges) {
+  CreateHandler(MakeAppearanceItems());
+  ASSERT_EQ(Search(u"bookmarks bar").size(), 1u);
+
+  registry().RemoveItem(mojom::SettingId::kShowBookmarksBar);
+  EXPECT_THAT(Search(u"bookmarks bar"), IsEmpty());
+
+  registry().AddItem(MakeItem(mojom::SettingId::kShowBookmarksBar,
+                              kAppearanceRoute, u"Show bookmarks bar"));
+  EXPECT_EQ(Search(u"bookmarks bar").size(), 1u);
+}
+
+TEST_F(SettingsSearchHandlerTest, ReflectsReplacedItem) {
+  CreateHandler(MakeAppearanceItems());
+  ASSERT_EQ(Search(u"page zoom").size(), 1u);
+
+  registry().AddItem(
+      MakeItem(mojom::SettingId::kPageZoom, kAppearanceRoute, u"Zoom level"));
+
+  auto results = Search(u"zoom");
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0]->title, u"Zoom level");
+}
+
 TEST_F(SettingsSearchHandlerTest, LimitsResultCount) {
+  constexpr mojom::SettingId kIds[] = {
+      mojom::SettingId::kAppearance,       mojom::SettingId::kThemes,
+      mojom::SettingId::kCustomizeToolbar, mojom::SettingId::kColorSchemeMode,
+      mojom::SettingId::kShowHomeButton,   mojom::SettingId::kShowBookmarksBar,
+      mojom::SettingId::kTabStripPosition,
+  };
+  static_assert(std::size(kIds) > SettingsSearchHandler::kMaxResults);
   std::vector<std::unique_ptr<SettingsSearchItem>> items;
-  for (size_t i = 0; i < SettingsSearchHandler::kMaxResults + 1; ++i) {
-    items.push_back(MakeItem(mojom::SettingId::kAppearance, kAppearanceRoute,
-                             u"Appearance"));
+  for (mojom::SettingId id : kIds) {
+    items.push_back(MakeItem(id, kAppearanceRoute, u"Appearance"));
   }
   CreateHandler(std::move(items));
 
@@ -217,6 +255,19 @@ TEST_F(SettingsSearchHandlerTest, TruncationDropsSplitSurrogatePair) {
   CreateHandlerWithTitle(title);
 
   auto results = Search(title);
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_THAT(results[0]->title_match_ranges,
+              ElementsAre(gfx::Range(0, kMaxQueryLength - 1)));
+}
+
+TEST_F(SettingsSearchHandlerTest, TruncationTrimsTrailingWhitespace) {
+  // The limit falls right after a space, which must be trimmed before
+  // HasMinQueryLength().
+  const std::u16string prefix(kMaxQueryLength - 1, u'a');
+  CreateHandlerWithTitle(prefix);
+
+  auto results = Search(prefix + u" bcd");
 
   ASSERT_EQ(results.size(), 1u);
   EXPECT_THAT(results[0]->title_match_ranges,
