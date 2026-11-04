@@ -15,9 +15,6 @@ tast.flex.HWIS
 tast.wmp.DesksTemplatesBasic
 tast.wmp.DesksTemplatesLaunch
 
-# b/312966807
-tast.inputs.InputMethodShelfInputs
-
 # b/549299789
 tast.secagentd.AuthenticationEvents
 tast.secagentd.FileEvents.cookies
