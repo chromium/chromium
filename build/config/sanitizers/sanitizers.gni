@@ -176,8 +176,8 @@ declare_args() {
   # initialization code; targets created specifically for fuzztests alone
   # would not normally be disabled by a setting of 'false' here.
   register_fuzztests_in_test_suites =
-      is_linux || is_mac || is_win || is_chromeos || use_libfuzzer ||
-      use_centipede || use_external_fuzzing_engine
+      is_linux || is_mac || is_win || is_chromeos || is_android ||
+      use_libfuzzer || use_centipede || use_external_fuzzing_engine
 }
 
 declare_args() {
