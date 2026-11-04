@@ -293,6 +293,10 @@ BASE_FEATURE(kLensOverlayVirtualFocusNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOmniboxEverywhereVirtualFocusNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, use desktop widget to show the omnibox popup.
+BASE_FEATURE(kOmniboxPopupDesktopWidget, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebuiBrowserVirtualFocusNavigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

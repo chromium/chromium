@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -294,14 +296,13 @@ void RoundedOmniboxResultsFrame::OnBeforeWidgetInit(
     views::Widget::InitParams* params,
     views::Widget* widget) {
 #if BUILDFLAG(IS_WIN)
-  // On Windows, use an Aura window instead of a native window, because the
-  // native window does not support clicking through translucent shadows to the
-  // underyling content. Linux and ChromeOS do not need this because they
-  // already use Aura for the suggestions dropdown.
-  //
-  // TODO(sdy): Mac does not support Aura at the moment, and needs a different
-  // platform-specific solution.
-  params->native_widget = new views::NativeWidgetAura(widget);
+  if (!base::FeatureList::IsEnabled(features::kOmniboxPopupDesktopWidget)) {
+    // On Windows, use an Aura window instead of a native window, because the
+    // native window does not support clicking through translucent shadows to
+    // the underlying content. Linux and ChromeOS do not need this because they
+    // already use Aura for the suggestions dropdown.
+    params->native_widget = new views::NativeWidgetAura(widget);
+  }
 #endif
   params->name = "RoundedOmniboxResultsFrameWindow";
 
