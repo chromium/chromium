@@ -53,7 +53,7 @@ public class SoftKeyboardCondition extends ConditionWithResult<Boolean> {
         }
 
         View view = activity.getWindow().getDecorView();
-        if (KeyboardUtils.isAndroidSoftKeyboardShowing(view)) {
+        if (KeyboardUtils.isAndroidSoftKeyboardObscuring(view)) {
             return whether(mExpectShowingWhenNoPhysicalKeyboard, "IME insets present")
                     .withResult(true);
         }

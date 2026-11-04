@@ -88,7 +88,7 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
      */
     @Override
     public boolean isSoftKeyboardShowing(View view) {
-        return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
+        return KeyboardUtils.isAndroidSoftKeyboardObscuring(view);
     }
 
     /**

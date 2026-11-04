@@ -839,7 +839,7 @@ public class OmniboxTestUtils {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            boolean isShowing = KeyboardUtils.isAndroidSoftKeyboardShowing(mView);
+            boolean isShowing = KeyboardUtils.isAndroidSoftKeyboardVisible(mView);
             return whether(isShowing == mExpectShowing, "Keyboard showing is %b", isShowing);
         }
 

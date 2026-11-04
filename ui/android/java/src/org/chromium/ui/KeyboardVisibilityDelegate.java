@@ -121,7 +121,7 @@ public class KeyboardVisibilityDelegate {
      * @return Whether or not the software keyboard is visible.
      */
     public boolean isKeyboardShowing(View view) {
-        return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
+        return KeyboardUtils.isAndroidSoftKeyboardObscuring(view);
     }
 
     /**

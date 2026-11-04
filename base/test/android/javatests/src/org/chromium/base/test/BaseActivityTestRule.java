@@ -145,7 +145,7 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         T activity = getActivity();
         if (activity != null) {
             View decorView = activity.getWindow().getDecorView();
-            if (KeyboardUtils.isAndroidSoftKeyboardShowing(decorView)) {
+            if (KeyboardUtils.isAndroidSoftKeyboardVisible(decorView)) {
                 Log.w(TAG, "Soft keyboard should not be showing at the end of a test.");
             }
         }

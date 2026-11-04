@@ -165,7 +165,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
 
         when(mWindowInsets.isVisible(WindowInsets.Type.ime())).thenReturn(true);
         triggerLayout();
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener, never()).keyboardVisibilityChanged(true);
 
         mKeyboardInsetSupplier.set(0);
         verify(mKeyboardVisibilityListener, never()).keyboardVisibilityChanged(false);
