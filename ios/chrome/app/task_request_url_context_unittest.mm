@@ -48,6 +48,47 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+// Test double for SceneController to verify tab opening from TaskRequests.
+@interface TaskRequestURLContextTestTabOpener : SceneController <TabOpening>
+
+// The mode in which the tab was requested to be opened.
+@property(nonatomic, assign) ApplicationModeForTabOpening targetMode;
+// The parameters used to load the opened tab.
+@property(nonatomic, assign) UrlLoadParams urlLoadParams;
+// Whether the omnibox was requested to be dismissed.
+@property(nonatomic, assign) BOOL dismissOmnibox;
+// The post-opening action requested for the opened tab.
+@property(nonatomic, assign) TabOpeningPostOpeningAction completionAction;
+// Whether the post-opening completion was executed.
+@property(nonatomic, assign) BOOL completionActionExecuted;
+
+@end
+
+@implementation TaskRequestURLContextTestTabOpener
+
+- (ProceduralBlock)completionBlockForTriggeringAction:
+    (TabOpeningPostOpeningAction)action {
+  self.completionAction = action;
+  return ^{
+    self.completionActionExecuted = YES;
+  };
+}
+
+- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
+            (ApplicationModeForTabOpening)targetMode
+                                 withUrlLoadParams:(UrlLoadParams)urlLoadParams
+                                    dismissOmnibox:(BOOL)dismissOmnibox
+                                        completion:(ProceduralBlock)completion {
+  self.targetMode = targetMode;
+  self.urlLoadParams = urlLoadParams;
+  self.dismissOmnibox = dismissOmnibox;
+  if (completion) {
+    completion();
+  }
+}
+
+@end
+
 class TaskRequestForURLContextTest : public PlatformTest {
  protected:
   void SetUp() override {
@@ -658,42 +699,6 @@ TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
     }
   }
 }
-
-// Test double for SceneController to verify tab opening from TaskRequests.
-@interface TaskRequestURLContextTestTabOpener : SceneController <TabOpening>
-
-@property(nonatomic, assign) ApplicationModeForTabOpening targetMode;
-@property(nonatomic, assign) UrlLoadParams urlLoadParams;
-@property(nonatomic, assign) BOOL dismissOmnibox;
-@property(nonatomic, assign) TabOpeningPostOpeningAction completionAction;
-@property(nonatomic, assign) BOOL completionActionExecuted;
-
-@end
-
-@implementation TaskRequestURLContextTestTabOpener
-
-- (ProceduralBlock)completionBlockForTriggeringAction:
-    (TabOpeningPostOpeningAction)action {
-  self.completionAction = action;
-  return ^{
-    self.completionActionExecuted = YES;
-  };
-}
-
-- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
-            (ApplicationModeForTabOpening)targetMode
-                                 withUrlLoadParams:(UrlLoadParams)urlLoadParams
-                                    dismissOmnibox:(BOOL)dismissOmnibox
-                                        completion:(ProceduralBlock)completion {
-  self.targetMode = targetMode;
-  self.urlLoadParams = urlLoadParams;
-  self.dismissOmnibox = dismissOmnibox;
-  if (completion) {
-    completion();
-  }
-}
-
-@end
 
 // Tests that WidgetKit URL execution correctly triggers the scene controller.
 TEST_F(TaskRequestForURLContextTest, TestWidgetURLContextExecution) {
