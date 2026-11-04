@@ -17,7 +17,7 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -109,7 +109,7 @@ public final class ExtensionActionContextMenuUtils {
         buttonView.setDelegate(listDelegate, false);
 
         buttonView.addPopupListener(
-                new ListMenuHost.PopupMenuShownListener() {
+                new PopupMenuShownListener() {
                     @Override
                     public void onPopupMenuShown() {}
 

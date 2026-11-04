@@ -20,7 +20,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.HostAccessRequest;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -123,12 +123,12 @@ public class ExtensionsMenuViewBinder {
                         }
                     });
         } else if (key == ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE) {
-            List<ExtensionsMenuTypes.HostAccessRequest> requests =
+            List<HostAccessRequest> requests =
                     model.get(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS);
             updateSectionVisibilities(
                     view, model.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE), requests);
         } else if (key == ExtensionsMenuProperties.HOST_ACCESS_REQUESTS) {
-            List<ExtensionsMenuTypes.HostAccessRequest> requests =
+            List<HostAccessRequest> requests =
                     model.get(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS);
             // Update visibility (in case the list became empty or non-empty)
             updateSectionVisibilities(
@@ -139,7 +139,7 @@ public class ExtensionsMenuViewBinder {
             listContainer.removeAllViews();
             if (requests != null) {
                 LayoutInflater inflater = LayoutInflater.from(listContainer.getContext());
-                for (ExtensionsMenuTypes.HostAccessRequest request : requests) {
+                for (HostAccessRequest request : requests) {
                     View itemView =
                             inflater.inflate(
                                     R.layout.extensions_request_access_item, listContainer, false);
@@ -193,9 +193,7 @@ public class ExtensionsMenuViewBinder {
     }
 
     private static void updateSectionVisibilities(
-            View view,
-            int optionalSectionType,
-            List<ExtensionsMenuTypes.HostAccessRequest> requests) {
+            View view, int optionalSectionType, List<HostAccessRequest> requests) {
         View reloadSection = view.findViewById(R.id.extensions_menu_reload_section);
         int expectedVisibility =
                 (optionalSectionType == OptionalSectionType.RELOAD_PAGE) ? View.VISIBLE : View.GONE;
@@ -215,7 +213,7 @@ public class ExtensionsMenuViewBinder {
     }
 
     private static void populateRequestView(
-            View itemView, PropertyModel model, ExtensionsMenuTypes.HostAccessRequest request) {
+            View itemView, PropertyModel model, HostAccessRequest request) {
         Context context = itemView.getContext();
 
         // Set Icon and Name

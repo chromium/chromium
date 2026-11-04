@@ -13,8 +13,8 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.UserSiteAccess;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -64,12 +64,12 @@ public class SitePermissionsPageViewBinder {
                     (radioGroup, checkedId) -> {
                         int siteAccess = -1;
                         if (checkedId == R.id.extensions_menu_site_permissions_on_click) {
-                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_CLICK;
+                            siteAccess = UserSiteAccess.ON_CLICK;
                         } else if (checkedId == R.id.extensions_menu_site_permissions_on_site) {
-                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_SITE;
+                            siteAccess = UserSiteAccess.ON_SITE;
                         } else if (checkedId
                                 == R.id.extensions_menu_site_permissions_on_all_sites) {
-                            siteAccess = ExtensionsMenuTypes.UserSiteAccess.ON_ALL_SITES;
+                            siteAccess = UserSiteAccess.ON_ALL_SITES;
                         }
                         if (siteAccess != -1 && callback != null) {
                             callback.onResult(siteAccess);
@@ -97,6 +97,6 @@ public class SitePermissionsPageViewBinder {
 
     private static void updateRadioButton(RadioButtonWithDescription button, ControlState state) {
         button.setChecked(state.isOn);
-        button.setEnabled(state.status == ExtensionsMenuTypes.ControlState.Status.ENABLED);
+        button.setEnabled(state.status == ControlState.Status.ENABLED);
     }
 }

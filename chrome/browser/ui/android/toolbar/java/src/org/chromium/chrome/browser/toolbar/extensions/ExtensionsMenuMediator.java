@@ -20,7 +20,11 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ExtensionSitePermissionsState;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.MenuEntryState;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.SiteSettingsState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -198,7 +202,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         int optionalSection = mMenuBridge.getOptionalSection();
         mMainPageModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
 
-        if (optionalSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
+        if (optionalSection == OptionalSectionType.HOST_ACCESS_REQUESTS) {
             mMainPageModel.set(
                     ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
                     mMenuBridge.getHostAccessRequests());
@@ -216,7 +220,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             return;
         }
 
-        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
         mActionModels.add(actionIndex, createMenuItem(entry));
 
         updateZeroState();
@@ -238,7 +242,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         // Do nothing when the site permissions page is opened for a different
         // extension.
-        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
         if (!isSitePermissionsPageOpenedFor(entry)) {
             return;
         }
@@ -261,7 +265,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         // Do nothing when the site permissions page is opened for a different
         // extension.
-        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
+        MenuEntryState entry = mMenuBridge.getMenuEntry(actionIndex);
         if (!isSitePermissionsPageOpenedFor(entry)) {
             return;
         }
@@ -274,7 +278,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     @Override
     public void onActionUpdated(int newIndex) {
         if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
-            ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
+            MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
 
             // Find the old index for the model corresponding to the updated action.
             int oldIndex = -1;
@@ -306,7 +310,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         // Do nothing when the site permissions page is opened for a different
         // extension.
-        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
+        MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
         if (!isSitePermissionsPageOpenedFor(entry)) {
             return;
         }
@@ -379,7 +383,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * @param entry The state of the menu entry to create.
      * @return The created list item.
      */
-    private ListItem createMenuItem(ExtensionsMenuTypes.MenuEntryState entry) {
+    private ListItem createMenuItem(MenuEntryState entry) {
         PropertyModel model =
                 new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                         .with(ExtensionsMenuItemProperties.EXTENSION_ID, entry.id)
@@ -415,7 +419,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     /**
      * Returns whether the site permissions page is currently opened for the given extension entry.
      */
-    private boolean isSitePermissionsPageOpenedFor(ExtensionsMenuTypes.MenuEntryState entry) {
+    private boolean isSitePermissionsPageOpenedFor(MenuEntryState entry) {
         if (getCurrentPage() != ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
             return false;
         }
@@ -459,7 +463,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         }
 
         int currentSection = mMainPageModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE);
-        if (currentSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
+        if (currentSection == OptionalSectionType.HOST_ACCESS_REQUESTS) {
             mMainPageModel.set(
                     ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
                     mMenuBridge.getHostAccessRequests());
@@ -467,8 +471,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /** Updates the itemModel for an extension menu entry according to the given state. */
-    private void updateMenuItem(
-            PropertyModel itemModel, ExtensionsMenuTypes.MenuEntryState itemState) {
+    private void updateMenuItem(PropertyModel itemModel, MenuEntryState itemState) {
         itemModel.set(ExtensionsMenuItemProperties.TITLE, itemState.actionButton.text);
         itemModel.set(ExtensionsMenuItemProperties.ICON, itemState.actionButton.icon);
         itemModel.set(ExtensionsMenuItemProperties.IS_PINNED, itemState.contextMenuButton.isOn);
@@ -504,7 +507,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * action models list. Also updates the zero state visibility.
      */
     private void updateMenuEntries() {
-        List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
+        List<MenuEntryState> entries = mMenuBridge.getMenuEntries();
 
         if (mActionModels.size() != entries.size()) {
             // If sizes mismatch (e.g., initial load), clear and rebuild.
@@ -512,7 +515,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         } else {
             // Update items in-place to keep the {@link ListItem} instances.
             for (int i = 0; i < entries.size(); i++) {
-                ExtensionsMenuTypes.MenuEntryState entry = entries.get(i);
+                MenuEntryState entry = entries.get(i);
                 ListItem item = mActionModels.get(i);
 
                 String currentId = item.model.get(ExtensionsMenuItemProperties.EXTENSION_ID);
@@ -530,9 +533,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /** Resets and reconstructs {@link mActionModels}. */
-    private void reconstructModel(List<ExtensionsMenuTypes.MenuEntryState> entries) {
+    private void reconstructModel(List<MenuEntryState> entries) {
         mActionModels.clear();
-        for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
+        for (MenuEntryState entry : entries) {
             mActionModels.add(createMenuItem(entry));
         }
     }
@@ -544,7 +547,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * @return Whether the site permissions page was successfully updated.
      */
     private boolean updateSitePermissionsPage(String extensionId) {
-        ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
+        ExtensionSitePermissionsState sitePermissionsState =
                 mMenuBridge.getExtensionSitePermissionsState(extensionId);
         if (sitePermissionsState == null) {
             mMainPageModel.set(
@@ -602,12 +605,11 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     /** Updates the site settings toggle. */
     @VisibleForTesting
     void updateSiteSettingsToggle() {
-        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
-                mMenuBridge.getSiteSettingsState();
+        SiteSettingsState siteSettingsState = mMenuBridge.getSiteSettingsState();
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_CONTAINER_VISIBLE, true);
         mMainPageModel.set(
                 ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE,
-                siteSettingsState.toggle.status != ExtensionsMenuTypes.ControlState.Status.HIDDEN);
+                siteSettingsState.toggle.status != ControlState.Status.HIDDEN);
         mMainPageModel.set(
                 ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED,
                 siteSettingsState.toggle.isOn);

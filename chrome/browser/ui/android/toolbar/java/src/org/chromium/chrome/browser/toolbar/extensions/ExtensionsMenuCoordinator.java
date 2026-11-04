@@ -46,7 +46,7 @@ import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
-import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -210,7 +210,7 @@ public class ExtensionsMenuCoordinator
                 });
 
         mExtensionsMenuButton.addPopupListener(
-                new ListMenuHost.PopupMenuShownListener() {
+                new PopupMenuShownListener() {
                     @Override
                     public void onPopupMenuShown() {
                         mIsMenuOpen = true;

@@ -68,9 +68,10 @@ import org.chromium.chrome.browser.ui.toolbar.SiteAccess;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -154,7 +155,7 @@ public class ExtensionActionListMediatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mClearOmniboxFocus;
 
-    @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
+    @Captor private ArgumentCaptor<PopupMenuShownListener> mPopupListenerCaptor;
 
     @Captor
     private ArgumentCaptor<ExtensionsToolbarBridge.ActionListDelegate> mBridgeDelegateCaptor;
@@ -466,8 +467,8 @@ public class ExtensionActionListMediatorTest {
 
     @Test
     public void testDismissPopupOnDialogAdded() {
-        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observerCaptor =
-                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        ArgumentCaptor<ModalDialogManagerObserver> observerCaptor =
+                ArgumentCaptor.forClass(ModalDialogManagerObserver.class);
         verify(mModalDialogManager).addObserver(observerCaptor.capture());
 
         // Trigger a popup.
@@ -646,7 +647,7 @@ public class ExtensionActionListMediatorTest {
 
         // Set up the mock action to track if its state is queried.
         ExtensionAction action = mock(ExtensionAction.class);
-        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        HoverCardState state = mock(HoverCardState.class);
         when(action.getHoverCardState()).thenReturn(state);
         doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
@@ -680,7 +681,7 @@ public class ExtensionActionListMediatorTest {
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
         ExtensionAction action = mock(ExtensionAction.class);
-        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        HoverCardState state = mock(HoverCardState.class);
         when(action.getHoverCardState()).thenReturn(state);
         doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
@@ -716,7 +717,7 @@ public class ExtensionActionListMediatorTest {
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
         ExtensionAction action = mock(ExtensionAction.class);
-        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        HoverCardState state = mock(HoverCardState.class);
         when(action.getHoverCardState()).thenReturn(state);
         doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
@@ -786,7 +787,7 @@ public class ExtensionActionListMediatorTest {
                 item.model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER);
 
         ExtensionAction action = mock(ExtensionAction.class);
-        ExtensionAction.HoverCardState state = mock(ExtensionAction.HoverCardState.class);
+        HoverCardState state = mock(HoverCardState.class);
         when(action.getHoverCardState()).thenReturn(state);
         doReturn(action).when(mExtensionsToolbarBridge).getAction(eq(ACTION1_ID), any());
 
