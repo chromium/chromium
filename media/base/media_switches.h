@@ -246,6 +246,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseGreedyTextStabilizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseWaitK);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLogSodaLoadFailures);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMP4ApplyEmptyEditList);
 // Flag to enable or disable parsing of MP4 timed metadata tracks.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMP4TimedMetadataTrack);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMatchSourceAudioChannelLayout);

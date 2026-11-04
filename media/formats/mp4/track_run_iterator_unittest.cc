@@ -14,6 +14,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_media_log.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/rcheck.h"
@@ -327,6 +329,10 @@ namespace mp4 {
 
 MATCHER(ReservedValueInSampleDependencyInfo, "") {
   return arg.contains("Reserved value used in sample dependency info.");
+}
+
+MATCHER(EditListOffsetOverflow, "") {
+  return arg.contains("Edit list offset exceeds representable range.");
 }
 
 TEST(TimeDeltaFromRationalTest, RoundsTowardZero) {
@@ -871,6 +877,130 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(3, kVideoScale));
   EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(1, kVideoScale));
   EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(3, kVideoScale));
+}
+
+TEST_F(TrackRunIteratorTest, LeadingEmptyEditListTest) {
+  // Create a 2-entry edit list where the first entry is an empty edit
+  // (media_time == -1) of 80ms in movie timescale (1000), which corresponds to
+  // 2 ticks in the video track's timescale (kVideoScale = 25), followed by a
+  // media edit starting at media_time = 0.
+  iter_ = std::make_unique<TrackRunIterator>(&moov_, &media_log_);
+  EditListEntry empty_entry;
+  empty_entry.segment_duration = 80;
+  empty_entry.media_time = -1;
+  empty_entry.media_rate_integer = 1;
+  empty_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(empty_entry);
+
+  EditListEntry media_entry;
+  media_entry.segment_duration = 0;
+  media_entry.media_time = 0;
+  media_entry.media_rate_integer = 1;
+  media_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(media_entry);
+
+  MovieFragment moof = CreateFragment();
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(0, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(2, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(1, kVideoScale));
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(1, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(3, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(2, kVideoScale));
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(3, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(5, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(3, kVideoScale));
+}
+
+TEST_F(TrackRunIteratorTest, LeadingEmptyEditListDisabledTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMP4ApplyEmptyEditList);
+
+  iter_ = std::make_unique<TrackRunIterator>(&moov_, &media_log_);
+  EditListEntry empty_entry;
+  empty_entry.segment_duration = 80;
+  empty_entry.media_time = -1;
+  empty_entry.media_rate_integer = 1;
+  empty_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(empty_entry);
+
+  EditListEntry media_entry;
+  media_entry.segment_duration = 0;
+  media_entry.media_time = 0;
+  media_entry.media_rate_integer = 1;
+  media_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(media_entry);
+
+  MovieFragment moof = CreateFragment();
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(0, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(0, kVideoScale));
+}
+
+TEST_F(TrackRunIteratorTest, LeadingEmptyEditWithMediaOffsetTest) {
+  // Combine a 120ms leading empty edit (3 ticks in kVideoScale = 25) with a
+  // media edit starting at media_time = 2 (80ms CTS bias removal), resulting in
+  // a net +1 tick (+40ms) composition offset on top of the fragment run CTS
+  // offsets.
+  iter_ = std::make_unique<TrackRunIterator>(&moov_, &media_log_);
+  EditListEntry empty_entry;
+  empty_entry.segment_duration = 120;
+  empty_entry.media_time = -1;
+  empty_entry.media_rate_integer = 1;
+  empty_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(empty_entry);
+
+  EditListEntry media_entry;
+  media_entry.segment_duration = 0;
+  media_entry.media_time = 2;
+  media_entry.media_rate_integer = 1;
+  media_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(media_entry);
+
+  MovieFragment moof = CreateFragment();
+  std::vector<int32_t>& cts_offsets =
+      moof.tracks[1].runs[0].sample_composition_time_offsets;
+  cts_offsets.resize(10);
+  cts_offsets[0] = 2;
+  cts_offsets[1] = 5;
+  cts_offsets[2] = 0;
+  moof.tracks[1].decode_time.decode_time = 0;
+
+  ASSERT_TRUE(iter_->Init(moof));
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(0, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(3, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(1, kVideoScale));
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(1, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(7, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(2, kVideoScale));
+  iter_->AdvanceSample();
+  EXPECT_EQ(iter_->dts(), DecodeTimestampFromRational(3, kVideoScale));
+  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(4, kVideoScale));
+  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(3, kVideoScale));
+}
+
+TEST_F(TrackRunIteratorTest, LeadingEmptyEditOverflowTest) {
+  EXPECT_MEDIA_LOG(EditListOffsetOverflow());
+  iter_ = std::make_unique<TrackRunIterator>(&moov_, &media_log_);
+  EditListEntry empty_entry;
+  empty_entry.segment_duration = std::numeric_limits<uint64_t>::max();
+  empty_entry.media_time = -1;
+  empty_entry.media_rate_integer = 1;
+  empty_entry.media_rate_fraction = 0;
+  moov_.tracks[1].edit.list.edits.push_back(empty_entry);
+
+  MovieFragment moof = CreateFragment();
+  ASSERT_FALSE(iter_->Init(moof));
 }
 
 TEST_F(TrackRunIteratorTest, IgnoreUnknownAuxInfoTest) {

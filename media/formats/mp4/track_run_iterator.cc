@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -20,6 +21,7 @@
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp4/rcheck.h"
@@ -319,13 +321,29 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     int64_t edit_list_offset = 0;
     const std::vector<EditListEntry>& edits = trak->edit.list.edits;
     if (!edits.empty()) {
-      if (edits.size() > 1)
-        DVLOG(1) << "Multi-entry edit box detected; some components ignored.";
-
-      if (edits[0].media_time < 0) {
-        DVLOG(1) << "Empty edit list entry ignored.";
-      } else {
-        edit_list_offset = edits[0].media_time;
+      base::CheckedNumeric<int64_t> offset = 0;
+      size_t edit_index = 0;
+      if (edits[0].media_time < 0 &&
+          base::FeatureList::IsEnabled(kMP4ApplyEmptyEditList)) {
+        RCHECK(moov_->header.timescale > 0);
+        offset -= base::CheckedNumeric<uint64_t>(edits[0].segment_duration) *
+                  trak->media.header.timescale / moov_->header.timescale;
+        edit_index = 1;
+      }
+      if (edit_index < edits.size()) {
+        if (edits.size() > edit_index + 1) {
+          DVLOG(1) << "Multi-entry edit box detected; some components ignored.";
+        }
+        if (edits[edit_index].media_time < 0) {
+          DVLOG(1) << "Empty edit list entry ignored.";
+        } else {
+          offset += edits[edit_index].media_time;
+        }
+      }
+      if (!offset.AssignIfValid(&edit_list_offset)) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "Edit list offset exceeds representable range.";
+        return false;
       }
     }
 

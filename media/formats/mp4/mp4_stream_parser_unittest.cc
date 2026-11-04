@@ -1229,8 +1229,12 @@ TEST_F(MP4StreamParserTest, MAYBE_TimedMetadataTrack) {
       }
     }
   }
-  EXPECT_GT(video_buffers_total, 0u);
-  EXPECT_EQ(video_buffers_with_agtm, video_buffers_total);
+  // Track 1 (video) in agtm-metadata-track-frag.mp4 has a 100ms leading empty
+  // edit, shifting its 14 100ms frames to [100ms, 1500ms), whereas Track 2
+  // (metadata) has no edit list and covers [0ms, 1400ms). Thus the first 13
+  // video frames overlap the metadata track and receive AGTM metadata.
+  EXPECT_EQ(video_buffers_total, 14u);
+  EXPECT_EQ(video_buffers_with_agtm, 13u);
 }
 
 // <cos(θ), sin(θ), θ expressed as a rotation Enum>

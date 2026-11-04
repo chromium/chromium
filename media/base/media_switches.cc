@@ -800,6 +800,11 @@ BASE_FEATURE(kLogSodaLoadFailures,
              "kLogSodaLoadFailures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for applying leading empty edit list entries in MP4 MSE streams
+// (crbug.com/537235698).
+// TODO(crbug.com/537235698): Remove after M159 reaches stable.
+BASE_FEATURE(kMP4ApplyEmptyEditList, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMP4TimedMetadataTrack, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows Chrome to reconfigure the sink to match the channel count of the
