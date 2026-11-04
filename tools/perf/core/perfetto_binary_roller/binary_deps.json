@@ -1,8 +1,8 @@
 {
     "trace_processor_shell": {
         "linux_arm64": {
-            "hash": "842fe4029fbe51e0307c54abc9a8b9c1f1d4e14f",
-            "full_remote_path": "perfetto-luci-artifacts/fc421da7e36e4b4f44151801b34cc563636ac537/linux-arm64/trace_processor_shell"
+            "hash": "e5cada41cfcb2bd4c8ed92fac07d0a6eafc70a84",
+            "full_remote_path": "perfetto-luci-artifacts/52ac869d773578d29e603af8cdd90d42d629ab68/linux-arm64/trace_processor_shell"
         },
         "win": {
             "hash": "555c74d836da94984f5923bd830ba8946100cc1a",
