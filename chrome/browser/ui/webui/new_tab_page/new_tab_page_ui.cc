@@ -753,6 +753,9 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
            ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
                base::FeatureList::IsEnabled(
                    ntp_realbox::kNtpRealboxDynamicAiModeButton));
+  dict.Set("ntpRealboxDynamicAiModeButtonPreventEarlyPaint",
+           base::FeatureList::IsEnabled(
+               ntp_realbox::kNtpRealboxDynamicAiModeButtonPreventEarlyPaint));
 
   if (ntp_realbox::IsNtpRealboxNextEnabled(profile)) {
     if (base::FeatureList::IsEnabled(

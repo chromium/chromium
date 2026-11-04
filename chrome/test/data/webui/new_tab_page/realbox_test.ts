@@ -1150,6 +1150,40 @@ suite('NewTabPageRealboxNextTest', () => {
       assertTrue(composeButton.hasAttribute('dynamic'));
     });
 
+    test('inherit-visibility attribute follows loadTimeData', async () => {
+      loadTimeData.overrideValues({
+        ntpRealboxDynamicAiModeButton: true,
+        ntpRealboxDynamicAiModeButtonPreventEarlyPaint: true,
+      });
+      realbox = createAndAppendRealbox({
+        composeButtonEnabled: true,
+        composeboxEnabled: true,
+        ntpRealboxNextEnabled: true,
+      });
+      await microtasksFinished();
+      const composeButton =
+          realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
+      assertTrue(!!composeButton);
+      assertTrue(composeButton.hasAttribute('inherit-visibility'));
+    });
+
+    test('inherit-visibility attribute is not set when disabled', async () => {
+      loadTimeData.overrideValues({
+        ntpRealboxDynamicAiModeButton: true,
+        ntpRealboxDynamicAiModeButtonPreventEarlyPaint: false,
+      });
+      realbox = createAndAppendRealbox({
+        composeButtonEnabled: true,
+        composeboxEnabled: true,
+        ntpRealboxNextEnabled: true,
+      });
+      await microtasksFinished();
+      const composeButton =
+          realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
+      assertTrue(!!composeButton);
+      assertFalse(composeButton.hasAttribute('inherit-visibility'));
+    });
+
     test('dynamic attribute is not set when disabled', async () => {
       loadTimeData.overrideValues({ntpRealboxDynamicAiModeButton: false});
       realbox = createAndAppendRealbox({

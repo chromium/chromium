@@ -97,6 +97,13 @@ extern const base::FeatureParam<bool> kMultiLineEnabled;
 // Whether to enable the dynamic version of the AI Mode button in the realbox.
 BASE_DECLARE_FEATURE(kNtpRealboxDynamicAiModeButton);
 
+// With kNtpRealboxDynamicAiModeButton, the button's icon forces
+// `visibility: visible`, so it paints on its own before the NTP searchbox is
+// shown, which regressed Startup.FirstWebContents.NonEmptyPaint3. When enabled,
+// the icon inherits its visibility instead. Temporary; remove once enabled by
+// default.
+BASE_DECLARE_FEATURE(kNtpRealboxDynamicAiModeButtonPreventEarlyPaint);
+
 bool IsNtpRealboxNextEnabled(Profile* profile);
 
 }  // namespace ntp_realbox

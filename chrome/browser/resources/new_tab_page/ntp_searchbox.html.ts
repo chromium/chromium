@@ -72,6 +72,8 @@ export function getHtml(this: NtpSearchboxElement) {
     ${this.showComposeButton_ ? html`
       <cr-searchbox-compose-button id="composeButton" slot="compose-button"
           ?dynamic="${this.ntpRealboxDynamicAiModeButtonEnabled_}"
+          ?inherit-visibility="${
+              this.ntpRealboxDynamicAiModeButtonPreventEarlyPaint_}"
           ?has-user-input="${this.hasUserInput_}"
           ?virtual-focus-enabled="${this.virtualFocusEnabled}"
           ?has-virtual-focus="${this.isAiModeVirtualFocused()}"
