@@ -2267,6 +2267,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "autocomplete_label_sensitive_migration_generation": "1"
+                    },
                     "enable_features": [
                         "AutofillLabelSensitiveAutocomplete",
                         "AutofillRecordAutocompleteTableStats"
