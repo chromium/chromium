@@ -32,6 +32,7 @@
 @property(nonatomic, strong) NSMutableArray<ActuationWorklogItem*>* items;
 @property(nonatomic, assign) std::optional<actor::ToolType> latestToolType;
 @property(nonatomic, assign) NSUInteger attachCount;
+@property(nonatomic, strong) ActuationInterventionData* intervention;
 @end
 
 @implementation FakeWorklogDataSourceObserver
@@ -60,6 +61,11 @@
                  toolType:(std::optional<actor::ToolType>)toolType {
   [_items addObject:item];
   _latestToolType = toolType;
+}
+
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+    didUpdateIntervention:(ActuationInterventionData*)intervention {
+  _intervention = intervention;
 }
 
 @end
@@ -243,6 +249,85 @@ TEST_F(GeminiActorTaskStoreTest, AddingObserverTwiceSendsWorklogOnce) {
   [store_ addObserver:observer_];
 
   EXPECT_EQ(observer_.attachCount, 1u);
+}
+
+// Tests the user intervention flow.
+TEST_F(GeminiActorTaskStoreTest, UserInterventionFlow) {
+  AttachAndRegister();
+  __block BOOL completion_called = NO;
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"Intervention Title"
+                              subtitle:@"Intervention Subtitle"
+                            buttonText:@"Continue"
+                     completionHandler:^{
+                       completion_called = YES;
+                     }];
+
+  ASSERT_NE(observer_.intervention, nil);
+  EXPECT_NSEQ(observer_.intervention.title, @"Intervention Title");
+  EXPECT_NSEQ(observer_.intervention.subtitle, @"Intervention Subtitle");
+  ASSERT_EQ(observer_.intervention.actions.count, 1u);
+  ActuationInterventionAction* action =
+      observer_.intervention.actions.firstObject;
+  EXPECT_NSEQ(action.title, @"Continue");
+  EXPECT_FALSE(completion_called);
+
+  [store_ resolveInterventionWithAction:action];
+  EXPECT_TRUE(completion_called);
+  EXPECT_EQ(observer_.intervention, nil);
+}
+
+// Tests that replacing or disconnecting an intervention discards the pending
+// completion without invoking it.
+TEST_F(GeminiActorTaskStoreTest, UserInterventionCancellation) {
+  AttachAndRegister();
+  __block BOOL first_completion_called = NO;
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"First Title"
+                              subtitle:@"First Subtitle"
+                            buttonText:@"Action 1"
+                     completionHandler:^{
+                       first_completion_called = YES;
+                     }];
+
+  ASSERT_NE(observer_.intervention, nil);
+  EXPECT_FALSE(first_completion_called);
+
+  // A second intervention arrives before user acts on the first.
+  __block BOOL second_completion_called = NO;
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"Second Title"
+                              subtitle:@"Second Subtitle"
+                            buttonText:@"Action 2"
+                     completionHandler:^{
+                       second_completion_called = YES;
+                     }];
+
+  // First completion must be discarded without invocation.
+  EXPECT_FALSE(first_completion_called);
+  EXPECT_FALSE(second_completion_called);
+  EXPECT_NSEQ(observer_.intervention.title, @"Second Title");
+
+  // Disconnecting discards the pending completion.
+  [store_ disconnect];
+  EXPECT_FALSE(second_completion_called);
+}
+
+// Tests that an observer added while an intervention is pending receives it.
+TEST_F(GeminiActorTaskStoreTest, LateObserverReceivesPendingIntervention) {
+  AttachAndRegister();
+  [store_ actorTask:task_id_
+      requestUserInterventionWithTitle:@"Intervention Title"
+                              subtitle:@"Intervention Subtitle"
+                            buttonText:@"Continue"
+                     completionHandler:nil];
+
+  FakeWorklogDataSourceObserver* lateObserver =
+      [[FakeWorklogDataSourceObserver alloc] init];
+  [store_ addObserver:lateObserver];
+
+  ASSERT_NE(lateObserver.intervention, nil);
+  EXPECT_EQ(lateObserver.intervention, observer_.intervention);
 }
 
 }  // namespace

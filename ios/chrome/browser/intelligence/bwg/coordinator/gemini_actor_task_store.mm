@@ -38,6 +38,11 @@ constexpr CGFloat kIconSize = 16.0;
   std::optional<actor::ToolType> _latestToolType;
   // Latest appended task update, used to drop consecutive duplicates.
   NSString* _latestTaskUpdate;
+  // Pending intervention, if any.
+  ActuationInterventionData* _intervention;
+  // Completion of `_intervention`, called with the identifier of the action the
+  // user resolves it with.
+  void (^_interventionCompletion)(InterventionActionIdentifier);
 }
 
 - (instancetype)initWithTaskID:(actor::ActorTaskId)taskID
@@ -52,6 +57,8 @@ constexpr CGFloat kIconSize = 16.0;
                 observersWithProtocol:@protocol(
                                           ActuationWorklogDataSourceObserver)]);
     _items = [NSMutableArray array];
+    // TODO(crbug.com/579385903): Register as the task's intervention delegate
+    // once the worklog resolves interventions through the store.
     if (actorService && actorService->AddTaskUpdatesObserver(taskID, self)) {
       _actorService = actorService;
     }
@@ -64,6 +71,8 @@ constexpr CGFloat kIconSize = 16.0;
     _actorService->RemoveTaskUpdatesObserver(_taskID, self);
     _actorService = nullptr;
   }
+  _intervention = nil;
+  _interventionCompletion = nil;
 }
 
 #pragma mark - ActuationWorklogDataSource
@@ -79,6 +88,9 @@ constexpr CGFloat kIconSize = 16.0;
                     taskState:_taskState
                         items:[_items copy]
                latestToolType:_latestToolType];
+  if (_intervention) {
+    [observer worklogDataSource:self didUpdateIntervention:_intervention];
+  }
 }
 
 - (void)removeObserver:(id<ActuationWorklogDataSourceObserver>)observer {
@@ -123,6 +135,40 @@ constexpr CGFloat kIconSize = 16.0;
   [self appendTaskUpdate:taskUpdate toolType:toolType];
 }
 
+#pragma mark - ActorTaskInterventionDelegate
+
+- (void)actorTask:(actor::ActorTaskId)taskID
+    requestUserInterventionWithTitle:(NSString*)title
+                            subtitle:(NSString*)subtitle
+                          buttonText:(NSString*)buttonText
+                   completionHandler:(void (^)(void))completionHandler {
+  [self discardIntervention];
+  if (completionHandler) {
+    _interventionCompletion = ^(InterventionActionIdentifier actionIdentifier) {
+      if (actionIdentifier == InterventionActionIdentifier::kContinue) {
+        completionHandler();
+      }
+    };
+  }
+
+  ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
+      initWithIdentifier:InterventionActionIdentifier::kContinue
+                   title:buttonText];
+  [self setIntervention:[ActuationInterventionData cardItemWithTitle:title
+                                                            subtitle:subtitle
+                                                              action:action]];
+}
+
+#pragma mark - ActuationWorklogActionHandler
+
+- (void)resolveInterventionWithAction:(ActuationInterventionAction*)action {
+  void (^completion)(InterventionActionIdentifier) = _interventionCompletion;
+  [self discardIntervention];
+  if (completion) {
+    completion(action.identifier);
+  }
+}
+
 #pragma mark - Private
 
 // Appends an item for `taskUpdate` unless empty or a consecutive duplicate.
@@ -153,6 +199,21 @@ constexpr CGFloat kIconSize = 16.0;
   [_observers worklogDataSource:self
              didUpdateTaskTitle:_taskTitle
                       taskState:_taskState];
+}
+
+// Sets the pending intervention and notifies the observers.
+- (void)setIntervention:(ActuationInterventionData*)intervention {
+  if (_intervention == intervention) {
+    return;
+  }
+  _intervention = intervention;
+  [_observers worklogDataSource:self didUpdateIntervention:intervention];
+}
+
+// Clears the pending intervention and drops its completion without calling it.
+- (void)discardIntervention {
+  _interventionCompletion = nil;
+  [self setIntervention:nil];
 }
 
 @end

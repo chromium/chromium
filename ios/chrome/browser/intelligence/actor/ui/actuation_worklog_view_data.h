@@ -163,11 +163,21 @@ enum class ActuationInterventionType {
   kColumn,
 };
 
+// Identifiers of the actions of an `ActuationInterventionData`.
+enum class InterventionActionIdentifier : NSInteger {
+  // Continue the current task.
+  kContinue,
+  // "Allow this suggestion" action.
+  kAllow,
+  // "Manually enter" or "Manual sign in" action.
+  kManuallyEnter,
+};
+
 // View data object describing an action of an `ActuationInterventionData`.
 @interface ActuationInterventionAction : NSObject
 
-// Caller-defined identifier, passed back when the action is triggered.
-@property(nonatomic, assign, readonly) NSInteger identifier;
+// Identifier passed back when the action is triggered.
+@property(nonatomic, assign, readonly) InterventionActionIdentifier identifier;
 
 // Title of the button triggering the action.
 @property(nonatomic, copy, readonly) NSString* title;
@@ -175,7 +185,7 @@ enum class ActuationInterventionType {
 // TODO(crbug.com/573145076): Add an optional `icon` for `columnItem`.
 
 // Designated initializer.
-- (instancetype)initWithIdentifier:(NSInteger)identifier
+- (instancetype)initWithIdentifier:(InterventionActionIdentifier)identifier
                              title:(NSString*)title NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

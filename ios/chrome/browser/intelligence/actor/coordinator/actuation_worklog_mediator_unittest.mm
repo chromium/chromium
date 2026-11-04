@@ -216,6 +216,8 @@ ActorFormSuggestion* CreateAutofillSuggestion(
 // Publishes `item`, executed with `toolType`.
 - (void)appendItem:(ActuationWorklogItem*)item
           toolType:(std::optional<actor::ToolType>)toolType;
+// Publishes `intervention`.
+- (void)updateIntervention:(ActuationInterventionData*)intervention;
 @end
 
 @implementation FakeActuationWorklogDataSource {
@@ -268,6 +270,10 @@ ActorFormSuggestion* CreateAutofillSuggestion(
   [_items addObject:item];
   _latestToolType = toolType;
   [_observer worklogDataSource:self didAppendItem:item toolType:toolType];
+}
+
+- (void)updateIntervention:(ActuationInterventionData*)intervention {
+  [_observer worklogDataSource:self didUpdateIntervention:intervention];
 }
 
 @end
@@ -1090,4 +1096,23 @@ TEST_F(ActuationWorklogMediatorTest, TestMinimizedHeaderContentShowsStatus) {
       HeaderContent(ActuationWorklogDisplayModeMinimized);
   EXPECT_NSEQ(minimized.title, @(kTaskTitle));
   EXPECT_NSEQ(minimized.subtitle, @"Clicking button");
+}
+
+// Tests that the published intervention is displayed, and cleared once the
+// data source clears it.
+TEST_F(ActuationWorklogMediatorTest, TestPublishedInterventionIsDisplayed) {
+  StartObservingTask(task_id_);
+  ActuationInterventionData* intervention = [ActuationInterventionData
+      cardItemWithTitle:@"Title"
+               subtitle:@"Subtitle"
+                 action:[[ActuationInterventionAction alloc]
+                            initWithIdentifier:InterventionActionIdentifier::
+                                                   kContinue
+                                         title:@"Continue"]];
+
+  [data_source_ updateIntervention:intervention];
+  EXPECT_EQ(fake_consumer_.intervention, intervention);
+
+  [data_source_ updateIntervention:nil];
+  EXPECT_EQ(fake_consumer_.intervention, nil);
 }

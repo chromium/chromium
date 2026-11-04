@@ -11,6 +11,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
+@class ActuationInterventionAction;
+@class ActuationInterventionData;
 @class ActuationWorklogItem;
 @protocol ActuationWorklogDataSource;
 
@@ -37,6 +39,11 @@
             didAppendItem:(ActuationWorklogItem*)item
                  toolType:(std::optional<actor::ToolType>)toolType;
 
+// Called when the pending intervention changes (`nil` once resolved or
+// discarded), and after attach if one is pending.
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+    didUpdateIntervention:(ActuationInterventionData*)intervention;
+
 @end
 
 // Source of the worklog of a single actor task.
@@ -48,6 +55,14 @@
 
 // Removes `observer`.
 - (void)removeObserver:(id<ActuationWorklogDataSourceObserver>)observer;
+
+@end
+
+// Handles the user actions on the worklog of a single actor task.
+@protocol ActuationWorklogActionHandler <NSObject>
+
+// Resolves the pending intervention with `action`. No-op if none is pending.
+- (void)resolveInterventionWithAction:(ActuationInterventionAction*)action;
 
 @end
 

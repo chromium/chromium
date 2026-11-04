@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/public/actuation_worklog_data_source.h"
@@ -16,9 +17,11 @@ class ActorService;
 }  // namespace actor
 
 // Keeps the worklog of a Gemini actor task, built from `ActorService` updates
-// plus Gemini-specific steps.
-@interface GeminiActorTaskStore
-    : NSObject <ActorTaskUpdatesObserver, ActuationWorklogDataSource>
+// plus Gemini-specific steps, and handles the task's interventions.
+@interface GeminiActorTaskStore : NSObject <ActorTaskInterventionDelegate,
+                                            ActorTaskUpdatesObserver,
+                                            ActuationWorklogActionHandler,
+                                            ActuationWorklogDataSource>
 
 // ID of the observed task.
 @property(nonatomic, readonly) actor::ActorTaskId taskID;

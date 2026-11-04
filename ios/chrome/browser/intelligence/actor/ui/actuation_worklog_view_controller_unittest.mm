@@ -36,7 +36,8 @@ namespace {
 using chrome_test_util::FindViewById;
 
 // Arbitrary identifier for the test action.
-constexpr NSInteger kActionIdentifier = 0;
+constexpr InterventionActionIdentifier kActionIdentifier =
+    InterventionActionIdentifier::kContinue;
 
 class ActuationWorklogViewControllerTest : public PlatformTest {
  protected:

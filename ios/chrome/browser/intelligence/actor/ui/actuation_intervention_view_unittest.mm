@@ -30,7 +30,8 @@ namespace {
 using chrome_test_util::FindViewById;
 
 // Arbitrary identifier for the test actions.
-constexpr NSInteger kActionIdentifier = 0;
+constexpr InterventionActionIdentifier kActionIdentifier =
+    InterventionActionIdentifier::kContinue;
 
 class ActuationInterventionViewTest : public PlatformTest {
  protected:

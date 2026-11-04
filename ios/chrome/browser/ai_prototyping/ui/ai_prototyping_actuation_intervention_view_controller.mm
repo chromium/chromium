@@ -25,9 +25,12 @@ constexpr std::array kLayouts = {
 };
 
 // Identifiers of the showcased intervention actions.
-constexpr NSInteger kPrimaryActionIdentifier = 0;
-constexpr NSInteger kSecondaryActionIdentifier = 1;
-constexpr NSInteger kTertiaryActionIdentifier = 2;
+constexpr InterventionActionIdentifier kPrimaryActionIdentifier =
+    InterventionActionIdentifier::kContinue;
+constexpr InterventionActionIdentifier kSecondaryActionIdentifier =
+    InterventionActionIdentifier::kAllow;
+constexpr InterventionActionIdentifier kTertiaryActionIdentifier =
+    InterventionActionIdentifier::kManuallyEnter;
 
 // Default intervention texts.
 NSString* const kDefaultTitle = @"Confirm purchase";
@@ -277,7 +280,7 @@ NSString* LayoutName(ActuationInterventionType layout) {
 
 // Appends an action with `identifier` titled with the text of `field` to
 // `actions`, unless `field` is empty.
-- (void)appendActionWithIdentifier:(NSInteger)identifier
+- (void)appendActionWithIdentifier:(InterventionActionIdentifier)identifier
                          fromField:(UITextField*)field
                            toArray:
                                (NSMutableArray<ActuationInterventionAction*>*)

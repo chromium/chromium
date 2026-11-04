@@ -165,7 +165,7 @@ constexpr NSUInteger kMaxColumnActionCount = 3;
 
 @implementation ActuationInterventionAction
 
-- (instancetype)initWithIdentifier:(NSInteger)identifier
+- (instancetype)initWithIdentifier:(InterventionActionIdentifier)identifier
                              title:(NSString*)title {
   CHECK(title);
 

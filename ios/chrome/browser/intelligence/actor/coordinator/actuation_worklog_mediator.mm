@@ -38,16 +38,6 @@ constexpr CGFloat kAccessoryIconSize = 24.0;
 // Masked password field to be displayed in credential selection card.
 NSString* const kMaskedPassword = @"••••••••";
 
-// Identifiers for known intervention actions.
-enum class InterventionActionIdentifier : NSInteger {
-  // Continue the current task.
-  kContinue,
-  // "Allow this suggestion" action.
-  kAllow,
-  // "Manually enter" or "Manual sign in" action.
-  kManuallyEnter,
-};
-
 // Generates an `ActuationWorklogChip` based on the executed tool type. Returns
 // `nil` for tool types that don't display a chip.
 ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
@@ -446,6 +436,11 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   [self updateHeaderContent];
 }
 
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+    didUpdateIntervention:(ActuationInterventionData*)intervention {
+  [self.consumer setIntervention:intervention];
+}
+
 #pragma mark - ActorTaskInterventionDelegate
 
 - (void)actorTask:(actor::ActorTaskId)taskID
@@ -492,13 +487,11 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   // "hand.tap".
   ActuationInterventionAction* manualAction =
       [[ActuationInterventionAction alloc]
-          initWithIdentifier:static_cast<NSInteger>(
-                                 InterventionActionIdentifier::kManuallyEnter)
+          initWithIdentifier:InterventionActionIdentifier::kManuallyEnter
                        title:manuallyEnterButtonText];
   ActuationInterventionAction* allowAction = [[ActuationInterventionAction
       alloc]
-      initWithIdentifier:static_cast<NSInteger>(
-                             InterventionActionIdentifier::kAllow)
+      initWithIdentifier:InterventionActionIdentifier::kAllow
                    title:l10n_util::GetNSString(
                              IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ALLOW_BUTTON)];
   ActuationInterventionData* data = [ActuationInterventionData
@@ -523,8 +516,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
   }
 
   ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
-      initWithIdentifier:static_cast<NSInteger>(
-                             InterventionActionIdentifier::kContinue)
+      initWithIdentifier:InterventionActionIdentifier::kContinue
                    title:buttonText];
   ActuationInterventionData* data =
       [ActuationInterventionData cardItemWithTitle:title
@@ -548,7 +540,7 @@ ActuationWorklogItem* CardItemForSuggestion(ActorFormSuggestion* suggestion) {
       _pendingInterventionCompletion;
   [self discardPendingIntervention];
   if (completion) {
-    completion(static_cast<InterventionActionIdentifier>(action.identifier));
+    completion(action.identifier);
   }
 }
 
