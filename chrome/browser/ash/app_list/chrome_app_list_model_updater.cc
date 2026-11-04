@@ -203,7 +203,9 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
 
     // When the app list is under temporary sorting, local items should be
     // ordered. Therefore `is_successful` should be true.
-    CHECK(is_successful, base::NotFatalUntil::M160);
+    // TODO(crbug.com/579337833): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(is_successful);
 
     if (!is_successful) {
       CHECK(!position_under_temporary_order.IsValid(),
