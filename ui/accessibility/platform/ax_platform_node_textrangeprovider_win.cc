@@ -1704,7 +1704,9 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
     end = std::move(normalized_end);
   }
 
-  CHECK_LE(*start, *end, base::NotFatalUntil::M163);
+  // TODO(crbug.com/580500253): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_LE(*start, *end);
 }
 
 // static
