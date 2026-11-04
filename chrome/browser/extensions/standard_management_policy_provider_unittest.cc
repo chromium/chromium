@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
@@ -533,5 +534,76 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustManualInstallBypass) {
   }
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+// Base struct used to initialize the Isolated Mode override before
+// `StandardManagementPolicyProviderTest` constructs `TestingProfile`.
+struct ScopedIsolatedModeInitializer {
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode;
+};
+
+class StandardManagementPolicyProviderIsolatedModeTest
+    : private ScopedIsolatedModeInitializer,
+      public StandardManagementPolicyProviderTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  StandardManagementPolicyProviderIsolatedModeTest()
+      : ScopedIsolatedModeInitializer{
+            enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting(
+                IsIsolatedMode())} {}
+
+  bool IsIsolatedMode() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StandardManagementPolicyProviderIsolatedModeTest,
+                         testing::Bool());
+
+// Tests that when Enterprise Isolated Mode is enabled, only force-installed
+// extensions must remain enabled in Isolated Mode.
+TEST_P(StandardManagementPolicyProviderIsolatedModeTest,
+       MustRemainIsolatedModeEnabled) {
+  auto forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .Build();
+  auto recommended_extension =
+      ExtensionBuilder("recommended")
+          .SetLocation(ManifestLocation::kExternalPrefDownload)
+          .Build();
+  auto internal_extension = ExtensionBuilder("internal")
+                                .SetLocation(ManifestLocation::kInternal)
+                                .Build();
+  auto not_allowed_forced_extension =
+      ExtensionBuilder("not_allowed")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .SetManifestKey("incognito", "not_allowed")
+          .Build();
+
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(profile_.GetTestingPrefService());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        forced_extension->id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        recommended_extension->id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/false);
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        not_allowed_forced_extension->id(),
+        extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+
+  EXPECT_EQ(
+      provider_.MustRemainIsolatedModeEnabled(forced_extension.get(), nullptr),
+      IsIsolatedMode());
+  EXPECT_FALSE(provider_.MustRemainIsolatedModeEnabled(
+      recommended_extension.get(), nullptr));
+  EXPECT_FALSE(provider_.MustRemainIsolatedModeEnabled(
+      internal_extension.get(), nullptr));
+  EXPECT_FALSE(provider_.MustRemainIsolatedModeEnabled(
+      not_allowed_forced_extension.get(), nullptr));
+}
 
 }  // namespace extensions

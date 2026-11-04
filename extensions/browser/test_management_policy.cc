@@ -14,6 +14,7 @@ TestManagementPolicyProvider::TestManagementPolicyProvider()
       must_remain_enabled_(false),
       must_remain_disabled_(false),
       must_remain_installed_(false),
+      must_remain_isolated_mode_enabled_(false),
       disable_reason_(disable_reason::DISABLE_NONE) {
   error_message_ = base::UTF8ToUTF16(expected_error());
 }
@@ -31,6 +32,8 @@ void TestManagementPolicyProvider::SetProhibitedActions(
   must_remain_enabled_ = (prohibited_actions & MUST_REMAIN_ENABLED) != 0;
   must_remain_disabled_ = (prohibited_actions & MUST_REMAIN_DISABLED) != 0;
   must_remain_installed_ = (prohibited_actions & MUST_REMAIN_INSTALLED) != 0;
+  must_remain_isolated_mode_enabled_ =
+      (prohibited_actions & MUST_REMAIN_ISOLATED_MODE_ENABLED) != 0;
 }
 
 void TestManagementPolicyProvider::SetDisableReason(
@@ -96,6 +99,15 @@ bool TestManagementPolicyProvider::MustRemainInstalled(
     *error = error_message_;
   }
   return must_remain_installed_;
+}
+
+bool TestManagementPolicyProvider::MustRemainIsolatedModeEnabled(
+    const Extension* extension,
+    std::u16string* error) const {
+  if (error && must_remain_isolated_mode_enabled_) {
+    *error = error_message_;
+  }
+  return must_remain_isolated_mode_enabled_;
 }
 
 }  // namespace extensions

@@ -156,6 +156,9 @@ void SetIsIncognitoEnabledImpl(const ExtensionId& extension_id,
     if (!util::CanBeIncognitoEnabled(extension)) {
       return;
     }
+    if (isolated_mode && MustRemainIsolatedModeEnabled(extension, context)) {
+      return;
+    }
 
     // TODO(crbug.com/356905053): Enable handling component extensions on
     // desktop android.

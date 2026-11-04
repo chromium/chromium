@@ -27,6 +27,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
@@ -130,6 +131,9 @@ bool IsIncognitoEnabledImpl(const Extension* extension,
       return true;
     }
 #endif
+    if (isolated_mode && MustRemainIsolatedModeEnabled(extension, context)) {
+      return true;
+    }
   }
 
   return IsIncognitoEnabledForIdAndContext(extension->id(), context,
@@ -179,6 +183,17 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
 bool IsIncognitoEnabledForSync(const ExtensionId& extension_id,
                                content::BrowserContext* context) {
   return IsIncognitoEnabledImpl(extension_id, context, /*isolated_mode=*/false);
+}
+
+bool MustRemainIsolatedModeEnabled(const Extension* extension,
+                                   content::BrowserContext* context) {
+  auto* extension_system = ExtensionSystem::Get(context);
+  if (!extension_system) {
+    return false;
+  }
+
+  return extension_system->management_policy()->MustRemainIsolatedModeEnabled(
+      extension);
 }
 
 bool CanCrossIncognito(const Extension* extension,

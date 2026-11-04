@@ -25,6 +25,8 @@ class ManagementPolicyTest : public testing::Test {
         extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT);
     must_remain_installed_.SetProhibitedActions(
         TestProvider::MUST_REMAIN_INSTALLED);
+    must_remain_isolated_mode_enabled_.SetProhibitedActions(
+        TestProvider::MUST_REMAIN_ISOLATED_MODE_ENABLED);
     restrict_all_.SetProhibitedActions(TestProvider::PROHIBIT_MODIFY_STATUS |
                                        TestProvider::PROHIBIT_LOAD |
                                        TestProvider::MUST_REMAIN_ENABLED);
@@ -39,6 +41,7 @@ class ManagementPolicyTest : public testing::Test {
   TestProvider must_remain_enabled_;
   TestProvider must_remain_disabled_;
   TestProvider must_remain_installed_;
+  TestProvider must_remain_isolated_mode_enabled_;
   TestProvider restrict_all_;
 };
 
@@ -198,6 +201,27 @@ TEST_F(ManagementPolicyTest, MustRemainInstalled) {
   error.clear();
   EXPECT_FALSE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_TRUE(error.empty());
+}
+
+TEST_F(ManagementPolicyTest, MustRemainIsolatedModeEnabled) {
+  // No providers registered.
+  EXPECT_FALSE(policy_.MustRemainIsolatedModeEnabled(nullptr));
+
+  // One provider, no relevant restriction.
+  policy_.RegisterProvider(&allow_all_);
+  EXPECT_FALSE(policy_.MustRemainIsolatedModeEnabled(nullptr));
+
+  // Two providers, no relevant restrictions.
+  policy_.RegisterProvider(&no_modify_status_);
+  EXPECT_FALSE(policy_.MustRemainIsolatedModeEnabled(nullptr));
+
+  // Three providers, one with a relevant restriction.
+  policy_.RegisterProvider(&must_remain_isolated_mode_enabled_);
+  EXPECT_TRUE(policy_.MustRemainIsolatedModeEnabled(nullptr));
+
+  // Remove the restriction.
+  policy_.UnregisterProvider(&must_remain_isolated_mode_enabled_);
+  EXPECT_FALSE(policy_.MustRemainIsolatedModeEnabled(nullptr));
 }
 
 // Tests error handling in the ManagementPolicy.

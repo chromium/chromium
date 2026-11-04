@@ -47,6 +47,8 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                            std::u16string* error) const override;
   bool ShouldForceUninstall(const Extension* extension,
                             std::u16string* error) const override;
+  bool MustRemainIsolatedModeEnabled(const Extension* extension,
+                                     std::u16string* error) const override;
 
  private:
   std::u16string GetLoadErrorMessage(

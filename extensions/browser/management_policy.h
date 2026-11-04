@@ -120,6 +120,11 @@ class ManagementPolicy {
     // uninstalled.
     virtual bool ShouldForceUninstall(const Extension* extension,
                                       std::u16string* error) const;
+
+    // Providers should return true if Enterprise Isolated Mode is enabled and
+    // the `extension` must always remain enabled in it.
+    virtual bool MustRemainIsolatedModeEnabled(const Extension* extension,
+                                               std::u16string* error) const;
   };
 
   ManagementPolicy();
@@ -187,6 +192,10 @@ class ManagementPolicy {
   // Returns true for extensions that should be force uninstalled.
   bool ShouldForceUninstall(const Extension* extension,
                             std::u16string* error) const;
+
+  // Returns true if Enterprise Isolated Mode is enabled and the `extension`
+  // must remain enabled in it.
+  bool MustRemainIsolatedModeEnabled(const Extension* extension) const;
 
   // Returns true if the `extension` should be repaired upon corruption.
   // Note that this method doesn't check whether extension is corrupted or not

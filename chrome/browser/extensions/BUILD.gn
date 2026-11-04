@@ -516,6 +516,7 @@ source_set("extensions") {
     "//chrome/browser/download",
     "//chrome/browser/enterprise",
     "//chrome/browser/enterprise/connectors/reporting",
+    "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",

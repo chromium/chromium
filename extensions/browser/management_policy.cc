@@ -114,6 +114,12 @@ bool ManagementPolicy::Provider::ShouldForceUninstall(
   return false;
 }
 
+bool ManagementPolicy::Provider::MustRemainIsolatedModeEnabled(
+    const Extension* extension,
+    std::u16string* error) const {
+  return false;
+}
+
 void ManagementPolicy::RegisterProvider(Provider* provider) {
   providers_.insert(provider);
 }
@@ -212,6 +218,13 @@ bool ManagementPolicy::ShouldForceUninstall(const Extension* extension,
                                             std::u16string* error) const {
   return ApplyToProviderList(&Provider::ShouldForceUninstall, "Uninstalling",
                              false, extension, error);
+}
+
+bool ManagementPolicy::MustRemainIsolatedModeEnabled(
+    const Extension* extension) const {
+  return ApplyToProviderList(&Provider::MustRemainIsolatedModeEnabled,
+                             "Disabling in Isolated Mode", false, extension,
+                             /*error=*/nullptr);
 }
 
 bool ManagementPolicy::ShouldRepairIfCorrupted(const Extension* extension) {

@@ -63,6 +63,10 @@ bool IsIncognitoEnabled(const Extension* extension,
 bool IsIncognitoEnabledForSync(const ExtensionId& extension_id,
                                content::BrowserContext* context);
 
+// Returns true if `extension` must remain enabled in Enterprise Isolated Mode.
+bool MustRemainIsolatedModeEnabled(const Extension* extension,
+                                   content::BrowserContext* context);
+
 // Returns true if `extension` can see events and data from another sub-profile
 // (incognito to original profile, or vice versa).
 bool CanCrossIncognito(const Extension* extension,

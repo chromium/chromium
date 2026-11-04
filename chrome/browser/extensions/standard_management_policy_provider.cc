@@ -10,11 +10,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/isolated_mode/isolated_mode_settings_service_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/buildflags/buildflags.h"
@@ -331,6 +333,23 @@ bool StandardManagementPolicyProvider::ShouldForceUninstall(
     return true;
   }
   return false;
+}
+
+bool StandardManagementPolicyProvider::MustRemainIsolatedModeEnabled(
+    const Extension* extension,
+    std::u16string* error) const {
+  if (!util::CanBeIncognitoEnabled(extension)) {
+    return false;
+  }
+  if (!enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_)) {
+    return false;
+  }
+
+  // TODO(crbug.com/576672136): Return false when the
+  // IsolatedModeExtensionForcedInstalledSettings policy allows users to disable
+  // force-installed extensions in Isolated Mode.
+  return settings_->GetInstallationMode(extension) ==
+         ManagedInstallationMode::kForced;
 }
 
 std::u16string StandardManagementPolicyProvider::GetLoadErrorMessage(

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_value_map.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -68,6 +69,9 @@ void ExtensionPrefValueMap::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
   SetExtensionState(extension->id(), true);
+  SetExtensionIncognitoState(
+      extension->id(),
+      extensions::util::IsIncognitoEnabled(extension, browser_context));
 }
 
 void ExtensionPrefValueMap::OnExtensionUnloaded(
