@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -104,6 +105,11 @@ base::expected<void, std::string> ValidateTabForMove(
 
   if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
     return base::unexpected(tabs_constants::kNotAllowedForDevToolsError);
+  }
+
+  if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+    return base::unexpected(
+        tabs_constants::kNotAllowedForPictureInPictureError);
   }
 
   return {};

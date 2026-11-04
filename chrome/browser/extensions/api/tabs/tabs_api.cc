@@ -1846,6 +1846,11 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     return false;
   }
 
+  if (PictureInPictureWindowManager::IsChildWebContents(contents)) {
+    *error = tabs_constants::kNotAllowedForPictureInPictureError;
+    return false;
+  }
+
   // Don't let the extension move the tab if the user is dragging tabs.
   if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
@@ -2226,6 +2231,11 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
 
     if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
       return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+    }
+
+    if (PictureInPictureWindowManager::IsChildWebContents(web_contents)) {
+      return RespondNow(
+          Error(tabs_constants::kNotAllowedForPictureInPictureError));
     }
   }
 
