@@ -381,16 +381,19 @@ void DesktopWindowTreeHostWin::Close() {
   // Do not generate synthesized events during shutdown.
   dispatcher()->Shutdown();
 
-  // Calling Hide() can detach the content window's layer, so store it
-  // beforehand so we can access it below.
-  auto* window_layer = content_window()->layer();
+  // Calling Hide() can detach (and, when animations have zero duration,
+  // synchronously destroy) the content window's layer, so hold a WeakPtr
+  // beforehand so we can safely check it below.
+  base::WeakPtr<ui::Layer> window_layer =
+      content_window()->layer()->AsWeakPtr();
 
   content_window()->Hide();
   // TODO(beng): Move this entire branch to DNWA so it can be shared with X11.
   if (should_animate_window_close_) {
     pending_close_ = true;
-    // Animation may not start for a number of reasons.
-    if (!window_layer->GetAnimator()->is_animating()) {
+    // Animation may not start for a number of reasons, or may have already
+    // completed synchronously during Hide().
+    if (!window_layer || !window_layer->GetAnimator()->is_animating()) {
       message_handler_->Close();
     }
     // else case, OnWindowHidingAnimationCompleted does the actual Close.

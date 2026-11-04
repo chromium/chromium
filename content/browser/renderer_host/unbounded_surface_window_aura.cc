@@ -35,6 +35,7 @@
 #include "ui/events/blink/web_input_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -327,6 +328,7 @@ bool UnboundedSurfaceWindowAura::InitWindow(const gfx::Rect& bounds_in_screen) {
       std::make_unique<aura::Window>(this, aura::client::WINDOW_TYPE_MENU);
   window_->Init(ui::LayerType::LAYER_SURFACE);
   window_->SetTransparent(true);
+  wm::SetShadowElevation(window_.get(), wm::kShadowElevationNone);
   // TODO(crbug.com/508672616): Note that we may need to change this to a non-
   // transparent background later, if security issues arise. For example, this
   // allows content to put up a fully transparent (invisible) overlay over site
