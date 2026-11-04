@@ -129,20 +129,6 @@ suite('AppStyleUpdater', () => {
       });
 
   test(
-      'setLineFocusStyle does not update toolbar colors if line focus is ' +
-          'disabled',
-      () => {
-        const initialColor = 'rgb(255, 0, 0)';
-        app.style.setProperty('--toolbar-icon-color', initialColor);
-        visualBrowserProxy.lineFocusEnabled = false;
-
-        updater.setLineFocusStyle(LineFocusType.WINDOW);
-
-        assertEquals(
-            initialColor, app.style.getPropertyValue('--toolbar-icon-color'));
-      });
-
-  test(
       'setLineFocusStyle sets dark toolbar icon color in immersive mode for ' +
           'window line focus',
       () => {

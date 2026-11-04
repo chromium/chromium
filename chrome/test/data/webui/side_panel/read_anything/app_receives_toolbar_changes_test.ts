@@ -423,28 +423,6 @@ suite('AppReceivesToolbarChanges', () => {
         assertEquals('', app.$.container.style.paddingTop);
       });
 
-  suite('with line focus disabled', () => {
-    setup(async () => {
-      const result = await setupAppTestEnvironment({lineFocusEnabled: false});
-      app = result.app;
-      visualBrowserProxy = result.visualBrowserProxy;
-    });
-
-    test('line focus change does nothing', async () => {
-      const lineFocus = app.$.lineFocus;
-      assertTrue(!!lineFocus);
-
-      emitEvent(
-          app, ToolbarEvent.LINE_FOCUS_STYLE,
-          {detail: {data: LineFocusStyle.UNDERLINE}});
-      await microtasksFinished();
-      assertEquals(
-          '',
-          window.getComputedStyle(lineFocus).getPropertyValue(
-              '--line-focus-display'));
-    });
-  });
-
   test('font size change updates line focus line height', async () => {
     app.updateContent();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});

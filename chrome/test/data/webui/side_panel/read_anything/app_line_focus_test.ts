@@ -10,12 +10,10 @@ import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome-untrusted:
 import {eventToPromise, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, setupAppTestEnvironment} from './common.js';
-import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
 
 suite('AppLineFocus', () => {
   let app: AppElement;
   let contentController: ContentController;
-  let visualBrowserProxy: TestVisualBrowserProxy;
 
   function getLineFocusPadding(): number {
     const val = app.style.getPropertyValue('--line-focus-padding');
@@ -26,7 +24,6 @@ suite('AppLineFocus', () => {
     const result = await setupAppTestEnvironment();
     app = result.app;
     contentController = result.contentController;
-    visualBrowserProxy = result.visualBrowserProxy;
   });
 
   teardown(() => {
@@ -74,26 +71,6 @@ suite('AppLineFocus', () => {
 
     assertLT(0, getLineFocusPadding());
   });
-
-  test(
-      'new content does not update padding for line focus with flag disabled',
-      async () => {
-        visualBrowserProxy.lineFocusEnabled = false;
-        app.connectedCallback();
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
-            {detail: {data: LineFocusMovement.CURSOR}});
-        emitEvent(
-            app, ToolbarEvent.LINE_FOCUS_STYLE,
-            {detail: {data: LineFocusStyle.UNDERLINE}});
-        await microtasksFinished();
-        assertEquals(0, getLineFocusPadding());
-
-        app.updateContent();
-        await microtasksFinished();
-
-        assertEquals(0, getLineFocusPadding());
-      });
 
   test(
       'new content does not update padding for line focus with line focus off',

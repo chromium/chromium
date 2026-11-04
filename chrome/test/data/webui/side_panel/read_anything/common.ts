@@ -45,7 +45,6 @@ export interface AppTestSetupResult extends TestSetupResult {
 
 export interface AppTestFlags {
   readAnythingImprovedUiEnabled?: boolean;
-  lineFocusEnabled?: boolean;
 }
 
 // Initializes all singletons, mocks, and controllers in their strict
@@ -62,9 +61,6 @@ export function setupTestEnvironment(flags?: AppTestFlags): TestSetupResult {
   if (flags?.readAnythingImprovedUiEnabled !== undefined) {
     visualBrowserProxy.readAnythingImprovedUiEnabled =
         flags.readAnythingImprovedUiEnabled;
-  }
-  if (flags?.lineFocusEnabled !== undefined) {
-    visualBrowserProxy.lineFocusEnabled = flags.lineFocusEnabled;
   }
   VisualBrowserProxyImpl.setInstance(visualBrowserProxy);
   const contentBrowserProxy = new TestContentBrowserProxy();

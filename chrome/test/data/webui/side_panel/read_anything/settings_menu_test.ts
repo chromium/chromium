@@ -49,7 +49,7 @@ suite('SettingsMenuElement', () => {
   }
 
   setup(async () => {
-    const result = setupTestEnvironment({lineFocusEnabled: true});
+    const result = setupTestEnvironment();
     contentBrowserProxy = result.contentBrowserProxy;
     metrics = result.metrics;
     visualBrowserProxy = result.visualBrowserProxy;

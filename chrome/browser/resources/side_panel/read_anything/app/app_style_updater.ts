@@ -91,17 +91,10 @@ export class AppStyleUpdater {
   }
 
   setPaddingForLineFocus(padding: number) {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return;
-    }
-
     this.setStyle_('--line-focus-padding', `${padding}px`);
   }
 
   getPaddingForLineFocus(): number {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return 0;
-    }
     const padding = this.app_.style.getPropertyValue('--line-focus-padding');
     return padding ? parseInt(padding) : 0;
   }
@@ -115,8 +108,7 @@ export class AppStyleUpdater {
 
   setLineFocusStyle(type: LineFocusType) {
     this.setToolbarIconColorForLineFocus_(type);
-    if (!this.visualBrowserProxy_.isLineFocusEnabled() ||
-        type === LineFocusType.NONE) {
+    if (type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
       return;
     }
@@ -136,10 +128,6 @@ export class AppStyleUpdater {
   }
 
   private setToolbarIconColorForLineFocus_(type: LineFocusType) {
-    if (!this.visualBrowserProxy_.isLineFocusEnabled()) {
-      return;
-    }
-
     // Since the window line focus scrim goes into the toolbar area, update the
     // toolbar icons as needed to maintain visibility on top of the dark scrim.
     const isWindow = type === LineFocusType.WINDOW;
@@ -240,8 +228,7 @@ export class AppStyleUpdater {
     // disabled (via flag), off, or in line mode.
     const lineFocusDisplay =
         this.app_.style.getPropertyValue('--line-focus-display');
-    if (!this.visualBrowserProxy_.isLineFocusEnabled() ||
-        lineFocusDisplay === 'none' || !isLineFocusWindow) {
+    if (lineFocusDisplay === 'none' || !isLineFocusWindow) {
       this.setStyle_(
           '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
     }
