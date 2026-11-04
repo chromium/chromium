@@ -117,12 +117,34 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // True if the user is adding an entity instance, false if the user is
     // editing an entity instance.
     add: boolean;
+    // Whether the public pass Wallet disclosure notice feature is enabled.
+    enableWalletDisclosureNotice?: boolean;
+    // The details returned by `getDetailsForUpsertPass` when the disclosure
+    // notice feature is enabled.
+    upsertPassDetails?: chrome.autofillPrivate.UpsertPassDetails|null;
     // The title of the test.
     title: string;
   }
 
   const addOrEditEntityInstanceParams: AddOrEditParamsInterface[] = [
     {confirmed: true, add: true, title: 'AddEntityInstanceConfirmed'},
+    {
+      confirmed: true,
+      add: true,
+      enableWalletDisclosureNotice: true,
+      upsertPassDetails: {
+        legalMessageLines: [],
+        contextToken: 'test-context-token',
+      },
+      title: 'AddEntityInstanceConfirmed_WithWalletDisclosureDetails',
+    },
+    {
+      confirmed: true,
+      add: true,
+      enableWalletDisclosureNotice: true,
+      upsertPassDetails: null,
+      title: 'AddEntityInstanceConfirmed_WithoutWalletDisclosureDetails',
+    },
     {confirmed: true, add: false, title: 'EditEntityInstanceConfirmed'},
     {confirmed: false, add: true, title: 'AddEntityInstanceCancelled'},
     {confirmed: false, add: false, title: 'EditEntityInstanceCancelled'},
@@ -130,6 +152,13 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
   addOrEditEntityInstanceParams.forEach(
       (params) => test(params.title, async function() {
+        loadTimeData.overrideValues({
+          enableWalletDisclosureNoticePublicPass:
+              !!params.enableWalletDisclosureNotice,
+        });
+        entityDataManager.setGetDetailsForUpsertPassResponse(
+            params.upsertPassDetails ?? null);
+
         const newAttributeInstanceValue = 'BMW';
         let expectedEntityInstance: chrome.autofillPrivate.EntityInstance;
 
@@ -199,7 +228,14 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           // Expect storedInWallet to be set if supportsWalletStorage is true
           // and only when new entities.
           if (params.add && testEntityInstance.type.supportsWalletStorage) {
-            expectedEntityInstance.storedInWallet = true;
+            if (params.enableWalletDisclosureNotice) {
+              expectedEntityInstance.storedInWallet =
+                  !!params.upsertPassDetails;
+              expectedEntityInstance.contextToken =
+                  params.upsertPassDetails?.contextToken;
+            } else {
+              expectedEntityInstance.storedInWallet = true;
+            }
           }
 
           const dialogConfirmedPromise = eventToPromise<
