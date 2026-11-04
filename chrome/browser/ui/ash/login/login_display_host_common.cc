@@ -239,6 +239,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(CHECK_DEREF(metrics_service)),
@@ -250,6 +251,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
           CHECK_DEREF(device_restriction_schedule_controller)),
       multi_user_sign_in_policy_controller_(
           CHECK_DEREF(multi_user_sign_in_policy_controller)),
+      system_clock_(CHECK_DEREF(system_clock)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),

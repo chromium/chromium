@@ -455,6 +455,7 @@ WizardController::WizardController(
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     WizardContext* wizard_context)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(metrics_service),
@@ -466,6 +467,7 @@ WizardController::WizardController(
           device_restriction_schedule_controller),
       multi_user_sign_in_policy_controller_(
           CHECK_DEREF(multi_user_sign_in_policy_controller)),
+      system_clock_(CHECK_DEREF(system_clock)),
       quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>(
               &local_state_.get())),
@@ -2499,7 +2501,7 @@ void WizardController::OnEnrollmentDone() {
         &application_locale_storage_.get(), shared_url_loader_factory_,
         &browser_policy_connector_ash_.get(), component_manager_ash_,
         device_restriction_schedule_controller_.get(),
-        &multi_user_sign_in_policy_controller_.get());
+        &multi_user_sign_in_policy_controller_.get(), &system_clock_.get());
   } else {
     ShowLoginScreen();
   }
@@ -2556,7 +2558,7 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
           &application_locale_storage_.get(), shared_url_loader_factory_,
           &browser_policy_connector_ash_.get(), component_manager_ash_,
           device_restriction_schedule_controller_.get(),
-          &multi_user_sign_in_policy_controller_.get());
+          &multi_user_sign_in_policy_controller_.get(), &system_clock_.get());
       break;
     case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();

@@ -1401,6 +1401,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
             ->device_restriction_schedule_controller(),
         g_browser_process->platform_part()
             ->multi_user_sign_in_policy_controller(),
+        g_browser_process->platform_part()->GetSystemClock(),
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
 

@@ -61,6 +61,11 @@ class View;
 }  // namespace views
 
 namespace ash {
+
+namespace system {
+class SystemClock;
+}  // namespace system
+
 class ExistingUserController;
 class MojoSystemInfoDispatcher;
 class OobeUIDialogDelegate;
@@ -76,9 +81,9 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public ui::UserActivityObserver {
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
-  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`
-  // and `multi_user_sign_in_policy_controller` must be non-null and must
-  // outlive `this`.
+  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
+  // `multi_user_sign_in_policy_controller` and `system_clock` must be non-null
+  // and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostMojo(
       PrefService* local_state,
@@ -92,6 +97,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
           device_restriction_schedule_controller,
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
+      system::SystemClock* system_clock,
       DisplayedScreen displayed_screen,
       bool update_geolocation_usage_allowed);
 

@@ -52,6 +52,10 @@ class MultiUserSignInPolicyController;
 
 namespace ash {
 
+namespace system {
+class SystemClock;
+}  // namespace system
+
 class LoginFeedback;
 class OobeMetricsHelper;
 class OobeCrosEventsMetrics;
@@ -65,9 +69,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public ash::SessionTerminationManager::Observer {
  public:
   // `local_state`, `metrics_service`, `application_locale_storage`,
-  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`
-  // and `multi_user_sign_in_policy_controller` must be non-null and must
-  // outlive `this`.
+  // `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
+  // `multi_user_sign_in_policy_controller` and `system_clock` must be non-null
+  // and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostCommon(
       PrefService* local_state,
@@ -81,6 +85,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
           device_restriction_schedule_controller,
       const user_manager::MultiUserSignInPolicyController*
           multi_user_sign_in_policy_controller,
+      system::SystemClock* system_clock,
       bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
@@ -183,6 +188,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       device_restriction_schedule_controller_;
   const raw_ref<const user_manager::MultiUserSignInPolicyController>
       multi_user_sign_in_policy_controller_;
+  const raw_ref<system::SystemClock> system_clock_;
 
  private:
   void Cleanup();

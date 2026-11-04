@@ -83,9 +83,9 @@ void RemoveObsoleteKioskCryptohomes() {
 
 // Starts kiosk app launch and shows the splash screen.
 // `local_state`, `metrics_service`, `application_locale_storage`,
-// `browser_policy_connector_ash`, `device_restriction_schedule_controller`, and
-// `multi_user_sign_in_policy_controller` must be non-null and must outlive
-// LoginDisplayHostWebUI.
+// `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
+// `multi_user_sign_in_policy_controller`, and `system_clock` must be non-null
+// and must outlive LoginDisplayHostWebUI.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartKioskSession(
     PrefService* local_state,
@@ -98,6 +98,7 @@ void StartKioskSession(
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     KioskAppId app,
     bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
@@ -113,7 +114,7 @@ void StartKioskSession(
       local_state, metrics_service, application_locale_storage,
       std::move(shared_url_loader_factory), browser_policy_connector_ash,
       std::move(component_manager_ash), device_restriction_schedule_controller,
-      multi_user_sign_in_policy_controller);
+      multi_user_sign_in_policy_controller, system_clock);
   display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
@@ -122,9 +123,9 @@ void StartKioskSession(
 }
 
 // `local_state`, `metrics_service`, `application_locale_storage`,
-// `browser_policy_connector_ash`, `device_restriction_schedule_controller`, and
-// `multi_user_sign_in_policy_controller` must be non-null and must outlive
-// LoginDisplayHostWebUI.
+// `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
+// `multi_user_sign_in_policy_controller`, and `system_clock` must be non-null
+// and must outlive LoginDisplayHostWebUI.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartAutoLaunchKioskSession(
     PrefService* local_state,
@@ -136,7 +137,8 @@ void StartAutoLaunchKioskSession(
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
-        multi_user_sign_in_policy_controller) {
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock) {
   auto app = KioskController::Get().GetAutoLaunchApp();
   CHECK(app.has_value());
 
@@ -144,15 +146,15 @@ void StartAutoLaunchKioskSession(
       local_state, metrics_service, application_locale_storage,
       std::move(shared_url_loader_factory), browser_policy_connector_ash,
       std::move(component_manager_ash), device_restriction_schedule_controller,
-      multi_user_sign_in_policy_controller, app.value().id(),
+      multi_user_sign_in_policy_controller, system_clock, app.value().id(),
       /*is_auto_launch=*/true);
 }
 
 // Starts the login/oobe screen.
 // `local_state`, `metrics_service`, `application_locale_storage`,
-// `browser_policy_connector_ash`, `device_restriction_schedule_controller`, and
-// `multi_user_sign_in_policy_controller` must be non-null and must outlive the
-// LoginDisplayHost created by ShowLoginWizard().
+// `browser_policy_connector_ash`, `device_restriction_schedule_controller`,
+// `multi_user_sign_in_policy_controller`, and `system_clock` must be non-null
+// and must outlive the LoginDisplayHost created by ShowLoginWizard().
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void StartLoginOobeSession(
     PrefService* local_state,
@@ -164,13 +166,14 @@ void StartLoginOobeSession(
     policy::DeviceRestrictionScheduleController*
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
-        multi_user_sign_in_policy_controller) {
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock) {
   // State will be defined once out-of-box/login branching is complete.
   ShowLoginWizard(
       local_state, metrics_service, application_locale_storage,
       std::move(shared_url_loader_factory), browser_policy_connector_ash,
       std::move(component_manager_ash), device_restriction_schedule_controller,
-      multi_user_sign_in_policy_controller, OOBE_SCREEN_UNKNOWN);
+      multi_user_sign_in_policy_controller, system_clock, OOBE_SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
   if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
@@ -488,6 +491,7 @@ void ChromeSessionManager::Initialize(
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
@@ -497,6 +501,7 @@ void ChromeSessionManager::Initialize(
   CHECK(component_manager_ash);
   CHECK(device_restriction_schedule_controller);
   CHECK(multi_user_sign_in_policy_controller);
+  CHECK(system_clock);
 
   // If a forced powerwash was triggered and no confirmation from the user is
   // necessary, we trigger the device wipe here before the user can log in again
@@ -543,7 +548,7 @@ void ChromeSessionManager::Initialize(
         std::move(shared_url_loader_factory),
         &browser_policy_connector_ash_.get(), std::move(component_manager_ash),
         device_restriction_schedule_controller,
-        multi_user_sign_in_policy_controller);
+        multi_user_sign_in_policy_controller, system_clock);
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
     if (is_running_test && !force_login_screen_in_test) {
@@ -555,7 +560,7 @@ void ChromeSessionManager::Initialize(
         std::move(shared_url_loader_factory),
         &browser_policy_connector_ash_.get(), std::move(component_manager_ash),
         device_restriction_schedule_controller,
-        multi_user_sign_in_policy_controller);
+        multi_user_sign_in_policy_controller, system_clock);
   } else {
     VLOG(1) << "Starting Chrome with a user session.";
     StartUserSession(std::move(shared_url_loader_factory), user_manager_,

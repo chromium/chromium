@@ -54,8 +54,6 @@
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -198,6 +196,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
         device_restriction_schedule_controller,
     const user_manager::MultiUserSignInPolicyController*
         multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
@@ -208,6 +207,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              std::move(component_manager_ash),
                              device_restriction_schedule_controller,
                              multi_user_sign_in_policy_controller,
+                             system_clock,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
@@ -215,8 +215,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
           std::move(shared_url_loader_factory),
           browser_policy_connector_ash,
           multi_user_sign_in_policy_controller,
-          // TODO(crbug.com/404133029): Avoid using g_browser_process.
-          g_browser_process->platform_part()->GetSystemClock(),
+          system_clock,
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
@@ -943,7 +942,8 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
       &application_locale_storage_.get(), shared_url_loader_factory_.get(),
       &browser_policy_connector_ash_.get(), component_manager_ash_,
       &device_restriction_schedule_controller_.get(),
-      &multi_user_sign_in_policy_controller_.get(), GetWizardContext());
+      &multi_user_sign_in_policy_controller_.get(), &system_clock_.get(),
+      GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_login_impl_);

@@ -52,9 +52,6 @@ specific_include_rules = {
   "user_adding_screen\\.cc": [
     "+chrome/browser/global_features.h",
   ],
-  "login_display_host_mojo\\.cc": [
-    "+chrome/browser/global_features.h",
-  ],
   "fake_login_display_host\\.cc": [
     "+chrome/browser/global_features.h",
   ],
