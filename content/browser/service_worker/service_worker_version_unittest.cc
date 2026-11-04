@@ -1947,6 +1947,30 @@ TEST_P(ServiceWorkerVersionTest, FailToStart_RestartStalledWorker) {
       version_->version_id()));
 }
 
+// Like FailToStart_RestartStalledWorker, but starting the worker is disallowed
+// by the time it stops, so it must not be restarted (crbug.com/531900625).
+TEST_P(ServiceWorkerVersionTest, FailToStart_DoNotRestartDisallowedWorker) {
+  std::optional<blink::ServiceWorkerStatusCode> status;
+  base::RunLoop run_loop;
+  // Stall in starting.
+  auto* client = helper_->AddNewPendingInstanceClient<
+      DelayedFakeEmbeddedWorkerInstanceClient>(helper_.get());
+  client->UnblockStopWorker();
+  version_->StartWorker(
+      ServiceWorkerMetrics::EventType::FETCH_MAIN_FRAME,
+      ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+  base::RunLoop().RunUntilIdle();
+
+  DisallowServiceWorkerWithLogsContentBrowserClient test_browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(
+      &test_browser_client);
+  version_->StopWorker(base::DoNothing());
+  run_loop.Run();
+
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorDisallowed, status.value());
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version_->running_status());
+}
+
 TEST_P(ServiceWorkerVersionTest, InstalledFetchEventHandlerExists) {
   auto* service_worker =
       helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());

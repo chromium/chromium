@@ -3272,10 +3272,11 @@ void ServiceWorkerVersion::OnStoppedInternal(
     protect = this;
   }
 
-  // |start_callbacks_| can be non-empty if a start worker request arrived while
-  // the worker was stopping. The worker must be restarted to fulfill the
-  // request.
+  // |start_callbacks_| can be non-empty if the worker was stopped while
+  // starting, or if a start worker request arrived while the worker was
+  // stopping. The worker must be restarted to fulfill the request.
   bool should_restart = !start_callbacks_.empty();
+  bool is_restart_disallowed = false;
   if (is_redundant() || in_dtor_) {
     // This worker will be destroyed soon.
     should_restart = false;
@@ -3291,6 +3292,11 @@ void ServiceWorkerVersion::OnStoppedInternal(
     // This worker is stopped while warmed-up or warming-up. Such workers don't
     // need to restart.
     should_restart = false;
+  } else if (should_restart && context_ && !IsStartWorkerAllowed()) {
+    // Starting may have been disallowed since it was requested, e.g. because
+    // the worker's extension was disabled (crbug.com/531900625).
+    should_restart = false;
+    is_restart_disallowed = true;
   }
 
   if (!stop_time_.is_null()) {
@@ -3313,8 +3319,11 @@ void ServiceWorkerVersion::OnStoppedInternal(
 
   if (!should_restart) {
     // Let all start callbacks fail.
-    FinishStartWorker(DeduceStartWorkerFailureReason(
-        blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
+    FinishStartWorker(
+        is_restart_disallowed
+            ? blink::ServiceWorkerStatusCode::kErrorDisallowed
+            : DeduceStartWorkerFailureReason(
+                  blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed));
   }
 
   // TODO(crbug.com/40864997): remove the following DCHECK when the cause

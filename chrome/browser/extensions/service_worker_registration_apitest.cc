@@ -653,6 +653,47 @@ IN_PROC_BROWSER_TEST_F(
             GetServiceWorkerRegistrationState(*extension_ref));
 }
 
+// Tests that disabling an extension while its worker is starting doesn't break
+// the worker once the extension is re-enabled (crbug.com/531900625).
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
+                       DisableExtensionWhileWorkerIsStarting) {
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(
+      R"({
+           "name": "Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })");
+  // Keep the worker starting until it's stopped.
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                          R"(chrome.test.sendMessage('evaluating');
+                             while (true) {})");
+
+  ExtensionTestMessageListener evaluating_listener("evaluating");
+  ChromeTestExtensionLoader(profile()).LoadUnpackedExtensionAsync(
+      extension_dir.UnpackedPath(), base::DoNothing());
+  ASSERT_TRUE(evaluating_listener.WaitUntilSatisfied());
+  const ExtensionId id = evaluating_listener.extension_id_for_message();
+
+  {
+    TestServiceWorkerTaskQueueObserver observer;
+    DisableExtension(id);
+    observer.WaitForWorkerUnregistered(id);
+  }
+
+  // Unpacked extension files are read on demand, so the next worker uses this.
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                          R"(chrome.runtime.onInstalled.addListener(() => {});
+                             chrome.test.sendMessage('listener added');)");
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener listener_added("listener added");
+  EnableExtension(id);
+  ASSERT_TRUE(listener_added.WaitUntilSatisfied());
+  histogram_tester.ExpectTotalCount("Stability.BadMessageTerminated.Content",
+                                    0);
+}
+
 // Verifies that a service worker registration associated with an extension's
 // manifest cannot be removed via the `chrome.browsingData` API.
 // Regression test for https://crbug.com/40247767.
