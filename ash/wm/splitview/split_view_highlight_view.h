@@ -49,6 +49,15 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
       bool previews_only,
       bool can_dragged_window_be_snapped);
 
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+  SystemDecoration* highlight_border_for_testing() {
+    return highlight_border_.get();
+  }
+
  private:
   // Determines whether this particular highlight view is located at the right
   // or bottom of the screen. These highlights animate in the opposite direction
@@ -56,7 +65,7 @@ class ASH_EXPORT SplitViewHighlightView : public views::View {
   // have to be done to ensure the animation is correct.
   const bool is_right_or_bottom_;
 
-  std::unique_ptr<SystemDecoration> view_decoration_;
+  std::unique_ptr<SystemDecoration> highlight_border_;
 };
 
 }  // namespace ash

@@ -68,13 +68,28 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
       cros_tokens::kCrosSysPrimary,
       gfx::RoundedCornersF(kHighlightScreenRoundRectRadius)));
 
-  view_decoration_ = SystemDecoration::CreateForView(
-      this, SystemDecoration::ShadowType::kNone,
+  // Parent the highlight border under `layer()` rather than as a sibling region
+  // layer so it inherits `layer()`'s opacity and clip-rect animations.
+  highlight_border_ = SystemDecoration::Create(
+      SystemDecoration::ShadowType::kNone,
       SystemDecoration::HighlightBorderMode::kHighlightBorder);
-  view_decoration_->SetRoundedCornerRadius(kHighlightScreenRoundRectRadius);
+  highlight_border_->SetRoundedCornerRadius(kHighlightScreenRoundRectRadius);
+  layer()->Add(highlight_border_->GetLayer());
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
+
+void SplitViewHighlightView::AddedToWidget() {
+  highlight_border_->ObserveColorProviderSource(GetWidget());
+}
+
+void SplitViewHighlightView::RemovedFromWidget() {
+  highlight_border_->ObserveColorProviderSource(nullptr);
+}
+
+void SplitViewHighlightView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  highlight_border_->SetContentBounds(GetLocalBounds());
+}
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,

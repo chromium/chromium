@@ -7,6 +7,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
+#include "ash/style/system_decoration.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -197,6 +198,32 @@ TEST_F(SplitViewHighlightViewTest, HighlightInRtl) {
 
   right_highlight_->layer()->GetAnimator()->StopAnimating();
   EXPECT_EQ(gfx::Rect(), right_highlight_->layer()->clip_rect());
+}
+
+TEST_F(SplitViewHighlightViewTest, HighlightBorderInheritsLayerState) {
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  SystemDecoration* border = left_highlight_->highlight_border_for_testing();
+  ASSERT_TRUE(border);
+  EXPECT_EQ(left_highlight_->layer(), border->GetLayer()->parent());
+
+  const gfx::Rect start_bounds(10, 20, 100, 100);
+  const gfx::Rect grown_bounds(10, 20, 200, 100);
+  SetLeftBounds(start_bounds, /*animate=*/false);
+  EXPECT_EQ(left_highlight_->GetLocalBounds(), border->GetContentBounds());
+  EXPECT_TRUE(border->GetHighlightBorderValueForTesting().has_value());
+
+  SetLeftBounds(grown_bounds, /*animate=*/true);
+  EXPECT_EQ(left_highlight_->GetLocalBounds(), border->GetContentBounds());
+  left_highlight_->layer()->GetAnimator()->StopAnimating();
+
+  // When shrinking, content bounds remain at `grown_bounds` size until the
+  // clip-rect animation finishes and updates the view bounds.
+  SetLeftBounds(start_bounds, /*animate=*/true);
+  EXPECT_EQ(gfx::Rect(grown_bounds.size()), border->GetContentBounds());
+  left_highlight_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(gfx::Rect(start_bounds.size()), border->GetContentBounds());
 }
 
 }  // namespace ash
