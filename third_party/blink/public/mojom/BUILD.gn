@@ -911,16 +911,6 @@ mojom("mojom_platform") {
   scramble_message_ids = false
 }
 
-if (is_android) {
-  # "mojom_platform" no longer generates Java bindings; the mojom files that are
-  # needed from Java live in "android_mojo_bindings" instead.
-  # TODO(crbug.com/579031069): Remove this alias once //clank depends on
-  # :android_mojo_bindings_java instead of :mojom_platform_java.
-  java_group("mojom_platform_java") {
-    deps = [ ":android_mojo_bindings_java" ]
-  }
-}
-
 # Kept separate from "mojom_platform" because the Java bindings are
 # needed by Android's implementation (in chrome/android or in android_webview)
 # for following mojom files. "mojom_platform" and "mojom_core" don't generate
