@@ -210,6 +210,22 @@ const KURL& WorkerClassicScriptLoader::ResponseURL() const {
   return response_url_;
 }
 
+TextEncoding WorkerClassicScriptLoader::GetScriptEncoding() const {
+  // If `decoder_` is available, return its encoding so that any BOM-detected
+  // encoding override is reflected.
+  if (decoder_) {
+    return decoder_->Encoding();
+  }
+  // Otherwise, resolve `response_encoding_` with the same fallback rules as
+  // `TextResourceDecoder::DefaultEncoding` (UTF-8 when unspecified, or Latin-1
+  // when invalid).
+  if (response_encoding_.empty()) {
+    return Utf8Encoding();
+  }
+  TextEncoding encoding(response_encoding_);
+  return encoding.IsValid() ? encoding : Latin1Encoding();
+}
+
 void WorkerClassicScriptLoader::DidReceiveResponse(
     uint64_t identifier,
     const ResourceResponse& response) {
@@ -258,9 +274,7 @@ void WorkerClassicScriptLoader::DidReceiveData(base::span<const char> data) {
 
   if (!decoder_) {
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
-        TextResourceDecoderOptions::kPlainTextContent,
-        response_encoding_.empty() ? Utf8Encoding()
-                                   : TextEncoding(response_encoding_)));
+        TextResourceDecoderOptions::kPlainTextContent, GetScriptEncoding()));
   }
 
   if (data.empty()) {

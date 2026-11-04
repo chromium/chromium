@@ -16,8 +16,14 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
+#include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -71,6 +77,15 @@ class BrowserSideSender
 
   void PushBody(const String& data) {
     PushDataPipe(data.Utf8(), body_handle_.get());
+  }
+
+  void PushBodyRawBytes(base::span<const uint8_t> bytes) {
+    ASSERT_TRUE(body_handle_.is_valid());
+    size_t actually_written_bytes = 0;
+    MojoResult rv = body_handle_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
+                                            actually_written_bytes);
+    ASSERT_EQ(MOJO_RESULT_OK, rv);
+    ASSERT_EQ(bytes.size(), actually_written_bytes);
   }
 
   void PushMetaData(const String& data) {
@@ -204,11 +219,32 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
     return worker_waiter_.get();
   }
 
+  base::WaitableEvent* GetScriptDataOnWorkerThread(
+      const String& script_url,
+      std::unique_ptr<InstalledScriptsManager::ScriptData>* out_data) {
+    PostCrossThreadTask(
+        *worker_thread_->GetTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(
+            &ServiceWorkerInstalledScriptsManagerTest::CallGetScriptData,
+            CrossThreadUnretained(this), script_url,
+            CrossThreadUnretained(out_data),
+            CrossThreadUnretained(worker_waiter_.get())));
+    return worker_waiter_.get();
+  }
+
  private:
   void CallGetRawScriptData(const String& script_url,
                             std::unique_ptr<RawScriptData>* out_data,
                             base::WaitableEvent* waiter) {
     *out_data = installed_scripts_manager_->GetRawScriptData(KURL(script_url));
+    waiter->Signal();
+  }
+
+  void CallGetScriptData(
+      const String& script_url,
+      std::unique_ptr<InstalledScriptsManager::ScriptData>* out_data,
+      base::WaitableEvent* waiter) {
+    *out_data = installed_scripts_manager_->GetScriptData(KURL(script_url));
     waiter->Signal();
   }
 
@@ -447,6 +483,132 @@ TEST_F(ServiceWorkerInstalledScriptsManagerTest, EarlyDisconnectionManager) {
     // |script_data| should be null since the data wasn't received on the
     // renderer process.
     EXPECT_FALSE(script_data);
+  }
+}
+
+TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetScriptDataEncoding) {
+  const KURL kScriptUrl1("https://example.com/shift_jis.js");
+  const KURL kScriptUrl2("https://example.com/default_utf8.js");
+  const KURL kScriptUrl3("https://example.com/invalid_encoding.js");
+  const KURL kScriptUrl4("https://example.com/utf16le_bom.js");
+
+  BrowserSideSender sender;
+  CreateInstalledScriptsManager(sender.CreateAndBind(
+      {kScriptUrl1, kScriptUrl2, kScriptUrl3, kScriptUrl4}));
+
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    const String kExpectedBody = "var x = 1;";
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl1, &script_data);
+    sender.TransferInstalledScript(kScriptUrl1, "Shift_JIS",
+                                   HashMap<String, String>(),
+                                   kExpectedBody.length() + 1, 0);
+    sender.PushBody(kExpectedBody);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    EXPECT_EQ(TextEncoding("Shift_JIS"), script_data->GetScriptEncoding());
+  }
+
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    const String kExpectedBody = "var x = 2;";
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl2, &script_data);
+    sender.TransferInstalledScript(kScriptUrl2, g_empty_string,
+                                   HashMap<String, String>(),
+                                   kExpectedBody.length() + 1, 0);
+    sender.PushBody(kExpectedBody);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    EXPECT_EQ(Utf8Encoding(), script_data->GetScriptEncoding());
+  }
+
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    const String kExpectedBody = "var x = 3;";
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl3, &script_data);
+    sender.TransferInstalledScript(kScriptUrl3, "invalid-encoding",
+                                   HashMap<String, String>(),
+                                   kExpectedBody.length() + 1, 0);
+    sender.PushBody(kExpectedBody);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    EXPECT_EQ(Latin1Encoding(), script_data->GetScriptEncoding());
+  }
+
+  {
+    std::unique_ptr<InstalledScriptsManager::ScriptData> script_data;
+    // UTF-16LE BOM (0xFF, 0xFE) followed by 'a' (0x61, 0x00) overrides the
+    // response header encoding.
+    const uint8_t kUtf16LeBytes[] = {0xFF, 0xFE, 0x61, 0x00};
+    base::WaitableEvent* waiter =
+        GetScriptDataOnWorkerThread(kScriptUrl4, &script_data);
+    sender.TransferInstalledScript(kScriptUrl4, "Shift_JIS",
+                                   HashMap<String, String>(),
+                                   std::size(kUtf16LeBytes), 0);
+    sender.PushBodyRawBytes(kUtf16LeBytes);
+    sender.FinishTransferBody();
+    sender.FinishTransferMetaData();
+    waiter->Wait();
+    ASSERT_TRUE(script_data);
+    EXPECT_EQ(TextEncoding("UTF-16LE"), script_data->GetScriptEncoding());
+    String installed_source = script_data->TakeSourceText();
+    EXPECT_EQ("a", installed_source);
+
+    auto* loader = MakeGarbageCollected<WorkerClassicScriptLoader>();
+    EXPECT_EQ(Utf8Encoding(), loader->GetScriptEncoding());
+    loader->DidReceiveData(base::as_chars(base::span(kUtf16LeBytes)));
+    loader->DidFinishLoading(0);
+    EXPECT_EQ(script_data->GetScriptEncoding(), loader->GetScriptEncoding());
+    EXPECT_EQ(installed_source, loader->SourceText());
+  }
+}
+
+TEST_F(ServiceWorkerInstalledScriptsManagerTest,
+       CachedMetadataHandlerEncoding) {
+  const KURL kScriptUrl("https://example.com/sw.js");
+
+  auto* utf8_handler =
+      MakeGarbageCollected<ServiceWorkerScriptCachedMetadataHandler>(
+          nullptr, kScriptUrl, nullptr, TextEncoding("UTF-8"));
+  auto* sjis_handler =
+      MakeGarbageCollected<ServiceWorkerScriptCachedMetadataHandler>(
+          nullptr, kScriptUrl, nullptr, TextEncoding("Shift_JIS"));
+  auto* empty_encoding_handler =
+      MakeGarbageCollected<ServiceWorkerScriptCachedMetadataHandler>(
+          nullptr, kScriptUrl, nullptr, TextEncoding());
+  auto* invalid_handler =
+      MakeGarbageCollected<ServiceWorkerScriptCachedMetadataHandler>(
+          nullptr, kScriptUrl, nullptr, TextEncoding("invalid-encoding"));
+
+  EXPECT_EQ("UTF-8", utf8_handler->Encoding());
+  EXPECT_EQ("Shift_JIS", sjis_handler->Encoding());
+  EXPECT_EQ(Latin1Encoding().GetName(), empty_encoding_handler->Encoding());
+  EXPECT_EQ(Latin1Encoding().GetName(), invalid_handler->Encoding());
+
+  uint32_t utf8_tag = V8CodeCache::TagForCodeCache(utf8_handler);
+  uint32_t sjis_tag = V8CodeCache::TagForCodeCache(sjis_handler);
+  uint32_t invalid_tag = V8CodeCache::TagForCodeCache(invalid_handler);
+  EXPECT_NE(utf8_tag, sjis_tag);
+  EXPECT_NE(utf8_tag, invalid_tag);
+  EXPECT_EQ(V8CodeCache::TagForCodeCache(empty_encoding_handler), invalid_tag);
+
+  {
+    ScopedServiceWorkerScriptEncodingForTest scoped_feature(false);
+    EXPECT_EQ(g_empty_string, utf8_handler->Encoding());
+    EXPECT_EQ(g_empty_string, sjis_handler->Encoding());
+    EXPECT_EQ(g_empty_string, empty_encoding_handler->Encoding());
+    EXPECT_EQ(g_empty_string, invalid_handler->Encoding());
+    EXPECT_EQ(V8CodeCache::TagForCodeCache(utf8_handler),
+              V8CodeCache::TagForCodeCache(sjis_handler));
   }
 }
 

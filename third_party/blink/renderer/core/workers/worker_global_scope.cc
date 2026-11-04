@@ -374,6 +374,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
   for (const KURL& complete_url : completed_urls) {
     KURL response_url;
     String source_code;
+    TextEncoding encoding;
     std::unique_ptr<Vector<uint8_t>> cached_meta_data;
     const String error_message =
         NetworkErrorMessageAtImportScript(complete_url);
@@ -383,7 +384,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
     // this succeeds, let script be the result. Otherwise, rethrow the
     // exception."
     if (!FetchClassicImportedScript(complete_url, &response_url, &source_code,
-                                    &cached_meta_data)) {
+                                    &cached_meta_data, &encoding)) {
       // TODO(vogelheim): In case of certain types of failure - e.g. 'nosniff'
       // block - this ought to be a DOMExceptionCode::kSecurityError, but that
       // information presently gets lost on the way.
@@ -406,7 +407,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
     // fetch options, and muted errors.
     // TODO(crbug.com/1082086): Fix the base URL.
     CachedMetadataHandler* handler(CreateWorkerScriptCachedMetadataHandler(
-        complete_url, std::move(cached_meta_data)));
+        complete_url, std::move(cached_meta_data), std::move(encoding)));
     ClassicScript* script = ClassicScript::Create(
         source_code, ClassicScript::StripFragmentIdentifier(complete_url),
         response_url /* base_url */, ScriptFetchOptions(),
@@ -440,7 +441,8 @@ bool WorkerGlobalScope::FetchClassicImportedScript(
     const KURL& script_url,
     KURL* out_response_url,
     String* out_source_code,
-    std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data) {
+    std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data,
+    TextEncoding* out_response_encoding) {
   ExecutionContext* execution_context = GetExecutionContext();
   WorkerClassicScriptLoader* classic_script_loader =
       MakeGarbageCollected<WorkerClassicScriptLoader>();
@@ -453,6 +455,7 @@ bool WorkerGlobalScope::FetchClassicImportedScript(
   *out_response_url = classic_script_loader->ResponseURL();
   *out_source_code = classic_script_loader->SourceText();
   *out_cached_meta_data = classic_script_loader->ReleaseCachedMetadata();
+  *out_response_encoding = classic_script_loader->GetScriptEncoding();
   probe::ScriptImported(execution_context, classic_script_loader->Identifier(),
                         classic_script_loader->SourceText());
   return true;
@@ -642,7 +645,8 @@ void WorkerGlobalScope::DidFetchClassicScript(
           : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       classic_script_loader->GetDocumentPolicy(), response_origin_trial_tokens,
       classic_script_loader->SourceText(),
-      classic_script_loader->ReleaseCachedMetadata(), stack_id);
+      classic_script_loader->ReleaseCachedMetadata(), stack_id,
+      classic_script_loader->GetScriptEncoding());
 }
 
 // [Worker]
@@ -657,7 +661,8 @@ void WorkerGlobalScope::RunClassicScript(
     const Vector<String>* response_origin_trial_tokens,
     const String& source_code,
     std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-    const v8_inspector::V8StackTraceId& stack_id) {
+    const v8_inspector::V8StackTraceId& stack_id,
+    TextEncoding encoding) {
   // [Worker] Step 12, performFetch, Step 3.
   //
   // [ServiceWorker] Step 8.1: "Set workerGlobalScope to be the result of
@@ -672,18 +677,19 @@ void WorkerGlobalScope::RunClassicScript(
   // [ServiceWorker] Step 9.4.1. "Set evaluationStatus to the result of running
   // the classic script script." [spec text]
   EvaluateClassicScript(response_url, source_code, std::move(cached_meta_data),
-                        stack_id);
+                        stack_id, std::move(encoding));
 }
 
 void WorkerGlobalScope::EvaluateClassicScript(
     const KURL& script_url,
     String source_code,
     std::unique_ptr<Vector<uint8_t>> cached_meta_data,
-    const v8_inspector::V8StackTraceId& stack_id) {
+    const v8_inspector::V8StackTraceId& stack_id,
+    TextEncoding encoding) {
   DCHECK(!IsContextPaused());
 
   CachedMetadataHandler* handler = CreateWorkerScriptCachedMetadataHandler(
-      script_url, std::move(cached_meta_data));
+      script_url, std::move(cached_meta_data), std::move(encoding));
   // Cross-origin workers are disallowed, so use
   // SanitizeScriptErrors::kDoNotSanitize.
   Script* worker_script = ClassicScript::Create(

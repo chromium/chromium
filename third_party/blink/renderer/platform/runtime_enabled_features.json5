@@ -5849,6 +5849,11 @@
       name: "ServiceWorkerInDedicatedWorker",
     },
     {
+      // Killswitch for crbug.com/552757015.
+      name: "ServiceWorkerScriptEncoding",
+      status: "stable",
+    },
+    {
       name: "ServiceWorkerStaticRouterTimingInfo",
       status: "stable",
     },

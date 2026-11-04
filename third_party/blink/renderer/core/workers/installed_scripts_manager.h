@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -30,7 +31,8 @@ class InstalledScriptsManager {
     ScriptData(const KURL& script_url,
                String source_text,
                std::unique_ptr<Vector<uint8_t>> meta_data,
-               std::unique_ptr<CrossThreadHTTPHeaderMapData>);
+               std::unique_ptr<CrossThreadHTTPHeaderMapData>,
+               TextEncoding encoding);
     ScriptData(const ScriptData&) = delete;
     ScriptData& operator=(const ScriptData&) = delete;
     ScriptData(ScriptData&& other) = default;
@@ -40,6 +42,7 @@ class InstalledScriptsManager {
     std::unique_ptr<Vector<uint8_t>> TakeMetaData() {
       return std::move(meta_data_);
     }
+    const TextEncoding& GetScriptEncoding() const { return encoding_; }
 
     ContentSecurityPolicyResponseHeaders
     GetContentSecurityPolicyResponseHeaders();
@@ -52,6 +55,7 @@ class InstalledScriptsManager {
     String source_text_;
     std::unique_ptr<Vector<uint8_t>> meta_data_;
     HTTPHeaderMap headers_;
+    TextEncoding encoding_;
   };
 
   // Used on the main or worker thread. Returns true if the script has been

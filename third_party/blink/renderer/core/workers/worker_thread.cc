@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -741,7 +742,8 @@ void WorkerThread::EvaluateClassicScriptOnWorkerThread(
   WorkerGlobalScope* global_scope = To<WorkerGlobalScope>(GlobalScope());
   CHECK(global_scope);
   global_scope->EvaluateClassicScript(script_url, std::move(source_code),
-                                      std::move(cached_meta_data), stack_id);
+                                      std::move(cached_meta_data), stack_id,
+                                      TextEncoding());
 }
 
 void WorkerThread::FetchAndRunClassicScriptOnWorkerThread(

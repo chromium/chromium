@@ -483,7 +483,8 @@ void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
       // TODO(crbug.com/488089240): Plumb Document Policy in Service Workers.
       DocumentPolicy::DocumentPolicyBundle{},
       script_data->CreateOriginTrialTokens().get(),
-      script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id);
+      script_data->TakeSourceText(), script_data->TakeMetaData(), stack_id,
+      script_data->GetScriptEncoding());
 }
 
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
@@ -635,7 +636,8 @@ bool ServiceWorkerGlobalScope::FetchClassicImportedScript(
     const KURL& script_url,
     KURL* out_response_url,
     String* out_source_code,
-    std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data) {
+    std::unique_ptr<Vector<uint8_t>>* out_cached_meta_data,
+    TextEncoding* out_response_encoding) {
   // InstalledScriptsManager is used only for starting installed service
   // workers.
   if (installed_scripts_manager_) {
@@ -649,13 +651,15 @@ bool ServiceWorkerGlobalScope::FetchClassicImportedScript(
     *out_response_url = script_url;
     *out_source_code = script_data->TakeSourceText();
     *out_cached_meta_data = script_data->TakeMetaData();
+    *out_response_encoding = script_data->GetScriptEncoding();
     // TODO(shimazu): Add appropriate probes for inspector.
     return true;
   }
   // This is a new service worker. Proceed with importing scripts and installing
   // them.
   return WorkerGlobalScope::FetchClassicImportedScript(
-      script_url, out_response_url, out_source_code, out_cached_meta_data);
+      script_url, out_response_url, out_source_code, out_cached_meta_data,
+      out_response_encoding);
 }
 
 ResourceLoadScheduler::ThrottleOptionOverride
@@ -843,9 +847,10 @@ void ServiceWorkerGlobalScope::importScripts(
 CachedMetadataHandler*
 ServiceWorkerGlobalScope::CreateWorkerScriptCachedMetadataHandler(
     const KURL& script_url,
-    std::unique_ptr<Vector<uint8_t>> meta_data) {
+    std::unique_ptr<Vector<uint8_t>> meta_data,
+    TextEncoding encoding) {
   return MakeGarbageCollected<ServiceWorkerScriptCachedMetadataHandler>(
-      this, script_url, std::move(meta_data));
+      this, script_url, std::move(meta_data), std::move(encoding));
 }
 
 void ServiceWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
