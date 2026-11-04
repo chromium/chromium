@@ -58,14 +58,15 @@ export function getHtml(this: ManagedUserProfileNoticeAppRefreshElement) {
 </div>
 <div class="action-container">
   <cr-button id="proceedButton" aria-label="${this.proceedLabel_}"
-      class="action-button tangible-button"
+      class="action-button"
       @click="${this.onProceedButtonClick_}"
       ?disabled="${this.shouldDisableProceedButton_()}"
       ?hidden="${this.isState_(State.PROCESSING)}">
     ${this.proceedLabel_}
   </cr-button>
   <cr-button id="cancelButton" aria-label="${this.getCancelLabel_()}"
-      class="tangible-button tonal-button" @click="${this.onCancelButtonClick_}"
+      class="tonal-button"
+      @click="${this.onCancelButtonClick_}"
       ?hidden="${!this.allowCancel_()}">
     ${this.getCancelLabel_()}
   </cr-button>

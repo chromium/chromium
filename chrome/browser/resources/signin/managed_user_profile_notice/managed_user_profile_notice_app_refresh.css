@@ -82,10 +82,6 @@
   margin-block: auto;
 }
 
-.action-button {
-  width: 88px;
-}
-
-.tangible-button {
+.action-container cr-button {
   min-width: 88px;
 }
