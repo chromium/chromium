@@ -31,6 +31,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
 
@@ -58,13 +59,20 @@ ChromeRecordReplayClient::ChromeRecordReplayClient(
     tabs::TabInterface& tab,
     std::unique_ptr<record_replay::TaskDiscoveryService> service)
     : tabs::ContentsObservingTabFeature(tab),
-      task_discovery_service_(std::move(service)) {
+      task_discovery_service_(std::move(service)),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   CHECK(
       base::FeatureList::IsEnabled(record_replay::features::kRecordReplayBase));
   driver_factory_.Observe(tab.GetContents());
 }
 
 ChromeRecordReplayClient::~ChromeRecordReplayClient() = default;
+
+// static
+ChromeRecordReplayClient* ChromeRecordReplayClient::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void ChromeRecordReplayClient::OnDiscardContents(
     tabs::TabInterface* tab,
@@ -81,12 +89,12 @@ void ChromeRecordReplayClient::BindRecordReplayDriver(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  RecordReplayClient* client = tab->GetTabFeatures()->record_replay_client();
+  ChromeRecordReplayClient* client = ChromeRecordReplayClient::From(tab);
   if (!client) {
     return;
   }
   record_replay::ContentRecordReplayDriverFactory& driver_factory =
-      static_cast<ChromeRecordReplayClient*>(client)->driver_factory_;
+      client->driver_factory_;
   record_replay::ContentRecordReplayDriver* driver =
       driver_factory.GetOrCreateDriver(rfh);
   if (!driver) {

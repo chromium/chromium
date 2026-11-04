@@ -49,6 +49,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   ~ChromeRecordReplayClient() override;
 
   DECLARE_USER_DATA(ChromeRecordReplayClient);
+  static ChromeRecordReplayClient* From(tabs::TabInterface* tab);
 
   static void BindRecordReplayDriver(
       content::RenderFrameHost* render_frame_host,
@@ -90,6 +91,8 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   std::optional<record_replay::TaskDefinition> offered_task_definition_;
   std::optional<std::vector<record_replay::TaskParameter>>
       offered_task_parameter_values_;
+
+  ui::ScopedUnownedUserData<ChromeRecordReplayClient> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ChromeRecordReplayClient> weak_ptr_factory_{this};
 };

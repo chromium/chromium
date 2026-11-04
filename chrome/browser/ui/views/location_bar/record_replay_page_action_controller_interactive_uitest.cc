@@ -11,9 +11,9 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/record_replay/replay_recording_bubble_view.h"
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
                        ExecuteAction_ShowsBubbleWhenRecordingExists) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   record_replay::RecordReplayClient* client =
-      tab->GetTabFeatures()->record_replay_client();
+      ChromeRecordReplayClient::From(tab);
   ASSERT_TRUE(client);
   record_replay::RecordReplayManager& manager = client->GetManager();
 
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
                        ExecuteAction_ShowsBubbleWithMultipleRecordings) {
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   record_replay::RecordReplayClient* client =
-      tab->GetTabFeatures()->record_replay_client();
+      ChromeRecordReplayClient::From(tab);
   ASSERT_TRUE(client);
   record_replay::RecordReplayManager& manager = client->GetManager();
 

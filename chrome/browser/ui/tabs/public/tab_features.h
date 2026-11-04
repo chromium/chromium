@@ -443,12 +443,6 @@ class TabFeatures {
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 
-#if !BUILDFLAG(IS_ANDROID)
-  record_replay::RecordReplayClient* record_replay_client() {
-    return record_replay_client_.get();
-  }
-#endif
-
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 

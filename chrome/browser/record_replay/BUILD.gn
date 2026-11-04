@@ -24,8 +24,17 @@ static_library("impl") {
     "task_store_factory.h",
   ]
 
-  deps = [
+  public_deps = [
     ":record_replay",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/record_replay/content/browser",
+    "//components/record_replay/core/browser",
+    "//components/record_replay/core/common:mojom",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+  ]
+
+  deps = [
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
@@ -35,12 +44,8 @@ static_library("impl") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//components/autofill/content/browser",
-    "//components/record_replay/content/browser",
-    "//components/record_replay/core/browser",
-    "//components/record_replay/core/common:mojom",
     "//components/tabs:impl",
     "//content/public/browser",
-    "//ui/base/unowned_user_data",
     "//ui/strings",
   ]
 }
@@ -66,6 +71,7 @@ source_set("unit_tests") {
     "//components/record_replay/core/common",
     "//components/tabs:test_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//url",
   ]
 }

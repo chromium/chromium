@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/record_replay/task_parameters_extractor_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -15,8 +16,10 @@
 #include "components/record_replay/core/browser/task_parameters_extractor.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -70,6 +73,8 @@ class ChromeRecordReplayClientTest : public ChromeRenderViewHostTestHarness {
     client_.emplace(*tab_, std::move(service));
   }
 
+  void ResetClient() { client_.reset(); }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       record_replay::features::kRecordReplayBase};
@@ -86,6 +91,42 @@ TEST_F(ChromeRecordReplayClientTest, GetPrimaryMainFrameUrl) {
   const GURL url2("https://google.com/");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url2);
   EXPECT_EQ(client().GetPrimaryMainFrameUrl(), url2);
+}
+
+TEST_F(ChromeRecordReplayClientTest, FromTabInterface) {
+  tabs::MockTabInterface unattached_tab;
+  EXPECT_EQ(ChromeRecordReplayClient::From(&unattached_tab), nullptr);
+  EXPECT_EQ(ChromeRecordReplayClient::From(&tab()), &client());
+  EXPECT_EQ(ChromeRecordReplayClient::From(nullptr), nullptr);
+
+  ResetClient();
+  EXPECT_EQ(ChromeRecordReplayClient::From(&tab()), nullptr);
+}
+
+TEST_F(ChromeRecordReplayClientTest, BindRecordReplayDriver) {
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab());
+  base::ScopedClosureRunner cleanup_tab_lookup(base::BindOnce(
+      [](content::WebContents* contents) {
+        contents->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+      },
+      web_contents()));
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://example.com/"));
+
+  mojo::AssociatedRemote<record_replay::mojom::RecordReplayDriver> remote;
+  ChromeRecordReplayClient::BindRecordReplayDriver(
+      main_rfh(), remote.BindNewEndpointAndPassDedicatedReceiver());
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+
+  ResetClient();
+  mojo::AssociatedRemote<record_replay::mojom::RecordReplayDriver>
+      disconnected_remote;
+  ChromeRecordReplayClient::BindRecordReplayDriver(
+      main_rfh(),
+      disconnected_remote.BindNewEndpointAndPassDedicatedReceiver());
+  disconnected_remote.FlushForTesting();
+  EXPECT_FALSE(disconnected_remote.is_connected());
 }
 
 TEST_F(ChromeRecordReplayClientTest, DidFinishNavigation_OffersTask) {

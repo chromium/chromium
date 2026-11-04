@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/views/location_bar/record_replay_page_action_controller.h"
 
+#include "chrome/browser/record_replay/chrome_record_replay_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/record_replay/save_recording_bubble_controller_impl.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -79,7 +79,7 @@ RecordReplayPageActionController* RecordReplayPageActionController::From(
 void RecordReplayPageActionController::ExecuteAction(
     actions::ActionItem* item) {
   record_replay::RecordReplayClient* client =
-      tab_->GetTabFeatures()->record_replay_client();
+      ChromeRecordReplayClient::From(&tab_.get());
   if (!client) {
     return;
   }
@@ -139,7 +139,7 @@ void RecordReplayPageActionController::ExecuteAction(
 
 void RecordReplayPageActionController::UpdateState() {
   record_replay::RecordReplayClient* client =
-      tab_->GetTabFeatures()->record_replay_client();
+      ChromeRecordReplayClient::From(&tab_.get());
   if (!client) {
     page_action_controller_->Hide(kActionRecordReplay);
     return;
@@ -156,7 +156,7 @@ void RecordReplayPageActionController::OnRetrieveRecordingsComplete(
   recent_recordings_ = std::move(recordings);
 
   record_replay::RecordReplayClient* client =
-      tab_->GetTabFeatures()->record_replay_client();
+      ChromeRecordReplayClient::From(&tab_.get());
   if (!client) {
     return;
   }

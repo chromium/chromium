@@ -117,6 +117,7 @@ source_set("impl") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/glic",
       "//chrome/browser/page_info",
+      "//chrome/browser/record_replay:impl",
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
@@ -394,6 +395,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":location_bar",
+    "//chrome/browser/record_replay:impl",
     "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
