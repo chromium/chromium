@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -149,6 +150,84 @@ TEST_F(SuspiciousSiteWarningAllowlistTest, ClearByPatternFilter) {
   allowlist_->Clear(base::Time(), base::Time::Max(), predicate);
   EXPECT_FALSE(allowlist_->IsSiteAllowedForHost(host1));
   EXPECT_TRUE(allowlist_->IsSiteAllowedForHost(host2));
+}
+
+// Tests that deleting all browsing history clears all allowlisted hosts.
+TEST_F(SuspiciousSiteWarningAllowlistTest, OnHistoryDeletionsAllHistory) {
+  const std::string host1 = "suspicious1.test";
+  const std::string host2 = "suspicious2.test";
+
+  allowlist_->AllowSiteForHost(host1);
+  allowlist_->AllowSiteForHost(host2);
+  ASSERT_TRUE(allowlist_->IsSiteAllowedForHost(host1));
+  ASSERT_TRUE(allowlist_->IsSiteAllowedForHost(host2));
+
+  allowlist_->OnHistoryDeletions(history::DeletionInfo::ForAllHistory());
+
+  EXPECT_FALSE(allowlist_->IsSiteAllowedForHost(host1));
+  EXPECT_FALSE(allowlist_->IsSiteAllowedForHost(host2));
+}
+
+// Tests that deleting a URL row revokes the allowlist entry for its host when
+// zero visits remain for that host, without affecting other allowlisted hosts.
+TEST_F(SuspiciousSiteWarningAllowlistTest,
+       OnHistoryDeletionsSingleRowZeroRemainingVisits) {
+  const std::string deleted_host = "suspicious.test";
+  const std::string other_host = "other.test";
+
+  allowlist_->AllowSiteForHost(deleted_host);
+  allowlist_->AllowSiteForHost(other_host);
+
+  const GURL deleted_url("https://suspicious.test/login");
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(deleted_url)}, /*favicon_urls=*/{});
+  deletion_info.set_deleted_urls_origin_map(
+      {{deleted_url.DeprecatedGetOriginAsURL(), {0, base::Time::Now()}}});
+
+  allowlist_->OnHistoryDeletions(deletion_info);
+
+  EXPECT_FALSE(allowlist_->IsSiteAllowedForHost(deleted_host));
+  EXPECT_TRUE(allowlist_->IsSiteAllowedForHost(other_host));
+}
+
+// Tests that deleting a URL row retains the allowlist entry if other visits to
+// the same origin remain.
+TEST_F(SuspiciousSiteWarningAllowlistTest,
+       OnHistoryDeletionsSingleRowWithRemainingVisits) {
+  const std::string host = "suspicious.test";
+  allowlist_->AllowSiteForHost(host);
+
+  const GURL deleted_url("https://suspicious.test/page1");
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(deleted_url)}, /*favicon_urls=*/{});
+  deletion_info.set_deleted_urls_origin_map(
+      {{deleted_url.DeprecatedGetOriginAsURL(), {1, base::Time::Now()}}});
+
+  allowlist_->OnHistoryDeletions(deletion_info);
+
+  EXPECT_TRUE(allowlist_->IsSiteAllowedForHost(host));
+}
+
+// Tests that deleting URL rows across multiple origins of the same host retains
+// the allowlist entry if at least one origin for that host has remaining
+// visits.
+TEST_F(SuspiciousSiteWarningAllowlistTest,
+       OnHistoryDeletionsMultipleOriginsSameHostWithRemainingVisits) {
+  const std::string host = "suspicious.test";
+  allowlist_->AllowSiteForHost(host);
+
+  const GURL https_url("https://suspicious.test/page1");
+  const GURL http_url("http://suspicious.test/page2");
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(https_url), history::URLRow(http_url)},
+      /*favicon_urls=*/{});
+  deletion_info.set_deleted_urls_origin_map(
+      {{https_url.DeprecatedGetOriginAsURL(), {0, base::Time::Now()}},
+       {http_url.DeprecatedGetOriginAsURL(), {1, base::Time::Now()}}});
+
+  allowlist_->OnHistoryDeletions(deletion_info);
+
+  EXPECT_TRUE(allowlist_->IsSiteAllowedForHost(host));
 }
 
 }  // namespace safe_browsing

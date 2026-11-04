@@ -416,6 +416,7 @@ source_set("suspicious_site_warning_allowlist") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/history/core/browser",
     "//url",
   ]
 }
@@ -429,6 +430,7 @@ source_set("suspicious_site_warning_allowlist_unittest") {
     "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/history/core/browser",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
     "//url",

@@ -318,7 +318,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     }
 
     if (threat_type == SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE &&
-        navigation_id_.has_value()) {
+        (navigation_id_.has_value() || weak_web_state_)) {
       UnsafeResource resource =
           MakeUnsafeResource(url, threat_type, threat_source.value(),
                              std::move(rt_lookup_response), performed_check);

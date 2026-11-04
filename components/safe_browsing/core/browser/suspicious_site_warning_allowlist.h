@@ -11,6 +11,10 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
+namespace history {
+class DeletionInfo;
+}  // namespace history
+
 namespace safe_browsing {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -115,6 +119,12 @@ class SuspiciousSiteWarningAllowlist {
 
   // Clears allowlist entries for the specified time range.
   void Clear(base::Time delete_begin, base::Time delete_end);
+
+  // Updates allowlist entries in response to browsing history deletions.
+  // Clears all entries if all history was deleted; otherwise revokes any
+  // allowlisted host whose remaining visit count in `deletion_info` is zero
+  // across all deleted origins for that host.
+  void OnHistoryDeletions(const history::DeletionInfo& deletion_info);
 
  private:
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;

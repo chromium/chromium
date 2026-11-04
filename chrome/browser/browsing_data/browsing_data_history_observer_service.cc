@@ -167,39 +167,7 @@ void BrowsingDataHistoryObserverService::OnHistoryDeletions(
   if (host_content_settings_map) {
     safe_browsing::SuspiciousSiteWarningAllowlist allowlist(
         host_content_settings_map);
-    if (deletion_info.IsAllHistory()) {
-      allowlist.Clear(base::Time(), base::Time::Max());
-    } else {
-      ContentSettingsForOneType allowlist_entries =
-          host_content_settings_map->GetSettingsForOneType(
-              ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA);
-      for (const auto& entry : allowlist_entries) {
-        if (entry.IsExpired() || !entry.setting_value.is_dict()) {
-          continue;
-        }
-        const std::string& host = entry.primary_pattern.GetHost();
-        if (host.empty()) {
-          continue;
-        }
-
-        bool host_was_deleted = false;
-        bool has_remaining_visits = false;
-        for (const auto& [origin_gurl, count_and_time] :
-             deletion_info.deleted_urls_origin_map()) {
-          if (origin_gurl.host() == host) {
-            host_was_deleted = true;
-            if (count_and_time.first > 0) {
-              has_remaining_visits = true;
-              break;
-            }
-          }
-        }
-
-        if (host_was_deleted && !has_remaining_visits) {
-          allowlist.RevokeUserAllowException(host);
-        }
-      }
-    }
+    allowlist.OnHistoryDeletions(deletion_info);
   }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -477,6 +478,7 @@ class MockHashRealTimeService : public HashRealTimeService {
 struct CreateSafeBrowsingUrlCheckerOptionalArgs {
   std::string url_lookup_service_metric_suffix = ".Enterprise";
   std::optional<int64_t> navigation_id = std::nullopt;
+  base::WeakPtr<web::WebState> weak_web_state = nullptr;
   base::WeakPtr<V5GetHashProtocolManager> v5_get_hash_protocol_manager =
       nullptr;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate = nullptr;
@@ -538,7 +540,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*has_user_gesture=*/false,
         optional_args.url_checker_delegate ? optional_args.url_checker_delegate
                                            : url_checker_delegate_,
-        mock_web_contents_getter.Get(), /*weak_web_state=*/nullptr,
+        mock_web_contents_getter.Get(), optional_args.weak_web_state,
         UnsafeResource::kNoRenderProcessId, std::nullopt,
         UnsafeResource::kNoFrameTreeNodeId, optional_args.navigation_id,
         url_real_time_lookup_enabled, can_check_safe_browsing_db,
@@ -550,8 +552,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
                                      : nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
         hash_real_time_selection,
-        /*is_async_check=*/false,
-        SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt,
+        /*is_async_check=*/false, SessionID::InvalidValue(),
+        /*referring_app_info=*/std::nullopt,
         optional_args.v5_get_hash_protocol_manager);
   }
 
@@ -1175,6 +1177,121 @@ TEST_F(
                                    /*expected_hpd_log_count=*/0);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived", false, 1);
+}
+
+// Tests that `ShowSuspiciousSiteWarning` is invoked when `weak_web_state` is
+// populated without a `navigation_id` (as on iOS).
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_UrlRealTimeEnabled_WarnableSuspiciousSiteDetection_WebStateWithoutNavigationId) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kSuspiciousSiteWarnings);
+
+  // `web::WebState` is forward-declared in cross-platform `.cc` files (its
+  // header imports UIKit); `SafeBrowsingUrlCheckerImpl` only checks validity of
+  // `weak_web_state` and forwards it into `UnsafeResource`.
+  uintptr_t dummy_web_state = 0;
+  base::WeakPtrFactory<web::WebState> web_state_factory(
+      reinterpret_cast<web::WebState*>(&dummy_web_state));
+
+  CreateSafeBrowsingUrlCheckerOptionalArgs optional_args;
+  optional_args.weak_web_state = web_state_factory.GetWeakPtr();
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone, optional_args);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE,
+      /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      url, /*match=*/false,
+      /*logging_details=*/std::nullopt);
+
+  WaitableNativeCheckUrlCallback callback;
+  EXPECT_CALL(
+      callback,
+      Run(/*proceed=*/true, /*showed_interstitial=*/false,
+          /*has_post_commit_interstitial_skipped=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
+      .Times(1);
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      ShowSuspiciousSiteWarning(
+          ::testing::AllOf(
+              ::testing::Field(&security_interstitials::UnsafeResource::url,
+                               url),
+              ::testing::Field(
+                  &security_interstitials::UnsafeResource::threat_type,
+                  SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE),
+              ::testing::Field(
+                  &security_interstitials::UnsafeResource::navigation_id,
+                  std::optional<int64_t>(std::nullopt)),
+              ::testing::Field(
+                  &security_interstitials::UnsafeResource::weak_web_state,
+                  web_state_factory.GetWeakPtr().get())),
+          _))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  callback.Wait();
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+  ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
+                                   /*expected_urt_log_count=*/1,
+                                   /*expected_hpd_log_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived", true, 1);
+}
+
+// Tests that `ShowSuspiciousSiteWarning` is not invoked when neither
+// `navigation_id` nor `weak_web_state` is populated on the URL checker.
+TEST_F(
+    SafeBrowsingUrlCheckerTest,
+    CheckUrl_UrlRealTimeEnabled_WarnableSuspiciousSiteDetection_NoNavigationIdOrWebState) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(kSuspiciousSiteWarnings);
+
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(
+      url, SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE,
+      /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(
+      url, /*match=*/false,
+      /*logging_details=*/std::nullopt);
+
+  WaitableNativeCheckUrlCallback callback;
+  EXPECT_CALL(
+      callback,
+      Run(/*proceed=*/true, /*showed_interstitial=*/false,
+          /*has_post_commit_interstitial_skipped=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_, ShowSuspiciousSiteWarning(_, _)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(0);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  callback.Wait();
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.VerdictReceived", true, 1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
