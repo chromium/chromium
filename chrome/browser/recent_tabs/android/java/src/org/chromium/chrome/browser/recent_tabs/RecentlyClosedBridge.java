@@ -21,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -93,14 +94,20 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         int destinationId = tabIds[0];
         Tab tab = tabModel.getTabById(destinationId);
         assert tab != null;
-        if (tabIds.length == 1) {
+        List<Tab> tabsToMerge = new ArrayList<>(tabIds.length - 1);
+        for (int id : tabIds) {
+            if (id == destinationId) continue;
+
+            Tab tabToMerge = tabModel.getTabById(id);
+            if (tabToMerge != null) {
+                tabsToMerge.add(tabToMerge);
+            }
+        }
+        if (tabsToMerge.isEmpty()) {
             tabModel.createSingleTabGroup(tab);
         } else {
-            for (int id : tabIds) {
-                if (id == destinationId) continue;
-
-                tabModel.mergeTabsToGroup(id, destinationId);
-            }
+            tabModel.mergeListOfTabsToGroup(
+                    tabsToMerge, tab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         }
 
         Token tabGroupId = tab.getTabGroupId();
