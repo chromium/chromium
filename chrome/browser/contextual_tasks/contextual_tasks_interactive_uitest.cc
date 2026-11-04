@@ -77,6 +77,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -128,6 +129,7 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/polling_state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -5709,6 +5711,135 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
                          &UserVariationToString);
+
+// Enables the Pin / Unpin item in the rearchitecture side panel toolbar's
+// overflow menu, as the `ContextualTasks_EphemeralPinning_Desktop` field trial
+// does.
+class ContextualTasksSidePanelRearchToolbarPinInteractiveUiTest
+    : public ContextualTasksSidePanelRearchToolbarInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    for (const auto& f : GetDefaultEnabledFeatures()) {
+      if (&f.feature.get() != &kContextualTasksHideMenuOnAiPage) {
+        enabled.push_back(f);
+      }
+    }
+    enabled.push_back({kContextualTasksRearchitecture, {}});
+    enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
+    enabled.push_back({kContextualTasksEnableSpatialModelToolbarLayout, {}});
+    enabled.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
+    enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
+
+    std::vector<base::test::FeatureRef> disabled = GetDefaultDisabledFeatures();
+    std::erase(disabled, kContextualTasksRearchitecture);
+    std::erase(disabled, kContextualTasksSidePanelRearchitecture);
+    std::erase(disabled, kContextualTasksEnableSpatialModelToolbarLayout);
+    disabled.push_back(kContextualTasksHideMenuOnAiPage);
+
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+ protected:
+  // Returns whether the Contextual Tasks action is pinned in both the profile's
+  // `PinnedToolbarActionsModel` and the browser toolbar.
+  bool IsContextualTasksActionPinned() const {
+    return PinnedToolbarActionsModel::Get(browser()->GetProfile())
+               ->Contains(kActionSidePanelShowContextualTasks) &&
+           PinnedActionTestAccessor(browser(),
+                                    kActionSidePanelShowContextualTasks)
+               .IsPinned();
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User opens Lens Overlay from the 3-dot App Menu on a web page.
+//  (2) User types a query into the Lens Overlay Contextual Searchbox and
+//      presses Enter to submit.
+//  (3) The Contextual Tasks side panel opens on an AI Mode page.
+//  (4) User clicks the toolbar overflow menu button; the menu shows "Pin".
+//  (5) User clicks "Pin".
+//  (6) The Contextual Tasks action is pinned to the browser toolbar.
+//  (7) User reopens the overflow menu; the menu now shows "Unpin".
+//  (8) User clicks "Unpin".
+//  (9) The Contextual Tasks action is unpinned from the browser toolbar.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelRearchToolbarPinInteractiveUiTest,
+    OverflowMenuPinAndUnpinSidePanel) {
+  SkipIfIncognito("Toolbar pinning is not eligible in Incognito.");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelToolbarWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kActionPinnedState);
+
+  const DeepQuery kOverflowMenuButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "#overflowMenuButton",
+  };
+  const DeepQuery kOverflowMenu{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-overflow-menu",
+  };
+  const DeepQuery kPinButton{
+      "contextual-tasks-toolbar-app",
+      "#toolbar",
+      "contextual-tasks-overflow-menu",
+      "#pinButton",
+  };
+
+  // Opens the toolbar overflow menu and waits for the open menu to show the
+  // pin item with the label for `label_id`.
+  auto open_menu_and_wait_for_pin_item = [&](int label_id) {
+    return Steps(
+        WaitForElementVisible(kSidePanelToolbarWebContentsId,
+                              kOverflowMenuButton),
+        ClickButton(kSidePanelToolbarWebContentsId, kOverflowMenuButton),
+        WaitForElementExists(kSidePanelToolbarWebContentsId, kOverflowMenu),
+        WaitForJsResultAt(
+            kSidePanelToolbarWebContentsId, kOverflowMenu,
+            content::JsReplace(
+                "el => { const pin = el.shadowRoot.querySelector('#pinButton');"
+                " return Boolean(el.shadowRoot.querySelector('#menu')?.open && "
+                "pin && !pin.hidden && pin.textContent.trim() === $1); }",
+                l10n_util::GetStringUTF8(label_id)),
+            true));
+  };
+
+  RunTestSequence(
+      // Steps 1-3: Open the Contextual Tasks side panel on an AI page from a
+      // Contextual Searchbox query, then instrument the rearchitecture toolbar.
+      SubmitContextualSearchboxQueryToOpenSidePanel(
+          kOverlayId, "hello world",
+          GURL("https://www.google.com/search?q=hello+world&udm=50")),
+      InstrumentSidePanelToolbar(kSidePanelToolbarWebContentsId),
+      PollState(kActionPinnedState,
+                [this]() { return IsContextualTasksActionPinned(); }),
+      WaitForState(kActionPinnedState, false),
+
+      // Steps 4-6: Open the overflow menu, click "Pin", and wait for the
+      // action to be pinned to the toolbar.
+      open_menu_and_wait_for_pin_item(IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP),
+      ClickButton(kSidePanelToolbarWebContentsId, kPinButton),
+      WaitForState(kActionPinnedState, true),
+
+      // Steps 7-9: Reopen the overflow menu, click "Unpin", and wait for the
+      // action to be unpinned from the toolbar.
+      open_menu_and_wait_for_pin_item(
+          IDS_SIDE_PANEL_HEADER_UNPIN_BUTTON_TOOLTIP),
+      ClickButton(kSidePanelToolbarWebContentsId, kPinButton),
+      WaitForState(kActionPinnedState, false));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSidePanelRearchToolbarPinInteractiveUiTest,
+    testing::Values(UserVariation::kSignedIn,
+                    UserVariation::kSignedOut,
+                    UserVariation::kIncognito),
+    &UserVariationToString);
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksEphemeralToolbarInteractiveUiTest,
