@@ -1156,14 +1156,24 @@ TEST_F(TranslateManagerTest, TranslatePage_UntranslatablePdf) {
               ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, _, _, _,
                               _))
       .Times(0);
+  EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(0);
+
+  // The error is shown asynchronously, so that the translate bubble has
+  // finished switching its view by the time the error arrives.
+  EXPECT_CALL(mock_translate_client_,
+              ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATE_ERROR, _, _,
+                              _, _))
+      .Times(0);
+  translate_manager_->TranslatePage("de", "en", /*triggered_from_menu=*/true);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_translate_client_);
+
   EXPECT_CALL(mock_translate_client_,
               ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATE_ERROR, "de",
                               "en", TranslateErrors::TRANSLATION_ERROR,
                               /*triggered_from_menu=*/true))
       .WillOnce(Return(true));
   EXPECT_CALL(mock_translate_client_, TriggerPdfTranslation()).Times(0);
-
-  translate_manager_->TranslatePage("de", "en", /*triggered_from_menu=*/true);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(TranslateManagerTest,

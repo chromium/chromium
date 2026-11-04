@@ -15,12 +15,14 @@
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
+#include "base/location.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/language/core/browser/language_model.h"
@@ -383,10 +385,19 @@ void TranslateManager::TranslatePage(std::string_view original_source_lang,
   // so that partial translation remains available for such PDFs.
   if (language_state_.pdf_translatability_status() ==
       LanguageState::PdfTranslatabilityStatus::kUntranslatable) {
-    translate_client_->ShowTranslateUI(
-        translate::TRANSLATE_STEP_TRANSLATE_ERROR,
-        std::string(original_source_lang), std::string(target_lang),
-        TranslateErrors::TRANSLATION_ERROR, triggered_from_menu);
+    // Report the error asynchronously, like translation failures from the
+    // renderer. The translate bubble calls TranslatePage() and then switches
+    // its own view, so a synchronous error would be dropped (from the language
+    // selection view) or immediately replaced (from the translate tab).
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &TranslateManager::ShowUntranslatablePdfError, GetWeakPtr(),
+            GetLanguageTagFromString(original_source_lang)
+                .value_or(GetKnownLanguageTag("und")),
+            GetLanguageTagFromString(target_lang)
+                .value_or(GetKnownLanguageTag("und")),
+            triggered_from_menu));
     return;
   }
 
@@ -462,6 +473,16 @@ void TranslateManager::TranslatePage(std::string_view original_source_lang,
 
   script->Request(std::move(callback), translate_driver_->IsIncognito(),
                   translate_client_->GetPrefs());
+}
+
+void TranslateManager::ShowUntranslatablePdfError(LanguageTag source_lang,
+                                                  LanguageTag target_lang,
+                                                  bool triggered_from_menu) {
+  translate_client_->ShowTranslateUI(
+      translate::TRANSLATE_STEP_TRANSLATE_ERROR,
+      std::string(source_lang.tag_string()),
+      std::string(target_lang.tag_string()),
+      TranslateErrors::TRANSLATION_ERROR, triggered_from_menu);
 }
 
 void TranslateManager::RevertTranslation() {

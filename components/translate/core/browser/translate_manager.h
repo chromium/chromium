@@ -252,6 +252,12 @@ class TranslateManager {
                        std::string_view source_lang,
                        std::string_view target_lang);
 
+  // Shows the translate error UI for a PDF that was determined to be
+  // untranslatable.
+  void ShowUntranslatablePdfError(base::i18n::LanguageTag source_lang,
+                                  base::i18n::LanguageTag target_lang,
+                                  bool triggered_from_menu);
+
   // Notifies all registered callbacks of translate errors.
   void NotifyTranslateError(TranslateErrors error_type);
 
