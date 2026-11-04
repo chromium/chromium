@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/functional/callback.h"
@@ -69,6 +70,18 @@ void SetUpWebUI(const ui::ElementIdentifier& element_id,
 // Retrieves the WebUIToolbarWebView instance associated with the given
 // `browser`.
 WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser);
+
+// Waits until the WebUI toolbar's WebContents finishes loading and its
+// accessibility tree contains a node named `accessible_name`. Returns
+// AssertionFailure if `browser` has no WebUI toolbar WebContents.
+//
+// Callers testing a specific toolbar control (such as the app menu or location
+// bar) must check that control's WebUI feature flag first, since
+// `WebUIToolbarWebView` may exist when another WebUI toolbar button is enabled
+// while the target control is still backed by Views.
+[[nodiscard]] ::testing::AssertionResult WaitForWebUIToolbarAccessibilityNode(
+    BrowserWindowInterface* browser,
+    std::string_view accessible_name);
 
 // Simulates a left-click on the WebUI toolbar extension button with the given
 // `id` (or the puzzle piece extensions menu button if `id` is empty).

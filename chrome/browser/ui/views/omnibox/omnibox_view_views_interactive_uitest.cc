@@ -47,7 +47,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_placeholder_util.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -104,7 +104,6 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/views_features.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -2054,13 +2053,8 @@ IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
   ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
 #endif  // !BUILDFLAG(IS_MAC)
   if (features::IsWebUILocationBarEnabled()) {
-    if (auto* toolbar_webview = BrowserView::GetBrowserViewForBrowser(browser())
-                                    ->toolbar()
-                                    ->GetWebUIToolbarViewForTesting()) {
-      content::WaitForAccessibilityTreeToContainNodeWithName(
-          toolbar_webview->GetWebViewForTesting()->GetWebContents(),
-          l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
-    }
+    ASSERT_TRUE(WaitForWebUIToolbarAccessibilityNode(
+        browser(), l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION)));
   }
   WaitForPendingSerialization();
 

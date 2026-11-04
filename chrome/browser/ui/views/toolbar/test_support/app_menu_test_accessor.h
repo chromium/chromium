@@ -28,7 +28,6 @@ class MenuItemView;
 class AppMenuTestAccessor {
  public:
   explicit AppMenuTestAccessor(BrowserWindowInterface* browser);
-  explicit AppMenuTestAccessor(AppMenuControl* control);
   AppMenuTestAccessor(const AppMenuTestAccessor&) = default;
   AppMenuTestAccessor& operator=(const AppMenuTestAccessor&) = default;
   ~AppMenuTestAccessor();
@@ -74,6 +73,7 @@ class AppMenuTestAccessor {
   AppMenuControl* GetControl() const { return control_; }
 
  private:
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<AppMenuControl> control_ = nullptr;
 };
 

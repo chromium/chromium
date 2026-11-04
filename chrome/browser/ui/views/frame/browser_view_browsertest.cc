@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -1588,6 +1589,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetDisabledTest,
     return;
   }
 #endif
+  if (features::IsWebUIAppMenuButtonEnabled()) {
+    ASSERT_TRUE(WaitForWebUIToolbarAccessibilityNode(
+        browser(), l10n_util::GetStringUTF8(IDS_ACCNAME_APP)));
+  }
 
   // There is no dialog, but the browser UI should be visible. So we expect the
   // browser's app menu button and no "OK" button from a dialog.
@@ -1649,6 +1654,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetEnabledTest,
     return;
   }
 #endif
+  if (features::IsWebUIAppMenuButtonEnabled()) {
+    ASSERT_TRUE(WaitForWebUIToolbarAccessibilityNode(
+        browser(), l10n_util::GetStringUTF8(IDS_ACCNAME_APP)));
+  }
 
   content::WebContents* contents = browser_view()->GetActiveWebContents();
   auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);

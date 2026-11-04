@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/user_education_class_properties.h"
@@ -72,16 +73,12 @@ content::WebContents* GetWebContentsFromView(views::View* view) {
 
 }  // namespace
 
-AppMenuTestAccessor::AppMenuTestAccessor(BrowserWindowInterface* browser) {
-  CHECK(browser);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+AppMenuTestAccessor::AppMenuTestAccessor(BrowserWindowInterface* browser)
+    : browser_(browser) {
+  CHECK(browser_);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   CHECK(browser_view);
   control_ = browser_view->toolbar_button_provider()->GetAppMenuControl();
-  CHECK(control_);
-}
-
-AppMenuTestAccessor::AppMenuTestAccessor(AppMenuControl* control)
-    : control_(control) {
   CHECK(control_);
 }
 
@@ -143,9 +140,9 @@ bool AppMenuTestAccessor::HandleAccessibleAction(
   }
 
   std::string acc_name = l10n_util::GetStringUTF8(IDS_ACCNAME_APP);
-
-  content::WaitForAccessibilityTreeToContainNodeWithName(web_contents,
-                                                         acc_name);
+  if (!WaitForWebUIToolbarAccessibilityNode(browser_, acc_name)) {
+    return false;
+  }
 
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.name = acc_name;

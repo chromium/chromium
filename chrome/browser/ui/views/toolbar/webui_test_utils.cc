@@ -221,6 +221,33 @@ WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser) {
       ->GetWebUIToolbarViewForTesting();
 }
 
+::testing::AssertionResult WaitForWebUIToolbarAccessibilityNode(
+    BrowserWindowInterface* browser,
+    std::string_view accessible_name) {
+  WebUIToolbarWebView* webui_toolbar = GetWebUIToolbarWebView(browser);
+  if (!webui_toolbar) {
+    return ::testing::AssertionFailure() << "No WebUIToolbarWebView found.";
+  }
+  views::WebView* toolbar_web_view = webui_toolbar->GetWebViewForTesting();
+  if (!toolbar_web_view) {
+    return ::testing::AssertionFailure()
+           << "No child WebView on WebUIToolbarWebView.";
+  }
+  content::WebContents* toolbar_web_contents =
+      toolbar_web_view->GetWebContents();
+  if (!toolbar_web_contents) {
+    return ::testing::AssertionFailure()
+           << "No WebContents in WebUIToolbarWebView.";
+  }
+  if (!content::WaitForLoadStop(toolbar_web_contents)) {
+    return ::testing::AssertionFailure()
+           << "WaitForLoadStop failed for WebUI toolbar WebContents.";
+  }
+  content::WaitForAccessibilityTreeToContainNodeWithName(toolbar_web_contents,
+                                                         accessible_name);
+  return ::testing::AssertionSuccess();
+}
+
 AvatarButtonUpdateWaiter::AvatarButtonUpdateWaiter(
     AvatarToolbarButtonInterface* button)
     : quit_closure_(run_loop_.QuitClosure()) {
