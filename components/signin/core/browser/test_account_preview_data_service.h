@@ -92,6 +92,11 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
   // simulates the completion of the preferred account computation.
   void RunPendingPreferredAccountRequests(
       std::optional<AccountPreviewPreference> preference);
+
+  std::optional<base::TimeDelta> last_preferred_account_request_timeout()
+      const {
+    return last_preferred_account_request_timeout_;
+  }
 #endif
 
  private:
@@ -103,6 +108,7 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
       pending_callback_;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   bool defer_preferred_account_requests_ = false;
+  std::optional<base::TimeDelta> last_preferred_account_request_timeout_;
   std::vector<base::OnceCallback<void(std::optional<AccountPreviewPreference>)>>
       pending_preferred_account_requests_;
 #endif

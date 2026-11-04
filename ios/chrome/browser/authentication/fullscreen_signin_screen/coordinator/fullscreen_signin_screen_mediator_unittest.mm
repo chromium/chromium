@@ -159,8 +159,7 @@ class FullscreenSigninScreenMediatorTest : public PlatformTest {
     return mediator_;
   }
 
-  web::WebTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
@@ -278,14 +277,12 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   EXPECT_FALSE(consumer_.contentLoading);
 }
 
-// Tests that the preferred account is ignored if it finishes computing after
-// the timeout configured in the feature param.
+// Tests that the default identity is kept and the loading state is hidden if
+// the preferred account request times out (resolves with `std::nullopt`).
 TEST_F(FullscreenSigninScreenMediatorTest,
-       IgnoresPreferredAccountAfterTimeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      switches::kEnableAccountPreviewPreferredAccountFRE,
-      {{switches::kAccountPreviewPreferredAccountFREFetchTimeout.name, "3s"}});
+       KeepsDefaultIdentityOnPreferredAccountTimeout) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewPreferredAccountFRE);
   account_preview_data_service_.set_defer_preferred_account_requests(true);
 
   FullscreenSigninScreenMediator* mediator =
@@ -293,13 +290,27 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
   EXPECT_TRUE(consumer_.contentLoading);
 
-  task_environment_.FastForwardBy(base::Seconds(3));
-  EXPECT_FALSE(consumer_.contentLoading);
-
   account_preview_data_service_.RunPendingPreferredAccountRequests(
-      CreatePreference(preferred_identity_.gaiaId));
-
+      std::nullopt);
+  EXPECT_FALSE(consumer_.contentLoading);
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
+}
+
+// Tests that the timeout configured in
+// `kAccountPreviewPreferredAccountFREFetchTimeout` is passed to
+// `GetPreferredAccountForSigninAsync()`.
+TEST_F(FullscreenSigninScreenMediatorTest,
+       PassesConfiguredPreferredAccountFetchTimeout) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewPreferredAccountFRE,
+      {{switches::kAccountPreviewPreferredAccountFREFetchTimeout.name, "3s"}});
+
+  CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+
+  EXPECT_EQ(
+      base::Seconds(3),
+      account_preview_data_service_.last_preferred_account_request_timeout());
 }
 
 // Tests that the default identity is kept if the preferred account is not on

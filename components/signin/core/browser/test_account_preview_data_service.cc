@@ -40,6 +40,7 @@ void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
 void TestAccountPreviewDataService::GetPreferredAccountForSigninAsync(
     base::OnceCallback<void(std::optional<AccountPreviewPreference>)> callback,
     base::TimeDelta timeout) {
+  last_preferred_account_request_timeout_ = timeout;
   GetPreferredAccountForSigninAsync(std::move(callback));
 }
 

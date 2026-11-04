@@ -14,7 +14,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
-#import "base/timer/timer.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
@@ -103,13 +102,11 @@ enum class SigninScreenState {
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
 
-  // Cancelable callback and timeout timer for the FRE preferred account
-  // request.
+  // Cancelable callback for the FRE preferred account request.
   base::CancelableOnceCallback<void(
       std::optional<
           signin::AccountPreviewDataService::AccountPreviewPreference>)>
       _preferredAccountCallback;
-  base::OneShotTimer _preferredAccountTimer;
 }
 
 - (instancetype)
@@ -202,14 +199,14 @@ enum class SigninScreenState {
   CHECK(!_authenticationService);
   CHECK(!_identityManager);
   CHECK(!_accountPreviewDataService);
-  CHECK(!_preferredAccountTimer.IsRunning());
+  CHECK(_preferredAccountCallback.IsCancelled());
   CHECK(!self.localPrefService);
   CHECK(!self.prefService);
   CHECK(!self.syncService);
 }
 
 - (void)disconnect {
-  if (_preferredAccountTimer.IsRunning()) {
+  if (!_preferredAccountCallback.IsCancelled()) {
     [self stopWaitingForPreferredAccount];
   }
   _consumer = nil;
@@ -229,7 +226,7 @@ enum class SigninScreenState {
     (AuthenticationFlow*)authenticationFlow {
   CHECK(!self.signinInProgress);
   // The UI is disabled while waiting for the preferred account.
-  CHECK(!_preferredAccountTimer.IsRunning());
+  CHECK(_preferredAccountCallback.IsCancelled());
   self.signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
@@ -431,7 +428,6 @@ enum class SigninScreenState {
 - (void)setUpSelectedIdentityForFRE {
   CHECK([self isFirstRun]);
   CHECK(_preferredAccountCallback.IsCancelled());
-  CHECK(!_preferredAccountTimer.IsRunning());
   self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
       _identityManager, _accountManagerService);
   // The feature is checked only when there is an account on the device.
@@ -447,13 +443,9 @@ enum class SigninScreenState {
     [weakSelf onPreferredAccountForFRERetrieved:preference];
   }));
   [self.consumer setContentLoading:YES];
-  _preferredAccountTimer.Start(
-      FROM_HERE, switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get(),
-      base::BindOnce(^{
-        [weakSelf stopWaitingForPreferredAccount];
-      }));
   _accountPreviewDataService->GetPreferredAccountForSigninAsync(
-      _preferredAccountCallback.callback());
+      _preferredAccountCallback.callback(),
+      switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get());
 }
 
 // Handles the result of the FRE preferred account request, selecting the
@@ -481,10 +473,9 @@ enum class SigninScreenState {
       preference->gaia_id);
 }
 
-// Cancels any pending preferred account callback and stops the timeout timer.
+// Cancels any pending preferred account callback and hides the loading state.
 - (void)stopWaitingForPreferredAccount {
   _preferredAccountCallback.Cancel();
-  _preferredAccountTimer.Stop();
   [self.consumer setContentLoading:NO];
 }
 
@@ -558,7 +549,7 @@ enum class SigninScreenState {
 - (void)accountsOnDeviceDidChange {
   if (![self selectedIdentityIsValid]) {
     self.selectedIdentity = [self calculateSelectedIdentity];
-    if (!self.selectedIdentity && _preferredAccountTimer.IsRunning()) {
+    if (!self.selectedIdentity && !_preferredAccountCallback.IsCancelled()) {
       [self stopWaitingForPreferredAccount];
     }
   }
