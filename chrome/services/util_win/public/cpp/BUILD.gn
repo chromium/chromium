@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+# The C++ types the UiaElementProbe service and its clients exchange.
+source_set("uia_element_probe_types") {
+  sources = [ "uia_element_probe_types.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}

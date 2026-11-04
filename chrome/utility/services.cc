@@ -40,10 +40,13 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 #include "chrome/services/util_win/processor_metrics.h"
+#include "chrome/services/util_win/public/mojom/uia_element_probe.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
+#include "chrome/services/util_win/uia_element_probe_impl.h"
 #include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"  // nogncheck
@@ -202,6 +205,12 @@ auto RunWindowsUtility(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver) {
 auto RunWindowsIconReader(
     mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver) {
   return std::make_unique<UtilReadIcon>(std::move(receiver));
+}
+
+auto RunUiaElementProbe(
+    mojo::PendingReceiver<chrome::mojom::UiaElementProbe> receiver) {
+  base::win::EnableHighDPISupport();
+  return std::make_unique<UiaElementProbeImpl>(std::move(receiver));
 }
 
 auto RunWindowsSystemProxyResolver(
@@ -536,6 +545,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunQuarantineService);
   services.Add(RunWindowsUtility);
   services.Add(RunWindowsIconReader);
+  services.Add(RunUiaElementProbe);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

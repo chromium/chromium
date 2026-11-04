@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "uia_element_probe.mojom",
     "util_read_icon.mojom",
     "util_win.mojom",
   ]
@@ -13,6 +14,7 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
   ]
 
@@ -60,6 +62,34 @@ mojom("mojom") {
         "//chrome/browser/win/conflicts:module_info",
         "//third_party/metrics_proto",
         "//ui/shell_dialogs",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "chrome.mojom.WindowIdentity"
+          cpp = "::UiaWindowIdentity"
+          forward_declaration = "struct UiaWindowIdentity;"
+          move_only = true
+        },
+        {
+          mojom = "chrome.mojom.UiaElementQuery"
+          cpp = "::UiaElementQuery"
+          forward_declaration = "struct UiaElementQuery;"
+        },
+        {
+          mojom = "chrome.mojom.UiaElementMeasurement"
+          cpp = "::UiaElementMeasurement"
+          forward_declaration = "struct UiaElementMeasurement;"
+        },
+      ]
+      traits_headers = [ "uia_element_probe_mojom_traits.h" ]
+      traits_sources = [ "uia_element_probe_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//chrome/services/util_win/public/cpp:uia_element_probe_types",
+        "//mojo/public/cpp/platform",
+        "//ui/gfx/geometry",
       ]
     },
   ]

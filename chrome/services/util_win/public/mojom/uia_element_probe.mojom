@@ -1,0 +1,84 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/wstring.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Identifies a top-level window of another app. Checked before each UIA query
+// so a stale or reused HWND cannot target a different window.
+struct WindowIdentity {
+  // Window handle (HWND). Only the low 32 bits of an HWND are significant even
+  // on 64-bit Windows, so uint32 is lossless. See base::win::HandleToUint32()
+  // and
+  // https://learn.microsoft.com/en-us/windows/win32/winprog64/interprocess-communication.
+  uint32 hwnd;
+
+  // Handle to the process owning `hwnd`, opened with
+  // PROCESS_QUERY_LIMITED_INFORMATION to read its PID and prevent PID reuse.
+  // See
+  // https://learn.microsoft.com/en-us/windows/win32/procthread/process-security-and-access-rights.
+  handle<platform> process;
+
+  // Window class name from GetClassName(), compared case-insensitively. Chrome
+  // window classes ("Chrome_*") are always refused.
+  mojo_base.mojom.WString window_class;
+};
+
+// Describes the target UIA element under the window. At least one of
+// `automation_id` and `fallback_automation_id_fragment` must be non-empty;
+// deserialization rejects a query with neither.
+struct UiaElementQuery {
+  // Exact non-localized UIA AutomationId to match first. See
+  // UIA_AutomationIdPropertyId in
+  // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-automation-element-propids.
+  mojo_base.mojom.WString automation_id;
+
+  // Case-insensitive word-start AutomationId fragment used as a fallback when
+  // `automation_id` finds no usable element. Ignored if empty.
+  mojo_base.mojom.WString fallback_automation_id_fragment;
+
+  // Windows UIA control type ID (UIA_*ControlTypeId, e.g.
+  // UIA_ButtonControlTypeId) required for the fallback match, or 0 for any
+  // type. Passed directly to UIA as a system constant rather than a mojom enum.
+  // Callers should specify a non-zero type because 0 fetches every element in
+  // the window. See
+  // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-controltype-ids.
+  int32 fallback_control_type;
+
+  // Maximum time to watch for the element to appear, capped at
+  // UiaElementProbeImpl::kMaxWait. Zero searches once without waiting.
+  mojo_base.mojom.TimeDelta wait_for;
+};
+
+// Bounds in physical screen pixels, where `element_bounds` has its center
+// inside `window_bounds`.
+struct UiaElementMeasurement {
+  gfx.mojom.Rect element_bounds;
+  gfx.mojom.Rect window_bounds;
+};
+
+// Measures an element in another app's window via Windows UI Automation (UIA).
+// See https://learn.microsoft.com/en-us/windows/win32/winauto/entry-uiauto-win32.
+//
+// Called only from the browser process via UiaElementLocatorWin
+// (chrome/browser/win/uia_element_locator_win.h), which launches this utility
+// service through content::ServiceProcessHost for the default browser visual
+// guide to locate the "Set default" button in Windows Settings.
+//
+// Runs out of process because UIA loads uiautomationcore.dll and cross-process
+// UIA calls can block if the target app is suspended. Runs unsandboxed because
+// the utility sandbox blocks cross-process UIA calls. Refuses Chrome windows so
+// WM_GETOBJECT never activates Chrome accessibility.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface UiaElementProbe {
+  // Returns the bounds of the matching element, or null if `window` fails
+  // validation or no usable match appears within `query.wait_for`. A new call
+  // immediately resolves any pending call with null.
+  FindElement(WindowIdentity window, UiaElementQuery query)
+      => (UiaElementMeasurement? measurement);
+};

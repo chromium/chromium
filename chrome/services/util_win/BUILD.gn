@@ -12,6 +12,8 @@ source_set("lib") {
     "processor_metrics.h",
     "tpm_metrics.cc",
     "tpm_metrics.h",
+    "uia_element_probe_impl.cc",
+    "uia_element_probe_impl.h",
     "uia_window_identity.cc",
     "uia_window_identity.h",
     "util_read_icon.cc",
@@ -27,9 +29,11 @@ source_set("lib") {
     "//components/variations",
     "//components/version_info",
     "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
   ]
 
   public_deps = [
+    "//chrome/services/util_win/public/cpp:uia_element_probe_types",
     "//chrome/services/util_win/public/mojom",
     "//third_party/metrics_proto",
   ]
@@ -41,6 +45,7 @@ source_set("unit_tests") {
     "av_products_unittest.cc",
     "processor_metrics_unittest.cc",
     "tpm_metrics_unittest.cc",
+    "uia_element_probe_impl_unittest.cc",
     "uia_window_identity_unittest.cc",
   ]
 
@@ -48,7 +53,13 @@ source_set("unit_tests") {
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/services/util_win/public/cpp:uia_element_probe_types",
+    "//chrome/services/util_win/public/mojom",
     "//components/variations",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 }
