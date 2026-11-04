@@ -389,12 +389,13 @@ inline constexpr bool kIsSpan<span<ElementType, Extent, InternalPtrType>> =
 
 template <typename T, typename R>
 concept CompatibleRange =
-    std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
-    (std::ranges::borrowed_range<R> || (std::is_const_v<T>)) &&
+    // Cheap checks first; they rule out the most common arguments.
     // `span`s should go through the copy constructor.
     (!kIsSpan<std::remove_cvref_t<R>> &&
      // Arrays should go through the array constructors.
      (!std::is_array_v<std::remove_cvref_t<R>>)) &&
+    std::ranges::contiguous_range<R> && std::ranges::sized_range<R> &&
+    (std::ranges::borrowed_range<R> || (std::is_const_v<T>)) &&
     LegalDataConversion<
         std::remove_reference_t<std::ranges::range_reference_t<R>>,
         T>;
@@ -555,8 +556,8 @@ class GSL_POINTER span {
   // Iterator + sentinel.
   template <typename It, typename End>
     requires(internal::CompatibleIter<element_type, It> &&
-             std::sized_sentinel_for<End, It> &&
-             !std::is_convertible_v<End, size_t>)
+             !std::is_convertible_v<End, size_t> &&
+             std::sized_sentinel_for<End, It>)
   // PRECONDITIONS: `first` and `last` must be for the same allocation and all
   // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
@@ -573,8 +574,8 @@ class GSL_POINTER span {
   // Iterator + sentinel, skipping the PartitionAlloc bounds check.
   template <typename It, typename End>
     requires(internal::CompatibleIter<element_type, It> &&
-             std::sized_sentinel_for<End, It> &&
-             !std::is_convertible_v<End, size_t>)
+             !std::is_convertible_v<End, size_t> &&
+             std::sized_sentinel_for<End, It>)
   // PRECONDITIONS: `first` and `last` must be for the same allocation and all
   // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr span(unchecked_t tag, It first, End last)
@@ -1098,8 +1099,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Iterator + sentinel.
   template <typename It, typename End>
     requires(internal::CompatibleIter<element_type, It> &&
-             std::sized_sentinel_for<End, It> &&
-             !std::is_convertible_v<End, size_t>)
+             !std::is_convertible_v<End, size_t> &&
+             std::sized_sentinel_for<End, It>)
   // PRECONDITIONS: `first` and `last` must be for the same allocation and all
   // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr span(It first, End last)
@@ -1116,8 +1117,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Iterator + sentinel, skipping the PartitionAlloc bounds check.
   template <typename It, typename End>
     requires(internal::CompatibleIter<element_type, It> &&
-             std::sized_sentinel_for<End, It> &&
-             !std::is_convertible_v<End, size_t>)
+             !std::is_convertible_v<End, size_t> &&
+             std::sized_sentinel_for<End, It>)
   // PRECONDITIONS: `first` and `last` must be for the same allocation and all
   // elements in the range [first, last) must be valid.
   UNSAFE_BUFFER_USAGE constexpr span(unchecked_t tag, It first, End last)
