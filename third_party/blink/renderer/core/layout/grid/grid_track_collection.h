@@ -176,6 +176,10 @@ class CORE_EXPORT GridLayoutTrackCollection
 
   bool operator==(const GridLayoutTrackCollection& other) const;
 
+  // Compares the border/scrollbar/padding input in this collection's axis.
+  bool HasMatchingSubgridBorderScrollbarPadding(
+      const BoxStrut& border_scrollbar_padding) const;
+
   // Returns the number of track ranges in the collection.
   wtf_size_t RangeCount() const { return ranges_.size(); }
   // Returns the start line of a given track range.
@@ -337,6 +341,10 @@ class CORE_EXPORT GridLayoutTrackCollection
   LayoutUnit accumulated_gutter_size_delta_;
   LayoutUnit accumulated_start_extra_margin_;
   LayoutUnit accumulated_end_extra_margin_;
+
+  // Preserve the local construction input separately from ancestor adjustments.
+  LayoutUnit subgrid_border_scrollbar_padding_start_;
+  LayoutUnit subgrid_border_scrollbar_padding_end_;
 
   // Collapsed track indexes from auto-fit ranges, populated when
   // `should_store_collapsed_track_indexes` is true at construction.

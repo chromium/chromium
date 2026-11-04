@@ -38,6 +38,32 @@ LayoutUnit StackingAxisGap(const ComputedStyle& style,
       style, percentage_resolution_size, stacking_axis_direction);
 }
 
+GridSizingTree BuildAndSizeSubgridSizingTree(
+    const GridLayoutAlgorithm& algorithm,
+    const SubgriddedItemData& subgridded_item_data,
+    const GridLineResolver& parent_line_resolver,
+    SizingConstraint sizing_constraint) {
+  GridSizingTree sizing_tree;
+  BuildGridSizingSubtree(algorithm, algorithm.Node().CachedLineResolver(),
+                         &sizing_tree,
+                         /*opt_oof_children=*/nullptr, subgridded_item_data,
+                         &parent_line_resolver, sizing_constraint);
+  const GridSizingSubtree sizing_subtree(&sizing_tree);
+
+  // TODO(yanlingwang): Recompute inherited and standalone-axis baselines when
+  // rebuilding the subgrid sizing tree.
+  algorithm.InitializeTrackSizes(sizing_subtree, subgridded_item_data);
+
+  // TODO(yanlingwang): Handle additional sizing passes when resolved row sizes
+  // change block-size-dependent item contributions.
+  for (auto direction : {kForColumns, kForRows}) {
+    ValidateMinMaxSizesCache(algorithm.Node(), sizing_subtree, direction);
+    algorithm.CompleteTrackSizingAlgorithm(sizing_subtree, subgridded_item_data,
+                                           direction, sizing_constraint);
+  }
+  return sizing_tree;
+}
+
 }  // namespace
 
 GridLanesLayoutAlgorithm::GridLanesLayoutAlgorithm(
@@ -1651,6 +1677,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   }
 
   for (auto& grid_lanes_item : grid_items) {
+    std::optional<GridSizingTree> rebuilt_sizing_tree;
     GridSizingSubtree child_sizing_subtree;
     GridLayoutSubtree* child_layout_subtree = nullptr;
     const bool is_subgrid = grid_lanes_item.IsSubgrid();
@@ -1695,17 +1722,15 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // resolved subgridded tracks (e.g., an aspect-ratio child whose size
     // depends on the subgridded axis would otherwise stay at the placeholder
     // size).
-    //
-    // The updates are written to the sizing tree's `GridLayoutData`, which is
-    // the single source of truth. A fresh layout subtree is finalized from it
-    // below, so the subgrid's layout sees the resolved data.
-    //
-    // TODO(yanlingwang): Refresh an auto-placed child subgrid's inherited
-    // tracks when the current grid-lanes container has only inherited layout
-    // geometry.
-    if (child_sizing_subtree && grid_lanes_item.is_auto_placed &&
+    const bool needs_resolved_placement =
+        grid_lanes_item.is_auto_placed &&
         grid_lanes_item.StartLine(grid_axis_direction) !=
-            grid_axis_start_offset) {
+            grid_axis_start_offset;
+
+    if (child_sizing_subtree && needs_resolved_placement) {
+      // The updates are written to the sizing tree's `GridLayoutData`, which is
+      // the single source of truth. A fresh layout subtree is finalized from it
+      // below, so the subgrid's layout sees the resolved data.
       const GridTrackSizingDirection subgrid_axis_direction =
           grid_lanes_item.RelativeDirectionInSubgrid(grid_axis_direction);
 
@@ -1721,6 +1746,21 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
             subgrid_axis_direction,
             sizing_constraint.value_or(SizingConstraint::kLayout));
       }
+    } else if (!child_sizing_subtree && is_subgrid) {
+      // These children receive finalized geometry from a grid-lanes subgrid.
+      // The grid-lanes refresh helper checks whether an update is needed before
+      // constructing a new track collection.
+      if (grid_lanes_item.node.IsGrid()) {
+        rebuilt_sizing_tree = BuildSubgridSizingTreeForResolvedPlacement(
+            grid_lanes_item, layout_data,
+            sizing_constraint.value_or(SizingConstraint::kLayout));
+        child_sizing_subtree = GridSizingSubtree(&*rebuilt_sizing_tree);
+      } else {
+        CHECK(grid_lanes_item.node.IsGridLanes());
+        child_layout_subtree =
+            RefreshSubgridInheritedTracksForResolvedPlacement(
+                grid_lanes_item, layout_data, child_layout_subtree);
+      }
     }
 
     // Finalize a fresh layout subtree for this subgrid from the sizing tree,
@@ -1728,6 +1768,13 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     if (child_sizing_subtree) {
       child_layout_subtree = MakeGarbageCollected<GridLayoutSubtree>(
           child_sizing_subtree.FinalizeTree());
+    }
+    if (is_subgrid && grid_lanes_item.node.IsGridLanes() &&
+        grid_lanes_item.is_auto_placed) {
+      // Descendants were sized before this subgrid's final position was known.
+      // Their inherited tracks may need updating even if their own positions
+      // within this subgrid are explicit.
+      child_layout_subtree->SetNeedsInheritedGeometryRefresh();
     }
 
     // During track sizing, we may force a specific inline size on an item
@@ -3292,6 +3339,118 @@ void GridLanesLayoutAlgorithm::RebuildSubgridLayoutDataForResolvedPlacement(
         child_sizing_subtree, subgridded_item_data, standalone_axis_in_subgrid,
         sizing_constraint, /*opt_needs_additional_pass=*/nullptr);
   }
+}
+
+GridLayoutSubtree*
+GridLanesLayoutAlgorithm::RefreshSubgridInheritedTracksForResolvedPlacement(
+    const GridItemData& subgrid_item,
+    const GridLayoutData& parent_layout_data,
+    GridLayoutSubtree* layout_subtree) const {
+  CHECK(subgrid_item.node.IsGridLanes());
+  const SubgriddedItemData subgridded_item_data(
+      subgrid_item, &parent_layout_data, GetConstraintSpace().GetWritingMode());
+  const ConstraintSpace subgrid_space =
+      CreateConstraintSpaceForLayout(subgridded_item_data);
+  const FragmentGeometry subgrid_fragment_geometry =
+      CalculateInitialFragmentGeometryForSubgrid(subgrid_item, subgrid_space);
+  const GridLanesLayoutAlgorithm subgrid_algorithm(
+      {subgrid_item.node, subgrid_fragment_geometry, subgrid_space});
+  const auto parent_direction = Style().GridLanesTrackSizingDirection();
+  const auto inherited_direction =
+      subgrid_item.RelativeDirectionInSubgrid(parent_direction);
+  const auto border_scrollbar_padding =
+      subgrid_algorithm.BorderScrollbarPadding();
+  const auto available_size = subgrid_algorithm.GetGridAvailableSize();
+  const auto& style = subgrid_item.node.Style();
+  const auto& parent_tracks = parent_direction == kForColumns
+                                  ? parent_layout_data.Columns()
+                                  : parent_layout_data.Rows();
+  const auto gutter_size = GridTrackSizingAlgorithm::CalculateGutterSize(
+      style, available_size, inherited_direction, parent_tracks.GutterSize());
+  const auto& old_data = *layout_subtree->LayoutData();
+  const auto& old_tracks =
+      inherited_direction == kForColumns ? old_data.Columns() : old_data.Rows();
+  const bool has_matching_bsp =
+      old_tracks.HasMatchingSubgridBorderScrollbarPadding(
+          border_scrollbar_padding);
+  // Reuse cached tracks when placement and ancestor geometry are unchanged
+  // and the border/scrollbar/padding and gutter inputs still match.
+  // Conservatively recheck margins because their resolved adjustments are not
+  // cached and may change when the percentage-resolution size changes.
+  if (!subgrid_item.is_auto_placed &&
+      !layout_subtree->NeedsInheritedGeometryRefresh() &&
+      !style.MayHaveMargin() && has_matching_bsp &&
+      old_tracks.GutterSize() == gutter_size) {
+    return layout_subtree;
+  }
+
+  auto* inherited_tracks = CreateSubgridTrackCollection(
+      subgridded_item_data, style, subgrid_space, border_scrollbar_padding,
+      available_size, inherited_direction);
+  // Track equality excludes cached border/scrollbar/padding inputs. Update
+  // those inputs even when the resulting geometry is unchanged, so later
+  // refresh checks stay valid.
+  if (!has_matching_bsp || *inherited_tracks != old_tracks) {
+    auto* layout_data = MakeGarbageCollected<GridLayoutData>(old_data);
+    layout_data->SetTrackCollection(inherited_tracks);
+    return layout_subtree->CopyWithUpdatedRoot(layout_data);
+  }
+  return layout_subtree;
+}
+
+GridSizingTree
+GridLanesLayoutAlgorithm::BuildSubgridSizingTreeForResolvedPlacement(
+    const GridItemData& subgrid_item,
+    const GridLayoutData& parent_layout_data,
+    SizingConstraint sizing_constraint) const {
+  CHECK(subgrid_item.node.IsGrid());
+  const SubgriddedItemData subgridded_item_data(
+      subgrid_item, &parent_layout_data, GetConstraintSpace().GetWritingMode());
+  const ConstraintSpace subgrid_space =
+      CreateConstraintSpaceForLayout(subgridded_item_data);
+  const FragmentGeometry subgrid_fragment_geometry =
+      CalculateInitialFragmentGeometryForSubgrid(subgrid_item, subgrid_space);
+  const GridLayoutAlgorithm subgrid_algorithm(
+      {subgrid_item.node, subgrid_fragment_geometry, subgrid_space});
+
+  const bool needs_intrinsic_inline_size =
+      sizing_constraint == SizingConstraint::kLayout &&
+      subgrid_item.RelativeDirectionInSubgrid(
+          Style().GridLanesTrackSizingDirection()) == kForRows;
+  auto sizing_tree = BuildAndSizeSubgridSizingTree(
+      subgrid_algorithm, subgridded_item_data, Node().CachedLineResolver(),
+      needs_intrinsic_inline_size ? SizingConstraint::kMaxContent
+                                  : sizing_constraint);
+
+  if (needs_intrinsic_inline_size) {
+    // Resolve shrink-to-fit inline geometry only after the new inherited rows
+    // and descendant standalone columns are known. Keep this geometry immutable
+    // while sizing the final subtree against the resolved inline size.
+    std::optional<LayoutUnit> fixed_inline_size;
+    if (subgrid_space.AvailableSize().inline_size == kIndefiniteSize) {
+      // An orthogonal item's inline size can still be unconstrained. Match the
+      // max-content fallback used when measuring grid-lanes items.
+      fixed_inline_size =
+          To<GridNode>(subgrid_item.node)
+              .ComputeSubgridMinMaxSizes(GridSizingSubtree(&sizing_tree),
+                                         subgrid_space)
+              .sizes.max_size;
+    }
+    const auto resolved_space = CreateConstraintSpaceForLayout(
+        subgridded_item_data, /*opt_layout_subtree=*/nullptr,
+        /*containing_grid_area=*/nullptr,
+        /*unavailable_block_size=*/LayoutUnit(),
+        /*min_block_size_should_encompass_intrinsic_size=*/false,
+        /*opt_child_block_offset=*/std::nullopt, fixed_inline_size);
+    const auto resolved_fragment_geometry =
+        CalculateInitialFragmentGeometryForSubgrid(
+            subgrid_item, resolved_space, GridSizingSubtree(&sizing_tree));
+    sizing_tree = BuildAndSizeSubgridSizingTree(
+        GridLayoutAlgorithm(
+            {subgrid_item.node, resolved_fragment_geometry, resolved_space}),
+        subgridded_item_data, Node().CachedLineResolver(), sizing_constraint);
+  }
+  return sizing_tree;
 }
 
 void GridLanesLayoutAlgorithm::CompleteFinalBaselineAlignment(

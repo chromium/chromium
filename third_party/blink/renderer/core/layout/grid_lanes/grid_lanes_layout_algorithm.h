@@ -315,6 +315,21 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridTrackSizingDirection subgrid_axis_direction,
       SizingConstraint sizing_constraint) const;
 
+  // Returns the existing layout subtree or a copy with refreshed inherited
+  // tracks for a grid-lanes child. Used when laying out nested subgrids within
+  // a grid-lanes subgrid.
+  GridLayoutSubtree* RefreshSubgridInheritedTracksForResolvedPlacement(
+      const GridItemData& subgrid_item,
+      const GridLayoutData& parent_layout_data,
+      GridLayoutSubtree* layout_subtree) const;
+
+  // Rebuilds a regular grid child's sizing tree to re-size its standalone
+  // tracks. Used when laying out nested subgrids within a grid-lanes subgrid.
+  GridSizingTree BuildSubgridSizingTreeForResolvedPlacement(
+      const GridItemData& subgrid_item,
+      const GridLayoutData& parent_layout_data,
+      SizingConstraint sizing_constraint) const;
+
   // Resolves non-definite track sizes for the grid axis.
   void ComputeUsedTrackSizes(const GridSizingSubtree& sizing_subtree,
                              SizingConstraint sizing_constraint,

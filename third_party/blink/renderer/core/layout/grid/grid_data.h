@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
 
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -102,6 +103,10 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
 
   bool HasTrackCollection(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? !!columns_ : !!rows_;
+  }
+
+  bool HasSingleTrackCollection() const {
+    return HasTrackCollection(kForColumns) != HasTrackCollection(kForRows);
   }
 
   bool IsSubgridWithStandaloneAxis(
@@ -370,6 +375,32 @@ class GridLayoutTree : public GarbageCollected<GridLayoutTree> {
     return tree_data_[index]->subtree_size;
   }
 
+  // Copy only the subtree's node references, sharing unchanged descendants.
+  GridLayoutTree* CopySubtreeWithUpdatedRoot(
+      wtf_size_t subtree_root,
+      GridLayoutData* updated_root_layout_data) const {
+    const auto* old_root = LayoutData(subtree_root);
+    CHECK(old_root->HasSingleTrackCollection());
+    CHECK(updated_root_layout_data->HasSingleTrackCollection());
+    CHECK(old_root->HasTrackCollection(kForColumns) ==
+          updated_root_layout_data->HasTrackCollection(kForColumns));
+    const auto subtree_size = SubtreeSize(subtree_root);
+    HeapVector<Member<GridTreeNode>, 16> tree_data;
+    tree_data.ReserveInitialCapacity(subtree_size);
+    auto* updated_root = MakeGarbageCollected<GridTreeNode>(
+        updated_root_layout_data, subtree_size);
+    tree_data.emplace_back(updated_root);
+
+    for (wtf_size_t i = 1; i < subtree_size; ++i) {
+      const auto& descendant = tree_data_[subtree_root + i];
+      tree_data.emplace_back(descendant);
+      updated_root->has_unresolved_geometry |=
+          descendant->has_unresolved_geometry;
+    }
+
+    return MakeGarbageCollected<GridLayoutTree>(std::move(tree_data));
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(tree_data_); }
 
  private:
@@ -390,25 +421,54 @@ class GridLayoutSubtree : public GarbageCollected<GridLayoutSubtree>,
     SetSubtreeRoot(LayoutTree(), subtree_root);
   }
 
-  GridLayoutSubtree(const GridLayoutTree* layout_tree, GridSubtree subtree)
-      : GridSubtree(std::move(subtree)), layout_tree_(layout_tree) {}
+  GridLayoutSubtree(const GridLayoutTree* layout_tree,
+                    GridSubtree subtree,
+                    bool needs_inherited_geometry_refresh = false)
+      : GridSubtree(std::move(subtree)),
+        layout_tree_(layout_tree),
+        needs_inherited_geometry_refresh_(needs_inherited_geometry_refresh) {}
 
   GridLayoutSubtree* FirstChild() const {
     return MakeGarbageCollected<GridLayoutSubtree>(
-        layout_tree_, GridSubtree::FirstChild(LayoutTree()));
+        layout_tree_, GridSubtree::FirstChild(LayoutTree()),
+        needs_inherited_geometry_refresh_);
   }
 
   GridLayoutSubtree* NextSibling() const {
     return MakeGarbageCollected<GridLayoutSubtree>(
-        layout_tree_, GridSubtree::NextSibling(LayoutTree()));
+        layout_tree_, GridSubtree::NextSibling(LayoutTree()),
+        NeedsInheritedGeometryRefresh());
   }
 
-  // This method is meant to be used for layout invalidation, so we only care
-  // about comparing the layout data of both subtrees.
+  bool NeedsInheritedGeometryRefresh() const {
+    return needs_inherited_geometry_refresh_;
+  }
+
+  void SetNeedsInheritedGeometryRefresh() {
+    needs_inherited_geometry_refresh_ = true;
+  }
+
+  // Returns a copy with `updated_root_layout_data` and marks its descendants
+  // to update their inherited tracks before layout.
+  GridLayoutSubtree* CopyWithUpdatedRoot(
+      GridLayoutData* updated_root_layout_data) const {
+    auto* updated_subtree = MakeGarbageCollected<GridLayoutSubtree>(
+        LayoutTree().CopySubtreeWithUpdatedRoot(subtree_root_,
+                                                updated_root_layout_data));
+    updated_subtree->SetNeedsInheritedGeometryRefresh();
+    return updated_subtree;
+  }
+
+  // Used for layout-cache invalidation. Compare the layout data and whether
+  // this subgrid or its descendants still need their inherited tracks updated
+  // before layout can be reused.
   bool operator==(const GridLayoutSubtree& other) const {
     return (layout_tree_ && other.layout_tree_)
-               ? layout_tree_->AreSubtreesEqual(
-                     subtree_root_, *other.layout_tree_, other.subtree_root_)
+               ? needs_inherited_geometry_refresh_ ==
+                         other.needs_inherited_geometry_refresh_ &&
+                     layout_tree_->AreSubtreesEqual(subtree_root_,
+                                                    *other.layout_tree_,
+                                                    other.subtree_root_)
                : !layout_tree_ && !other.layout_tree_;
   }
 
@@ -430,6 +490,9 @@ class GridLayoutSubtree : public GarbageCollected<GridLayoutSubtree>,
 
   // Pointer to the layout tree shared by multiple subtree instances.
   Member<const GridLayoutTree> layout_tree_;
+  // Indicates whether this subtree or its descendants may need their inherited
+  // tracks refreshed after placement or changes to ancestor geometry.
+  bool needs_inherited_geometry_refresh_ = false;
 };
 
 }  // namespace blink

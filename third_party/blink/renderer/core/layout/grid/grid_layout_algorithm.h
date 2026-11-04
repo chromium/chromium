@@ -89,17 +89,18 @@ class CORE_EXPORT GridLayoutAlgorithm
   LogicalSize GetGridAvailableSize() const { return grid_available_size_; }
 
   // Initializes the track sizes of a grid sizing subtree.
-  void InitializeTrackSizes(
-      const GridSizingSubtree& sizing_subtree,
-      const SubgriddedItemData& opt_subgrid_data,
-      const std::optional<GridTrackSizingDirection>& opt_track_direction) const;
+  void InitializeTrackSizes(const GridSizingSubtree& sizing_subtree,
+                            const SubgriddedItemData& opt_subgrid_data,
+                            const std::optional<GridTrackSizingDirection>&
+                                opt_track_direction = std::nullopt) const;
 
   // Computes and caches the used track sizes of a grid sizing subtree.
-  void CompleteTrackSizingAlgorithm(const GridSizingSubtree& sizing_subtree,
-                                    const SubgriddedItemData& opt_subgrid_data,
-                                    GridTrackSizingDirection track_direction,
-                                    SizingConstraint sizing_constraint,
-                                    bool* opt_needs_additional_pass) const;
+  void CompleteTrackSizingAlgorithm(
+      const GridSizingSubtree& sizing_subtree,
+      const SubgriddedItemData& opt_subgrid_data,
+      GridTrackSizingDirection track_direction,
+      SizingConstraint sizing_constraint,
+      bool* opt_needs_additional_pass = nullptr) const;
 
   // Performs the final baseline alignment pass of a grid sizing subtree.
   void ComputeBaselineAlignment(

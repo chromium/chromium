@@ -495,6 +495,17 @@ bool GridLayoutTrackCollection::operator==(
          ranges_ == other.ranges_ && sets_geometry_ == other.sets_geometry_;
 }
 
+bool GridLayoutTrackCollection::HasMatchingSubgridBorderScrollbarPadding(
+    const BoxStrut& border_scrollbar_padding) const {
+  const bool is_for_columns = track_direction_ == kForColumns;
+  return subgrid_border_scrollbar_padding_start_ ==
+             (is_for_columns ? border_scrollbar_padding.inline_start
+                             : border_scrollbar_padding.block_start) &&
+         subgrid_border_scrollbar_padding_end_ ==
+             (is_for_columns ? border_scrollbar_padding.inline_end
+                             : border_scrollbar_padding.block_end);
+}
+
 wtf_size_t GridLayoutTrackCollection::RangeStartLine(
     wtf_size_t range_index) const {
   DCHECK_LT(range_index, ranges_.size());
@@ -688,6 +699,12 @@ GridLayoutTrackCollection::CreateSubgridTrackCollection(
   const auto subgrid_border_scrollbar_padding_start =
       is_for_columns ? subgrid_border_scrollbar_padding.inline_start
                      : subgrid_border_scrollbar_padding.block_start;
+
+  subgrid_track_collection->subgrid_border_scrollbar_padding_start_ =
+      subgrid_border_scrollbar_padding_start;
+  subgrid_track_collection->subgrid_border_scrollbar_padding_end_ =
+      is_for_columns ? subgrid_border_scrollbar_padding.inline_end
+                     : subgrid_border_scrollbar_padding.block_end;
 
   const auto subgrid_margin_border_scrollbar_padding_start =
       subgrid_margin_start + subgrid_border_scrollbar_padding_start;
