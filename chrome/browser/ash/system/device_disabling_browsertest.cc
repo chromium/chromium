@@ -267,6 +267,8 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingBeforeLoginHostCreated,
       g_browser_process->shared_url_loader_factory(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       g_browser_process->platform_part()->component_manager_ash(),
+      g_browser_process->platform_part()
+          ->device_restriction_schedule_controller(),
       OOBE_SCREEN_UNKNOWN);
   // Check for WizardController state.
   OobeScreenWaiter(DeviceDisabledScreenView::kScreenId).Wait();

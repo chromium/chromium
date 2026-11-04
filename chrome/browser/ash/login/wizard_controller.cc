@@ -2489,10 +2489,12 @@ void WizardController::OnEnrollmentDone() {
     CHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
              OobeUI::kOobeDisplay, base::NotFatalUntil::M160);
     CHECK(metrics_service_);
+    CHECK(device_restriction_schedule_controller_);
     SwitchWebUItoMojo(
         &local_state_.get(), metrics_service_.get(),
         &application_locale_storage_.get(), shared_url_loader_factory_,
-        &browser_policy_connector_ash_.get(), component_manager_ash_);
+        &browser_policy_connector_ash_.get(), component_manager_ash_,
+        device_restriction_schedule_controller_.get());
   } else {
     ShowLoginScreen();
   }
@@ -2543,10 +2545,12 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
       PerformOOBECompletedActions(
           OobeMetricsHelper::CompletedPreLoginOobeFlowType::kDemo);
       CHECK(metrics_service_);
+      CHECK(device_restriction_schedule_controller_);
       SwitchWebUItoMojo(
           &local_state_.get(), metrics_service_.get(),
           &application_locale_storage_.get(), shared_url_loader_factory_,
-          &browser_policy_connector_ash_.get(), component_manager_ash_);
+          &browser_policy_connector_ash_.get(), component_manager_ash_,
+          device_restriction_schedule_controller_.get());
       break;
     case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();

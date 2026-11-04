@@ -25,15 +25,17 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
 }  // namespace policy
 
 namespace ash {
 
 // Shows the Chrome OS out-of-box / login UI. The LoginDisplayHost may be
 // created asynchronously, after a locale switch.
-// `local_state`, `metrics_service`, `application_locale_storage` and
-// `browser_policy_connector_ash` must be non-null and must outlive the
-// LoginDisplayHost that this function creates.
+// `local_state`, `metrics_service`, `application_locale_storage`,
+// `browser_policy_connector_ash` and `device_restriction_schedule_controller`
+// must be non-null and must outlive the LoginDisplayHost that this function
+// creates.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void ShowLoginWizard(
     PrefService* local_state,
@@ -42,13 +44,16 @@ void ShowLoginWizard(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
+    policy::DeviceRestrictionScheduleController*
+        device_restriction_schedule_controller,
     OobeScreenId first_screen);
 
 // Shuts down LoginDisplayHostWebUI host and creates LoginDisplayHostMojo
 // instead. This may happen asynchronously, after a locale switch.
-// `local_state`, `metrics_service`, `application_locale_storage` and
-// `browser_policy_connector_ash` must be non-null and must outlive the
-// LoginDisplayHost that this function creates.
+// `local_state`, `metrics_service`, `application_locale_storage`,
+// `browser_policy_connector_ash` and `device_restriction_schedule_controller`
+// must be non-null and must outlive the LoginDisplayHost that this function
+// creates.
 // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
 void SwitchWebUItoMojo(
     PrefService* local_state,
@@ -56,8 +61,9 @@ void SwitchWebUItoMojo(
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
-    scoped_refptr<component_updater::ComponentManagerAsh>
-        component_manager_ash);
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
+    policy::DeviceRestrictionScheduleController*
+        device_restriction_schedule_controller);
 
 }  // namespace ash
 

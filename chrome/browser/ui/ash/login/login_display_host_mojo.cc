@@ -194,6 +194,8 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
+    policy::DeviceRestrictionScheduleController*
+        device_restriction_schedule_controller,
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(local_state,
@@ -202,6 +204,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
                              shared_url_loader_factory,
                              browser_policy_connector_ash,
                              std::move(component_manager_ash),
+                             device_restriction_schedule_controller,
                              update_geolocation_usage_allowed),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
@@ -933,14 +936,11 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   scoped_observation_.Observe(web_dialog_view);
 
   // Should be created after dialog was created and OobeUI was loaded.
-  // TODO(crbug.com/404133029): Avoid using g_browser_process.
   wizard_controller_ = std::make_unique<WizardController>(
       &local_state_.get(), &metrics_service_.get(),
       &application_locale_storage_.get(), shared_url_loader_factory_.get(),
       &browser_policy_connector_ash_.get(), component_manager_ash_,
-      g_browser_process->platform_part()
-          ->device_restriction_schedule_controller(),
-      GetWizardContext());
+      &device_restriction_schedule_controller_.get(), GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_login_impl_);

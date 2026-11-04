@@ -43,6 +43,7 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
 }  // namespace policy
 
 namespace ash {
@@ -59,8 +60,9 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public SigninUI,
                                public ash::SessionTerminationManager::Observer {
  public:
-  // `local_state`, `metrics_service`, `application_locale_storage` and
-  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `local_state`, `metrics_service`, `application_locale_storage`,
+  // `browser_policy_connector_ash` and `device_restriction_schedule_controller`
+  // must be non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   LoginDisplayHostCommon(
       PrefService* local_state,
@@ -70,6 +72,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
+      policy::DeviceRestrictionScheduleController*
+          device_restriction_schedule_controller,
       bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
@@ -168,6 +172,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       browser_policy_connector_ash_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
+  const raw_ref<policy::DeviceRestrictionScheduleController>
+      device_restriction_schedule_controller_;
 
  private:
   void Cleanup();

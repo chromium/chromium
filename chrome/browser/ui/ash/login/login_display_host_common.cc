@@ -235,6 +235,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
+    policy::DeviceRestrictionScheduleController*
+        device_restriction_schedule_controller,
     bool update_geolocation_usage_allowed)
     : local_state_(CHECK_DEREF(local_state)),
       metrics_service_(CHECK_DEREF(metrics_service)),
@@ -242,6 +244,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       component_manager_ash_(std::move(component_manager_ash)),
+      device_restriction_schedule_controller_(
+          CHECK_DEREF(device_restriction_schedule_controller)),
       keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       kiosk_app_menu_controller_(local_state),

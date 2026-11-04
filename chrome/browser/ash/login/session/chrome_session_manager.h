@@ -36,6 +36,7 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 class BrowserPolicyConnectorAsh;
+class DeviceRestrictionScheduleController;
 }  // namespace policy
 
 class ApplicationLocaleStorage;
@@ -69,8 +70,9 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
   //   - Launches the auto launched kiosk app;
   //   - Resumes user sessions on crash-and-restart;
   //   - Starts a stub login session for dev or test;
-  // `metrics_service` and `application_locale_storage` must not be nullptr,
-  // and must be valid while main RunLoop is running.
+  // `metrics_service`, `application_locale_storage` and
+  // `device_restriction_schedule_controller` must not be nullptr, and must be
+  // valid while main RunLoop is running.
   // `shared_url_loader_factory` and `component_manager_ash` must not be
   // nullptr.
   void Initialize(
@@ -79,6 +81,8 @@ class ChromeSessionManager : public session_manager::SessionManagerObserver {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       scoped_refptr<component_updater::ComponentManagerAsh>
           component_manager_ash,
+      policy::DeviceRestrictionScheduleController*
+          device_restriction_schedule_controller,
       const base::CommandLine& parsed_command_line,
       Profile* profile,
       bool is_running_test);
