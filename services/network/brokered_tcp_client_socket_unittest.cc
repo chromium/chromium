@@ -145,14 +145,7 @@ TEST_F(BrokeredTcpClientSocketTest, Bind) {
   EXPECT_EQ(result, net::OK);
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/40918119): Re-enable on Fuchsia once cause for failure is
-// determined.
-#define MAYBE_FailedBind DISABLED_FailedBind
-#else
-#define MAYBE_FailedBind FailedBind
-#endif
-TEST_F(BrokeredTcpClientSocketTest, MAYBE_FailedBind) {
+TEST_F(BrokeredTcpClientSocketTest, FailedBind) {
   net::TestCompletionCallback callback;
 
   net::TCPServerSocket ipv6_server_socket(nullptr, net::NetLogSource());
