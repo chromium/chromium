@@ -3163,16 +3163,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   EXPECT_TRUE(first_web_contents->HasPictureInPictureDocument());
 }
 
-// TODO(crbug.com/382340033): Re-enable failing test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DevToolsMediaLogsRecordedForOpener \
-  DISABLED_DevToolsMediaLogsRecordedForOpener
-#else
-#define MAYBE_DevToolsMediaLogsRecordedForOpener \
-  DevToolsMediaLogsRecordedForOpener
-#endif
+// TODO(crbug.com/382340033, crbug.com/440673769): Re-enable failing test.
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       MAYBE_DevToolsMediaLogsRecordedForOpener) {
+                       DISABLED_DevToolsMediaLogsRecordedForOpener) {
   LoadAutoDocumentPipPage(browser());
   auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   PlayVideo(web_contents);
