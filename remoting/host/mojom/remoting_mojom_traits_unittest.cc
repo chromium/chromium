@@ -585,6 +585,13 @@ TEST(RemotingMojomTraitsTest, TransportRoute) {
   EXPECT_EQ(input.local_address, output.local_address);
 }
 
+TEST(RemotingMojomTraitsTest, TransportRouteUndefinedTypeIsRejected) {
+  EXPECT_FALSE((mojo::EnumTraits<mojom::TransportRouteType,
+                                 protocol::TransportRoute::RouteType>::
+                    FromMojom(mojom::TransportRouteType::kUndefined))
+                   .has_value());
+}
+
 TEST(RemotingMojomTraitsTest, VideoTrackLayout) {
   protocol::VideoTrackLayout input;
   input.set_screen_id(123);

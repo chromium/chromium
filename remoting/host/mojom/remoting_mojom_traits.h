@@ -745,8 +745,8 @@ struct EnumTraits<remoting::mojom::TransportRouteType,
                   ::remoting::protocol::TransportRoute::RouteType> {
   static remoting::mojom::TransportRouteType ToMojom(
       ::remoting::protocol::TransportRoute::RouteType input);
-  static ::remoting::protocol::TransportRoute::RouteType FromMojom(
-      remoting::mojom::TransportRouteType input);
+  static std::optional<::remoting::protocol::TransportRoute::RouteType>
+  FromMojom(remoting::mojom::TransportRouteType input);
 };
 
 template <>

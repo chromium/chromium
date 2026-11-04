@@ -1852,15 +1852,14 @@ mojo::EnumTraits<remoting::mojom::TransportRouteType,
 }
 
 // static
-::remoting::protocol::TransportRoute::RouteType
+std::optional<::remoting::protocol::TransportRoute::RouteType>
 mojo::EnumTraits<remoting::mojom::TransportRouteType,
                  ::remoting::protocol::TransportRoute::RouteType>::
     FromMojom(remoting::mojom::TransportRouteType input) {
   switch (input) {
     case remoting::mojom::TransportRouteType::kUndefined:
-      // kUndefined does not map to a value in TransportRoute::RouteType so
-      // it should be treated the same as any other unknown value.
-      break;
+      // kUndefined does not map to a value in TransportRoute::RouteType.
+      return std::nullopt;
     case remoting::mojom::TransportRouteType::kDirect:
       return ::remoting::protocol::TransportRoute::RouteType::DIRECT;
     case remoting::mojom::TransportRouteType::kStun:
@@ -1869,7 +1868,7 @@ mojo::EnumTraits<remoting::mojom::TransportRouteType,
       return ::remoting::protocol::TransportRoute::RouteType::RELAY;
   }
 
-  NOTREACHED();
+  return std::nullopt;
 }
 
 // static
