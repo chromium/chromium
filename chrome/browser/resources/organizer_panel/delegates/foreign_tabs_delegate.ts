@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import type {BrowserProxy, ForeignTab} from '../foreign_tabs.mojom-webui.js';
 import {browserProxyFactory} from '../foreign_tabs.mojom-webui.js';
-import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerSection} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 
 import {getHostnameOrUrl} from './tab_delegate_utils.js';
@@ -99,5 +99,9 @@ export class ForeignTabsDelegate implements
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTab(data.sessionTag, data.sessionTabId);
+  }
+
+  getItemClickAction(): OrganizerAction {
+    return 'OpenCrossDeviceTab';
   }
 }

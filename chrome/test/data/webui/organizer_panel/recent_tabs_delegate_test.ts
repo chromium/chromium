@@ -134,6 +134,7 @@ suite('RecentTabsDelegateTest', () => {
     assertEquals('recently-closed', delegate.getId());
     assertEquals('Recently closed', delegate.getHeader());
     assertEquals('RecentlyClosed', delegate.getHistogramSectionName());
+    assertEquals('OpenRecentlyClosedEntry', delegate.getItemClickAction());
   });
 
   test('returns tabs sorted by MRU', async () => {

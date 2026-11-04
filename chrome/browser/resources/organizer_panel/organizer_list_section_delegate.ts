@@ -11,6 +11,11 @@ export interface OrganizerListSectionClient {
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>): void;
 }
 
+// LINT.IfChange(OrganizerAction)
+export type OrganizerAction = 'CloseTab'|'OpenCrossDeviceTab'|
+    'OpenRecentlyClosedEntry'|'OpenTabGroup'|'SwitchTab';
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerAction)
+
 // LINT.IfChange(OrganizerSection)
 export type OrganizerSection =
     'CrossDeviceTabs'|'OpenTabs'|'RecentlyClosed'|'TabGroups';
@@ -36,10 +41,17 @@ export interface OrganizerListSectionDelegate<T> {
   // Called when an item in this section is clicked.
   onItemClick(item: OrganizerListSectionItem<T>): void;
 
+  // Returns the action name used in UMA histograms when an item is clicked.
+  getItemClickAction(): OrganizerAction;
+
   // Optional: Called when an item's trailing action button is clicked.
   onItemActionButtonClicked?
       (item: OrganizerListSectionItem<T>, buttonElement: HTMLElement):
           Promise<void>|void;
+
+  // Optional: Returns the action name used in UMA histograms when an item's
+  // trailing action button is clicked.
+  getActionButtonClickAction?(): OrganizerAction;
 
   // Optional: Called when an item's context menu is triggered via right-click.
   onItemContextMenuClicked?

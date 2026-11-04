@@ -1043,4 +1043,125 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(0, metrics.count('OrganizerPanel.ExpandSection'));
     assertEquals(0, metrics.count('OrganizerPanel.CollapseSection'));
   });
+
+  test(
+      'records IndexOf histograms on item and action button clicks',
+      async () => {
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {
+            title: ['Google'],
+            description: [{text: 'google.com'}],
+            hoveredActionButton: {
+              icon: 'cr:close',
+              ariaLabel: 'Close tab',
+            },
+          },
+          {
+            title: ['YouTube'],
+            description: [{text: 'youtube.com'}],
+            hoveredActionButton: {
+              icon: 'cr:close',
+              ariaLabel: 'Close tab',
+            },
+          },
+          {
+            title: ['YouTube Music'],
+            description: [{text: 'music.youtube.com'}],
+            hoveredActionButton: {
+              icon: 'cr:close',
+              ariaLabel: 'Close tab',
+            },
+          },
+        ];
+        listSection.delegate = new TestSectionDelegate('Open Tabs', items);
+        await microtasksFinished();
+
+        let listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(3, listItems.length);
+
+        listItems[1]!.click();
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList', 1));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfSwitchTabInFilteredList'));
+
+        listItems[2]!.shadowRoot.querySelector<HTMLElement>(
+                                    '#actionButton')!.click();
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfCloseTabInUnfilteredList', 2));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfCloseTabInFilteredList'));
+
+        // Filter items and verify filtered index is recorded.
+        listSection.searchQuery = 'YouTube';
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(2, listItems.length);
+
+        listItems[1]!.click();
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfSwitchTabInFilteredList', 1));
+
+        listItems[0]!.shadowRoot.querySelector<HTMLElement>(
+                                    '#actionButton')!.click();
+        await microtasksFinished();
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfCloseTabInFilteredList', 0));
+      });
+
+  test(
+      'does not record action button IndexOf histogram when action is undefined',
+      async () => {
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {
+            title: ['Tab Group 1'],
+            hoveredActionButton: {
+              icon: 'cr:more-vert',
+              ariaLabel: 'More options',
+            },
+          },
+        ];
+        const delegate = new TestSectionDelegate('Tab groups', items);
+        delegate.getActionButtonClickAction = undefined;
+        listSection.delegate = delegate;
+        await microtasksFinished();
+
+        const listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+
+        listItems[0]!.shadowRoot.querySelector<HTMLElement>(
+                                    '#actionButton')!.click();
+        await microtasksFinished();
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfCloseTabInUnfilteredList'));
+        assertEquals(
+            0,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList'));
+
+        listItems[0]!.click();
+        assertEquals(
+            1,
+            metrics.count(
+                'Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList', 0));
+      });
 });

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
-import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem, OrganizerSection} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem, OrganizerSection} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 export class TestSectionDelegate implements
     OrganizerListSectionDelegate<unknown> {
@@ -14,6 +14,7 @@ export class TestSectionDelegate implements
   getZeroState?: () => TemplateResult;
   shouldAlwaysShowZeroState?: () => boolean;
   shouldHide?: () => boolean;
+  getActionButtonClickAction?: () => OrganizerAction = () => 'CloseTab';
 
   private lastClickedItem_?: OrganizerListSectionItem<unknown>;
   private clickCount_: number = 0;
@@ -64,6 +65,10 @@ export class TestSectionDelegate implements
   onItemClick(item: OrganizerListSectionItem<unknown>) {
     this.lastClickedItem_ = item;
     this.clickCount_++;
+  }
+
+  getItemClickAction(): OrganizerAction {
+    return 'SwitchTab';
   }
 
   getLastClickedItem(): OrganizerListSectionItem<unknown>|undefined {

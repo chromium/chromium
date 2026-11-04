@@ -12,7 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
-import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
+import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {OrganizerListSectionHeaderElement} from './organizer_list_section_header.js';
 import {OrganizerSectionMenuOption} from './organizer_list_section_header.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
@@ -296,10 +296,20 @@ export class OrganizerListSectionElement extends CrLitElement implements
         this.delegate.getId(), this.showAll_);
   }
 
+  private recordIndexMetric_(action: OrganizerAction, index: number) {
+    chrome.histograms.recordSmallCount(
+        this.isSearching_() ?
+            `Tabs.Organizer.WebUI.IndexOf${action}InFilteredList` :
+            `Tabs.Organizer.WebUI.IndexOf${action}InUnfilteredList`,
+        index);
+  }
+
   protected onItemClick_(e: Event) {
     const target = e.currentTarget as OrganizerListSectionItemElement;
     assert(target.item);
     assert(this.delegate);
+    this.recordIndexMetric_(
+        this.delegate.getItemClickAction(), Number(target.dataset['index']));
     this.delegate.onItemClick(target.item);
     this.browserProxy_.handler.closePanel();
   }
@@ -312,6 +322,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(e.detail.buttonElement);
     assert(this.delegate);
     const itemElement = e.currentTarget as OrganizerListSectionItemElement;
+    const action = this.delegate.getActionButtonClickAction?.();
+    if (action) {
+      this.recordIndexMetric_(action, Number(itemElement.dataset['index']));
+    }
     await this.delegate.onItemActionButtonClicked?.(
         e.detail.item, e.detail.buttonElement);
     itemElement.resetActionButtonStateIfNeeded();
