@@ -56,10 +56,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
       const gpu::SyncToken& sync_token,
       bool is_lost)>;
 
-  // Returns true if this instance creates TransferableResources for usage with
-  // GPU compositing.
-  virtual bool CreatesAcceleratedTransferableResources() const = 0;
-
   virtual void OnRefReturned(scoped_refptr<CanvasResource>&& resource) {}
 
   static void DropRefOnOwningThread(scoped_refptr<CanvasResource> resource);
@@ -139,9 +135,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
                   bool is_accelerated);
   bool IsInitialized() const { return is_initialized_; }
 
-  bool CreatesAcceleratedTransferableResources() const override {
-    return !GetSharedImage()->is_software();
-  }
   void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
   const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
 

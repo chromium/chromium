@@ -24,7 +24,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       viz::ReleaseCallback out_callback,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  bool CreatesAcceleratedTransferableResources() const override { return true; }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
   void WaitSyncToken(const gpu::SyncToken&) override;
 
@@ -110,7 +109,6 @@ ExportedCanvasResource::ExportedCanvasResource(
       hdr_metadata_(hdr_metadata),
       resource_source_(resource_source),
       accelerated_raster_(true),
-      accelerated_compositing_(true),
       context_provider_wrapper_(provider),
       use_legacy_external_canvas_resource_bitmap_path_(true) {
   CHECK(resource_);
@@ -128,8 +126,6 @@ ExportedCanvasResource::ExportedCanvasResource(
       hdr_metadata_(resource_->GetHdrMetadata()),
       resource_source_(resource_->GetTransferableResourceSource()),
       accelerated_raster_(resource_->UsesAcceleratedRaster()),
-      accelerated_compositing_(
-          resource_->CreatesAcceleratedTransferableResources()),
       use_legacy_external_canvas_resource_bitmap_path_(false) {
   CHECK(resource_);
   CHECK(!resource_->is_cross_thread());
@@ -280,16 +276,15 @@ ExportedCanvasResource::PrepareTransferableResource() {
 
   resource.hdr_metadata = hdr_metadata_;
 
-  // When the compositor returns an accelerated resource, it provides a sync
-  // token to allow subsequent accelerated raster operations to properly
-  // sequence their usage of the resource within the GPU service. However, if
-  // the compositor is accelerated but raster is *not*, sync tokens are not
-  // sufficient for ordering: We must instead ensure that the compositor's
-  // GPU-side reads have actually *completed* before the compositor returns the
-  // resource for reuse, as after that point subsequent raster operations will
-  // start writing to the resource via the CPU without any subsequent
-  // synchronization with the GPU service.
-  if (!accelerated_raster_ && accelerated_compositing_) {
+  // When the compositor returns an resource, it provides a sync token to allow
+  // subsequent accelerated raster operations to properly sequence their usage
+  // of the resource within the GPU service. However, if raster is not
+  // accelerated, sync tokens are not sufficient for ordering: We must instead
+  // ensure that the compositor's reads have actually *completed* before the
+  // compositor returns the resource for reuse, as after that point subsequent
+  // raster operations will start writing to the resource via the CPU without
+  // any subsequent synchronization with the GPU service.
+  if (!accelerated_raster_) {
     resource.synchronization_type =
         viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   }

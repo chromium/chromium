@@ -64,7 +64,6 @@ class PLATFORM_EXPORT ExportedCanvasResource
   const gfx::HDRMetadata hdr_metadata_;
   const viz::TransferableResource::ResourceSource resource_source_;
   const bool accelerated_raster_;
-  const bool accelerated_compositing_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
