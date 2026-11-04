@@ -7813,10 +7813,15 @@ auto GraphBuilderTflite::SerializeIdentityOperation(OperandId input_operand_id,
   // Graph output tensors must be produced by an operator in the TFLite
   // flatbuffer, so use a reshape pass-through.
   if (std::ranges::contains(graph_info_->output_operands, output_operand_id)) {
+    // RESHAPE requires the input and output tensors to have the same type.
+    // Forward the input tensor type so that if the float16 input was promoted
+    // to float32, the output is a float32 temporary followed by a cast to the
+    // float16 graph output, the same as `SerializeReshape()`.
     ASSIGN_OR_RETURN(
         const TensorInfo output_tensor_info,
         SerializeOutputTensorInfo(output_operand_id, /*quantize_params=*/0,
-                                  /*operation_supports_float16=*/true));
+                                  /*operation_supports_float16=*/true,
+                                  input_tensor_info.data_type));
     return SerializeReshapeOperation(input_tensor_info.index,
                                      output_tensor_info.index,
                                      output_tensor_info.dimensions);
