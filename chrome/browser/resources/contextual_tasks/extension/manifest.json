@@ -8,6 +8,9 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  // Runs a separate instance in each off-the-record profile, which binds to
+  // that profile's ContextualTasksExtensionBridge.
+  "incognito": "split",
   "permissions": [
     "contextualTasksPrivate",
     "metricsPrivate",

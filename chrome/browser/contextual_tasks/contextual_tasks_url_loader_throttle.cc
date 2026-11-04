@@ -41,7 +41,11 @@ bool IsEligible(Profile* profile) {
     return false;
   }
 
-  if (!profile || profile->IsOffTheRecord()) {
+  // Incognito profiles are eligible too, since the extension runs in
+  // split incognito mode. Without the header, Search treats them as legacy
+  // clients and hides the searchbox.
+  if (!profile ||
+      (!profile->IsRegularProfile() && !profile->IsIncognitoProfile())) {
     return false;
   }
 

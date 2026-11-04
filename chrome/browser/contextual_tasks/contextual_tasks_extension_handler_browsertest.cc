@@ -4923,6 +4923,21 @@ IN_PROC_BROWSER_TEST_F(
       ContextualTasksWebContentsUserData::UserDataKey());
 }
 
+// The extension runs in split incognito mode, so each off-the-record profile
+// needs its own bridge to bind the extension's frames and service worker.
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       Bridge_CreatedForOffTheRecordProfile) {
+  Profile* otr_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ContextualTasksExtensionBridge* bridge =
+      ContextualTasksExtensionBridge::Get(GetProfile());
+  ContextualTasksExtensionBridge* otr_bridge =
+      ContextualTasksExtensionBridge::Get(otr_profile);
+  ASSERT_NE(bridge, nullptr);
+  ASSERT_NE(otr_bridge, nullptr);
+  EXPECT_NE(bridge, otr_bridge);
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     ServiceWorkerHandler_ConnectAndBidirectionalSearchMessage) {
