@@ -321,9 +321,9 @@ void GLManager::SetupBaseContext() {
     if (!gpu_preferences_.use_passthrough_cmd_decoder) {
       base_share_group_ =
           new scoped_refptr<gl::GLShareGroup>(new gl::GLShareGroup);
-      gfx::Size size(4, 4);
-      base_surface_ = new scoped_refptr<gl::GLSurface>(
-          gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), size));
+      base_surface_ =
+          new scoped_refptr<gl::GLSurface>(gl::init::CreateOffscreenGLSurface(
+              gl::GetDefaultDisplay(), gfx::Size()));
       base_context_ =
           new scoped_refptr<gl::GLContext>(gl::init::CreateGLContext(
               base_share_group_->get(), base_surface_->get(),

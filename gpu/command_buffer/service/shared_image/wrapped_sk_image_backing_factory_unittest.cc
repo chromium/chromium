@@ -263,7 +263,7 @@ TEST_P(WrappedSkImageBackingFactoryTest, RestoresPreviouslyCurrentGLContext) {
   // Use a different context and surface from the SharedContextState's.
   scoped_refptr<gl::GLSurface> other_surface =
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                         gfx::Size(4, 4));
+                                         gfx::Size());
   ASSERT_TRUE(other_surface);
   scoped_refptr<gl::GLContext> other_context = gl::init::CreateGLContext(
       nullptr, other_surface.get(), gl::GLContextAttribs());
@@ -533,7 +533,7 @@ TEST_P(WrappedSkImageBackingFactoryTest,
   // accessing the GL representation.
   scoped_refptr<gl::GLSurface> other_surface =
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                         gfx::Size(4, 4));
+                                         gfx::Size());
   ASSERT_TRUE(other_surface);
   scoped_refptr<gl::GLContext> other_context = gl::init::CreateGLContext(
       nullptr, other_surface.get(), gl::GLContextAttribs());

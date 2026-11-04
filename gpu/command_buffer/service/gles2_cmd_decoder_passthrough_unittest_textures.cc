@@ -714,7 +714,7 @@ TEST_F(GLES2DecoderPassthroughTest,
 
   scoped_refptr<gl::GLSurface> other_surface =
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
-                                         gfx::Size(4, 4));
+                                         gfx::Size());
   ASSERT_TRUE(other_surface);
 
   MemoryTypeTracker memory_tracker(nullptr);

@@ -1404,7 +1404,7 @@ TEST_P(WebGPUMailboxTextureTest, AssociateDissociateMailboxWhenNotCurrent) {
             [](scoped_refptr<gl::GLContext>* gl_context_out,
                scoped_refptr<gl::GLSurface>* gl_surface_out) {
               auto gl_surface = gl::init::CreateOffscreenGLSurface(
-                  gl::GetDefaultDisplay(), gfx::Size(4, 4));
+                  gl::GetDefaultDisplay(), gfx::Size());
               auto gl_context = gl::init::CreateGLContext(
                   nullptr, gl_surface.get(), gl::GLContextAttribs());
 
