@@ -105,6 +105,7 @@
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_content_browser_client.h"

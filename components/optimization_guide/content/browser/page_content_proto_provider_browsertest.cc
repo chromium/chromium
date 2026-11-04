@@ -39,6 +39,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"

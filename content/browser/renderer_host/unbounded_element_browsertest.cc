@@ -30,6 +30,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"

@@ -250,6 +250,7 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//extensions/common",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_test_support",

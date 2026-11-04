@@ -209,6 +209,7 @@ if (!is_android) {
       "//components/subresource_filter/content/browser",
       "//content/test:test_support",
       "//testing/gtest",
+      "//third_party/blink/public/common",
     ]
 
     # Some of these tests have pre-existing size_t-vs-int comparisons that only

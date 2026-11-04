@@ -22,6 +22,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/keycodes/keyboard_codes.h"

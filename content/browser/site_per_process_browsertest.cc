@@ -119,6 +119,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/policy_container_utils.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_frame_navigation_observer.h"

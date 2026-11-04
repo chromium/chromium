@@ -19,6 +19,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/url_constants.h"
 

@@ -34,6 +34,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/popup_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
