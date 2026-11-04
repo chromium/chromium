@@ -105,13 +105,13 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         setRootViewKeyboardInset(inset);
         triggerLayout();
         // Verify the observer is notified the keyboard is shown in response to a layout change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(true);
 
         inset = 0;
         setRootViewKeyboardInset(inset);
         triggerLayout();
         // Verify the observer is notified the keyboard is hidden in response to a layout change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(false);
     }
 
     @Test
@@ -125,23 +125,23 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         setRootViewKeyboardInset(inset);
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is shown in response to an inset change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(true);
 
         // Verify only called once.
         triggerLayout();
         // Verify the observer is not re-notified the keyboard is shown.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(true);
 
         inset = 0;
         setRootViewKeyboardInset(inset);
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is hidden in response to an inset change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(false);
 
         // Verify only called once.
         triggerLayout();
         // Verify the observer is not re-notified the keyboard is hidden.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(false);
 
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         assertFalse(mKeyboardInsetSupplier.hasObservers());
@@ -160,13 +160,13 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         setRootViewKeyboardInset(inset);
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is shown in response to an inset change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(true);
 
         inset = 0;
         setRootViewKeyboardInset(inset);
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is hidden in response to an inset change.
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(false);
 
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         assertFalse(mKeyboardInsetSupplier.hasObservers());
@@ -180,10 +180,10 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
 
         when(mWindowInsets.isVisible(WindowInsets.Type.ime())).thenReturn(true);
         triggerLayout();
-        verify(mKeyboardVisibilityListener, never()).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener, never()).keyboardObscuringChanged(true);
 
         mKeyboardInsetSupplier.set(0);
-        verify(mKeyboardVisibilityListener, never()).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener, never()).keyboardObscuringChanged(false);
     }
 
     @Test
@@ -194,12 +194,12 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
 
         setRootViewKeyboardInset(150);
         triggerLayout();
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(true);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(true);
 
         when(mWindowInsets.getInsets(WindowInsets.Type.ime())).thenReturn(Insets.of(0, 0, 0, 0));
         when(mWindowInsets.isVisible(WindowInsets.Type.ime())).thenReturn(true);
         mKeyboardInsetSupplier.set(0);
-        verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+        verify(mKeyboardVisibilityListener).keyboardObscuringChanged(false);
     }
 
     private void triggerLayout() {

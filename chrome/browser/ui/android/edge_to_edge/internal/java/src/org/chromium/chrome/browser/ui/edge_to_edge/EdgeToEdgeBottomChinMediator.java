@@ -269,7 +269,7 @@ class EdgeToEdgeBottomChinMediator
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener
 
     @Override
-    public void keyboardVisibilityChanged(boolean isShowing) {
+    public void keyboardObscuringChanged(boolean isShowing) {
         mIsKeyboardVisible = isShowing;
         updateHeightAndVisibility();
     }

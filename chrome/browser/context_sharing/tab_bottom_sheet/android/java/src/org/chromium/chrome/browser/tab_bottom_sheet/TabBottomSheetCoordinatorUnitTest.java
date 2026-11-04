@@ -1054,7 +1054,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         // Ensure focus is not in the bottom sheet.
         mView.clearFocus();
 
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
 
         verify(mMockBottomSheetController).collapseSheet(true);
     }
@@ -1072,7 +1072,7 @@ public class TabBottomSheetCoordinatorUnitTest {
         // Request focus inside the bottom sheet.
         mView.requestFocus();
 
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
 
         verify(mMockBottomSheetController, never()).collapseSheet(true);
     }
@@ -1087,7 +1087,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                 mKeyboardVisibilityListenerCaptor.getValue();
         assertNotNull(listener);
 
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
 
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
     }
@@ -1102,10 +1102,10 @@ public class TabBottomSheetCoordinatorUnitTest {
                 mKeyboardVisibilityListenerCaptor.getValue();
         assertNotNull(listener);
 
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
         verify(mMockWebUi).setIgnoreClearFocus(true);
 
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
         verify(mMockWebUi).setIgnoreClearFocus(false);
     }
 

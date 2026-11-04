@@ -143,7 +143,7 @@ public class UrlBarCoordinatorUnitTest {
         clearInvocations(mKeyboardVisibilityDelegate);
 
         // When confirmed SHOWN, show requests are still no-ops
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
@@ -163,7 +163,7 @@ public class UrlBarCoordinatorUnitTest {
 
     @Test
     public void setKeyboardVisibility_hideFromShown_schedulesDebounce() {
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
 
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
@@ -181,7 +181,7 @@ public class UrlBarCoordinatorUnitTest {
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
 
         // Move to SHOWN
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
 
         // First hide schedules debounce; second hide while HIDING is a no-op
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
@@ -192,7 +192,7 @@ public class UrlBarCoordinatorUnitTest {
 
     @Test
     public void setKeyboardVisibility_showWhileHiding_cancelsHideWithoutCallingShow() {
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
 
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
@@ -203,17 +203,17 @@ public class UrlBarCoordinatorUnitTest {
     }
 
     @Test
-    public void keyboardVisibilityChanged_updatesCursorAndCancelsPending() {
+    public void keyboardObscuringChanged_updatesCursorAndCancelsPending() {
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ true);
 
         // OS notifies that keyboard showed
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
         assertTrue(mUrlBar.mCursorVisible);
 
         // OS notifies that keyboard hid
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ false);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ false);
         assertFalse(mUrlBar.mCursorVisible);
     }
 
@@ -226,7 +226,7 @@ public class UrlBarCoordinatorUnitTest {
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
 
         // Late OS show callback must not cancel the pending hide runnable.
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
@@ -244,7 +244,7 @@ public class UrlBarCoordinatorUnitTest {
         clearInvocations(mKeyboardVisibilityDelegate);
 
         // Late OS show callback arrives while still in HIDING state -> re-triggers hide.
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
@@ -257,7 +257,7 @@ public class UrlBarCoordinatorUnitTest {
 
         // Simulate a transient 0-inset callback during IME keyboard swap
         // (PHASE_WM_ABORT_SHOW_IME_POST_LAYOUT) while the new IME view is still inflating.
-        mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ false);
+        mCoordinator.keyboardObscuringChanged(/* isObscuring= */ false);
 
         mCoordinator.setKeyboardVisibility(/* showKeyboard= */ false);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

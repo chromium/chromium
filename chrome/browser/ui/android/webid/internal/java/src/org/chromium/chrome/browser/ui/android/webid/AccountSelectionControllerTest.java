@@ -664,10 +664,10 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.emptyList());
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
         when(mTab.isUserInteractable()).thenReturn(true);
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
         verify(mMockBottomSheetController, times(2)).requestShowContent(mBottomSheetContent, true);
         assertFalse(mMediator.wasDismissed());
     }
@@ -713,13 +713,13 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.emptyList());
         KeyboardVisibilityListener listener = mMediator.getKeyboardEventListener();
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
         verify(mMockBottomSheetController).hideContent(mBottomSheetContent, true);
 
         when(mTab.isUserInteractable()).thenReturn(false);
 
         // Showing the keyboard again should do nothing since the tab is not interactable!
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
         // The requestShowContent method should have been called only once.
         verify(mMockBottomSheetController, times(1)).requestShowContent(mBottomSheetContent, true);
         assertFalse(mMediator.wasDismissed());

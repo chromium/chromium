@@ -651,7 +651,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         groupTitleEditText.setText(newTitle);
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mTabGroupContextMenuCoordinator.getKeyboardVisibilityListenerForTesting();
-        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        keyboardVisibilityListener.keyboardObscuringChanged(false);
 
         // Verify the group title is updated.
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID), eq(newTitle));
@@ -659,7 +659,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         // Remove the custom title set by the user by clearing the edit box.
         newTitle = "";
         groupTitleEditText.setText(newTitle);
-        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+        keyboardVisibilityListener.keyboardObscuringChanged(false);
 
         // Verify the previous title is deleted and is default to "N tabs"
         verify(mTabModel).deleteTabGroupTitle(TAB_GROUP_ID);
@@ -746,12 +746,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 ShadowLooper.getShadowMainLooper().isIdle());
 
         // Simulate the keyboard surfacing (isShowing = true).
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
 
         // Check if a layout task was successfully scheduled on the looper.
         assertFalse(
                 "The keyboard visibility change must schedule a layout task, making the looper"
-                    + " non-idle",
+                        + " non-idle",
                 ShadowLooper.getShadowMainLooper().isIdle());
 
         // Execute the posted layout task cleanly to finish the test cycle.
@@ -762,7 +762,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 mTabGroupContextMenuCoordinator.isMenuShowing());
 
         // Simulate the keyboard dismissing (isShowing = false).
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
 
         // For vertical tabs, dismissing the keyboard should NOT schedule a layout task to
         // avoid jarring flip-flop jumping.
@@ -838,7 +838,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 ShadowLooper.getShadowMainLooper().isIdle());
 
         // Simulate the keyboard surfacing (isShowing = true).
-        listener.keyboardVisibilityChanged(true);
+        listener.keyboardObscuringChanged(true);
 
         // Check if a layout task was successfully scheduled on the looper.
         assertFalse(
@@ -854,7 +854,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 mTabGroupContextMenuCoordinator.isMenuShowing());
 
         // Simulate the keyboard dismissing (isShowing = false) while menu remains open.
-        listener.keyboardVisibilityChanged(false);
+        listener.keyboardObscuringChanged(false);
 
         // For horizontal tabs, dismissing the keyboard must schedule a layout task to restore
         // menu height.

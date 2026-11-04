@@ -432,7 +432,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     }
 
     @Test
-    public void testKeyboardVisibilityChanged() {
+    public void testKeyboardObscuringChanged() {
         assertFalse(
                 "The chin should not be visible as it has just been initialized.",
                 mModel.get(CAN_SHOW));
@@ -442,7 +442,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
         assertTrue("The chin should be visible as all conditions are met.", mModel.get(CAN_SHOW));
         assertLayerVisibility(mIsTablet);
 
-        mMediator.keyboardVisibilityChanged(true);
+        mMediator.keyboardObscuringChanged(true);
         assertTrue(
                 "The chin should still be visible as the keyboard has a zero inset.",
                 mModel.get(CAN_SHOW));
@@ -453,7 +453,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
                 "The chin should not be visible as the keyboard is showing.", mModel.get(CAN_SHOW));
         assertEquals(LayerVisibility.HIDDEN, mMediator.getLayerVisibility());
 
-        mMediator.keyboardVisibilityChanged(false);
+        mMediator.keyboardObscuringChanged(false);
         assertTrue(
                 "The chin should be visible as the keyboard is no longer showing.",
                 mModel.get(CAN_SHOW));

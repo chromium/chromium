@@ -1351,7 +1351,7 @@ public class AppMenuTest {
         verify(mKeyboardDelegate).hideKeyboard(any());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mKeyboardListenerCaptor.getValue().keyboardVisibilityChanged(false);
+                    mKeyboardListenerCaptor.getValue().keyboardObscuringChanged(false);
                 });
 
         waitForMenuToShow(0, mAppMenuHandler);
@@ -1375,7 +1375,7 @@ public class AppMenuTest {
         verify(mKeyboardDelegate).hideKeyboard(any());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mKeyboardListenerCaptor.getValue().keyboardVisibilityChanged(false);
+                    mKeyboardListenerCaptor.getValue().keyboardObscuringChanged(false);
                 });
 
         waitForMenuToShow(1, mAppMenuHandler);
@@ -1399,7 +1399,7 @@ public class AppMenuTest {
         Assert.assertNotSame(first, second);
         verify(mKeyboardDelegate).removeKeyboardVisibilityListener(first);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> second.keyboardVisibilityChanged(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> second.keyboardObscuringChanged(false));
         waitForMenuToShow(0, mAppMenuHandler);
         verify(mKeyboardDelegate).removeKeyboardVisibilityListener(second);
     }

@@ -169,7 +169,7 @@ class AccountSelectionMediator {
     private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
                 @Override
-                public void keyboardVisibilityChanged(boolean isShowing) {
+                public void keyboardObscuringChanged(boolean isShowing) {
                     if (isShowing) {
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                     } else if (mTab.isUserInteractable()) {

@@ -335,7 +335,7 @@ class BottomControlsMediator
     }
 
     @Override
-    public void keyboardVisibilityChanged(boolean isShowing) {
+    public void keyboardObscuringChanged(boolean isShowing) {
         mIsKeyboardVisible = isShowing;
         updateCompositedViewVisibility();
         updateAndroidViewVisibility();
