@@ -252,7 +252,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
       const ui::ElementIdentifier& contents_id,
       const DeepQuery& element) {
     return Steps(WaitForElementToRender(contents_id, element),
-                 MoveMouseTo(contents_id, element), ClickMouse());
+                 ExecuteJsAt(contents_id, element, "(el) => el.click()"));
   }
 
   InteractiveTestApi::MultiStep OpenNewTabPage() {
@@ -555,6 +555,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
       // 1. Open Wallpaper Search.
       Steps(OpenNewTabPage(), OpenWallpaperSearchAt(kCustomizeChromeElementId)),
       // 2. Show feedback buttons.
+      WaitForElementExists(kCustomizeChromeElementId, kFeedbackButtons, true),
       ExecuteJsAt(kCustomizeChromeElementId, kFeedbackButtons,
                   "(el) => el.hidden = false"),
       // 3. Click thumbs down button.
