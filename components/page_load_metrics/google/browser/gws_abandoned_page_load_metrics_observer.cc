@@ -4,11 +4,14 @@
 
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
+#include <vector>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
@@ -20,17 +23,6 @@ namespace internal {
 const char kGWSAbandonedPageLoadMetricsHistogramPrefix[] =
     "PageLoad.Clients.GoogleSearch.Leakage2.";
 const char kSuffixWasNonSRP[] = ".WasNonSRP";
-
-const char kGwsAFTStartMarkName[] = "SearchAFTStart";
-const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
-const char kGwsHeadChunkStartMarkName[] = "SearchHeadStart";
-const char kGwsHeadChunkEndMarkName[] = "SearchHeadEnd";
-const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
-const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
-const char kGwsSGLMarkName[] = "SearchSGL";
-const char kGwsAIOAsyncStartMarkName[] = "SearchAIOAsyncStart";
-const char kGwsAIOInitialContentTimeMarkName[] = "SearchAIOInitialContentTime";
-const char kGwsAIOViewportEndTimeMarkName[] = "SearchAIOViewportEndTime";
 
 }  // namespace internal
 
@@ -70,12 +62,11 @@ GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
   return CONTINUE_OBSERVING;
 }
 
-const base::flat_map<std::string,
-                     AbandonedPageLoadMetricsObserver::NavigationMilestone>&
-GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
-  static const base::NoDestructor<
-      base::flat_map<std::string, NavigationMilestone>>
-      mark_names({
+std::optional<AbandonedPageLoadMetricsObserver::NavigationMilestone>
+GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkMilestone(
+    std::string_view mark_name) const {
+  static constexpr auto kMarkNames =
+      base::MakeFixedFlatMap<std::string_view, NavigationMilestone>({
           {internal::kGwsAFTStartMarkName, NavigationMilestone::kAFTStart},
           {internal::kGwsAFTEndMarkName, NavigationMilestone::kAFTEnd},
           {internal::kGwsHeadChunkStartMarkName,
@@ -87,7 +78,10 @@ GWSAbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
           {internal::kGwsBodyChunkEndMarkName,
            NavigationMilestone::kBodyChunkEnd},
       });
-  return *mark_names;
+  if (auto it = kMarkNames.find(mark_name); it != kMarkNames.end()) {
+    return it->second;
+  }
+  return std::nullopt;
 }
 
 bool GWSAbandonedPageLoadMetricsObserver::IsAllowedToLogMetrics() const {
@@ -121,14 +115,16 @@ GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   auto base_suffixes =
       AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes();
 
-  std::string request_source_suffix =
+  std::string_view request_source_suffix =
       did_request_non_srp_ ? internal::kSuffixWasNonSRP : "";
   std::vector<std::string> suffixes_with_request_source;
+  suffixes_with_request_source.reserve(base_suffixes.size());
   // Add suffix that indicates the navigation prevviously requested a non-SRP
   // URL (instead of immediately targeting a SRP URL) to all histograms, if
   // necessary.
-  for (auto base_suffix : base_suffixes) {
-    suffixes_with_request_source.push_back(base_suffix + request_source_suffix);
+  for (const std::string& base_suffix : base_suffixes) {
+    suffixes_with_request_source.push_back(
+        base::StrCat({base_suffix, request_source_suffix}));
   }
   return suffixes_with_request_source;
 }

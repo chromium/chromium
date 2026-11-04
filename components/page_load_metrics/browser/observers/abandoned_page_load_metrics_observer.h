@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <optional>
 #include <set>
+#include <string>
+#include <string_view>
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
@@ -299,8 +302,11 @@ class AbandonedPageLoadMetricsObserver
   // or react differently on the navigation events (e.g. filtering the URL).
   virtual std::string GetHistogramPrefix() const;
   virtual bool IsAllowedToLogMetrics() const;
-  virtual const base::flat_map<std::string, NavigationMilestone>&
-  GetCustomUserTimingMarkNames() const;
+
+  // Returns the milestone that `mark_name` maps to, or nullopt if this observer
+  // does not track the mark.
+  virtual std::optional<NavigationMilestone> GetCustomUserTimingMarkMilestone(
+      std::string_view mark_name) const;
   virtual bool IsAllowedToLogUMA() const;
   virtual bool IsAllowedToLogUKM() const;
   virtual void AddSRPMetricsToUKMIfNeeded(

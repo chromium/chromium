@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
@@ -14,16 +19,18 @@ namespace internal {
 extern const char kGWSAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasNonSRP[];
 
-extern const char kGwsAFTStartMarkName[];
-extern const char kGwsAFTEndMarkName[];
-extern const char kGwsHeadChunkStartMarkName[];
-extern const char kGwsHeadChunkEndMarkName[];
-extern const char kGwsBodyChunkStartMarkName[];
-extern const char kGwsBodyChunkEndMarkName[];
-extern const char kGwsSGLMarkName[];
-extern const char kGwsAIOAsyncStartMarkName[];
-extern const char kGwsAIOInitialContentTimeMarkName[];
-extern const char kGwsAIOViewportEndTimeMarkName[];
+inline constexpr char kGwsAFTStartMarkName[] = "SearchAFTStart";
+inline constexpr char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
+inline constexpr char kGwsHeadChunkStartMarkName[] = "SearchHeadStart";
+inline constexpr char kGwsHeadChunkEndMarkName[] = "SearchHeadEnd";
+inline constexpr char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
+inline constexpr char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
+inline constexpr char kGwsSGLMarkName[] = "SearchSGL";
+inline constexpr char kGwsAIOAsyncStartMarkName[] = "SearchAIOAsyncStart";
+inline constexpr char kGwsAIOInitialContentTimeMarkName[] =
+    "SearchAIOInitialContentTime";
+inline constexpr char kGwsAIOViewportEndTimeMarkName[] =
+    "SearchAIOViewportEndTime";
 }  // namespace internal
 
 // Observes and records UMA for navigations to GWS which might or might get
@@ -56,8 +63,8 @@ class GWSAbandonedPageLoadMetricsObserver
   ObservePolicy OnNavigationEvent(
       content::NavigationHandle* navigation_handle) override;
   bool IsAllowedToLogMetrics() const override;
-  const base::flat_map<std::string, NavigationMilestone>&
-  GetCustomUserTimingMarkNames() const override;
+  std::optional<NavigationMilestone> GetCustomUserTimingMarkMilestone(
+      std::string_view mark_name) const override;
   bool IsAllowedToLogUKM() const override;
 
   // Whether we've reached and logged all loading milestones, from kParseStart

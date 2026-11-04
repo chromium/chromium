@@ -4,10 +4,11 @@
 
 #include "components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -286,13 +287,10 @@ AbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   return {""};
 }
 
-const base::flat_map<std::string,
-                     AbandonedPageLoadMetricsObserver::NavigationMilestone>&
-AbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkNames() const {
-  static const base::NoDestructor<
-      base::flat_map<std::string, NavigationMilestone>>
-      mark_names;
-  return *mark_names;
+std::optional<AbandonedPageLoadMetricsObserver::NavigationMilestone>
+AbandonedPageLoadMetricsObserver::GetCustomUserTimingMarkMilestone(
+    std::string_view mark_name) const {
+  return std::nullopt;
 }
 
 std::string AbandonedPageLoadMetricsObserver::GetHistogramSuffix(
@@ -758,11 +756,10 @@ void AbandonedPageLoadMetricsObserver::OnComplete(
 void AbandonedPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
     const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
         timings) {
-  base::flat_map<std::string, NavigationMilestone> custom_timings =
-      GetCustomUserTimingMarkNames();
   for (const auto& mark : timings) {
-    if (custom_timings.contains(mark->mark_name)) {
-      LogLoadingMilestone(custom_timings[mark->mark_name], mark->start_time);
+    if (std::optional<NavigationMilestone> milestone =
+            GetCustomUserTimingMarkMilestone(mark->mark_name)) {
+      LogLoadingMilestone(*milestone, mark->start_time);
     }
   }
 }
