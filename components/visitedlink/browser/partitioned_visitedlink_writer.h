@@ -8,7 +8,7 @@
 #include <map>
 #include <set>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -234,9 +234,12 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // fingerprint was deleted, false if it was not in the table to delete.
   bool DeleteFingerprint(Fingerprint fingerprint);
 
-  // Returns a pointer to the start of the hash table, given the mapping
-  // containing the hash table.
-  static Fingerprint* GetHashTableFromMapping(
+  // Returns a span of the current hash table.
+  base::span<Fingerprint> GetHashTable();
+
+  // Returns a span of the hash table, given the mapping containing the hash
+  // table.
+  static base::span<Fingerprint> GetHashTableFromMapping(
       base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Returns the default table size. It can be overridden in unit tests.
@@ -334,8 +337,8 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
 #if defined(UNIT_TEST) || defined(PERF_TEST) || !defined(NDEBUG)
 inline void PartitionedVisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
-  for (int32_t i = 0; i < table_length_; i++) {
-    if (UNSAFE_TODO(hash_table_[i])) {
+  for (Fingerprint fingerprint : GetHashTable()) {
+    if (fingerprint) {
       used_count++;
     }
   }
