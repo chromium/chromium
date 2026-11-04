@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -60,6 +61,9 @@ class CORE_EXPORT TextSearcherIcu {
   wtf_size_t text_length_ = 0;
   Vector<UChar> normalized_search_text_;
   FindOptions options_;
+#if defined(ARCH_CPU_32_BITS)
+  bool is_pattern_too_long_ = false;
+#endif
 };
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -268,6 +269,33 @@ TEST(TextSearcherIcuTest, AsymmetricDiacriticSearchDisabledFallback) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(2u, result->start);
   EXPECT_FALSE(searcher.NextMatchResult().has_value());
+}
+
+// Regression test for crbug.com/580881866
+TEST(TextSearcherIcuTest, PatternLengthLimit) {
+  ScopedIcuSearchLengthLimitForTest scoped_feature(true);
+  TextSearcherIcu searcher;
+  const String text(u"a");
+  searcher.SetText(text.Span16());
+
+  // U+0001 is ignorable in collation, so 'a' followed by U+0001s matches "a"
+  // as long as the pattern length does not exceed 64K (65536) on 32-bit builds.
+  Vector<UChar> pattern_buffer(64 * 1024, 0x0001);
+  pattern_buffer[0] = 'a';
+  const String max_pattern(pattern_buffer);
+  searcher.SetPattern(max_pattern, FindOptions().SetCaseInsensitive(true));
+  searcher.SetOffset(0u);
+  EXPECT_TRUE(searcher.NextMatchResult().has_value());
+
+  pattern_buffer.push_back(0x0001);
+  const String too_long_pattern(pattern_buffer);
+  searcher.SetPattern(too_long_pattern, FindOptions().SetCaseInsensitive(true));
+  searcher.SetOffset(0u);
+#if defined(ARCH_CPU_32_BITS)
+  EXPECT_FALSE(searcher.NextMatchResult().has_value());
+#else
+  EXPECT_TRUE(searcher.NextMatchResult().has_value());
+#endif
 }
 
 }  // namespace blink

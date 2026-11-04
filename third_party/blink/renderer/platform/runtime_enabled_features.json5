@@ -3846,6 +3846,11 @@
       status: "stable",
     },
     {
+      // crbug.com/580881866
+      name: "IcuSearchLengthLimit",
+      status: "stable",
+    },
+    {
       name: "IgnoreLetterSpacingInCursiveScripts",
       status: "stable",
     },
