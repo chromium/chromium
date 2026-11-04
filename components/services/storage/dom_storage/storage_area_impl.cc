@@ -5,7 +5,9 @@
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -506,13 +508,10 @@ void StorageAreaImpl::GetAll(
     return;
   }
 
-  std::vector<blink::mojom::KeyValuePtr> all;
-  for (const auto& it : keys_values_map_) {
-    auto kv = blink::mojom::KeyValue::New();
-    kv->key = it.first;
-    kv->value = it.second;
-    all.push_back(std::move(kv));
-  }
+  std::vector<blink::mojom::KeyValuePtr> all =
+      base::ToVector(keys_values_map_, [](const auto& it) {
+        return blink::mojom::KeyValue::New(it.first, it.second);
+      });
   std::move(callback).Run(std::move(all));
   if (new_observer)
     AddObserver(std::move(new_observer));

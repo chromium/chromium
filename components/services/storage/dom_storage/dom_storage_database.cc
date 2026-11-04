@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/byte_size.h"
 #include "base/feature_list.h"
@@ -1061,6 +1062,7 @@ DbStatus DomStorageDatabaseFactory::MigrateDatabase(
 
     // Then create a batch update to add all key/value pairs to `destination`.
     DomStorageDatabase::MapBatchUpdate update(source_map.map_locator.Clone());
+    update.entries_to_add.reserve(map_entries.size());
     for (auto& [key, value] : map_entries) {
       update.entries_to_add.emplace_back(std::move(key), std::move(value));
     }

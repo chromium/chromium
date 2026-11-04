@@ -4,6 +4,9 @@
 
 #include "storage/browser/blob/blob_builder_from_stream.h"
 
+#include <cstddef>
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -406,6 +409,8 @@ void BlobBuilderFromStream::AllocateMoreMemorySpace(
   }
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> chunk_items;
+  chunk_items.reserve(
+      base::checked_cast<size_t>((length_hint - 1) / kMemoryBlockSize + 1));
   while (length_hint > 0) {
     const auto block_size = std::min<uint64_t>(kMemoryBlockSize, length_hint);
     chunk_items.push_back(base::MakeRefCounted<ShareableBlobDataItem>(
@@ -532,6 +537,8 @@ void BlobBuilderFromStream::AllocateMoreFileSpace(
   }
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> chunk_items;
+  chunk_items.reserve(
+      base::checked_cast<size_t>((length_hint - 1) / kMaxFileSize + 1));
   while (length_hint > 0) {
     const auto file_size = std::min(kMaxFileSize, length_hint);
     chunk_items.push_back(base::MakeRefCounted<ShareableBlobDataItem>(
