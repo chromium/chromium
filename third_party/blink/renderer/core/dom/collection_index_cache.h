@@ -41,6 +41,9 @@
 namespace blink {
 
 template <typename Collection, typename NodeType>
+class CollectionItemsCache;
+
+template <typename Collection, typename NodeType>
 class CollectionIndexCache {
   DISALLOW_NEW();
 
@@ -70,9 +73,11 @@ class CollectionIndexCache {
   void NodeInserted();
   void NodeRemoved();
 
-  virtual void Trace(Visitor* visitor) const { visitor->Trace(current_node_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(current_node_); }
 
- protected:
+ private:
+  friend class CollectionItemsCache<Collection, NodeType>;
+
   ALWAYS_INLINE NodeType* CachedNode() const { return current_node_.Get(); }
   ALWAYS_INLINE unsigned CachedNodeIndex() const {
     DCHECK(CachedNode());
@@ -93,7 +98,6 @@ class CollectionIndexCache {
     is_length_cache_valid_ = true;
   }
 
- private:
   NodeType* NodeBeforeCachedNode(const Collection&, unsigned index);
   NodeType* NodeAfterCachedNode(const Collection&, unsigned index);
 

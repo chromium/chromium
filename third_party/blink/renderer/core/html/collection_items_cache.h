@@ -38,25 +38,30 @@
 namespace blink {
 
 template <typename Collection, typename NodeType>
-class CollectionItemsCache : public CollectionIndexCache<Collection, NodeType> {
+class CollectionItemsCache {
   DISALLOW_NEW();
-
-  typedef CollectionIndexCache<Collection, NodeType> Base;
 
  public:
   CollectionItemsCache();
   ~CollectionItemsCache();
 
-  void Trace(Visitor* visitor) const override {
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(index_cache_);
     visitor->Trace(cached_list_);
-    Base::Trace(visitor);
   }
 
+  bool IsEmpty(const Collection& collection) {
+    return index_cache_.IsEmpty(collection);
+  }
+  bool HasExactlyOneNode(const Collection& collection) {
+    return index_cache_.HasExactlyOneNode(collection);
+  }
   unsigned NodeCount(const Collection&);
   NodeType* NodeAt(const Collection&, unsigned index);
   void Invalidate();
 
  private:
+  CollectionIndexCache<Collection, NodeType> index_cache_;
   bool list_valid_;
   HeapVector<Member<NodeType>> cached_list_;
 };
@@ -70,7 +75,7 @@ CollectionItemsCache<Collection, NodeType>::~CollectionItemsCache() = default;
 
 template <typename Collection, typename NodeType>
 void CollectionItemsCache<Collection, NodeType>::Invalidate() {
-  Base::Invalidate();
+  index_cache_.Invalidate();
   if (list_valid_) {
     cached_list_.Shrink(0);
     list_valid_ = false;
@@ -80,8 +85,8 @@ void CollectionItemsCache<Collection, NodeType>::Invalidate() {
 template <class Collection, class NodeType>
 unsigned CollectionItemsCache<Collection, NodeType>::NodeCount(
     const Collection& collection) {
-  if (this->IsCachedNodeCountValid())
-    return this->CachedNodeCount();
+  if (index_cache_.IsCachedNodeCountValid())
+    return index_cache_.CachedNodeCount();
 
   NodeType* current_node = collection.TraverseToFirst();
   unsigned current_index = 0;
@@ -91,9 +96,9 @@ unsigned CollectionItemsCache<Collection, NodeType>::NodeCount(
         current_index + 1, *current_node, current_index);
   }
 
-  this->SetCachedNodeCount(cached_list_.size());
+  index_cache_.SetCachedNodeCount(cached_list_.size());
   list_valid_ = true;
-  return this->CachedNodeCount();
+  return index_cache_.CachedNodeCount();
 }
 
 template <typename Collection, typename NodeType>
@@ -101,10 +106,11 @@ inline NodeType* CollectionItemsCache<Collection, NodeType>::NodeAt(
     const Collection& collection,
     unsigned index) {
   if (list_valid_) {
-    DCHECK(this->IsCachedNodeCountValid());
-    return index < this->CachedNodeCount() ? cached_list_[index] : nullptr;
+    DCHECK(index_cache_.IsCachedNodeCountValid());
+    return index < index_cache_.CachedNodeCount() ? cached_list_[index]
+                                                  : nullptr;
   }
-  return Base::NodeAt(collection, index);
+  return index_cache_.NodeAt(collection, index);
 }
 
 }  // namespace blink
