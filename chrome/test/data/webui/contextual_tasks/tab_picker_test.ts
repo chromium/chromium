@@ -32,6 +32,7 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
       new SearchboxPageCallbackRouter();
   readonly callbackRouterRemote: SearchboxPageRemote =
       this.callbackRouter_.$.bindNewPipeAndPassRemote();
+  private smartTabSharingActive_: boolean = false;
 
   constructor() {
     super([
@@ -40,6 +41,8 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
       'addTabContext',
       'deleteTabContext',
       'getInputState',
+      'setSmartTabSharingActive',
+      'getSmartTabSharingActive',
     ]);
   }
 
@@ -80,6 +83,16 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
 
   deleteTabContext(tabId: number) {
     this.methodCalled('deleteTabContext', tabId);
+  }
+
+  setSmartTabSharingActive(active: boolean) {
+    this.smartTabSharingActive_ = active;
+    this.methodCalled('setSmartTabSharingActive', active);
+  }
+
+  getSmartTabSharingActive() {
+    this.methodCalled('getSmartTabSharingActive');
+    return Promise.resolve({active: this.smartTabSharingActive_});
   }
 }
 
@@ -192,6 +205,7 @@ suite('TabPickerTest', () => {
     loadTimeData.overrideValues({
       shareTabs: 'Add tabs',
       recentTabsSuffix: 'Recent',
+      stsMegaplusShareRelevantOpenTabs: 'Share relevant tabs',
       contextualTasksUnboundedMenuEnabled: true,
     });
 
@@ -1616,5 +1630,90 @@ suite('TabPickerTest', () => {
         } finally {
           delete window.requestResize;
         }
+      });
+
+  test(
+      'Renders Smart Tab Sharing option in flyout and toggles ON when clicked',
+      async () => {
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
+            [tab0], [], {active: false, visible: true});
+        await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(app.smartTabSharingVisible);
+        assertFalse(app.smartTabSharingActive);
+
+        app.$.shareTabsTrigger.click();
+        await microtasksFinished();
+        assertTrue(app.$.tabMenu.open);
+
+        const autoHeader =
+            app.$.tabMenu.querySelector('#automaticallyAddTabsHeader');
+        assertTrue(isVisible(autoHeader));
+        assertEquals('Automatically add tabs', autoHeader!.textContent.trim());
+
+        const manualHeader =
+            app.$.tabMenu.querySelector('#manuallyAddTabsHeader');
+        assertTrue(isVisible(manualHeader));
+        assertEquals('Manually add tabs', manualHeader!.textContent.trim());
+
+        const stsItem = app.$.tabMenu.querySelector<HTMLButtonElement>(
+            '#smartTabSharingItemFlyout');
+        assertTrue(isVisible(stsItem));
+        assertEquals('false', stsItem!.getAttribute('aria-checked'));
+
+        const optionShownMetric = recordedMetrics.find(
+            m => m.metricName ===
+                'ContextualSearch.SmartTabSharing.MenuOptionShown');
+        assertTrue(!!optionShownMetric);
+        assertEquals(1, optionShownMetric.value);
+
+        // Clicking the flyout option activates Smart Tab Sharing, clears
+        // manual tabs, and closes the flyout.
+        stsItem!.click();
+        const activeArg =
+            await testProxy.whenCalled('setSmartTabSharingActive');
+        assertTrue(activeArg);
+        await microtasksFinished();
+
+        assertTrue(app.smartTabSharingActive);
+        assertEquals(0, app.selectedTabs.length);
+        assertFalse(app.$.tabMenu.open);
+      });
+
+  test(
+      'Renders active Smart Tab Sharing row on trigger and toggles OFF when clicked',
+      async () => {
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
+            [], [], {active: true, visible: true});
+        await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(app.smartTabSharingActive);
+        assertEquals(
+            'menuitemcheckbox', app.$.shareTabsTrigger.getAttribute('role'));
+        assertEquals(
+            'true', app.$.shareTabsTrigger.getAttribute('aria-checked'));
+        const label = app.$.shareTabsTrigger.querySelector('.tab-title');
+        assert(label);
+        assertEquals('Share relevant tabs', label.textContent.trim());
+        assertTrue(isVisible(app.$.shareTabsTrigger.querySelector(
+            '#smartTabSharingActiveCheck')));
+
+        // Hovering the active STS row does not open the flyout.
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        // Clicking the active STS row toggles Smart Tab Sharing OFF.
+        app.$.shareTabsTrigger.click();
+        const activeArg =
+            await testProxy.whenCalled('setSmartTabSharingActive');
+        assertFalse(activeArg);
+        await microtasksFinished();
+
+        assertFalse(app.smartTabSharingActive);
+        assertEquals('menuitem', app.$.shareTabsTrigger.getAttribute('role'));
+        assertEquals('Add tabs', label.textContent.trim());
       });
 });

@@ -15,6 +15,8 @@ export interface TabPickerBrowserProxy {
   getPluralString(messageName: string, count: number): Promise<string>;
   addTabContext(tabId: number): void;
   deleteTabContext(tabId: number): void;
+  setSmartTabSharingActive(active: boolean): void;
+  getSmartTabSharingActive(): Promise<{active: boolean}>;
 }
 
 let instance: TabPickerBrowserProxy|null = null;
@@ -47,6 +49,14 @@ export class TabPickerBrowserProxyImpl implements TabPickerBrowserProxy {
 
   deleteTabContext(tabId: number): void {
     ComposeboxProxyImpl.getInstance().searchboxHandler.deleteTabContext(tabId);
+  }
+
+  setSmartTabSharingActive(active: boolean): void {
+    ComposeboxProxyImpl.getInstance().handler.setSmartTabSharingActive(active);
+  }
+
+  getSmartTabSharingActive(): Promise<{active: boolean}> {
+    return ComposeboxProxyImpl.getInstance().handler.getSmartTabSharingActive();
   }
 
   static getInstance(): TabPickerBrowserProxy {
