@@ -12,7 +12,7 @@
 #include <set>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
@@ -362,9 +362,12 @@ class VisitedLinkWriter : public VisitedLinkCommon {
     return hash + 1;
   }
 
-  // Returns a pointer to the start of the hash table, given the mapping
-  // containing the hash table.
-  static Fingerprint* GetHashTableFromMapping(
+  // Returns a span of the current hash table.
+  base::span<Fingerprint> GetHashTable();
+
+  // Returns a span of the hash table, given the mapping containing the hash
+  // table.
+  static base::span<Fingerprint> GetHashTableFromMapping(
       base::WritableSharedMemoryMapping& hash_table_mapping);
 
   // Reference to the browser context that this object belongs to
@@ -457,8 +460,8 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 #if defined(UNIT_TEST) || defined(PERF_TEST) || !defined(NDEBUG)
 inline void VisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
-  for (int32_t i = 0; i < table_length_; i++) {
-    if (UNSAFE_TODO(hash_table_[i])) {
+  for (Fingerprint fingerprint : GetHashTable()) {
+    if (fingerprint) {
       used_count++;
     }
   }
