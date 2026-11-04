@@ -277,8 +277,6 @@ SkColor PermissionChipView::GetForegroundColor() const {
         text_and_icon_color = GetColorProvider()->GetColor(
             kColorOmniboxChipForegroundLowVisibility);
         break;
-      case permissions::PermissionAction::NUM:
-        break;
     }
   }
 

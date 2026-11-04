@@ -1021,8 +1021,7 @@ void PaymentHandlerWebFlowViewController::OnRequestsFinalized() {
 
 void PaymentHandlerWebFlowViewController::OnRequestDecided(
     permissions::PermissionAction action) {
-  base::UmaHistogramEnumeration("PaymentRequest.Camera.PromptAction", action,
-                                permissions::PermissionAction::NUM);
+  base::UmaHistogramEnumeration("PaymentRequest.Camera.PromptAction", action);
 
   if (!chip_model_ || !permission_dashboard_view()) {
     return;

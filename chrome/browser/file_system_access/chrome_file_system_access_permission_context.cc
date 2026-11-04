@@ -1626,7 +1626,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         break;
       case PermissionAction::REVOKED:
       case PermissionAction::GRANTED_ONCE:
-      case PermissionAction::NUM:
         NOTREACHED();
     }
   }
@@ -1699,7 +1698,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
             std::move(callback), PermissionRequestOutcome::kRequestAborted);
         break;
       case PermissionAction::REVOKED:
-      case PermissionAction::NUM:
         NOTREACHED();
     }
   }

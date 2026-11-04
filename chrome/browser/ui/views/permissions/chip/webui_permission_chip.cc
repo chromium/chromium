@@ -72,8 +72,6 @@ toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
       return toolbar_ui_api::mojom::PermissionAction::kRevoked;
     case permissions::PermissionAction::GRANTED_ONCE:
       return toolbar_ui_api::mojom::PermissionAction::kGrantedOnce;
-    case permissions::PermissionAction::NUM:
-      NOTREACHED();
   }
   NOTREACHED();
 }

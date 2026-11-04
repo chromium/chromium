@@ -222,8 +222,6 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       cam_mic_combo_accessibility_text_id =
           IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
       break;
-    case permissions::PermissionAction::NUM:
-      NOTREACHED();
   }
 
   const auto& requests = delegate_->Requests();

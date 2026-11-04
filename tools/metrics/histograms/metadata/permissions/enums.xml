@@ -133,6 +133,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:OsScreenAction) -->
 
+<!-- LINT.IfChange(PermissionAction) -->
+
 <enum name="PermissionAction">
   <int value="0" label="GRANTED"/>
   <int value="1" label="DENIED"/>
@@ -141,6 +143,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="REVOKED"/>
   <int value="5" label="GRANTED_ONCE"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:PermissionAction) -->
 
 <!-- LINT.IfChange(PermissionAiRelevanceModel) -->
 
