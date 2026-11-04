@@ -71,7 +71,9 @@ void RecordResult(ProtocolVersion protocol_version,
                   CertScope scope,
                   CertProvisioningWorkerState final_state,
                   CertProvisioningWorkerState prev_state) {
-  CHECK(!IsFinalState(prev_state), base::NotFatalUntil::M160);
+  // TODO(crbug.com/579031551): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!IsFinalState(prev_state));
   CHECK(IsFinalState(final_state), base::NotFatalUntil::M160);
   base::UmaHistogramEnumeration(
       kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)],
