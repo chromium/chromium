@@ -625,8 +625,16 @@ IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
 // Verifies that opening the omnibox suggestions popup locks expand-on-hover
 // into the collapsed state (even while the mouse remains hovered over VTS), and
 // dismissing the popup releases the lock so VTS can expand on hover again.
+// TODO(crbug.com/581549456): Timed out on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_OmniboxPopupLocksAndUnlocksExpandOnHover \
+  DISABLED_OmniboxPopupLocksAndUnlocksExpandOnHover
+#else
+#define MAYBE_OmniboxPopupLocksAndUnlocksExpandOnHover \
+  OmniboxPopupLocksAndUnlocksExpandOnHover
+#endif
 IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
-                       OmniboxPopupLocksAndUnlocksExpandOnHover) {
+                       MAYBE_OmniboxPopupLocksAndUnlocksExpandOnHover) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
@@ -663,8 +671,17 @@ IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
 // Verifies that adding new tabs (NTP), switching between web tabs and NTP tabs,
 // and removing tabs while the mouse is hovered over the expanded vertical tab
 // strip does not collapse expand-on-hover.
-IN_PROC_BROWSER_TEST_P(VerticalTabStripExpandOnHoverInteractiveUiTest,
-                       AddingSwitchingAndRemovingTabsPreservesExpandOnHover) {
+// TODO(crbug.com/581549456): Timed out on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AddingSwitchingAndRemovingTabsPreservesExpandOnHover \
+  DISABLED_AddingSwitchingAndRemovingTabsPreservesExpandOnHover
+#else
+#define MAYBE_AddingSwitchingAndRemovingTabsPreservesExpandOnHover \
+  AddingSwitchingAndRemovingTabsPreservesExpandOnHover
+#endif
+IN_PROC_BROWSER_TEST_P(
+    VerticalTabStripExpandOnHoverInteractiveUiTest,
+    MAYBE_AddingSwitchingAndRemovingTabsPreservesExpandOnHover) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
