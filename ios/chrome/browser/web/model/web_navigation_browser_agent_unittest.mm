@@ -32,7 +32,7 @@
 @end
 
 @implementation FakeNTPDelegate {
-  raw_ptr<web::WebState, DanglingUntriaged> _lastReloadedWebState;
+  raw_ptr<web::WebState> _lastReloadedWebState;
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {
@@ -65,6 +65,8 @@ class WebNavigationBrowserAgentTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
   }
+
+  ~WebNavigationBrowserAgentTest() override { agent_->SetDelegate(nil); }
 
  protected:
   web::WebTaskEnvironment task_environment_;
