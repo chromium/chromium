@@ -759,6 +759,15 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
   CloseTabToolRequest close_tab_req(ActorSurfaceHandle::FromRawValue(1));
   EXPECT_EQ(GetClientToolForRequest(close_tab_req),
             ClientTool(RuleMetadata::CAPABILITY_CLOSE_TAB));
+
+  ChangePasswordToolRequest change_password_req(
+      ActorSurfaceHandle::CreateForTesting(),
+      /*current_password_field=*/std::nullopt,
+      /*new_password_field=*/PageTarget(gfx::Point(0, 0)),
+      /*confirm_new_password_field=*/std::nullopt,
+      /*confirm_button=*/std::nullopt);
+  EXPECT_EQ(GetClientToolForRequest(change_password_req),
+            ClientTool(RuleMetadata::CAPABILITY_CHANGE_PASSWORD));
 }
 
 TEST_F(ActorProtoConversionTest, GetClientToolForRequest_NoCapability) {

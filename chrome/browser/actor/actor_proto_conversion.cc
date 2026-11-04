@@ -1074,6 +1074,8 @@ constexpr absl::Overload kGetCapabilityFn{
                  apc::RuleMetadata::CAPABILITY_ATTEMPT_FORM_FILLING>,
     ToCapability<AttemptOtpFillingToolRequest,
                  apc::RuleMetadata::CAPABILITY_ATTEMPT_OTP_FILLING>,
+    ToCapability<ChangePasswordToolRequest,
+                 apc::RuleMetadata::CAPABILITY_CHANGE_PASSWORD>,
     ToCapability<ClickToolRequest, apc::RuleMetadata::CAPABILITY_CLICK>,
     ToCapability<CloseTabToolRequest, apc::RuleMetadata::CAPABILITY_CLOSE_TAB>,
     ToCapability<CreateTabToolRequest,
@@ -1115,7 +1117,6 @@ constexpr absl::Overload kGetCapabilityFn{
 
     // Tools that don't have an `ActuationCapability` in the proto yet.
     ToUnknown<AddBookmarkToolRequest>,
-    ToUnknown<ChangePasswordToolRequest>,
     ToUnknown<CloseGeminiPanelToolRequest>,
     ToUnknown<EnterFullscreenToolRequest>,
     ToUnknown<ExitFullscreenToolRequest>,
