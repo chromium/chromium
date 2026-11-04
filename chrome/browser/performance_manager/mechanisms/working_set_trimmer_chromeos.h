@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_WORKING_SET_TRIMMER_CHROMEOS_H_
 
+#include <memory>
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,14 +16,12 @@
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
+#include "chromeos/ash/experiences/arc/mojom/memory.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace arc {
-enum class ArcVmReclaimType;
-}
 namespace performance_manager {
 
 namespace policies {
@@ -29,8 +30,11 @@ class WorkingSetTrimmerPolicyChromeOS;
 
 namespace mechanism {
 
-// For name compatibility of mechanism::ArcVmReclaimType.
-using arc::ArcVmReclaimType;
+enum class ArcVmReclaimType {
+  kReclaimNone = 0,
+  kReclaimGuestPageCaches,
+  kReclaimAll,  // drop guest page caches and do zram reclaim
+};
 
 // WorkingSetTrimmerChromeOS is the platform specific implementation of a
 // working set trimmer for ChromeOS. This class should not be used directly it
@@ -62,10 +66,30 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   // TrimWorkingSet based on ProcessId |pid|.
   void TrimWorkingSet(base::ProcessId pid);
 
+  // Asks vm_concierge to trim ARCVM's memory in the same way as TrimWorkingSet.
+  // The function must be called on the UI thread.
+  // |callback| is invoked upon completion.
+  // |page_limit| is the maximum number of pages to reclaim
+  //             (arc::ArcSession::kNoPageLimit for no limit)
   // Note: made virtual to ease unit testing (redefine in derived mock).
   virtual void TrimArcVmWorkingSet(TrimArcVmWorkingSetCallback callback,
                                    ArcVmReclaimType reclaim_type,
                                    int page_limit);
+  void OnDropArcVmCaches(TrimArcVmWorkingSetCallback callback,
+                         ArcVmReclaimType reclaim_type,
+                         int page_limit,
+                         bool result);
+
+  // |elapsed_timer| measures the time since the reclaim operation started.
+  void OnArcVmMemoryGuestReclaim(
+      std::unique_ptr<base::ElapsedTimer> elapsed_timer,
+      TrimArcVmWorkingSetCallback callback,
+      bool should_reclaim_from_host,
+      int page_limit,
+      arc::mojom::ReclaimResultPtr result);
+
+  void LogErrorAndInvokeCallback(const char* error,
+                                 TrimArcVmWorkingSetCallback callback);
 
   // The constructor is made private to prevent instantiation of this class
   // directly, it should always be retrieved via
@@ -75,6 +99,7 @@ class WorkingSetTrimmerChromeOS : public WorkingSetTrimmer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<content::BrowserContext> context_for_testing_ = nullptr;
+  bool is_trimming_arcvm_ = false;
 
   base::WeakPtrFactory<WorkingSetTrimmerChromeOS> weak_factory_{this};
 };

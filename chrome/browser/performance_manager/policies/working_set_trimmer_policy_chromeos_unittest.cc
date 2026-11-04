@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
 #include "chromeos/ash/experiences/arc/mojom/process.mojom.h"

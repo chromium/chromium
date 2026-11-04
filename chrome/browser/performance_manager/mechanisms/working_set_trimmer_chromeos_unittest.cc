@@ -16,7 +16,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -405,6 +404,76 @@ TEST_F(TestWorkingSetTrimmerChromeOS,
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result);
   EXPECT_FALSE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSetDropPageCachesOnly_SkipDropCaches) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(arc::kSkipDropCaches);
+
+  // Inject a DropCaches() failure; when kSkipDropCaches is enabled,
+  // DropCaches() is skipped and the operation still succeeds.
+  memory_instance()->set_drop_caches_result(false);
+
+  std::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(*result);
+}
+
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSet_NoTrimAgainIfLastTrimStillWorking) {
+  class DelayedDropCachesMemoryInstance : public arc::FakeMemoryInstance {
+   public:
+    void DropCaches(DropCachesCallback callback) override {
+      drop_caches_callback_ = std::move(callback);
+    }
+    void FinishDropCaches(bool result) {
+      std::move(drop_caches_callback_).Run(result);
+    }
+
+   private:
+    DropCachesCallback drop_caches_callback_;
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(arc::kSkipDropCaches);
+
+  DelayedDropCachesMemoryInstance delayed_memory_instance;
+  arc::ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
+      memory_instance());
+  arc::ArcServiceManager::Get()->arc_bridge_service()->memory()->SetInstance(
+      &delayed_memory_instance);
+  arc::WaitForInstanceReady(
+      arc::ArcServiceManager::Get()->arc_bridge_service()->memory());
+
+  std::optional<bool> first_result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&first_result](bool r, const std::string&) { first_result = r; }));
+  EXPECT_FALSE(first_result.has_value());
+
+  // A second trim request while the first is still in progress should be
+  // skipped immediately.
+  std::optional<bool> second_result;
+  std::string second_reason;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&second_result, &second_reason](bool r, const std::string& reason) {
+        second_result = r;
+        second_reason = reason;
+      }));
+  ASSERT_TRUE(second_result.has_value());
+  EXPECT_FALSE(*second_result);
+  EXPECT_NE(second_reason.find("skip"), std::string::npos);
+
+  delayed_memory_instance.FinishDropCaches(true);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(first_result.has_value());
+  EXPECT_TRUE(*first_result);
+
+  arc::ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
+      &delayed_memory_instance);
 }
 
 // Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback

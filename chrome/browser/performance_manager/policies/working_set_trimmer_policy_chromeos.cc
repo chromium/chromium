@@ -12,7 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"

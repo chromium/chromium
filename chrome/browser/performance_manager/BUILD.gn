@@ -250,7 +250,6 @@ source_set("impl") {
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/session",
-      "//chrome/browser/ash/arc/vmm",
       "//chromeos/ash/components/dbus/resourced",
       "//chromeos/ash/components/memory",
       "//chromeos/ash/experiences/arc",
@@ -442,7 +441,6 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ash/arc/boot_phase_monitor",
       "//chrome/browser/ash/arc/test:arc_test_support",
-      "//chrome/browser/ash/arc/vmm",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc:notification_test_support",
       "//chromeos/dbus/power:power_manager_proto_gen",

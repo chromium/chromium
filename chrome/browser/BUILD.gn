@@ -3512,7 +3512,6 @@ source_set("browser") {
       "//chrome/browser/ash/arc/sharesheet",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/arc/tts",
-      "//chrome/browser/ash/arc/vmm",
       "//chrome/browser/ash/arc/wallpaper",
       "//chrome/browser/ash/bluetooth",
       "//chrome/browser/ash/boca",
