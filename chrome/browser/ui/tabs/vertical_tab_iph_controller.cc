@@ -15,10 +15,6 @@
 #include "components/prefs/pref_service.h"
 
 namespace {
-// The minimum number of tabs required in the tab strip before the vertical
-// tabs IPH is considered for display.
-constexpr int kMinTabsForVerticalTabPromo = 20;
-
 // Delay before showing the IPH to avoid interrupting the user's immediate flow.
 constexpr base::TimeDelta kPromoDelay = base::Seconds(3);
 
@@ -66,7 +62,8 @@ void VerticalTabIphController::MaybeShowPromo() {
     return;
   }
 
-  if (tab_strip_model->count() <= kMinTabsForVerticalTabPromo) {
+  if (tab_strip_model->count() <=
+      feature_engagement::kIPHVerticalTabstripTutorialMinTabsParam.Get()) {
     return;
   }
 

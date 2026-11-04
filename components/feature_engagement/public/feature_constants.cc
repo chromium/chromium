@@ -293,6 +293,9 @@ BASE_FEATURE(kIPHVerticalTabsExpandOnHoverFeature,
 BASE_FEATURE(kIPHVerticalTabstripTutorialFeature,
              "IPH_VerticalTabstripTutorialFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+constinit const base::FeatureParam<int>
+    kIPHVerticalTabstripTutorialMinTabsParam{
+        &kIPHVerticalTabstripTutorialFeature, "x_min_tabs_for_promo", 20};
 BASE_FEATURE(kIPHTabGroupsFocusingFeature,
              "IPH_TabGroupsFocusingFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
