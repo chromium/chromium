@@ -6,8 +6,8 @@
 #define BASE_ANDROID_YIELD_TO_LOOPER_CHECKER_H_
 
 #include "base/base_export.h"
-#include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/feature.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
@@ -19,15 +19,15 @@ class TickClock;
 
 namespace base::android {
 
-// When enabled, periodically yield to Android Looper in MessagePumpAndroid.
+// When enabled, periodically yield to Android Looper in `MessagePumpAndroid`.
 // Yield only on UI thread.
 BASE_EXPORT BASE_DECLARE_FEATURE(kYieldToLooperPeriodically);
 
 // Amount to wait between yields when `kYieldToLooperPeriodically` is enabled.
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kYieldToLooperPeriod);
 
-// Tracks scenarios in which the MessagePumpAndroid should yield to the Android
-// Looper. Currently yields:
+// Tracks scenarios in which the `MessagePumpAndroid` should yield to the
+// Android Looper. Currently yields:
 // * After every task while an embedder's startup is running;
 // * Periodically, when `kYieldToLooperPeriodically` is enabled.
 //
@@ -61,9 +61,9 @@ class BASE_EXPORT YieldToLooperChecker {
 
   bool is_startup_running_ = false;
   base::TimeTicks batch_start_;
-  // TimeDelta::Max() when periodic yielding is disabled.
+  // `TimeDelta::Max()` when periodic yielding is disabled.
   base::TimeDelta yield_period_ = base::TimeDelta::Max();
-  raw_ptr<const base::TickClock> tick_clock_;
+  raw_ref<const base::TickClock> tick_clock_;
   THREAD_CHECKER(thread_checker_);
 
   friend class base::NoDestructor<YieldToLooperChecker>;

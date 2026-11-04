@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
 namespace base::android {
@@ -19,7 +20,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Milliseconds(100));
 
 YieldToLooperChecker::YieldToLooperChecker()
-    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
+    : tick_clock_(*base::DefaultTickClock::GetInstance()) {}
 
 void YieldToLooperChecker::InitializeFeatures() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -55,7 +56,8 @@ bool YieldToLooperChecker::ShouldYield() {
 void YieldToLooperChecker::SetTickClockForTesting(
     const base::TickClock* tick_clock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  tick_clock_ = tick_clock ? tick_clock : base::DefaultTickClock::GetInstance();
+  tick_clock_ =
+      *(tick_clock ? tick_clock : base::DefaultTickClock::GetInstance());
 }
 
 // static
