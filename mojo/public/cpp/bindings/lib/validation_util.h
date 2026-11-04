@@ -116,30 +116,30 @@ bool ValidateMessagePayload(const Message* message,
 
 // The following Validate.*NonNullable() functions validate that the given
 // |input| is not null/invalid.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidatePointerNonNullableImpl(const uint64_t* offset,
+                                    int field_index,
+                                    ValidationContext* validation_context);
+
 template <typename T>
 bool ValidatePointerNonNullable(const T& input,
                                 int field_index,
                                 ValidationContext* validation_context) {
-  if (input.offset) {
-    return true;
-  }
-  ReportNonNullableValidationError(validation_context,
-                                   VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-                                   field_index);
-  return false;
+  return ValidatePointerNonNullableImpl(&input.offset, field_index,
+                                        validation_context);
 }
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateInlinedUnionNonNullableImpl(const void* data,
+                                         int field_index,
+                                         ValidationContext* validation_context);
 
 template <typename T>
 bool ValidateInlinedUnionNonNullable(const T& input,
                                      int field_index,
                                      ValidationContext* validation_context) {
-  if (!input.is_null()) {
-    return true;
-  }
-  ReportNonNullableValidationError(validation_context,
-                                   VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-                                   field_index);
-  return false;
+  return ValidateInlinedUnionNonNullableImpl(&input, field_index,
+                                             validation_context);
 }
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
@@ -172,51 +172,206 @@ bool ValidateHandleOrInterfaceNonNullable(
     int field_index,
     ValidationContext* validation_context);
 
-template <typename T>
-bool ValidateParams(const Pointer<T>& input,
-                    ValidationContext* validation_context) {
-  if (validation_context->ExceedsMaxDepth()) {
-    ReportValidationError(validation_context,
-                          VALIDATION_ERROR_MAX_RECURSION_DEPTH);
-    return false;
-  }
+using ValidateStructFunc = bool(const void*, ValidationContext*);
+using ValidateUnionFunc = bool(const void*, ValidationContext*, bool);
+using ValidateContainerFunc = bool(const void*,
+                                   ValidationContext*,
+                                   const ContainerValidateParams*);
 
-  return ValidatePointer(input, validation_context);
-}
+// `element_size == 0` indicates a packed-bit `bool` array.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+const ArrayHeader* ValidateArrayHeaderAndClaimMemory(
+    const void* data,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    uint32_t element_size);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidatePrimitiveOrEnumArray(
+    const void* data,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    uint32_t element_size);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateBoolArray(const void* data,
+                       ValidationContext* validation_context,
+                       const ContainerValidateParams* validate_params);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateStructArray(const void* data,
+                         ValidationContext* validation_context,
+                         const ContainerValidateParams* validate_params,
+                         ValidateStructFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateContainerArray(const void* data,
+                            ValidationContext* validation_context,
+                            const ContainerValidateParams* validate_params,
+                            ValidateContainerFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateUnionArray(const void* data,
+                        ValidationContext* validation_context,
+                        const ContainerValidateParams* validate_params,
+                        ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateMapImpl(const void* data,
+                     ValidationContext* validation_context,
+                     const ContainerValidateParams* validate_params,
+                     ValidateContainerFunc* validate_keys_func,
+                     ValidateContainerFunc* validate_values_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateContainerImpl(const uint64_t* offset,
+                           ValidationContext* validation_context,
+                           const ContainerValidateParams* validate_params,
+                           ValidateContainerFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullContainerImpl(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index,
+    ValidateContainerFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateByteArrayContainer(const uint64_t* offset,
+                                ValidationContext* validation_context,
+                                const ContainerValidateParams* validate_params);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullByteArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidatePrimitiveOrEnumArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    uint32_t element_size);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullPrimitiveOrEnumArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index,
+    uint32_t element_size);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateBoolArrayContainer(const uint64_t* offset,
+                                ValidationContext* validation_context,
+                                const ContainerValidateParams* validate_params);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullBoolArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateStructArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    ValidateStructFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullStructArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index,
+    ValidateStructFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateUnionArrayContainer(const uint64_t* offset,
+                                 ValidationContext* validation_context,
+                                 const ContainerValidateParams* validate_params,
+                                 ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullUnionArrayContainer(
+    const uint64_t* offset,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index,
+    ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateMapContainer(const uint64_t* offset,
+                          ValidationContext* validation_context,
+                          const ContainerValidateParams* validate_params,
+                          ValidateContainerFunc* validate_keys_func,
+                          ValidateContainerFunc* validate_values_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullMapContainer(const uint64_t* offset,
+                                 ValidationContext* validation_context,
+                                 const ContainerValidateParams* validate_params,
+                                 int field_index,
+                                 ValidateContainerFunc* validate_keys_func,
+                                 ValidateContainerFunc* validate_values_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateStructImpl(const uint64_t* offset,
+                        ValidationContext* validation_context,
+                        ValidateStructFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullStructImpl(const uint64_t* offset,
+                               ValidationContext* validation_context,
+                               int field_index,
+                               ValidateStructFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateInlinedUnionImpl(const void* data,
+                              ValidationContext* validation_context,
+                              ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonInlinedUnionImpl(const uint64_t* offset,
+                                 ValidationContext* validation_context,
+                                 ValidateUnionFunc* validate_func);
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullNonInlinedUnionImpl(const uint64_t* offset,
+                                        ValidationContext* validation_context,
+                                        int field_index,
+                                        ValidateUnionFunc* validate_func);
 
 template <typename T>
 bool ValidateContainer(const Pointer<T>& input,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-  return ValidateParams(input, validation_context) &&
-         T::Validate(input.Get(), validation_context, validate_params);
+  return T::ValidateContainer(&input.offset, validation_context,
+                              validate_params);
 }
 
 template <typename T>
 bool ValidateStruct(const Pointer<T>& input,
                     ValidationContext* validation_context) {
-  ValidationContext::ScopedDepthTracker depth_tracker(validation_context);
-
-  return ValidateParams(input, validation_context) &&
-         T::Validate(input.Get(), validation_context);
+  return ValidateStructImpl(&input.offset, validation_context, &T::Validate);
 }
 
 template <typename T>
 bool ValidateInlinedUnion(const T& input,
                           ValidationContext* validation_context) {
-  if (validation_context->ExceedsMaxDepth()) {
-    ReportValidationError(validation_context,
-                          VALIDATION_ERROR_MAX_RECURSION_DEPTH);
-    return false;
-  }
-  return T::Validate(&input, validation_context, true);
+  return ValidateInlinedUnionImpl(&input, validation_context, &T::Validate);
 }
 
 template <typename T>
 bool ValidateNonInlinedUnion(const Pointer<T>& input,
                              ValidationContext* validation_context) {
-  return ValidateParams(input, validation_context) &&
-         T::Validate(input.Get(), validation_context, false);
+  return ValidateNonInlinedUnionImpl(&input.offset, validation_context,
+                                     &T::Validate);
 }
 
 // Same as the above functions, but additionally validate that `input` is not
@@ -224,30 +379,28 @@ bool ValidateNonInlinedUnion(const Pointer<T>& input,
 // for non-nullable fields, since a single (non-inlined) call per field results
 // in smaller code than calling ValidatePointerNonNullable() separately.
 template <typename T>
-NOINLINE bool ValidateNonNullContainer(
-    const Pointer<T>& input,
-    ValidationContext* validation_context,
-    const ContainerValidateParams* validate_params,
-    int field_index) {
-  return ValidatePointerNonNullable(input, field_index, validation_context) &&
-         ValidateContainer(input, validation_context, validate_params);
+bool ValidateNonNullContainer(const Pointer<T>& input,
+                              ValidationContext* validation_context,
+                              const ContainerValidateParams* validate_params,
+                              int field_index) {
+  return T::ValidateNonNullContainer(&input.offset, validation_context,
+                                     validate_params, field_index);
 }
 
 template <typename T>
-NOINLINE bool ValidateNonNullStruct(const Pointer<T>& input,
+bool ValidateNonNullStruct(const Pointer<T>& input,
+                           ValidationContext* validation_context,
+                           int field_index) {
+  return ValidateNonNullStructImpl(&input.offset, validation_context,
+                                   field_index, &T::Validate);
+}
+
+template <typename T>
+bool ValidateNonNullNonInlinedUnion(const Pointer<T>& input,
                                     ValidationContext* validation_context,
                                     int field_index) {
-  return ValidatePointerNonNullable(input, field_index, validation_context) &&
-         ValidateStruct(input, validation_context);
-}
-
-template <typename T>
-NOINLINE bool ValidateNonNullNonInlinedUnion(
-    const Pointer<T>& input,
-    ValidationContext* validation_context,
-    int field_index) {
-  return ValidatePointerNonNullable(input, field_index, validation_context) &&
-         ValidateNonInlinedUnion(input, validation_context);
+  return ValidateNonNullNonInlinedUnionImpl(&input.offset, validation_context,
+                                            field_index, &T::Validate);
 }
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

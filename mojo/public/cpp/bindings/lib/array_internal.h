@@ -282,46 +282,11 @@ struct ArrayDataTraits<T> {
 // data view type instead of the data type, that way we can use MojomTypeTraits
 // to determine the categories.
 
-template <typename T, bool is_union, bool is_handle_or_interface>
+template <typename T, bool is_handle_or_interface>
 struct ArraySerializationHelper;
 
 template <typename T>
-struct ArraySerializationHelper<T, false, false> {
-  using ElementType = typename ArrayDataTraits<T>::StorageType;
-
-  static bool ValidateElements(const ArrayHeader* header,
-                               const ElementType* elements,
-                               ValidationContext* validation_context,
-                               const ContainerValidateParams* validate_params) {
-    DCHECK(!validate_params->element_is_nullable)
-        << "Primitive type should be non-nullable";
-    DCHECK(!validate_params->element_validate_params)
-        << "Primitive type should not have array validate params";
-
-    if (!validate_params->validate_enum_func) {
-      return true;
-    }
-
-    // Enum validation.
-    for (uint32_t i = 0; i < header->num_elements; ++i) {
-      // Enums are defined by mojo to be 32-bit, but this code is also compiled
-      // for arrays of primitives such as uint64_t (but never called), so it's
-      // safe to do a static_cast here.
-      DCHECK(sizeof(elements[i]) <= sizeof(int32_t))
-          << "Enum validation should never take place on a primitive type of "
-             "width greater than 32-bit";
-      if (!validate_params->validate_enum_func(
-              static_cast<int32_t>(UNSAFE_TODO(elements[i])),
-              validation_context)) {
-        return false;
-      }
-    }
-    return true;
-  }
-};
-
-template <typename T>
-struct ArraySerializationHelper<std::optional<T>, false, false> {
+struct ArraySerializationHelper<std::optional<T>, false> {
   using ElementType = typename ArrayDataTraits<T>::StorageType;
 
   static bool ValidateElements(const ArrayHeader* header,
@@ -354,7 +319,7 @@ struct ArraySerializationHelper<std::optional<T>, false, false> {
 };
 
 template <typename T>
-struct ArraySerializationHelper<T, false, true> {
+struct ArraySerializationHelper<T, true> {
   using ElementType = typename ArrayDataTraits<T>::StorageType;
 
   static bool ValidateElements(const ArrayHeader* header,
@@ -390,137 +355,172 @@ struct ArraySerializationHelper<T, false, true> {
 };
 
 template <typename T>
-struct ArraySerializationHelper<Pointer<T>, false, false> {
-  using ElementType = typename ArrayDataTraits<Pointer<T>>::StorageType;
-
-  static bool ValidateElements(const ArrayHeader* header,
-                               const ElementType* elements,
-                               ValidationContext* validation_context,
-                               const ContainerValidateParams* validate_params) {
-    for (uint32_t i = 0; i < header->num_elements; ++i) {
-      if (!validate_params->element_is_nullable &&
-          !UNSAFE_TODO(elements[i]).offset) {
-        ReportValidationError(
-            validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-            MakeMessageWithArrayIndex("null in array expecting valid pointers",
-                                      header->num_elements, i));
-        return false;
-      }
-      if (!ValidateCaller<T>::Run(UNSAFE_TODO(elements[i]), validation_context,
-                                  validate_params->element_validate_params)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
- private:
-  template <typename U,
-            bool is_array_or_map = IsSpecializationOf<Array_Data, U>::value ||
-                                   IsSpecializationOf<Map_Data, U>::value>
-  struct ValidateCaller {
-    static bool Run(const Pointer<U>& data,
-                    ValidationContext* validation_context,
-                    const ContainerValidateParams* validate_params) {
-      DCHECK(!validate_params)
-          << "Struct type should not have array validate params";
-
-      return ValidateStruct(data, validation_context);
-    }
-  };
-
-  template <typename U>
-  struct ValidateCaller<U, true> {
-    static bool Run(const Pointer<U>& data,
-                    ValidationContext* validation_context,
-                    const ContainerValidateParams* validate_params) {
-      return ValidateContainer(data, validation_context, validate_params);
-    }
-  };
-};
-
-template <typename U>
-struct ArraySerializationHelper<U, true, false> {
-  using ElementType = typename ArrayDataTraits<U>::StorageType;
-
-  static bool ValidateElements(const ArrayHeader* header,
-                               const ElementType* elements,
-                               ValidationContext* validation_context,
-                               const ContainerValidateParams* validate_params) {
-    for (uint32_t i = 0; i < header->num_elements; ++i) {
-      if (!validate_params->element_is_nullable &&
-          UNSAFE_TODO(elements[i]).is_null()) {
-        ReportValidationError(
-            validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
-            MakeMessageWithArrayIndex("null in array expecting valid unions",
-                                      header->num_elements, i));
-        return false;
-      }
-      if (!ValidateInlinedUnion(UNSAFE_TODO(elements[i]), validation_context)) {
-        return false;
-      }
-    }
-    return true;
-  }
-};
-
-template <typename T>
 class Array_Data {
  public:
   using Traits = ArrayDataTraits<T>;
   using StorageType = typename Traits::StorageType;
   using Ref = typename Traits::Ref;
   using ConstRef = typename Traits::ConstRef;
-  using Helper = ArraySerializationHelper<
-      T,
-      IsUnionDataType<T>::value,
-      std::is_same<T, AssociatedInterface_Data>::value ||
-          std::is_same<T, AssociatedEndpointHandle_Data>::value ||
-          std::is_same<T, Interface_Data>::value ||
-          std::is_same<T, Handle_Data>::value>;
+  static constexpr bool kIsHandleOrInterface =
+      std::is_same_v<T, AssociatedInterface_Data> ||
+      std::is_same_v<T, AssociatedEndpointHandle_Data> ||
+      std::is_same_v<T, Interface_Data> || std::is_same_v<T, Handle_Data>;
   using Element = T;
 
   static bool Validate(const void* data,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-    if (!data) {
-      return true;
-    }
-    if (!IsAligned(data)) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_MISALIGNED_OBJECT);
-      return false;
-    }
-    if (!validation_context->IsValidRange(data, sizeof(ArrayHeader))) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_ILLEGAL_MEMORY_RANGE);
-      return false;
-    }
-    const ArrayHeader* header = static_cast<const ArrayHeader*>(data);
-    if (header->num_elements > Traits::kMaxNumElements ||
-        header->num_bytes < Traits::GetStorageSize(header->num_elements)) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER);
-      return false;
-    }
-    if (validate_params->expected_num_elements != 0 &&
-        header->num_elements != validate_params->expected_num_elements) {
-      ReportValidationError(
-          validation_context, VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
-          MakeMessageWithExpectedArraySize(
-              "fixed-size array has wrong number of elements",
-              header->num_elements, validate_params->expected_num_elements));
-      return false;
-    }
-    if (!validation_context->ClaimMemory(data, header->num_bytes)) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_ILLEGAL_MEMORY_RANGE);
-      return false;
-    }
+    if constexpr (IsSpecializationOf<Pointer, T>::value) {
+      using U = typename T::BaseType;
+      if constexpr (IsSpecializationOf<Array_Data, U>::value ||
+                    IsSpecializationOf<Map_Data, U>::value) {
+        return ValidateContainerArray(data, validation_context, validate_params,
+                                      &U::Validate);
+      } else {
+        return ValidateStructArray(data, validation_context, validate_params,
+                                   &U::Validate);
+      }
+    } else if constexpr (IsUnionDataType<T>::value) {
+      return ValidateUnionArray(data, validation_context, validate_params,
+                                &T::Validate);
+    } else if constexpr (std::is_same_v<T, bool>) {
+      return ValidateBoolArray(data, validation_context, validate_params);
+    } else if constexpr (kIsHandleOrInterface) {
+      if (!data) {
+        return true;
+      }
+      const ArrayHeader* header = ValidateArrayHeaderAndClaimMemory(
+          data, validation_context, validate_params, sizeof(T));
+      if (!header) {
+        return false;
+      }
+      const Array_Data<T>* object = static_cast<const Array_Data<T>*>(data);
+      return ArraySerializationHelper<
+          T, kIsHandleOrInterface>::ValidateElements(&object->header_,
+                                                     object->storage(),
+                                                     validation_context,
+                                                     validate_params);
+    } else if constexpr (!base::is_instantiation<T, std::optional>) {
+      return ValidatePrimitiveOrEnumArray(data, validation_context,
+                                          validate_params, sizeof(T));
+    } else {
+      if (!data) {
+        return true;
+      }
+      if (!IsAligned(data)) {
+        ReportValidationError(validation_context,
+                              VALIDATION_ERROR_MISALIGNED_OBJECT);
+        return false;
+      }
+      if (!validation_context->IsValidRange(data, sizeof(ArrayHeader))) {
+        ReportValidationError(validation_context,
+                              VALIDATION_ERROR_ILLEGAL_MEMORY_RANGE);
+        return false;
+      }
+      const ArrayHeader* header = static_cast<const ArrayHeader*>(data);
+      if (header->num_elements > Traits::kMaxNumElements ||
+          header->num_bytes < Traits::GetStorageSize(header->num_elements)) {
+        ReportValidationError(validation_context,
+                              VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER);
+        return false;
+      }
+      if (validate_params->expected_num_elements != 0 &&
+          header->num_elements != validate_params->expected_num_elements) {
+        ReportValidationError(
+            validation_context, VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
+            MakeMessageWithExpectedArraySize(
+                "fixed-size array has wrong number of elements",
+                header->num_elements, validate_params->expected_num_elements));
+        return false;
+      }
+      if (!validation_context->ClaimMemory(data, header->num_bytes)) {
+        ReportValidationError(validation_context,
+                              VALIDATION_ERROR_ILLEGAL_MEMORY_RANGE);
+        return false;
+      }
 
-    const Array_Data<T>* object = static_cast<const Array_Data<T>*>(data);
-    return Helper::ValidateElements(&object->header_, object->storage(),
-                                    validation_context, validate_params);
+      const Array_Data<T>* object = static_cast<const Array_Data<T>*>(data);
+      return ArraySerializationHelper<
+          T, kIsHandleOrInterface>::ValidateElements(&object->header_,
+                                                     object->storage(),
+                                                     validation_context,
+                                                     validate_params);
+    }
+  }
+
+  static bool ValidateContainer(
+      const uint64_t* offset,
+      ValidationContext* validation_context,
+      const ContainerValidateParams* validate_params) {
+    if constexpr (IsSpecializationOf<Pointer, T>::value) {
+      using U = typename T::BaseType;
+      if constexpr (IsSpecializationOf<Array_Data, U>::value ||
+                    IsSpecializationOf<Map_Data, U>::value) {
+        return ValidateContainerImpl(offset, validation_context,
+                                     validate_params, &Validate);
+      } else {
+        return ValidateStructArrayContainer(offset, validation_context,
+                                            validate_params, &U::Validate);
+      }
+    } else if constexpr (IsUnionDataType<T>::value) {
+      return ValidateUnionArrayContainer(offset, validation_context,
+                                         validate_params, &T::Validate);
+    } else if constexpr (std::is_same_v<T, bool>) {
+      return ValidateBoolArrayContainer(offset, validation_context,
+                                        validate_params);
+    } else if constexpr (!kIsHandleOrInterface &&
+                         !base::is_instantiation<T, std::optional>) {
+      if constexpr (sizeof(T) == 1) {
+        return ValidateByteArrayContainer(offset, validation_context,
+                                          validate_params);
+      } else {
+        return ValidatePrimitiveOrEnumArrayContainer(
+            offset, validation_context, validate_params, sizeof(T));
+      }
+    } else {
+      return ValidateContainerImpl(offset, validation_context, validate_params,
+                                   &Validate);
+    }
+  }
+
+  static bool ValidateNonNullContainer(
+      const uint64_t* offset,
+      ValidationContext* validation_context,
+      const ContainerValidateParams* validate_params,
+      int field_index) {
+    if constexpr (IsSpecializationOf<Pointer, T>::value) {
+      using U = typename T::BaseType;
+      if constexpr (IsSpecializationOf<Array_Data, U>::value ||
+                    IsSpecializationOf<Map_Data, U>::value) {
+        return ValidateNonNullContainerImpl(offset, validation_context,
+                                            validate_params, field_index,
+                                            &Validate);
+      } else {
+        return ValidateNonNullStructArrayContainer(offset, validation_context,
+                                                   validate_params, field_index,
+                                                   &U::Validate);
+      }
+    } else if constexpr (IsUnionDataType<T>::value) {
+      return ValidateNonNullUnionArrayContainer(offset, validation_context,
+                                                validate_params, field_index,
+                                                &T::Validate);
+    } else if constexpr (std::is_same_v<T, bool>) {
+      return ValidateNonNullBoolArrayContainer(offset, validation_context,
+                                               validate_params, field_index);
+    } else if constexpr (!kIsHandleOrInterface &&
+                         !base::is_instantiation<T, std::optional>) {
+      if constexpr (sizeof(T) == 1) {
+        return ValidateNonNullByteArrayContainer(offset, validation_context,
+                                                 validate_params, field_index);
+      } else {
+        return ValidateNonNullPrimitiveOrEnumArrayContainer(
+            offset, validation_context, validate_params, field_index,
+            sizeof(T));
+      }
+    } else {
+      return ValidateNonNullContainerImpl(
+          offset, validation_context, validate_params, field_index, &Validate);
+    }
   }
 
   size_t size() const { return header_.num_elements; }

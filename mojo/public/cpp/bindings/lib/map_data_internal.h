@@ -23,41 +23,28 @@ class Map_Data {
   static bool Validate(const void* data,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-    if (!data) {
-      return true;
-    }
+    return ValidateMapImpl(data, validation_context, validate_params,
+                           &Array_Data<Key>::Validate,
+                           &Array_Data<Value>::Validate);
+  }
 
-    if (!ValidateStructHeaderAndClaimMemory(data, validation_context)) {
-      return false;
-    }
+  static bool ValidateContainer(
+      const uint64_t* offset,
+      ValidationContext* validation_context,
+      const ContainerValidateParams* validate_params) {
+    return ValidateMapContainer(offset, validation_context, validate_params,
+                                &Array_Data<Key>::Validate,
+                                &Array_Data<Value>::Validate);
+  }
 
-    const Map_Data* object = static_cast<const Map_Data*>(data);
-    if (object->header_.num_bytes != sizeof(Map_Data) ||
-        object->header_.version != 0) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_UNEXPECTED_STRUCT_HEADER);
-      return false;
-    }
-
-    if (!ValidatePointerNonNullable(object->keys, 0, validation_context) ||
-        !ValidateContainer(object->keys, validation_context,
-                           validate_params->key_validate_params)) {
-      return false;
-    }
-
-    if (!ValidatePointerNonNullable(object->values, 1, validation_context) ||
-        !ValidateContainer(object->values, validation_context,
-                           validate_params->element_validate_params)) {
-      return false;
-    }
-
-    if (object->keys.Get()->size() != object->values.Get()->size()) {
-      ReportValidationError(validation_context,
-                            VALIDATION_ERROR_DIFFERENT_SIZED_ARRAYS_IN_MAP);
-      return false;
-    }
-
-    return true;
+  static bool ValidateNonNullContainer(
+      const uint64_t* offset,
+      ValidationContext* validation_context,
+      const ContainerValidateParams* validate_params,
+      int field_index) {
+    return ValidateNonNullMapContainer(
+        offset, validation_context, validate_params, field_index,
+        &Array_Data<Key>::Validate, &Array_Data<Value>::Validate);
   }
 
   StructHeader header_;
