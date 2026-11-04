@@ -289,6 +289,11 @@ config("default_sanitizer_ldflags") {
         # need to use this symbol to report control flow coverage
         # to the main binary
         ldflags += [ "-Wl,-undefined,dynamic_lookup" ]
+
+        # Centipede's pc-table and control-flow coverage can push the __DATA
+        # segment of large binaries such as unit_tests past the 65,536-page
+        # limit of Mach-O chained fixups.
+        ldflags += [ "-Wl,-no_fixup_chains" ]
       }
     }
 
