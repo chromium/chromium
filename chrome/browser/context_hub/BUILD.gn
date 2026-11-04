@@ -111,6 +111,7 @@ source_set("context_hub") {
     "//sql",
     "//ui/gfx",
     "//ui/gfx/codec",
+    "//ui/gfx/geometry",
   ]
 }
 
@@ -149,6 +150,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base/unowned_user_data",
     "//ui/gfx",
+    "//ui/gfx/codec",
   ]
 
   if (!is_android) {

@@ -83,9 +83,11 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -186,12 +188,29 @@ bool HasHttpImageUrl(const MemoryBankEntry& entry) {
          entry.image_url->SchemeIsHTTPOrHTTPS();
 }
 
+// Downscales `bitmap` to fit within `max_dimension` x `max_dimension` pixels
+// (when `max_dimension` > 0 and either dimension exceeds it), preserving its
+// aspect ratio, and PNG-encodes it. Since PNG is lossless, a photo can be
+// many times larger re-encoded as PNG than the source image.
 FetchedChatImage EncodeChatImageToPng(std::vector<size_t> entry_indices,
+                                      int max_dimension,
                                       const SkBitmap& bitmap) {
+  SkBitmap scaled_bitmap = bitmap;
+  const int longest_side = std::max(bitmap.width(), bitmap.height());
+  if (max_dimension > 0 && longest_side > max_dimension) {
+    gfx::Size scaled_size = gfx::ScaleToRoundedSize(
+        gfx::Size(bitmap.width(), bitmap.height()),
+        static_cast<float>(max_dimension) / longest_side);
+    // Ensure neither dimension rounds down to 0 for extreme aspect ratios.
+    scaled_size.SetToMax(gfx::Size(1, 1));
+    scaled_bitmap = skia::ImageOperations::Resize(
+        bitmap, skia::ImageOperations::RESIZE_BEST, scaled_size.width(),
+        scaled_size.height());
+  }
   return FetchedChatImage{
       .entry_indices = std::move(entry_indices),
       .png_bytes = gfx::PNGCodec::EncodeBGRASkBitmap(
-          bitmap, /*discard_transparency=*/false),
+          scaled_bitmap, /*discard_transparency=*/false),
   };
 }
 
@@ -210,6 +229,7 @@ void OnChatImageFetched(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&EncodeChatImageToPng, std::move(entry_indices),
+                     features::kMaxMemoryBankChatImageDimension.Get(),
                      image.AsBitmap()),
       std::move(barrier_callback));
 }

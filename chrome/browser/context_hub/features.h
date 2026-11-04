@@ -56,6 +56,12 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankChatHistoryTurns);
 // without image bytes.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxMemoryBankChatImages);
 
+// The maximum width and height, in pixels, of each image attached to a memory
+// bank chat request. Larger images are downscaled to fit, preserving their
+// aspect ratio, before they are PNG-encoded; non-positive values disable
+// downscaling.
+BASE_DECLARE_FEATURE_PARAM(int, kMaxMemoryBankChatImageDimension);
+
 // The maximum number of tab groups stored in the in-memory tab group store.
 BASE_DECLARE_FEATURE_PARAM(int, kMaxTabGroups);
 
