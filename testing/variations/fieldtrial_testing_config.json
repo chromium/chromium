@@ -6633,6 +6633,7 @@
                         "NotifyCompositorOfSpaceVisibilityOnMacOs",
                         "NotifyCompositorOfWindowOcclusionOnMacOs",
                         "NotifyCompositorOfWindowVisibilityOnMacOs",
+                        "TrackAllTopLevelWindowsForOcclusion",
                         "VizBufferQueueDiscardOnVisibilityChange"
                     ]
                 }
