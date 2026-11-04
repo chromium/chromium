@@ -33,7 +33,10 @@ source_set("power_save_blocker") {
 
   sources = [ "power_save_blocker.h" ]
 
-  public_deps = [ "//services/device/public/mojom" ]
+  public_deps = [
+    "//build/config/linux/dbus:buildflags",
+    "//services/device/public/mojom",
+  ]
 
   deps = [ "//base" ]
 
@@ -54,8 +57,8 @@ source_set("power_save_blocker") {
   } else if (is_linux && use_dbus) {
     sources += [ "power_save_blocker_linux.cc" ]
     deps += [
-      "//components/dbus/thread_linux",
-      "//components/dbus/utils",
+      "//components/dbus",
+      "//services/device/public/cpp:device_features",
       "//ui/display",
       "//ui/gfx",
     ]

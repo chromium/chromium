@@ -236,6 +236,13 @@ BASE_FEATURE(kAutomaticUsbDetach, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kProductNameOverHidName, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX)
+// When running in a Flatpak or Snap sandbox, acquire wake locks through the
+// org.freedesktop.portal.Inhibit portal before falling back to the session bus
+// APIs. Can be disabled as a kill switch if needed.
+BASE_FEATURE(kWakeLockInhibitPortal, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_WIN)
 // Splits DTR and RTS control signals. See crbug.com/420689824.
 // Can be disabled as a kill switch if needed.

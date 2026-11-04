@@ -8,11 +8,14 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,20 +25,29 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/nix/xdg_util.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/name_has_owner.h"
+#include "components/dbus/utils/variant.h"
+#include "components/dbus/xdg/portal.h"
+#include "components/dbus/xdg/portal_constants.h"
+#include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "services/device/public/cpp/device_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
 
 namespace device {
 
 namespace {
+
+constexpr char kInhibitPortalInterface[] = "org.freedesktop.portal.Inhibit";
 
 enum class DBusApi {
   kGnome,                   // org.gnome.SessionManager
@@ -46,6 +58,7 @@ enum class DBusApi {
 // Inhibit flags defined in the org.gnome.SessionManager interface.
 // Can be OR'd together and passed as argument to the Inhibit() method
 // to specify which power management features we want to suspend.
+// org.freedesktop.portal.Inhibit uses the same values.
 enum class GnomeApiInhibitFlags {
   kLogout = 1,
   kSwitchUser = 2,
@@ -101,7 +114,17 @@ GnomeApiInhibitFlags WakeLockTypeToGnomeInhibitFlag(mojom::WakeLockType type) {
   }
 }
 
+scoped_refptr<dbus::Bus>& BusOverride() {
+  static base::NoDestructor<scoped_refptr<dbus::Bus>> bus;
+  return *bus;
+}
+
 }  // namespace
+
+// static
+void PowerSaveBlocker::SetBusForTesting(scoped_refptr<dbus::Bus> bus) {
+  BusOverride() = std::move(bus);
+}
 
 class PowerSaveBlocker::Delegate {
  public:
@@ -115,7 +138,8 @@ class PowerSaveBlocker::Delegate {
 
   void Init() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    bus_ = dbus_thread_linux::GetSharedSessionBus();
+    bus_ = BusOverride() ? BusOverride()
+                         : dbus_thread_linux::GetSharedSessionBus();
     if (ShouldBlock()) {
       ApplyBlock();
     }
@@ -150,6 +174,69 @@ class PowerSaveBlocker::Delegate {
   void ApplyBlock() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    // In a Flatpak or Snap sandbox, the session bus APIs below typically need
+    // extra permissions, so prefer the Inhibit portal there.
+    if (base::FeatureList::IsEnabled(features::kWakeLockInhibitPortal) &&
+        base::nix::GetAppSandbox() != base::nix::AppSandbox::kNone) {
+      dbus_xdg::RequestXdgDesktopPortal(
+          bus_.get(), kInhibitPortalInterface,
+          base::BindOnce(&Delegate::OnPortalRequested,
+                         weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+
+    ApplyHostBlock();
+  }
+
+  void OnPortalRequested(uint32_t version) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (version == 0) {
+      ApplyHostBlock();
+      return;
+    }
+    InhibitWithPortal();
+  }
+
+  // Inhibits with org.freedesktop.portal.Inhibit. The inhibition lasts until
+  // `portal_request_` is destroyed, which closes the Request.
+  void InhibitWithPortal() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    dbus::ObjectProxy* portal_proxy =
+        bus_->GetObjectProxy(dbus_xdg::kPortalServiceName,
+                             dbus::ObjectPath(dbus_xdg::kPortalObjectPath));
+    dbus_xdg::Dictionary options;
+    options.emplace("reason", dbus_utils::Variant::Wrap<"s">(description_));
+    // The arguments of the method are:
+    //     window:        Identifier for the window, or empty
+    //     flags:         Flags that specify what should be inhibited
+    //     options:       Vardict with optional further information
+    portal_request_ = dbus_xdg::Request::CreateLongLived(
+        bus_, portal_proxy, kInhibitPortalInterface, "Inhibit",
+        std::move(options),
+        base::BindOnce(&Delegate::OnPortalInhibitResult,
+                       weak_ptr_factory_.GetWeakPtr()),
+        std::string(),
+        static_cast<uint32_t>(WakeLockTypeToGnomeInhibitFlag(type_)));
+  }
+
+  // Runs if the portal reports success or failure. Some portals report
+  // neither, and the inhibition is active anyway.
+  void OnPortalInhibitResult(dbus_xdg::Results results) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (results.has_value()) {
+      return;
+    }
+    LOG(ERROR) << "Inhibit() request for " << kInhibitPortalInterface
+               << " failed";
+    portal_request_.reset();
+    // Fall back to the session bus APIs, which may still be reachable.
+    ApplyHostBlock();
+  }
+
+  // Applies the power save block without the portal.
+  void ApplyHostBlock() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     // First, try to inhibit using the GNOME API, since it can inhibit both the
     // screensaver and power-saving with one method call. If this fails,
     // the callbacks will handle falling back to the Freedesktop APIs.
@@ -161,6 +248,7 @@ class PowerSaveBlocker::Delegate {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(bus_);  // RemoveBlock() should only be called once.
 
+    portal_request_.reset();
     for (const auto& inhibit_cookie : inhibit_cookies_) {
       Uninhibit(inhibit_cookie);
     }
@@ -351,6 +439,9 @@ class PowerSaveBlocker::Delegate {
       screen_saver_suspender_;
 
   base::flat_map<DBusApi, bool> api_availability_cache_;
+
+  // The portal's Inhibit() request. Destroying it releases the inhibition.
+  std::unique_ptr<dbus_xdg::Request> portal_request_;
 
   base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
 };

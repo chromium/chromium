@@ -8,15 +8,23 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+namespace dbus {
+class Bus;
+}
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
 namespace device {
 
@@ -50,6 +58,12 @@ class PowerSaveBlocker {
   // Does nothing unless the embedder holds the WAKE_LOCK permission.
   void InitWithoutContext();
 #endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  // Makes PowerSaveBlockers created afterwards use `bus` instead of the shared
+  // session bus. Pass nullptr to restore the default.
+  static void SetBusForTesting(scoped_refptr<dbus::Bus> bus);
+#endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 
  private:
   class Delegate;
