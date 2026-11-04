@@ -92,9 +92,12 @@ AvailableMemoryMonitor::ComputeAvailableMemory() {
 
   MemorySample sample;
   sample.available_physical_bytes = info.GetAvailablePhysicalMemory();
+  sample.total_physical_bytes = info.total;
 
 #if BUILDFLAG(IS_APPLE)
   sample.free_physical_bytes = info.free;
+  sample.compressor_bytes = info.compressor;
+  sample.wired_bytes = info.wired;
 #endif
 
 #if BUILDFLAG(IS_WIN)

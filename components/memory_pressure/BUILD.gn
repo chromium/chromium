@@ -34,6 +34,8 @@ source_set("memory_pressure") {
 
   if (is_mac) {
     sources += [
+      "compressor_memory_pressure_evaluator.cc",
+      "compressor_memory_pressure_evaluator.h",
       "free_memory_pressure_evaluator.cc",
       "free_memory_pressure_evaluator.h",
     ]
@@ -73,6 +75,7 @@ source_set("unit_tests") {
 
   if (is_mac) {
     sources += [
+      "compressor_memory_pressure_evaluator_unittest.cc",
       "disk_space_memory_pressure_evaluator_mac_unittest.cc",
       "free_memory_pressure_evaluator_unittest.cc",
       "system_memory_pressure_evaluator_mac_unittest.cc",

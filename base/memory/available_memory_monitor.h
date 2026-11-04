@@ -31,11 +31,19 @@ class BASE_EXPORT AvailableMemoryMonitor {
   struct MemorySample {
     base::TimeTicks timestamp;
     base::ByteSize available_physical_bytes;
+    base::ByteSize total_physical_bytes;
 
 #if BUILDFLAG(IS_APPLE)
     // Strictly unallocated free physical memory (free_count -
     // speculative_count).
     base::ByteSize free_physical_bytes;
+
+    // Memory used by the kernel compressed pager to hold compressed data.
+    base::ByteSize compressor_bytes;
+
+    // Memory held by the kernel and core system components that cannot be
+    // paged out or compressed.
+    base::ByteSize wired_bytes;
 #endif
 
 #if BUILDFLAG(IS_WIN)

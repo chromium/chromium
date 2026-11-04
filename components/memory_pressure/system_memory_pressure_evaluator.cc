@@ -18,6 +18,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "components/memory_pressure/compressor_memory_pressure_evaluator.h"
 #include "components/memory_pressure/free_memory_pressure_evaluator.h"
 #endif
 
@@ -85,6 +86,12 @@ SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(
           memory_pressure::features::kMacFreeMemoryPressureEvaluator)) {
     evaluators.push_back(
         FreeMemoryPressureEvaluator::CreateWithMacFeatureParams(
+            monitor->CreateVoter()));
+  }
+  if (base::FeatureList::IsEnabled(
+          memory_pressure::features::kMacCompressorMemoryPressureEvaluator)) {
+    evaluators.push_back(
+        CompressorMemoryPressureEvaluator::CreateWithMacFeatureParams(
             monitor->CreateVoter()));
   }
 #endif
