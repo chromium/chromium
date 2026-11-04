@@ -1117,19 +1117,17 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
 void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
     read_anything::mojom::LineFocus current_line_focus,
     read_anything::mojom::LineFocus last_non_disabled_line_focus) {
-  if (features::IsReadAnythingLineFocusEnabled()) {
-    profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
-                                     static_cast<size_t>(current_line_focus));
-    profile_->GetPrefs()->SetInteger(
-        prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
-        static_cast<size_t>(last_non_disabled_line_focus));
+  profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
+                                   static_cast<size_t>(current_line_focus));
+  profile_->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
+      static_cast<size_t>(last_non_disabled_line_focus));
 
-    if (current_line_focus == read_anything::mojom::LineFocus::kOff) {
-      return;
-    }
-
-    iph_controller_->OnLineFocusTurnedOn();
+  if (current_line_focus == read_anything::mojom::LineFocus::kOff) {
+    return;
   }
+
+  iph_controller_->OnLineFocusTurnedOn();
 }
 
 void ReadAnythingUntrustedPageHandler::OnAiPlaybackStateChanged(bool enabled) {
@@ -2269,12 +2267,10 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
   base::UmaHistogramBoolean(
       "Accessibility.ReadAnything.Links",
       prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled));
-  if (features::IsReadAnythingLineFocusEnabled()) {
-    auto line_focus = static_cast<read_anything::mojom::LineFocus>(
-        prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
-    base::UmaHistogramEnumeration("Accessibility.ReadAnything.LineFocus",
-                                  line_focus);
-  }
+  auto line_focus = static_cast<read_anything::mojom::LineFocus>(
+      prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.LineFocus",
+                                line_focus);
 }
 
 void ReadAnythingUntrustedPageHandler::RestoreSettingsFromPrefs() {
@@ -2282,16 +2278,12 @@ void ReadAnythingUntrustedPageHandler::RestoreSettingsFromPrefs() {
   base::DictValue voices = base::DictValue();
   voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   read_anything::mojom::LineFocus line_focus =
-      features::IsReadAnythingLineFocusEnabled()
-          ? static_cast<read_anything::mojom::LineFocus>(
-                prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus))
-          : read_anything::mojom::LineFocus::kDefaultValue;
+      static_cast<read_anything::mojom::LineFocus>(
+          prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
   bool line_focus_enabled = line_focus != read_anything::mojom::LineFocus::kOff;
   read_anything::mojom::LineFocus last_non_disabled_line_focus =
-      features::IsReadAnythingLineFocusEnabled()
-          ? static_cast<read_anything::mojom::LineFocus>(prefs->GetInteger(
-                prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus))
-          : read_anything::mojom::LineFocus::kDefaultValue;
+      static_cast<read_anything::mojom::LineFocus>(prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus));
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(

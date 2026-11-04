@@ -106,7 +106,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
       'getLowContrastDarkTheme',
       'getColorTheme',
       'requestImageData',
-      'isLineFocusEnabled',
       'getLineFocusOff',
       'getLineFocusSmallStaticWindow',
       'getLineFocusMediumStaticWindow',
@@ -295,11 +294,6 @@ export class TestVisualBrowserProxy extends TestBrowserProxy implements
   requestImageData(nodeId: number): void {
     this.methodCalled('requestImageData', nodeId);
     this.fetchedImages.push(nodeId);
-  }
-
-  isLineFocusEnabled(): boolean {
-    this.methodCalled('isLineFocusEnabled');
-    return this.lineFocusEnabled;
   }
 
   getLineFocusOff(): number {

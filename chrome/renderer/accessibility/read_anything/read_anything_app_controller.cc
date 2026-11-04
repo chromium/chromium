@@ -1369,8 +1369,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "isReadabilityEnabled")
       .SetProperty<&ReadAnythingAppController::GetDistillationMethod>(
           "activeDistillationMethod")
-      .SetProperty<&ReadAnythingAppController::IsLineFocusEnabled>(
-          "isLineFocusEnabled")
       .SetProperty<&ReadAnythingAppController::GetLanguageCodeForSpeech>(
           "baseLanguageForSpeech")
       .SetProperty<&ReadAnythingAppController::RequiresDistillation>(
@@ -1614,13 +1612,11 @@ int ReadAnythingAppController::HighlightGranularity() const {
 }
 
 int ReadAnythingAppController::LastNonDisabledLineFocus() const {
-  return IsLineFocusEnabled()
-             ? std::to_underlying(model_.last_non_disabled_line_focus())
-             : std::to_underlying(read_anything::mojom::LineFocus::kOff);
+  return std::to_underlying(model_.last_non_disabled_line_focus());
 }
 
 bool ReadAnythingAppController::IsLineFocusOn() const {
-  return IsLineFocusEnabled() && model_.line_focus_enabled();
+  return model_.line_focus_enabled();
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
@@ -2127,10 +2123,6 @@ bool ReadAnythingAppController::IsReadabilityEnabled() const {
   return features::IsReadAnythingWithReadabilityEnabled();
 }
 
-bool ReadAnythingAppController::IsLineFocusEnabled() const {
-  return features::IsReadAnythingLineFocusEnabled();
-}
-
 bool ReadAnythingAppController::IsGoogleDocs() const {
   return model_.IsDocs();
 }
@@ -2524,10 +2516,6 @@ void ReadAnythingAppController::OnHighlightGranularityChanged(
 void ReadAnythingAppController::OnLineFocusChanged(
     int current_line_focus,
     int last_non_disabled_line_focus) {
-  if (!IsLineFocusEnabled()) {
-    return;
-  }
-
   const auto maybe_current =
       ToEnum<read_anything::mojom::LineFocus>(current_line_focus);
   const auto maybe_last =
@@ -2926,14 +2914,11 @@ void ReadAnythingAppController::RecordSessionMetricsIfShownOrRecentlyHidden(
 }
 
 void ReadAnythingAppController::StartLineFocusSession() {
-  if (IsLineFocusEnabled()) {
-    model_.set_line_focus_session_start_time(base::TimeTicks::Now());
-  }
+  model_.set_line_focus_session_start_time(base::TimeTicks::Now());
 }
 
 void ReadAnythingAppController::LogLineFocusSession() {
-  if (IsLineFocusEnabled() &&
-      model_.line_focus_session_start_time().has_value()) {
+  if (model_.line_focus_session_start_time().has_value()) {
     base::UmaHistogramLongTimes(
         "Accessibility.ReadAnything.LineFocusSessionLength",
         base::TimeTicks::Now() -
@@ -2976,30 +2961,21 @@ void ReadAnythingAppController::LogPageDuration() {
 }
 
 void ReadAnythingAppController::AddLineFocusScrollDistance(int distance) {
-  if (IsLineFocusEnabled()) {
-    model_.set_line_focus_scroll_distance(model_.line_focus_scroll_distance() +
-                                          distance);
-  }
+  model_.set_line_focus_scroll_distance(model_.line_focus_scroll_distance() +
+                                        distance);
 }
 
 void ReadAnythingAppController::AddLineFocusMouseDistance(int distance) {
-  if (IsLineFocusEnabled()) {
-    model_.set_line_focus_mouse_distance(model_.line_focus_mouse_distance() +
-                                         distance);
-  }
+  model_.set_line_focus_mouse_distance(model_.line_focus_mouse_distance() +
+                                       distance);
 }
 
 void ReadAnythingAppController::IncrementLineFocusKeyboardLines() {
-  if (IsLineFocusEnabled()) {
-    model_.set_line_focus_keyboard_lines(model_.line_focus_keyboard_lines() +
-                                         1);
-  }
+  model_.set_line_focus_keyboard_lines(model_.line_focus_keyboard_lines() + 1);
 }
 
 void ReadAnythingAppController::IncrementLineFocusSpeechLines() {
-  if (IsLineFocusEnabled()) {
-    model_.set_line_focus_speech_lines(model_.line_focus_speech_lines() + 1);
-  }
+  model_.set_line_focus_speech_lines(model_.line_focus_speech_lines() + 1);
 }
 
 void ReadAnythingAppController::OnUrlInformationSet() {

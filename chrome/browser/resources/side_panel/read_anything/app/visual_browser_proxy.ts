@@ -71,7 +71,6 @@ export interface VisualBrowserProxy {
 
   requestImageData(nodeId: number): void;
 
-  isLineFocusEnabled(): boolean;
   isLineFocusOn(): boolean;
   getLastNonDisabledLineFocus(): number;
   getLineFocusOff(): number;
@@ -290,10 +289,6 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
 
   requestImageData(nodeId: number): void {
     chrome.readingMode.requestImageData(nodeId);
-  }
-
-  isLineFocusEnabled(): boolean {
-    return chrome.readingMode.isLineFocusEnabled;
   }
 
   getLineFocusOff(): number {

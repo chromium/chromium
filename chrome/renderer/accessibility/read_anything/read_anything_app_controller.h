@@ -332,7 +332,6 @@ class ReadAnythingAppController
   bool IsTranslatePdfEnabled() const;
   bool IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() const;
   bool IsReadabilityEnabled() const;
-  bool IsLineFocusEnabled() const;
   bool IsReadabilityWithLinksEnabled() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
