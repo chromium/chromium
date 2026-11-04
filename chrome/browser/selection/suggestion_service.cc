@@ -568,6 +568,7 @@ void SuggestionService::OnServerSuggestions(
   LogLatencyMetrics(tab_->GetContents(), request_start_time,
                     mes_request_start_time, num_image_bytes, num_apc_bytes,
                     response->latency_metrics(), suggestions.size());
+  feedback_zip_builder.SetResponse(std::move(*response), suggestions);
   std::move(callback).Run(std::move(suggestions),
                           std::move(feedback_zip_builder));
 }

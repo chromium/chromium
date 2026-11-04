@@ -27,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -155,6 +156,9 @@ struct FeedbackZipBuilder::State {
   std::optional<std::u16string> selected_text;
   std::optional<optimization_guide::proto::SmartSelectionSuggestionsRequest>
       request;
+  std::optional<optimization_guide::proto::SmartSelectionSuggestionsResponse>
+      response;
+  std::optional<std::string> suggestions_json;
 };
 
 FeedbackZipBuilder::FeedbackZipBuilder() : state_(std::make_unique<State>()) {}
@@ -221,6 +225,27 @@ void FeedbackZipBuilder::SetRequest(
   state_->request = std::move(request);
 }
 
+void FeedbackZipBuilder::SetResponse(
+    optimization_guide::proto::SmartSelectionSuggestionsResponse response,
+    base::span<const std::unique_ptr<Suggestion>> suggestions) {
+  CHECK(state_);
+  state_->response = std::move(response);
+  base::ListValue list;
+  for (const std::unique_ptr<Suggestion>& suggestion : suggestions) {
+    if (!suggestion) {
+      continue;
+    }
+    list.Append(
+        base::DictValue()
+            .Set("label", base::UTF16ToUTF8(suggestion->GetLabel()))
+            .Set("tool", optimization_guide::proto::SmartSelectionToolId_Name(
+                             suggestion->GetToolId())));
+  }
+  state_->suggestions_json =
+      base::WriteJsonWithOptions(list, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+          .value_or("[]");
+}
+
 void FeedbackZipBuilder::CreateZip(
     base::FilePath target_zip_path,
     base::OnceCallback<void(std::optional<base::FilePath>)> callback) const {
@@ -281,7 +306,13 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
                         base::UTF16ToUTF8(*state.selected_text))) ||
       (state.request.has_value() &&
        !base::WriteFile(dir.AppendASCII("request.pb"),
-                        state.request->SerializeAsString()))) {
+                        state.request->SerializeAsString())) ||
+      (state.response.has_value() &&
+       !base::WriteFile(dir.AppendASCII("response.pb"),
+                        state.response->SerializeAsString())) ||
+      (state.suggestions_json.has_value() &&
+       !base::WriteFile(dir.AppendASCII("suggestions.json"),
+                        *state.suggestions_json))) {
     return std::nullopt;
   }
 

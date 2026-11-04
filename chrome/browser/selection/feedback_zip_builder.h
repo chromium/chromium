@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -22,6 +23,7 @@ class TabInterface;
 namespace selection {
 
 struct EncodedImage;
+class Suggestion;
 
 // Collects artifacts from a Smart Selection request and packages them into a
 // dogfood feedback ZIP archive on demand.
@@ -41,6 +43,9 @@ class FeedbackZipBuilder {
   void SetSelectedText(std::u16string selected_text);
   void SetRequest(
       optimization_guide::proto::SmartSelectionSuggestionsRequest request);
+  void SetResponse(
+      optimization_guide::proto::SmartSelectionSuggestionsResponse response,
+      base::span<const std::unique_ptr<Suggestion>> suggestions);
 
   // Creates a ZIP file at `target_zip_path` (using `base::GetUniquePath` to
   // avoid overwriting an existing file) containing the artifacts recorded
@@ -51,6 +56,8 @@ class FeedbackZipBuilder {
   // - `apc.pb`: the serialized AnnotatedPageContent proto,
   // - `selection.txt`: the UTF-8 text selection,
   // - `request.pb`: the serialized SmartSelectionSuggestionsRequest proto,
+  // - `response.pb`: the serialized SmartSelectionSuggestionsResponse proto,
+  // - `suggestions.json`: the generated client suggestions,
   // - `metadata.json`: client/environment metadata (OS, build, account,
   //   active variations, and feature parameters),
   // and passes the created ZIP path to `callback` (or `std::nullopt` on

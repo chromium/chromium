@@ -12,20 +12,25 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/json/json_reader.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/selection/features.h"
@@ -67,6 +72,9 @@ namespace selection {
 namespace {
 
 using ::base::test::EqualsProto;
+using ::base::test::IsJson;
+using ::base::test::IsSupersetOfValue;
+using ::base::test::ParseJsonDict;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
@@ -76,6 +84,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
+using ::testing::Key;
 using ::testing::MockFunction;
 using ::testing::Pointee;
 using ::testing::Property;
@@ -83,6 +92,42 @@ using ::testing::Return;
 
 using SuggestionsFuture =
     TestFuture<std::vector<std::unique_ptr<Suggestion>>, FeedbackZipBuilder>;
+
+// Creates a feedback ZIP archive from `zip_builder`, unzips it into a temporary
+// directory, and returns a map from filename to file contents.
+base::flat_map<std::string, std::string> CreateAndUnzip(
+    const FeedbackZipBuilder& zip_builder) {
+  base::ScopedTempDir zip_dir;
+  CHECK(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+  std::optional<base::FilePath> zip_path = future.Take();
+  if (!zip_path.has_value() || *zip_path != target_zip_path) {
+    ADD_FAILURE() << "CreateZip failed";
+    return {};
+  }
+
+  base::ScopedTempDir extract_dir;
+  CHECK(extract_dir.CreateUniqueTempDir());
+  if (!zip::Unzip(*zip_path, extract_dir.GetPath())) {
+    ADD_FAILURE() << "Unzip failed";
+    return {};
+  }
+
+  base::flat_map<std::string, std::string> files;
+  base::FileEnumerator enumerator(extract_dir.GetPath(), /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    std::string content;
+    CHECK(base::ReadFileToString(path, &content));
+    files.emplace(path.BaseName().AsUTF8Unsafe(), std::move(content));
+  }
+  return files;
+}
 
 auto SuggestionWithLabel(std::u16string_view label) {
   return Pointee(Property(&Suggestion::GetLabel, label));
@@ -1090,15 +1135,23 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
       {"youtube_tool", "workspace_tool"});
   service().RegisterTool(&gemini_tool);
 
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  auto* suggestion1 = response.add_suggestions();
+  suggestion1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  suggestion1->set_label("Server Gemini Action");
+  auto* suggestion2 = response.add_suggestions();
+  suggestion2->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS);
+  suggestion2->set_label("Unregistered Tool Action");
+
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
                                kSmartSelectionSuggestions,
                            _, _, _))
       .WillOnce(RunOnceCallback<3>(
           optimization_guide::OptimizationGuideModelExecutionResult(
-              base::ok(optimization_guide::AnyWrapProto(
-                  optimization_guide::proto::
-                      SmartSelectionSuggestionsResponse())),
+              base::ok(optimization_guide::AnyWrapProto(response)),
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
@@ -1114,56 +1167,31 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
-  base::ScopedTempDir zip_dir;
-  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
-  const base::FilePath target_zip_path =
-      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+  base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
+  ASSERT_THAT(files,
+              ElementsAre(Key("apc.pb"), Key("mes_screenshot.png"),
+                          Key("metadata.json"), Key("request.pb"),
+                          Key("response.pb"), Key("screenshot.png"),
+                          Key("selection.txt"), Key("suggestions.json")));
 
-  TestFuture<std::optional<base::FilePath>> future;
-  zip_builder.CreateZip(target_zip_path, future.GetCallback());
-
-  std::optional<base::FilePath> zip_path = future.Take();
-  ASSERT_TRUE(zip_path.has_value());
-  EXPECT_EQ(*zip_path, target_zip_path);
-  EXPECT_TRUE(base::PathExists(*zip_path));
-
-  base::ScopedTempDir extract_dir;
-  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
-  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
-
-  std::optional<std::vector<uint8_t>> screenshot_bytes = base::ReadFileToBytes(
-      extract_dir.GetPath().AppendASCII("screenshot.png"));
-  ASSERT_TRUE(screenshot_bytes.has_value());
-  SkBitmap screenshot = gfx::PNGCodec::Decode(*screenshot_bytes);
-  EXPECT_FALSE(screenshot.isNull());
+  SkBitmap screenshot =
+      gfx::PNGCodec::Decode(base::as_byte_span(files["screenshot.png"]));
   EXPECT_EQ(screenshot.width(), 100);
   EXPECT_EQ(screenshot.height(), 100);
 
-  std::optional<std::vector<uint8_t>> mes_bytes = base::ReadFileToBytes(
-      extract_dir.GetPath().AppendASCII("mes_screenshot.png"));
-  ASSERT_TRUE(mes_bytes.has_value());
-  SkBitmap mes_screenshot = gfx::PNGCodec::Decode(*mes_bytes);
-  EXPECT_FALSE(mes_screenshot.isNull());
+  SkBitmap mes_screenshot =
+      gfx::PNGCodec::Decode(base::as_byte_span(files["mes_screenshot.png"]));
   EXPECT_EQ(mes_screenshot.width(), 55);
   EXPECT_EQ(mes_screenshot.height(), 70);
 
-  std::string apc_str;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("apc.pb"), &apc_str));
   optimization_guide::proto::AnnotatedPageContent apc;
-  ASSERT_TRUE(apc.ParseFromString(apc_str));
+  ASSERT_TRUE(apc.ParseFromString(files["apc.pb"]));
   EXPECT_THAT(apc, EqualsProto(aoi.apc));
 
-  std::string selected_text;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("selection.txt"), &selected_text));
-  EXPECT_EQ(selected_text, "Selected feedback text");
+  EXPECT_EQ(files["selection.txt"], "Selected feedback text");
 
-  std::string request_str;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("request.pb"), &request_str));
   optimization_guide::proto::SmartSelectionSuggestionsRequest request;
-  ASSERT_TRUE(request.ParseFromString(request_str));
+  ASSERT_TRUE(request.ParseFromString(files["request.pb"]));
   EXPECT_THAT(
       request.client_capabilities().available_tools(),
       ElementsAre(ToolWithCapabilities(
@@ -1173,61 +1201,41 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   const optimization_guide::proto::AreaOfInterest& proto_aoi =
       request.areas_of_interest(0);
   EXPECT_EQ(proto_aoi.mime_type(), "image/png");
-  EXPECT_EQ(proto_aoi.image_bytes(), base::as_string_view(*mes_bytes));
+  EXPECT_EQ(proto_aoi.image_bytes(), files["mes_screenshot.png"]);
   EXPECT_EQ(proto_aoi.selection().x(), 10);
   EXPECT_EQ(proto_aoi.selection().y(), 15);
   EXPECT_EQ(proto_aoi.selection().width(), 30);
   EXPECT_EQ(proto_aoi.selection().height(), 40);
   EXPECT_THAT(proto_aoi.annotated_page_content(), EqualsProto(aoi.apc));
 
-  std::string metadata_json;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
-  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
-      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(metadata_dict.has_value());
-  const std::string* page_url = metadata_dict->FindString("page_url");
-  ASSERT_NE(page_url, nullptr);
-  EXPECT_EQ(*page_url, "https://example.com/feedback");
+  base::DictValue metadata_dict = ParseJsonDict(files["metadata.json"]);
+  EXPECT_THAT(metadata_dict, IsSupersetOfValue(R"({
+    "page_url": "https://example.com/feedback",
+    "account": {
+      "state": "Signed Out",
+      "is_signed_in": false,
+      "is_google_internal_account": false
+    },
+    "smart_selection_feature_params": {
+      "enabled": true,
+      "crop_padding": 15,
+      "append_apc": true
+    }
+  })"));
+  EXPECT_NE(metadata_dict.FindDict("os"), nullptr);
+  EXPECT_NE(metadata_dict.FindDict("chrome"), nullptr);
+  EXPECT_NE(metadata_dict.FindDict("variations"), nullptr);
 
-  const base::DictValue* os_dict = metadata_dict->FindDict("os");
-  ASSERT_NE(os_dict, nullptr);
-  EXPECT_TRUE(os_dict->FindString("type"));
-  EXPECT_TRUE(os_dict->FindString("version"));
-  EXPECT_TRUE(os_dict->FindString("architecture"));
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response_proto;
+  ASSERT_TRUE(response_proto.ParseFromString(files["response.pb"]));
+  EXPECT_THAT(response_proto, EqualsProto(response));
 
-  const base::DictValue* chrome_dict = metadata_dict->FindDict("chrome");
-  ASSERT_NE(chrome_dict, nullptr);
-  EXPECT_TRUE(chrome_dict->FindString("version"));
-  EXPECT_TRUE(chrome_dict->FindString("channel"));
-  EXPECT_TRUE(chrome_dict->FindString("revision"));
-  EXPECT_TRUE(chrome_dict->FindBool("is_official_build").has_value());
-  EXPECT_TRUE(chrome_dict->FindString("locale"));
-
-  const base::DictValue* account_dict = metadata_dict->FindDict("account");
-  ASSERT_NE(account_dict, nullptr);
-  const std::string* account_state = account_dict->FindString("state");
-  ASSERT_NE(account_state, nullptr);
-  EXPECT_EQ(*account_state, "Signed Out");
-  EXPECT_EQ(account_dict->FindBool("is_signed_in"), false);
-  EXPECT_EQ(account_dict->FindBool("is_google_internal_account"), false);
-
-  const base::DictValue* variations_dict =
-      metadata_dict->FindDict("variations");
-  ASSERT_NE(variations_dict, nullptr);
-  EXPECT_TRUE(variations_dict->FindList("active_hashes"));
-  EXPECT_TRUE(variations_dict->FindList("active_names"));
-  EXPECT_TRUE(variations_dict->FindString("command_line"));
-
-  const base::DictValue* params_dict =
-      metadata_dict->FindDict("smart_selection_feature_params");
-  ASSERT_NE(params_dict, nullptr);
-  EXPECT_EQ(params_dict->FindBool("enabled"), true);
-  EXPECT_EQ(params_dict->FindInt("crop_padding"), 15);
-  EXPECT_TRUE(params_dict->FindInt("timeout_ms").has_value());
-  EXPECT_TRUE(params_dict->FindInt("max_screenshot_dimension").has_value());
-  EXPECT_TRUE(params_dict->FindInt("jpeg_quality").has_value());
-  EXPECT_EQ(params_dict->FindBool("append_apc"), true);
+  EXPECT_THAT(files["suggestions.json"], IsJson(R"([
+    {
+      "label": "Server Gemini Action",
+      "tool": "SMART_SELECTION_TOOL_GEMINI_IN_CHROME"
+    }
+  ])"));
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1265,47 +1273,24 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
-  base::ScopedTempDir zip_dir;
-  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
-  const base::FilePath target_zip_path =
-      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+  base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
 
-  TestFuture<std::optional<base::FilePath>> future;
-  zip_builder.CreateZip(target_zip_path, future.GetCallback());
-
-  std::optional<base::FilePath> zip_path = future.Take();
-  ASSERT_TRUE(zip_path.has_value());
-  EXPECT_EQ(*zip_path, target_zip_path);
-
-  base::ScopedTempDir extract_dir;
-  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
-  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
-
-  std::optional<std::vector<uint8_t>> screenshot_bytes = base::ReadFileToBytes(
-      extract_dir.GetPath().AppendASCII("screenshot.jpg"));
-  ASSERT_TRUE(screenshot_bytes.has_value());
-  SkBitmap screenshot = gfx::JPEGCodec::Decode(*screenshot_bytes);
-  EXPECT_FALSE(screenshot.isNull());
+  SkBitmap screenshot =
+      gfx::JPEGCodec::Decode(base::as_byte_span(files["screenshot.jpg"]));
   EXPECT_EQ(screenshot.width(), 50);
   EXPECT_EQ(screenshot.height(), 40);
 
-  std::optional<std::vector<uint8_t>> mes_bytes = base::ReadFileToBytes(
-      extract_dir.GetPath().AppendASCII("mes_screenshot.jpg"));
-  ASSERT_TRUE(mes_bytes.has_value());
-  SkBitmap mes_screenshot = gfx::JPEGCodec::Decode(*mes_bytes);
-  EXPECT_FALSE(mes_screenshot.isNull());
+  SkBitmap mes_screenshot =
+      gfx::JPEGCodec::Decode(base::as_byte_span(files["mes_screenshot.jpg"]));
   EXPECT_EQ(mes_screenshot.width(), 50);
   EXPECT_EQ(mes_screenshot.height(), 40);
 
-  std::string request_str;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("request.pb"), &request_str));
   optimization_guide::proto::SmartSelectionSuggestionsRequest request;
-  ASSERT_TRUE(request.ParseFromString(request_str));
+  ASSERT_TRUE(request.ParseFromString(files["request.pb"]));
   ASSERT_EQ(request.areas_of_interest_size(), 1);
   EXPECT_EQ(request.areas_of_interest(0).mime_type(), "image/jpeg");
   EXPECT_EQ(request.areas_of_interest(0).image_bytes(),
-            base::as_string_view(*mes_bytes));
+            files["mes_screenshot.jpg"]);
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1335,34 +1320,14 @@ TEST(SuggestionServiceAccountMetadataTest, CreateFeedbackZipSigninPending) {
   FeedbackZipBuilder zip_builder;
   zip_builder.SetTab(mock_tab, /*server_suggestions_enabled=*/true);
 
-  base::ScopedTempDir zip_dir;
-  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
-  const base::FilePath target_zip_path =
-      zip_dir.GetPath().AppendASCII("signin_pending_feedback.zip");
-
-  TestFuture<std::optional<base::FilePath>> future;
-  zip_builder.CreateZip(target_zip_path, future.GetCallback());
-  std::optional<base::FilePath> zip_path = future.Take();
-  ASSERT_TRUE(zip_path.has_value());
-
-  base::ScopedTempDir extract_dir;
-  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
-  ASSERT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
-
-  std::string metadata_json;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
-  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
-      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(metadata_dict.has_value());
-
-  const base::DictValue* account_dict = metadata_dict->FindDict("account");
-  ASSERT_NE(account_dict, nullptr);
-  const std::string* state = account_dict->FindString("state");
-  ASSERT_NE(state, nullptr);
-  EXPECT_EQ(*state, "Sign-in Pending");
-  EXPECT_EQ(account_dict->FindBool("is_signed_in"), true);
-  EXPECT_EQ(account_dict->FindBool("is_google_internal_account"), true);
+  base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
+  EXPECT_THAT(ParseJsonDict(files["metadata.json"]), IsSupersetOfValue(R"({
+    "account": {
+      "state": "Sign-in Pending",
+      "is_signed_in": true,
+      "is_google_internal_account": true
+    }
+  })"));
 }
 
 // Tests that when server suggestions are disabled, `RequestSuggestions`
@@ -1389,39 +1354,10 @@ TEST_F(SuggestionServiceUnitTest,
   auto [suggestions, zip_builder] = suggestions_future.Take();
   EXPECT_THAT(suggestions, IsEmpty());
 
-  base::ScopedTempDir zip_dir;
-  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
-  const base::FilePath target_zip_path =
-      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
-
-  TestFuture<std::optional<base::FilePath>> future;
-  zip_builder.CreateZip(target_zip_path, future.GetCallback());
-
-  std::optional<base::FilePath> zip_path = future.Take();
-  ASSERT_TRUE(zip_path.has_value());
-  EXPECT_TRUE(base::PathExists(*zip_path));
-
-  base::ScopedTempDir extract_dir;
-  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
-  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
-
-  std::string metadata_json;
-  ASSERT_TRUE(base::ReadFileToString(
-      extract_dir.GetPath().AppendASCII("metadata.json"), &metadata_json));
-  std::optional<base::DictValue> metadata_dict = base::JSONReader::ReadDict(
-      metadata_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(metadata_dict.has_value());
-  EXPECT_FALSE(metadata_dict->FindByDottedPath(
-      "smart_selection_feature_params.enabled"));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
-  EXPECT_FALSE(base::PathExists(
-      extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
-  EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
+  base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
+  ASSERT_THAT(files, ElementsAre(Key("metadata.json")));
+  EXPECT_FALSE(ParseJsonDict(files["metadata.json"])
+                   .FindByDottedPath("smart_selection_feature_params.enabled"));
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1430,35 +1366,150 @@ TEST_F(SuggestionServiceUnitTest,
 // `RequestSuggestions` call and produces a valid ZIP archive containing
 // `metadata.json`.
 TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipBeforeAnyRequest) {
-  FeedbackZipBuilder zip_builder;
+  EXPECT_THAT(CreateAndUnzip(FeedbackZipBuilder()),
+              ElementsAre(Key("metadata.json")));
+}
 
-  base::ScopedTempDir zip_dir;
-  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
-  const base::FilePath target_zip_path =
-      zip_dir.GetPath().AppendASCII("feedback_before_request.zip");
+// Tests that overlapping `RequestSuggestions` calls receive isolated
+// `FeedbackZipBuilder` instances so a late response from an earlier request
+// does not overwrite or pollute a newer request's feedback ZIP archive.
+TEST_F(SuggestionServiceUnitTest,
+       ConcurrentRequestsHaveIsolatedFeedbackZipBuilders) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
 
-  TestFuture<std::optional<base::FilePath>> future;
-  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
 
-  std::optional<base::FilePath> zip_path = future.Take();
-  ASSERT_TRUE(zip_path.has_value());
-  EXPECT_EQ(*zip_path, target_zip_path);
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      mes_callback_1;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      mes_callback_2;
 
-  base::ScopedTempDir extract_dir;
-  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
-  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(MoveArg<3>(&mes_callback_1))
+      .WillOnce(MoveArg<3>(&mes_callback_2));
 
-  EXPECT_TRUE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("metadata.json")));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
-  EXPECT_FALSE(base::PathExists(
-      extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
-  EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
-  EXPECT_FALSE(
-      base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
+  AreaOfInterest aoi_1;
+  aoi_1.screenshot.allocN32Pixels(10, 10);
+  aoi_1.screenshot.eraseColor(SK_ColorBLUE);
+  aoi_1.selected_text = u"Stale selection";
+
+  SuggestionsFuture future_1;
+  service().RequestSuggestions(aoi_1, future_1.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_1.is_null(); }));
+
+  AreaOfInterest aoi_2;
+  aoi_2.screenshot.allocN32Pixels(10, 10);
+  aoi_2.screenshot.eraseColor(SK_ColorGREEN);
+  aoi_2.selected_text = u"Fresh selection";
+
+  SuggestionsFuture future_2;
+  service().RequestSuggestions(aoi_2, future_2.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_2.is_null(); }));
+
+  // Complete Request 2 first with "Fresh Suggestion".
+  optimization_guide::proto::SmartSelectionSuggestionsResponse fresh_response;
+  auto* fresh_s = fresh_response.add_suggestions();
+  fresh_s->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  fresh_s->set_label("Fresh Suggestion");
+  std::move(mes_callback_2)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               base::ok(optimization_guide::AnyWrapProto(fresh_response)),
+               /*execution_info=*/nullptr),
+           /*log_entry=*/nullptr);
+
+  auto [suggestions_2, zip_builder_2] = future_2.Take();
+  EXPECT_THAT(suggestions_2,
+              ElementsAre(SuggestionWithLabel(u"Fresh Suggestion")));
+
+  // Complete Request 1 late (after Request 2 started and completed) with
+  // "Stale Suggestion".
+  optimization_guide::proto::SmartSelectionSuggestionsResponse stale_response;
+  auto* stale_s = stale_response.add_suggestions();
+  stale_s->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  stale_s->set_label("Stale Suggestion");
+  std::move(mes_callback_1)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(
+               base::ok(optimization_guide::AnyWrapProto(stale_response)),
+               /*execution_info=*/nullptr),
+           /*log_entry=*/nullptr);
+
+  auto [suggestions_1, zip_builder_1] = future_1.Take();
+  EXPECT_THAT(suggestions_1,
+              ElementsAre(SuggestionWithLabel(u"Stale Suggestion")));
+
+  base::flat_map<std::string, std::string> files_2 =
+      CreateAndUnzip(zip_builder_2);
+  EXPECT_EQ(files_2["selection.txt"], "Fresh selection");
+  EXPECT_THAT(files_2["suggestions.json"], IsJson(R"([
+    {
+      "label": "Fresh Suggestion",
+      "tool": "SMART_SELECTION_TOOL_GEMINI_IN_CHROME"
+    }
+  ])"));
+
+  base::flat_map<std::string, std::string> files_1 =
+      CreateAndUnzip(zip_builder_1);
+  EXPECT_EQ(files_1["selection.txt"], "Stale selection");
+  EXPECT_THAT(files_1["suggestions.json"], IsJson(R"([
+    {
+      "label": "Stale Suggestion",
+      "tool": "SMART_SELECTION_TOOL_GEMINI_IN_CHROME"
+    }
+  ])"));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that when `ExecuteModel` returns an error, `SuggestionsCallback`
+// receives empty suggestions and a `FeedbackZipBuilder` containing all
+// request-side artifacts without `response.pb` or `suggestions.json`.
+TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipOnServerError) {
+  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::unexpected(
+                  optimization_guide::OptimizationGuideModelExecutionError::
+                      FromModelExecutionError(
+                          optimization_guide::
+                              OptimizationGuideModelExecutionError::
+                                  ModelExecutionError::kGenericFailure)),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(40, 30);
+  aoi.screenshot.eraseColor(SK_ColorGREEN);
+  aoi.bounds = gfx::Rect(5, 5, 20, 15);
+  aoi.apc.mutable_main_frame_data()->set_title("Server Error Page");
+  aoi.selected_text = u"Error selection text";
+
+  SuggestionsFuture suggestions_future;
+  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  auto [suggestions, zip_builder] = suggestions_future.Take();
+  EXPECT_THAT(suggestions, IsEmpty());
+
+  EXPECT_THAT(CreateAndUnzip(zip_builder),
+              ElementsAre(Key("apc.pb"), Key("mes_screenshot.png"),
+                          Key("metadata.json"), Key("request.pb"),
+                          Key("screenshot.png"), Key("selection.txt")));
+
+  service().UnregisterTool(&gemini_tool);
 }
 
 TEST_F(SuggestionServiceUnitTest, UpdateScreenContentPrewarmsAuthToken) {
