@@ -7,8 +7,6 @@
 -ConverterTest.MoveOnlyParameters
 -ConverterTest.VectorOfWrappables
 -InterceptorTest.BypassInterceptorAllowed
--InterceptorTest.BypassInterceptorForbidden
--InterceptorTest.IndexedInterceptor
 -InterceptorTest.NamedInterceptor
 -InterceptorTest.NamedInterceptorCall
 -WrappableTest.GetAndSetProperty
@@ -17,6 +15,5 @@
 -WrappableTest.LazyPropertyGetterIsCalledOnce
 -WrappableTest.MethodInvocationErrorsOnNamedObject
 -WrappableTest.MethodInvocationErrorsOnUnnamedObject
--WrappableTest.UnwrapFailures
 -WrappableTest.WrapAndUnwrap
 -WrappableTest.CannotConstruct
