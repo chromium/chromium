@@ -19,6 +19,14 @@ BASE_FEATURE(kImmersiveFullscreenSpaceSwitchMitigation,
 BASE_FEATURE(kImmersiveFullscreenOverlayWindowDebug,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Immersive fullscreen v2. When enabled, top chrome (tab strip, toolbar,
+// bookmarks bar) stays in the browser window in immersive fullscreen, instead
+// of being moved into overlay widgets that AppKit reparents into its
+// NSToolbarFullScreenWindow. The NSToolbarFullScreenWindow, which hosts the
+// window controls, is made transparent, and top chrome follows it as it slides
+// in and out with the menu bar.
+BASE_FEATURE(kMacImmersiveFullscreenV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSuppressAppKitFrameAdjustmentsDuringMoveLoop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

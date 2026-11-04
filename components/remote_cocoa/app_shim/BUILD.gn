@@ -21,6 +21,7 @@ component("app_shim") {
     "NSToolbar+Private.mm",
     "alert.h",
     "alert.mm",
+    "appkit_titlebar_private.h",
     "application_bridge.h",
     "application_bridge.mm",
     "bridged_content_view.h",
@@ -38,6 +39,8 @@ component("app_shim") {
     "immersive_mode_delegate_mac.h",
     "immersive_mode_tabbed_controller_cocoa.h",
     "immersive_mode_tabbed_controller_cocoa.mm",
+    "immersive_mode_transparent_titlebar_controller_cocoa.h",
+    "immersive_mode_transparent_titlebar_controller_cocoa.mm",
     "menu_controller_cocoa_delegate_impl.h",
     "menu_controller_cocoa_delegate_impl.mm",
     "mojo_menu_model.h",
@@ -122,6 +125,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_native_widget_window_mac_unittests.mm",
+    "immersive_mode_transparent_titlebar_controller_cocoa_unittest.mm",
     "native_widget_mac_nswindow_headless_unittests.mm",
     "native_widget_mac_nswindow_unittests.mm",
     "native_widget_mac_overlay_nswindow_unittests.mm",
@@ -138,5 +142,6 @@ source_set("unit_tests") {
     "//ui/accelerated_widget_mac",
     "//ui/base",
     "//ui/display:test_support",
+    "//ui/gfx/geometry",
   ]
 }
