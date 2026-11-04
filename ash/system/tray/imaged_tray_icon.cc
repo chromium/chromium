@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -99,6 +100,8 @@ ImagedTrayIcon::ImagedTrayIcon(Shelf* shelf,
           .Build();
 
   image_view_ = tray_container()->AddChildView(std::move(image_view));
+  image_view_->SetPaintToLayer();
+  image_view_->layer()->SetFillsBoundsOpaquely(false);
   GetViewAccessibility().SetName(GetLocalizedString(accessibility_name));
 }
 

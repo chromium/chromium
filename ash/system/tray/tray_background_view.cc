@@ -547,10 +547,12 @@ void TrayBackgroundView::OnVisibilityAnimationFinished(
     bool should_log_visible_pod_count,
     bool aborted) {
   if (visible_preferred_) {
-    // The animation may not trigger painting of `tray_container_` during
-    // running (which is intended, because painting on each frame is expensive).
-    // Therefore, schedule paint on `tray_container_` at the end of animation.
-    tray_container_->SchedulePaint();
+    // The animation may not trigger painting of `tray_container_`'s children
+    // during running (which is intended, because painting on each frame is
+    // expensive). Therefore, schedule paint on them at the end of animation.
+    for (views::View* child : tray_container_->children()) {
+      child->SchedulePaint();
+    }
   }
 
   SetCanProcessEventsWithinSubtree(true);

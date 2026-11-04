@@ -56,6 +56,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
@@ -127,6 +128,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
       std::make_unique<EcheIconLoadingIndicatorView>(eche_icon.get()));
   eche_loading_indicator_->SetVisible(false);
   eche_icon_ = tray_container()->AddChildView(std::move(eche_icon));
+  eche_icon_->SetPaintToLayer();
+  eche_icon_->layer()->SetFillsBoundsOpaquely(false);
   tray_container()->SetSpacingBetweenChildren(kIconSpacing);
   auto icon = std::make_unique<views::ImageButton>(base::BindRepeating(
       &PhoneHubTray::PhoneHubIconActivated, weak_factory_.GetWeakPtr()));
@@ -143,6 +146,8 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
   icon->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   icon_ = tray_container()->AddChildView(std::move(icon));
+  icon_->SetPaintToLayer();
+  icon_->layer()->SetFillsBoundsOpaquely(false);
 
   UpdateTrayItemColor(is_active());
 
