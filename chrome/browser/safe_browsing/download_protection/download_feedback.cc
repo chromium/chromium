@@ -135,6 +135,7 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
           data:
             "The suspicious binary file."
           destination: GOOGLE_OWNED_SERVICE
+          legacy_api_url: "https://safebrowsing.google.com/safebrowsing/uploads/chrome"
         }
         policy {
           cookies_allowed: YES

@@ -468,7 +468,6 @@ void CheckClientDownloadRequestBase::SendRequest() {
           "client_download_request", "client_download_request_for_platform", R"(
           semantics {
             sender: "Download Protection Service"
-            destination: GOOGLE_OWNED_SERVICE
             internal {
               contacts {
                 email: "chrome-counter-abuse-downloads@google.com"

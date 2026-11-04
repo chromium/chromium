@@ -144,7 +144,9 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateDesktop::
               type: SENSITIVE_URL
               type: WEB_CONTENT
             }
-            last_reviewed: "2025-02-25"
+            destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "safebrowsingdownloadprotection.googleapis.com"
+            last_reviewed: "2026-11-03"
           })");
 }
 

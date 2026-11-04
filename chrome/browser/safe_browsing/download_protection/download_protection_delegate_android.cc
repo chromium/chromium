@@ -281,7 +281,9 @@ net::NetworkTrafficAnnotationTag DownloadProtectionDelegateAndroid::
               type: SENSITIVE_URL
               type: WEB_CONTENT
             }
-            last_reviewed: "2025-03-10"
+            destination: GOOGLE_OWNED_SERVICE
+            api_service_name: "androidchromeprotect.pa.googleapis.com"
+            last_reviewed: "2026-11-03"
           })");
 }
 
