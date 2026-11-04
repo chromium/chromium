@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CLOSEWATCHER_CLOSE_LISTENER_MANAGER_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -18,7 +19,8 @@ class CloseListenerHost;
 // know ahead of time whether there is a CloseWatcher that should intercept and
 // consume a back gesture.
 class CONTENT_EXPORT CloseListenerManager
-    : public WebContentsUserData<CloseListenerManager> {
+    : public WebContentsUserData<CloseListenerManager>,
+      public WebContentsObserver {
  public:
   ~CloseListenerManager() override;
   CloseListenerManager(const CloseListenerManager&) = delete;
@@ -26,9 +28,14 @@ class CONTENT_EXPORT CloseListenerManager
 
   static void DidChangeFocusedFrame(WebContents* web_contents);
 
-  // `host_being_updated` may not be associated with the currently focused
+  // `host_being_updated` may be null if the focused frame has no
+  // CloseListenerHost, or may not be associated with the currently focused
   // frame, in which case nothing will be updated.
   void MaybeUpdateInterceptStatus(CloseListenerHost* host_being_updated);
+
+  // WebContentsObserver:
+  void RenderFrameHostChanged(RenderFrameHost* old_host,
+                              RenderFrameHost* new_host) override;
 
  private:
   explicit CloseListenerManager(WebContents* web_contents);

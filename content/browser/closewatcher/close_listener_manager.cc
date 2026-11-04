@@ -11,9 +11,15 @@
 namespace content {
 
 CloseListenerManager::CloseListenerManager(WebContents* web_contents)
-    : WebContentsUserData<CloseListenerManager>(*web_contents) {}
+    : WebContentsUserData<CloseListenerManager>(*web_contents),
+      WebContentsObserver(web_contents) {}
 
 CloseListenerManager::~CloseListenerManager() = default;
+
+void CloseListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
+                                                  RenderFrameHost* new_host) {
+  DidChangeFocusedFrame(web_contents());
+}
 
 // static
 void CloseListenerManager::DidChangeFocusedFrame(WebContents* web_contents) {
@@ -22,9 +28,7 @@ void CloseListenerManager::DidChangeFocusedFrame(WebContents* web_contents) {
     CloseListenerHost* current_host =
         focused_frame ? CloseListenerHost::GetForCurrentDocument(focused_frame)
                       : nullptr;
-    if (current_host) {
-      manager->MaybeUpdateInterceptStatus(current_host);
-    }
+    manager->MaybeUpdateInterceptStatus(current_host);
   }
 }
 
@@ -33,11 +37,11 @@ void CloseListenerManager::MaybeUpdateInterceptStatus(
   if (GetWebContents().IsBeingDestroyed()) {
     return;
   }
-  if (&host_being_updated->render_frame_host() !=
-      GetWebContents().GetFocusedFrame()) {
+  if (host_being_updated && &host_being_updated->render_frame_host() !=
+                                GetWebContents().GetFocusedFrame()) {
     return;
   }
-  bool should_intercept = host_being_updated->IsActive();
+  bool should_intercept = host_being_updated && host_being_updated->IsActive();
   if (should_intercept == should_intercept_) {
     return;
   }
