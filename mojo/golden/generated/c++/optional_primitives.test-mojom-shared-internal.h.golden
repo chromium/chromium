@@ -52,7 +52,7 @@ class  OptionalPrimitives_Data {
  private:
   friend class mojo::internal::MessageFragment<OptionalPrimitives_Data>;
 
-  OptionalPrimitives_Data();
+  OptionalPrimitives_Data() = default;
   ~OptionalPrimitives_Data() = delete;
 };
 static_assert(sizeof(OptionalPrimitives_Data) == 64,

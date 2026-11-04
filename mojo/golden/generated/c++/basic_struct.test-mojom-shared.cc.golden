@@ -36,8 +36,5 @@ bool BasicStruct_Data::Validate(
   return true;
 }
 
-BasicStruct_Data::BasicStruct_Data()
-    : header_({sizeof(*this), 0}) {}
-
 }  // namespace internal
 }  // namespace golden

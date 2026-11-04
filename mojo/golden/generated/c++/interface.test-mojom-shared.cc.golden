@@ -36,9 +36,6 @@ bool IFace_Method_Params_Data::Validate(
   return true;
 }
 
-IFace_Method_Params_Data::IFace_Method_Params_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool IFace_Method_ResponseParams_Data::Validate(
@@ -66,9 +63,6 @@ bool IFace_Method_ResponseParams_Data::Validate(
 
   return true;
 }
-
-IFace_Method_ResponseParams_Data::IFace_Method_ResponseParams_Data()
-    : header_({sizeof(*this), 0}) {}
 
 }  // namespace internal
 }  // namespace golden

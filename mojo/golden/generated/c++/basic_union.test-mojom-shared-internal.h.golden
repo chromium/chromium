@@ -122,7 +122,7 @@ class  BasicUnion_Data {
   // "Each non-static data member is allocated as if it were the sole member of
   // a struct." - Section 9.5.2 ISO/IEC 14882:2011 (The C++ Spec)
   union MOJO_ALIGNAS(8) Union_ {
-    Union_() : unknown(0) {}
+    Union_() = default;
     int32_t f_numeric_value;
     int32_t f_enum_value;
     int32_t f_extensible_enum_value;
@@ -149,7 +149,7 @@ class  StructInUnion_Data {
  private:
   friend class mojo::internal::MessageFragment<StructInUnion_Data>;
 
-  StructInUnion_Data();
+  StructInUnion_Data() = default;
   ~StructInUnion_Data() = delete;
 };
 static_assert(sizeof(StructInUnion_Data) == 24,

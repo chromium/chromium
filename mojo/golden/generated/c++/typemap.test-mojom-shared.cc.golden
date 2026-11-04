@@ -44,9 +44,6 @@ bool Typemapped_Data::Validate(
   return true;
 }
 
-Typemapped_Data::Typemapped_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool IFaceWithTypemap_Echo_Params_Data::Validate(
@@ -70,9 +67,6 @@ bool IFaceWithTypemap_Echo_Params_Data::Validate(
   return true;
 }
 
-IFaceWithTypemap_Echo_Params_Data::IFaceWithTypemap_Echo_Params_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool IFaceWithTypemap_Echo_ResponseParams_Data::Validate(
@@ -95,9 +89,6 @@ bool IFaceWithTypemap_Echo_ResponseParams_Data::Validate(
 
   return true;
 }
-
-IFaceWithTypemap_Echo_ResponseParams_Data::IFaceWithTypemap_Echo_ResponseParams_Data()
-    : header_({sizeof(*this), 0}) {}
 
 }  // namespace internal
 }  // namespace golden

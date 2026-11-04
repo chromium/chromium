@@ -60,8 +60,5 @@ bool OptionalPrimitives_Data::Validate(
   return true;
 }
 
-OptionalPrimitives_Data::OptionalPrimitives_Data()
-    : header_({sizeof(*this), 0}) {}
-
 }  // namespace internal
 }  // namespace golden

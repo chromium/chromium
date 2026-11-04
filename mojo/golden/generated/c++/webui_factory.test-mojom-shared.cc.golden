@@ -36,9 +36,6 @@ bool Page_OnSomethingHappened_Params_Data::Validate(
   return true;
 }
 
-Page_OnSomethingHappened_Params_Data::Page_OnSomethingHappened_Params_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool PageHandler_DoSomething_Params_Data::Validate(
@@ -58,9 +55,6 @@ bool PageHandler_DoSomething_Params_Data::Validate(
 
   return true;
 }
-
-PageHandler_DoSomething_Params_Data::PageHandler_DoSomething_Params_Data()
-    : header_({sizeof(*this), 0}) {}
 
 
 // static
@@ -91,9 +85,6 @@ bool WebUiPageHandlerFactory_CreatePageHandler_Params_Data::Validate(
 
   return true;
 }
-
-WebUiPageHandlerFactory_CreatePageHandler_Params_Data::WebUiPageHandlerFactory_CreatePageHandler_Params_Data()
-    : header_({sizeof(*this), 0}) {}
 
 }  // namespace internal
 }  // namespace golden

@@ -547,10 +547,7 @@ class Array_Data {
  private:
   friend class MessageFragment<Array_Data>;
 
-  Array_Data(uint32_t num_bytes, uint32_t num_elements) {
-    header_.num_bytes = num_bytes;
-    header_.num_elements = num_elements;
-  }
+  Array_Data() = default;
   ~Array_Data() = delete;
 
   internal::ArrayHeader header_;

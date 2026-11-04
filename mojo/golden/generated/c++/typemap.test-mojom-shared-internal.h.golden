@@ -42,7 +42,7 @@ class  Typemapped_Data {
  private:
   friend class mojo::internal::MessageFragment<Typemapped_Data>;
 
-  Typemapped_Data();
+  Typemapped_Data() = default;
   ~Typemapped_Data() = delete;
 };
 static_assert(sizeof(Typemapped_Data) == 24,

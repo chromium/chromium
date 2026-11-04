@@ -157,9 +157,6 @@ bool StructInUnion_Data::Validate(
   return true;
 }
 
-StructInUnion_Data::StructInUnion_Data()
-    : header_({sizeof(*this), 0}) {}
-
 }  // namespace internal
 }  // namespace golden
 

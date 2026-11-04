@@ -68,10 +68,7 @@ class Map_Data {
  private:
   friend class MessageFragment<Map_Data>;
 
-  Map_Data() {
-    header_.num_bytes = sizeof(*this);
-    header_.version = 0;
-  }
+  Map_Data() = default;
   ~Map_Data() = delete;
 };
 static_assert(sizeof(Map_Data<char, char>) == 24, "Bad sizeof(Map_Data)");

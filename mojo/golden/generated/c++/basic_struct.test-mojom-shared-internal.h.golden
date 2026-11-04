@@ -39,7 +39,7 @@ class  BasicStruct_Data {
  private:
   friend class mojo::internal::MessageFragment<BasicStruct_Data>;
 
-  BasicStruct_Data();
+  BasicStruct_Data() = default;
   ~BasicStruct_Data() = delete;
 };
 static_assert(sizeof(BasicStruct_Data) == 16,

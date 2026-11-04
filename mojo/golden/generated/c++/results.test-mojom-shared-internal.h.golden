@@ -70,7 +70,7 @@ class  ResultInterface_Method_ResponseParam_Result_Data {
   // "Each non-static data member is allocated as if it were the sole member of
   // a struct." - Section 9.5.2 ISO/IEC 14882:2011 (The C++ Spec)
   union MOJO_ALIGNAS(8) Union_ {
-    Union_() : unknown(0) {}
+    Union_() = default;
     uint8_t f_success : 1;
     mojo::internal::Pointer<internal::ResultTestError_Data> f_failure;
     uint64_t unknown;
@@ -122,7 +122,7 @@ class  ResultInterface_SyncMethod_ResponseParam_Result_Data {
   // "Each non-static data member is allocated as if it were the sole member of
   // a struct." - Section 9.5.2 ISO/IEC 14882:2011 (The C++ Spec)
   union MOJO_ALIGNAS(8) Union_ {
-    Union_() : unknown(0) {}
+    Union_() = default;
     uint8_t f_success : 1;
     mojo::internal::Pointer<internal::ResultTestError_Data> f_failure;
     uint64_t unknown;
@@ -144,7 +144,7 @@ class  ResultTestError_Data {
  private:
   friend class mojo::internal::MessageFragment<ResultTestError_Data>;
 
-  ResultTestError_Data();
+  ResultTestError_Data() = default;
   ~ResultTestError_Data() = delete;
 };
 static_assert(sizeof(ResultTestError_Data) == 8,

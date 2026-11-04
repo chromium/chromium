@@ -33,7 +33,7 @@ class  IFaceWithTypemap_Echo_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<IFaceWithTypemap_Echo_Params_Data>;
 
-  IFaceWithTypemap_Echo_Params_Data();
+  IFaceWithTypemap_Echo_Params_Data() = default;
   ~IFaceWithTypemap_Echo_Params_Data() = delete;
 };
 static_assert(sizeof(IFaceWithTypemap_Echo_Params_Data) == 16,
@@ -49,7 +49,7 @@ class  IFaceWithTypemap_Echo_ResponseParams_Data {
  private:
   friend class mojo::internal::MessageFragment<IFaceWithTypemap_Echo_ResponseParams_Data>;
 
-  IFaceWithTypemap_Echo_ResponseParams_Data();
+  IFaceWithTypemap_Echo_ResponseParams_Data() = default;
   ~IFaceWithTypemap_Echo_ResponseParams_Data() = delete;
 };
 static_assert(sizeof(IFaceWithTypemap_Echo_ResponseParams_Data) == 16,

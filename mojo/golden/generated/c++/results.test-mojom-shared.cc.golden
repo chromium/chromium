@@ -130,9 +130,6 @@ bool ResultTestError_Data::Validate(
   return true;
 }
 
-ResultTestError_Data::ResultTestError_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool ResultInterface_Method_Params_Data::Validate(
@@ -152,9 +149,6 @@ bool ResultInterface_Method_Params_Data::Validate(
 
   return true;
 }
-
-ResultInterface_Method_Params_Data::ResultInterface_Method_Params_Data()
-    : header_({sizeof(*this), 0}) {}
 
 
 // static
@@ -183,9 +177,6 @@ bool ResultInterface_Method_ResponseParams_Data::Validate(
   return true;
 }
 
-ResultInterface_Method_ResponseParams_Data::ResultInterface_Method_ResponseParams_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool ResultInterface_SyncMethod_Params_Data::Validate(
@@ -205,9 +196,6 @@ bool ResultInterface_SyncMethod_Params_Data::Validate(
 
   return true;
 }
-
-ResultInterface_SyncMethod_Params_Data::ResultInterface_SyncMethod_Params_Data()
-    : header_({sizeof(*this), 0}) {}
 
 
 // static
@@ -235,9 +223,6 @@ bool ResultInterface_SyncMethod_ResponseParams_Data::Validate(
 
   return true;
 }
-
-ResultInterface_SyncMethod_ResponseParams_Data::ResultInterface_SyncMethod_ResponseParams_Data()
-    : header_({sizeof(*this), 0}) {}
 
 }  // namespace internal
 }  // namespace golden

@@ -32,7 +32,7 @@ class  Page_OnSomethingHappened_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<Page_OnSomethingHappened_Params_Data>;
 
-  Page_OnSomethingHappened_Params_Data();
+  Page_OnSomethingHappened_Params_Data() = default;
   ~Page_OnSomethingHappened_Params_Data() = delete;
 };
 static_assert(sizeof(Page_OnSomethingHappened_Params_Data) == 8,
@@ -47,7 +47,7 @@ class  PageHandler_DoSomething_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<PageHandler_DoSomething_Params_Data>;
 
-  PageHandler_DoSomething_Params_Data();
+  PageHandler_DoSomething_Params_Data() = default;
   ~PageHandler_DoSomething_Params_Data() = delete;
 };
 static_assert(sizeof(PageHandler_DoSomething_Params_Data) == 8,
@@ -65,7 +65,7 @@ class  WebUiPageHandlerFactory_CreatePageHandler_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<WebUiPageHandlerFactory_CreatePageHandler_Params_Data>;
 
-  WebUiPageHandlerFactory_CreatePageHandler_Params_Data();
+  WebUiPageHandlerFactory_CreatePageHandler_Params_Data() = default;
   ~WebUiPageHandlerFactory_CreatePageHandler_Params_Data() = delete;
 };
 static_assert(sizeof(WebUiPageHandlerFactory_CreatePageHandler_Params_Data) == 24,

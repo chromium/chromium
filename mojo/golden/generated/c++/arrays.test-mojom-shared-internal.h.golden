@@ -40,7 +40,7 @@ class  ArrayElement_Data {
  private:
   friend class mojo::internal::MessageFragment<ArrayElement_Data>;
 
-  ArrayElement_Data();
+  ArrayElement_Data() = default;
   ~ArrayElement_Data() = delete;
 };
 static_assert(sizeof(ArrayElement_Data) == 16,
@@ -97,7 +97,7 @@ class  StructWithArrays_Data {
  private:
   friend class mojo::internal::MessageFragment<StructWithArrays_Data>;
 
-  StructWithArrays_Data();
+  StructWithArrays_Data() = default;
   ~StructWithArrays_Data() = delete;
 };
 static_assert(sizeof(StructWithArrays_Data) == 88,

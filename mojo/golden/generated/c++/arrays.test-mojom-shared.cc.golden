@@ -36,9 +36,6 @@ bool ArrayElement_Data::Validate(
   return true;
 }
 
-ArrayElement_Data::ArrayElement_Data()
-    : header_({sizeof(*this), 0}) {}
-
 
 // static
 bool StructWithArrays_Data::Validate(
@@ -138,9 +135,6 @@ bool StructWithArrays_Data::Validate(
 
   return true;
 }
-
-StructWithArrays_Data::StructWithArrays_Data()
-    : header_({sizeof(*this), 0}) {}
 
 }  // namespace internal
 }  // namespace golden

@@ -34,7 +34,7 @@ class  ResultInterface_Method_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<ResultInterface_Method_Params_Data>;
 
-  ResultInterface_Method_Params_Data();
+  ResultInterface_Method_Params_Data() = default;
   ~ResultInterface_Method_Params_Data() = delete;
 };
 static_assert(sizeof(ResultInterface_Method_Params_Data) == 16,
@@ -50,7 +50,7 @@ class  ResultInterface_Method_ResponseParams_Data {
  private:
   friend class mojo::internal::MessageFragment<ResultInterface_Method_ResponseParams_Data>;
 
-  ResultInterface_Method_ResponseParams_Data();
+  ResultInterface_Method_ResponseParams_Data() = default;
   ~ResultInterface_Method_ResponseParams_Data() = delete;
 };
 static_assert(sizeof(ResultInterface_Method_ResponseParams_Data) == 24,
@@ -67,7 +67,7 @@ class  ResultInterface_SyncMethod_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<ResultInterface_SyncMethod_Params_Data>;
 
-  ResultInterface_SyncMethod_Params_Data();
+  ResultInterface_SyncMethod_Params_Data() = default;
   ~ResultInterface_SyncMethod_Params_Data() = delete;
 };
 static_assert(sizeof(ResultInterface_SyncMethod_Params_Data) == 16,
@@ -83,7 +83,7 @@ class  ResultInterface_SyncMethod_ResponseParams_Data {
  private:
   friend class mojo::internal::MessageFragment<ResultInterface_SyncMethod_ResponseParams_Data>;
 
-  ResultInterface_SyncMethod_ResponseParams_Data();
+  ResultInterface_SyncMethod_ResponseParams_Data() = default;
   ~ResultInterface_SyncMethod_ResponseParams_Data() = delete;
 };
 static_assert(sizeof(ResultInterface_SyncMethod_ResponseParams_Data) == 24,

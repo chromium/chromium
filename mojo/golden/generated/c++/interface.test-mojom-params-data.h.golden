@@ -34,7 +34,7 @@ class  IFace_Method_Params_Data {
  private:
   friend class mojo::internal::MessageFragment<IFace_Method_Params_Data>;
 
-  IFace_Method_Params_Data();
+  IFace_Method_Params_Data() = default;
   ~IFace_Method_Params_Data() = delete;
 };
 static_assert(sizeof(IFace_Method_Params_Data) == 16,
@@ -50,7 +50,7 @@ class  IFace_Method_ResponseParams_Data {
  private:
   friend class mojo::internal::MessageFragment<IFace_Method_ResponseParams_Data>;
 
-  IFace_Method_ResponseParams_Data();
+  IFace_Method_ResponseParams_Data() = default;
   ~IFace_Method_ResponseParams_Data() = delete;
 };
 static_assert(sizeof(IFace_Method_ResponseParams_Data) == 16,

@@ -35,8 +35,11 @@ class {{export_attribute}} {{class_name}} {
 
  private:
   friend class mojo::internal::MessageFragment<{{class_name}}>;
+{%- if struct.versions[-1].version != 0 %}
+  static constexpr uint32_t kVersion_ = {{struct.versions[-1].version}};
+{%- endif %}
 
-  {{class_name}}();
+  {{class_name}}() = default;
   ~{{class_name}}() = delete;
 };
 static_assert(sizeof({{class_name}}) == {{struct.versions[-1].num_bytes}},
