@@ -137,6 +137,10 @@ class MockServiceObserver : public ContextHubService::Observer {
               OnMemoryBankEntriesDeleted,
               (const std::vector<int64_t>&),
               (override));
+  MOCK_METHOD(void,
+              OnAutoTabGroupsPreferencesChanged,
+              (const std::string&),
+              (override));
 };
 
 class MockPageContentExtractionService
@@ -2469,6 +2473,152 @@ TEST_F(ContextHubServiceTest, ChatHistory_Clear) {
 
   service_.ClearTabGroupChatHistory();
   EXPECT_TRUE(service_.GetTabGroupChatHistory().empty());
+}
+
+TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_DefaultsWhenUnset) {
+  EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
+      prefs::kContextHubAutoTabGroupsPreferences));
+  const std::string effective = service_.GetEffectiveAutoTabGroupsPreferences();
+  EXPECT_FALSE(effective.empty());
+  EXPECT_NE(effective.find("Group tabs by task"), std::string::npos);
+}
+
+TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SetTrimsAndNotifies) {
+  MockServiceObserver observer;
+  service_.AddObserver(&observer);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(
+                            "- Keep shopping tabs together."));
+
+  EXPECT_TRUE(service_.SetAutoTabGroupsPreferences(
+      "  - Keep shopping tabs together.\n\n"));
+  EXPECT_EQ(profile_.GetPrefs()->GetString(
+                prefs::kContextHubAutoTabGroupsPreferences),
+            "- Keep shopping tabs together.");
+  EXPECT_EQ(service_.GetEffectiveAutoTabGroupsPreferences(),
+            "- Keep shopping tabs together.");
+  service_.RemoveObserver(&observer);
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTabGroupsPreferences_SetEmptyResetsToDefault) {
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("first"));
+
+  MockServiceObserver observer;
+  service_.AddObserver(&observer);
+  // Observers always receive the effective text, i.e. the defaults again.
+  std::string notified;
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_))
+      .WillOnce([&notified](const std::string& text) { notified = text; });
+
+  EXPECT_TRUE(service_.SetAutoTabGroupsPreferences("   "));
+  EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
+      prefs::kContextHubAutoTabGroupsPreferences));
+  EXPECT_EQ(notified, service_.GetEffectiveAutoTabGroupsPreferences());
+  service_.RemoveObserver(&observer);
+}
+
+TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_RejectsOverByteCap) {
+  PrefService* prefs = profile_.GetPrefs();
+  MockServiceObserver observer;
+  service_.AddObserver(&observer);
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(_)).Times(0);
+
+  // Exactly at the cap is accepted; one byte over is rejected.
+  const std::string at_cap(
+      ContextHubService::kMaxAutoTabGroupsPreferencesLength, 'a');
+  EXPECT_CALL(observer, OnAutoTabGroupsPreferencesChanged(at_cap));
+  EXPECT_TRUE(service_.SetAutoTabGroupsPreferences(at_cap));
+
+  EXPECT_FALSE(service_.SetAutoTabGroupsPreferences(at_cap + "b"));
+  EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
+            at_cap);
+
+  // The cap is measured in bytes, not characters: 2000 three-byte characters
+  // are 6000 bytes.
+  std::string multibyte;
+  for (int i = 0; i < 2000; ++i) {
+    multibyte += "\u65E5";  // 日 (3 bytes in UTF-8)
+  }
+  EXPECT_FALSE(service_.SetAutoTabGroupsPreferences(multibyte));
+  EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
+            at_cap);
+  service_.RemoveObserver(&observer);
+}
+
+TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_SavedInProfilePref) {
+  PrefService* prefs = profile_.GetPrefs();
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences("  - Group by project.  "));
+  EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
+            "- Group by project.");
+
+  // A reset removes the user value rather than storing an empty string.
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences(""));
+  EXPECT_FALSE(prefs->HasPrefPath(prefs::kContextHubAutoTabGroupsPreferences));
+}
+
+TEST_F(ContextHubServiceTest, AutoTabGroupsPreferences_ReadFromProfilePref) {
+  profile_.GetPrefs()->SetString(prefs::kContextHubAutoTabGroupsPreferences,
+                                 "- Keep work and personal apart.");
+  // No asynchronous load: the stored document is available immediately.
+  EXPECT_EQ(service_.GetEffectiveAutoTabGroupsPreferences(),
+            "- Keep work and personal apart.");
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTabGroupsPreferences_ClearedWhenFeatureDisabled) {
+  profile_.GetPrefs()->SetString(prefs::kContextHubAutoTabGroupsPreferences,
+                                 "- Left over from the experiment.");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      browser::context_hub::mojom::kAutoTabGroups);
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
+      std::make_unique<InMemoryMemoryBank>(),
+      /*tab_group_store=*/nullptr,
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+  EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
+      prefs::kContextHubAutoTabGroupsPreferences));
+  EXPECT_FALSE(service.SetAutoTabGroupsPreferences("- Should not be stored."));
+  EXPECT_FALSE(profile_.GetPrefs()->HasPrefPath(
+      prefs::kContextHubAutoTabGroupsPreferences));
+}
+
+// The built-in defaults are display-only: they are never written to the pref,
+// and a stored document is handed back verbatim by a freshly constructed
+// service. A later release that ships different defaults therefore cannot
+// overwrite what the user (or refinement) saved.
+TEST_F(ContextHubServiceTest,
+       AutoTabGroupsPreferences_StoredDocumentIsIndependentOfDefaults) {
+  PrefService* prefs = profile_.GetPrefs();
+  // Reading the effective document does not persist the defaults.
+  const std::string defaults = service_.GetEffectiveAutoTabGroupsPreferences();
+  ASSERT_FALSE(defaults.empty());
+  EXPECT_FALSE(prefs->HasPrefPath(prefs::kContextHubAutoTabGroupsPreferences));
+
+  constexpr char kStored[] = "- Keep groups to at most 5 tabs.";
+  ASSERT_TRUE(service_.SetAutoTabGroupsPreferences(kStored));
+  EXPECT_NE(kStored, defaults);
+
+  // Simulate a restart: a new service instance (whose defaults may differ from
+  // the ones in effect when the document was saved) must neither rewrite the
+  // pref nor fall back to the defaults.
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      /*embedder=*/nullptr, /*embedder_metadata_provider=*/nullptr,
+      std::make_unique<InMemoryMemoryBank>(),
+      /*tab_group_store=*/nullptr,
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+  EXPECT_EQ(prefs->GetString(prefs::kContextHubAutoTabGroupsPreferences),
+            kStored);
+  EXPECT_EQ(service.GetEffectiveAutoTabGroupsPreferences(), kStored);
 }
 
 TEST_F(ContextHubServiceTest, DeleteAllTabGroups) {

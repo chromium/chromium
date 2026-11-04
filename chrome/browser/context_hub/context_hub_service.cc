@@ -20,6 +20,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -151,6 +153,17 @@ constexpr net::NetworkTrafficAnnotationTag
             "Requests made via the profile URLLoaderFactory are still "
             "subject to the URLBlocklist and URLAllowlist enterprise policies."
         })");
+
+// The Auto Tab Groups preferences shown when the user has not stored a
+// document of their own. Never persisted; see
+// `GetEffectiveAutoTabGroupsPreferences()`.
+// TODO(crbug.com/581841564): Drop hardcoding in favor of a localized
+// string resource.
+constexpr char kDefaultAutoTabGroupsPreferences[] =
+    "- Group tabs by task, project or topic, not just by website.\n"
+    "- Keep group names short, descriptive and free of personal details.\n"
+    "- Reuse my existing groups when new tabs fit.\n"
+    "- Only group tabs when you're confident they belong together.";
 
 optimization_guide::proto::MemoryBankEntry ToMemoryBankEntryProto(
     const MemoryBankEntry& entry) {
@@ -470,6 +483,13 @@ ContextHubService::ContextHubService(
   // is turned off (e.g. via Finch at teardown), wipe anything left behind.
   if (!features::kTopicsFishfoodFeedback.Get()) {
     profile_->GetPrefs()->ClearPref(prefs::kContextHubTopicsFishfoodFeedback);
+  }
+  // Auto Tab Groups preferences are only kept while the feature is enabled;
+  // wipe anything left behind once it is turned off (e.g. at experiment
+  // teardown).
+  if (!base::FeatureList::IsEnabled(
+          browser::context_hub::mojom::kAutoTabGroups)) {
+    profile_->GetPrefs()->ClearPref(prefs::kContextHubAutoTabGroupsPreferences);
   }
   if (scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
           profile_->GetURLLoaderFactory()) {
@@ -1345,6 +1365,33 @@ ContextHubService::GetTabGroupChatHistory() const {
 
 void ContextHubService::ClearTabGroupChatHistory() {
   tab_group_chat_history_cache_.Clear();
+}
+
+std::string ContextHubService::GetEffectiveAutoTabGroupsPreferences() const {
+  const std::string& stored = profile_->GetPrefs()->GetString(
+      prefs::kContextHubAutoTabGroupsPreferences);
+  return stored.empty() ? kDefaultAutoTabGroupsPreferences : stored;
+}
+
+bool ContextHubService::SetAutoTabGroupsPreferences(std::string_view text) {
+  if (!base::FeatureList::IsEnabled(
+          browser::context_hub::mojom::kAutoTabGroups)) {
+    return false;
+  }
+  std::string_view trimmed = base::TrimWhitespaceASCII(text, base::TRIM_ALL);
+  if (trimmed.size() > kMaxAutoTabGroupsPreferencesLength) {
+    return false;
+  }
+  PrefService* pref_service = profile_->GetPrefs();
+  if (trimmed.empty()) {
+    pref_service->ClearPref(prefs::kContextHubAutoTabGroupsPreferences);
+  } else {
+    pref_service->SetString(prefs::kContextHubAutoTabGroupsPreferences,
+                            trimmed);
+  }
+  observers_.Notify(&Observer::OnAutoTabGroupsPreferencesChanged,
+                    GetEffectiveAutoTabGroupsPreferences());
+  return true;
 }
 
 void ContextHubService::AddMemoryBankChatHistoryTurn(

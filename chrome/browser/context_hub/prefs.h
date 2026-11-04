@@ -28,6 +28,14 @@ inline constexpr char kContextHubTopicsFishfoodFeedback[] =
 inline constexpr char kContextHubBrowseMemoryBanksShortcut[] =
     "context_hub.memory_banks.browse_shortcut";
 
+// The user's Auto Tab Groups preferences: a short markdown document, written
+// by the user or distilled by the model, that shapes tab grouping. Empty means
+// the defaults apply. Only written while `kAutoTabGroups` is enabled and
+// cleared on startup otherwise. Not synced. See
+// `ContextHubService::SetAutoTabGroupsPreferences()`.
+inline constexpr char kContextHubAutoTabGroupsPreferences[] =
+    "context_hub.auto_tab_groups.preferences";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace context_hub::prefs

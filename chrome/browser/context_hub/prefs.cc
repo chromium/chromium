@@ -17,6 +17,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kContextHubTopicsFishfoodFeedback);
   registry->RegisterStringPref(kContextHubBrowseMemoryBanksShortcut,
                                std::string());
+  registry->RegisterStringPref(kContextHubAutoTabGroupsPreferences,
+                               std::string());
 }
 
 }  // namespace context_hub::prefs
