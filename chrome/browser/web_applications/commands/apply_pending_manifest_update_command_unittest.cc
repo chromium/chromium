@@ -32,6 +32,7 @@
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 #include "url/origin.h"
@@ -85,20 +86,23 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         gfx::test::CreateBitmap(kAppIconSize, kAppIconColor)};
 
     // Set up manifest.
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl).value();
-    manifest->name = u"Foo App";
-    manifest->icons = {icon};
-    manifest->has_valid_specified_start_url = true;
-
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(
+            kAppUrl, GenerateManifestIdFromStartUrlOnly(kAppUrl).value(),
+            blink::Manifest::GetDefaultScope(kAppUrl))
+            .SetName(u"Foo App")
+            .SetIcons({icon})
+            .SetHasValidSpecifiedStartUrl(true)
+            .BuildChecked();
   }
 
-  blink::mojom::ManifestPtr& GetPageManifest() {
-    return web_contents_manager()
-        .GetOrCreatePageState(kAppUrl)
-        .manifest_before_default_processing;
+  void UpdatePageManifest(
+      base::FunctionRef<void(blink::Manifest::Builder&)> update_fn) {
+    auto& page_state = web_contents_manager().GetOrCreatePageState(kAppUrl);
+    CHECK(page_state.opt_manifest.has_value());
+    blink::Manifest::Builder builder = page_state.opt_manifest->ToBuilder();
+    update_fn(builder);
+    page_state.opt_manifest = std::move(builder).BuildChecked();
   }
 
   ManifestSilentUpdateCheckResult RunManifestSilentUpdateAndGetResult() {
@@ -124,13 +128,15 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
     return manifest_apply_pending_update_future.Get();
   }
 
-  SkBitmap ChangePageIconAndGetBitmap(blink::mojom::ManifestPtr& manifest) {
+  SkBitmap ChangePageIconAndGetBitmap() {
     blink::Manifest::ImageResource new_icon;
     const GURL new_icon_url = GURL("https://example2.com/path/def_icon.png");
     new_icon.src = new_icon_url;
     new_icon.sizes = {{kUpdatedAppIconSize, kUpdatedAppIconSize}};
     new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    manifest->icons = {new_icon};
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetIcons({new_icon});
+    });
 
     // Set icon in content. Setting the icon color to YELLOW to trigger a more
     // than 10% image diff to create a pending update info when updating.
@@ -185,8 +191,8 @@ TEST_F(ApplyPendingManifestUpdateCommandTest, VerifyNameUpdatedSuccessfully) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
             base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
@@ -222,8 +228,7 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
-  auto& new_manifest = GetPageManifest();
-  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap(new_manifest);
+  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap();
 
   EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
@@ -319,9 +324,9 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id),
             base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
-  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap(new_manifest);
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
+  SkBitmap updated_bitmap = ChangePageIconAndGetBitmap();
 
   EXPECT_EQ(RunManifestSilentUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
@@ -437,19 +442,21 @@ TEST_F(ApplyPendingManifestUpdateCommandTest,
   updated_any_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 #endif
 
-  auto& new_manifest = GetPageManifest();
-
   // Adding the ANY icon that will be chosen as the trusted icon on windows and
   // linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  new_manifest->icons = {updated_icon, updated_any_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({updated_icon, updated_any_icon});
+  });
   // Make icon diff larger than 10% by changing the color to RED.
   const SkBitmap updated_any_bitmaps =
       gfx::test::CreateBitmap(icon_size_any, kUpdatedAppIconColor);
   web_contents_manager().GetOrCreateIconState(icon_any_url).bitmaps = {
       updated_any_bitmaps};
 #else  // Mac and ChromeOS should get MASKABLE
-  new_manifest->icons = {updated_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({updated_icon});
+  });
 #endif
 
   // Make icon diff larger than 10% by changing the color to RED.

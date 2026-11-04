@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 namespace {
@@ -46,13 +47,13 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   FetchInstallabilityForChromeManagementTest() = default;
   ~FetchInstallabilityForChromeManagementTest() override = default;
 
-  blink::mojom::ManifestPtr CreateManifest() {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
-    manifest->scope = kWebAppScope;
-    manifest->short_name = base::ASCIIToUTF16(kWebAppName);
-    return manifest;
+  blink::Manifest CreateManifest() {
+    return blink::Manifest::Builder(
+               kWebAppUrl,
+               GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
+               kWebAppScope)
+        .SetShortName(base::ASCIIToUTF16(kWebAppName))
+        .BuildChecked();
   }
 
   std::unique_ptr<WebAppInstallInfo> CreateWebAppInfo() {
@@ -121,7 +122,7 @@ TEST_F(FetchInstallabilityForChromeManagementTest, NotInstallable) {
   // Url loading succeeds, but manifest fetch says not installable.
   url_loader->SetNextLoadUrlResult(kWebAppUrl,
                                    webapps::WebAppUrlLoaderResult::kUrlLoaded);
-  data_retriever->SetManifest(blink::mojom::ManifestPtr(),
+  data_retriever->SetManifest(/*manifest=*/std::nullopt,
                               webapps::InstallableStatusCode::NO_MANIFEST);
 
   FetchResult result =

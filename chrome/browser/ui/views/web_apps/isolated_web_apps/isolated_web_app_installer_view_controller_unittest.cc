@@ -58,6 +58,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/styled_label.h"
@@ -111,24 +112,21 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
       /*enterprise_name=*/"Google LLC");
 }
 
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& iwa_url,
-                                                const IwaVersion version) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = iwa_url;
-  manifest->scope = iwa_url.Resolve("/");
-  manifest->start_url = iwa_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = u"test app name";
-  manifest->version = base::UTF8ToUTF16(version.GetString());
-
+blink::Manifest CreateDefaultManifest(const GURL& iwa_url,
+                                      const IwaVersion version) {
   blink::Manifest::ImageResource icon;
   icon.src = iwa_url.Resolve(kIconPath);
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   icon.type = u"image/png";
   icon.sizes = {gfx::Size(256, 256)};
-  manifest->icons.push_back(icon);
 
-  return manifest;
+  return blink::Manifest::Builder(iwa_url.Resolve("/testing-start-url.html"),
+                                  iwa_url, iwa_url.Resolve("/"))
+      .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+      .SetShortName(u"test app name")
+      .SetVersion(base::UTF8ToUTF16(version.GetString()))
+      .SetIcons({icon})
+      .BuildChecked();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -234,7 +232,7 @@ class IsolatedWebAppInstallerViewControllerTest : public ::testing::Test {
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url = iwa_url.Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing =
+    page_state.opt_manifest =
         CreateDefaultManifest(iwa_url, *IwaVersion::Create(version));
   }
 

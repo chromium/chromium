@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -151,16 +152,14 @@ class KioskWebAppServiceLauncherTest : public BrowserWithTestWindowTest {
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;
 
-    install_page_state.manifest_before_default_processing =
-        blink::mojom::Manifest::New();
-    install_page_state.manifest_before_default_processing->start_url =
-        start_url;
-    install_page_state.manifest_before_default_processing->id =
-        web_app::GenerateManifestIdFromStartUrlOnly(start_url).value();
-    install_page_state.manifest_before_default_processing->display =
-        blink::mojom::DisplayMode::kStandalone;
-    install_page_state.manifest_before_default_processing->short_name =
-        u"Basic app name";
+    install_page_state.opt_manifest =
+        blink::Manifest::Builder(
+            start_url,
+            web_app::GenerateManifestIdFromStartUrlOnly(start_url).value(),
+            start_url.GetWithoutFilename())
+            .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+            .SetShortName(u"Basic app name")
+            .BuildChecked();
 
     return web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   }

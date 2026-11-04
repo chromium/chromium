@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -76,18 +77,19 @@ class TrustedIconInstallUnitTest : public WebAppTest {
           {gfx::test::CreateBitmap(kTrustedIconSize, kTrustedIconColor)};
     }
 
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = app_url();
-    manifest->id = GenerateManifestIdFromStartUrlOnly(app_url()).value();
-    manifest->scope = app_url().GetWithoutFilename();
-    manifest->display = DisplayMode::kStandalone;
-    manifest->name = u"Foo Bar App";
-    manifest->icons = {manifest_icon};
+    std::vector<blink::Manifest::ImageResource> icons = {manifest_icon};
     if (allow_trusted_icons) {
-      manifest->icons.push_back(trusted_icon);
+      icons.push_back(trusted_icon);
     }
 
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(
+            app_url(), GenerateManifestIdFromStartUrlOnly(app_url()).value(),
+            app_url().GetWithoutFilename())
+            .SetDisplay(DisplayMode::kStandalone)
+            .SetName(u"Foo Bar App")
+            .SetIcons(std::move(icons))
+            .BuildChecked();
   }
 
   webapps::AppId InstallExternallyManagedApp(

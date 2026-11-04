@@ -34,7 +34,6 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
 class Profile;
@@ -147,8 +146,7 @@ class ManifestBuilder {
   const IwaVersion& version() const;
 
   std::string ToJson() const;
-  blink::mojom::ManifestPtr ToBlinkManifest(
-      const url::Origin& app_origin) const;
+  blink::Manifest ToBlinkManifest(const url::Origin& app_origin) const;
 
  private:
   std::string name_;

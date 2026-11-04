@@ -57,7 +57,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
@@ -716,8 +716,12 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     // Make the manifest state match GetInstallOptionsWithFactory().
     auto& page_state =
         fake_web_contents_manager().GetOrCreatePageState(install_url);
-    page_state.manifest_before_default_processing->id = manifest_id.value();
-    page_state.manifest_before_default_processing->name = kAppName;
+    CHECK(page_state.opt_manifest.has_value());
+    page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                  .SetId(manifest_id.value())
+                                  .SetHasCustomId(true)
+                                  .SetName(std::u16string(kAppName))
+                                  .BuildChecked();
 
     auto& icon_state = fake_web_contents_manager().GetOrCreateIconState(
         GURL(FakeWebContentsManager::kBasicInstallIconUrl));
@@ -870,9 +874,14 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateOccursForChat) {
                  GetChatStartUrl(), GetChatManifestUrl());
   auto& page_state = fake_web_contents_manager().GetOrCreatePageState(
       GetChatInstallUrlFetchedForUpdate());
-  page_state.manifest_before_default_processing->scope_extensions.push_back(
-      blink::mojom::ManifestScopeExtension::New(kOtherOrigin,
-                                                /*has_origin_wildcard=*/false));
+  CHECK(page_state.opt_manifest.has_value());
+  std::vector<blink::Manifest::ScopeExtension> scope_extensions =
+      page_state.opt_manifest->scope_extensions();
+  scope_extensions.push_back(
+      {.origin = kOtherOrigin, .has_origin_wildcard = false});
+  page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                .SetScopeExtensions(std::move(scope_extensions))
+                                .BuildChecked();
   std::move(post_startup_tasks).Run();
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -911,7 +920,9 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateIsThrottled) {
                  GetChatStartUrl(), GetChatManifestUrl());
   auto& page_state = fake_web_contents_manager().GetOrCreatePageState(
       GetChatInstallUrlFetchedForUpdate());
-  page_state.manifest_before_default_processing->name = kNewAppName1;
+  CHECK(page_state.opt_manifest.has_value());
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder().SetName(kNewAppName1).BuildChecked();
   // Trigger the first update via startup task.
   post_startup_tasks.Run();
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -920,7 +931,8 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateIsThrottled) {
 
   // Modify the manifest again to have a different name, and trigger update
   // again, verify it doesn't work.
-  page_state.manifest_before_default_processing->name = kNewAppName2;
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder().SetName(kNewAppName2).BuildChecked();
   post_startup_tasks.Run();
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_EQ(base::UTF16ToUTF8(kNewAppName1),

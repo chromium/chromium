@@ -19,7 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -52,7 +52,7 @@ class WebAppScopeExtensionsTest : public WebAppTest {
 
   webapps::AppId InstallWebAppWithScopeExtensions(
       const GURL& scope,
-      std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions) {
+      std::vector<blink::Manifest::ScopeExtension> scope_extensions) {
     SetupPageWithScopeExtensions(scope, std::move(scope_extensions));
     return test::InstallForWebContents(
         profile(), web_contents(),
@@ -74,11 +74,14 @@ class WebAppScopeExtensionsTest : public WebAppTest {
 
   void SetupPageWithScopeExtensions(
       const GURL& url,
-      std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions) {
+      std::vector<blink::Manifest::ScopeExtension> scope_extensions) {
     SetupPageNoScopeExtensions(url);
     auto& page_state = web_contents_manager().GetOrCreatePageState(url);
-    page_state.manifest_before_default_processing->scope_extensions =
-        std::move(scope_extensions);
+    CHECK(page_state.opt_manifest.has_value());
+    page_state.opt_manifest =
+        page_state.opt_manifest->ToBuilder()
+            .SetScopeExtensions(std::move(scope_extensions))
+            .BuildChecked();
   }
 
   WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
@@ -94,13 +97,13 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnReinstall) {
       &fake_provider().registrar_unsafe());
   base::test::TestFuture<const webapps::AppId&, const WebAppScope&> future;
   adapter.SetWebAppEffectiveScopeChangedDelegate(future.GetRepeatingCallback());
-  std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions;
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.org")),
-      /*has_origin_wildcard=*/false));
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.net")),
-      /*has_origin_wildcard=*/true));
+  std::vector<blink::Manifest::ScopeExtension> scope_extensions;
+  scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.org")),
+      .has_origin_wildcard = false});
+  scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.net")),
+      .has_origin_wildcard = true});
   InstallWebAppWithScopeExtensions(scope, std::move(scope_extensions));
 
   ASSERT_TRUE(future.Wait());
@@ -126,14 +129,14 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnAddedUpdate) {
   adapter.SetWebAppEffectiveScopeChangedDelegate(future.GetRepeatingCallback());
 
   // Do the update.
-  std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions;
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.org")),
-      /*has_origin_wildcard=*/false));
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.net")),
-      /*has_origin_wildcard=*/true));
-  SetupPageWithScopeExtensions(scope, std::move(scope_extensions));
+  std::vector<blink::Manifest::ScopeExtension> update_scope_extensions;
+  update_scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.org")),
+      .has_origin_wildcard = false});
+  update_scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.net")),
+      .has_origin_wildcard = true});
+  SetupPageWithScopeExtensions(scope, std::move(update_scope_extensions));
   base::test::TestFuture<ManifestSilentUpdateCompletionInfo>
       manifest_silent_update_future;
   fake_provider().scheduler().ScheduleManifestSilentUpdate(
@@ -155,13 +158,13 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnAddedUpdate) {
 
 TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnRemovedUpdate) {
   const GURL scope("https://example.com/");
-  std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions;
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.org")),
-      /*has_origin_wildcard=*/false));
-  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
-      url::Origin::Create(GURL("https://example.net")),
-      /*has_origin_wildcard=*/true));
+  std::vector<blink::Manifest::ScopeExtension> scope_extensions;
+  scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.org")),
+      .has_origin_wildcard = false});
+  scope_extensions.push_back(blink::Manifest::ScopeExtension{
+      .origin = url::Origin::Create(GURL("https://example.net")),
+      .has_origin_wildcard = true});
   const webapps::AppId app_id =
       InstallWebAppWithScopeExtensions(scope, std::move(scope_extensions));
 

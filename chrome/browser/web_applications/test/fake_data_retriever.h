@@ -17,7 +17,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -54,7 +54,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
       const std::u16string& title,
       std::optional<webapps::mojom::WebPageMetadata> opt_metadata);
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
-  void SetManifest(blink::mojom::ManifestPtr manifest,
+  void SetManifest(std::optional<blink::Manifest> manifest,
                    webapps::InstallableStatusCode error_code);
   // Set icons to respond on |GetIcons|.
   void SetIcons(IconsMap icons_map);
@@ -81,7 +81,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
   base::OnceClosure completion_callback_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
-  blink::mojom::ManifestPtr manifest_;
+  std::optional<blink::Manifest> manifest_;
   GURL manifest_url_;
   webapps::InstallableStatusCode error_code_ =
       webapps::InstallableStatusCode::NO_MANIFEST;

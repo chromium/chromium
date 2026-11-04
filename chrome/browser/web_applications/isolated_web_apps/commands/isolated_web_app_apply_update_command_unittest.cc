@@ -48,6 +48,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
 
@@ -80,30 +82,29 @@ std::vector<base::FilePath> GetDirContents(const base::FilePath& directory) {
   return children;
 }
 
-blink::mojom::ManifestPtr CreateDefaultManifest(
+blink::Manifest CreateDefaultManifest(
     const GURL& application_url,
     const IwaVersion& version,
     const std::optional<GURL>& update_manifest_url = std::nullopt) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = u"updated app";
-  manifest->version = base::UTF8ToUTF16(version.GetString());
-
-  if (update_manifest_url) {
-    manifest->update_manifest_url = *update_manifest_url;
-  }
-
   blink::Manifest::ImageResource icon;
   icon.src = application_url.Resolve(kIconPath);
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   icon.type = u"image/png";
   icon.sizes = {gfx::Size(256, 256)};
-  manifest->icons.push_back(icon);
 
-  return manifest;
+  auto builder = blink::Manifest::Builder(
+      application_url.Resolve("/testing-start-url.html"),
+      application_url.DeprecatedGetOriginAsURL(), application_url.Resolve("/"));
+  builder.SetDisplay(blink::mojom::DisplayMode::kStandalone)
+      .SetShortName(u"updated app")
+      .SetVersion(base::UTF8ToUTF16(version.GetString()))
+      .SetIcons({icon});
+
+  if (update_manifest_url) {
+    builder.SetUpdateManifestUrl(*update_manifest_url);
+  }
+
+  return builder.BuildChecked();
 }
 
 class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
@@ -192,7 +193,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     page_state.manifest_url =
         url_info_.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing = CreateDefaultManifest(
+    page_state.opt_manifest = CreateDefaultManifest(
         url_info_.origin().GetURL(), update_version_, update_manifest_url);
 
     return page_state;
@@ -429,11 +430,12 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
   InstallIwa(update_info());
   ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   auto& page_state = CreateDefaultPageState();
-  page_state.manifest_before_default_processing->start_url =
-      page_state.manifest_before_default_processing->start_url.Resolve(
-          "/foo/index.html");
-  page_state.manifest_before_default_processing->scope =
-      page_state.manifest_before_default_processing->start_url.Resolve("/foo/");
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder()
+          .SetStartUrl(
+              page_state.opt_manifest->start_url().Resolve("/foo/index.html"))
+          .SetScope(page_state.opt_manifest->start_url().Resolve("/foo/"))
+          .BuildChecked();
 
   auto result = ApplyPendingUpdate();
   EXPECT_THAT(result,

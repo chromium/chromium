@@ -56,6 +56,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -779,11 +780,12 @@ TEST_F(WebAppSyncBridgeTest, MigrateFromSourceAppInSameSyncChange) {
   auto& fake_page_state =
       web_contents_manager.GetOrCreatePageState(kTargetStartUrl);
   fake_page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
-  blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-  manifest->name = u"Target App";
-  manifest->start_url = kTargetStartUrl;
-  manifest->id = kTargetStartUrl;
-  fake_page_state.manifest_before_default_processing = std::move(manifest);
+  fake_page_state.opt_manifest =
+      blink::Manifest::Builder(
+          kTargetStartUrl, kTargetStartUrl,
+          blink::Manifest::GetDefaultScope(kTargetStartUrl))
+          .SetName(u"Target App")
+          .BuildChecked();
 
   syncer::EntityChangeList entity_changes;
   // Delete source

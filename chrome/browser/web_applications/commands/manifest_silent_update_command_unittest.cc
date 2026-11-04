@@ -106,23 +106,23 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
         gfx::test::CreateBitmap(kManifestIconSize, kManifestIconColor)};
 
     // Set up manifest.
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kAppUrl).value();
-    manifest->scope = kAppUrl.GetWithoutFilename();
-    manifest->display = DisplayMode::kStandalone;
-    manifest->name = u"Foo App";
-    manifest->icons = {icon};
-    manifest->background_color = kManifestIconColor;
-    manifest->theme_color = kManifestIconColor;
-    manifest->has_valid_specified_start_url = true;
-    auto note_taking = blink::mojom::ManifestNoteTaking::New();
-    note_taking->new_note_url = GURL("https://www.foo.bar/web_apps/new_note");
-    manifest->note_taking = std::move(note_taking);
-    manifest->launch_handler = LaunchHandler(
-        blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew);
+    blink::Manifest::NoteTaking note_taking;
+    note_taking.new_note_url = GURL("https://www.foo.bar/web_apps/new_note");
 
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(
+            kAppUrl, GenerateManifestIdFromStartUrlOnly(kAppUrl).value(),
+            kAppUrl.GetWithoutFilename())
+            .SetDisplay(DisplayMode::kStandalone)
+            .SetName(u"Foo App")
+            .SetIcons({icon})
+            .SetBackgroundColor(kManifestIconColor)
+            .SetThemeColor(kManifestIconColor)
+            .SetHasValidSpecifiedStartUrl(true)
+            .SetNoteTaking(std::move(note_taking))
+            .SetLaunchHandler(blink::Manifest::LaunchHandler(
+                blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew))
+            .BuildChecked();
   }
 
   ManifestSilentUpdateCheckResult RunManifestUpdateAndGetResult(
@@ -138,10 +138,17 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     return manifest_silent_update_future.Take().result;
   }
 
-  blink::mojom::ManifestPtr& GetPageManifest() {
-    return web_contents_manager()
-        .GetOrCreatePageState(kAppUrl)
-        .manifest_before_default_processing;
+  const blink::Manifest& GetPageManifest() {
+    return *web_contents_manager().GetOrCreatePageState(kAppUrl).opt_manifest;
+  }
+
+  void UpdatePageManifest(
+      base::FunctionRef<void(blink::Manifest::Builder&)> update_fn) {
+    auto& page_state = web_contents_manager().GetOrCreatePageState(kAppUrl);
+    CHECK(page_state.opt_manifest.has_value());
+    blink::Manifest::Builder builder = page_state.opt_manifest->ToBuilder();
+    update_fn(builder);
+    page_state.opt_manifest = std::move(builder).BuildChecked();
   }
 
   FakeWebContentsManager& web_contents_manager() {
@@ -242,7 +249,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
   non_square_icon.src = kNonSquareIconUrl;
   non_square_icon.sizes = {{192, 144}};
   non_square_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {non_square_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({non_square_icon});
+  });
   web_contents_manager().GetOrCreateIconState(kNonSquareIconUrl).bitmaps = {
       gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
 
@@ -276,7 +285,8 @@ TEST_F(ManifestSilentUpdateCommandTest,
   icon.src = kIconUrl;
   icon.sizes = {{192, 192}};
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({icon}); });
   web_contents_manager().GetOrCreateIconState(kIconUrl).bitmaps = {
       gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
 
@@ -338,9 +348,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
   localized_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   std::vector<blink::Manifest::ImageResource> localized_icons = {
       localized_icon};
-  GetPageManifest()->icons_localized.emplace();
-  GetPageManifest()->icons_localized->insert(
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      std::vector<blink::Manifest::ImageResource>>
+      icons_localized;
+  icons_localized.insert(
       {base::i18n::GetKnownLanguageTag("en-US"), localized_icons});
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIconsLocalized(std::move(icons_localized));
+  });
   web_contents_manager().GetOrCreateIconState(kLocalizedIconUrl).bitmaps = {
       gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
 
@@ -361,9 +376,10 @@ TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
   const GURL new_start_url("https://www.foo.bar/web_apps/new_basic.html");
-  new_manifest->start_url = new_start_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetStartUrl(new_start_url);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -410,8 +426,9 @@ TEST_F(ManifestSilentUpdateCommandTest, ThemeColorUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppThemeColor(app_id),
             SK_ColorCYAN);
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->theme_color = SK_ColorYELLOW;
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetThemeColor(SK_ColorYELLOW);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -434,8 +451,9 @@ TEST_F(ManifestSilentUpdateCommandTest, BackgroundColorUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppBackgroundColor(app_id),
             SK_ColorCYAN);
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->background_color = SK_ColorYELLOW;
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetBackgroundColor(SK_ColorYELLOW);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -459,8 +477,9 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayModeUpdatedSilently) {
       provider().registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id),
       DisplayMode::kStandalone);
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->display = DisplayMode::kBrowser;
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetDisplay(DisplayMode::kBrowser);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -484,11 +503,11 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppScope(app_id),
             kAppUrl.GetWithoutFilename());
 
-  auto& new_manifest = GetPageManifest();
   const GURL new_scope("https://www.foo.bar/new_scope/");
   const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
-  new_manifest->scope = new_scope;
-  new_manifest->start_url = new_start_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetScope(new_scope).SetStartUrl(new_start_url);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -512,13 +531,16 @@ TEST_F(ManifestSilentUpdateCommandTest, DisplayOverrideUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppEffectiveDisplayMode(app_id),
             DisplayMode::kStandalone);
 
-  auto& new_manifest = GetPageManifest();
   std::vector<DisplayMode> new_display_override = {DisplayMode::kMinimalUi,
                                                    DisplayMode::kBrowser};
+  std::vector<blink::Manifest::DisplayOverride> display_overrides;
   for (const auto& display_mode : new_display_override) {
-    new_manifest->display_override.push_back(
+    display_overrides.push_back(
         blink::Manifest::DisplayOverride::Create(display_mode));
   }
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetDisplayOverride(std::move(display_overrides));
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -546,9 +568,12 @@ TEST_F(ManifestSilentUpdateCommandTest, NoteTakingUrlUpdatedSilently) {
                 ->note_taking_new_note_url(),
             GURL("https://www.foo.bar/web_apps/new_note"));
 
-  auto& new_manifest = GetPageManifest();
   const GURL new_note_url("https://www.foo.bar/web_apps/new_note_new");
-  new_manifest->note_taking->new_note_url = new_note_url;
+  blink::Manifest::NoteTaking note_taking;
+  note_taking.new_note_url = new_note_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetNoteTaking(std::move(note_taking));
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -576,13 +601,13 @@ TEST_F(ManifestSilentUpdateCommandTest, ShortcutsMenuItemInfosUpdatedSilently) {
                   .GetAppShortcutsMenuItemInfos(app_id)
                   .empty());
 
-  auto& new_manifest = GetPageManifest();
-
   {
     blink::Manifest::ShortcutItem shortcut;
     shortcut.name = u"New Shortcut";
     shortcut.url = GURL("https://www.foo.bar/web_apps/new_shortcut");
-    new_manifest->shortcuts.push_back(std::move(shortcut));
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetShortcuts({std::move(shortcut)});
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -613,8 +638,6 @@ TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {
 
   EXPECT_FALSE(provider().registrar_unsafe().GetAppShareTarget(app_id));
 
-  auto& new_manifest = GetPageManifest();
-
   {
     blink::Manifest::ShareTarget share_target;
     share_target.action = GURL("https://www.foo.bar/share");
@@ -623,7 +646,9 @@ TEST_F(ManifestSilentUpdateCommandTest, ShareTargetUpdatedSilently) {
         blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
     blink::Manifest::ShareTargetParams params;
     share_target.params = std::move(params);
-    new_manifest->share_target.emplace(std::move(share_target));
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetShareTarget(std::move(share_target));
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -650,13 +675,13 @@ TEST_F(ManifestSilentUpdateCommandTest, ProtocolHandlersUpdatedSilently) {
                   ->protocol_handlers()
                   .empty());
 
-  auto& new_manifest = GetPageManifest();
-
   {
-    auto protocol_handler = blink::mojom::ManifestProtocolHandler::New();
-    protocol_handler->protocol = u"mailto";
-    protocol_handler->url = GURL("https://www.foo.bar/web_apps/handle=%s");
-    new_manifest->protocol_handlers.push_back(std::move(protocol_handler));
+    blink::Manifest::ProtocolHandler protocol_handler;
+    protocol_handler.protocol = u"mailto";
+    protocol_handler.url = GURL("https://www.foo.bar/web_apps/handle=%s");
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetProtocolHandlers({std::move(protocol_handler)});
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -687,14 +712,14 @@ TEST_F(ManifestSilentUpdateCommandTest, FileHandlersUpdatedSilently) {
   EXPECT_TRUE(
       provider().registrar_unsafe().GetAppFileHandlers(app_id)->empty());
 
-  auto& new_manifest = GetPageManifest();
-
   {
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = GURL("https://www.foo.bar/web_apps/open-files");
-    handler->accept[u"image/png"].push_back(u".png");
-    handler->name = u"Images";
-    new_manifest->file_handlers.push_back(std::move(handler));
+    blink::Manifest::FileHandler handler;
+    handler.action = GURL("https://www.foo.bar/web_apps/open-files");
+    handler.accept[u"image/png"].push_back(u".png");
+    handler.name = u"Images";
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetFileHandlers({std::move(handler)});
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -726,9 +751,10 @@ TEST_F(ManifestSilentUpdateCommandTest, LaunchHandlerUpdatedSilently) {
             LaunchHandler(
                 blink::mojom::ManifestLaunchHandler_ClientMode::kNavigateNew));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->launch_handler = LaunchHandler(
-      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetLaunchHandler(blink::Manifest::LaunchHandler(
+        blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting));
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -752,14 +778,14 @@ TEST_F(ManifestSilentUpdateCommandTest, ScopeExtensionsUpdatedSilently) {
 
   EXPECT_TRUE(provider().registrar_unsafe().GetScopeExtensions(app_id).empty());
 
-  auto& new_manifest = GetPageManifest();
-
   {
-    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
-    scope_extension->origin =
+    blink::Manifest::ScopeExtension scope_extension;
+    scope_extension.origin =
         url::Origin::Create(GURL("https://scope_extensions_new.com/"));
-    scope_extension->has_origin_wildcard = false;
-    new_manifest->scope_extensions.push_back(std::move(scope_extension));
+    scope_extension.has_origin_wildcard = false;
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetScopeExtensions({std::move(scope_extension)});
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -791,12 +817,13 @@ TEST_F(ManifestSilentUpdateCommandTest, TabStripUpdatedSilently) {
 
   EXPECT_FALSE(provider().registrar_unsafe().GetAppById(app_id)->tab_strip());
 
-  auto& new_manifest = GetPageManifest();
   {
     TabStrip tab_strip;
     tab_strip.home_tab = TabStrip::Visibility::kAuto;
     tab_strip.new_tab_button.url = GURL("https://www.random.com/");
-    new_manifest->tab_strip = std::move(tab_strip);
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetTabStrip(std::move(tab_strip));
+    });
   }
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
@@ -834,8 +861,8 @@ TEST_F(ManifestSilentUpdateCommandTest, AppNameChangedPendingUpdateInfoSaved) {
       provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
       base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
@@ -871,10 +898,10 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
   const GURL new_start_url("https://www.foo.bar/web_apps/new_basic.html");
-  new_manifest->start_url = new_start_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetName(u"New Name").SetStartUrl(new_start_url);
+  });
 
   EXPECT_EQ(
       RunManifestUpdateAndGetResult(),
@@ -907,15 +934,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
   // For a 96x96 image, total pixels = 9216.
@@ -976,13 +1002,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
   bitmap1.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorWHITE);
 
   // Trigger first update, verify that app icon updates are applied silently.
-  auto& new_manifest = GetPageManifest();
   blink::Manifest::ImageResource first_update_icon;
   first_update_icon.src = bitmap_url1;
   first_update_icon.sizes = {{96, 96}};
   first_update_icon.purpose = {
       blink::mojom::ManifestImageResource_Purpose::ANY};
-  new_manifest->icons = {first_update_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({first_update_icon});
+  });
   web_contents_manager().GetOrCreateIconState(bitmap_url1).bitmaps = {bitmap1};
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::
@@ -999,7 +1026,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
   second_update_icon.sizes = {{96, 96}};
   second_update_icon.purpose = {
       blink::mojom::ManifestImageResource_Purpose::ANY};
-  new_manifest->icons = {second_update_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({second_update_icon});
+  });
   web_contents_manager().GetOrCreateIconState(bitmap_url2).bitmaps = {bitmap2};
   EXPECT_EQ(
       RunManifestUpdateAndGetResult(base::Time::Now()),
@@ -1041,16 +1070,16 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
-  new_manifest->start_url = GURL("https://www.foo.bar/web_apps/new_basic.html");
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({new_icon})
+        .SetStartUrl(GURL("https://www.foo.bar/web_apps/new_basic.html"));
+  });
 
   SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
   // For a 96x96 image, total pixels = 9216.
@@ -1099,15 +1128,14 @@ TEST_F(ManifestSilentUpdateCommandTest,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{30, 30}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   // Set icon in content. Setting the icon color to YELLOW and changing the icon
   // size to trigger a more than 10% image diff.
@@ -1184,16 +1212,15 @@ TEST_F(ManifestSilentUpdateCommandTest,
       provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
       base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
-  new_manifest->name = u"New Name";
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({new_icon}).SetName(u"New Name");
+  });
 
   // Set icon in content. Setting the icon color to YELLOW to trigger a more
   // than 10% image diff.
@@ -1268,16 +1295,16 @@ TEST_F(ManifestSilentUpdateCommandTest,
     update->UpdateApp(app_id)->SetStoredTrustedIconSizes(IconPurpose::ANY, {});
   }
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
-  new_manifest->start_url = GURL("https://www.foo.bar/web_apps/new_basic.html");
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({new_icon})
+        .SetStartUrl(GURL("https://www.foo.bar/web_apps/new_basic.html"));
+  });
 
   SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
   // For a 96x96 image, total pixels = 9216.
@@ -1328,16 +1355,16 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
-  new_manifest->start_url = GURL("https://www.foo.bar/web_apps/new_basic.html");
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({new_icon})
+        .SetStartUrl(GURL("https://www.foo.bar/web_apps/new_basic.html"));
+  });
   // Set icon in content. Setting the icon color to YELLOW to trigger a more
   // than 10% image diff.
   SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
@@ -1397,9 +1424,9 @@ TEST_F(ManifestSilentUpdateCommandTest, SyncInstalledAppUpdated) {
       webapps::WebappInstallSource::SYNC);
   SetupBasicInstallablePageState();
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
-  new_manifest->theme_color = SK_ColorYELLOW;
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetName(u"New Name").SetThemeColor(SK_ColorYELLOW);
+  });
 
   // Sync installed apps should allow updates, but security sensitive updates
   // (like name) should still be pending. Non-sensitive updates (like theme
@@ -1435,8 +1462,8 @@ TEST_F(ManifestSilentUpdateCommandTest, VerifyNoManifestIconsAppUpToDate) {
   EXPECT_EQ(icon_infos.front().url,
             GURL("https://example.com/path/def_icon.png"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->icons = {};
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetIcons({}); });
   // Note: The InstallableParams options should cause this error to return if
   // there are no icons, but the testing dependency faking isn't quite set up
   // for this yet to happen automatically. So set this manually on the fake.
@@ -1473,15 +1500,15 @@ TEST_F(ManifestSilentUpdateCommandTest,
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->icons = {};
+  const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({}).SetStartUrl(new_start_url);
+  });
   // Note: The InstallableParams options should cause this error to return if
   // there are no icons, but the testing dependency faking isn't quite set up
   // for this yet to happen automatically. So set this manually on the fake.
   web_contents_manager().GetOrCreatePageState(kAppUrl).error_code =
       webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
-  const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
-  new_manifest->start_url = new_start_url;
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kInvalidManifest);
@@ -1510,14 +1537,9 @@ TEST_F(ManifestSilentUpdateCommandTest,
       provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
       base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->icons = {};
-  // Note: The InstallableParams options should cause this error to return if
-  // there are no icons, but the testing dependency faking isn't quite set up
-  // for this yet to happen automatically. So set this manually on the fake.
-  web_contents_manager().GetOrCreatePageState(kAppUrl).error_code =
-      webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
-  new_manifest->name = u"New Name";
+  UpdatePageManifest([](blink::Manifest::Builder& builder) {
+    builder.SetIcons({}).SetName(u"New Name");
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kInvalidManifest);
@@ -1572,7 +1594,9 @@ TEST_F(ManifestSilentUpdateCommandTest, IconDownloadFailure) {
   second_icon.src = GURL("https://example2.com/path/def_icon.png");
   second_icon.sizes = {{96, 96}};
   second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {second_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({second_icon});
+  });
   SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError);
@@ -1594,7 +1618,8 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateTwiceSameManifest) {
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
   auto& new_icon_state = web_contents_manager().GetOrCreateIconState(
@@ -1629,7 +1654,9 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateTwiceNewManifest) {
   second_icon.src = GURL("https://example2.com/path/def_icon.png");
   second_icon.sizes = {{96, 96}};
   second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {second_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({second_icon});
+  });
   SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
   auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
       GURL("https://example2.com/path/def_icon.png"));
@@ -1643,7 +1670,9 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateTwiceNewManifest) {
   third_icon.src = GURL("https://example3.com/path/def_icon.png");
   third_icon.sizes = {{96, 96}};
   third_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {third_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({third_icon});
+  });
   SkBitmap third_bitmap = gfx::test::CreateBitmap(96, SK_ColorRED);
   auto& third_icon_state = web_contents_manager().GetOrCreateIconState(
       GURL("https://example3.com/path/def_icon.png"));
@@ -1671,7 +1700,9 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateThenBackToOriginal) {
   second_icon.src = GURL("https://example2.com/path/def_icon.png");
   second_icon.sizes = {{96, 96}};
   second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {second_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({second_icon});
+  });
   SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
   auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
       GURL("https://example2.com/path/def_icon.png"));
@@ -1711,7 +1742,9 @@ TEST_F(ManifestSilentUpdateCommandTest, UpdateWithIconWriteFailure) {
   second_icon.src = GURL("https://example2.com/path/def_icon.png");
   second_icon.sizes = {{96, 96}};
   second_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  GetPageManifest()->icons = {second_icon};
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetIcons({second_icon});
+  });
   SkBitmap second_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
   auto& second_icon_state = web_contents_manager().GetOrCreateIconState(
       GURL("https://example2.com/path/def_icon.png"));
@@ -1770,9 +1803,10 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest, StartUrlUpdatedSilently) {
   EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
             "https://www.foo.bar/web_apps/basic.html");
 
-  auto& new_manifest = GetPageManifest();
   const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
-  new_manifest->start_url = new_start_url;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    builder.SetStartUrl(new_start_url);
+  });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -1795,8 +1829,8 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
       provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
       base::UTF16ToUTF8(u"Foo App"));
 
-  auto& new_manifest = GetPageManifest();
-  new_manifest->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
@@ -1820,15 +1854,14 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   // Set icon in content. Setting the icon color to YELLOW to trigger a more
   // than 10% image diff.
@@ -1867,15 +1900,14 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
 
-  new_manifest->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
   // For a 96x96 image, total pixels = 9216.
@@ -1918,14 +1950,13 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
             GURL("https://example.com/path/def_icon.png"));
   EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
-  auto& new_manifest = GetPageManifest();
-
   // Set up manifest icon for the first visit.
   blink::Manifest::ImageResource new_icon;
   new_icon.src = GURL("https://example2.com/path/def_icon.png");
   new_icon.sizes = {{96, 96}};
   new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  new_manifest->icons = {new_icon};
+  UpdatePageManifest(
+      [&](blink::Manifest::Builder& builder) { builder.SetIcons({new_icon}); });
 
   // Set icon in content. Setting the icon color to YELLOW to trigger a more
   // than 10% image diff.

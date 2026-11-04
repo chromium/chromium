@@ -72,6 +72,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -118,22 +120,21 @@ IwaSourceProxy CreateDevProxySource() {
       url::Origin::Create(GURL("http://default-proxy-url.org/")));
 }
 
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = u"test short manifest name";
-  manifest->version = u"1.0.0";
-
+blink::Manifest CreateDefaultManifest(const GURL& application_url) {
   blink::Manifest::ImageResource icon;
   icon.src = application_url.Resolve(kIconPath);
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   icon.type = u"image/png";
   icon.sizes = {gfx::Size(256, 256)};
-  manifest->icons.push_back(icon);
-  return manifest;
+  return blink::Manifest::Builder(
+             application_url.Resolve("/testing-start-url.html"),
+             application_url.DeprecatedGetOriginAsURL(),
+             application_url.Resolve("/"))
+      .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+      .SetShortName(u"test short manifest name")
+      .SetVersion(u"1.0.0")
+      .SetIcons({icon})
+      .BuildChecked();
 }
 
 GURL CreateDefaultManifestURL(const GURL& application_url) {
@@ -175,8 +176,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url = CreateDefaultManifestURL(application_url);
     page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing =
-        CreateDefaultManifest(application_url);
+    page_state.opt_manifest = CreateDefaultManifest(application_url);
 
     auto& icon_state = web_contents_manager().GetOrCreateIconState(
         application_url.Resolve(kIconPath));
@@ -315,7 +315,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
   page_state.manifest_url = GURL("http://test-url-example.com/manifest.json");
-  page_state.manifest_before_default_processing = blink::mojom::Manifest::New();
+  page_state.opt_manifest = std::nullopt;
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
@@ -464,8 +464,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        FailsWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->id =
-      url_info.origin().GetURL().Resolve("/test-manifest-id");
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder()
+          .SetId(url_info.origin().GetURL().Resolve("/test-manifest-id"))
+          .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
@@ -478,8 +480,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        InstalledApplicationScopeIsResolvedToRootWhenManifestScopeIsSlash) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->scope =
-      url_info.origin().GetURL().Resolve("/");
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder()
+          .SetScope(url_info.origin().GetURL().Resolve("/"))
+          .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
@@ -491,8 +495,9 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        PassesManifestNameAsUntranslatedName) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->name =
-      u"test application name";
+  page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                .SetName(u"test application name")
+                                .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
@@ -504,9 +509,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsUntranslatedNameWhenNameIsNotPresent) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->name = std::nullopt;
-  page_state.manifest_before_default_processing->short_name =
-      u"test short name";
+  page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                .SetName(std::nullopt)
+                                .SetShortName(u"test short name")
+                                .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
@@ -518,9 +524,10 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
        UseShortNameAsTitleWhenManifestNameIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->name = u"";
-  page_state.manifest_before_default_processing->short_name =
-      u"other test short name";
+  page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                .SetName(u"")
+                                .SetShortName(u"other test short name")
+                                .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
   EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
@@ -607,7 +614,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenAppIsNotInstallable) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
   page_state.manifest_url = GURL{"http://test-url-example.com/manifest.json"};
-  page_state.manifest_before_default_processing = blink::mojom::Manifest::New();
+  page_state.opt_manifest = std::nullopt;
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
@@ -620,7 +627,7 @@ TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenAppIsNotInstallable) {
 TEST_F(InstallIsolatedWebAppCommandTest, ReportFailureWhenManifestIsNull) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing = nullptr;
+  page_state.opt_manifest = std::nullopt;
   page_state.error_code = webapps::InstallableStatusCode::NO_MANIFEST;
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
@@ -634,8 +641,10 @@ TEST_F(InstallIsolatedWebAppCommandTest,
        ReportFailureWhenManifestIdIsNotEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   auto [page_state, icon_state] = SetUpPageAndIconStates(url_info);
-  page_state.manifest_before_default_processing->id =
-      url_info.origin().GetURL().Resolve("/test manifest id");
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder()
+          .SetId(url_info.origin().GetURL().Resolve("/test manifest id"))
+          .BuildChecked();
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
               Not(HasValue()));

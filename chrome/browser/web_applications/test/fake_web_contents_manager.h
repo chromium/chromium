@@ -20,7 +20,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -80,12 +80,7 @@ class FakeWebContentsManager : public WebContentsManager {
     // An empty url is considered an absent url.
     GURL manifest_url;
     bool valid_manifest_for_web_app = false;
-    // Manifests always go through default processing (e.g. start_url defaulting
-    // to the document_url, and manifest_id defaulting to start_url). This fake
-    // system will ensure that `CheckInstallabilityAndRetrieveManifest` this
-    // behavior is replicated before the manifest is returned for
-    // `CheckInstallabilityAndRetrieveManifest`.
-    blink::mojom::ManifestPtr manifest_before_default_processing;
+    std::optional<blink::Manifest> opt_manifest;
 
     webapps::InstallableStatusCode error_code =
         webapps::InstallableStatusCode::NO_ERROR_DETECTED;

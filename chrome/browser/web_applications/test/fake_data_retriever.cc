@@ -20,38 +20,9 @@
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace web_app {
-
-namespace {
-
-std::optional<blink::Manifest> ToBlinkManifest(
-    const blink::mojom::Manifest* mojom_manifest) {
-  if (!mojom_manifest || blink::IsEmptyManifest(*mojom_manifest)) {
-    return std::nullopt;
-  }
-  blink::mojom::ManifestPtr copy = mojom_manifest->Clone();
-  if (!copy->start_url.is_valid()) {
-    copy->start_url = GURL("https://example.com/start");
-  }
-  if (!copy->id.is_valid() ||
-      !url::IsSameOriginWith(copy->start_url, copy->id)) {
-    copy->id = copy->start_url.GetWithoutRef();
-  }
-  if (!copy->scope.is_valid() ||
-      !url::IsSameOriginWith(copy->start_url, copy->scope)) {
-    copy->scope = copy->start_url.GetWithoutFilename();
-  }
-  auto converted = blink::ManifestFromMojom(*copy);
-  if (converted.has_value()) {
-    return std::move(*converted);
-  }
-  return std::nullopt;
-}
-
-}  // namespace
 
 FakeDataRetriever::FakeDataRetriever() = default;
 
@@ -74,12 +45,9 @@ void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     CheckInstallabilityCallback callback,
     std::optional<webapps::InstallableParams> params) {
-  std::optional<blink::Manifest> opt_manifest =
-      ToBlinkManifest(manifest_.get());
-  const bool valid_manifest_for_web_app = opt_manifest.has_value();
-  completion_callback_ =
-      base::BindOnce(std::move(callback), std::move(opt_manifest),
-                     valid_manifest_for_web_app, error_code_);
+  const bool valid_manifest_for_web_app = manifest_.has_value();
+  completion_callback_ = base::BindOnce(
+      std::move(callback), manifest_, valid_manifest_for_web_app, error_code_);
   ScheduleCompletionCallback();
 }
 
@@ -116,7 +84,7 @@ void FakeDataRetriever::SetWebPageMetadata(
   }
 }
 
-void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
+void FakeDataRetriever::SetManifest(std::optional<blink::Manifest> manifest,
                                     webapps::InstallableStatusCode error_code) {
   manifest_ = std::move(manifest);
   error_code_ = error_code;
@@ -144,13 +112,11 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   SetWebPageMetadata(url, u"Page Title",
                      /*opt_metadata=*/std::nullopt);
 
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = url;
-  manifest->id =
-      GenerateManifestIdFromStartUrlOnly(manifest->start_url).value();
-  manifest->scope = scope;
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = u"Manifest Name";
+  blink::Manifest manifest =
+      blink::Manifest::Builder(url, url.GetWithoutRef(), scope)
+          .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+          .SetShortName(u"Manifest Name")
+          .BuildChecked();
 
   SetManifest(std::move(manifest),
               /*error_code=*/webapps::InstallableStatusCode::NO_ERROR_DETECTED);

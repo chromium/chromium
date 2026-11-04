@@ -33,6 +33,8 @@
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -47,24 +49,23 @@ using testing::Property;
 
 constexpr std::string_view kIconPath = "/icon.png";
 
-blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                const IwaVersion version) {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->id = application_url.DeprecatedGetOriginAsURL();
-  manifest->scope = application_url.Resolve("/");
-  manifest->start_url = application_url.Resolve("/testing-start-url.html");
-  manifest->display = DisplayMode::kStandalone;
-  manifest->short_name = u"test app name";
-  manifest->version = base::UTF8ToUTF16(version.GetString());
-
+blink::Manifest CreateDefaultManifest(const GURL& application_url,
+                                      const IwaVersion version) {
   blink::Manifest::ImageResource icon;
   icon.src = application_url.Resolve(kIconPath);
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
   icon.type = u"image/png";
   icon.sizes = {gfx::Size(256, 256)};
-  manifest->icons.push_back(icon);
 
-  return manifest;
+  return blink::Manifest::Builder(
+             application_url.Resolve("/testing-start-url.html"),
+             application_url.DeprecatedGetOriginAsURL(),
+             application_url.Resolve("/"))
+      .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+      .SetShortName(u"test app name")
+      .SetVersion(base::UTF8ToUTF16(version.GetString()))
+      .SetIcons({icon})
+      .BuildChecked();
 }
 
 class SignedWebBundleMetadataTest : public WebAppTest {
@@ -120,7 +121,7 @@ class SignedWebBundleMetadataTest : public WebAppTest {
     page_state.manifest_url =
         url_info.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.manifest_before_default_processing = CreateDefaultManifest(
+    page_state.opt_manifest = CreateDefaultManifest(
         url_info.origin().GetURL(), *IwaVersion::Create("3.4.5"));
   }
 

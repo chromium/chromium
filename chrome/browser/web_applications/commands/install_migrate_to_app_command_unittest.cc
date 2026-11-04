@@ -32,7 +32,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
 
@@ -82,18 +82,17 @@ class InstallMigrateToAppCommandTest : public WebAppTest {
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kTargetUrl;
-    manifest->id = manifest_id;
-    manifest->name = u"Target App";
-    manifest->manifest_url = kTargetUrl;
-
-    auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-    migrate_from->id = migrate_from_id;
-    manifest->migrate_from.push_back(std::move(migrate_from));
+    blink::Manifest::MigrateFrom migrate_from;
+    migrate_from.id = migrate_from_id;
 
     page_state.manifest_url = kTargetUrl;
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(kTargetUrl, manifest_id,
+                                 blink::Manifest::GetDefaultScope(kTargetUrl))
+            .SetName(u"Target App")
+            .SetManifestUrl(kTargetUrl)
+            .SetMigrateFrom({std::move(migrate_from)})
+            .BuildChecked();
   }
 
   InstallMigrateToAppResult ScheduleCommandAndWait(
@@ -188,7 +187,9 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessUpdateSuggested) {
   // Update target page state with a new name to verify identity update.
   auto& page_state =
       web_contents_manager().GetOrCreatePageState(kTargetInstallUrl);
-  page_state.manifest_before_default_processing->name = u"New Target Name";
+  page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                .SetName(u"New Target Name")
+                                .BuildChecked();
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -266,18 +267,17 @@ TEST_F(InstallMigrateToAppCommandTest, SuccessInstallSameSiteCrossOrigin) {
   page_state.valid_manifest_for_web_app = true;
   page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = kTargetUrl;
-  manifest->id = kTargetManifestId.value();
-  manifest->name = u"Target App";
-  manifest->manifest_url = kTargetUrl;
-
-  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = kSourceManifestId.value();
-  manifest->migrate_from.push_back(std::move(migrate_from));
+  blink::Manifest::MigrateFrom migrate_from;
+  migrate_from.id = kSourceManifestId.value();
 
   page_state.manifest_url = kTargetUrl;
-  page_state.manifest_before_default_processing = std::move(manifest);
+  page_state.opt_manifest =
+      blink::Manifest::Builder(kTargetUrl, kTargetManifestId.value(),
+                               blink::Manifest::GetDefaultScope(kTargetUrl))
+          .SetName(u"Target App")
+          .SetManifestUrl(kTargetUrl)
+          .SetMigrateFrom({std::move(migrate_from)})
+          .BuildChecked();
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),

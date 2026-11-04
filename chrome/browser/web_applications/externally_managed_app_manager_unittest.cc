@@ -44,8 +44,8 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -951,8 +951,11 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install user app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.manifest_before_default_processing->short_name =
-        u"Test user app";
+    CHECK(install_page_state.opt_manifest.has_value());
+    install_page_state.opt_manifest =
+        install_page_state.opt_manifest->ToBuilder()
+            .SetShortName(u"Test user app")
+            .BuildChecked();
 
     auto install_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
@@ -974,10 +977,12 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
     // Install policy app
     auto& install_page_state =
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
-    install_page_state.manifest_before_default_processing->name =
-        u"Test policy app";
-    install_page_state.manifest_before_default_processing->short_name =
-        u"Test policy app";
+    CHECK(install_page_state.opt_manifest.has_value());
+    install_page_state.opt_manifest =
+        install_page_state.opt_manifest->ToBuilder()
+            .SetName(u"Test policy app")
+            .SetShortName(u"Test policy app")
+            .BuildChecked();
 
     SynchronizeFuture result;
     fake_provider().externally_managed_app_manager().SynchronizeInstalledApps(

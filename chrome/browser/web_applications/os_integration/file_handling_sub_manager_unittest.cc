@@ -37,6 +37,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -334,20 +335,18 @@ TEST_F(FileHandlingSubManagerConfigureTest,
         fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
             kInstallUrl);
 
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kStartUrl;
-    manifest->id = manifest->start_url.GetWithoutRef();
-    manifest->scope = manifest->start_url.GetWithoutFilename();
-    manifest->manifest_url = page_state.manifest_url;
-
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = kStartUrl;
-    handler->name = u"Text";
+    blink::Manifest::FileHandler handler;
+    handler.action = kStartUrl;
+    handler.name = u"Text";
     std::vector<std::u16string> extensions = {u".txt"};
-    handler->accept.emplace(u"text/plain", extensions);
-    manifest->file_handlers.push_back(std::move(handler));
+    handler.accept.emplace(u"text/plain", extensions);
 
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(kStartUrl, kStartUrl,
+                                 kStartUrl.GetWithoutFilename())
+            .SetManifestUrl(page_state.manifest_url)
+            .SetFileHandlers({std::move(handler)})
+            .BuildChecked();
   }
 
   // Install app with file handlers
@@ -430,20 +429,18 @@ TEST_F(FileHandlingSubManagerConfigureTest,
         fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
             kInstallUrl);
 
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kStartUrl;
-    manifest->id = manifest->start_url.GetWithoutRef();
-    manifest->scope = manifest->start_url.GetWithoutFilename();
-    manifest->manifest_url = page_state.manifest_url;
-
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = kStartUrl;
-    handler->name = u"Text";
+    blink::Manifest::FileHandler handler;
+    handler.action = kStartUrl;
+    handler.name = u"Text";
     std::vector<std::u16string> extensions = {u".txt"};
-    handler->accept.emplace(u"text/plain", extensions);
-    manifest->file_handlers.push_back(std::move(handler));
+    handler.accept.emplace(u"text/plain", extensions);
 
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(kStartUrl, kStartUrl,
+                                 kStartUrl.GetWithoutFilename())
+            .SetManifestUrl(page_state.manifest_url)
+            .SetFileHandlers({std::move(handler)})
+            .BuildChecked();
   }
 
   // Install app with file handlers
@@ -521,10 +518,11 @@ TEST_F(FileHandlingSubManagerConfigureTest,
     page_state.url_load_result = {webapps::WebAppUrlLoaderResult::kUrlLoaded};
     page_state.manifest_url = kManifestUrl;
 
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kStartUrl;
-    manifest->scope = kStartUrl.GetWithoutFilename();
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(kStartUrl, kStartUrl,
+                                 kStartUrl.GetWithoutFilename())
+            .SetManifestUrl(page_state.manifest_url)
+            .BuildChecked();
 
     std::vector<ExternalInstallOptions> install_options_list;
     install_options_list.emplace_back(kInstallUrl,
@@ -549,13 +547,14 @@ TEST_F(FileHandlingSubManagerConfigureTest,
         fake_provider().GetFakeWebContentsManager()->GetOrCreatePageState(
             kInstallUrl);
 
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = kStartUrl;
-    handler->name = u"Text";
-    handler->accept.emplace(u"text/plain",
-                            std::vector<std::u16string>{u".txt"});
-    page_state.manifest_before_default_processing->file_handlers.push_back(
-        std::move(handler));
+    blink::Manifest::FileHandler handler;
+    handler.action = kStartUrl;
+    handler.name = u"Text";
+    handler.accept.emplace(u"text/plain", std::vector<std::u16string>{u".txt"});
+    CHECK(page_state.opt_manifest.has_value());
+    page_state.opt_manifest = page_state.opt_manifest->ToBuilder()
+                                  .SetFileHandlers({std::move(handler)})
+                                  .BuildChecked();
   }
 
   EXPECT_EQ(

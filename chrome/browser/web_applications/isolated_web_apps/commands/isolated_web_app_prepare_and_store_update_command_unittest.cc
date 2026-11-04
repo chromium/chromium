@@ -44,6 +44,7 @@
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
 
@@ -474,10 +475,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   auto url_info = InstallIwa();
   auto update_bundle = WriteUpdateBundleToDisk();
   auto& page_state = update_bundle->FakeInstallPageState(profile());
-  page_state.manifest_before_default_processing->start_url =
-      url_info.origin().GetURL().Resolve("/foo/index.html");
-  page_state.manifest_before_default_processing->scope =
-      url_info.origin().GetURL().Resolve("/foo/");
+  page_state.opt_manifest =
+      page_state.opt_manifest->ToBuilder()
+          .SetStartUrl(url_info.origin().GetURL().Resolve("/foo/index.html"))
+          .SetScope(url_info.origin().GetURL().Resolve("/foo/"))
+          .BuildChecked();
 
   const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
 

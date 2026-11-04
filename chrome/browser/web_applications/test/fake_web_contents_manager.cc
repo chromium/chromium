@@ -27,7 +27,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -36,33 +35,6 @@
 
 namespace web_app {
 namespace {
-
-std::optional<blink::Manifest> ToBlinkManifest(
-    const blink::mojom::Manifest* mojom_manifest,
-    const GURL& fallback_url = GURL()) {
-  if (!mojom_manifest || blink::IsEmptyManifest(*mojom_manifest)) {
-    return std::nullopt;
-  }
-  blink::mojom::ManifestPtr copy = mojom_manifest->Clone();
-  if (!copy->start_url.is_valid()) {
-    copy->start_url = fallback_url.is_valid()
-                          ? fallback_url
-                          : GURL("https://example.com/start");
-  }
-  if (!copy->id.is_valid() ||
-      !url::IsSameOriginWith(copy->start_url, copy->id)) {
-    copy->id = copy->start_url.GetWithoutRef();
-  }
-  if (!copy->scope.is_valid() ||
-      !url::IsSameOriginWith(copy->start_url, copy->scope)) {
-    copy->scope = copy->start_url.GetWithoutFilename();
-  }
-  auto converted = blink::ManifestFromMojom(*copy);
-  if (converted.has_value()) {
-    return std::move(*converted);
-  }
-  return std::nullopt;
-}
 bool EqualsWithComparison(
     const GURL& a,
     const GURL& b,
@@ -297,31 +269,18 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
         base::BindOnce(std::move(callback), std::move(install_info)));
   }
 
-  blink::mojom::ManifestPtr ResolveManifest(
+  std::optional<blink::Manifest> ResolveManifest(
       FakeWebContentsManager::FakePageState& page,
       const GURL& url) {
-    // Apply the 'default' values in the manifest spec algorithm.
-    blink::mojom::ManifestPtr manifest =
-        page.manifest_before_default_processing
-            ? page.manifest_before_default_processing->Clone()
-            : blink::mojom::Manifest::New();
-    manifest->manifest_url = page.manifest_url;
-    if (manifest->start_url.is_empty()) {
-      manifest->start_url = url;
-      manifest->has_valid_specified_start_url = false;
-    } else {
-      manifest->has_valid_specified_start_url = true;
+    std::optional<blink::Manifest> manifest =
+        page.opt_manifest.has_value() ? page.opt_manifest
+                                      : blink::Manifest::CreateDefault(url);
+    if (manifest.has_value() && !page.manifest_url.is_empty() &&
+        manifest->manifest_url().is_empty()) {
+      manifest = manifest->ToBuilder()
+                     .SetManifestUrl(page.manifest_url)
+                     .BuildChecked();
     }
-    if (manifest->id.is_empty()) {
-      manifest->id = manifest->start_url.GetWithoutRef();
-      manifest->has_custom_id = false;
-    } else {
-      manifest->has_custom_id = true;
-    }
-    if (manifest->scope.is_empty()) {
-      manifest->scope = manifest->start_url.GetWithoutFilename();
-    }
-    CHECK(manifest->scope.ExtractFileName().empty());
     return manifest;
   }
 
@@ -350,9 +309,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
 
-    blink::mojom::ManifestPtr manifest = ResolveManifest(page, url);
-    std::optional<blink::Manifest> opt_manifest =
-        ToBlinkManifest(manifest.get(), url);
+    std::optional<blink::Manifest> opt_manifest = ResolveManifest(page, url);
 
     // The on_manifest_fetch callback below may end up destroying `this` as well
     // as invalidate `page`, so don't access any more member variables or call
@@ -402,29 +359,21 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     // The on_manifest_fetch callback below may end up destroying `this` as well
     // as invalidate `page`, so don't access any more member variables or call
     // other methods after this.
-    auto manifest = ResolveManifest(page, url);
+    std::optional<blink::Manifest> manifest = ResolveManifest(page, url);
     if (page.on_manifest_fetch) {
       std::move(page.on_manifest_fetch).Run();
     }
 
-    auto get_manifest_result =
-        [&]() -> base::expected<blink::Manifest,
-                                blink::mojom::RequestManifestErrorPtr> {
-      if (!manifest) {
-        return base::unexpected(blink::mojom::RequestManifestError::New(
-            blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
-            std::vector<blink::mojom::ManifestErrorPtr>()));
-      }
-      auto converted = blink::ManifestFromMojom(*manifest);
-      if (!converted.has_value()) {
-        return base::unexpected(blink::mojom::RequestManifestError::New(
-            blink::mojom::ManifestRequestResult::kUnexpectedFailure,
-            std::vector<blink::mojom::ManifestErrorPtr>()));
-      }
-      return std::move(*converted);
-    };
     base::expected<blink::Manifest, blink::mojom::RequestManifestErrorPtr>
-        manifest_result = get_manifest_result();
+        manifest_result =
+            manifest.has_value()
+                ? base::expected<blink::Manifest,
+                                 blink::mojom::RequestManifestErrorPtr>(
+                      std::move(*manifest))
+                : base::unexpected(blink::mojom::RequestManifestError::New(
+                      blink::mojom::ManifestRequestResult::
+                          kManifestFailedToFetch,
+                      std::vector<blink::mojom::ManifestErrorPtr>()));
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -559,20 +508,23 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
   install_page_state.manifest_url = manifest_url;
   install_page_state.valid_manifest_for_web_app = true;
 
-  install_page_state.manifest_before_default_processing =
-      blink::mojom::Manifest::New();
-  blink::mojom::Manifest& manifest =
-      *install_page_state.manifest_before_default_processing;
-  manifest.id = GenerateManifestIdFromStartUrlOnly(start_url).value();
-  manifest.start_url = start_url;
-  manifest.display = blink::mojom::DisplayMode::kStandalone;
-  manifest.name = name;
-  manifest.short_name = name;
   blink::Manifest::ImageResource icon;
   icon.src = kIconUrl;
   icon.sizes = {{kBasicInstallIconSize, kBasicInstallIconSize}};
   icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-  manifest.icons = {icon};
+
+  install_page_state.opt_manifest =
+      blink::Manifest::Builder(
+          start_url, GenerateManifestIdFromStartUrlOnly(start_url).value(),
+          start_url.GetWithoutFilename())
+          .SetManifestUrl(manifest_url)
+          .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+          .SetName(std::u16string(name))
+          .SetShortName(std::u16string(name))
+          .SetIcons({icon})
+          .SetHasValidSpecifiedStartUrl(true)
+          .SetHasCustomId(true)
+          .BuildChecked();
 
   // Set icons in content.
   GetOrCreateIconState(kIconUrl).bitmaps = {
@@ -588,7 +540,11 @@ void FakeWebContentsManager::SetPageState(
 }
 FakeWebContentsManager::FakePageState&
 FakeWebContentsManager::GetOrCreatePageState(const GURL& gurl) {
-  return page_state_[gurl];
+  auto [it, inserted] = page_state_.try_emplace(gurl);
+  if (inserted && gurl.is_valid()) {
+    it->second.opt_manifest = blink::Manifest::CreateDefault(gurl);
+  }
+  return it->second;
 }
 void FakeWebContentsManager::DeletePageState(const GURL& gurl) {
   page_state_.erase(gurl);

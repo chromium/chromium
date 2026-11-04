@@ -28,6 +28,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -57,10 +58,20 @@ class FetchManifestAndUpdateTest : public WebAppTest {
         provider().web_contents_manager());
   }
 
-  blink::mojom::ManifestPtr& GetPageManifest() {
-    return web_contents_manager()
-        .GetOrCreatePageState(GURL(kInstallUrl))
-        .manifest_before_default_processing;
+  const blink::Manifest& GetPageManifest() {
+    return *web_contents_manager()
+                .GetOrCreatePageState(GURL(kInstallUrl))
+                .opt_manifest;
+  }
+
+  void UpdatePageManifest(
+      base::FunctionRef<void(blink::Manifest::Builder&)> update_fn) {
+    auto& page_state =
+        web_contents_manager().GetOrCreatePageState(GURL(kInstallUrl));
+    CHECK(page_state.opt_manifest.has_value());
+    blink::Manifest::Builder builder = page_state.opt_manifest->ToBuilder();
+    update_fn(builder);
+    page_state.opt_manifest = std::move(builder).BuildChecked();
   }
 
   std::optional<webapps::AppId> InstallApp() {
@@ -105,22 +116,24 @@ class FetchManifestAndUpdateTest : public WebAppTest {
     non_square_icon.sizes = {{192, 144}};
     non_square_icon.purpose = {
         blink::mojom::ManifestImageResource_Purpose::ANY};
-    GetPageManifest()->icons = {non_square_icon};
+    std::vector<blink::Manifest::ImageResource> icons = {non_square_icon};
     web_contents_manager()
         .GetOrCreateIconState(GURL(kNonSquareIconUrl))
         .bitmaps = {gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
-    if (!add_square_monochrome_icon) {
-      return;
+    if (add_square_monochrome_icon) {
+      blink::Manifest::ImageResource monochrome_icon;
+      monochrome_icon.src = GURL(kMonochromeIconUrl);
+      monochrome_icon.sizes = {{192, 192}};
+      monochrome_icon.purpose = {
+          blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+      icons.push_back(monochrome_icon);
+      web_contents_manager()
+          .GetOrCreateIconState(GURL(kMonochromeIconUrl))
+          .bitmaps = {gfx::test::CreateBitmap(192, SK_ColorBLACK)};
     }
-    blink::Manifest::ImageResource monochrome_icon;
-    monochrome_icon.src = GURL(kMonochromeIconUrl);
-    monochrome_icon.sizes = {{192, 192}};
-    monochrome_icon.purpose = {
-        blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
-    GetPageManifest()->icons.push_back(monochrome_icon);
-    web_contents_manager()
-        .GetOrCreateIconState(GURL(kMonochromeIconUrl))
-        .bitmaps = {gfx::test::CreateBitmap(192, SK_ColorBLACK)};
+    UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+      builder.SetIcons(std::move(icons));
+    });
   }
 
   // Verifies the app still has the icon from
@@ -152,7 +165,8 @@ class FetchManifestAndUpdateTest : public WebAppTest {
 TEST_F(FetchManifestAndUpdateTest, NameUpdate) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
-  GetPageManifest()->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
   EXPECT_EQ(result, FetchManifestAndUpdateResult::kSuccess);
@@ -172,7 +186,8 @@ TEST_F(FetchManifestAndUpdateTest, NoUpdateAfterInstall) {
 TEST_F(FetchManifestAndUpdateTest, ClearsPendingUpdateInfo) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
-  GetPageManifest()->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   {
     base::test::TestFuture<ManifestSilentUpdateCompletionInfo> future;
@@ -230,7 +245,12 @@ TEST_F(FetchManifestAndUpdateTest, IconUpdate) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
   const GURL kNewIconUrl("https://www.example.com/new_icon.png");
-  GetPageManifest()->icons[0].src = kNewIconUrl;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    auto icons = GetPageManifest().icons();
+    ASSERT_FALSE(icons.empty());
+    icons[0].src = kNewIconUrl;
+    builder.SetIcons(std::move(icons));
+  });
   web_contents_manager().GetOrCreateIconState(kNewIconUrl).bitmaps = {
       gfx::test::CreateBitmap(144, SK_ColorRED)};
 
@@ -280,7 +300,12 @@ TEST_F(FetchManifestAndUpdateTest, PrimaryPageChangedDuringIconFetch) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
   const GURL kNewIconUrl("https://www.example.com/new_icon.png");
-  GetPageManifest()->icons[0].src = kNewIconUrl;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    auto icons = GetPageManifest().icons();
+    ASSERT_FALSE(icons.empty());
+    icons[0].src = kNewIconUrl;
+    builder.SetIcons(std::move(icons));
+  });
   auto& icon_state = web_contents_manager().GetOrCreateIconState(kNewIconUrl);
   icon_state.bitmaps = {gfx::test::CreateBitmap(144, SK_ColorRED)};
   icon_state.trigger_primary_page_changed_if_fetched = true;
@@ -296,7 +321,12 @@ TEST_F(FetchManifestAndUpdateTest, IconDownloadError) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
   const GURL kNewIconUrl("https://www.example.com/new_icon.png");
-  GetPageManifest()->icons[0].src = kNewIconUrl;
+  UpdatePageManifest([&](blink::Manifest::Builder& builder) {
+    auto icons = GetPageManifest().icons();
+    ASSERT_FALSE(icons.empty());
+    icons[0].src = kNewIconUrl;
+    builder.SetIcons(std::move(icons));
+  });
   // Not setting any icon state for kNewIconUrl, so it will fail to download.
 
   ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result, RunUpdate());
@@ -309,7 +339,8 @@ TEST_F(FetchManifestAndUpdateTest, IconDownloadError) {
 TEST_F(FetchManifestAndUpdateTest, InstallationError) {
   ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
 
-  GetPageManifest()->name = u"New Name";
+  UpdatePageManifest(
+      [](blink::Manifest::Builder& builder) { builder.SetName(u"New Name"); });
 
   provider().file_utils()->AsTestFileUtils()->SetRemainingDiskSpaceSize(0);
 

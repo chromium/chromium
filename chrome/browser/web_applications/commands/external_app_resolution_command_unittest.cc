@@ -53,6 +53,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -121,15 +122,15 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
     return future.Get<0>();
   }
 
-  blink::mojom::ManifestPtr CreateValidManifest() {
-    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-    manifest->name = u"Example App";
-    manifest->short_name = u"App";
-    manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
-    manifest->scope = kWebAppUrl.GetWithoutFilename();
-    manifest->display = blink::mojom::DisplayMode::kStandalone;
-    return manifest;
+  blink::Manifest CreateValidManifest() {
+    return blink::Manifest::Builder(
+               kWebAppUrl,
+               GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
+               blink::Manifest::GetDefaultScope(kWebAppUrl))
+        .SetName(u"Example App")
+        .SetShortName(u"App")
+        .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+        .BuildChecked();
   }
 
   void SetUp() override {
@@ -158,18 +159,20 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   IconsMap CreateAndLoadIconMapFromSizes(
       const std::vector<SquareSizePx>& sizes_px,
       const std::vector<SkColor>& colors,
-      blink::mojom::Manifest* manifest) {
+      blink::Manifest& manifest) {
     DCHECK_EQ(colors.size(), sizes_px.size());
     IconsMap icons_map;
     const GURL url = GURL("https://example.com/");
+    std::vector<blink::Manifest::ImageResource> icons = manifest.icons();
 
     for (size_t i = 0; i < sizes_px.size(); i++) {
       GURL icon_url =
           url.Resolve("icon_any" + base::NumberToString(sizes_px[i]) + ".png");
-      manifest->icons.push_back(
+      icons.push_back(
           CreateSquareImageResource(icon_url, sizes_px[i], {IconPurpose::ANY}));
       icons_map[icon_url] = {CreateSquareIcon(sizes_px[i], colors[i])};
     }
+    manifest = manifest.ToBuilder().SetIcons(std::move(icons)).BuildChecked();
     return icons_map;
   }
 
@@ -215,17 +218,16 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
                     const PageStateOptions& mock_options = {}) {
     FakeWebContentsManager::FakePageState& state =
         fake_web_contents_manager().GetOrCreatePageState(options.install_url);
-    state.manifest_before_default_processing = blink::mojom::Manifest::New();
-    state.manifest_before_default_processing->start_url = options.install_url;
-
-    if (mock_options.manifest_id.has_value()) {
-      state.manifest_before_default_processing->id = *mock_options.manifest_id;
-    } else {
-      state.manifest_before_default_processing->id =
-          GenerateManifestIdFromStartUrlOnly(options.install_url).value();
-    }
-
-    state.manifest_before_default_processing->name = u"Manifest Name";
+    GURL manifest_id =
+        mock_options.manifest_id.has_value()
+            ? *mock_options.manifest_id
+            : GenerateManifestIdFromStartUrlOnly(options.install_url).value();
+    state.opt_manifest =
+        blink::Manifest::Builder(
+            options.install_url, manifest_id,
+            blink::Manifest::GetDefaultScope(options.install_url))
+            .SetName(u"Manifest Name")
+            .BuildChecked();
     state.return_null_info = mock_options.empty_web_app_info;
 
     state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
@@ -403,7 +405,8 @@ TEST_F(ExternalAppResolutionCommandTest, InstallPlaceholderTwice) {
                {.url_load_result =
                     webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded});
   auto data_retriever = std::make_unique<FakeDataRetriever>();
-  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl,
+                                             kWebAppUrl.GetWithoutFilename());
 
   auto result = InstallAndWait(options, std::move(data_retriever));
 
@@ -960,7 +963,7 @@ TEST_F(ExternalAppResolutionCommandTest,
     std::vector<SkColor> icon_colors{SK_ColorGREEN, SK_ColorRED};
     auto manifest = CreateValidManifest();
     IconsMap icons_map =
-        CreateAndLoadIconMapFromSizes(new_sizes, icon_colors, manifest.get());
+        CreateAndLoadIconMapFromSizes(new_sizes, icon_colors, manifest);
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
       http_results[IconUrlWithSize::CreateForUnspecifiedSize(
@@ -1009,7 +1012,7 @@ TEST_F(ExternalAppResolutionCommandTest, IconDownloadSuccessOverwriteOldIcons) {
     std::vector<SkColor> old_colors{SK_ColorBLUE};
     auto manifest = CreateValidManifest();
     IconsMap icons_map =
-        CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest.get());
+        CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest);
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
       http_results[IconUrlWithSize::CreateForUnspecifiedSize(
@@ -1049,8 +1052,8 @@ TEST_F(ExternalAppResolutionCommandTest, IconDownloadSuccessOverwriteOldIcons) {
     std::vector<SquareSizePx> new_sizes{icon_size::k64, icon_size::k512};
     std::vector<SkColor> new_colors{SK_ColorYELLOW, SK_ColorRED};
     auto new_manifest = CreateValidManifest();
-    IconsMap new_icons_map = CreateAndLoadIconMapFromSizes(
-        new_sizes, new_colors, new_manifest.get());
+    IconsMap new_icons_map =
+        CreateAndLoadIconMapFromSizes(new_sizes, new_colors, new_manifest);
     DownloadedIconsHttpResults new_http_results;
     for (const auto& url_and_bitmap : new_icons_map) {
       new_http_results[IconUrlWithSize::CreateForUnspecifiedSize(
@@ -1103,7 +1106,7 @@ TEST_F(ExternalAppResolutionCommandTest,
   {
     auto manifest = CreateValidManifest();
     IconsMap icons_map =
-        CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest.get());
+        CreateAndLoadIconMapFromSizes(old_sizes, old_colors, manifest);
     DownloadedIconsHttpResults http_results;
     for (const auto& url_and_bitmap : icons_map) {
       http_results[IconUrlWithSize::CreateForUnspecifiedSize(
@@ -1145,8 +1148,8 @@ TEST_F(ExternalAppResolutionCommandTest,
     std::vector<SquareSizePx> new_sizes{icon_size::k256, icon_size::k512};
     std::vector<SkColor> new_colors{SK_ColorGREEN, SK_ColorBLUE};
     auto new_manifest = CreateValidManifest();
-    IconsMap new_icons_map = CreateAndLoadIconMapFromSizes(
-        new_sizes, new_colors, new_manifest.get());
+    IconsMap new_icons_map =
+        CreateAndLoadIconMapFromSizes(new_sizes, new_colors, new_manifest);
     DownloadedIconsHttpResults new_http_results;
     for (const auto& url_and_bitmap : new_icons_map) {
       new_http_results[IconUrlWithSize::CreateForUnspecifiedSize(
@@ -1266,8 +1269,12 @@ TEST_F(ExternalAppResolutionCommandTest, CrossOriginManifestRejected) {
   SetPageState(install_options);
   auto& state = fake_web_contents_manager().GetOrCreatePageState(
       install_options.install_url);
-  state.manifest_before_default_processing->start_url = kCrossOriginStartUrl;
-  state.manifest_before_default_processing->id = kCrossOriginManifestId;
+  state.opt_manifest =
+      blink::Manifest::Builder(
+          kCrossOriginStartUrl, kCrossOriginManifestId,
+          blink::Manifest::GetDefaultScope(kCrossOriginStartUrl))
+          .SetName(u"Manifest Name")
+          .BuildChecked();
 
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kInstallURLInvalid);
@@ -1293,8 +1300,12 @@ TEST_F(ExternalAppResolutionCommandTest,
   SetPageState(install_options);
   auto& state = fake_web_contents_manager().GetOrCreatePageState(
       install_options.install_url);
-  state.manifest_before_default_processing->start_url = kCrossOriginStartUrl;
-  state.manifest_before_default_processing->id = kCrossOriginManifestId;
+  state.opt_manifest =
+      blink::Manifest::Builder(
+          kCrossOriginStartUrl, kCrossOriginManifestId,
+          blink::Manifest::GetDefaultScope(kCrossOriginStartUrl))
+          .SetName(u"Manifest Name")
+          .BuildChecked();
 
   auto result = InstallAndWait(install_options);
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);

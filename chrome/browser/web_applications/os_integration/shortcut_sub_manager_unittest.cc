@@ -30,6 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -260,24 +261,23 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
     // Create fake manifest.
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
-    manifest->scope = kWebAppUrl.GetWithoutFilename();
-    manifest->name = u"New App";
-
+    std::vector<blink::Manifest::ImageResource> icons;
     for (const auto& [size, bitmap] : updated_icons) {
       blink::Manifest::ImageResource icon;
       icon.src =
           kWebAppUrl.Resolve("icon" + base::NumberToString(size) + ".png");
       icon.sizes.push_back(gfx::Size(size, size));
       icon.purpose.push_back(blink::mojom::ManifestImageResource_Purpose::ANY);
-      manifest->icons.push_back(std::move(icon));
-
-      manager.GetOrCreateIconState(manifest->icons.back().src).bitmaps = {
-          bitmap};
+      manager.GetOrCreateIconState(icon.src).bitmaps = {bitmap};
+      icons.push_back(std::move(icon));
     }
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest =
+        blink::Manifest::Builder(
+            kWebAppUrl, GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
+            kWebAppUrl.GetWithoutFilename())
+            .SetName(u"New App")
+            .SetIcons(std::move(icons))
+            .BuildChecked();
 
     base::test::TestFuture<ManifestSilentUpdateCompletionInfo> update_future;
     fake_provider().scheduler().ScheduleManifestSilentUpdate(

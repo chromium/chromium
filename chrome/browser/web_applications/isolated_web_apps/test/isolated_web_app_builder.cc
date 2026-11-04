@@ -109,13 +109,13 @@ FakeWebAppProvider* GetFakeWebAppProvider(Profile* profile) {
 FakeWebContentsManager::FakePageState& FakeInstallPageState(
     Profile* profile,
     const IsolatedWebAppUrlInfo& url_info,
-    blink::mojom::ManifestPtr blink_manifest) {
+    blink::Manifest blink_manifest) {
   FakeWebAppProvider* fake_web_app_provider = GetFakeWebAppProvider(profile);
   CHECK(fake_web_app_provider) << "WebAppProvider isn't faked";
   auto& fake_web_contents_manager = static_cast<FakeWebContentsManager&>(
       fake_web_app_provider->web_contents_manager());
 
-  for (const blink::Manifest::ImageResource& icon : blink_manifest->icons) {
+  for (const blink::Manifest::ImageResource& icon : blink_manifest.icons()) {
     FakeWebContentsManager::FakeIconState& icon_state =
         fake_web_contents_manager.GetOrCreateIconState(icon.src);
     // For now we use a placeholder icon rather than reading the icons
@@ -136,8 +136,7 @@ FakeWebContentsManager::FakePageState& FakeInstallPageState(
       webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   install_page_state.manifest_url = base_url.Resolve(kManifestPath);
   install_page_state.valid_manifest_for_web_app = true;
-  install_page_state.manifest_before_default_processing =
-      std::move(blink_manifest);
+  install_page_state.opt_manifest = std::move(blink_manifest);
 
   return install_page_state;
 }
@@ -448,52 +447,59 @@ std::string ManifestBuilder::ToJson() const {
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
-blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
+blink::Manifest ManifestBuilder::ToBlinkManifest(
     const url::Origin& app_origin) const {
   GURL base_url = app_origin.GetURL();
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->name = base::UTF8ToUTF16(name_);
-  manifest->version = base::UTF8ToUTF16(version_.GetString());
-  manifest->id = base_url;
-  manifest->scope = base_url;
-  manifest->start_url = base_url.Resolve(start_url_);
+  blink::Manifest::Builder builder(base_url.Resolve(start_url_), base_url,
+                                   base_url);
+  builder.SetName(base::UTF8ToUTF16(name_))
+      .SetVersion(base::UTF8ToUTF16(version_.GetString()))
+      .SetDisplay(display_mode_);
+
   if (update_manifest_url_) {
-    manifest->update_manifest_url = update_manifest_url_;
+    builder.SetUpdateManifestUrl(update_manifest_url_);
   }
-  manifest->display = display_mode_;
+
+  std::vector<blink::Manifest::DisplayOverride> display_overrides;
   for (const auto& item : display_mode_override_) {
     if (!item.url_patterns().empty()) {
       CHECK_EQ(item.display_mode(), blink::mojom::DisplayMode::kUnframed)
           << "Only the 'unframed' display override can have URL patterns.";
     }
-    manifest->display_override.push_back(
+    display_overrides.push_back(
         item.display_mode() == blink::mojom::DisplayMode::kUnframed
             ? blink::Manifest::DisplayOverride::CreateUnframed(
                   item.url_patterns())
             : blink::Manifest::DisplayOverride::Create(item.display_mode()));
   }
+  builder.SetDisplayOverride(std::move(display_overrides));
+
   if (launch_handler_client_mode_) {
-    manifest->launch_handler =
-        blink::Manifest::LaunchHandler(*launch_handler_client_mode_);
+    builder.SetLaunchHandler(
+        blink::Manifest::LaunchHandler(*launch_handler_client_mode_));
   }
 
+  std::vector<blink::Manifest::ImageResource> blink_icons;
   for (const auto& icon : icons_) {
     blink::Manifest::ImageResource blink_icon;
     blink_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
     blink_icon.src = base_url.Resolve(icon.resource_path);
     blink_icon.type = base::UTF8ToUTF16(icon.content_type);
     blink_icon.sizes.push_back(icon.size);
-    manifest->icons.push_back(blink_icon);
+    blink_icons.push_back(std::move(blink_icon));
   }
+  builder.SetIcons(std::move(blink_icons));
 
+  std::vector<blink::Manifest::ProtocolHandler> protocol_handlers;
   for (const auto& protocol_handler_pair : protocol_handlers_) {
-    blink::mojom::ManifestProtocolHandlerPtr protocol_handler =
-        blink::mojom::ManifestProtocolHandler::New(
-            base::UTF8ToUTF16(protocol_handler_pair.first),
-            GURL(protocol_handler_pair.second));
-    manifest->protocol_handlers.push_back(std::move(protocol_handler));
+    blink::Manifest::ProtocolHandler protocol_handler;
+    protocol_handler.protocol = base::UTF8ToUTF16(protocol_handler_pair.first);
+    protocol_handler.url = GURL(protocol_handler_pair.second);
+    protocol_handlers.push_back(std::move(protocol_handler));
   }
+  builder.SetProtocolHandlers(std::move(protocol_handlers));
 
+  std::vector<blink::Manifest::FileHandler> file_handlers;
   for (const auto& file_handler : file_handlers_) {
     base::flat_map<std::u16string, std::vector<std::u16string>> accept;
     for (const auto& accept_entry : file_handler.second) {
@@ -503,20 +509,23 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
         extensions.push_back(base::UTF8ToUTF16(extension));
       }
     }
-    auto handler = blink::mojom::ManifestFileHandler::New();
-    handler->action = GURL(file_handler.first);
-    handler->accept = accept;
-    manifest->file_handlers.push_back(std::move(handler));
+    blink::Manifest::FileHandler handler;
+    handler.action = GURL(file_handler.first);
+    handler.accept = std::move(accept);
+    file_handlers.push_back(std::move(handler));
   }
+  builder.SetFileHandlers(std::move(file_handlers));
 
+  std::vector<blink::Manifest::ScopeExtension> scope_extensions;
   for (const ScopeExtension& it : scope_extensions_) {
-    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
-    scope_extension->origin = it.origin;
-    scope_extension->has_origin_wildcard = it.has_origin_wildcard;
-    manifest->scope_extensions.push_back(std::move(scope_extension));
+    blink::Manifest::ScopeExtension scope_extension;
+    scope_extension.origin = it.origin;
+    scope_extension.has_origin_wildcard = it.has_origin_wildcard;
+    scope_extensions.push_back(std::move(scope_extension));
   }
+  builder.SetScopeExtensions(std::move(scope_extensions));
 
-  return manifest;
+  return builder.BuildChecked();
 }
 
 IsolatedWebAppBuilder::Resource::Resource(

@@ -42,6 +42,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "url/gurl.h"
@@ -149,36 +150,35 @@ class WebInstallServiceImplTest : public WebAppTest {
   }
 
   // Creates a manifest with the given properties. If `custom_id` is provided,
-  // sets the id field explicitly. Otherwise, the FakeWebContentsManager will
-  // default it to start_url (and set has_custom_id = false).
-  blink::mojom::ManifestPtr CreateManifest(
+  // sets the id field explicitly. Otherwise, defaults it to start_url (and
+  // sets has_custom_id = false).
+  blink::Manifest CreateManifest(
       const GURL& start_url,
       const std::optional<GURL>& custom_id = std::nullopt) {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->name = u"Test App";
-    manifest->short_name = u"Test";
-    manifest->start_url = start_url;
-    manifest->display = blink::mojom::DisplayMode::kStandalone;
-
+    GURL id = custom_id.value_or(start_url.GetWithoutRef());
+    blink::Manifest::Builder builder(
+        start_url, id, blink::Manifest::GetDefaultScope(start_url));
+    builder.SetName(u"Test App");
+    builder.SetShortName(u"Test");
+    builder.SetDisplay(blink::mojom::DisplayMode::kStandalone);
     if (custom_id) {
-      manifest->id = custom_id.value();
+      builder.SetHasCustomId(true);
     }
 
     blink::Manifest::ImageResource icon;
     icon.src = GURL(kIconUrl);
     icon.sizes = {{144, 144}};
     icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    manifest->icons = {icon};
+    builder.SetIcons({icon});
 
-    return manifest;
+    return builder.BuildChecked();
   }
 
   // Populates the FakePageState for |url| with the given manifest.
-  void SetupPageWithManifest(const GURL& url,
-                             blink::mojom::ManifestPtr manifest) {
+  void SetupPageWithManifest(const GURL& url, blink::Manifest manifest) {
     auto& page_state = fake_web_contents_manager().GetOrCreatePageState(url);
     page_state.has_service_worker = true;
-    page_state.manifest_before_default_processing = std::move(manifest);
+    page_state.opt_manifest = std::move(manifest);
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url = GURL(kManifestUrl);

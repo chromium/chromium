@@ -205,19 +205,20 @@ class FetchManifestAndInstallCommandTest
         accept, user_display_mode);
   }
 
-  blink::mojom::ManifestPtr CreateValidManifest() {
-    blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
-    manifest->name = u"foo";
-    manifest->short_name = u"bar";
-    manifest->start_url = kWebAppUrl;
-    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value();
-    manifest->display = blink::mojom::DisplayMode::kStandalone;
+  blink::Manifest CreateValidManifest() {
     blink::Manifest::ImageResource icon;
     icon.src = kDefaultIconUrl;
     icon.sizes = {{144, 144}};
     icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    manifest->icons = {icon};
-    return manifest;
+    return blink::Manifest::Builder(
+               kWebAppUrl,
+               GenerateManifestIdFromStartUrlOnly(kWebAppUrl).value(),
+               kWebAppUrl.GetWithoutFilename())
+        .SetName(u"foo")
+        .SetShortName(u"bar")
+        .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+        .SetIcons({icon})
+        .BuildChecked();
   }
 
   FakeWebContentsManager& web_contents_manager() {
@@ -226,17 +227,18 @@ class FetchManifestAndInstallCommandTest
   }
 
   void SetupPageState(
-      blink::mojom::ManifestPtr opt_manifest = blink::mojom::ManifestPtr()) {
+      std::optional<blink::Manifest> opt_manifest = std::nullopt) {
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
 
     page_state.has_service_worker = true;
-    page_state.manifest_before_default_processing =
+    bool has_custom_manifest = opt_manifest.has_value();
+    page_state.opt_manifest =
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest();
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
     // When using the default manifest, populate the default icon.
-    if (!opt_manifest) {
+    if (!has_custom_manifest) {
       auto& icon_state =
           web_contents_manager().GetOrCreateIconState(kDefaultIconUrl);
       icon_state.bitmaps = {CreateSquareIcon(144, kDefaultIconColor)};
@@ -354,10 +356,13 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
   icons_map[icon_url1] = {CreateSquareIcon(icon_size::k64, SK_ColorBLUE)};
   GURL icon_url2 = url.Resolve("color2.png");
   icons_map[icon_url2] = {CreateSquareIcon(icon_size::k512, SK_ColorGREEN)};
-  manifest->icons = {
-      CreateSquareImageResource(icon_url1, icon_size::k64, {IconPurpose::ANY}),
-      CreateSquareImageResource(icon_url2, icon_size::k512,
-                                {IconPurpose::ANY, IconPurpose::MASKABLE})};
+  manifest = manifest.ToBuilder()
+                 .SetIcons({CreateSquareImageResource(icon_url1, icon_size::k64,
+                                                      {IconPurpose::ANY}),
+                            CreateSquareImageResource(
+                                icon_url2, icon_size::k512,
+                                {IconPurpose::ANY, IconPurpose::MASKABLE})})
+                 .BuildChecked();
 
   SetupPageState(std::move(manifest));
   SetupIconState(icons_map);
@@ -432,7 +437,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
        SuccessWithFallbackInstallNoManifest) {
   SetupPageState();
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
-  page_state.manifest_before_default_processing = nullptr;
+  page_state.opt_manifest = std::nullopt;
   page_state.opt_metadata =
       FakeWebContentsManager::CreateMetadataWithTitle(u"test app");
 
@@ -636,7 +641,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
   const GURL url = GURL("https://example.com/path");
 
   // Remove the default icon.
-  manifest->icons = {};
+  std::vector<blink::Manifest::ImageResource> icons;
 
   for (const TestIconInfo& purpose_info : purpose_infos) {
     for (SquareSizePx s : purpose_info.sizes_px) {
@@ -644,12 +649,14 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
       GURL icon_url =
           url.Resolve(purpose_info.icon_url_name + size_str + ".png");
 
-      manifest->icons.push_back(
+      icons.push_back(
           CreateSquareImageResource(icon_url, s, {purpose_info.purpose}));
 
       icons_map[icon_url] = {CreateSquareIcon(s, purpose_info.color)};
     }
   }
+
+  manifest = manifest.ToBuilder().SetIcons(std::move(icons)).BuildChecked();
 
   int num_icons = icons_map.size();
 
@@ -739,8 +746,10 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_PrimaryPageChanged) {
   const GURL url = GURL("https://example.com/path");
 
   GURL icon_url = url.Resolve("color.png");
-  manifest->icons = {
-      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY})};
+  manifest = manifest.ToBuilder()
+                 .SetIcons({CreateSquareImageResource(icon_url, icon_size::k64,
+                                                      {IconPurpose::ANY})})
+                 .BuildChecked();
   icons_map[icon_url] = {CreateSquareIcon(icon_size::k64, SK_ColorBLUE)};
 
   SetupPageState(std::move(manifest));
@@ -802,8 +811,10 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_IconNotFound) {
   const GURL url = GURL("https://example.com/path");
 
   GURL icon_url = url.Resolve("color.png");
-  manifest->icons = {
-      CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY})};
+  manifest = manifest.ToBuilder()
+                 .SetIcons({CreateSquareImageResource(icon_url, icon_size::k64,
+                                                      {IconPurpose::ANY})})
+                 .BuildChecked();
   SetupPageState(std::move(manifest));
   // Setting up an empty icons map should trigger a 404 response.
   SetupIconState(icons_map);
@@ -853,8 +864,10 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDiskFailed) {
   IconsMap icons_map;
 
   GURL icon_url("https://example.com/app.ico");
-  manifest->icons.push_back(
+  std::vector<blink::Manifest::ImageResource> icons = manifest.icons();
+  icons.push_back(
       CreateSquareImageResource(icon_url, icon_size::k64, {IconPurpose::ANY}));
+  manifest = manifest.ToBuilder().SetIcons(std::move(icons)).BuildChecked();
   icons_map[icon_url] = {CreateSquareIcon(icon_size::k32, SK_ColorRED)};
   SetupPageState(std::move(manifest));
   SetupIconState(icons_map);
@@ -913,7 +926,9 @@ TEST_F(FetchManifestAndInstallCommandTest, IntentToPlayStore) {
   blink::Manifest::RelatedApplication related_app;
   related_app.platform = u"chromeos_play";
   related_app.id = u"com.app.id";
-  manifest->related_applications.push_back(std::move(related_app));
+  manifest = manifest.ToBuilder()
+                 .SetRelatedApplications({std::move(related_app)})
+                 .BuildChecked();
   SetupPageState(std::move(manifest));
 
   EXPECT_EQ(InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -947,7 +962,7 @@ class FetchManifestAndInstallCommandUniversalInstallTest
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
     page_state.has_service_worker = false;
     page_state.manifest_url = kWebAppManifestUrl;
-    page_state.manifest_before_default_processing = CreateValidManifest();
+    page_state.opt_manifest = CreateValidManifest();
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
   }
@@ -1104,41 +1119,41 @@ class UniversalInstallComboTest
           web_app::test::LoadTestImageFromDisk(kUnmaskableFavicon);
       page_state.favicon = {test_icon.AsBitmap()};
     }
-    page_state.manifest_before_default_processing =
-        blink::mojom::Manifest::New();
-    auto& manifest = page_state.manifest_before_default_processing;
+    GURL start_url = GetStartUrl().value_or(kWebAppUrl);
+    GURL id = GetManifestIdentity().has_value() ? GetManifestIdentity()->value()
+                                                : start_url.GetWithoutRef();
+    GURL scope = blink::Manifest::GetDefaultScope(start_url);
+    blink::Manifest::Builder builder(start_url, id, scope);
+    builder.SetHasValidSpecifiedStartUrl(GetStartUrl().has_value());
+    if (GetManifestIdentity().has_value()) {
+      builder.SetHasCustomId(true);
+    }
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
 
     if (GetAppName()) {
-      manifest->name = GetAppName().value();
-      manifest->short_name = GetAppName().value();
+      builder.SetName(GetAppName().value());
+      builder.SetShortName(GetAppName().value());
     } else {
       page_state.error_code =
           webapps::InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME;
     }
 
-    if (GetStartUrl()) {
-      manifest->start_url = GetStartUrl().value();
-    } else {
+    if (!GetStartUrl()) {
       page_state.error_code =
           webapps::InstallableStatusCode::START_URL_NOT_VALID;
     }
 
-    if (GetManifestIdentity()) {
-      manifest->id = GetManifestIdentity()->value();
-    }
-
     if (GetDisplayMode()) {
-      manifest->display = blink::mojom::DisplayMode::kBrowser;
-      manifest->display_override = {
-          blink::Manifest::DisplayOverride::Create(GetDisplayMode().value())};
+      builder.SetDisplay(blink::mojom::DisplayMode::kBrowser);
+      builder.SetDisplayOverride(
+          {blink::Manifest::DisplayOverride::Create(GetDisplayMode().value())});
     } else {
       page_state.error_code =
           webapps::InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
     }
 
     if (GetIcon()) {
-      manifest->icons = {GetIcon().value()};
+      builder.SetIcons({GetIcon().value()});
       GURL url = GetIcon()->src;
       auto& icon_state = web_contents_manager().GetOrCreateIconState(url);
       if (url.spec().contains("not_found")) {
@@ -1152,9 +1167,11 @@ class UniversalInstallComboTest
       page_state.error_code = webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
     }
 
-    if (!blink::IsEmptyManifest(manifest)) {
+    blink::Manifest manifest = std::move(builder).BuildChecked();
+    if (!blink::IsDefaultManifest(manifest, kWebAppUrl)) {
       page_state.manifest_url = kWebAppManifestUrl;
     }
+    page_state.opt_manifest = std::move(manifest);
 
     page_state.valid_manifest_for_web_app = IsInstallableOtherThanDisplay();
   }
