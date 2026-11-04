@@ -13,6 +13,7 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
@@ -24,6 +25,7 @@ namespace supervised_user {
 SupervisedUserServiceFactory::SupervisedUserServiceFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key),
                                          "SupervisedUserService") {
+  DependsOn(BrowserListFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -31,7 +33,9 @@ std::unique_ptr<KeyedService>
 SupervisedUserServiceFactory::BuildServiceInstanceFor(
     ProfileIOS& profile) const {
   std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-      std::make_unique<SupervisedUserServicePlatformDelegate>(&profile);
+      std::make_unique<SupervisedUserServicePlatformDelegate>(
+          CHECK_DEREF(profile.GetPrefs()),
+          CHECK_DEREF(BrowserListFactory::GetForProfile(profile)));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =

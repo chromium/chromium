@@ -5,16 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 
-class ProfileIOS;
+class BrowserList;
+class PrefService;
 
 // Delegate handling iOS logic that is invoked from SupervisedUserService.
 class SupervisedUserServicePlatformDelegate
     : public supervised_user::SupervisedUserService::PlatformDelegate {
  public:
-  explicit SupervisedUserServicePlatformDelegate(ProfileIOS* profile);
+  // `pref_service` and `browser_list` must outlive this object.
+  SupervisedUserServicePlatformDelegate(PrefService& pref_service,
+                                        BrowserList& browser_list);
 
   // supervised_user::SupervisedUserService::PlatformDelegate
   std::string GetCountryCode() const override;
@@ -24,7 +27,8 @@ class SupervisedUserServicePlatformDelegate
   void CloseIncognitoTabs() override;
 
  private:
-  raw_ptr<ProfileIOS> profile_;
+  const raw_ref<PrefService> pref_service_;
+  const raw_ref<BrowserList> browser_list_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SERVICE_PLATFORM_DELEGATE_H_
