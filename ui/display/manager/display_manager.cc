@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/linear_find.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -752,9 +753,10 @@ void DisplayManager::SetDisplayRotation(int64_t display_id,
   if (is_active) {
     AddMirrorDisplayInfoIfAny(&display_info_list);
     UpdateDisplaysWith(display_info_list);
-  } else if (display_info_.find(display_id) != display_info_.end()) {
+  } else if (ManagedDisplayInfo* info =
+                 base::FindOrNull(display_info_, display_id)) {
     // Inactive displays can reactivate, ensure they have been updated.
-    display_info_[display_id].SetRotation(rotation, source);
+    info->SetRotation(rotation, source);
   }
 }
 
@@ -862,17 +864,15 @@ void DisplayManager::RegisterDisplayProperty(
     bool is_interlaced,
     VariableRefreshRateState variable_refresh_rate_state,
     const std::optional<float>& vsync_rate_min) {
-  if (display_info_.find(display_id) == display_info_.end()) {
-    display_info_[display_id] =
-        ManagedDisplayInfo(display_id, std::string(), false);
-  }
+  ManagedDisplayInfo& info =
+      display_info_.try_emplace(display_id, display_id, std::string(), false)
+          .first->second;
 
   // Do not allow rotation in unified desktop mode.
   if (display_id == kUnifiedDisplayId) {
     rotation = Display::ROTATE_0;
   }
 
-  ManagedDisplayInfo& info = display_info_[display_id];
   info.SetRotation(rotation, Display::RotationSource::USER);
   info.SetRotation(rotation, Display::RotationSource::ACTIVE);
   info.set_zoom_factor(display_zoom_factor);
@@ -1322,13 +1322,9 @@ bool DisplayManager::UpdateDisplaysWith(
   UpdateNonPrimaryDisplayBoundsForLayout(&new_displays, &updated_indices);
   for (size_t updated_index : updated_indices) {
     if (!std::ranges::contains(added_display_indices, updated_index)) {
-      uint32_t metrics = DisplayObserver::DISPLAY_METRIC_BOUNDS |
-                         DisplayObserver::DISPLAY_METRIC_WORK_AREA;
-      if (display_changes.find(updated_index) != display_changes.end()) {
-        metrics |= display_changes[updated_index];
-      }
-
-      display_changes[updated_index] = metrics;
+      display_changes[updated_index] |=
+          DisplayObserver::DISPLAY_METRIC_BOUNDS |
+          DisplayObserver::DISPLAY_METRIC_WORK_AREA;
     }
   }
 
@@ -2320,9 +2316,9 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
 
   // Forget the configured resolution if the original unified desktop resolution
   // has changed.
-  if (display_info_.count(kUnifiedDisplayId) != 0 &&
-      GetMaxNativeSize(display_info_[kUnifiedDisplayId]) !=
-          unified_bounds.size()) {
+  if (const ManagedDisplayInfo* info =
+          base::FindOrNull(display_info_, kUnifiedDisplayId);
+      info && GetMaxNativeSize(*info) != unified_bounds.size()) {
     display_modes_.erase(kUnifiedDisplayId);
   }
 

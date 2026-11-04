@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/containers/map_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -114,9 +115,9 @@ ManagedDisplayInfo* GetInternalDisplay(ManagedDisplayInfoList* displays) {
 // |display_id|.
 void ClearCalibrationDataInMap(TouchDeviceManager::AssociationInfoMap& info_map,
                                int64_t display_id) {
-  if (info_map.find(display_id) == info_map.end())
-    return;
-  info_map[display_id].calibration_data = TouchCalibrationData();
+  if (auto* info = base::FindOrNull(info_map, display_id)) {
+    info->calibration_data = TouchCalibrationData();
+  }
 }
 
 // Returns a pointer to the ManagedDisplayInfo of the display that the device
@@ -131,24 +132,25 @@ ManagedDisplayInfo* GetBestMatchForDevice(
 
   // If we have no historical information for the touch device identified by
   // |identifier|, do an early return.
-  if (!touch_associations.contains(identifier))
+  const TouchDeviceManager::AssociationInfoMap* info_map =
+      base::FindOrNull(touch_associations, identifier);
+  if (!info_map) {
     return display_info;
-
-  const TouchDeviceManager::AssociationInfoMap& info_map =
-      touch_associations.at(identifier);
+  }
   // Iterate over each active display to see which one was most recently
   // associated with the touch device identified by |identifier|.
   for (ManagedDisplayInfo* display : *displays) {
     // We do not want to match anything to the internal display.
     if (IsInternalDisplayId(display->id()))
       continue;
-    if (!info_map.contains(display->id()))
+    const TouchDeviceManager::TouchAssociationInfo* info =
+        base::FindOrNull(*info_map, display->id());
+    if (!info) {
       continue;
-    const TouchDeviceManager::TouchAssociationInfo& info =
-        info_map.at(display->id());
-    if (info.timestamp > most_recent_timestamp) {
+    }
+    if (info->timestamp > most_recent_timestamp) {
       display_info = display;
-      most_recent_timestamp = info.timestamp;
+      most_recent_timestamp = info->timestamp;
     }
   }
   return display_info;
@@ -393,13 +395,16 @@ void TouchDeviceManager::AssociateDevicesWithCollision(
     // If this device is not the one that has a collision or if this device is
     // the one that has collision but we have no past port mapping information
     // associated with it, then we skip.
-    if (!collision_set.contains(identifier) ||
-        !port_associations_.contains(identifier)) {
+    const int64_t* port_display_id =
+        collision_set.contains(identifier)
+            ? base::FindOrNull(port_associations_, identifier)
+            : nullptr;
+    if (!port_display_id) {
       device_it++;
       continue;
     }
 
-    int64_t display_id = port_associations_.at(identifier);
+    int64_t display_id = *port_display_id;
 
     // Find the display associated with |display_id| from |displays|.
     ManagedDisplayInfoList::iterator display_it =
@@ -635,8 +640,8 @@ void TouchDeviceManager::ClearTouchCalibrationData(
     int64_t display_id) {
   const TouchDeviceIdentifier identifier =
       TouchDeviceIdentifier::FromDevice(device);
-  if (touch_associations_.contains(identifier)) {
-    ClearCalibrationDataInMap(touch_associations_.at(identifier), display_id);
+  if (auto* info_map = base::FindOrNull(touch_associations_, identifier)) {
+    ClearCalibrationDataInMap(*info_map, display_id);
   }
 }
 
@@ -656,29 +661,36 @@ TouchCalibrationData TouchDeviceManager::GetCalibrationData(
   if (display_id == kInvalidDisplayId) {
     // If the touch device is currently not associated with any display and the
     // |display_id| was not provided, then this is an invalid query.
-    if (!active_touch_associations_.contains(identifier))
+    const int64_t* active_display_id =
+        base::FindOrNull(active_touch_associations_, identifier);
+    if (!active_display_id) {
       return TouchCalibrationData();
+    }
 
     // If the display id is not provided, we return the calibration information
     // for the touch device |touchscreen| and the display it is actively
     // associated with.
-    display_id = active_touch_associations_.at(identifier);
+    display_id = *active_display_id;
   }
 
-  if (touch_associations_.contains(identifier)) {
-    const AssociationInfoMap& info_map = touch_associations_.at(identifier);
-    if (info_map.find(display_id) != info_map.end())
-      return info_map.at(display_id).calibration_data;
+  // Returns the association info for the touch device identified by |id| and
+  // the display identified by |display_id|, or nullptr if there is none.
+  auto get_touch_association_info =
+      [this, display_id](
+          const TouchDeviceIdentifier& id) -> const TouchAssociationInfo* {
+    const AssociationInfoMap* info_map =
+        base::FindOrNull(touch_associations_, id);
+    return info_map ? base::FindOrNull(*info_map, display_id) : nullptr;
+  };
+
+  if (const auto* info = get_touch_association_info(identifier)) {
+    return info->calibration_data;
   }
 
   // Check for legacy calibration data.
-  TouchDeviceIdentifier fallback_identifier(
-      TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier());
-  if (touch_associations_.contains(fallback_identifier)) {
-    const AssociationInfoMap& info_map =
-        touch_associations_.at(fallback_identifier);
-    if (info_map.find(display_id) != info_map.end())
-      return info_map.at(display_id).calibration_data;
+  if (const auto* info = get_touch_association_info(
+          TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier())) {
+    return info->calibration_data;
   }
 
   // Return an empty calibration data if none was found.
@@ -690,17 +702,18 @@ bool TouchDeviceManager::DisplayHasTouchDevice(
     const ui::TouchscreenDevice& device) const {
   const TouchDeviceIdentifier identifier =
       TouchDeviceIdentifier::FromDevice(device);
-  return active_touch_associations_.contains(identifier) &&
-         active_touch_associations_.at(identifier) == display_id;
+  const int64_t* associated_display_id =
+      base::FindOrNull(active_touch_associations_, identifier);
+  return associated_display_id && *associated_display_id == display_id;
 }
 
 int64_t TouchDeviceManager::GetAssociatedDisplay(
     const ui::TouchscreenDevice& device) const {
   const TouchDeviceIdentifier identifier =
       TouchDeviceIdentifier::FromDevice(device);
-  if (active_touch_associations_.contains(identifier))
-    return active_touch_associations_.at(identifier);
-  return kInvalidDisplayId;
+  const int64_t* display_id =
+      base::FindOrNull(active_touch_associations_, identifier);
+  return display_id ? *display_id : kInvalidDisplayId;
 }
 
 std::vector<ui::TouchscreenDevice>
