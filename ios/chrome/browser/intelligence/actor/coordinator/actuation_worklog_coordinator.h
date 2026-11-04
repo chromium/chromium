@@ -9,21 +9,25 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class ActuationWorklogViewController;
+@protocol ActuationWorklogActionHandler;
 @protocol ActuationWorklogDataSource;
 
 // Coordinator managing the actuation worklog lifecycle. Displays the worklog
-// published by an `ActuationWorklogDataSource` and handles the task
-// interventions from `ActorService`.
+// published by an `ActuationWorklogDataSource` and forwards the user actions
+// to an `ActuationWorklogActionHandler`.
 @interface ActuationWorklogCoordinator : ChromeCoordinator
 
 // The view controller displaying the actuation worklog.
 @property(nonatomic, readonly) ActuationWorklogViewController* viewController;
 
 // Starts displaying the worklog of the task identified by `taskID`, as
-// published by `dataSource`, replacing any previously observed task. Must be
-// called after `start`.
+// published by `dataSource`, replacing any previously observed task. The user
+// actions on the worklog are forwarded to `actionHandler`. Must be called after
+// `start`.
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource;
+                      dataSource:(id<ActuationWorklogDataSource>)dataSource
+                   actionHandler:
+                       (id<ActuationWorklogActionHandler>)actionHandler;
 
 // Stops observing the current task and resets the worklog. No-op if no task is
 // observed.

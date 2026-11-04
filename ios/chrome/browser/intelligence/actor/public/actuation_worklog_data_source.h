@@ -11,6 +11,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
+@class ActorFormSuggestion;
 @class ActuationInterventionAction;
 @class ActuationInterventionData;
 @class ActuationWorklogItem;
@@ -39,10 +40,21 @@
             didAppendItem:(ActuationWorklogItem*)item
                  toolType:(std::optional<actor::ToolType>)toolType;
 
+// Called when the last item is replaced by `item`, which has no tool chip, e.g.
+// the suggestions card after a reselection.
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+       didReplaceLastItem:(ActuationWorklogItem*)item;
+
 // Called when the pending intervention changes (`nil` once resolved or
 // discarded), and after attach if one is pending.
 - (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
     didUpdateIntervention:(ActuationInterventionData*)intervention;
+
+// Called when `suggestions` become selectable for `item` (`nil` once the user
+// resolves the intervention), and after attach if some are selectable.
+- (void)worklogDataSource:(id<ActuationWorklogDataSource>)dataSource
+     didUpdateSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+                  forItem:(ActuationWorklogItem*)item;
 
 @end
 
@@ -63,6 +75,11 @@
 
 // Resolves the pending intervention with `action`. No-op if none is pending.
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action;
+
+// Selects `suggestion` for the pending suggestions intervention, replacing the
+// card of the previously selected suggestion. No-op if no suggestions are
+// selectable.
+- (void)selectSuggestion:(ActorFormSuggestion*)suggestion;
 
 @end
 

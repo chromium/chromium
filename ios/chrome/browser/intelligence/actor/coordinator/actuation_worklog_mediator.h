@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_suggestions_delegate.h"
-#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 
@@ -17,14 +16,14 @@ class ActorService;
 }  // namespace actor
 
 @protocol ActuationSuggestionsConsumer;
+@protocol ActuationWorklogActionHandler;
 @protocol ActuationWorklogConsumer;
 @protocol ActuationWorklogDataSource;
 
 // Translates the worklog of an `ActorTask` into displayable timeline items and
 // action chips for an `ActuationWorklogConsumer`.
-@interface ActuationWorklogMediator : NSObject <ActorTaskInterventionDelegate,
-                                                ActuationSuggestionsDelegate,
-                                                ActuationWorklogMutator>
+@interface ActuationWorklogMediator
+    : NSObject <ActuationSuggestionsDelegate, ActuationWorklogMutator>
 
 // The consumer that receives formatted worklog updates.
 @property(nonatomic, weak) id<ActuationWorklogConsumer> consumer;
@@ -32,16 +31,19 @@ class ActorService;
 // Consumer handling suggestion coordinator lifecycle.
 @property(nonatomic, weak) id<ActuationSuggestionsConsumer> suggestionsConsumer;
 
-// Designated initializer with the service handling the task interventions.
+// Designated initializer with the service stopping the task.
 - (instancetype)initWithActorService:(actor::ActorService*)actorService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts displaying the worklog of the task identified by `taskID`, as
-// published by `dataSource`, replacing any previously observed task.
+// published by `dataSource`, replacing any previously observed task. The user
+// actions on the worklog are forwarded to `actionHandler`.
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource;
+                      dataSource:(id<ActuationWorklogDataSource>)dataSource
+                   actionHandler:
+                       (id<ActuationWorklogActionHandler>)actionHandler;
 
 // Stops observing the current task and resets the worklog. No-op if no task is
 // observed.

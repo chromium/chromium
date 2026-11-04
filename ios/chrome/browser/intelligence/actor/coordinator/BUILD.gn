@@ -52,7 +52,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/actor/core",
-    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/model",

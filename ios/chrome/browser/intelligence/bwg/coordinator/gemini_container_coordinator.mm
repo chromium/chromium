@@ -145,9 +145,12 @@
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator
     didStartActuationTaskWithID:(actor::ActorTaskId)taskID
-                     dataSource:(id<ActuationWorklogDataSource>)dataSource {
+                     dataSource:(id<ActuationWorklogDataSource>)dataSource
+                  actionHandler:
+                      (id<ActuationWorklogActionHandler>)actionHandler {
   [_actuationWorklogCoordinator startObservingTaskWithID:taskID
-                                              dataSource:dataSource];
+                                              dataSource:dataSource
+                                           actionHandler:actionHandler];
 }
 
 - (void)geminiContainerMediator:(GeminiContainerMediator*)mediator

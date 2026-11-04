@@ -102,9 +102,8 @@ TEST_F(ActuationWorklogCoordinatorTest,
 
   ActuationWorklogItem* updated_item =
       [ActuationWorklogItem simpleItemWithTitle:@"Updated" active:YES];
-  [consumer
-      updateActiveWorklogItemForReselectedSuggestion:updated_item
-                                     fromCoordinator:suggestions_coordinator];
+  [consumer updateActiveWorklogItemForReselectedSuggestion:updated_item];
+  EXPECT_EQ(coordinator.viewController.suggestionsPresenter, presenter);
   EXPECT_EQ(suggestions_coordinator.worklogItem, updated_item);
 
   [coordinator stop];

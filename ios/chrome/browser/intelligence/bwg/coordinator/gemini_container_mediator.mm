@@ -487,7 +487,8 @@ class GeminiContainerMediatorTabHelperObserver
   [self setActuationActive:YES];
   [self.delegate geminiContainerMediator:self
              didStartActuationTaskWithID:taskID
-                              dataSource:_actuationTaskStore];
+                              dataSource:_actuationTaskStore
+                           actionHandler:_actuationTaskStore];
 }
 
 - (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID

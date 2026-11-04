@@ -26,15 +26,16 @@ class ActorService;
 // ID of the observed task.
 @property(nonatomic, readonly) actor::ActorTaskId taskID;
 
-// Designated initializer. Starts observing `taskID` updates on `actorService`;
-// the worklog stays empty if they can't be observed.
+// Designated initializer. Starts observing `taskID` updates on `actorService`
+// and handling its interventions; the worklog stays empty if they can't be
+// observed.
 - (instancetype)initWithTaskID:(actor::ActorTaskId)taskID
                   actorService:(actor::ActorService*)actorService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Stops observing the task.
+// Stops observing the task and handling its interventions.
 - (void)disconnect;
 
 @end

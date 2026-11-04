@@ -67,11 +67,7 @@
 }
 
 - (void)updateActiveWorklogItemForReselectedSuggestion:
-            (ActuationWorklogItem*)worklogItem
-                                       fromCoordinator:
-                                           (ActuationSuggestionsCoordinator*)
-                                               coordinator {
-  CHECK_EQ(_suggestionsCoordinator, coordinator);
+    (ActuationWorklogItem*)worklogItem {
   _suggestionsCoordinator.worklogItem = worklogItem;
 }
 
@@ -84,8 +80,12 @@
 #pragma mark - Public
 
 - (void)startObservingTaskWithID:(actor::ActorTaskId)taskID
-                      dataSource:(id<ActuationWorklogDataSource>)dataSource {
-  [_mediator startObservingTaskWithID:taskID dataSource:dataSource];
+                      dataSource:(id<ActuationWorklogDataSource>)dataSource
+                   actionHandler:
+                       (id<ActuationWorklogActionHandler>)actionHandler {
+  [_mediator startObservingTaskWithID:taskID
+                           dataSource:dataSource
+                        actionHandler:actionHandler];
 }
 
 - (void)stopObservingTask {
