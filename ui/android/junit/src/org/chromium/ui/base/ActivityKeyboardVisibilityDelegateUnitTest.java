@@ -30,8 +30,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseFeatures;
-import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,13 +67,24 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     private TestRootView mRootView;
     private final SettableMonotonicObservableSupplier<Integer> mKeyboardInsetSupplier =
             ObservableSuppliers.createMonotonic();
-    private LazyOneshotSupplier<MonotonicObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     @Before
     public void setUp() {
-        mLazyKeyboardInsetSupplier = LazyOneshotSupplier.fromValue(mKeyboardInsetSupplier);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    @Test
+    public void testSetKeyboardInsetSupplier_observerAlreadyAdded_replacesObserver() {
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
+        assertTrue(mKeyboardInsetSupplier.hasObservers());
+
+        SettableMonotonicObservableSupplier<Integer> newSupplier =
+                ObservableSuppliers.createMonotonic();
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(newSupplier);
+        assertFalse(mKeyboardInsetSupplier.hasObservers());
+        assertTrue(newSupplier.hasObservers());
     }
 
     private void onActivity(Activity activity) {
@@ -109,7 +118,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     public void testKeyboardInsetObserver_ObserverAlreadyAdded() {
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
         assertEquals(1, shadowOf(mRootView).getOnLayoutChangeListeners().size());
-        mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         assertTrue(mKeyboardInsetSupplier.hasObservers());
 
         int inset = 150;
@@ -133,11 +142,14 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         triggerLayout();
         // Verify the observer is not re-notified the keyboard is hidden.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        assertFalse(mKeyboardInsetSupplier.hasObservers());
     }
 
     @Test
     public void testKeyboardInsetObserver_ObserverNotYetAdded() {
-        mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         assertFalse(mKeyboardInsetSupplier.hasObservers());
 
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -155,12 +167,15 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
         mKeyboardInsetSupplier.set(inset);
         // Verify the observer is notified the keyboard is hidden in response to an inset change.
         verify(mKeyboardVisibilityListener).keyboardVisibilityChanged(false);
+
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+        assertFalse(mKeyboardInsetSupplier.hasObservers());
     }
 
     @Test
     @EnableFeatures(BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY)
     public void testKeyboardInsetObserver_SplitScreenZeroKeyboardInset() {
-        mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
 
         when(mWindowInsets.isVisible(WindowInsets.Type.ime())).thenReturn(true);
@@ -174,7 +189,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Test
     @DisableFeatures(BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY)
     public void testKeyboardInsetObserver_SplitScreenZeroKeyboardInset_KillSwitchDisabled() {
-        mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
+        mKeyboardVisibilityDelegate.setKeyboardInsetSupplier(mKeyboardInsetSupplier);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
 
         setRootViewKeyboardInset(150);
