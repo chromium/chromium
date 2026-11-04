@@ -421,8 +421,8 @@ BASE_DECLARE_FEATURE_PARAM(
 // `kEnableAccountPreviewData` is not enabled.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewSwitchingAccount);
-// When true, skips cooldowns and throttling limits for the account switching
-// promo. Used for manual and automated testing.
+// When true, skips cooldowns and per-account-pair throttling limits for the
+// account switching promo. Used for manual testing only.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kEnableAccountPreviewSwitchingAccountSkipCooldown);

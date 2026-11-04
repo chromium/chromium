@@ -462,8 +462,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // enabled.
 BASE_FEATURE(kEnableAccountPreviewSwitchingAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// When true, skips cooldowns and throttling limits for the account switching
-// promo. Used for manual and automated testing.
+// When true, skips cooldowns and per-account-pair throttling limits for the
+// account switching promo. Used for manual testing only.
 BASE_FEATURE_PARAM(bool,
                    kEnableAccountPreviewSwitchingAccountSkipCooldown,
                    &kEnableAccountPreviewSwitchingAccount,

@@ -6,11 +6,14 @@
 
 #import <string>
 
+#import "base/check.h"
 #import "base/check_op.h"
+#import "base/not_fatal_until.h"
 #import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -32,6 +35,8 @@ namespace {
 //   "pairs": {
 //     "<primary_gaia_id>": {
 //       "<target_gaia_id>": {
+//         // Number of times the user tapped "Not now".
+//         "explicit_dismissal_count": 1,
 //         // Set when the user switched from `target` to `primary`.
 //         "suppressed_by_reverse_switch": true
 //       }
@@ -39,20 +44,19 @@ namespace {
 //   }
 // }
 constexpr char kPairsDictKey[] = "pairs";
+constexpr char kPairExplicitDismissalCountKey[] = "explicit_dismissal_count";
 constexpr char kPairSuppressedByReverseSwitchKey[] =
     "suppressed_by_reverse_switch";
 
-// Verifies that `profile_prefs` is the `PrefService` of the personal profile
-// whenever a `ProfileManagerIOS` is active.
+// Checks that `profile_prefs` is the `PrefService` of the personal profile.
 void CheckIsPersonalProfilePrefs(const PrefService& profile_prefs) {
-  if (ProfileManagerIOS* profile_manager =
-          GetApplicationContext()->GetProfileManager()) {
-    ProfileIOS* personal_profile = profile_manager->GetProfileWithName(
-        profile_manager->GetProfileAttributesStorage()
-            ->GetPersonalProfileName());
-    CHECK(personal_profile);
-    CHECK_EQ(&profile_prefs, personal_profile->GetPrefs());
-  }
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+  CHECK(profile_manager);
+  ProfileIOS* personal_profile = profile_manager->GetProfileWithName(
+      profile_manager->GetProfileAttributesStorage()->GetPersonalProfileName());
+  CHECK(personal_profile);
+  CHECK_EQ(&profile_prefs, personal_profile->GetPrefs());
 }
 
 // Ensures and returns the mutable per-pair dictionary for
@@ -89,9 +93,17 @@ bool IsSuppressedByPairRules(const base::DictValue* pairs_dict,
     return false;
   }
 
-  // Set when the user previously switched away from `target_gaia_id` to
-  // `primary_gaia_id`; never suggest switching back.
-  return pair_dict->FindBool(kPairSuppressedByReverseSwitchKey).value_or(false);
+  if (pair_dict->FindBool(kPairSuppressedByReverseSwitchKey).value_or(false)) {
+    // The user previously switched away from `target_gaia_id` to
+    // `primary_gaia_id`; never suggest switching back.
+    return true;
+  }
+
+  // Maximum number of explicit dismissals for a specific `(primary, target)`
+  // pair before permanently suppressing that pair.
+  static constexpr int kMaxPairExplicitDismissals = 2;
+  return pair_dict->FindInt(kPairExplicitDismissalCountKey).value_or(0) >=
+         kMaxPairExplicitDismissals;
 }
 
 }  // namespace
@@ -104,6 +116,7 @@ bool CanShowAccountSwitchingPromo(const PrefService& profile_prefs,
                                   const GaiaId& primary_gaia_id,
                                   const GaiaId& target_gaia_id) {
   CheckIsPersonalProfilePrefs(profile_prefs);
+
   const base::DictValue& state_dict =
       profile_prefs.GetDict(kAccountSwitchingPromoStatePref);
   return !IsSuppressedByPairRules(state_dict.FindDict(kPairsDictKey),
@@ -114,9 +127,14 @@ void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
                                          const GaiaId& previous_primary_gaia_id,
                                          const GaiaId& new_primary_gaia_id) {
   CheckIsPersonalProfilePrefs(profile_prefs);
-  CHECK(!previous_primary_gaia_id.empty());
-  CHECK(!new_primary_gaia_id.empty());
-  CHECK_NE(previous_primary_gaia_id, new_primary_gaia_id);
+  CHECK(!previous_primary_gaia_id.empty(), base::NotFatalUntil::M170);
+  CHECK(!new_primary_gaia_id.empty(), base::NotFatalUntil::M170);
+  CHECK_NE(previous_primary_gaia_id, new_primary_gaia_id,
+           base::NotFatalUntil::M170);
+  if (previous_primary_gaia_id.empty() || new_primary_gaia_id.empty() ||
+      previous_primary_gaia_id == new_primary_gaia_id) {
+    return;
+  }
 
   ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
   // User switched from `previous_primary_gaia_id` (Account B) to
@@ -124,6 +142,27 @@ void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
   // (A -> B).
   EnsurePairDict(*update, new_primary_gaia_id, previous_primary_gaia_id)
       .Set(kPairSuppressedByReverseSwitchKey, true);
+}
+
+void RecordAccountSwitchingPromoExplicitlyDismissed(
+    PrefService& profile_prefs,
+    const GaiaId& primary_gaia_id,
+    const GaiaId& target_gaia_id) {
+  CheckIsPersonalProfilePrefs(profile_prefs);
+  CHECK(!primary_gaia_id.empty(), base::NotFatalUntil::M170);
+  CHECK(!target_gaia_id.empty(), base::NotFatalUntil::M170);
+  CHECK_NE(primary_gaia_id, target_gaia_id, base::NotFatalUntil::M170);
+  if (primary_gaia_id.empty() || target_gaia_id.empty() ||
+      primary_gaia_id == target_gaia_id) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(&profile_prefs, kAccountSwitchingPromoStatePref);
+  base::DictValue& pair_dict =
+      EnsurePairDict(*update, primary_gaia_id, target_gaia_id);
+  int pair_dismissals =
+      pair_dict.FindInt(kPairExplicitDismissalCountKey).value_or(0);
+  pair_dict.Set(kPairExplicitDismissalCountKey, pair_dismissals + 1);
 }
 
 }  // namespace signin

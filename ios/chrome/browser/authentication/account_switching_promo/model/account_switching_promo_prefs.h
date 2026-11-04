@@ -27,20 +27,31 @@ inline constexpr char kAccountSwitchingPromoStatePref[] =
 // Registers profile preferences used by the account switching promo.
 void RegisterAccountSwitchingPromoProfilePrefs(PrefRegistrySimple* registry);
 
-// Returns true if the account switching promo is allowed to be shown for
-// (`primary_gaia_id`, `target_gaia_id`) according to per-account-pair rules
-// (reverse-switch suppression). Global cooldowns and caps are enforced by
-// Feature Engagement Tracker.
+// Returns whether the account switching promo may be shown for the
+// (`primary_gaia_id`, `target_gaia_id`) pair. Applies the per-account-pair
+// rules (reverse-switch suppression and a cap of 2 explicit dismissals). Global
+// cooldowns and caps are enforced by Feature Engagement Tracker.
+// `profile_prefs` must be the personal profile's `PrefService`.
 bool CanShowAccountSwitchingPromo(const PrefService& profile_prefs,
                                   const GaiaId& primary_gaia_id,
                                   const GaiaId& target_gaia_id);
 
 // Suppresses the reverse pair
 // `(new_primary_gaia_id, previous_primary_gaia_id)` when the user switches from
-// `previous_primary_gaia_id` to `new_primary_gaia_id`.
+// `previous_primary_gaia_id` to `new_primary_gaia_id`. `profile_prefs` must be
+// the personal profile's `PrefService`.
 void SuppressAccountSwitchingReversePair(PrefService& profile_prefs,
                                          const GaiaId& previous_primary_gaia_id,
                                          const GaiaId& new_primary_gaia_id);
+
+// Increments the explicit dismissal ("Not now") count of the
+// (`primary_gaia_id`, `target_gaia_id`) pair in `profile_prefs`.
+// `profile_prefs` must be the personal profile's `PrefService`.
+// `primary_gaia_id` and `target_gaia_id` must be non-empty and distinct.
+void RecordAccountSwitchingPromoExplicitlyDismissed(
+    PrefService& profile_prefs,
+    const GaiaId& primary_gaia_id,
+    const GaiaId& target_gaia_id);
 
 }  // namespace signin
 
