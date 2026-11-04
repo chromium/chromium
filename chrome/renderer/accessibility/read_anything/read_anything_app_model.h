@@ -104,16 +104,18 @@ class ReadAnythingAppModel {
     ~AXTreeInfo();
 
     // Store AXTrees of web contents in the browser's tab strip as
-    // AXTreeManagers.
+    // AXTreeManagers. Null until the tree's first accessibility update:
+    // OnActiveAXTreeIDChanged() can add a tree's metadata (e.g. its UKM
+    // source ID and whether it's a PDF) before that.
     std::unique_ptr<ui::AXTreeManager> manager;
 
     // The UKM source ID of the main frame that sources this AXTree. This is
     // used for metrics collection. Only root AXTrees have this set.
     ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
 
-    // Used to keep track of how many selections were made for the
-    // ukm_source_id. Only recorded during the select-to-distill flow (when the
-    // empty state page is shown).
+    // Used to keep track of how many selections were made for this tree. Only
+    // recorded during the select-to-distill flow (when the empty state page is
+    // shown).
     int num_selections = 0;
 
     // Whether URL information, namely is_docs, has been set.
@@ -604,8 +606,11 @@ class ReadAnythingAppModel {
   void SetRootTreeId(ui::AXTreeID root_tree_id);
   const ui::AXTreeID& root_tree_id() const { return root_tree_id_; }
 
+  // Returns the UKM source ID that the browser reported for the active tree.
+  // If a child tree is active, or was active and has been destroyed, returns
+  // the root tree's source ID instead.
   ukm::SourceId GetUkmSourceId() const;
-  void SetUkmSourceIdForTree(const ui::AXTreeID& tree,
+  void SetUkmSourceIdForTree(const ui::AXTreeID& tree_id,
                              ukm::SourceId ukm_source_id);
 
   GURL GetActiveTreeUrl() const;
@@ -702,6 +707,8 @@ class ReadAnythingAppModel {
   // root node. Returns nullptr otherwise.
   ui::AXSerializableTree* GetValidActiveTree() const;
 
+  // Returns whether accessibility updates have created the AXTree for
+  // `tree_id`. Metadata added before the first update doesn't count.
   bool ContainsTree(const ui::AXTreeID& tree_id) const;
 
   bool ContainsActiveTree() const;
@@ -770,9 +777,10 @@ class ReadAnythingAppModel {
   }
 
   // The UKM source of the page that the active AXTree belongs to, as reported
-  // by the browser. Unlike GetUkmSourceId(), this is independent of the active
-  // tree's lifetime: it's kept when the tree is destroyed and set even before
-  // the tree's first updates arrive.
+  // by the browser. Unlike GetUkmSourceId(), this is kept when the root tree is
+  // destroyed or cleared. Don't use it to record UKM, since
+  // OnActiveAXTreeIDChanged() updates it before recording the outgoing page's
+  // session metrics; use GetUkmSourceId() instead.
   ukm::SourceId active_page_ukm_source_id() const {
     return active_page_ukm_source_id_;
   }
@@ -931,10 +939,13 @@ class ReadAnythingAppModel {
 
   void EnsureAXTreeExists(const ui::AXTreeID& tree_id);
 
+  // Returns the info for `tree_id`, adding an entry without an AXTree if
+  // there isn't one yet.
+  AXTreeInfo& EnsureTreeInfoExists(const ui::AXTreeID& tree_id);
+
   void UpdateActiveTreeIfNeeded(const ui::AXTreeID& tree_id);
 
   void SetFontSize(double font_size, int increment = 0);
-  void SetUkmSourceId(ukm::SourceId ukm_source_id);
   std::map<std::string, std::vector<AnchorData>> CollectAnchorsFromAXTree(
       ui::AXSerializableTree* tree);
 
@@ -1260,9 +1271,6 @@ class ReadAnythingAppModel {
   // selection in the main panel.
   SidePanelDistillationMode side_panel_distillation_mode_ =
       SidePanelDistillationMode::kMainContent;
-
-  std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
-  std::map<ui::AXTreeID, bool> pending_is_pdf_;
 
   // Possible child tree ids that could be used to distill content if the
   // root tree has no distillable content. This will only be used if

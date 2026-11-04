@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -28,7 +29,15 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using ::testing::ElementsAre;
+using ::testing::NotNull;
+using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
+
+class MockModelObserver : public ReadAnythingAppModel::ModelObserver {
+ public:
+  MOCK_METHOD(void, OnTreeAdded, (ui::AXTree * tree), (override));
+  MOCK_METHOD(void, OnTreeRemoved, (ui::AXTree * tree), (override));
+};
 
 class ReadAnythingAppModelNoInitTest : public testing::Test {
  public:
@@ -1615,7 +1624,14 @@ TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeExists) {
   EXPECT_EQ(model().GetUkmSourceId(), source_id);
 }
 
-TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
+TEST_F(ReadAnythingAppModelTest,
+       SetUkmSourceIdForTree_TreeDoesNotExistInitially) {
+  StrictMock<MockModelObserver> observer;
+  base::ScopedObservation<ReadAnythingAppModel,
+                          ReadAnythingAppModel::ModelObserver>
+      observation(&observer);
+  observation.Observe(&model());
+
   ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id);
@@ -1627,15 +1643,126 @@ TEST_F(ReadAnythingAppModelTest, SetUkmSourceId_TreeDoesNotExistInitially) {
 
   ukm::SourceId source_id = ukm::AssignNewSourceId();
 
-  // The UKM source should be invalid when the tree is made active but before
-  // a representation of it is actually stored.
+  // Tree metadata is available before the tree's first accessibility update,
+  // without creating an AXTree or notifying observers.
   model().SetActiveTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  model().SetIsPdf(true);
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+  EXPECT_TRUE(model().IsPdf());
+  EXPECT_FALSE(model().ContainsTree(tree_id));
+  EXPECT_FALSE(model().ContainsActiveTree());
+  EXPECT_EQ(model().GetValidActiveTree(), nullptr);
+
+  // The metadata is kept once an accessibility update creates the tree and
+  // notifies observers.
+  EXPECT_CALL(observer, OnTreeAdded(NotNull()));
+  ApplyAccessibilityUpdates(tree_id, {std::move(update)});
+  EXPECT_TRUE(model().ContainsTree(tree_id));
+  EXPECT_TRUE(model().ContainsActiveTree());
+  EXPECT_NE(model().GetValidActiveTree(), nullptr);
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+  EXPECT_TRUE(model().IsPdf());
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetUkmSourceId_ChildTreeActive_UsesRootTreeSource) {
+  const ui::AXTreeID root_tree_id = SetupTree("https://www.google.com/");
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+  model().SetRootTreeId(root_tree_id);
+  model().SetUkmSourceIdForTree(root_tree_id, source_id);
+
+  // Screen2x makes a child tree (e.g. an iframe) the active tree if the root
+  // tree has no distillable content. Child trees have no UKM source ID.
+  const ui::AXTreeID child_tree_id = SetupTree("https://www.example.com/");
+  model().SetActiveTreeId(child_tree_id);
+
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetUkmSourceId_ActiveChildTreeDestroyed_UsesRootTreeSource) {
+  const ui::AXTreeID root_tree_id = SetupTree("https://www.google.com/");
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+  model().SetRootTreeId(root_tree_id);
+  model().SetUkmSourceIdForTree(root_tree_id, source_id);
+  const ui::AXTreeID child_tree_id = SetupTree("https://www.example.com/");
+  model().SetActiveTreeId(child_tree_id);
+
+  // Metrics recorded after the active child tree is destroyed still belong to
+  // the root tree's page.
+  model().OnAXTreeDestroyed(child_tree_id);
+
+  EXPECT_EQ(model().active_tree_id(), ui::AXTreeIDUnknown());
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       GetUkmSourceId_RootTreeDestroyedWhileChildTreeActive_ReturnsInvalid) {
+  const ui::AXTreeID root_tree_id = SetupTree("https://www.google.com/");
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+  model().SetRootTreeId(root_tree_id);
+  model().SetUkmSourceIdForTree(root_tree_id, source_id);
+  const ui::AXTreeID child_tree_id = SetupTree("https://www.example.com/");
+  model().SetActiveTreeId(child_tree_id);
+
+  model().OnAXTreeDestroyed(root_tree_id);
+
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SetUkmSourceIdForTree_InactiveTree_UsedWhenActivated) {
+  const ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+
+  // Setting the source ID of an inactive tree doesn't change the active
+  // tree's source ID.
   model().SetUkmSourceIdForTree(tree_id, source_id);
   EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
 
-  // The UKM source should be valid once an accessibility event is received for
-  // the active tree.
-  ApplyAccessibilityUpdates(tree_id, {std::move(update)});
+  model().SetRootTreeId(tree_id);
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       OnAXTreeDestroyed_TreeWithoutUpdates_ErasesMetadata) {
+  StrictMock<MockModelObserver> observer;
+  base::ScopedObservation<ReadAnythingAppModel,
+                          ReadAnythingAppModel::ModelObserver>
+      observation(&observer);
+  observation.Observe(&model());
+
+  const ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  model().SetRootTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, ukm::AssignNewSourceId());
+  model().SetIsPdf(true);
+
+  model().OnAXTreeDestroyed(tree_id);
+  EXPECT_EQ(model().active_tree_id(), ui::AXTreeIDUnknown());
+
+  // Re-activating tree_id checks that its metadata entry was erased, rather
+  // than returning empty defaults only because active_tree_id_ was cleared.
+  model().SetRootTreeId(tree_id);
+  EXPECT_EQ(model().GetUkmSourceId(), ukm::kInvalidSourceId);
+  EXPECT_FALSE(model().IsPdf());
+  EXPECT_FALSE(model().tree_infos_for_testing().contains(tree_id));
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       SetUkmSourceIdForTree_IgnoresUnknownTreeAndInvalidSource) {
+  const size_t num_trees = model().tree_infos_for_testing().size();
+  model().SetUkmSourceIdForTree(ui::AXTreeIDUnknown(),
+                                ukm::AssignNewSourceId());
+  EXPECT_EQ(model().tree_infos_for_testing().size(), num_trees);
+  EXPECT_FALSE(
+      model().tree_infos_for_testing().contains(ui::AXTreeIDUnknown()));
+
+  const ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+  model().SetRootTreeId(tree_id);
+  model().SetUkmSourceIdForTree(tree_id, source_id);
+  model().SetUkmSourceIdForTree(tree_id, ukm::kInvalidSourceId);
   EXPECT_EQ(model().GetUkmSourceId(), source_id);
 }
 

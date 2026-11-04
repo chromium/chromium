@@ -44,7 +44,7 @@ class AXTree;
 }  // namespace ui
 
 namespace ukm {
-class MojoUkmRecorder;
+class UkmRecorder;
 }  // namespace ukm
 
 class AXTreeDistiller;
@@ -607,8 +607,8 @@ class ReadAnythingAppController
       std::unique_ptr<base::ScopedObservation<ui::AXTree, ui::AXTreeObserver>>>
       tree_observers_;
 
-  // For metrics logging
-  std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
+  // For metrics logging. A ukm::MojoUkmRecorder, except in tests.
+  std::unique_ptr<ukm::UkmRecorder> ukm_recorder_;
 
   // The time when the renderer constructor is first triggered.
   base::TimeTicks renderer_load_triggered_time_ms_;

@@ -200,9 +200,7 @@ void ReadAnythingAppModel::ResetLineFocusSession() {
 }
 
 bool ReadAnythingAppModel::PostProcessSelection() {
-  CHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
-  const auto it = tree_infos_.find(active_tree_id_);
-  CHECK(it != tree_infos_.end());
+  CHECK(ContainsActiveTree());
 
   requires_post_process_selection_ = false;
   const bool was_empty = is_empty();
@@ -260,7 +258,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   if (was_empty) {
     base::UmaHistogramEnumeration(kEmptyStateHistogramName,
                                   EmptyState::kShownWithSelectionAfter);
-    ++it->second->num_selections;
+    SetNumSelections(GetNumSelections() + 1);
   }
 
   if (IsSelectionInDistilledContent()) {
@@ -593,7 +591,8 @@ ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
 }
 
 bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
-  return tree_infos_.contains(tree_id);
+  const auto it = tree_infos_.find(tree_id);
+  return it != tree_infos_.end() && it->second->manager;
 }
 
 bool ReadAnythingAppModel::ContainsActiveTree() const {
@@ -679,16 +678,8 @@ void ReadAnythingAppModel::FallbackToScreen2x() {
 }
 
 bool ReadAnythingAppModel::IsPdf() const {
-  if (tree_infos_.contains(active_tree_id_)) {
-    return tree_infos_.at(active_tree_id_)->is_pdf;
-  }
-
-  auto it = pending_is_pdf_.find(active_tree_id_);
-  if (it != pending_is_pdf_.end()) {
-    return it->second;
-  }
-
-  return false;
+  const auto it = tree_infos_.find(active_tree_id_);
+  return it != tree_infos_.end() && it->second->is_pdf;
 }
 
 void ReadAnythingAppModel::SetIsPdf(bool is_pdf) {
@@ -696,11 +687,7 @@ void ReadAnythingAppModel::SetIsPdf(bool is_pdf) {
     return;
   }
 
-  if (tree_infos_.contains(active_tree_id_)) {
-    tree_infos_.at(active_tree_id_)->is_pdf = is_pdf;
-  } else {
-    pending_is_pdf_[active_tree_id_] = is_pdf;
-  }
+  EnsureTreeInfoExists(active_tree_id_).is_pdf = is_pdf;
 }
 
 bool ReadAnythingAppModel::IsDocs() const {
@@ -814,6 +801,7 @@ bool ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   const auto it = tree_infos_.find(tree_id);
   DCHECK(it != tree_infos_.end());
+  CHECK(it->second->manager);
   auto* const tree =
       static_cast<ui::AXSerializableTree*>(it->second->manager->ax_tree());
   CHECK(tree);
@@ -876,30 +864,27 @@ void ReadAnythingAppModel::PrepareForAXTreeUpdates(
 }
 
 void ReadAnythingAppModel::EnsureAXTreeExists(const ui::AXTreeID& tree_id) {
-  // Create a new tree if an event is received for a tree that is not yet in
-  // the tree list.
+  // Create the tree when its first accessibility update arrives, keeping any
+  // metadata that OnActiveAXTreeIDChanged() already added for it.
   if (ContainsTree(tree_id)) {
     return;
   }
   auto new_tree = std::make_unique<ui::AXSerializableTree>();
-
   for (auto& observer : observers_) {
     observer.OnTreeAdded(new_tree.get());
   }
-  auto tree_info = std::make_unique<AXTreeInfo>(
-      std::make_unique<ui::AXTreeManager>(std::move(new_tree)));
-  if (pending_is_pdf_.contains(tree_id)) {
-    tree_info->is_pdf = pending_is_pdf_[tree_id];
-    pending_is_pdf_.erase(tree_id);
+  EnsureTreeInfoExists(tree_id).manager =
+      std::make_unique<ui::AXTreeManager>(std::move(new_tree));
+}
+
+ReadAnythingAppModel::AXTreeInfo& ReadAnythingAppModel::EnsureTreeInfoExists(
+    const ui::AXTreeID& tree_id) {
+  CHECK_NE(tree_id, ui::AXTreeIDUnknown());
+  std::unique_ptr<AXTreeInfo>& tree_info = tree_infos_[tree_id];
+  if (!tree_info) {
+    tree_info = std::make_unique<AXTreeInfo>(/*manager=*/nullptr);
   }
-  tree_infos_.emplace(tree_id, std::move(tree_info));
-  // If we previously received UKM source info for this tree_id, set the
-  // UKM source now that the tree information has been added to tree_infos_.
-  if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
-    ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
-    pending_ukm_sources_.erase(tree_id);
-    SetUkmSourceId(ukm_source_id);
-  }
+  return *tree_info;
 }
 
 void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
@@ -988,8 +973,6 @@ void ReadAnythingAppModel::QueueAccessibilityUpdates(
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
-  pending_is_pdf_.erase(tree_id);
-
   // `OnAXTreeDestroyed()` is called whenever the `AXActionHandler` in the
   // browser learns that an `AXTree` was destroyed. This could be from any tab,
   // not just the active one; therefore many `tree_id`s will not be found in
@@ -1007,57 +990,44 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     displayed_nodes_pending_deletion_.clear();
   }
 
-  for (ui::AXTree* const ax_tree = it->second->manager->ax_tree();
-       auto& observer : observers_) {
-    observer.OnTreeRemoved(ax_tree);
+  // Observers are only notified of trees once their AXTree is created (see
+  // EnsureAXTreeExists()), and queuing updates creates the AXTree first.
+  if (it->second->manager) {
+    for (ui::AXTree* const ax_tree = it->second->manager->ax_tree();
+         auto& observer : observers_) {
+      observer.OnTreeRemoved(ax_tree);
+    }
+    pending_updates_.erase(tree_id);
   }
 
   tree_infos_.erase(it);
-
-  // Any pending updates associated with the erased tree should also be dropped.
-  pending_updates_.erase(tree_id);
 }
 
 ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
-  if (tree_infos_.contains(active_tree_id_)) {
-    ReadAnythingAppModel::AXTreeInfo* tree_info =
-        tree_infos_.at(active_tree_id_).get();
-    if (tree_info) {
-      return tree_info->ukm_source_id;
+  if (const auto it = tree_infos_.find(active_tree_id_);
+      it != tree_infos_.end() &&
+      it->second->ukm_source_id != ukm::kInvalidSourceId) {
+    return it->second->ukm_source_id;
+  }
+  // Only root trees have a UKM source ID, and Screen2x can make a child tree
+  // (e.g. an iframe) the active tree. See UpdateActiveTreeIfNeeded().
+  if (root_tree_id_ != active_tree_id_ &&
+      root_tree_id_ != ui::AXTreeIDUnknown()) {
+    if (const auto it = tree_infos_.find(root_tree_id_);
+        it != tree_infos_.end()) {
+      return it->second->ukm_source_id;
     }
   }
   return ukm::kInvalidSourceId;
 }
 
-void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
+void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree_id,
                                                  ukm::SourceId ukm_source_id) {
-  // We may receive an OnActiveAXTreeIDChanged event on a tree before we've
-  // received an ApplyAccessibilityUpdates event adding the tree to
-  // tree_infos_. When this happens, we should keep track of the ukm_source_id,
-  // and later, if the tree is added to tree_infos_ while it's still active,
-  // we can try again to set the ukm source.
-  if (!tree_infos_.contains(active_tree_id_)) {
-    pending_ukm_sources_[tree] = ukm_source_id;
+  if (tree_id == ui::AXTreeIDUnknown() ||
+      ukm_source_id == ukm::kInvalidSourceId) {
     return;
   }
-
-  SetUkmSourceId(ukm_source_id);
-}
-
-void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
-  if (!tree_infos_.contains(active_tree_id_)) {
-    return;
-  }
-  ReadAnythingAppModel::AXTreeInfo* tree_info =
-      tree_infos_.at(active_tree_id_).get();
-  if (!tree_info) {
-    return;
-  }
-  if (tree_info->ukm_source_id == ukm::kInvalidSourceId) {
-    tree_info->ukm_source_id = ukm_source_id;
-  } else {
-    DCHECK_EQ(tree_info->ukm_source_id, ukm_source_id);
-  }
+  EnsureTreeInfoExists(tree_id).ukm_source_id = ukm_source_id;
 }
 
 int ReadAnythingAppModel::GetNumSelections() const {

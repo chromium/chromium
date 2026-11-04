@@ -29,10 +29,12 @@
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "components/translate/core/common/translate_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/mock_render_thread.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,6 +194,7 @@ class MockReadAnythingUntrustedPageHandler
 
 using testing::ElementsAre;
 using testing::Mock;
+using testing::SizeIs;
 
 class ReadAnythingAppControllerTest : public testing::Test {
  public:
@@ -219,6 +222,10 @@ class ReadAnythingAppControllerTest : public testing::Test {
     controller_ = cppgc::MakeGarbageCollected<ReadAnythingAppController>(
         isolate_holder_->isolate()->GetCppHeap()->GetAllocationHandle(),
         /*render_frame=*/nullptr);
+
+    auto test_ukm_recorder = std::make_unique<ukm::TestUkmRecorder>();
+    test_ukm_recorder_ = test_ukm_recorder.get();
+    controller_->ukm_recorder_ = std::move(test_ukm_recorder);
   }
 
   void SetUp() override {
@@ -306,6 +313,7 @@ class ReadAnythingAppControllerTest : public testing::Test {
       controller_ = nullptr;
     }
     distiller_ = nullptr;
+    test_ukm_recorder_ = nullptr;
     isolate_holder_.reset();
     testing::Test::TearDown();
   }
@@ -485,6 +493,7 @@ class ReadAnythingAppControllerTest : public testing::Test {
 
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller> distiller_ = nullptr;
+  raw_ptr<ukm::TestUkmRecorder> test_ukm_recorder_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -4306,6 +4315,29 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
                                        /*is_pdf=*/false);
   EXPECT_FALSE(model().readability_content_drawn());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnActiveAXTreeIDChanged_BeforeFirstAXUpdate_ExposesUkmSourceId) {
+  // The browser announces a page's tree and UKM source ID before the tree's
+  // first accessibility update. Readability doesn't wait for that update, so
+  // its content can arrive first.
+  const ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  const ukm::SourceId source_id = ukm::AssignNewSourceId();
+  controller().OnActiveAXTreeIDChanged(tree_id, source_id, /*is_pdf=*/false);
+  controller().UpdateContent("Title", "<p>Body</p>");
+
+  EXPECT_FALSE(model().ContainsActiveTree());
+  EXPECT_EQ(model().GetUkmSourceId(), source_id);
+
+  using Distillation = ukm::builders::Accessibility_ReadAnything_Distillation;
+  const auto entries =
+      test_ukm_recorder_->GetEntriesByName(Distillation::kEntryName);
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(entries[0]->source_id, source_id);
+  test_ukm_recorder_->ExpectEntryMetric(
+      entries[0], Distillation::kDistillationStatusName,
+      static_cast<int>(read_anything::mojom::DistillationStatus::kSuccess));
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
