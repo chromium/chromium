@@ -85,10 +85,10 @@ end
 )";
 
 std::vector<uint8_t> CreateCidToGidMap() {
-  std::vector<uint8_t> arr;
-  constexpr int kCIDToGIDMapSize = 2 * (1 << 16);
-  for (int i = 0; i < kCIDToGIDMapSize; i++) {
-    arr.push_back((i % 2) ? 1 : 0);
+  constexpr size_t kCIDToGIDMapSize = 2 * (1 << 16);
+  std::vector<uint8_t> arr(kCIDToGIDMapSize, 0);
+  for (size_t i = 1; i < kCIDToGIDMapSize; i += 2) {
+    arr[i] = 1;
   }
   return arr;
 }
