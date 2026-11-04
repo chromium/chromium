@@ -246,7 +246,9 @@ void BaseRenderingContext2D::ResetBacking() {
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
   cached_content_id_ = cc::PaintImage::kInvalidContentId;
+  must_preserve_content_on_copy_on_write_ = true;
   current_resource_has_write_access_ = false;
+  is_cleared_ = false;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
@@ -422,7 +424,9 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     if (!shared_image_provider_->IsValid()) {
       shared_image_provider_.reset();
       canvas_image_provider_.reset();
+      must_preserve_content_on_copy_on_write_ = true;
       current_resource_has_write_access_ = false;
+      is_cleared_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -431,7 +435,9 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     }
   } else if (!shared_image_provider_->resource()) {
     shared_image_provider_.reset();
+    must_preserve_content_on_copy_on_write_ = true;
     current_resource_has_write_access_ = false;
+    is_cleared_ = false;
     if (context_provider_wrapper_) {
       context_provider_wrapper_->RemoveObserver(this);
       context_provider_wrapper_.reset();
@@ -443,7 +449,9 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
+      must_preserve_content_on_copy_on_write_ = true;
       current_resource_has_write_access_ = false;
+      is_cleared_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -483,6 +491,8 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   CreateSoftwareSurface();
   if (!surface_) {
     shared_image_provider_.reset();
+    must_preserve_content_on_copy_on_write_ = true;
+    is_cleared_ = false;
     return;
   }
 
@@ -722,7 +732,7 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
 
     shared_image_provider_->resource_ =
         shared_image_provider_->NewOrRecycledResource();
-    if (shared_image_provider_->must_preserve_content_on_copy_on_write_) {
+    if (must_preserve_content_on_copy_on_write_) {
       auto [src_token, dst_token] =
           shared_image_provider_->RasterInterface()->CopySharedImage(
               old_resource_shared_image->GetSharedImage(),
@@ -735,15 +745,14 @@ void BaseRenderingContext2D::EnsureResourceReadyForDraw() {
     } else {
       // If we're not copying over the previous contents, we need to ensure
       // that the image is cleared on the next BeginRasterCHROMIUM.
-      shared_image_provider_->is_cleared_ = false;
+      is_cleared_ = false;
     }
 
-    UMA_HISTOGRAM_BOOLEAN(
-        "Blink.Canvas.ContentChangeMode",
-        shared_image_provider_->must_preserve_content_on_copy_on_write_);
+    UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.ContentChangeMode",
+                          must_preserve_content_on_copy_on_write_);
     // By default, the contents of the new resource must be preserved on a
     // subsequent CopyOnWrite.
-    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+    must_preserve_content_on_copy_on_write_ = true;
   }
 }
 
@@ -777,7 +786,7 @@ void BaseRenderingContext2D::EndWriteAccess() {
     // As a write operation has just completed on the current resource, it is
     // now necessary to preserve that resource's contents on a subsequent
     // CopyOnWrite.
-    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+    must_preserve_content_on_copy_on_write_ = true;
   } else {
     if (!shared_image_provider_->resource() ||
         shared_image_provider_->resource()->IsLost() ||
@@ -802,8 +811,8 @@ void BaseRenderingContext2D::RasterRecordToSharedImage(
     EnsureResourceReadyForDraw();
     EnsureWriteAccess();
 
-    const bool needs_clear = !shared_image_provider_->is_cleared_;
-    shared_image_provider_->is_cleared_ = true;
+    const bool needs_clear = !is_cleared_;
+    is_cleared_ = true;
     auto* image_provider = GetOrCreateCanvasImageProvider();
     cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
         blink::BindRepeating(
@@ -954,7 +963,7 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     // (see discussion here:
     // https://chromium-review.googlesource.com/c/chromium/src/+/7557841/comment/bb38e497_ef1efdbc/).
     // Verify that this is the case and update the code here.
-    shared_image_provider_->must_preserve_content_on_copy_on_write_ = true;
+    must_preserve_content_on_copy_on_write_ = true;
 
     gpu::SyncToken sync_token =
         shared_image_provider_->RasterInterface()->WritePixels(
@@ -969,7 +978,7 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
     if (x <= 0 && y <= 0 &&
         orig_info.width() >= shared_image_provider_->Size().width() &&
         orig_info.height() >= shared_image_provider_->Size().height()) {
-      shared_image_provider_->is_cleared_ = true;
+      is_cleared_ = true;
     }
 
     return true;
@@ -1652,7 +1661,7 @@ void BaseRenderingContext2D::InitializeForRecording(
 void BaseRenderingContext2D::RecordingCleared() {
   clear_frame_ = true;
   if (shared_image_provider_) {
-    shared_image_provider_->RecordingCleared();
+    must_preserve_content_on_copy_on_write_ = false;
   }
 }
 

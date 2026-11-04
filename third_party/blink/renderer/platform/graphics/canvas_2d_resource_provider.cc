@@ -229,10 +229,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   CHECK(!IsSingleBuffered() || is_accelerated_);
 }
 
-void Canvas2DResourceProvider::RecordingCleared() {
-  must_preserve_content_on_copy_on_write_ = false;
-}
-
 Canvas2DResourceProvider::Canvas2DResourceProvider(
     gfx::Size size,
     viz::SharedImageFormat format,

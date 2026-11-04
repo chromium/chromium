@@ -137,7 +137,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void SetResourceRecyclingEnabled(bool value);
 
   gpu::raster::RasterInterface* RasterInterface() const;
-  void RecordingCleared();
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
   CanvasResourceSharedImage* resource() {
@@ -177,13 +176,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
-  // Whether the content of the current resource must be transferred to a new
-  // resource on CopyOnWrite. True by default, but can be set to false as an
-  // optimization if the current resource is known to have been cleared.
-  bool must_preserve_content_on_copy_on_write_ = true;
-
   const bool is_accelerated_;
-  bool is_cleared_ = false;
   bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;

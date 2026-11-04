@@ -464,7 +464,12 @@ class MODULES_EXPORT BaseRenderingContext2D
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
+  // Whether the content of the current resource must be transferred to a new
+  // resource on CopyOnWrite. True by default, but can be set to false as an
+  // optimization if the current resource is known to have been cleared.
+  bool must_preserve_content_on_copy_on_write_ = true;
   bool current_resource_has_write_access_ = false;
+  bool is_cleared_ = false;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
   size_t max_recorded_op_bytes_ = 0;
