@@ -9,8 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -240,7 +241,10 @@ public class IncognitoProfileDestroyerIntegrationTest {
     }
 
     private void assertIncognitoProfileDestroyed() throws ExecutionException {
-        verify(mMockProfileManagerObserver, atLeastOnce()).onProfileDestroyed(any());
+        verify(
+                        mMockProfileManagerObserver,
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).atLeastOnce())
+                .onProfileDestroyed(any());
         Profile incognitoProfile =
                 ThreadUtils.runOnUiThreadBlocking(() -> mIncognitoTabModel.getProfile());
         assertNull(incognitoProfile);

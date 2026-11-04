@@ -2147,6 +2147,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mActivityTabProvider.destroy();
 
         super.onDestroy();
+        onPostDestroy();
     }
 
     /**
@@ -2163,6 +2164,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mAcceleratorManager = null;
         }
     }
+
+    /**
+     * Override this to perform destruction tasks after {@link #onDestroy()} has completed,
+     * including {@link ActivityLifecycleDispatcher} destruction observers and {@link WindowAndroid}
+     * destruction.
+     */
+    protected void onPostDestroy() {}
 
     /**
      * @return Whether the activity is being launched as a recreation from a previous instance.

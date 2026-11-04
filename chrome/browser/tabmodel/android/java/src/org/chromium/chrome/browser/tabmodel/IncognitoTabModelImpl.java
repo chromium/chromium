@@ -125,6 +125,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         if (mNativeAndroidBrowserWindow != 0) {
             mDelegateModel.associateWithBrowserWindow(mNativeAndroidBrowserWindow);
         }
+        mDelegateModel.setActive(mActive);
         mDelegateModel
                 .getCurrentTabSupplier()
                 .addSyncObserverAndPostIfNonNull(mDelegateModelCurrentTabSupplierObserver);

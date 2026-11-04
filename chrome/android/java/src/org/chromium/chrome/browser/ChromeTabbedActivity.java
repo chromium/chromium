@@ -3507,7 +3507,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             StartupPaintPreviewHelper.enableShowOnRestore();
         }
 
-        IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
+        maybeRegisterIncognitoTabHost();
         StartupPaintPreviewHelperSupplier.attach(
                 assumeNonNull(getWindowAndroid()).getUnownedUserDataHost(),
                 mStartupPaintPreviewHelperSupplier);
@@ -5746,6 +5746,33 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
+    protected void onPostDestroy() {
+        super.onPostDestroy();
+        // In an OFF_THE_RECORD window with a StubTabModel for the regular model, closing the last
+        // incognito tab no longer switches to the regular model, so the incognito model remains
+        // active until mIncognitoTabHost is unregistered in destroyTabModels(). Destroy the OTR
+        // profile here after DestroyObservers have cleaned up.
+        if (mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD
+                && isFinishing()
+                && didFinishNativeInitialization()
+                && ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()) {
+            maybeDestroyOtrProfile();
+        }
+    }
+
+    private void maybeDestroyOtrProfile() {
+        ProfileProvider profileProvider = getProfileProviderSupplier().get();
+        Profile otrProfile =
+                profileProvider != null ? profileProvider.getOffTheRecordProfile() : null;
+        if (otrProfile != null
+                && !otrProfile.shutdownStarted()
+                && !IncognitoTabHostUtils.doIncognitoTabsExist()
+                && !IncognitoTabHostUtils.isIncognitoTabModelActive()) {
+            ProfileManager.destroyWhenAppropriate(otrProfile);
+        }
+    }
+
+    @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         if (ChromeApplicationImpl.isSevereMemorySignal(level)) {
@@ -5862,6 +5889,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     public OneshotSupplier<TabSwitcher> getTabSwitcherSupplierForTesting() {
         return mTabSwitcherSupplier;
+    }
+
+    @VisibleForTesting
+    void maybeRegisterIncognitoTabHost() {
+        if (mSupportedProfileType != SupportedProfileType.REGULAR
+                || !ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled()) {
+            IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
+        }
     }
 
     public IncognitoTabHost getIncognitoTabHostForTesting() {

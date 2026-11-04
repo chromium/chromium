@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -114,5 +115,27 @@ public class IncognitoTabModelImplUnitTest {
                 tab2, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         verify(newMockTabModel).addTabGroupObserver(mMockTabGroupObserver);
+    }
+
+    @Test
+    public void testActiveStateForwardedOnModelCreationAndRecreation() {
+        mIncognitoTabModel.setActive(true);
+        assertTrue(mIncognitoTabModel.isActiveModel());
+        assertTrue(mMockTabModel.isActiveModel());
+
+        MockTab tab1 = new MockTab(1, mProfile);
+        mIncognitoTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mIncognitoTabModel.removeTab(tab1);
+
+        MockTabModel newMockTabModel = spy(new MockTabModel(mProfile, null));
+        mTabModelSupplier = () -> newMockTabModel;
+
+        MockTab tab2 = new MockTab(2, mProfile);
+        mIncognitoTabModel.addTab(
+                tab2, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        verify(newMockTabModel).setActive(true);
+        assertTrue(newMockTabModel.isActiveModel());
     }
 }

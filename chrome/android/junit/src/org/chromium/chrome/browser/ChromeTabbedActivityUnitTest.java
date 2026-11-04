@@ -36,6 +36,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -46,6 +48,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerJni;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -65,9 +69,11 @@ public class ChromeTabbedActivityUnitTest {
     private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
         private boolean mAreTabModelsInitialized;
         private boolean mIsActivityFinishingOrDestroyed;
+        private boolean mIsFinishing;
         private boolean mDidFinishNativeInitialization;
         private boolean mTerminateIncognitoSessionCalled;
         private boolean mFinishCalled;
+        private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
         private final List<Integer> mRequestedWindowFeatures = new ArrayList<>();
         private OnBackInvokedDispatcher mMockOnBackInvokedDispatcher;
 
@@ -102,8 +108,17 @@ public class ChromeTabbedActivityUnitTest {
             mIsActivityFinishingOrDestroyed = isActivityFinishingOrDestroyed;
         }
 
+        public void setIsFinishing(boolean isFinishing) {
+            mIsFinishing = isFinishing;
+        }
+
         public void setDidFinishNativeInitialization(boolean didFinishNativeInitialization) {
             mDidFinishNativeInitialization = didFinishNativeInitialization;
+        }
+
+        public void setProfileProviderSupplierForTesting(
+                OneshotSupplier<ProfileProvider> profileProviderSupplier) {
+            mProfileProviderSupplier = profileProviderSupplier;
         }
 
         public boolean wasTerminateIncognitoSessionCalled() {
@@ -125,8 +140,20 @@ public class ChromeTabbedActivityUnitTest {
         }
 
         @Override
+        public boolean isFinishing() {
+            return mIsFinishing;
+        }
+
+        @Override
         public boolean didFinishNativeInitialization() {
             return mDidFinishNativeInitialization;
+        }
+
+        @Override
+        public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
+            return mProfileProviderSupplier != null
+                    ? mProfileProviderSupplier
+                    : super.getProfileProviderSupplier();
         }
 
         @Override
@@ -358,6 +385,103 @@ public class ChromeTabbedActivityUnitTest {
 
         assertTrue(activity.wasTerminateIncognitoSessionCalled());
         assertFalse(activity.wasFinishCalled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testMaybeRegisterIncognitoTabHost_withIsolation() {
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        mActivity.maybeRegisterIncognitoTabHost();
+        assertFalse(
+                IncognitoTabHostRegistry.getInstance()
+                        .getHosts()
+                        .contains(mActivity.getIncognitoTabHostForTesting()));
+
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        mActivity.maybeRegisterIncognitoTabHost();
+        assertTrue(
+                IncognitoTabHostRegistry.getInstance()
+                        .getHosts()
+                        .contains(mActivity.getIncognitoTabHostForTesting()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testOnPostDestroy_offTheRecordFinishing_destroysOtrProfile() {
+        ProfileManager.Natives profileManagerJni = mock(ProfileManager.Natives.class);
+        ProfileManagerJni.setInstanceForTesting(profileManagerJni);
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        activity.setIsFinishing(true);
+        activity.setDidFinishNativeInitialization(true);
+
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.shutdownStarted()).thenReturn(false);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
+        when(profileProvider.getOffTheRecordProfile()).thenReturn(otrProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+        activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
+
+        activity.maybeRegisterIncognitoTabHost();
+        activity.destroyTabModels();
+        activity.onPostDestroy();
+
+        verify(profileManagerJni).destroyWhenAppropriate(otrProfile);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testOnPostDestroy_offTheRecordFinishing_skipsDestroyWhenOtherHostActive() {
+        ProfileManager.Natives profileManagerJni = mock(ProfileManager.Natives.class);
+        ProfileManagerJni.setInstanceForTesting(profileManagerJni);
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        activity.setIsFinishing(true);
+        activity.setDidFinishNativeInitialization(true);
+
+        Profile otrProfile = mock(Profile.class);
+        when(otrProfile.shutdownStarted()).thenReturn(false);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
+        when(profileProvider.getOffTheRecordProfile()).thenReturn(otrProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+        activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
+
+        IncognitoTabHost otherHost = mock(IncognitoTabHost.class);
+        when(otherHost.isActiveModel()).thenReturn(true);
+        IncognitoTabHostRegistry.getInstance().register(otherHost);
+
+        activity.maybeRegisterIncognitoTabHost();
+        activity.destroyTabModels();
+        activity.onPostDestroy();
+
+        verify(profileManagerJni, never()).destroyWhenAppropriate(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testOnPostDestroy_offTheRecordNotFinishingOrNativeNotInitialized_skipsDestroy() {
+        ProfileManager.Natives profileManagerJni = mock(ProfileManager.Natives.class);
+        ProfileManagerJni.setInstanceForTesting(profileManagerJni);
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+
+        // Not finishing: should not destroy OTR profile.
+        activity.setIsFinishing(false);
+        activity.setDidFinishNativeInitialization(true);
+        activity.onPostDestroy();
+        verify(profileManagerJni, never()).destroyWhenAppropriate(any());
+
+        // Finishing, but native not initialized (e.g. early abort): should not access
+        // ProfileProviderSupplier or destroy OTR profile.
+        activity.setIsFinishing(true);
+        activity.setDidFinishNativeInitialization(false);
+        activity.onPostDestroy();
+        verify(profileManagerJni, never()).destroyWhenAppropriate(any());
     }
 
     @Test
