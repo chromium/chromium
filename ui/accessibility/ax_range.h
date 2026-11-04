@@ -675,7 +675,9 @@ class AXRange final {
           range_start->text_offset(), range_end->text_offset(),
           AXClippingBehavior::kUnclipped, &offscreen_result);
       if (offscreen_result == AXOffscreenResult::kOnscreen) {
-        CHECK(degenerate_range_rect.width() == 0, base::NotFatalUntil::M163);
+        // TODO(crbug.com/580137549): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(degenerate_range_rect.width() == 0);
         degenerate_range_rect.set_width(1);
         rects.push_back(degenerate_range_rect);
       }
