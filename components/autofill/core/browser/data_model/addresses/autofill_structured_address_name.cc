@@ -212,8 +212,11 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
 }
 
 std::u16string NameFull::GetFormatString() const {
+  // CJK names don't have a middle name and the CJK pattern omits NAME_MIDDLE.
+  // Hence, a name is only considered CJK if the middle name is empty.
   StructuredAddressesFormatProvider::ContextInfo info;
   info.name_has_cjk_characteristics =
+      GetNodeForType(NAME_MIDDLE)->GetValue().empty() &&
       HasCjkNameCharacteristics(
           base::UTF16ToUTF8(GetNodeForType(NAME_FIRST)->GetValue())) &&
       HasCjkNameCharacteristics(
