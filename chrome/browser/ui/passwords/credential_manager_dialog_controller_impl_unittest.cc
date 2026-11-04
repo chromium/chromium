@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -162,6 +163,7 @@ TEST_F(CredentialManagerDialogControllerTest, PasswordCombinedSelectorController
   EXPECT_EQ(controller().GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kCredentialManager);
   EXPECT_FALSE(controller().ShouldShowTopIllustration());
+  EXPECT_EQ(controller().GetActorType(), std::nullopt);
   EXPECT_TRUE(controller().GetActorIconUrl().is_empty());
   EXPECT_FALSE(controller().GetTitle().empty());
   EXPECT_TRUE(controller().GetSubtitle().empty());

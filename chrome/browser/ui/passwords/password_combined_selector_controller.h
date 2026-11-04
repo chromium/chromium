@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_COMBINED_SELECTOR_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
 
@@ -37,6 +39,10 @@ class PasswordCombinedSelectorController : public PasswordBaseDialogController {
 
   virtual DisplayType GetDisplayType() const = 0;
   virtual bool ShouldShowTopIllustration() const = 0;
+  // Returns the remote actor type for selecting the default header icon, or
+  // `std::nullopt` if this dialog is not for a remote actor.
+  virtual std::optional<password_manager::RemoteActorType> GetActorType()
+      const = 0;
   // Returns the custom icon URL for the remote actor header illustration, or
   // an empty GURL to use the default icon.
   virtual GURL GetActorIconUrl() const = 0;

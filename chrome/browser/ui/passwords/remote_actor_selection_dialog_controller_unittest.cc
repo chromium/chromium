@@ -14,6 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +71,7 @@ TEST_F(RemoteActorSelectionDialogControllerTest, Properties) {
   EXPECT_EQ(controller.GetDisplayType(),
             PasswordCombinedSelectorController::DisplayType::kRemoteActor);
   EXPECT_TRUE(controller.ShouldShowTopIllustration());
+  EXPECT_EQ(controller.GetActorType(), RemoteActorType::kGemini);
   EXPECT_TRUE(controller.GetActorIconUrl().is_empty());
   const GURL custom_icon_url("https://www.gstatic.com/images/icon.png");
   controller.SetActorIconUrl(custom_icon_url);
@@ -122,6 +124,46 @@ TEST_F(RemoteActorSelectionDialogControllerTest,
   EXPECT_EQ(controller.GetSubtitle().substr(link_range.start(),
                                             link_range.length()),
             u"Learn how Search Agent handles your data");
+}
+
+TEST_F(RemoteActorSelectionDialogControllerTest,
+       SetActorNameAndLearnMoreUrlOverrideDefaults) {
+  std::vector<std::unique_ptr<PasswordForm>> credentials;
+  credentials.push_back(std::make_unique<PasswordForm>(GetLocalForm()));
+
+  base::MockCallback<RemoteActorSelectionDialogController::OnResultCallback>
+      callback;
+  EXPECT_CALL(callback, Run(Eq(std::nullopt)));
+
+  RemoteActorSelectionDialogController controller(
+      web_contents(), std::move(credentials), credential_domain_,
+      callback.Get());
+
+  EXPECT_EQ(controller.GetLearnMoreUrl(),
+            GURL("https://support.google.com/gemini?p=lm_gpm_data"));
+  EXPECT_FALSE(controller.GetSubtitleLinkRange().is_empty());
+
+  controller.SetActorType(RemoteActorType::kSearch);
+  controller.SetActorName(u"Search Agent");
+  controller.SetLearnMoreUrl(GURL("https://g.co/privacypolicy"));
+
+  EXPECT_EQ(controller.GetActorType(), RemoteActorType::kSearch);
+  EXPECT_EQ(controller.GetTitle(),
+            u"Allow Search Agent to sign in to example.com for you?");
+  gfx::Range link_range = controller.GetSubtitleLinkRange();
+  ASSERT_FALSE(link_range.is_empty());
+  EXPECT_EQ(controller.GetSubtitle(),
+            u"Search Agent can use Google Password Manager to sign in for you. "
+            u"Learn how Search Agent handles your data");
+  EXPECT_EQ(controller.GetSubtitle().substr(link_range.start(),
+                                            link_range.length()),
+            u"Learn how Search Agent handles your data");
+  EXPECT_EQ(controller.GetLearnMoreUrl(), GURL("https://g.co/privacypolicy"));
+
+  // Non-HTTPS URLs must be rejected and fall back to the default help URL.
+  controller.SetLearnMoreUrl(GURL("http://insecure.example.com"));
+  EXPECT_EQ(controller.GetLearnMoreUrl(),
+            GURL("https://support.google.com/gemini?p=lm_gpm_data"));
 }
 
 TEST_F(RemoteActorSelectionDialogControllerTest,

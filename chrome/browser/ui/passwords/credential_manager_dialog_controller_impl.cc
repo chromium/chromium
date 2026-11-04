@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller_impl.h"
 
+#include <optional>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
@@ -259,6 +262,11 @@ CredentialManagerDialogControllerImpl::GetDisplayType() const {
 
 bool CredentialManagerDialogControllerImpl::ShouldShowTopIllustration() const {
   return false;
+}
+
+std::optional<password_manager::RemoteActorType>
+CredentialManagerDialogControllerImpl::GetActorType() const {
+  return std::nullopt;
 }
 
 GURL CredentialManagerDialogControllerImpl::GetActorIconUrl() const {

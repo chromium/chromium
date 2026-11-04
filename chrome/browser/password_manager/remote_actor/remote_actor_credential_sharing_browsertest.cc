@@ -16,6 +16,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "content/public/browser/render_frame_host.h"
@@ -37,17 +38,22 @@
 namespace {
 
 constexpr char kAllowedHost[] = "gemini.google.com";
+constexpr char kSearchAllowedHost[] = "search.google.com";
 constexpr char kDisallowedHost[] = "google.com";
 
 }  // namespace
 
 class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
  public:
-  explicit RemoteActorCredentialSharingBrowserTest(bool enable_feature = true) {
+  explicit RemoteActorCredentialSharingBrowserTest(
+      bool enable_feature = true,
+      const std::string& allowed_host = kAllowedHost,
+      const std::string& allowed_host_actor = "") {
     if (enable_feature) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           password_manager::features::kRemoteActorCredentialSharing,
-          {{"allowed_host_for_testing", kAllowedHost}});
+          {{"allowed_host_for_testing", allowed_host},
+           {"allowed_host_actor_for_testing", allowed_host_actor}});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           password_manager::features::kRemoteActorCredentialSharing);
@@ -287,4 +293,39 @@ IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingDisabledBrowserTest,
                        GetWebContents(),
                        "typeof chrome !== 'undefined' && typeof "
                        "chrome.requestAgentAuthentication !== 'undefined'"));
+}
+
+class RemoteActorCredentialSharingSearchBrowserTest
+    : public RemoteActorCredentialSharingBrowserTest {
+ public:
+  RemoteActorCredentialSharingSearchBrowserTest()
+      : RemoteActorCredentialSharingBrowserTest(
+            /*enable_feature=*/true,
+            /*allowed_host=*/kSearchAllowedHost,
+            /*allowed_host_actor=*/"search") {}
+};
+
+IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingSearchBrowserTest,
+                       SearchOriginExposesApiAndInvokesController) {
+  base::HistogramTester histograms;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForHost(kSearchAllowedHost, "/title1.html")));
+  EXPECT_EQ(true, content::EvalJs(
+                      GetWebContents(),
+                      "typeof chrome !== 'undefined' && typeof "
+                      "chrome.requestAgentAuthentication === 'function'"));
+
+  EXPECT_EQ(false, content::EvalJs(GetWebContents(), R"(
+    new Promise((resolve) => {
+      chrome.requestAgentAuthentication(
+          'gaia_id_123', 'google.com', 'search_task_456', (success) => {
+        resolve(success);
+      });
+    });
+  )"));
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      password_manager::RemoteActorCredentialSharingResult::
+          kUserIdentityOrSyncStateInvalid,
+      1);
 }

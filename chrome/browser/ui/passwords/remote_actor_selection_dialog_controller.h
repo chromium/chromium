@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_UI_PASSWORDS_REMOTE_ACTOR_SELECTION_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/password_combined_selector_controller.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -46,12 +49,19 @@ class RemoteActorSelectionDialogController
   // Show the dialog.
   virtual void Show();
 
-  // Must be called before `Show()`.
+  // Setters below must be called before `Show()`.
+  void SetActorType(RemoteActorType actor_type);
+  void SetActorName(std::u16string actor_name);
+  void SetLearnMoreUrl(GURL learn_more_url);
   void SetActorIconUrl(GURL actor_icon_url);
+
+  // Returns the configured learn-more URL, or the default help URL if unset.
+  GURL GetLearnMoreUrl() const;
 
   // PasswordCombinedSelectorController:
   DisplayType GetDisplayType() const override;
   bool ShouldShowTopIllustration() const override;
+  std::optional<RemoteActorType> GetActorType() const override;
   GURL GetActorIconUrl() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSubtitle() const override;
@@ -78,6 +88,12 @@ class RemoteActorSelectionDialogController
   mutable gfx::Range subtitle_link_range_;
   // Callback to run when the user selects a credential or closes the dialog.
   OnResultCallback callback_;
+  // The remote actor type for which credentials are being requested.
+  RemoteActorType actor_type_ = RemoteActorType::kGemini;
+  // Optional display name override for the remote actor in the dialog.
+  std::u16string actor_name_;
+  // Optional "Learn more" URL override for the remote actor in the dialog.
+  GURL learn_more_url_;
   // Optional URL for a custom remote actor icon in the dialog header.
   GURL actor_icon_url_;
 

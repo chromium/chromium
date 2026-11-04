@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/passwords/remote_actor_selection_dialog_controller.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_config.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/prefs/pref_service.h"
@@ -136,6 +138,17 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
     return;
   }
 
+  std::optional<RemoteActorConfig> actor_config =
+      GetRemoteActorConfigForOrigin(
+          render_frame_host().GetLastCommittedOrigin());
+  if (!actor_config.has_value()) {
+    LogRemoteActorCredentialSharingResult(
+        RemoteActorCredentialSharingResult::kOtherError);
+    RespondWithError(std::move(callback));
+    return;
+  }
+  actor_config_ = std::move(actor_config);
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   ChromePasswordManagerClient* client =
@@ -154,6 +167,8 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
           .get(),
       RemoteActorCredentialSharingServiceFactory::GetForProfile(profile),
       client, this);
+  controller_->SetActorParameters(actor_config_->oauth_client_id,
+                                  actor_config_->task_namespace_id);
   controller_->Start(
       gaia_id, domain, task_id,
       base::BindOnce(&RemoteActorCredentialSharingImpl::OnShareCompleted,
@@ -176,6 +191,12 @@ void RemoteActorCredentialSharingImpl::ShowCredentialSelection(
       web_contents, std::move(credentials), origin.Serialize(),
       base::BindOnce(&RemoteActorCredentialSharingImpl::OnDialogResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (actor_config_.has_value()) {
+    dialog_controller_->SetActorType(actor_config_->actor_type);
+    dialog_controller_->SetActorName(actor_config_->display_name);
+    dialog_controller_->SetLearnMoreUrl(actor_config_->learn_more_url);
+    dialog_controller_->SetActorIconUrl(actor_config_->icon_url);
+  }
   dialog_controller_->Show();
 }
 
@@ -255,6 +276,8 @@ bool RemoteActorCredentialSharingImpl::IsAllowedByPolicy(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   CHECK(prefs);
 
+  // TODO(crbug.com/580767241): Check the corresponding enterprise policy for
+  // Search Agent (e.g. AIModeSettings) when actor_type is kSearch.
   // Check whether the browser, device, or account is enterprise-managed, or if
   // the preference is explicitly set by enterprise policy.
   bool is_managed =
@@ -291,6 +314,7 @@ void RemoteActorCredentialSharingImpl::OnDialogResult(
 void RemoteActorCredentialSharingImpl::OnShareCompleted(
     RequestAgentAuthenticationCallback callback,
     RemoteActorCredentialSharingResult result) {
+  actor_config_.reset();
   controller_.reset();
   std::move(callback).Run(result ==
                           RemoteActorCredentialSharingResult::kSuccess);

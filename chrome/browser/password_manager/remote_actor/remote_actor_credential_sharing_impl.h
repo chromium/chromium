@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing.mojom.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/remote_actor/remote_actor_config.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_controller.h"
 #include "components/password_manager/core/browser/remote_actor/remote_actor_credential_sharing_result.h"
 #include "content/public/browser/document_user_data.h"
@@ -120,6 +121,7 @@ class RemoteActorCredentialSharingImpl
   // already been consumed.
   bool popup_activation_consumed_ = false;
 
+  std::optional<RemoteActorConfig> actor_config_;
   std::unique_ptr<RemoteActorCredentialSharingController> controller_;
   std::unique_ptr<RemoteActorSelectionDialogController> dialog_controller_;
 

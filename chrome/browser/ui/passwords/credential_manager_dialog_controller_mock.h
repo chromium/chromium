@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_MOCK_H_
 
+#include <optional>
+
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -42,6 +45,10 @@ class CredentialManagerDialogControllerMock
 
   MOCK_METHOD(DisplayType, GetDisplayType, (), (const, override));
   MOCK_METHOD(bool, ShouldShowTopIllustration, (), (const, override));
+  MOCK_METHOD(std::optional<password_manager::RemoteActorType>,
+              GetActorType,
+              (),
+              (const, override));
   MOCK_METHOD(GURL, GetActorIconUrl, (), (const, override));
   MOCK_METHOD(std::u16string, GetTitle, (), (const, override));
   MOCK_METHOD(std::u16string, GetSubtitle, (), (const, override));

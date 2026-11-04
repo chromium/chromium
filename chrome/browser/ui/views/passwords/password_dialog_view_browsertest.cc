@@ -44,6 +44,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -761,12 +762,16 @@ void SetupRemoteActorMockController(
     CredentialManagerDialogControllerMock& mock_controller,
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms,
     std::u16string actor_name = u"Gemini",
-    GURL actor_icon_url = GURL()) {
+    GURL actor_icon_url = GURL(),
+    password_manager::RemoteActorType actor_type =
+        password_manager::RemoteActorType::kGemini) {
   EXPECT_CALL(mock_controller, GetDisplayType())
       .WillRepeatedly(Return(
           PasswordCombinedSelectorController::DisplayType::kRemoteActor));
   EXPECT_CALL(mock_controller, ShouldShowTopIllustration())
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller, GetActorType())
+      .WillRepeatedly(Return(actor_type));
   EXPECT_CALL(mock_controller, GetActorIconUrl())
       .WillRepeatedly(Return(actor_icon_url));
   EXPECT_CALL(mock_controller, OnCloseDialog());
@@ -1270,7 +1275,8 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   forms.push_back(std::move(form));
 
   SetupRemoteActorMockController(mock_controller, forms, u"Google Search",
-                                 embedded_test_server()->GetURL("/icon.png"));
+                                 embedded_test_server()->GetURL("/icon.png"),
+                                 password_manager::RemoteActorType::kSearch);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
   EXPECT_CALL(*this, OnIconRequestDone());
 #endif
@@ -1294,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // 1. Before the server accepts connections, the custom icon slot center pixel
   // (x = 228 + 36/2 = 246, y = 90/2 = 45) is initialized with the default
-  // Gemini icon (non-transparent and not the fetched SK_ColorBLUE icon).
+  // Search icon (non-transparent and not the fetched SK_ColorBLUE icon).
   const SkColor initial_slot_color =
       actor_icon_view->GetImage().bitmap()->getColor(246, 45);
   EXPECT_NE(initial_slot_color, SK_ColorTRANSPARENT);

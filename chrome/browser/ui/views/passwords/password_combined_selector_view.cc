@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/views/passwords/password_combined_selector_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -30,6 +33,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
@@ -68,6 +72,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/grit/webui_theme_resources.h"
 #endif
 
 namespace {
@@ -587,14 +592,23 @@ ui::ImageModel CreateRemoteActorHeaderImageModel(
           *full_banner, actor_icon));
 }
 
-gfx::ImageSkia GetDefaultRemoteActorIcon() {
-  static constexpr int kDefaultGeminiIconSize = 36;
-  const gfx::ImageSkia* gemini_icon =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_GEIC_BUTTON_ICON);
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      *gemini_icon, skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(kDefaultGeminiIconSize, kDefaultGeminiIconSize));
+gfx::ImageSkia GetDefaultRemoteActorIcon(
+    password_manager::RemoteActorType actor_type) {
+  switch (actor_type) {
+    case password_manager::RemoteActorType::kSearch:
+      return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GOOGLE_G_GRADIENT_20);
+    case password_manager::RemoteActorType::kGemini: {
+      static constexpr int kDefaultGeminiIconSize = 36;
+      const gfx::ImageSkia* gemini_icon =
+          ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GEIC_BUTTON_ICON);
+      return gfx::ImageSkiaOperations::CreateResizedImage(
+          *gemini_icon, skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(kDefaultGeminiIconSize, kDefaultGeminiIconSize));
+    }
+  }
+  NOTREACHED();
 }
 #endif
 
@@ -756,11 +770,15 @@ void PasswordCombinedSelectorView::OnWidgetInitialized() {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
-  // Initialize the header slot with the default Gemini icon so that a broken or
+  // Initialize the header slot with the default actor icon so that a broken or
   // slow custom icon URL never leaves the slot blank. If a valid custom icon
   // URL is provided, `UpdateAvatar()` will replace it once fetched.
+  const std::optional<password_manager::RemoteActorType> actor_type =
+      controller_->GetActorType();
+  CHECK(actor_type.has_value());
   auto header_view = std::make_unique<views::ImageView>(
-      CreateRemoteActorHeaderImageModel(GetDefaultRemoteActorIcon()));
+      CreateRemoteActorHeaderImageModel(
+          GetDefaultRemoteActorIcon(*actor_type)));
   header_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   header_view->SetID(kHeaderActorIconId);
 

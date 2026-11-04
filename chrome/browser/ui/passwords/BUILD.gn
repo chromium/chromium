@@ -45,6 +45,7 @@ source_set("passwords") {
       "//chrome/common:buildflags",
       "//components/password_manager/core/browser/ui",
       "//components/password_manager/core/common",
+      "//components/password_manager/core/common/remote_actor",
       "//components/zoom",
       "//skia",
       "//ui/base/unowned_user_data",

@@ -103,6 +103,8 @@ source_set("impl") {
 
   deps = [
     ":passwords",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/app/theme:webui_theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/favicon",
     "//chrome/browser/glic/resources:grit",
@@ -131,6 +133,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/views/webauthn",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common/remote_actor",
     "//components/tabs:public",
   ]
 
@@ -230,6 +233,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/affiliations/core/browser:test_support",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common/remote_actor",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]

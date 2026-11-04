@@ -87,6 +87,7 @@ source_set("browser_tests") {
     "//chrome/common:mojo_bindings",
     "//chrome/test:test_support",
     "//components/autofill/core/common:test_support",
+    "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/core/common/remote_actor:features",
     "//components/policy/core/common:test_support",
     "//content/public/browser",

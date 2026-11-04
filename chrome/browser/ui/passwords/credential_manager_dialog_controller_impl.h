@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
+#include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
 #include "ui/gfx/range/range.h"
 
 class AccountChooserPrompt;
@@ -61,6 +63,8 @@ class CredentialManagerDialogControllerImpl
   // PasswordCombinedSelectorController:
   DisplayType GetDisplayType() const override;
   bool ShouldShowTopIllustration() const override;
+  std::optional<password_manager::RemoteActorType> GetActorType()
+      const override;
   GURL GetActorIconUrl() const override;
   std::u16string GetTitle() const override;
   std::u16string GetSubtitle() const override;
