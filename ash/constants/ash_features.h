@@ -463,8 +463,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool>
     kLanguagePacksFontsLoadAfterDownloadDuringLogin;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLanguagePacksInSettings);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFeatureManagementLocalImageSearch);

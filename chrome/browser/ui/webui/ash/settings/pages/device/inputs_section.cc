@@ -456,9 +456,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "onDeviceGrammarCheckEnabled",
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));
 
-  html_source->AddBoolean(
-      "languagePacksInSettingsEnabled",
-      base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
+  // TODO: crbug.com/335232633 - Inline this flag and remove it.
+  html_source->AddBoolean("languagePacksInSettingsEnabled", false);
   // TODO(b/290861003): Update the settings code and remove this.
   html_source->AddBoolean("isShortcutCustomizationEnabled", true);
 

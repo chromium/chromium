@@ -9,12 +9,9 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -29,7 +26,6 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/language_packs/handwriting.h"
 #include "chromeos/ash/components/language_packs/language_packs_util.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 using ::ash::input_method::InputMethodManager;
@@ -433,14 +429,9 @@ void LanguagePackManager::CheckAndUpdateDlcsForInputMethods(
 
 void LanguagePackManager::ObservePrefs(PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This is the main gate for the functionality of observing Prefs.
-  // If this flag is false, all of the cascading logic is disabled.
-  if (base::FeatureList::IsEnabled(features::kLanguagePacksInSettings)) {
-    pref_change_registrar_.Init(pref_service);
-    base::RepeatingClosure callback = base::BindRepeating(
-        &LanguagePackManager::CheckAndUpdateDlcsForInputMethods, pref_service);
-    pref_change_registrar_.Add(ash::prefs::kLanguagePreloadEngines, callback);
-  }
+  // No-op as `kLanguagePacksInSettings` is now removed.
+  // TODO: crbug.com/335232633 - Clean up `pref_change_registrar_` and
+  //   `CheckAndUpdateDlcsForInputMethods`, both of which are now unused.
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {

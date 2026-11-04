@@ -995,11 +995,6 @@ BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kLanguagePacksFontsLoadAfterDownloadDuringLogin =
     {&kLanguagePacksFonts, "load_after_download_during_login", true};
 
-// Enables the UI and relative logic to manage Language Packs in Settings.
-// This feature allows users to install/remove languages and input methods
-// via the corresponding Settings page.
-BASE_FEATURE(kLanguagePacksInSettings, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval, base::FEATURE_DISABLED_BY_DEFAULT);
 
