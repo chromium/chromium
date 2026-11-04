@@ -6,9 +6,11 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -16,6 +18,8 @@
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
+#include "cc/metrics/scroll_timing_buffer.h"
+#include "cc/metrics/scroll_timing_info.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -35,10 +39,12 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     : should_report_histograms_(should_report_histograms),
       report_event_latency_to_custom_recorder_(
           report_event_latency_to_custom_recorder),
-      should_report_scroll_timing_(should_report_scroll_timing),
       layer_tree_host_id_(layer_tree_host_id),
       is_trees_in_viz_client_(is_trees_in_viz_client),
-      scroll_jank_v4_processor_(should_report_scroll_timing) {}
+      scroll_timing_buffer_(
+          should_report_scroll_timing ? ScrollTimingBuffer::Create() : nullptr),
+      scroll_jank_v4_processor_(
+          /*emit_scroll_timing=*/has_scroll_timing_buffer()) {}
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
   base::TimeTicks now = Now();
@@ -95,9 +101,12 @@ base::TimeTicks CompositorFrameReportingController::Now() const {
   return tick_clock_->NowTicks();
 }
 
-void CompositorFrameReportingController::OnScrollTimingInfosCompleted(
-    std::vector<ScrollTimingInfo>) {
-  // TODO(crbug.com/504094429): Forward completed records to the main thread.
+base::ReadOnlySharedMemoryRegion
+CompositorFrameReportingController::TakeScrollTimingBufferRegion() {
+  if (!scroll_timing_buffer_) {
+    return {};
+  }
+  return scroll_timing_buffer_->TakeReadOnlyRegion();
 }
 
 bool CompositorFrameReportingController::HasReporterAt(
@@ -742,14 +751,14 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
     }
   }
   last_started_compositor_frame_ = {};
-  if (visible_ && should_report_scroll_timing_) {
+  if (visible_ && scroll_timing_buffer_) {
     pending_scroll_timing_flush_ = true;
   }
   MaybeFlushAndDrainScrollTiming();
 }
 
 void CompositorFrameReportingController::MaybeFlushAndDrainScrollTiming() {
-  if (!should_report_scroll_timing_) {
+  if (!scroll_timing_buffer_) {
     return;
   }
 
@@ -772,8 +781,10 @@ void CompositorFrameReportingController::MaybeFlushAndDrainScrollTiming() {
 
   std::vector<ScrollTimingInfo> scroll_timing_infos =
       scroll_jank_v4_processor_.TakeCompletedScrollTimingInfos();
-  if (visible_ && !scroll_timing_infos.empty()) {
-    OnScrollTimingInfosCompleted(std::move(scroll_timing_infos));
+  if (visible_) {
+    for (const auto& record : scroll_timing_infos) {
+      scroll_timing_buffer_->Push(record);
+    }
   }
 }
 

@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -42,10 +43,13 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/view_transition_content_layer.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
+#include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/events_metrics_manager.h"
+#include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/resources/ui_resource_manager.h"
+#include "cc/test/event_metrics_test_creator.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_layer_tree_host.h"
@@ -105,6 +109,7 @@
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -173,6 +178,220 @@ bool TreesInViz() {
 }
 
 using LayerTreeHostTest = LayerTreeTest;
+
+// Verify that a record published at presentation is readable on the main thread
+// without a main frame, and that the consumer survives later commits. Threaded
+// only: single-threaded compositors do not support Scroll Timing.
+class LayerTreeHostTestScrollTimingBuffer : public LayerTreeHostTest {
+ public:
+  // TreesInViz compositors have no Scroll Timing buffer.
+  LayerTreeHostTestScrollTimingBuffer()
+      : LayerTreeTest(kDefaultRendererType, /*disable_trees_in_viz=*/true) {}
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->enable_scroll_performance_timing = true;
+  }
+
+  void BeginTest() override {
+    consumer_ = layer_tree_host()->scroll_timing_buffer_consumer();
+    EXPECT_TRUE(consumer_);
+    if (!consumer_) {
+      EndTest();
+      return;
+    }
+    EXPECT_THAT(consumer_->ReadRecords().records, testing::IsEmpty());
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    if (injected_scroll_) {
+      return;
+    }
+    injected_scroll_ = true;
+    start_time_ = base::TimeTicks::Now();
+    const auto dispatch_args =
+        ScrollEventMetrics::DispatchBeginFrameArgs::From(args);
+    EventMetricsTestCreator creator;
+    EventMetrics::List events;
+    events.push_back(creator.FirstGestureScrollUpdateBuilder()
+                         .SetTimestamp(start_time_)
+                         .SetScrollBeginGeneratedTimestamp(start_time_)
+                         .SetScrollBeginArrivalTimestamp(start_time_)
+                         .SetDispatchArgs(dispatch_args)
+                         .SetDelta(1)
+                         .AddAppliedScrollObservation(ElementId(11))
+                         .Build());
+    events.push_back(creator.GestureScrollEndBuilder()
+                         .SetTimestamp(start_time_ + base::Microseconds(1))
+                         .SetScrollBeginGeneratedTimestamp(start_time_)
+                         .SetScrollBeginArrivalTimestamp(start_time_)
+                         .SetDispatchArgs(dispatch_args)
+                         .Build());
+    for (auto& event : events) {
+      const bool is_scroll_update = event->AsScrollUpdate() != nullptr;
+      auto monitor = host_impl->GetScopedEventMetricsMonitor(
+          base::BindOnce([](std::unique_ptr<EventMetrics> metrics,
+                            bool handled) { return metrics; },
+                         std::move(event)));
+      monitor->SetSaveMetrics();
+      if (is_scroll_update) {
+        host_impl->DidScrollForMetrics();
+      }
+    }
+  }
+
+  void DidReceivePresentationTimeOnThread(
+      LayerTreeHostImpl* host_impl,
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override {
+    if (queued_read_) {
+      return;
+    }
+    queued_read_ = true;
+    MainThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LayerTreeHostTestScrollTimingBuffer::VerifyPublishedRecord,
+            base::Unretained(this), feedback.timestamp));
+  }
+
+  void VerifyPublishedRecord(base::TimeTicks presentation_time) {
+    if (!consumer_) {
+      return;
+    }
+    const auto snapshot = consumer_->ReadRecords();
+    EXPECT_THAT(snapshot.records,
+                testing::ElementsAre(ScrollTimingInfo{
+                    .start_time = start_time_,
+                    .end_time = presentation_time,
+                    .input_type = ui::ScrollInputType::kTouchscreen,
+                    .element_id = ElementId(11),
+                }));
+    EXPECT_EQ(snapshot.overwritten_count, 0u);
+    read_record_ = true;
+    PostSetNeedsCommitWithForcedRedrawToMainThread();
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    if (++activations_ == 2) {
+      EndTest();
+    }
+  }
+
+  void AfterTest() override {
+    if (!consumer_) {
+      return;
+    }
+    EXPECT_TRUE(read_record_);
+    EXPECT_EQ(activations_, 2);
+    EXPECT_EQ(consumer_, layer_tree_host()->scroll_timing_buffer_consumer());
+    EXPECT_THAT(consumer_->ReadRecords().records, testing::IsEmpty());
+    consumer_ = nullptr;
+  }
+
+ private:
+  raw_ptr<ScrollTimingBufferConsumer> consumer_ = nullptr;
+  base::TimeTicks start_time_;
+  bool injected_scroll_ = false;
+  bool queued_read_ = false;
+  bool read_record_ = false;
+  int activations_ = 0;
+};
+
+MULTI_THREAD_TEST_F(LayerTreeHostTestScrollTimingBuffer);
+
+TEST_F(LayerTreeHostTestScrollTimingBuffer, MissingConsumerFailsCleanly) {
+  // Unsupported compositing provides a deterministic missing-consumer case.
+  EXPECT_NONFATAL_FAILURE(RunTest(CompositorMode::SINGLE_THREADED),
+                          "consumer_");
+}
+
+class LayerTreeHostTestScrollTimingBufferAvailability
+    : public LayerTreeHostTest {
+ public:
+  // TreesInViz compositors have no Scroll Timing buffer.
+  LayerTreeHostTestScrollTimingBufferAvailability()
+      : LayerTreeTest(kDefaultRendererType, /*disable_trees_in_viz=*/true) {}
+
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    // Use renderer settings in both compositor modes.
+    settings->single_thread_proxy_scheduler = false;
+    settings->enable_scroll_performance_timing = true;
+  }
+
+  void BeginTest() override {
+    auto* consumer = layer_tree_host()->scroll_timing_buffer_consumer();
+    EXPECT_EQ(consumer != nullptr, HasImplThread());
+    if (consumer) {
+      const auto snapshot = consumer->ReadRecords();
+      EXPECT_THAT(snapshot.records, testing::IsEmpty());
+      EXPECT_EQ(snapshot.overwritten_count, 0u);
+    }
+    if (HasImplThread()) {
+      PostSetNeedsCommitToMainThread();
+    } else {
+      PostCompositeImmediatelyToMainThread();
+    }
+  }
+
+  void WillBeginImplFrameOnThread(LayerTreeHostImpl* host_impl,
+                                  const viz::BeginFrameArgs& args,
+                                  bool has_damage) override {
+    EXPECT_EQ(host_impl->compositor_frame_reporting_controller()
+                  ->has_scroll_timing_buffer(),
+              HasImplThread());
+    EventMetricsTestCreator creator;
+    {
+      auto monitor = host_impl->GetScopedEventMetricsMonitor(base::BindOnce(
+          [](std::unique_ptr<EventMetrics> metrics, bool handled) {
+            return metrics;
+          },
+          creator.FirstGestureScrollUpdateBuilder().SetDelta(1).Build()));
+      host_impl->DidScrollForMetrics();
+      host_impl->DidScrollContent(ElementId(11), /*animated=*/false,
+                                  gfx::Vector2dF(0, 1));
+    }
+    const auto events = host_impl->TakeSavedEventsMetricsForTesting();
+    EXPECT_EQ(events.size(), 1u);
+    if (events.size() == 1u) {
+      EXPECT_EQ(
+          events[0]->AsScrollUpdate()->applied_scroll_observations().size(),
+          HasImplThread() ? 1u : 0u);
+    }
+    EndTest();
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestScrollTimingBufferAvailability);
+
+class LayerTreeHostTestScrollTimingBufferDisabled : public LayerTreeHostTest {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->single_thread_proxy_scheduler = false;
+    settings->enable_scroll_performance_timing = false;
+  }
+
+  void BeginTest() override {
+    EXPECT_FALSE(layer_tree_host()->scroll_timing_buffer_consumer());
+
+    // Finish the startup commit before teardown synchronizes with the impl
+    // thread.
+    if (HasImplThread()) {
+      PostSetNeedsCommitToMainThread();
+    } else {
+      PostCompositeImmediatelyToMainThread();
+    }
+  }
+
+  void DidCommit() override {
+    EXPECT_FALSE(layer_tree_host()->scroll_timing_buffer_consumer());
+    EndTest();
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestScrollTimingBufferDisabled);
 
 class LayerTreeHostTestHasImplThreadTest : public LayerTreeHostTest {
  public:

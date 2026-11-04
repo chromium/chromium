@@ -22,6 +22,10 @@
 #include "cc/trees/proxy.h"
 #include "cc/trees/proxy_common.h"
 
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}
+
 namespace cc {
 
 class CompletionEvent;
@@ -185,9 +189,11 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool IsImplThread() const;
   base::SingleThreadTaskRunner* ImplThreadTaskRunner();
 
-  void InitializeOnImplThread(CompletionEvent* completion_event,
-                              int id,
-                              const LayerTreeSettings* settings);
+  void InitializeOnImplThread(
+      CompletionEvent* completion_event,
+      int id,
+      const LayerTreeSettings* settings,
+      base::ReadOnlySharedMemoryRegion* scroll_timing_buffer_region);
   void DestroyProxyImplOnImplThread(CompletionEvent* completion_event);
 
   // Indicates whether the compositor should continue to receive BeginFrame

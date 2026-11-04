@@ -82,6 +82,10 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/latency/latency_info.h"
 
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}
+
 namespace gfx {
 class PointF;
 }
@@ -849,6 +853,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const {
     return compositor_frame_reporting_controller_.get();
   }
+
+  // See CompositorFrameReportingController.
+  base::ReadOnlySharedMemoryRegion TakeScrollTimingBufferRegion();
 
   void set_pending_tree_fully_painted_for_testing(bool painted) {
     pending_tree_fully_painted_ = painted;

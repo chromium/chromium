@@ -60,7 +60,8 @@ class CC_EXPORT ScrollTimingBuffer {
   // Overwrites the oldest record when full.
   void Push(const ScrollTimingInfo& record);
 
-  base::ReadOnlySharedMemoryRegion DuplicateReadOnlyRegion() const;
+  // Transfers the read-only handle once; the producer remains writable.
+  base::ReadOnlySharedMemoryRegion TakeReadOnlyRegion();
 
  private:
   explicit ScrollTimingBuffer(

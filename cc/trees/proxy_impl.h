@@ -27,6 +27,10 @@
 
 class GURL;
 
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}
+
 namespace viz {
 class FrameTimingDetails;
 class LocalSurfaceId;
@@ -66,6 +70,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   ~ProxyImpl() override;
 
   ProxyImpl& operator=(const ProxyImpl&) = delete;
+
+  base::ReadOnlySharedMemoryRegion TakeScrollTimingBufferRegion();
 
   void UpdateBrowserControlsStateOnImpl(
       BrowserControlsState constraints,

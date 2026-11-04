@@ -8,7 +8,6 @@
 #include <array>
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -25,13 +24,17 @@
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
-#include "cc/metrics/scroll_timing_info.h"
+
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}
 
 namespace viz {
 class FrameTimingDetails;
 }
 
 namespace cc {
+class ScrollTimingBuffer;
 struct BeginMainFrameMetrics;
 struct FrameInfo;
 
@@ -136,6 +139,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool HasReporterAt(PipelineStage stage) const;
 
+  bool has_scroll_timing_buffer() const { return !!scroll_timing_buffer_; }
+
+  // Called once during startup; returns an invalid region when unavailable.
+  base::ReadOnlySharedMemoryRegion TakeScrollTimingBufferRegion();
+
   void SetVisible(bool visible);
 
  protected:
@@ -149,9 +157,6 @@ class CC_EXPORT CompositorFrameReportingController {
     ~SubmittedCompositorFrame();
   };
   base::TimeTicks Now() const;
-
-  virtual void OnScrollTimingInfosCompleted(
-      std::vector<ScrollTimingInfo> scroll_timing_infos);
 
   bool next_activate_has_invalidation() const {
     return next_activate_has_invalidation_;
@@ -204,7 +209,6 @@ class CC_EXPORT CompositorFrameReportingController {
 
   const bool should_report_histograms_;
   const bool report_event_latency_to_custom_recorder_;  // UI LatencyData
-  const bool should_report_scroll_timing_;
   const int layer_tree_host_id_;
   bool is_trees_in_viz_client_;
 
@@ -218,6 +222,8 @@ class CC_EXPORT CompositorFrameReportingController {
   raw_ptr<FrameSorter> frame_sorter_ = nullptr;
   raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers_ = nullptr;
 
+  // Must precede scroll_jank_v4_processor_, whose initialization reads it.
+  std::unique_ptr<ScrollTimingBuffer> scroll_timing_buffer_;
   PredictorJankTracker predictor_jank_tracker_;
   ScrollJankDroppedFrameTracker scroll_jank_dropped_frame_tracker_;
   ScrollJankV4Processor scroll_jank_v4_processor_;

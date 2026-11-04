@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/common/task_annotator.h"
@@ -152,6 +153,11 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
       host_impl_->compositor_frame_reporting_controller());
 
   DCHECK_EQ(scheduler_->visible(), host_impl_->visible());
+}
+
+base::ReadOnlySharedMemoryRegion ProxyImpl::TakeScrollTimingBufferRegion() {
+  DCHECK(IsImplThread());
+  return host_impl_->TakeScrollTimingBufferRegion();
 }
 
 ProxyImpl::~ProxyImpl() {

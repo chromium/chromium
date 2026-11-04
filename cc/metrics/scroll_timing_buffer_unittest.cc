@@ -28,7 +28,7 @@ class ScrollTimingBufferTest : public testing::Test {
     buffer_ = ScrollTimingBuffer::Create();
     ASSERT_TRUE(buffer_);
     consumer_ =
-        ScrollTimingBufferConsumer::Create(buffer_->DuplicateReadOnlyRegion());
+        ScrollTimingBufferConsumer::Create(buffer_->TakeReadOnlyRegion());
     ASSERT_TRUE(consumer_);
   }
 
@@ -54,7 +54,7 @@ TEST_F(ScrollTimingBufferTest, CapacityOverwritesOldest) {
     buffer_ = ScrollTimingBuffer::Create();
     ASSERT_TRUE(buffer_);
     consumer_ =
-        ScrollTimingBufferConsumer::Create(buffer_->DuplicateReadOnlyRegion());
+        ScrollTimingBufferConsumer::Create(buffer_->TakeReadOnlyRegion());
     ASSERT_TRUE(consumer_);
     std::vector<ScrollTimingInfo> expected;
     for (uint32_t i = 1; i <= count; ++i) {
@@ -212,15 +212,33 @@ TEST_F(ScrollTimingBufferTest,
 }
 
 TEST_F(ScrollTimingBufferTest, ProducerKeepsStorageAlive) {
+  buffer_ = ScrollTimingBuffer::Create();
+  ASSERT_TRUE(buffer_);
+  auto region = buffer_->TakeReadOnlyRegion();
+  consumer_ = ScrollTimingBufferConsumer::Create(region.Duplicate());
+  ASSERT_TRUE(consumer_);
   buffer_->Push(Record(1));
   EXPECT_THAT(consumer_->ReadRecords().records,
               testing::ElementsAre(Record(1)));
   consumer_.reset();
   buffer_->Push(Record(2));
-  consumer_ =
-      ScrollTimingBufferConsumer::Create(buffer_->DuplicateReadOnlyRegion());
+  consumer_ = ScrollTimingBufferConsumer::Create(std::move(region));
   ASSERT_TRUE(consumer_);
   const auto snapshot = consumer_->ReadRecords();
+  EXPECT_THAT(snapshot.records, testing::ElementsAre(Record(1), Record(2)));
+  EXPECT_EQ(snapshot.overwritten_count, 0u);
+}
+
+TEST_F(ScrollTimingBufferTest, TakenRegionSurvivesProducerDestruction) {
+  auto buffer = ScrollTimingBuffer::Create();
+  ASSERT_TRUE(buffer);
+  buffer->Push(Record(1));
+  auto region = buffer->TakeReadOnlyRegion();
+  buffer->Push(Record(2));
+  buffer.reset();
+  const auto consumer = ScrollTimingBufferConsumer::Create(std::move(region));
+  ASSERT_TRUE(consumer);
+  const auto snapshot = consumer->ReadRecords();
   EXPECT_THAT(snapshot.records, testing::ElementsAre(Record(1), Record(2)));
   EXPECT_EQ(snapshot.overwritten_count, 0u);
 }
@@ -243,8 +261,13 @@ TEST_F(ScrollTimingBufferTest,
 }
 
 TEST_F(ScrollTimingBufferTest, ConsumersHaveIndependentReadPositions) {
+  buffer_ = ScrollTimingBuffer::Create();
+  ASSERT_TRUE(buffer_);
+  auto region = buffer_->TakeReadOnlyRegion();
+  consumer_ = ScrollTimingBufferConsumer::Create(region.Duplicate());
+  ASSERT_TRUE(consumer_);
   const auto other_consumer =
-      ScrollTimingBufferConsumer::Create(buffer_->DuplicateReadOnlyRegion());
+      ScrollTimingBufferConsumer::Create(std::move(region));
   ASSERT_TRUE(other_consumer);
   buffer_->Push(Record(1));
   EXPECT_THAT(consumer_->ReadRecords().records,
@@ -266,8 +289,7 @@ TEST_F(ScrollTimingBufferTest, RejectsRegressingWriteCount) {
   auto storage =
       base::StructuredSharedMemory<ScrollTimingBuffer::SharedState>::Create();
   ASSERT_TRUE(storage);
-  consumer_ =
-      ScrollTimingBufferConsumer::Create(storage->DuplicateReadOnlyRegion());
+  consumer_ = ScrollTimingBufferConsumer::Create(storage->TakeReadOnlyRegion());
   ASSERT_TRUE(consumer_);
   auto& state = storage->WritableRef();
   for (uint64_t index = 0; index < 2; ++index) {

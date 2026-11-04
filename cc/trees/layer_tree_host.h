@@ -85,6 +85,7 @@ class PaintWorkletLayerPainter;
 class RasterDarkModeFilter;
 class RenderFrameMetadataObserver;
 class RenderingStatsInstrumentation;
+class ScrollTimingBufferConsumer;
 class TaskGraphRunner;
 class UIResourceManager;
 
@@ -260,6 +261,18 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback);
   void ClearEventsMetrics();
+
+  // Called by the proxy during startup.
+  void InitializeScrollTimingBufferConsumer(
+      base::ReadOnlySharedMemoryRegion region);
+
+  // Owned by this host until destruction; main-thread only. Null when Scroll
+  // Timing is disabled, unsupported, or shared-memory setup fails. It has one
+  // read position, so only one client should call ReadRecords().
+  ScrollTimingBufferConsumer* scroll_timing_buffer_consumer() {
+    DCHECK(IsMainThread());
+    return scroll_timing_buffer_consumer_.get();
+  }
 
   size_t saved_events_metrics_count_for_testing() const {
     DCHECK(IsMainThread());
@@ -1190,6 +1203,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   mutable std::unique_ptr<CompletionEvent> commit_completion_event_;
 
   EventsMetricsManager events_metrics_manager_;
+  std::unique_ptr<ScrollTimingBufferConsumer> scroll_timing_buffer_consumer_;
 
   // A map from ViewTransition tokens to whether a new LocalSurfaceId is
   // needed for this ViewTransitionRequest.

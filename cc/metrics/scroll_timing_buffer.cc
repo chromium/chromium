@@ -46,9 +46,8 @@ void ScrollTimingBuffer::Push(const ScrollTimingInfo& record) {
   state.write_count.store(index + 1, std::memory_order_release);
 }
 
-base::ReadOnlySharedMemoryRegion ScrollTimingBuffer::DuplicateReadOnlyRegion()
-    const {
-  return storage_.DuplicateReadOnlyRegion();
+base::ReadOnlySharedMemoryRegion ScrollTimingBuffer::TakeReadOnlyRegion() {
+  return storage_.TakeReadOnlyRegion();
 }
 
 ScrollTimingBufferConsumer::ScrollTimingBufferConsumer(

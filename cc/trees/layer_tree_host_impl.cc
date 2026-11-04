@@ -729,14 +729,18 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     // tests.
     next_frame_token_from_client_ = 1u;
   } else {
+    const bool scroll_timing_supported =
+        settings.enable_scroll_performance_timing &&
+        task_runner_provider_->HasImplThread() &&
+        !settings.single_thread_proxy_scheduler &&
+        !settings.is_layer_tree_for_ui && !settings.TreesInVizInClientProcess();
     compositor_frame_reporting_controller_ =
         std::make_unique<CompositorFrameReportingController>(
             /*should_report_histograms=*/!settings
                 .single_thread_proxy_scheduler,
             /*report_event_latency_to_custom_recorder=*/
             settings.is_layer_tree_for_ui,
-            /*should_report_scroll_timing=*/
-            settings.enable_scroll_performance_timing,
+            /*should_report_scroll_timing=*/scroll_timing_supported,
             /*layer_tree_host_id=*/id,
             /*is_trees_in_viz_client=*/
             settings_.TreesInVizInClientProcess());
@@ -4755,8 +4759,8 @@ void LayerTreeHostImpl::DidScrollContent(ElementId element_id,
                                          const gfx::Vector2dF& scroll_delta) {
   // An animated scroll has not moved content yet; the movement lands on later
   // animation ticks that do not reach here.
-  if (settings_.enable_scroll_performance_timing && !animated && element_id &&
-      !scroll_delta.IsZero()) {
+  if (compositor_frame_reporting_controller_->has_scroll_timing_buffer() &&
+      !animated && element_id && !scroll_delta.IsZero()) {
     events_metrics_manager_.RecordAppliedScrollObservation(element_id);
   }
 
@@ -6101,6 +6105,11 @@ void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
   for (auto& callback : callbacks) {
     std::move(callback).Run(details.presentation_feedback.timestamp);
   }
+}
+
+base::ReadOnlySharedMemoryRegion
+LayerTreeHostImpl::TakeScrollTimingBufferRegion() {
+  return compositor_frame_reporting_controller_->TakeScrollTimingBufferRegion();
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {

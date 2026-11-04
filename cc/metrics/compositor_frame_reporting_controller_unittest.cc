@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,6 +26,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/metrics/scroll_timing_info.h"
 #include "cc/paint/element_id.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
@@ -59,7 +61,13 @@ class TestCompositorFrameReportingController
             report_event_latency_to_custom_recorder,
             should_report_scroll_timing,
             /*layer_tree_host_id=*/1,
-            /*is_trees_in_viz_client=*/is_trees_in_viz_client) {}
+            /*is_trees_in_viz_client=*/is_trees_in_viz_client) {
+    if (should_report_scroll_timing) {
+      scroll_timing_consumer_ =
+          ScrollTimingBufferConsumer::Create(TakeScrollTimingBufferRegion());
+      CHECK(scroll_timing_consumer_);
+    }
+  }
 
   TestCompositorFrameReportingController(
       const TestCompositorFrameReportingController& controller) = delete;
@@ -138,20 +146,14 @@ class TestCompositorFrameReportingController
   }
 
   std::vector<ScrollTimingInfo> TakeCompletedScrollTimingInfos() {
-    return std::exchange(completed_scroll_timing_infos_, {});
-  }
-
- protected:
-  void OnScrollTimingInfosCompleted(
-      std::vector<ScrollTimingInfo> scroll_timing_infos) override {
-    completed_scroll_timing_infos_.insert(
-        completed_scroll_timing_infos_.end(),
-        std::make_move_iterator(scroll_timing_infos.begin()),
-        std::make_move_iterator(scroll_timing_infos.end()));
+    CHECK(scroll_timing_consumer_);
+    auto snapshot = scroll_timing_consumer_->ReadRecords();
+    EXPECT_EQ(snapshot.overwritten_count, 0u);
+    return std::move(snapshot.records);
   }
 
  private:
-  std::vector<ScrollTimingInfo> completed_scroll_timing_infos_;
+  std::unique_ptr<ScrollTimingBufferConsumer> scroll_timing_consumer_;
 };
 
 class CompositorFrameReportingControllerTest : public testing::Test {
@@ -539,6 +541,23 @@ TEST_F(CompositorFrameReportingControllerTest,
   histogram_tester.ExpectBucketCount(
       "CompositorLatency2.Type",
       CompositorFrameReporter::FrameReportType::kDroppedFrame, 0);
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       ScrollTimingBufferUsesExplicitSupportFlag) {
+  for (bool should_report_histograms : {false, true}) {
+    SCOPED_TRACE(should_report_histograms);
+    for (bool should_report_scroll_timing : {false, true}) {
+      SCOPED_TRACE(should_report_scroll_timing);
+      CompositorFrameReportingController controller(
+          should_report_histograms,
+          /*report_event_latency_to_custom_recorder=*/false,
+          should_report_scroll_timing, /*layer_tree_host_id=*/1,
+          /*is_trees_in_viz_client=*/false);
+      const auto region = controller.TakeScrollTimingBufferRegion();
+      EXPECT_EQ(region.IsValid(), should_report_scroll_timing);
+    }
+  }
 }
 
 class ScrollTimingCompositorFrameReportingControllerTest
@@ -3451,7 +3470,8 @@ TEST_F(CompositorFrameReportingControllerTest,
         /*should_report_histograms=*/false,
         /*report_event_latency_to_custom_recorder=*/false,
         /*is_trees_in_viz_client=*/false,
-        /*should_report_scroll_timing=*/true);
+        /*should_report_scroll_timing=*/false);
+    EXPECT_FALSE(reporting_controller_no_histograms.has_scroll_timing_buffer());
     reporting_controller_no_histograms.set_tick_clock(&test_tick_clock_);
     reporting_controller_no_histograms.SetFrameSorter(&local_frame_sorter);
     reporting_controller_no_histograms.SetFrameSequenceTrackerCollection(
@@ -3496,9 +3516,6 @@ TEST_F(CompositorFrameReportingControllerTest,
                                                                  details);
     reporting_controller_no_histograms.OnStoppedRequestingBeginFrames();
     reporting_controller_no_histograms.SetVisible(false);
-    EXPECT_THAT(
-        reporting_controller_no_histograms.TakeCompletedScrollTimingInfos(),
-        IsEmpty());
   }
 
   // Verify that no ScrollJank metrics are reported.

@@ -54,6 +54,7 @@
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_info.h"
+#include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/animation_test_common.h"
@@ -15653,15 +15654,25 @@ TEST_P(LayerTreeHostImplTest,
           .get(),
       ui::ScrollInputType::kTouchscreen);
 
-  EXPECT_THAT(
-      ScrollUpdateAndGetObservations(
-          host_impl_.get(),
-          UpdateState(gfx::Point(50, 50), gfx::Vector2dF(0, 10),
-                      ui::ScrollInputType::kTouchscreen),
-          ui::ScrollInputType::kTouchscreen),
-      ElementsAre(
-          Field(&ScrollUpdateEventMetrics::AppliedScrollObservation::element_id,
-                child_scroller->element_id())));
+  const auto observations = ScrollUpdateAndGetObservations(
+      host_impl_.get(),
+      UpdateState(gfx::Point(50, 50), gfx::Vector2dF(0, 10),
+                  ui::ScrollInputType::kTouchscreen),
+      ui::ScrollInputType::kTouchscreen);
+  if (settings.trees_in_viz_in_viz_process ||
+      settings.TreesInVizInClientProcess()) {
+    EXPECT_THAT(observations, IsEmpty());
+    EXPECT_FALSE(host_impl_->compositor_frame_reporting_controller()
+                     ->has_scroll_timing_buffer());
+  } else {
+    EXPECT_THAT(
+        observations,
+        ElementsAre(Field(
+            &ScrollUpdateEventMetrics::AppliedScrollObservation::element_id,
+            child_scroller->element_id())));
+    EXPECT_TRUE(host_impl_->compositor_frame_reporting_controller()
+                    ->has_scroll_timing_buffer());
+  }
 
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
@@ -15700,6 +15711,8 @@ TEST_P(LayerTreeHostImplTest,
   LayerTreeSettings settings = DefaultSettings();
   settings.enable_scroll_performance_timing = false;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  EXPECT_FALSE(host_impl_->compositor_frame_reporting_controller()
+                   ->has_scroll_timing_buffer());
   SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
   DrawFrame();
 
@@ -15745,6 +15758,95 @@ TEST_P(LayerTreeHostImplTest,
                    CurrentScrollOffset(OuterViewportScrollLayer()));
 
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
+TEST_P(
+    LayerTreeHostImplTest,
+    ScrollPerformanceTimingRetainsRecordsAcrossTreeResetAndVisibilityChanges) {
+  LayerTreeSettings settings = DefaultSettings();
+  if (settings.trees_in_viz_in_viz_process ||
+      settings.TreesInVizInClientProcess()) {
+    GTEST_SKIP();
+  }
+  settings.enable_scroll_performance_timing = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  auto* controller = host_impl_->compositor_frame_reporting_controller();
+  const auto consumer = ScrollTimingBufferConsumer::Create(
+      host_impl_->TakeScrollTimingBufferRegion());
+  ASSERT_TRUE(consumer);
+  base::SimpleTestTickClock clock;
+  clock.SetNowTicks(base::TimeTicks::Now());
+  controller->set_tick_clock(&clock);
+  base::ScopedClosureRunner restore_clock(
+      base::BindLambdaForTesting([controller] {
+        controller->set_tick_clock(base::DefaultTickClock::GetInstance());
+      }));
+  EventMetricsTestCreator creator;
+  const auto start_time = clock.NowTicks() + base::Milliseconds(1);
+  const auto scroll_id = start_time + base::Milliseconds(1);
+  clock.Advance(base::Milliseconds(16));
+  const auto args = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, /*source_id=*/1, /*sequence_number=*/1,
+      clock.NowTicks());
+  controller->WillBeginImplFrame(args, /*will_throttle_main=*/false);
+  EventMetrics::List events;
+  events.push_back(
+      creator.FirstGestureScrollUpdateBuilder()
+          .SetTimestamp(start_time + base::Milliseconds(2))
+          .SetDelta(1)
+          .SetDidScroll(true)
+          .SetDispatchArgs(
+              ScrollEventMetrics::DispatchBeginFrameArgs::From(args))
+          .SetScrollBeginGeneratedTimestamp(start_time)
+          .SetScrollBeginArrivalTimestamp(scroll_id)
+          .AddAppliedScrollObservation(ElementId(11))
+          .Build());
+  clock.Advance(base::Milliseconds(1));
+  controller->OnFinishImplFrame(args.frame_id, /*waiting_for_main=*/false);
+  SubmitInfo submit_info = {1, clock.NowTicks()};
+  submit_info.events_metrics.impl_event_metrics = std::move(events);
+  controller->DidSubmitCompositorFrame(submit_info, args.frame_id,
+                                       viz::BeginFrameId());
+  clock.Advance(base::Milliseconds(1));
+  viz::FrameTimingDetails details;
+  details.presentation_feedback.timestamp = clock.NowTicks();
+  controller->DidPresentCompositorFrame(/*frame_token=*/1, details);
+
+  controller->OnStoppedRequestingBeginFrames();
+  const ScrollTimingInfo expected_info{
+      .start_time = start_time,
+      .end_time = details.presentation_feedback.timestamp,
+      .input_type = ui::ScrollInputType::kTouchscreen,
+      .element_id = ElementId(11),
+  };
+  // Published records belong to the compositor, not its layer trees.
+  host_impl_->ResetTreesForTesting();
+  host_impl_->SetVisible(false);
+  host_impl_->SetVisible(true);
+
+  const auto retained_snapshot = consumer->ReadRecords();
+  EXPECT_THAT(retained_snapshot.records, ElementsAre(expected_info));
+  EXPECT_EQ(retained_snapshot.overwritten_count, 0u);
+}
+
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingHasNoBufferForScheduledSingleThreadedMode) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  settings.single_thread_proxy_scheduler = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  EXPECT_FALSE(host_impl_->compositor_frame_reporting_controller()
+                   ->has_scroll_timing_buffer());
+}
+
+TEST_P(LayerTreeHostImplTest,
+       ScrollPerformanceTimingHasNoBufferForUiCompositor) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  settings.is_layer_tree_for_ui = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  EXPECT_FALSE(host_impl_->compositor_frame_reporting_controller()
+                   ->has_scroll_timing_buffer());
 }
 
 class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {

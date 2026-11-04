@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -77,14 +78,17 @@ ProxyMain::~ProxyMain() {
   DCHECK(!started_);
 }
 
-void ProxyMain::InitializeOnImplThread(CompletionEvent* completion_event,
-                                       int id,
-                                       const LayerTreeSettings* settings) {
+void ProxyMain::InitializeOnImplThread(
+    CompletionEvent* completion_event,
+    int id,
+    const LayerTreeSettings* settings,
+    base::ReadOnlySharedMemoryRegion* scroll_timing_buffer_region) {
   DCHECK(task_runner_provider_->IsImplThread());
   DCHECK(!proxy_impl_);
   proxy_impl_ =
       std::make_unique<ProxyImpl>(weak_factory_.GetWeakPtr(), layer_tree_host_,
                                   id, settings, task_runner_provider_);
+  *scroll_timing_buffer_region = proxy_impl_->TakeScrollTimingBufferRegion();
   completion_event->Signal();
 }
 
@@ -906,6 +910,7 @@ void ProxyMain::Start() {
   DCHECK(IsMainThread());
   DCHECK(layer_tree_host_->IsThreaded());
 
+  base::ReadOnlySharedMemoryRegion scroll_timing_buffer_region;
   {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     CompletionEvent completion;
@@ -913,11 +918,16 @@ void ProxyMain::Start() {
         FROM_HERE, base::BindOnce(&ProxyMain::InitializeOnImplThread,
                                   base::Unretained(this), &completion,
                                   layer_tree_host_->GetId(),
-                                  &layer_tree_host_->GetSettings()));
+                                  &layer_tree_host_->GetSettings(),
+                                  &scroll_timing_buffer_region));
     completion.Wait();
   }
 
   started_ = true;
+  if (scroll_timing_buffer_region.IsValid()) {
+    layer_tree_host_->InitializeScrollTimingBufferConsumer(
+        std::move(scroll_timing_buffer_region));
+  }
 }
 
 void ProxyMain::Stop() {

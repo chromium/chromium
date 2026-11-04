@@ -46,6 +46,7 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
+#include "cc/metrics/scroll_timing_buffer.h"
 #include "cc/metrics/ukm_dropped_frames_data.h"
 #include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/resources/ui_resource_manager.h"
@@ -253,6 +254,15 @@ void LayerTreeHost::SetTaskRunnerProviderForTesting(
 void LayerTreeHost::SetUIResourceManagerForTesting(
     std::unique_ptr<UIResourceManager> ui_resource_manager) {
   ui_resource_manager_ = std::move(ui_resource_manager);
+}
+
+void LayerTreeHost::InitializeScrollTimingBufferConsumer(
+    base::ReadOnlySharedMemoryRegion region) {
+  DCHECK(IsMainThread());
+  CHECK(region.IsValid());
+  CHECK(!scroll_timing_buffer_consumer_);
+  scroll_timing_buffer_consumer_ =
+      ScrollTimingBufferConsumer::Create(std::move(region));
 }
 
 void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
