@@ -310,17 +310,6 @@ cr-composebox-contextual-entrypoint-and-menu,
   color: var(--color-sys-on-surface);
 }
 
-#composeButton::part(hoverBackground) {
-  background-color: var(--color-sys-state-hover-dim-blend-protection);
-  display: block;
-  opacity: var(--compose-button-hover-background-opacity, 0);
-  transition: opacity 250ms linear;
-}
-
-#composeButton::part(compose-button):hover {
-  --compose-button-hover-background-opacity: 1;
-}
-
 :host([is-fusebox-enabled]) #composeButton {
   --cr-button-height: 28px;
   margin-inline-end: 36px;
