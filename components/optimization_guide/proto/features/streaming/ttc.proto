@@ -7,6 +7,7 @@ edition = "2023";
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
+import "components/optimization_guide/proto/features/wire/tool_declaration.proto";
 import "components/optimization_guide/proto/common_types.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -288,6 +289,9 @@ message ToolDefinition {
 
   // Verbalization behavior indicating whether action should be spoken aloud.
   VerbalizationBehavior verbalization = 5;
+
+  // Shared metadata and parameter schema for this tool.
+  ToolDeclaration tool_declaration = 6;
 }
 
 // Tool call request dispatched from server to client.
