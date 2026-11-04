@@ -46,9 +46,6 @@ bool gExecutedSetUpForTestCase = false;
 
 BOOL gIsMockAuthenticationDisabled = NO;
 
-// YES the test is for startup.
-bool gStartupTest = false;
-
 NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
@@ -267,9 +264,7 @@ void ResetAuthentication() {
   if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey killWebKitNetworkProcess];
     [ChromeEarlGrey signOutAndClearIdentities];
-    if (![ChromeTestCase isStartupTest]) {
-      [ChromeEarlGrey openNewTab];
-    }
+    [ChromeEarlGrey openNewTab];
   }
   _executedTestMethodSetUp = YES;
 
@@ -315,11 +310,9 @@ void ResetAuthentication() {
 
     // Clean up any UI that may remain open so the next test starts in a clean
     // state.
-    if (![ChromeTestCase isStartupTest]) {
-      // If a native context menu is presented on the screen, try to dismiss it.
-      [ChromeEarlGreyUI dismissContextMenuIfPresent];
-      [[self class] removeAnyOpenMenusAndInfoBars];
-    }
+    // If a native context menu is presented on the screen, try to dismiss it.
+    [ChromeEarlGreyUI dismissContextMenuIfPresent];
+    [[self class] removeAnyOpenMenusAndInfoBars];
     if (![self loadMinimalAppUI]) {
       [[self class] closeAllTabs];
     }
@@ -359,7 +352,6 @@ void ResetAuthentication() {
   }
   _executedTestMethodSetUp = NO;
   _testServer = nil;
-  gStartupTest = false;
   [super tearDown];
 }
 
@@ -413,11 +405,7 @@ void ResetAuthentication() {
 }
 
 + (void)testForStartup {
-  gStartupTest = YES;
-}
-
-+ (BOOL)isStartupTest {
-  return gStartupTest;
+  // No-op.
 }
 
 - (void)backgroundAndForegroundApp {
@@ -530,15 +518,18 @@ void ResetAuthentication() {
 
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.
-  if (![ChromeTestCase isStartupTest] &&
-      ![ChromeTestCase forceRestartAndWipe]) {
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [[self class] removeAnyOpenMenusAndInfoBars];
     [self closeAllTabs];
   }
   [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
-  // Enforce the assumption that the tests are running in portrait.
-  if (![ChromeTestCase isStartupTest]) {
+  // Enforce the assumption that the tests are running in portrait. Do not
+  // attempt to rotate if the orientation is unknown (for tests that halt the
+  // startup sequence before a scene exists).
+  UIInterfaceOrientation currentOrientation =
+      [ChromeEarlGrey interfaceOrientation];
+  if (currentOrientation != UIInterfaceOrientationUnknown) {
     if ([ChromeEarlGrey isDuoSimulator]) {
       // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
       [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
@@ -546,8 +537,7 @@ void ResetAuthentication() {
         [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
       }
       [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
-    } else if ([ChromeEarlGrey interfaceOrientation] !=
-               UIInterfaceOrientationPortrait) {
+    } else if (currentOrientation != UIInterfaceOrientationPortrait) {
       // Only rotate if needed. On a physical device with the orientation lock
       // on, an XCUITest rotation releases the lock, and the OS then re-applies
       // the physical orientation (e.g. a device resting in landscape), undoing
@@ -620,9 +610,7 @@ void ResetAuthentication() {
       if (![ChromeTestCase forceRestartAndWipe]) {
         // Reset any remaining sign-in state from previous tests.
         [ChromeEarlGrey signOutAndClearIdentities];
-        if (![ChromeTestCase isStartupTest]) {
-          [ChromeEarlGrey openNewTab];
-        }
+        [ChromeEarlGrey openNewTab];
       }
     }
   }

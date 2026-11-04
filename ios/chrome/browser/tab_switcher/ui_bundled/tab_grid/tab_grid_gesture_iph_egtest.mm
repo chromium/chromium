@@ -44,10 +44,6 @@ using ::chrome_test_util::TabGridSearchTabsButton;
 }
 
 - (void)setUp {
-  // Non-startup tests closes all tabs in set up, exposing the tab grid and show
-  // the IPH before test body gets executed. Working around but marking it as a
-  // startup test.
-  [[self class] testForStartup];
   [super setUp];
   MakeFirstRunRecent();
   chrome_test_util::GREYAssertErrorNil(

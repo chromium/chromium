@@ -223,11 +223,6 @@ void CompleteSigninFlow() {
           [self appConfigurationWithoutEnterprisePolicy]];
 }
 
-- (void)setUp {
-  [[self class] testForStartup];
-  [super setUp];
-}
-
 - (void)tearDownHelper {
   // Sign out then wait for the sign-in screen to reappear if not already
   // displayed. This is to avoid a conflict between the dismiss animation and

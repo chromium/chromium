@@ -220,10 +220,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // when the user opens the menu while the 1st step is displayed.
 // TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
 - (void)DISABLED_testOverflowMenuIPHForHistoryShow2StepsWhenUserOpensMenu {
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -250,10 +246,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // when the user lets the first step times out.
 // TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
 - (void)DISABLED_testOverflowMenuIPHForHistoryShow2StepsWhen1stStepTimeout {
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;
@@ -290,10 +282,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // the 1st step IPH is dismissed by the user by tapping outside.
 // TODO(crbug.com/570598001): Flaky on ios-simulator-noncq.
 - (void)DISABLED_testOverflowMenuIPHForHistoryNotShow2ndStep {
-  // The IPH appears immediately on startup, so don't open a new tab when the
-  // app starts up.
-  [[self class] testForStartup];
-
   // Scope for the synchronization disabled.
   {
     ScopedSynchronizationDisabler syncDisabler;

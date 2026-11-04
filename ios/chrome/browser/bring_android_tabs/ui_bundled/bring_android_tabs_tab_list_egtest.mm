@@ -69,7 +69,6 @@ void TriggerTabList() {
 }
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
   if (![ChromeEarlGrey isIPadIdiom]) {
     GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");

@@ -30,7 +30,6 @@
 @implementation SearchEngineChoiceTaiyakiTestCase
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
   // Make sure the search engine has been reset, to avoid any issues if it was
   // not by a previous test.

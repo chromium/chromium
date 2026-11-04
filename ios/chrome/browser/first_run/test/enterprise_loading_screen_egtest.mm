@@ -34,7 +34,6 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 @implementation EnterpriseLoadingScreenTestCase
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
 
   _policyTestServer = std::make_unique<policy::EmbeddedPolicyTestServer>();

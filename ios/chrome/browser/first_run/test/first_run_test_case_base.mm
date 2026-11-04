@@ -62,7 +62,6 @@
 #pragma mark - XCTestCase
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
 
   chrome_test_util::GREYAssertErrorNil(

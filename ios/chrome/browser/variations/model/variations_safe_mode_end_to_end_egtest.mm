@@ -120,11 +120,6 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 }
 
 - (void)setUp {
-  // `ChromeTestCase:isStartupTest` must be true before calling [super setUp] in
-  // order to avoid opening a new tab on startup. While not strictly necessary,
-  // this let's the test run a little faster.
-  [[self class] testForStartup];
-
   [super setUp];
   [self resetAppState:[self appConfigurationForTestCase]];
   self.continueAfterFailure = YES;

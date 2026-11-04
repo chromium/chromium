@@ -75,7 +75,6 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 - (void)setUp {
   [super setUp];
-  [[self class] testForStartup];
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface setupHistogramTester]);
   [ChromeEarlGrey

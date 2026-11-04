@@ -1056,7 +1056,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 @implementation SeparateProfilesFRETestCase
 
 - (void)setUp {
-  [[self class] testForStartup];
   [super setUp];
   [SigninEarlGrey setUseFakeResponsesForProfileSeparationPolicyRequests];
 }

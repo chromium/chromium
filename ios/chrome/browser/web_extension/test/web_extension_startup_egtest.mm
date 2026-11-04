@@ -27,11 +27,6 @@
   return config;
 }
 
-- (void)setUp {
-  [[self class] testForStartup];
-  [super setUp];
-}
-
 // Tests that startup halts at kPrepareUI stage until ExtensionService is ready.
 - (void)testStartupWaitsForExtensionService {
   // Verify that the extension service was waited upon and is not ready.

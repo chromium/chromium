@@ -58,7 +58,8 @@ class EmbeddedTestServer;
 // the app with the same configuration as used by -setUp.
 - (void)triggerRestoreByRestartingApplication;
 
-// Configures the fixture for startup testing.
+// Deprecated no-op.
+// TODO(crbug.com/446122860): Remove once internal callers are removed.
 + (void)testForStartup;
 
 // Backgrounds then foregrounds the app safely.
