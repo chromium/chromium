@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
+#include "components/safe_browsing/content/browser/url_checker/browser_url_loader_throttle.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"

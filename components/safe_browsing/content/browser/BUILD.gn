@@ -37,10 +37,10 @@ if (safe_browsing_mode > 0) {
       "safe_browsing_blocking_page.cc",
       "safe_browsing_blocking_page.h",
       "safe_browsing_blocking_page_factory.h",
-      "safe_browsing_navigation_throttle.cc",
-      "safe_browsing_navigation_throttle.h",
       "ui_manager.cc",
       "ui_manager.h",
+      "url_checker/safe_browsing_navigation_throttle.cc",
+      "url_checker/safe_browsing_navigation_throttle.h",
     ]
 
     deps = [
@@ -67,14 +67,10 @@ if (safe_browsing_mode > 0) {
 
 source_set("browser") {
   sources = [
-    "async_check_tracker.cc",
-    "async_check_tracker.h",
     "base_blocking_page.cc",
     "base_blocking_page.h",
     "base_ui_manager.cc",
     "base_ui_manager.h",
-    "browser_url_loader_throttle.cc",
-    "browser_url_loader_throttle.h",
     "client_report_util.cc",
     "client_report_util.h",
     "content_unsafe_resource_util.cc",
@@ -89,8 +85,12 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
-    "url_checker_holder.cc",
-    "url_checker_holder.h",
+    "url_checker/async_check_tracker.cc",
+    "url_checker/async_check_tracker.h",
+    "url_checker/browser_url_loader_throttle.cc",
+    "url_checker/browser_url_loader_throttle.h",
+    "url_checker/url_checker_holder.cc",
+    "url_checker/url_checker_holder.h",
     "web_contents_key.cc",
     "web_contents_key.h",
   ]
@@ -156,9 +156,9 @@ source_set("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "async_check_tracker_unittest.cc",
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
+    "url_checker/async_check_tracker_unittest.cc",
   ]
 
   deps = [
@@ -192,8 +192,8 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode > 0) {
     sources += [
-      "browser_url_loader_throttle_unittest.cc",
       "ui_manager_unittest.cc",
+      "url_checker/browser_url_loader_throttle_unittest.cc",
     ]
     deps += [
       ":client_side_detection_service",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/url_checker_holder.h"
+#include "components/safe_browsing/content/browser/url_checker/url_checker_holder.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"

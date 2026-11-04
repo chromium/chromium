@@ -19,7 +19,7 @@
 #include "base/unguessable_token.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 #include "components/safe_browsing/core/browser/credit_card_form_event.h"

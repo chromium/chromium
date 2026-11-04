@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
+#include "components/safe_browsing/content/browser/url_checker/browser_url_loader_throttle.h"
 
 #include <string_view>
 #include <utility>
@@ -16,11 +16,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/content/browser/url_checker_holder.h"
+#include "components/safe_browsing/content/browser/url_checker/async_check_tracker.h"
+#include "components/safe_browsing/content/browser/url_checker/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"

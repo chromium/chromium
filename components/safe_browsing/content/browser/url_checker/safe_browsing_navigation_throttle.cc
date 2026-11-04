@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/url_checker/safe_browsing_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"

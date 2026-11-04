@@ -164,8 +164,8 @@
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/content/browser/url_checker/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 

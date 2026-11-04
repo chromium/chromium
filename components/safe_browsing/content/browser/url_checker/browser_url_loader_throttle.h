@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BROWSER_URL_LOADER_THROTTLE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BROWSER_URL_LOADER_THROTTLE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_BROWSER_URL_LOADER_THROTTLE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_BROWSER_URL_LOADER_THROTTLE_H_
 
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/content/browser/url_checker_holder.h"
+#include "components/safe_browsing/content/browser/url_checker/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/url_checker/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
@@ -237,4 +237,4 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_BROWSER_URL_LOADER_THROTTLE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_BROWSER_URL_LOADER_THROTTLE_H_

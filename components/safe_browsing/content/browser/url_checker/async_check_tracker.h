@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_ASYNC_CHECK_TRACKER_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_ASYNC_CHECK_TRACKER_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ASYNC_CHECK_TRACKER_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ASYNC_CHECK_TRACKER_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/content/browser/url_checker_holder.h"
+#include "components/safe_browsing/content/browser/url_checker/url_checker_holder.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -180,4 +180,4 @@ class AsyncCheckTracker
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_ASYNC_CHECK_TRACKER_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_URL_CHECKER_ASYNC_CHECK_TRACKER_H_
