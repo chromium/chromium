@@ -8452,24 +8452,6 @@
             ]
         }
     ],
-    "Geic": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "Geic"
-                    ]
-                }
-            ]
-        }
-    ],
     "GeminiWebChromeCohesion": [
         {
             "platforms": [

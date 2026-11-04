@@ -279,7 +279,7 @@ bool IsGlicNativeLoadingPlaceholderEnabled() {
          !base::FeatureList::IsEnabled(kGlicNoWebUiLoader);
 }
 
-BASE_FEATURE(kGeic, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeic, FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 
 const base::FeatureParam<bool> kGeicEnabledParam{&kGeic, "enabled", true};
 

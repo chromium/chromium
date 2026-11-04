@@ -65,9 +65,20 @@ class GeicEnablingTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(GeicEnablingTest, DefaultStateIsDisabled) {
+TEST_F(GeicEnablingTest, DefaultState) {
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsGeicEnabledByFeature());
   EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_TRUE(
+      ResolvePolicyUrl("https://business.gemini.google/side-panel").is_empty());
+#else
+  EXPECT_TRUE(IsGeicEnabledByFeature());
+  // Without a configured guest URL, a profile is not in GEiC mode even though
+  // `features::kGeic` is enabled by default.
+  EXPECT_TRUE(ResolveGeicGuestUrl(profile()).is_empty());
+  EXPECT_EQ(ResolvePolicyUrl("https://business.gemini.google/side-panel"),
+            GURL("https://business.gemini.google/side-panel"));
+#endif
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithDefaults) {
