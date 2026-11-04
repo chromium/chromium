@@ -97,10 +97,14 @@ std::vector<RulingLine> CreateGridLines(base::span<const float> xs,
   return lines;
 }
 
-// Returns a text run with the given bounds.
-chrome_pdf::AccessibilityTextRunInfo CreateTextRun(const gfx::RectF& bounds) {
+// Returns a text run with the given bounds and optional text direction.
+chrome_pdf::AccessibilityTextRunInfo CreateTextRun(
+    const gfx::RectF& bounds,
+    chrome_pdf::AccessibilityTextDirection direction =
+        chrome_pdf::AccessibilityTextDirection::kNone) {
   chrome_pdf::AccessibilityTextRunInfo run;
   run.bounds = bounds;
+  run.direction = direction;
   return run;
 }
 
@@ -111,14 +115,16 @@ chrome_pdf::AccessibilityTextRunInfo CreateTextRun(const gfx::RectF& bounds) {
 std::vector<chrome_pdf::AccessibilityTextRunInfo> CreateRunsInCells(
     base::span<const float> xs,
     base::span<const float> ys,
-    std::vector<std::pair<size_t, size_t>> cells) {
+    std::vector<std::pair<size_t, size_t>> cells,
+    chrome_pdf::AccessibilityTextDirection direction =
+        chrome_pdf::AccessibilityTextDirection::kNone) {
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.reserve(cells.size());
   for (const auto& [r, c] : cells) {
     gfx::RectF bounds(xs[c], ys[r], xs[c + 1] - xs[c], ys[r + 1] - ys[r]);
     bounds.Inset(5);
     CHECK(!bounds.IsEmpty());
-    text_runs.push_back(CreateTextRun(bounds));
+    text_runs.push_back(CreateTextRun(bounds, direction));
   }
   return text_runs;
 }
@@ -152,12 +158,16 @@ GridInput CreateGridWithRunInEveryCell(base::span<const float> xs,
 }
 
 // Returns full-span ruling lines for the grid with boundaries `xs` and `ys`,
-// and one text run per listed {row, col} cell, in the listed order.
+// and one text run with `direction` per listed {row, col} cell, in the listed
+// order.
 GridInput CreateGridWithRunsInCells(
     base::span<const float> xs,
     base::span<const float> ys,
-    std::vector<std::pair<size_t, size_t>> cells) {
-  return {CreateGridLines(xs, ys), CreateRunsInCells(xs, ys, std::move(cells))};
+    std::vector<std::pair<size_t, size_t>> cells,
+    chrome_pdf::AccessibilityTextDirection direction =
+        chrome_pdf::AccessibilityTextDirection::kNone) {
+  return {CreateGridLines(xs, ys),
+          CreateRunsInCells(xs, ys, std::move(cells), direction)};
 }
 
 }  // namespace
@@ -597,6 +607,24 @@ TEST(PdfAccessibilityTableDetectorTest, SeparatesDisconnectedGrids) {
                              .column_boundaries = {0, 30, 60}}));
 }
 
+TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithOvershootingLines) {
+  // 2x2 grid where an interior vertical line extends 35 px past the bottom
+  // border:
+  //   +----+----+
+  //   |    |    |
+  //   +----+----+
+  //   |    |    |
+  //   +----+----+
+  //        |
+  //        |
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kTwoCellBoundaries, kTwoCellBoundaries);
+  // Horizontal lines come first, so index 4 is the vertical line at x = 30.
+  ruling_lines[4] = CreateVLine(30, 0, 95);
+
+  EXPECT_TRUE(DetectRulingGrids(ruling_lines).empty());
+}
+
 TEST(PdfAccessibilityTableDetectorTest, Grid3x3WithOneRunPerCell) {
   // 3x3 grid: horizontal lines at y = 0, 30, 60, 90; vertical lines at x = 0,
   // 30, 60, 90.
@@ -724,6 +752,69 @@ TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithNoText) {
 
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, RejectsGridWithRunsCrossingColumns) {
+  // 3x3 grid. Two runs (`=`) cross the column line at x = 30, and 8 runs sit
+  // in the center cell:
+  //   +-----+-----+-----+
+  //   |  ===|===  |     |
+  //   +-----+-----+-----+
+  //   |     | x 8 |     |
+  //   +-----+-----+-----+
+  //   |  ===|===  |     |
+  //   +-----+-----+-----+
+  std::vector<RulingLine> ruling_lines =
+      CreateGridLines(kThreeCellBoundaries, kThreeCellBoundaries);
+
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
+  // 10 runs total.
+  text_runs.reserve(10);
+  // 8 normal runs.
+  for (int i = 0; i < 8; ++i) {
+    text_runs.push_back(CreateTextRun(gfx::RectF(35, 35, 20, 20)));
+  }
+  // 2 runs that cross the interior vertical line at x = 30 by more than 3 px on
+  // each side: bounds x = 20 to 40 (start 20 < 27, end 40 > 33).
+  // 2 out of 10 is 20% > 10% threshold.
+  text_runs.push_back(CreateTextRun(gfx::RectF(20, 5, 20, 10)));
+  text_runs.push_back(CreateTextRun(gfx::RectF(20, 65, 20, 10)));
+
+  EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest,
+     RejectsGridWithPredominantlyVerticalRuns) {
+  // 2x2 grid where all 4 cells have vertical text runs (e.g. sideways table).
+  auto [ruling_lines, text_runs] = CreateGridWithRunsInCells(
+      kTwoCellBoundaries, kTwoCellBoundaries, {{0, 0}, {0, 1}},
+      chrome_pdf::AccessibilityTextDirection::kTopToBottom);
+  base::Extend(text_runs,
+               CreateRunsInCells(
+                   kTwoCellBoundaries, kTwoCellBoundaries, {{1, 0}, {1, 1}},
+                   chrome_pdf::AccessibilityTextDirection::kBottomToTop));
+
+  EXPECT_TRUE(DetectGridTables(text_runs, ruling_lines).empty());
+}
+
+TEST(PdfAccessibilityTableDetectorTest, AcceptsGridWithRotatedHeaders) {
+  // 3 rows x 2 columns. Row 0 has rotated (vertical) headers, and rows 1 and 2
+  // have horizontal data runs. 2 vertical runs out of 6 total runs (33% <=
+  // 50%).
+  auto [ruling_lines, text_runs] = CreateGridWithRunsInCells(
+      kTwoCellBoundaries, kThreeCellBoundaries, {{0, 0}, {0, 1}},
+      chrome_pdf::AccessibilityTextDirection::kTopToBottom);
+  base::Extend(
+      text_runs,
+      CreateRunsInCells(kTwoCellBoundaries, kThreeCellBoundaries,
+                        {{1, 0}, {1, 1}, {2, 0}, {2, 1}},
+                        chrome_pdf::AccessibilityTextDirection::kLeftToRight));
+
+  std::vector<HeuristicTable> tables =
+      DetectGridTables(text_runs, ruling_lines);
+  ASSERT_EQ(tables.size(), 1u);
+  ASSERT_EQ(tables[0].rows.size(), 3u);
+  EXPECT_EQ(tables[0].rows[0].cells.size(), 2u);
 }
 
 // In the grid diagrams below, `X` marks a cell with text and `.` an empty cell.

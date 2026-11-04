@@ -15,6 +15,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/function_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/pdf/renderer/pdf_accessibility_text_utils.h"
 #include "pdf/accessibility_structs.h"
@@ -79,10 +80,26 @@ constexpr float kClusterTolerancePx = 5.0f;
 // Minimum number of rows and of columns in a table.
 constexpr size_t kMinTableRowsAndColumns = 2;
 
+// How far, in pixels, a run must extend past an interior column boundary on
+// both sides to count as crossing it.
+constexpr float kColumnCrossingTolerancePx = 3.0f;
+
+// Maximum fraction of runs that cross a column boundary. Above it, the lines
+// are likely chart gridlines drawn through labels.
+constexpr float kMaxColumnCrossingRunFraction = 0.10f;
+
+// How far a line may extend past the grid's outer boundary. Longer lines are
+// likely chart axes, timelines or page rules.
+constexpr float kMaxLineOvershootPx = 20.0f;
+
 // Minimum fraction of cells, after trimming empty edges, that must contain
 // text. Grids with mostly empty cells are more likely forms or decorative
 // boxes than data tables.
 constexpr float kMinPopulatedCellFraction = 0.50f;
+
+// Maximum fraction of vertical-text runs. Above it, the grid is likely a
+// sideways table, whose rows and columns would come out swapped.
+constexpr float kMaxVerticalRunFraction = 0.50f;
 
 // An axis-aligned line segment. `position` is the fixed perpendicular
 // coordinate (y for horizontal, x for vertical), and `start` to `end` is the
@@ -535,6 +552,48 @@ std::vector<float> LinePositions(base::span<const RulingLine> lines,
   });
 }
 
+// Returns whether either endpoint of `line` is outside `bounds`.
+bool IsLineOutsideBounds(const RulingLine& line, const gfx::RectF& bounds) {
+  return !bounds.InclusiveContains(line.start) ||
+         !bounds.InclusiveContains(line.end);
+}
+
+// Returns whether any ruling line in `group` extends beyond the grid boundary
+// defined by `column_boundaries` and `row_boundaries` by more than
+// `kMaxLineOvershootPx`. For example, the middle vertical line below extends
+// past the bottom of the grid, like a chart axis:
+//   +----+----+
+//   |    |    |
+//   +----+----+
+//   |    |    |
+//   +----+----+
+//        |
+//        |
+bool HasOvershootingLines(const LineGroup& group,
+                          base::span<const RulingLine> h_lines,
+                          base::span<const RulingLine> v_lines,
+                          base::span<const float> column_boundaries,
+                          base::span<const float> row_boundaries) {
+  // Each line's fixed coordinate is within `kClusterTolerancePx` of a boundary,
+  // so only its length can reach outside `allowed_bounds`.
+  gfx::RectF allowed_bounds = gfx::BoundingRect(
+      gfx::PointF(column_boundaries.front(), row_boundaries.front()),
+      gfx::PointF(column_boundaries.back(), row_boundaries.back()));
+  allowed_bounds.Outset(kMaxLineOvershootPx);
+
+  for (size_t idx : group.horizontal_indices) {
+    if (IsLineOutsideBounds(h_lines[idx], allowed_bounds)) {
+      return true;
+    }
+  }
+  for (size_t idx : group.vertical_indices) {
+    if (IsLineOutsideBounds(v_lines[idx], allowed_bounds)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Returns index `i` such that `boundaries[i] <= value < boundaries[i + 1]`,
 // clamped to the first and last intervals.
 size_t FindInterval(base::span<const float> boundaries, float value) {
@@ -587,6 +646,51 @@ size_t CountAssignedRuns(const RunIndicesByCell& cells) {
     }
   }
   return count;
+}
+
+// Returns the number of text runs in `cells` that satisfy `predicate`, which
+// takes a text run index.
+size_t CountRunsIf(const RunIndicesByCell& cells,
+                   base::FunctionRef<bool(size_t run_index)> predicate) {
+  size_t count = 0;
+  for (const auto& row : cells) {
+    for (const auto& cell_runs : row) {
+      count += std::ranges::count_if(cell_runs, predicate);
+    }
+  }
+  return count;
+}
+
+// Returns the number of text runs in `cells` that cross an interior column
+// boundary, i.e. extend more than `kColumnCrossingTolerancePx` past it on both
+// sides. For example, "Revenue" crosses the boundary below, but "Cost" stays
+// within its column:
+//   +-----+-----+
+//   | Reve|nue  |
+//   | Cost|     |
+//   +-----+-----+
+size_t CountRunsCrossingColumns(
+    const RunIndicesByCell& cells,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    base::span<const float> column_boundaries) {
+  base::span<const float> interior_boundaries =
+      column_boundaries.subspan(1u, column_boundaries.size() - 2);
+  return CountRunsIf(cells, [&](size_t run_index) {
+    const gfx::RectF& bounds = text_runs[run_index].bounds;
+    return std::ranges::any_of(interior_boundaries, [&](float boundary_x) {
+      return bounds.x() < boundary_x - kColumnCrossingTolerancePx &&
+             bounds.right() > boundary_x + kColumnCrossingTolerancePx;
+    });
+  });
+}
+
+// Returns the number of text runs in `cells` with vertical text direction.
+size_t CountVerticalRuns(
+    const RunIndicesByCell& cells,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
+  return CountRunsIf(cells, [&](size_t run_index) {
+    return IsVerticalTextDirection(text_runs[run_index].direction);
+  });
 }
 
 // Smallest row and column ranges that cover every non-empty cell, and how many
@@ -791,6 +895,10 @@ std::vector<RulingGrid> DetectRulingGrids(
     if (column_boundaries.size() < kMinTableRowsAndColumns + 1) {
       continue;
     }
+    if (HasOvershootingLines(group, h_lines, v_lines, column_boundaries,
+                             row_boundaries)) {
+      continue;
+    }
 
     grids.push_back(RulingGrid{
         .row_boundaries = std::move(row_boundaries),
@@ -806,8 +914,23 @@ std::vector<HeuristicTable> DetectGridTables(
   std::vector<HeuristicTable> tables;
   for (const RulingGrid& grid : DetectRulingGrids(ruling_lines)) {
     RunIndicesByCell cells = AssignRunsToCells(text_runs, grid);
+    const size_t total_assigned_runs = CountAssignedRuns(cells);
     // Skip grids with no text runs (e.g., a drawing).
-    if (CountAssignedRuns(cells) == 0) {
+    if (total_assigned_runs == 0) {
+      continue;
+    }
+
+    // Skip grids where column lines run through text (e.g. chart gridlines
+    // drawn behind or across labels).
+    if (CountRunsCrossingColumns(cells, text_runs, grid.column_boundaries) >
+        kMaxColumnCrossingRunFraction * total_assigned_runs) {
+      continue;
+    }
+
+    // Skip grids composed predominantly of vertical text runs (e.g.
+    // sideways tables, which need separate rotation handling).
+    if (CountVerticalRuns(cells, text_runs) >
+        kMaxVerticalRunFraction * total_assigned_runs) {
       continue;
     }
 
