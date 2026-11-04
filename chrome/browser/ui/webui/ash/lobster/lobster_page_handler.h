@@ -9,9 +9,9 @@
 
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_result.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,7 +22,8 @@ class LobsterSession;
 
 class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
  public:
-  explicit LobsterPageHandler(LobsterSession* active_session, Profile* profile);
+  LobsterPageHandler(LobsterSession* active_session,
+                     base::FilePath download_dir);
 
   ~LobsterPageHandler() override;
 
@@ -51,7 +52,9 @@ class LobsterPageHandler : public lobster::mojom::UntrustedLobsterPageHandler {
  private:
   // Not owned by this class
   raw_ptr<LobsterSession> session_;
-  raw_ptr<Profile> profile_;
+
+  // Where a candidate is written when the user downloads it.
+  const base::FilePath download_dir_;
 
   mojo::Receiver<lobster::mojom::UntrustedLobsterPageHandler> receiver_{this};
 };

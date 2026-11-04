@@ -5,14 +5,13 @@
 #include "chrome/browser/ui/webui/ash/lobster/lobster_page_handler.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -27,8 +26,8 @@ bool IsUrlAllowed(const GURL& url) {
 }  // namespace
 
 LobsterPageHandler::LobsterPageHandler(LobsterSession* active_session,
-                                       Profile* profile)
-    : session_(active_session), profile_(profile) {
+                                       base::FilePath download_dir)
+    : session_(active_session), download_dir_(std::move(download_dir)) {
   CHECK(session_);
 }
 
@@ -44,9 +43,7 @@ void LobsterPageHandler::BindInterface(
 void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
                                            DownloadCandidateCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->DownloadCandidate(
-      candidate_id, file_manager::util::GetDownloadsFolderForProfile(profile_),
-      std::move(callback));
+  session_->DownloadCandidate(candidate_id, download_dir_, std::move(callback));
 }
 
 void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
@@ -57,9 +54,7 @@ void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
 void LobsterPageHandler::CommitAsDownload(uint32_t candidate_id,
                                           CommitAsDownloadCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->CommitAsDownload(
-      candidate_id, file_manager::util::GetDownloadsFolderForProfile(profile_),
-      std::move(callback));
+  session_->CommitAsDownload(candidate_id, download_dir_, std::move(callback));
 }
 
 void LobsterPageHandler::RequestCandidates(const std::string& query,

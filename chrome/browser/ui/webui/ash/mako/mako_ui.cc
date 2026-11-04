@@ -10,9 +10,11 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/lobster/lobster_controller.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
@@ -21,8 +23,10 @@
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
 #include "chrome/grit/orca_resources.h"
 #include "chrome/grit/orca_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -139,8 +143,12 @@ void MakoUntrustedUI::BindInterface(
     return;
   }
 
-  lobster_page_handler_ =
-      std::make_unique<LobsterPageHandler>(active_session, profile);
+  // The WebUI only runs in a user session, so the user's home directory is
+  // mounted and the Downloads folder resolves.
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  lobster_page_handler_ = std::make_unique<LobsterPageHandler>(
+      active_session, file_manager::util::GetDownloadsFolder(user));
 
   lobster_page_handler_->BindInterface(std::move(pending_receiver));
 }

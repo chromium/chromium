@@ -16,11 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/download/chrome_download_manager_delegate.h"
-#include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/download/download_core_service_impl.h"
-#include "chrome/browser/download/download_prefs.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,26 +84,11 @@ class FakeLobsterSession : public LobsterSession {
 
 class LobsterPageHandlerTest : public testing::Test {
  public:
-  void SetUp() override {
-    DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
-        ->SetDownloadManagerDelegateForTesting(
-            std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
-
-    // Use a temporary directory for downloads.
-    ASSERT_TRUE(download_dir_.CreateUniqueTempDir());
-    DownloadPrefs* prefs =
-        DownloadPrefs::FromDownloadManager(profile_.GetDownloadManager());
-    prefs->SetDownloadPath(download_dir_.GetPath());
-    prefs->SkipSanitizeDownloadTargetPathForTesting();
-  }
-  TestingProfile& profile() { return profile_; }
+  void SetUp() override { ASSERT_TRUE(download_dir_.CreateUniqueTempDir()); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir download_dir_;
-
- private:
-  TestingProfile profile_;
 };
 
 TEST_F(LobsterPageHandlerTest,
@@ -126,7 +106,8 @@ TEST_F(LobsterPageHandlerTest,
   FakeLobsterSession session(std::move(image_candidates),
                              /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<lobster::mojom::ResponsePtr> future;
 
   page_handler.RequestCandidates("a nice strawberry", 2, future.GetCallback());
@@ -151,7 +132,8 @@ TEST_F(LobsterPageHandlerTest, RequestCandidatesReturnsError) {
       base::unexpected(
           LobsterError(LobsterErrorCode::kInvalidArgument, "dummy error")),
       /*commit_or_download_status=*/false, /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<lobster::mojom::ResponsePtr> future;
 
   page_handler.RequestCandidates("a nice strawberry", 2, future.GetCallback());
@@ -167,7 +149,8 @@ TEST_F(LobsterPageHandlerTest, RequestCandidatesReturnsError) {
 TEST_F(LobsterPageHandlerTest, DownloadCandidateSucceeds) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.DownloadCandidate(1, future.GetCallback());
@@ -178,7 +161,8 @@ TEST_F(LobsterPageHandlerTest, DownloadCandidateSucceeds) {
 TEST_F(LobsterPageHandlerTest, DownloadCandidateFails) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/false,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.DownloadCandidate(/*id=*/1, future.GetCallback());
@@ -189,7 +173,8 @@ TEST_F(LobsterPageHandlerTest, DownloadCandidateFails) {
 TEST_F(LobsterPageHandlerTest, CommitAsDownloadSucceeds) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.CommitAsDownload(/*id=*/1, future.GetCallback());
@@ -200,7 +185,8 @@ TEST_F(LobsterPageHandlerTest, CommitAsDownloadSucceeds) {
 TEST_F(LobsterPageHandlerTest, CommitAsDownloadFails) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/false,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.CommitAsDownload(/*id=*/1, future.GetCallback());
@@ -211,7 +197,8 @@ TEST_F(LobsterPageHandlerTest, CommitAsDownloadFails) {
 TEST_F(LobsterPageHandlerTest, CommitAsInsertSucceeds) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.CommitAsInsert(/*id=*/1, future.GetCallback());
@@ -222,7 +209,8 @@ TEST_F(LobsterPageHandlerTest, CommitAsInsertSucceeds) {
 TEST_F(LobsterPageHandlerTest, CommitAsInsertFails) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/false,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.CommitAsInsert(/*id=*/1, future.GetCallback());
@@ -233,7 +221,8 @@ TEST_F(LobsterPageHandlerTest, CommitAsInsertFails) {
 TEST_F(LobsterPageHandlerTest, SubmitFeedbackFails) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/false,
                              /*feedback_submission_status=*/false);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.SubmitFeedback(/*id=*/1, /*description=*/"dummy description",
@@ -245,7 +234,8 @@ TEST_F(LobsterPageHandlerTest, SubmitFeedbackFails) {
 TEST_F(LobsterPageHandlerTest, SubmitFeedbackSucceeds) {
   FakeLobsterSession session({}, /*commit_or_download_status=*/false,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
   base::test::TestFuture<bool> future;
 
   page_handler.SubmitFeedback(/*id=*/1, /*description=*/"dummy description",
@@ -279,7 +269,8 @@ TEST_P(LobsterPageHandlerMetrics, EmitMetricEvent) {
   const LobsterMetricState& state = GetParam();
   FakeLobsterSession session({}, /*commit_or_download_status=*/true,
                              /*feedback_submission_status=*/true);
-  LobsterPageHandler page_handler = LobsterPageHandler(&session, &profile());
+  LobsterPageHandler page_handler =
+      LobsterPageHandler(&session, download_dir_.GetPath());
 
   page_handler.EmitMetricEvent(state);
 
