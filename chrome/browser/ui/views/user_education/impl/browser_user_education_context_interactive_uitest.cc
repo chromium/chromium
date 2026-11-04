@@ -50,11 +50,11 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest, OneProfileFindsView) {
   const auto ui_context = BrowserElements::From(browser())->GetContext();
   auto* const tracker = ui::ElementTracker::GetElementTracker();
 
-  auto elements = tracker->GetAllMatchingElements(
-      kToolbarAppMenuButtonElementId, ui_context);
+  auto elements =
+      tracker->GetAllMatchingElements(kNewTabButtonElementId, ui_context);
   ASSERT_FALSE(elements.empty());
-  auto* expected = tracker->GetFirstMatchingElement(
-      kToolbarAppMenuButtonElementId, ui_context);
+  auto* expected =
+      tracker->GetFirstMatchingElement(kNewTabButtonElementId, ui_context);
   ASSERT_NE(nullptr, expected);
   EXPECT_EQ(expected, filter.Run(elements));
 }
@@ -93,13 +93,13 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
   RunTestSequenceInContext(
       BrowserElements::From(incognito_browser)->GetContext(),
-      WaitForShow(kToolbarAppMenuButtonElementId));
+      WaitForShow(kNewTabButtonElementId));
 
-  auto elements = tracker->GetAllMatchingElementsInAnyContext(
-      kToolbarAppMenuButtonElementId);
+  auto elements =
+      tracker->GetAllMatchingElementsInAnyContext(kNewTabButtonElementId);
   ASSERT_EQ(2U, elements.size());
-  auto* expected = tracker->GetFirstMatchingElement(
-      kToolbarAppMenuButtonElementId, ui_context);
+  auto* expected =
+      tracker->GetFirstMatchingElement(kNewTabButtonElementId, ui_context);
   ASSERT_NE(nullptr, expected);
   EXPECT_EQ(expected, filter.Run(elements));
 }
@@ -116,17 +116,17 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
   RunTestSequence(
       InContext(BrowserElements::From(incognito_browser)->GetContext(),
-                WaitForShow(kToolbarAppMenuButtonElementId)),
-      // Hide the app menu button in the original browser.
-      WithView(kToolbarAppMenuButtonElementId,
+                WaitForShow(kNewTabButtonElementId)),
+      // Hide the new tab button in the original browser.
+      WithView(kNewTabButtonElementId,
                [](views::View* view) { view->SetVisible(false); }),
-      WaitForHide(kToolbarAppMenuButtonElementId));
+      WaitForHide(kNewTabButtonElementId));
 
-  auto elements = tracker->GetAllMatchingElementsInAnyContext(
-      kToolbarAppMenuButtonElementId);
+  auto elements =
+      tracker->GetAllMatchingElementsInAnyContext(kNewTabButtonElementId);
   ASSERT_EQ(1U, elements.size());
-  auto* expected = tracker->GetFirstMatchingElement(
-      kToolbarAppMenuButtonElementId, ui_context);
+  auto* expected =
+      tracker->GetFirstMatchingElement(kNewTabButtonElementId, ui_context);
   ASSERT_EQ(nullptr, expected);
   EXPECT_EQ(expected, filter.Run(elements));
 }
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
           AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&expected](ui::TrackedElement* el) { expected = el; })),
       InContext(BrowserElements::From(incognito_browser)->GetContext(),
-                WaitForShow(kToolbarAppMenuButtonElementId),
+                WaitForShow(kNewTabButtonElementId),
                 InstrumentTab(kBrowser2TabId),
                 InParallel(
                     RunSubsequence(NavigateWebContents(
@@ -177,8 +177,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
 
   RunTestSequenceInContext(
       BrowserElements::From(incognito_browser)->GetContext(),
-      WaitForShow(kToolbarAppMenuButtonElementId),
-      InstrumentTab(kBrowser2TabId),
+      WaitForShow(kNewTabButtonElementId), InstrumentTab(kBrowser2TabId),
       NavigateWebContents(kBrowser2TabId,
                           GURL(chrome::kChromeUIUserEducationInternalsURL)),
       InAnyContext(WaitForShow(UserEducationInternalsUI::kToolbarElementId)));
@@ -204,12 +203,12 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   RunTestSequence(
       InContext(
           ui_context1,
-          AfterShow(kToolbarAppMenuButtonElementId,
+          AfterShow(kNewTabButtonElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; }),
           NameElement(kElement1Name, std::ref(element1))),
       InContext(
           ui_context2,
-          AfterShow(kToolbarAppMenuButtonElementId,
+          AfterShow(kNewTabButtonElementId,
                     [&element2](ui::TrackedElement* el) { element2 = el; }),
           NameElement(kElement2Name, std::ref(element2))),
       SetOnIncompatibleAction(
@@ -220,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                    [&](ui::TrackedElement* expected) {
                      ui::TrackedElement* actual =
                          filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                             kToolbarAppMenuButtonElementId));
+                             kNewTabButtonElementId));
                      if (actual != expected) {
                        LOG(ERROR)
                            << "Expected " << *expected << " actual " << *actual;
@@ -232,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
       CheckElement(kElement1Name, [&](ui::TrackedElement* expected) {
         ui::TrackedElement* actual =
             filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                kToolbarAppMenuButtonElementId));
+                kNewTabButtonElementId));
         if (actual != expected) {
           LOG(ERROR) << "Expected " << *expected << " actual " << *actual;
           return false;
@@ -255,18 +254,18 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   ui::TrackedElement* element2;
 
   RunTestSequence(
-      WaitForShow(kToolbarAppMenuButtonElementId),
-      WithView(kToolbarAppMenuButtonElementId,
+      WaitForShow(kNewTabButtonElementId),
+      WithView(kNewTabButtonElementId,
                [](views::View* view) { view->SetVisible(false); }),
-      WaitForHide(kToolbarAppMenuButtonElementId),
+      WaitForHide(kNewTabButtonElementId),
       InContext(
           ui_context1,
-          AfterShow(kToolbarAppMenuButtonElementId,
+          AfterShow(kNewTabButtonElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; }),
           NameElement(kElement1Name, std::ref(element1))),
       InContext(
           ui_context2,
-          AfterShow(kToolbarAppMenuButtonElementId,
+          AfterShow(kNewTabButtonElementId,
                     [&element2](ui::TrackedElement* el) { element2 = el; }),
           NameElement(kElement2Name, std::ref(element2))),
       SetOnIncompatibleAction(
@@ -277,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
                    [&](ui::TrackedElement* expected) {
                      ui::TrackedElement* actual =
                          filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                             kToolbarAppMenuButtonElementId));
+                             kNewTabButtonElementId));
                      if (actual != expected) {
                        LOG(ERROR)
                            << "Expected " << *expected << " actual " << *actual;
@@ -289,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
       CheckElement(kElement2Name, [&](ui::TrackedElement* expected) {
         ui::TrackedElement* actual =
             filter.Run(tracker->GetAllMatchingElementsInAnyContext(
-                kToolbarAppMenuButtonElementId));
+                kNewTabButtonElementId));
         if (actual != expected) {
           LOG(ERROR) << "Expected " << *expected << " actual " << *actual;
           return false;
@@ -319,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
           AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; })),
       NameElement(kElement1Name, std::ref(element1)),
-      InContext(ui_context2, WaitForShow(kToolbarAppMenuButtonElementId),
+      InContext(ui_context2, WaitForShow(kNewTabButtonElementId),
                 InstrumentTab(kBrowser2TabId)),
       InParallel(
           RunSubsequence(NavigateWebContents(
@@ -373,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
   ui::TrackedElement* element2;
 
   RunTestSequence(
-      InContext(ui_context1, WaitForShow(kToolbarAppMenuButtonElementId),
+      InContext(ui_context1, WaitForShow(kNewTabButtonElementId),
                 InstrumentTab(kBrowser1TabId),
                 NavigateWebContents(
                     kBrowser1TabId,
@@ -382,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationContextUiTest,
           AfterShow(UserEducationInternalsUI::kToolbarElementId,
                     [&element1](ui::TrackedElement* el) { element1 = el; })),
       NameElement(kElement1Name, std::ref(element1)),
-      InContext(ui_context2, WaitForShow(kToolbarAppMenuButtonElementId),
+      InContext(ui_context2, WaitForShow(kNewTabButtonElementId),
                 InstrumentTab(kBrowser2TabId)),
       InParallel(
           RunSubsequence(NavigateWebContents(
