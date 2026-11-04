@@ -157,7 +157,7 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionExtensionsSubmenuVisitChromeWebStore,
              u"Visit Chrome Web Store");
   add_action(kActionFindExtensions, u"Find Extensions");
-  add_action(kActionSkillsAndExtensionsSubmenu, u"Extensions and Skills");
+  add_action(kActionSkillsAndExtensionsSubmenu, u"Extensions and skills");
   add_action(kActionManageSkills, u"Your skills");
   add_action(kActionClearBrowsingData, u"Clear Browsing Data");
   add_action(kActionSavedTabGroupsSubmenu, u"Tab Groups");
