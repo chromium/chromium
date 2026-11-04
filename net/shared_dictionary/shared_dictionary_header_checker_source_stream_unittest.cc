@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/cstring_view.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -22,6 +23,8 @@ namespace net {
 namespace {
 
 using Type = SharedDictionaryHeaderCheckerSourceStream::Type;
+using HeaderValidationFailureReason =
+    SharedDictionaryHeaderCheckerSourceStream::HeaderValidationFailureReason;
 
 static constexpr SHA256HashValue kTestHash = {
     {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
@@ -152,7 +155,25 @@ class SharedDictionaryHeaderCheckerSourceStreamTest
     return stream()->Read(buffer(), buffer()->size(), std::move(callback));
   }
 
+  void ExpectFailureReason(HeaderValidationFailureReason sample) {
+    const char* histogram =
+        GetType() == Type::kDictionaryCompressedBrotli
+            ? "Net.SharedDictionary.HeaderValidationFailureReason.Dcb"
+            : "Net.SharedDictionary.HeaderValidationFailureReason.Dcz";
+    histogram_tester_.ExpectUniqueSample(histogram, sample, 1);
+    EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(
+                    "Net.SharedDictionary.HeaderValidationFailureReason."),
+                testing::ElementsAre(testing::Pair(histogram, 1)));
+  }
+
+  void ExpectNoFailureReason() {
+    EXPECT_THAT(histogram_tester_.GetTotalCountsForPrefix(
+                    "Net.SharedDictionary.HeaderValidationFailureReason."),
+                testing::IsEmpty());
+  }
+
  private:
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<MockSourceStream> mock_stream_;
   std::unique_ptr<SharedDictionaryHeaderCheckerSourceStream> stream_;
   raw_ptr<MockSourceStream> mock_stream_ptr_;
@@ -193,18 +214,21 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, SyncReadError) {
   AddReadResult(ERR_FAILED, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_FAILED);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, AsyncReadError) {
   AddReadResult(ERR_FAILED, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_FAILED, 1);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, EmptyStreamSyncComplete) {
   AddReadResult(OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kEmptyHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
@@ -212,6 +236,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
   AddReadResult(OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 1);
+  ExpectFailureReason(HeaderValidationFailureReason::kEmptyHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
@@ -220,6 +245,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
   CreateHeaderCheckerSourceStream();
   CompleteNextRead();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kEmptyHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
@@ -228,6 +254,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
   AddReadResult(OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kIncompleteHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
@@ -237,6 +264,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
   CreateHeaderCheckerSourceStream();
   CompleteNextRead();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kIncompleteHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
@@ -245,6 +273,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
   AddReadResult(OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 1);
+  ExpectFailureReason(HeaderValidationFailureReason::kIncompleteHeader);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSync) {
@@ -256,6 +285,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSync) {
   EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
             kTestBodyData);
   CheckSyncRead(OK);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedSync) {
@@ -268,6 +298,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedSync) {
   EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
             kTestBodyData);
   CheckSyncRead(OK);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderAsync) {
@@ -279,6 +310,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderAsync) {
   EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
             kTestBodyData);
   CheckAsyncRead(OK, 1);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
@@ -291,6 +323,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
   EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
             kTestBodyData);
   CheckAsyncRead(OK, 1);
+  ExpectNoFailureReason();
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureSync) {
@@ -298,6 +331,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureSync) {
   AddReadResult(kTestHash, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kSignatureMismatch);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureAsync) {
@@ -305,6 +339,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongSinatureAsync) {
   AddReadResult(kTestHash, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
+  ExpectFailureReason(HeaderValidationFailureReason::kSignatureMismatch);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashSync) {
@@ -313,6 +348,7 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashSync) {
   AddReadResult(kWrongHash, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kDictionaryHashMismatch);
 }
 
 TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashAsync) {
@@ -321,6 +357,19 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, WrongHashAsync) {
   AddReadResult(kWrongHash, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
+  ExpectFailureReason(HeaderValidationFailureReason::kDictionaryHashMismatch);
+}
+
+TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest,
+       RepeatedReadAfterFailureRecordsReasonOnce) {
+  AddReadResult(GetWrongSignature(), Mode::ASYNC);
+  AddReadResult(kTestHash, Mode::ASYNC);
+  CreateHeaderCheckerSourceStream();
+  CheckAsyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER, 2);
+  ExpectFailureReason(HeaderValidationFailureReason::kSignatureMismatch);
+
+  CheckSyncRead(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER);
+  ExpectFailureReason(HeaderValidationFailureReason::kSignatureMismatch);
 }
 
 }  // namespace net

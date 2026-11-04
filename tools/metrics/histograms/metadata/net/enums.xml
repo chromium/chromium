@@ -3547,6 +3547,17 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/socket/udp_socket_posix.h:SetSocketOptionGroResult) -->
 
+<!-- LINT.IfChange(SharedDictionaryHeaderValidationFailureReason) -->
+
+<enum name="SharedDictionaryHeaderValidationFailureReason">
+  <int value="0" label="Empty header"/>
+  <int value="1" label="Incomplete header"/>
+  <int value="2" label="Signature mismatch"/>
+  <int value="3" label="Dictionary hash mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/shared_dictionary/shared_dictionary_header_checker_source_stream.h:SharedDictionaryHeaderValidationFailureReason) -->
+
 <!-- LINT.IfChange(SharedDictionaryStorageEvictionReason) -->
 
 <enum name="SharedDictionaryStorageEvictionReason">

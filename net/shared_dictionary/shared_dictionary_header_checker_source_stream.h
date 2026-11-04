@@ -6,6 +6,7 @@
 #define NET_SHARED_DICTIONARY_SHARED_DICTIONARY_HEADER_CHECKER_SOURCE_STREAM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "net/base/completion_once_callback.h"
@@ -42,6 +43,19 @@ class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
     kDictionaryCompressedBrotli,
     kDictionaryCompressedZstd,
   };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SharedDictionaryHeaderValidationFailureReason)
+  enum class HeaderValidationFailureReason {
+    kEmptyHeader = 0,
+    kIncompleteHeader = 1,
+    kSignatureMismatch = 2,
+    kDictionaryHashMismatch = 3,
+    kMaxValue = kDictionaryHashMismatch,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SharedDictionaryHeaderValidationFailureReason)
+
   SharedDictionaryHeaderCheckerSourceStream(
       std::unique_ptr<SourceStream> upstream,
       Type type,
@@ -62,7 +76,7 @@ class NET_EXPORT SharedDictionaryHeaderCheckerSourceStream
  private:
   void ReadHeader();
   void OnReadCompleted(int result);
-  bool CheckHeaderBuffer() const;
+  std::optional<HeaderValidationFailureReason> CheckHeaderBuffer() const;
   void HeaderCheckCompleted(int header_check_result);
 
   base::span<const unsigned char> GetSignatureInBuffer() const;

@@ -8360,6 +8360,26 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.SharedDictionary.HeaderValidationFailureReason.{Encoding}"
+    enum="SharedDictionaryHeaderValidationFailureReason"
+    expires_after="2027-04-28">
+  <owner>pmeenan@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    Reason a {Encoding} response's header validation failed with
+    ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER. Recorded once per failed header
+    validation attempt by SharedDictionaryHeaderCheckerSourceStream. Empty and
+    incomplete headers are recorded only on clean EOF before the full header is
+    received; complete headers check the magic signature before the dictionary
+    SHA-256 hash. Upstream read errors and payload decoding errors are not
+    recorded.
+  </summary>
+  <token key="Encoding">
+    <variant name="Dcb" summary="Dictionary-Compressed Brotli"/>
+    <variant name="Dcz" summary="Dictionary-Compressed Zstandard"/>
+  </token>
+</histogram>
+
 <histogram name="Net.SharedDictionary.Transaction.Outcome"
     enum="SharedDictionaryTransactionOutcome" expires_after="2027-03-14">
   <owner>wbjacksonjr@chromium.org</owner>

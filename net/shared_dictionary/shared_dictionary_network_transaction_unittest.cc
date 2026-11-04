@@ -25,6 +25,7 @@
 #include "net/log/test_net_log.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
+#include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 #include "net/shared_dictionary/shared_dictionary_transaction_outcome.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
@@ -219,12 +220,7 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
  public:
   SharedDictionaryNetworkTransactionTest()
       : scoped_mock_transaction_(kBrotliDictionaryTestTransaction),
-        network_layer_(std::make_unique<MockNetworkLayer>()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            features::kCompressionDictionaryTransportRequireKnownRootCert});
-  }
+        network_layer_(std::make_unique<MockNetworkLayer>()) {}
   ~SharedDictionaryNetworkTransactionTest() override = default;
 
   SharedDictionaryNetworkTransactionTest(
@@ -244,10 +240,14 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
   std::optional<ScopedMockTransaction> scoped_mock_transaction_;
 
  private:
+  // Initialize before starting threads and reset after they have stopped.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kCompressionDictionaryTransportRequireKnownRootCert}};
   std::unique_ptr<MockNetworkLayer> network_layer_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
@@ -754,6 +754,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
+  base::HistogramTester histogram_tester;
   scoped_mock_transaction_->handler = base::BindRepeating(
       [](const HttpRequestInfo* request, std::string* response_status,
          std::string* response_headers, std::string* response_data) {
@@ -785,7 +786,59 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WrongContentDictionaryHeader) {
   ASSERT_THAT(read_callback.GetResult(transaction.Read(
                   buf.get(), buf->size(), read_callback.callback())),
               test::IsError(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.HeaderValidationFailureReason.Dcb",
+      SharedDictionaryHeaderCheckerSourceStream::HeaderValidationFailureReason::
+          kSignatureMismatch,
+      /*expected_bucket_count=*/1);
 }
+
+#if !defined(NET_DISABLE_ZSTD)
+TEST_F(SharedDictionaryNetworkTransactionTest,
+       WrongZstdContentDictionaryHeader) {
+  base::HistogramTester histogram_tester;
+  scoped_mock_transaction_.reset();
+  ScopedMockTransaction mock_transaction(kZstdDictionaryTestTransaction);
+  mock_transaction.handler = base::BindRepeating(
+      [](const HttpRequestInfo* request, std::string* response_status,
+         std::string* response_headers, std::string* response_data) {
+        std::string data = kZstdEncodedDataString;
+        // Change the first byte to invalidate the encoding signature.
+        ++data[0];
+        *response_data = data;
+      });
+
+  MockHttpRequest request(mock_transaction);
+  request.dictionary_getter = base::BindRepeating(
+      [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
+         const GURL& request_url) -> scoped_refptr<SharedDictionary> {
+        return base::MakeRefCounted<DummySyncDictionary>(kTestDictionaryData);
+      });
+  SharedDictionaryNetworkTransaction transaction(CreateNetworkTransaction(),
+                                                 /*enable_shared_zstd=*/true);
+  transaction.SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  TestCompletionCallback start_callback;
+  ASSERT_THAT(start_callback.GetResult(transaction.Start(
+                  &request, start_callback.callback(), NetLogWithSource())),
+              test::IsError(OK));
+  scoped_refptr<IOBufferWithSize> buf =
+      base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
+  TestCompletionCallback read_callback;
+  ASSERT_THAT(read_callback.GetResult(transaction.Read(
+                  buf.get(), buf->size(), read_callback.callback())),
+              test::IsError(ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.HeaderValidationFailureReason.Dcz",
+      SharedDictionaryHeaderCheckerSourceStream::HeaderValidationFailureReason::
+          kSignatureMismatch,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Net.SharedDictionary.HeaderValidationFailureReason.Dcb", 0);
+}
+#endif  // !defined(NET_DISABLE_ZSTD)
+
 TEST_F(SharedDictionaryNetworkTransactionTest, MultipleContentEncodingWithSbr) {
   // Change MockTransaction to set `content-encoding: dcb, deflate`.
   scoped_mock_transaction_->response_headers =
