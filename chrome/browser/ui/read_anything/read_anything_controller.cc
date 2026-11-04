@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_hats_survey_controller.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -153,8 +153,8 @@ ReadAnythingController::ReadAnythingController(
           base::Unretained(this))));
 
   if (features::IsReadAnythingOmniboxChipEnabled() &&
-      tab_->GetBrowserWindowInterface() && tab_->GetTabFeatures() &&
-      tab_->GetTabFeatures()->page_action_controller()) {
+      tab_->GetBrowserWindowInterface() &&
+      page_actions::PageActionController::From(tab_)) {
     omnibox_controller_ = std::make_unique<ReadAnythingOmniboxController>(tab_);
   }
 

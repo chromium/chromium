@@ -436,10 +436,6 @@ class TabFeatures {
 
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
 
-  page_actions::PageActionController* page_action_controller() {
-    return page_action_controller_.get();
-  }
-
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 

@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
@@ -23,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -71,13 +70,6 @@ class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
 
   void CheckVisibility(bool expected) {
     EXPECT_EQ(expected, PageActionAccessor().GetVisible());
-  }
-
-  page_actions::PageActionController* page_action_controller() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->page_action_controller();
   }
 
  protected:

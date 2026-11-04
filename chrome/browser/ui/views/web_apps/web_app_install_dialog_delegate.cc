@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -79,10 +78,11 @@ NewPageActionHighlight(content::WebContents& web_contents) {
     return std::nullopt;
   }
 
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
-  CHECK(tab_features);
+  page_actions::PageActionController* page_action_controller =
+      page_actions::PageActionController::From(tab);
+  CHECK(page_action_controller);
 
-  return tab_features->page_action_controller()->AddActivity(kActionInstallPwa);
+  return page_action_controller->AddActivity(kActionInstallPwa);
 }
 
 }  // namespace

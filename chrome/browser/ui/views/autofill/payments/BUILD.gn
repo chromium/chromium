@@ -782,7 +782,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/page_action:icon_type",
     "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/autofill/popup:popup_cell_utils",
     "//chrome/browser/ui/views/extensions:security_dialog_tracker",

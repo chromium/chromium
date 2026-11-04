@@ -8,7 +8,6 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
@@ -48,10 +47,9 @@ void FileSystemAccessPageActionController::UpdateVisibility() {
     has_write_access = context->OriginHasWriteAccess(origin);
     show_read_indicator = context->OriginHasReadAccess(origin);
   }
-  tabs::TabFeatures* tab_features = tab().GetTabFeatures();
-  CHECK(tab_features);
   page_actions::PageActionController* page_action_controller =
-      tab_features->page_action_controller();
+      page_actions::PageActionController::From(&tab());
+  CHECK(page_action_controller);
   if (has_write_access || show_read_indicator) {
     if (!has_write_access) {
       page_action_controller->OverrideImage(
@@ -92,7 +90,7 @@ void FileSystemAccessPageActionController::PrimaryPageChanged(
 
 void FileSystemAccessPageActionController::HideIcon() {
   page_actions::PageActionController* page_action_controller =
-      tab().GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(&tab());
   CHECK(page_action_controller);
   page_action_controller->Hide(kActionShowFileSystemAccess);
 }

@@ -149,11 +149,9 @@ FilterUiController::FilterUiController(tabs::TabInterface& tab)
     favicon_service_ = FaviconServiceFactory::GetForProfile(
         profile, ServiceAccessType::EXPLICIT_ACCESS);
   }
-  if (tab.GetTabFeatures()) {
-    page_action_controller_ = tab.GetTabFeatures()->page_action_controller();
-    if (page_action_controller_) {
-      RegisterAsPageActionObserver(*page_action_controller_);
-    }
+  page_action_controller_ = page_actions::PageActionController::From(&tab);
+  if (page_action_controller_) {
+    RegisterAsPageActionObserver(*page_action_controller_);
   }
 }
 

@@ -16,7 +16,6 @@ source_set("ui") {
       "//base",
       "//chrome/browser/multistep_filter/core",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tabs_public",
       "//components/multistep_filter/core",
       "//ui/base/unowned_user_data",

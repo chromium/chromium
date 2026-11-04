@@ -190,6 +190,8 @@ class PageActionControllerTest : public testing::Test {
         .Build();
   }
 
+  void ResetController() { controller_.reset(); }
+
  protected:
   TestPageActionPropertiesProvider properties_provider_;
 
@@ -201,6 +203,16 @@ class PageActionControllerTest : public testing::Test {
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<FakeTabInterface> tab_interface_;
 };
+
+// Tests that PageActionController::From resolves the active controller on a tab
+// and returns nullptr once the controller is destroyed.
+TEST_F(PageActionControllerTest,
+       FromReturnsRegisteredControllerForTabLifecycle) {
+  EXPECT_EQ(PageActionController::From(tab_interface()), controller());
+
+  ResetController();
+  EXPECT_EQ(PageActionController::From(tab_interface()), nullptr);
+}
 
 // Tests adding/removing observers.
 TEST_F(PageActionControllerTest, AddAndRemoveObserver) {

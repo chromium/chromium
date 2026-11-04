@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -79,6 +78,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -287,10 +287,8 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   }
 
   page_actions::PageActionController* GetPageActionController() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->page_action_controller();
+    return page_actions::PageActionController::From(
+        browser()->GetActiveTabInterface());
   }
 
   virtual void InitializeFeatureList() = 0;
@@ -1486,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMockOptGuideBrowserTest,
 
   tabs::TabInterface* tab_1 = browser()->GetActiveTabInterface();
   page_actions::PageActionController* tab_1_page_action_controller =
-      tab_1->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(tab_1);
   CHECK(tab_1_page_action_controller);
 
   class TestObserver : public page_actions::PageActionModelObserver {
@@ -2669,9 +2667,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       /*index=*/0, std::move(detached_tab), AddTabTypes::ADD_ACTIVE);
 
   page_actions::PageActionController* second_controller =
-      second_browser->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->page_action_controller();
+      page_actions::PageActionController::From(
+          second_browser->GetActiveTabInterface());
   CHECK(second_controller);
   page_actions::PageActionObserver second_observer(
       kActionAnchoredContextualCue);

@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -36,6 +35,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,10 +72,8 @@ class ReadAnythingOmniboxControllerTestBase
   }
 
   void RegisterPageActionObserver() {
-    auto* page_action_controller = browser()
-                                       ->GetActiveTabInterface()
-                                       ->GetTabFeatures()
-                                       ->page_action_controller();
+    auto* page_action_controller = page_actions::PageActionController::From(
+        browser()->GetActiveTabInterface());
     CHECK(page_action_controller);
     RegisterAsPageActionObserver(*page_action_controller);
   }
@@ -98,7 +96,7 @@ class ReadAnythingOmniboxControllerTestBase
 
   void ShowPageAction() {
     tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-    tab->GetTabFeatures()->page_action_controller()->Show(
+    page_actions::PageActionController::From(tab)->Show(
         kActionSidePanelShowReadAnything);
   }
 

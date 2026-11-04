@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
@@ -448,13 +447,9 @@ void FindBarController::UpdatePageAction() {
     return;
   }
 
-  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
-    return;
-  }
   // Page actions don't exist for non-normal windows.
   page_actions::PageActionController* controller =
-      tab_features->page_action_controller();
+      page_actions::PageActionController::From(tab);
   if (!controller) {
     return;
   }

@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
@@ -378,7 +377,7 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
   }
 
   page_actions::PageActionController* page_action_controller =
-      active_tab->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(active_tab);
   CHECK(page_action_controller);
 
   const actions::ActionId page_action_id =

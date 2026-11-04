@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
@@ -68,11 +67,11 @@ const char kIconSourceHistogram[] = "Omnibox.AiModePageAction.IconSource";
 page_actions::PageActionController* GetPageActionController(
     BrowserWindowInterface& bwi) {
   tabs::TabInterface* tab_interface = bwi.GetActiveTabInterface();
-  if (!tab_interface || !tab_interface->GetTabFeatures()) {
+  if (!tab_interface) {
     return nullptr;
   }
 
-  return tab_interface->GetTabFeatures()->page_action_controller();
+  return page_actions::PageActionController::From(tab_interface);
 }
 
 // Converts an `Image` of arbitrary size to an `ImageModel` of

@@ -37,6 +37,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -54,6 +56,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1056,10 +1059,8 @@ IN_PROC_BROWSER_TEST_F(IndigoContextualCueingV2BrowserTest,
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
 
   page_actions::PageActionController* page_action_controller =
-      browser()
-          ->GetActiveTabInterface()
-          ->GetTabFeatures()
-          ->page_action_controller();
+      page_actions::PageActionController::From(
+          browser()->GetActiveTabInterface());
   page_actions::PageActionObserver observer(kActionAnchoredContextualCue);
   observer.RegisterAsPageActionObserver(*page_action_controller);
 

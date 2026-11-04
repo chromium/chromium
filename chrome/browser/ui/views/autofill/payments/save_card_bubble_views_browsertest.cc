@@ -26,8 +26,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
@@ -61,6 +61,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -342,10 +343,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void RegisterPageActionObserver() {
-    auto* page_action_controller = GetBrowser(0)
-                                       ->GetActiveTabInterface()
-                                       ->GetTabFeatures()
-                                       ->page_action_controller();
+    auto* page_action_controller = page_actions::PageActionController::From(
+        GetBrowser(0)->GetActiveTabInterface());
     CHECK(page_action_controller);
     RegisterAsPageActionObserver(*page_action_controller);
   }

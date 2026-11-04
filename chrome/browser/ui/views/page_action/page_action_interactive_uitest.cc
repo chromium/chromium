@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_enums.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -34,6 +33,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
@@ -142,10 +142,8 @@ class PageActionUiTestBase {
   virtual BrowserWindowInterface* GetBrowser() const = 0;
 
   page_actions::PageActionController* page_action_controller() const {
-    return GetBrowser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->page_action_controller();
+    return page_actions::PageActionController::From(
+        GetBrowser()->GetActiveTabInterface());
   }
 
   LocationBar* location_bar() const {

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "components/tabs/public/tab_interface.h"
@@ -42,8 +41,8 @@ TranslatePageActionController::TranslatePageActionController(
           &TranslatePageActionController::WillDiscardContents,
           base::Unretained(this)));
 
-  RegisterAsPageActionObserver(
-      CHECK_DEREF(tab_interface_->GetTabFeatures()->page_action_controller()));
+  RegisterAsPageActionObserver(CHECK_DEREF(
+      page_actions::PageActionController::From(&tab_interface_.get())));
 
   // Translation may be enabled already at the time of creating the tab (e.g.,
   // while moving contents from a browser windows to a web app).
@@ -95,7 +94,7 @@ void TranslatePageActionController::UpdatePageAction() {
   const bool translate_enabled = language_state.translate_enabled();
 
   page_actions::PageActionController* page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(&tab_interface_.get());
   CHECK(page_action_controller);
 
   if (translate_enabled) {

@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -27,15 +26,14 @@ ReadAnythingOmniboxController::ReadAnythingOmniboxController(
   // enabled and the tab has the required window and page action features.
   CHECK(features::IsReadAnythingOmniboxChipEnabled());
   CHECK(tab_->GetBrowserWindowInterface());
-  CHECK(tab_->GetTabFeatures());
-  CHECK(tab_->GetTabFeatures()->page_action_controller());
+  auto* page_action_controller = page_actions::PageActionController::From(tab_);
+  CHECK(page_action_controller);
 
   read_anything::ReadAnythingEntryPointController::
       RegisterForSuggestReadingMode(
           tab_->GetBrowserWindowInterface()->GetProfile());
 
-  RegisterAsPageActionObserver(
-      *tab_->GetTabFeatures()->page_action_controller());
+  RegisterAsPageActionObserver(*page_action_controller);
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(
       base::BindRepeating(&ReadAnythingOmniboxController::TabWillDetach,
                           weak_factory_.GetWeakPtr())));

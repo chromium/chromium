@@ -157,8 +157,7 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
                           accounts_[0]->browser_trusted_login_state) ==
                           content::IdentityRequestAccount::LoginState::kSignIn;
 
-  auto* features = tab_->GetTabFeatures();
-  auto* controller = features->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab_);
 
   // Passing false to hide_dialog_widget_after_idp_login_popup_ to ensure the
   // widget is shown.
@@ -313,10 +312,8 @@ bool FedCmAccountSelectionView::Show(
         return true;
       }
       if (tab_) {
-        if (auto* features = tab_->GetTabFeatures()) {
-          if (auto* controller = features->page_action_controller()) {
-            controller->Hide(kActionFederation);
-          }
+        if (auto* controller = page_actions::PageActionController::From(tab_)) {
+          controller->Hide(kActionFederation);
         }
       }
     }
@@ -1231,12 +1228,10 @@ void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
   scoped_user_data_.reset();
   CancelAmbientBubble();
   if (IsAmbientEnabled() && tab_) {
-    if (auto* features = tab_->GetTabFeatures()) {
-      if (auto* controller = features->page_action_controller()) {
-        controller->Hide(kActionFederation);
-        controller->HideSuggestionChip(kActionFederation);
-        controller->HideAnchoredMessage(kActionFederation);
-      }
+    if (auto* controller = page_actions::PageActionController::From(tab_)) {
+      controller->Hide(kActionFederation);
+      controller->HideSuggestionChip(kActionFederation);
+      controller->HideAnchoredMessage(kActionFederation);
     }
   }
 
@@ -1656,12 +1651,7 @@ bool FedCmAccountSelectionView::ShowPageAction(
     return false;
   }
 
-  auto* features = tab_->GetTabFeatures();
-  if (!features) {
-    return false;
-  }
-
-  auto* controller = features->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab_);
   if (!controller) {
     return false;
   }

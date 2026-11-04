@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -61,6 +60,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/security_state/core/security_state.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_features.h"
@@ -598,10 +598,9 @@ class LocationBarViewPageActionHideWhileEditingTests
     zoom_action->SetEnabled(true);
 
     // 2. For the active tab, actually show it in the new PageActionController.
-    auto* tab_features = browser()->GetActiveTabInterface()->GetTabFeatures();
-    ASSERT_TRUE(tab_features);
     page_actions::PageActionController* controller =
-        tab_features->page_action_controller();
+        page_actions::PageActionController::From(
+            browser()->GetActiveTabInterface());
     ASSERT_TRUE(controller);
     controller->Show(kActionShowZoomBubble);
 
@@ -966,9 +965,8 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewElevatedToolbarBrowserTest,
   LocationBarView* location_bar = GetLocationBarView();
   ASSERT_TRUE(location_bar);
 
-  auto* tab_features = browser()->GetActiveTabInterface()->GetTabFeatures();
-  ASSERT_TRUE(tab_features);
-  auto* controller = tab_features->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(
+      browser()->GetActiveTabInterface());
   ASSERT_TRUE(controller);
   auto* const root_action_item =
       BrowserActions::From(browser())->root_action_item();

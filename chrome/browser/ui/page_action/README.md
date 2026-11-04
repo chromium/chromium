@@ -88,7 +88,9 @@ If the feature is browser-scoped, it can access a tab’s controller through the
 tab interface:
 
 ```c++
-bwi->GetActiveTabInterface()->GetTabFeatures()->page_action_controller();
+if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+  auto* controller = page_actions::PageActionController::From(tab);
+}
 ```
 
 From there, controlling the page action is done through the

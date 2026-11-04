@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,7 +42,7 @@ void IntentPickerViewPageActionController::UpdatePageActionVisibility(
     return;
   }
   page_actions::PageActionController* page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(&tab_interface_.get());
   CHECK(page_action_controller);
   if (should_show_icon) {
     if (apps::features::ShouldShowLinkCapturingUX()) {
@@ -77,7 +76,7 @@ void IntentPickerViewPageActionController::UpdatePageActionVisibility(
 
 void IntentPickerViewPageActionController::HideIcon() {
   page_actions::PageActionController* page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(&tab_interface_.get());
   CHECK(page_action_controller);
   page_action_controller->Hide(kActionShowIntentPicker);
   page_action_controller->HideSuggestionChip(kActionShowIntentPicker);

@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
@@ -1140,7 +1139,7 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (page_actions::PageActionController* page_action_controller =
-          tab_->GetTabFeatures()->page_action_controller()) {
+          page_actions::PageActionController::From(tab_)) {
     if (page_action_controller->GetActiveAnchoredMessage().has_value() ||
         active_cue_data_.has_value()) {
       CUEING_LOG(
@@ -1251,7 +1250,7 @@ void ContextualCueingController::ShowCue(
                            action_data, cue_id);
 
   page_actions::PageActionController* page_action_controller =
-      tab_->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(tab_);
   if (!page_action_controller) {
     CUEING_LOG("Not attempting to show cue: no page action controller.");
     RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
@@ -1537,7 +1536,7 @@ void ContextualCueingController::OnCueClicked(
     // Re-show the anchored message to allow for the user to see the tab
     // sharing UI before invoking the cue target's click action
     if (page_actions::PageActionController* page_action_controller =
-            tab_->GetTabFeatures()->page_action_controller()) {
+            page_actions::PageActionController::From(tab_)) {
       current_anchored_message_priority_ =
           page_actions::PageActionPriorityCategory::kUserInteraction;
       page_action_controller->ShowAnchoredMessage(
@@ -1684,7 +1683,7 @@ void ContextualCueingController::HideCue() {
   tab_list_observation_.Reset();
   current_anchored_message_priority_ = std::nullopt;
   page_actions::PageActionController* page_action_controller =
-      tab_->GetTabFeatures()->page_action_controller();
+      page_actions::PageActionController::From(tab_);
   if (!page_action_controller) {
     return;
   }
@@ -1699,7 +1698,7 @@ void ContextualCueingController::HideCue() {
 void ContextualCueingController::HideAnchoredMessage() {
 #if !BUILDFLAG(IS_ANDROID)
   if (page_actions::PageActionController* page_action_controller =
-          tab_->GetTabFeatures()->page_action_controller()) {
+          page_actions::PageActionController::From(tab_)) {
     page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   }
 #endif

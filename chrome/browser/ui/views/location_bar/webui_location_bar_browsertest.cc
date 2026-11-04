@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
@@ -320,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  auto* controller = tab->GetTabFeatures()->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab);
 
   controller->Show(kActionAiMode);
   EXPECT_FALSE(control.GetPageActionStates().empty());
@@ -330,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, PageActionNavigation) {
 
   web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
   tab = tabs::TabInterface::GetFromContents(web_contents);
-  controller = tab->GetTabFeatures()->page_action_controller();
+  controller = page_actions::PageActionController::From(tab);
 
   controller->Show(kActionAiMode);
   EXPECT_FALSE(control.GetPageActionStates().empty());
@@ -342,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  auto* controller = tab->GetTabFeatures()->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab);
 
   actions::ActionId action_id = kActionAiMode;
   page_actions::PageActionTestAccessor accessor(browser(), action_id);
@@ -386,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, AllPageActionsPresent) {
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  auto* controller = tab->GetTabFeatures()->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab);
 
   constexpr char kGetPageActionIconsScript[] = R"(
     Array.from(document.querySelector('toolbar-app')?.
@@ -730,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents();
 
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  auto* controller = tab->GetTabFeatures()->page_action_controller();
+  auto* controller = page_actions::PageActionController::From(tab);
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       kActionBookmarkThisTab,
       BrowserActions::From(browser())->root_action_item());

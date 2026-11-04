@@ -55,6 +55,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -284,11 +285,8 @@ IN_PROC_BROWSER_TEST_F(MultistepFilterBrowserTest,
   EXPECT_EQ(suggestion_result.navigation_url, suggestion_url);
 
   page_actions::PageActionController* page_action_controller =
-      browser()
-          ->GetTabStripModel()
-          ->GetActiveTab()
-          ->GetTabFeatures()
-          ->page_action_controller();
+      page_actions::PageActionController::From(
+          browser()->GetTabStripModel()->GetActiveTab());
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return page_action_controller->GetActiveAnchoredMessage() ==
            kActionMultistepFilter;
