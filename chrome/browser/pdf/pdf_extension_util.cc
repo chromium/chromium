@@ -372,8 +372,9 @@ std::string GetManifest() {
   std::string manifest_contents(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PDF_MANIFEST));
-  CHECK(manifest_contents.find(kNameTag) != std::string::npos,
-        base::NotFatalUntil::M163);
+  // TODO(crbug.com/580493958): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kNameTag,
                                          kExtensionName);
 
