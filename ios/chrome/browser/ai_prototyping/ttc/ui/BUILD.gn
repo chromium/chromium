@@ -10,6 +10,8 @@ source_set("ui") {
     "ttc_view_controller.mm",
     "ttc_voice_plate_consumer.h",
     "ttc_voice_plate_mutator.h",
+    "ttc_voice_plate_view.h",
+    "ttc_voice_plate_view.mm",
     "ttc_waveform_view.h",
     "ttc_waveform_view.mm",
   ]
@@ -29,7 +31,10 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_waveform_view_unittest.mm" ]
+  sources = [
+    "ttc_voice_plate_view_unittest.mm",
+    "ttc_waveform_view_unittest.mm",
+  ]
   deps = [
     ":ui",
     "//base",
