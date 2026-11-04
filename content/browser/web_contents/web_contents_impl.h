@@ -600,6 +600,7 @@ class CONTENT_EXPORT WebContentsImpl
   void GotPointerLockPermissionResponse(bool allowed) override;
   void DropPointerLockForTesting() override;
   bool GotResponseToKeyboardLockRequest(bool allowed) override;
+  void DiscardKeyboardLockRequest() override;
   bool HasOpener() override;
   RenderFrameHostImpl* GetOpener() override;
   bool HasLiveOriginalOpenerChain() override;

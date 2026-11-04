@@ -88,6 +88,11 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   void UnlockKeyboardForWebContents(
       base::WeakPtr<content::WebContents> web_contents);
 
+  // Called when the keyboard lock permission is denied or the prompt is
+  // dismissed. Unlocks `web_contents` and discards its keyboard lock request.
+  void OnKeyboardLockPermissionDenied(
+      base::WeakPtr<content::WebContents> web_contents);
+
   // Called when the user has held down Escape.
   void HandleUserHeldEscapeDeprecated();
 

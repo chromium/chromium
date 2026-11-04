@@ -181,6 +181,7 @@ if (!is_android) {
         "//chrome/test/base:interactive_test_utils",
         "//components/blocked_content",
         "//components/metrics:content",
+        "//components/permissions:permissions_common",
         "//components/permissions:test_support",
         "//net:test_support",
         "//ui/display:test_support",

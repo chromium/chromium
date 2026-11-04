@@ -6,7 +6,10 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -203,6 +206,33 @@ class AllowInnerContentsKeyboardLockDelegate
   bool AllowKeyboardLockForInnerContents(WebContents* web_contents) override {
     return true;
   }
+};
+
+// A delegate that rejects every keyboard lock request asynchronously, as
+// Chrome does when the user denies or dismisses the permission prompt.
+class RejectingKeyboardLockDelegate
+    : public FakeKeyboardLockWebContentsDelegate {
+ public:
+  void RequestKeyboardLock(WebContents* web_contents,
+                           bool esc_key_locked) override {
+    ++request_count_;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::WeakPtr<WebContents> web_contents) {
+                         if (!web_contents) {
+                           return;
+                         }
+                         web_contents->GotResponseToKeyboardLockRequest(
+                             /*allowed=*/false);
+                         web_contents->DiscardKeyboardLockRequest();
+                       },
+                       web_contents->GetWeakPtr()));
+  }
+
+  int request_count() const { return request_count_; }
+
+ private:
+  int request_count_ = 0;
 };
 
 }  // namespace
@@ -527,6 +557,27 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, CancelInFullscreen) {
   EnterFullscreen(FROM_HERE);
   CancelKeyboardLock(FROM_HERE);
   ExitFullscreen(FROM_HERE);
+}
+
+// A rejected request is discarded, so entering fullscreen doesn't send it to
+// the delegate again. See crbug.com/379954091.
+IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest,
+                       RejectedRequestIsNotResentOnFullscreen) {
+  GURL url_for_test = https_fullscreen_frame();
+  NavigateToTestURL(url_for_test);
+
+  RejectingKeyboardLockDelegate rejecting_delegate;
+  web_contents()->SetDelegate(&rejecting_delegate);
+
+  ASSERT_EQ(false, EvalJs(web_contents(), kKeyboardLockMethodCallWithAllKeys));
+  EXPECT_EQ(1, rejecting_delegate.request_count());
+  EXPECT_EQ(nullptr, web_contents()->GetKeyboardLockWidget());
+
+  EnterFullscreen(FROM_HERE);
+  EXPECT_EQ(1, rejecting_delegate.request_count());
+  ExitFullscreen(FROM_HERE);
+
+  web_contents()->SetDelegate(web_contents_delegate());
 }
 
 IN_PROC_BROWSER_TEST_F(KeyboardLockBrowserTest, EnterAndExitFullscreenCycling) {

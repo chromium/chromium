@@ -7801,6 +7801,14 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   return true;
 }
 
+void WebContentsImpl::DiscardKeyboardLockRequest() {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::DiscardKeyboardLockRequest");
+  // Clearing `keyboard_lock_widget_` keeps EnterFullscreenMode() from sending
+  // the rejected request to the delegate again.
+  CancelKeyboardLock(keyboard_lock_widget_);
+}
+
 bool WebContentsImpl::HasOpener() {
   return GetOpener() != nullptr;
 }

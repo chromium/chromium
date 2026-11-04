@@ -1392,6 +1392,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns false if the request is no longer valid, otherwise true.
   virtual bool GotResponseToKeyboardLockRequest(bool allowed) = 0;
 
+  // Discards the pending keyboard lock request, e.g. after the user denied or
+  // dismissed a permission prompt and GotResponseToKeyboardLockRequest(false)
+  // was called. A discarded request is not sent to the delegate again when
+  // the page re-enters fullscreen; the page must call keyboard.lock() again
+  // to make a new request.
+  virtual void DiscardKeyboardLockRequest() = 0;
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Called when the user has selected a color in the color chooser.
   virtual void DidChooseColorInColorChooser(SkColor color) = 0;

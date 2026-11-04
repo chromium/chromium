@@ -122,6 +122,10 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
     return mock_controller_.get();
   }
 
+  content::MockPermissionController* permission_controller() {
+    return permission_controller_.get();
+  }
+
   std::vector<ExclusiveAccessBubbleHideReason>
       pointer_lock_bubble_hide_reason_recorder_;
 
