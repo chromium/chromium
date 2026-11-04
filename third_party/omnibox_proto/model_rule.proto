@@ -18,13 +18,27 @@ import "model_mode.proto";
 import "tool_mode.proto";
 
 // Rule for restricting a model.
-// Next ID: 6
+// Next ID: 8
 message ModelRule {
+  // Numeric value of the `ModelMode` enum for the model that is being
+  // restricted. See crbug.com/545733743.
+  int32 model_key = 6;
+  // Deprecated: Use `model_key` instead. Cleared for clients that have
+  // migrated to `model_key`.
+  // New clients must not use this field.
+  //
   // The model that is being restricted.
-  optional ModelMode model = 1;
+  optional ModelMode model = 1 [deprecated = true];
+  // Numeric values of the `ToolMode` enums for the tools that are allowed to be
+  // used with the model. See crbug.com/545733743.
+  repeated int32 allowed_tool_keys = 7;
+  // Deprecated: Use `allowed_tool_keys` instead. Cleared for clients that have
+  // migrated to `allowed_tool_keys`.
+  // New clients must not use this field.
+  //
   // The tools that are allowed to be used with the model.
   // If allow_all_tools is true, this field is ignored.
-  repeated ToolMode allowed_tools = 2;
+  repeated ToolMode allowed_tools = 2 [deprecated = true];
   // The input types that are allowed to be used with the model.
   // If allow_all_input_types is true, this field is ignored.
   repeated InputType allowed_input_types = 3;

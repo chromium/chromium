@@ -45,6 +45,8 @@ fusebox_action::mojom::SuggestInventory EnumTraits<
       return fusebox_action::mojom::SuggestInventory::kAddTab;
     case omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_IMAGES:
       return fusebox_action::mojom::SuggestInventory::kAimImages;
+    case omnibox::SuggestInventory::SUGGEST_INVENTORY_IMAGE_GEN_SEASONAL_PROMO:
+      return fusebox_action::mojom::SuggestInventory::kImageGenSeasonalPromo;
     default:
       return fusebox_action::mojom::SuggestInventory::kDefault;
   }
@@ -90,6 +92,9 @@ EnumTraits<fusebox_action::mojom::SuggestInventory, omnibox::SuggestInventory>::
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_ADD_TAB;
     case fusebox_action::mojom::SuggestInventory::kAimImages:
       return omnibox::SuggestInventory::SUGGEST_INVENTORY_AIM_IMAGES;
+    case fusebox_action::mojom::SuggestInventory::kImageGenSeasonalPromo:
+      return omnibox::SuggestInventory::
+          SUGGEST_INVENTORY_IMAGE_GEN_SEASONAL_PROMO;
   }
   return std::nullopt;
 }

@@ -19,15 +19,22 @@ import "model_mode.proto";
 import "url_param.proto";
 
 // Configuration for a model mode.
-// Next ID: 10
+// Next ID: 11
 // LINT.IfChange(ModelConfig)
 message ModelConfig {
+  // Numeric value of the `ModelMode` enum for the model. See
+  // crbug.com/545733743.
+  int32 model_key = 10;
+  // Deprecated: Use `model_key` instead. Cleared for clients that have
+  // migrated to `model_key`.
+  // New clients must not use this field.
+  //
   // The model mode.
   //
   // Note: Clients should use the *Value accessor variant (e.g. getModelValue())
   // rather than enum accessors to be future-proof against new open enum values
   // served by the backend without requiring client updates.
-  ModelMode model = 1;
+  ModelMode model = 1 [deprecated = true];
   // The label for the model in a menu.
   string menu_label = 2;
   // The hint text in the input text field when this model is selected.

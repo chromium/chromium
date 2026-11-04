@@ -120,6 +120,8 @@ TEST(FuseboxActionMojoUtilsTest, MapsSuggestInventoryValuesToMojo) {
       {omnibox::SUGGEST_INVENTORY_ADD_TAB, omnibox::SUGGEST_INVENTORY_ADD_TAB},
       {omnibox::SUGGEST_INVENTORY_AIM_IMAGES,
        omnibox::SUGGEST_INVENTORY_AIM_IMAGES},
+      {omnibox::SUGGEST_INVENTORY_IMAGE_GEN_SEASONAL_PROMO,
+       omnibox::SUGGEST_INVENTORY_IMAGE_GEN_SEASONAL_PROMO},
   };
   for (const auto& test_case : kCases) {
     omnibox::SuggestTemplateInfo::FuseboxAction proto;

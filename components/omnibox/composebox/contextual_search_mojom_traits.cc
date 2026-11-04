@@ -137,6 +137,26 @@ UsedModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::ToMojom(
       return UsedModelMode::kGeminiProLatest;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PREVIEW:
       return UsedModelMode::kGeminiPreview;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_ALFA:
+      return UsedModelMode::kAimModelAlfa;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_BRAVO:
+      return UsedModelMode::kAimModelBravo;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_CHARLIE:
+      return UsedModelMode::kAimModelCharlie;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_DELTA:
+      return UsedModelMode::kAimModelDelta;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_ECHO:
+      return UsedModelMode::kAimModelEcho;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_FOXTROT:
+      return UsedModelMode::kAimModelFoxtrot;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_GOLF:
+      return UsedModelMode::kAimModelGolf;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_HOTEL:
+      return UsedModelMode::kAimModelHotel;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_INDIA:
+      return UsedModelMode::kAimModelIndia;
+    case omnibox::ModelMode::MODEL_MODE_AIM_MODEL_JULIETT:
+      return UsedModelMode::kAimModelJuliett;
     // The proto compiler generates these sentinel values. We must handle them
     // to satisfy the compiler's exhaustiveness check (since we don't have a
     // default case), but they should never be encountered in practice.
@@ -168,6 +188,26 @@ omnibox::ModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::FromMojom(
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST;
     case UsedModelMode::kGeminiPreview:
       return omnibox::ModelMode::MODEL_MODE_GEMINI_PREVIEW;
+    case UsedModelMode::kAimModelAlfa:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_ALFA;
+    case UsedModelMode::kAimModelBravo:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_BRAVO;
+    case UsedModelMode::kAimModelCharlie:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_CHARLIE;
+    case UsedModelMode::kAimModelDelta:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_DELTA;
+    case UsedModelMode::kAimModelEcho:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_ECHO;
+    case UsedModelMode::kAimModelFoxtrot:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_FOXTROT;
+    case UsedModelMode::kAimModelGolf:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_GOLF;
+    case UsedModelMode::kAimModelHotel:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_HOTEL;
+    case UsedModelMode::kAimModelIndia:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_INDIA;
+    case UsedModelMode::kAimModelJuliett:
+      return omnibox::ModelMode::MODEL_MODE_AIM_MODEL_JULIETT;
   }
   NOTREACHED();
 }

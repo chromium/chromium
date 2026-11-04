@@ -19,15 +19,21 @@ import "tool_mode.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 15
+// Next ID: 16
 // LINT.IfChange(ToolConfig)
 message ToolConfig {
+  // Numeric value of the `ToolMode` enum for the tool. See crbug.com/545733743.
+  int32 tool_key = 15;
+  // Deprecated: Use `tool_key` instead. Cleared for clients that have
+  // migrated to `tool_key`.
+  // New clients must not use this field.
+  //
   // The tool mode.
   //
   // Note: Clients should use the *Value accessor variant (e.g. getToolValue())
   // rather than enum accessors to be future-proof against new open enum values
   // served by the backend without requiring client updates.
-  ToolMode tool = 1;
+  ToolMode tool = 1 [deprecated = true];
   // Disable model selection state when the tool is selected (e.g. no check mark
   // on model selection when the tool is selected). Some tools are not
   // associated with any of the selectable models (e.g. DeepSearch)

@@ -16,10 +16,16 @@ package omnibox;
 import "icon_resource_ids.proto";
 
 // Configuration for Icon.
-// Next ID: 2
+// Next ID: 3
 message Icon {
   // The icon id.
   // Note: this legacy enum does not have an unspecified value, so clients
-  // should trate the current PLACE_WHITE = 0 as unspecified instead.
+  // should treat the current PLACE_WHITE = 0 as unspecified instead.
   optional IconResourceIds icon_id = 1;
+
+  // Hosted HTTPS URL of the icon to be displayed on the client.
+  // Expected to point to an image asset, typically a vector graphic (e.g. SVG
+  // such as 24px Google Symbols from https://fonts.gstatic.com/) or a raster
+  // image (e.g. PNG).
+  string icon_url = 2;
 }
