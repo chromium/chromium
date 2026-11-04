@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ORGANIZER_PANEL_ORGANIZER_PANEL_UI_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"

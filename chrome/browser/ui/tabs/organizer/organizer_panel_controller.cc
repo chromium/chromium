@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -24,7 +26,14 @@
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/site_engagement/content/site_engagement_helper.h"
+#include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,7 +43,6 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_util.h"
 #endif
 
@@ -246,6 +254,9 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
     active_extension_id_.reset();
   }
 #endif
+  if (is_visible_) {
+    UpdatePanelWebContents();
+  }
   if (immediate) {
     BrowserAnimationController::From(&*browser_window_)
         ->Reset(OrganizerPanelAnimations::kOrganizerPanel, GetTargetMotion());
@@ -319,6 +330,56 @@ void OrganizerPanelController::CloseForExtension(
 base::CallbackListSubscription OrganizerPanelController::RegisterOnStateChanged(
     StateChangedCallback callback) {
   return on_state_changed_callback_list_.Add(std::move(callback));
+}
+
+content::WebContents* OrganizerPanelController::EnsureWebContentsCreated() {
+  if (web_contents_) {
+    return web_contents_.get();
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // When extension side panel mode is enabled, the panel hosts extensions,
+  // not WebUI. Skip requesting WebUI contents.
+  if (organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()) {
+    return nullptr;
+  }
+#endif
+
+  auto* const preload_manager = WebUIContentsPreloadManager::GetInstance();
+  CHECK(preload_manager);
+  WebUIContentsPreloadManager::RequestResult result = preload_manager->Request(
+      GURL(chrome::kChromeUIOrganizerPanelURL), browser_window_->GetProfile());
+  web_contents_ = std::move(result.web_contents);
+  webui::SetBrowserWindowInterface(web_contents_.get(), &*browser_window_);
+  web_contents_->SetSupportsDraggableRegions(true);
+  if (site_engagement::SiteEngagementService::IsEnabled()) {
+    site_engagement_helper_ =
+        std::make_unique<site_engagement::SiteEngagementService::Helper>(
+            web_contents_.get());
+  }
+  return web_contents_.get();
+}
+
+void OrganizerPanelController::RegisterPanelView(
+    OrganizerPanelView* panel_view) {
+  CHECK(!panel_view_);
+  CHECK(!is_visible_);
+  panel_view_ = panel_view;
+}
+
+void OrganizerPanelController::UnregisterPanelView(
+    OrganizerPanelView* panel_view) {
+  CHECK_EQ(panel_view_, panel_view);
+  panel_view_ = nullptr;
+}
+
+void OrganizerPanelController::UpdatePanelWebContents() {
+  if (!is_visible_ || !panel_view_) {
+    return;
+  }
+  if (content::WebContents* const contents = EnsureWebContentsCreated()) {
+    panel_view_->AttachWebContents(contents);
+  }
 }
 
 std::unique_ptr<views::View> OrganizerPanelController::SetPanelView(

@@ -307,7 +307,9 @@ WebUIContentsPreloadManager::WebUIContentsPreloadManager()
     SetPreloadCandidateSelector(
         std::make_unique<webui::ProfilePreloadCandidateSelector>(
             webui_tracker_.get()));
-  } else {
+  } else if (!organizer_panel::IsOrganizerPanelFeatureEnabled() ||
+             !organizer_panel::
+                 IsShowExtensionsSidePanelUiInOrganizerPanelEnabled()) {
     const GURL default_url = organizer_panel::IsOrganizerPanelFeatureEnabled()
                                  ? GURL(chrome::kChromeUIOrganizerPanelURL)
                                  : GURL(chrome::kChromeUITabSearchURL);
@@ -358,6 +360,9 @@ void WebUIContentsPreloadManager::WarmupForBrowser(
 
 std::optional<GURL> WebUIContentsPreloadManager::GetNextWebUIURLToPreload(
     content::BrowserContext* browser_context) const {
+  if (!preload_candidate_selector_) {
+    return std::nullopt;
+  }
   return preload_candidate_selector_->GetURLToPreload(
       webui::PreloadContext::From(
           Profile::FromBrowserContext(browser_context)));

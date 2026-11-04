@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -390,4 +391,33 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
   // History Cluster metrics are recorded on WebUI destruction.
   web_contents.reset();
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.InitialState", 1);
+}
+
+class WebUIContentsPreloadManagerFixedSelectorExtensionModeBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  WebUIContentsPreloadManagerFixedSelectorExtensionModeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPreloadTopChromeWebUI,
+          {{features::kPreloadTopChromeWebUISmartPreloadName, "false"},
+           {features::kPreloadTopChromeWebUIDelayPreloadName, "false"}}},
+         {organizer_panel::kOrganizerPanel, {}},
+         {organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When smart preload is disabled and Organizer Panel is in extension mode,
+// neither Organizer Panel nor Tab Search is preloadable, so no WebUI should be
+// preloaded.
+IN_PROC_BROWSER_TEST_F(
+    WebUIContentsPreloadManagerFixedSelectorExtensionModeBrowserTest,
+    DoesNotPreloadWhenOrganizerPanelInExtensionMode) {
+  WebUIContentsPreloadManagerTestAPI test_api;
+  EXPECT_EQ(test_api.GetNextWebUIURLToPreload(browser()->GetProfile()),
+            std::nullopt);
+  EXPECT_EQ(test_api.GetPreloadedWebContents(), nullptr);
 }

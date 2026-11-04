@@ -77,12 +77,14 @@ class OrganizerPanelViewTest : public ChromeViewsTestBase {
         mock_browser_window_interface_, root_action_item_.get());
   }
 
-  void CreateView() {
+  void CreateView(bool show_widget = true) {
     auto view = OrganizerPanelView::Create(mock_browser_window_interface_);
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ = widget_->SetContentsView(std::move(view));
     widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
-    widget_->Show();
+    if (show_widget) {
+      widget_->Show();
+    }
   }
 
   void TearDown() override {
@@ -177,9 +179,10 @@ TEST_F(OrganizerPanelViewTest, DraggableRegionsInWindowCaption) {
       organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
 
   CreateView();
+  state_controller()->SetOrganizerVisible(true);
   views::WebView* web_view = views::AsViewClass<views::WebView>(GetWebView());
   ASSERT_NE(web_view, nullptr);
-  content::WebContents* web_contents = web_view->GetWebContents();
+  content::WebContents* web_contents = web_view->web_contents();
   ASSERT_NE(web_contents, nullptr);
 
   // Initially no draggable regions.
@@ -236,6 +239,7 @@ TEST_F(OrganizerPanelViewTest, VisibilityChangedRestoresFocusWhenWidgetActive) {
       organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
 
   CreateView();
+  state_controller()->SetOrganizerVisible(true);
   views::View* web_view = GetWebView();
   ASSERT_NE(web_view, nullptr);
 
@@ -262,6 +266,7 @@ TEST_F(OrganizerPanelViewTest,
       organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
 
   CreateView();
+  state_controller()->SetOrganizerVisible(true);
   views::View* web_view = GetWebView();
   ASSERT_NE(web_view, nullptr);
 
@@ -284,4 +289,21 @@ TEST_F(OrganizerPanelViewTest,
   web_view->SetVisible(false);
   EXPECT_NE(widget()->GetFocusManager()->GetFocusedView(), initial_view);
   EXPECT_EQ(widget()->GetFocusManager()->GetStoredFocusView(), initial_view);
+}
+
+TEST_F(OrganizerPanelViewTest, LazyWebContentsInitialization) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  CreateView(/*show_widget=*/false);
+  views::WebView* web_view = views::AsViewClass<views::WebView>(GetWebView());
+  ASSERT_NE(web_view, nullptr);
+  // WebContents should not be created eagerly before being shown.
+  EXPECT_EQ(web_view->web_contents(), nullptr);
+
+  // Opening the organizer panel requests and initializes the WebContents.
+  state_controller()->SetOrganizerVisible(true);
+  EXPECT_NE(web_view->web_contents(), nullptr);
+  EXPECT_EQ(web_view->web_contents(), state_controller()->web_contents());
 }

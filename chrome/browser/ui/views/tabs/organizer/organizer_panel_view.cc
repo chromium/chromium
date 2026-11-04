@@ -14,14 +14,13 @@
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -55,6 +54,22 @@ class OrganizerPanelWebView : public views::WebView {
   ~OrganizerPanelWebView() override = default;
 
   // views::WebView:
+  void SetWebContents(content::WebContents* replacement) override {
+    if (web_contents() == replacement) {
+      return;
+    }
+    if (web_contents() && web_contents()->GetDelegate() == this) {
+      web_contents()->SetDelegate(nullptr);
+    }
+    draggable_region_.setEmpty();
+    if (replacement) {
+      replacement->SetDelegate(this);
+      views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+          replacement, SK_ColorTRANSPARENT);
+    }
+    views::WebView::SetWebContents(replacement);
+  }
+
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override {
@@ -83,22 +98,29 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
         std::make_unique<OrganizerPanelWebView>(browser.GetProfile()));
     web_view_->SetAcceleratorHandling(
         views::WebContentsAcceleratorHandling::kEnabled);
-    content::WebContents* const web_contents =
-        web_view_->GetWebContents(GURL(chrome::kChromeUIOrganizerPanelURL));
-    webui::SetBrowserWindowInterface(web_contents, &browser);
-    web_contents->SetSupportsDraggableRegions(true);
-    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-        web_contents, SK_ColorTRANSPARENT);
-    web_view_->LoadInitialURL(GURL(chrome::kChromeUIOrganizerPanelURL));
     web_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
     web_view_->SetProperty(views::kElementIdentifierKey, kWebViewElementId);
     observation_.Observe(web_view_);
+
+    if (auto* const controller = OrganizerPanelController::From(&browser)) {
+      controller->RegisterPanelView(this);
+    }
   }
 
-  ~OrganizerPanelViewImpl() override { web_view_ = nullptr; }
+  ~OrganizerPanelViewImpl() override {
+    if (auto* const controller = OrganizerPanelController::From(&*browser_)) {
+      controller->UnregisterPanelView(this);
+    }
+    AttachWebContents(nullptr);
+    web_view_ = nullptr;
+  }
+
+  void AttachWebContents(content::WebContents* web_contents) override {
+    web_view_->SetWebContents(web_contents);
+  }
 
   // views::ViewObserver
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -110,7 +132,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     }
     auto* const currently_focused = focus_manager->GetFocusedView();
     if (visible) {
-      if (web_view_ && web_view_->IsDrawn()) {
+      if (web_contents() && web_view_->IsDrawn()) {
         previously_focused_view_.SetView(currently_focused);
         web_view_->RequestFocus();
       } else {
@@ -138,7 +160,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
   }
 
   bool IsPositionInWindowCaption(const gfx::Point& point) const override {
-    if (!web_view_) {
+    if (!web_contents()) {
       return false;
     }
     if (!DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser_.get())) {
@@ -150,6 +172,10 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
   }
 
  private:
+  content::WebContents* web_contents() const {
+    return web_view_ ? web_view_->web_contents() : nullptr;
+  }
+
   const raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<OrganizerPanelWebView> web_view_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
@@ -202,6 +228,9 @@ bool OrganizerPanelView::IsInExtensionModeForTesting() const {
 bool OrganizerPanelView::IsPositionInWindowCaption(
     const gfx::Point& point) const {
   return false;
+}
+
+void OrganizerPanelView::AttachWebContents(content::WebContents* web_contents) {
 }
 
 BEGIN_METADATA(OrganizerPanelView)

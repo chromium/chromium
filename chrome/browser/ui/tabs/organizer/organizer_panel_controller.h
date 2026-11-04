@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -22,6 +23,11 @@
 
 class BrowserView;
 class BrowserWindowInterface;
+class OrganizerPanelView;
+
+namespace content {
+class WebContents;
+}
 
 namespace actions {
 class ActionItem;
@@ -70,12 +76,23 @@ class OrganizerPanelController {
   base::CallbackListSubscription RegisterOnStateChanged(
       StateChangedCallback callback);
 
+  // Returns the current WebContents for the organizer panel, if created.
+  content::WebContents* web_contents() const { return web_contents_.get(); }
+  site_engagement::SiteEngagementService::Helper* site_engagement_helper()
+      const {
+    return site_engagement_helper_.get();
+  }
+
   // Sets the panel view and returns the old one, if any.
   std::unique_ptr<views::View> SetPanelView(
       base::PassKey<BrowserView>,
       std::unique_ptr<views::View> panel_view);
   std::unique_ptr<views::View> SetPanelViewForTesting(
       std::unique_ptr<views::View> panel_view);
+
+  // Registers / unregisters the active panel view with the controller.
+  void RegisterPanelView(OrganizerPanelView* panel_view);
+  void UnregisterPanelView(OrganizerPanelView* panel_view);
 
  private:
   // Notifies subscribers when the is_visible_ or location state of the
@@ -92,6 +109,9 @@ class OrganizerPanelController {
   // Controls whether the Organizer Panel is visible.
   bool is_visible_ = false;
 
+  content::WebContents* EnsureWebContentsCreated();
+  void UpdatePanelWebContents();
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::optional<extensions::ExtensionId> active_extension_id_;
 #endif
@@ -101,12 +121,17 @@ class OrganizerPanelController {
 
   class PanelViewManager;
   const std::unique_ptr<PanelViewManager> panel_view_manager_;
+  raw_ptr<OrganizerPanelView> panel_view_ = nullptr;
   base::CallbackListSubscription vertical_tab_strip_animation_subscription_;
 
   // Callback list for state changes to visibility or location.
   base::RepeatingCallbackList<void(OrganizerPanelController*)>
       on_state_changed_callback_list_;
   ui::ScopedUnownedUserData<OrganizerPanelController> scoped_unowned_user_data_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<site_engagement::SiteEngagementService::Helper>
+      site_engagement_helper_;
 
   base::WeakPtrFactory<OrganizerPanelController> weak_ptr_factory_{this};
 };

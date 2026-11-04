@@ -15,6 +15,7 @@ source_set("organizer") {
     "//base",
     "//chrome/browser/ui/animation",
     "//chrome/browser/ui/views/tabs/organizer:organizer_panel_host",
+    "//components/site_engagement/content",
     "//extensions/buildflags",
     "//ui/base/unowned_user_data",
   ]
@@ -46,9 +47,12 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/tabs/organizer",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
+    "//content/public/browser",
     "//ui/base",
     "//ui/views",
   ]
@@ -67,6 +71,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/tabs/organizer:unit_test_support",
+    "//chrome/browser/ui/webui/top_chrome",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

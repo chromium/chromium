@@ -73,7 +73,6 @@ source_set("impl") {
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/browser/ui/views/toolbar",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/saved_tab_groups/public",
     "//content/public/browser",
     "//ui/actions",

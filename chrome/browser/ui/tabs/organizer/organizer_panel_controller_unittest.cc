@@ -17,13 +17,27 @@
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_test.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+
+namespace {
+
+class TestOrganizerPanelView : public OrganizerPanelView {
+ public:
+  explicit TestOrganizerPanelView(BrowserWindowInterface& browser)
+      : OrganizerPanelView(browser) {}
+  ~TestOrganizerPanelView() override = default;
+};
+
+}  // namespace
 
 class OrganizerPanelControllerTest : public testing::Test {
  public:
@@ -32,6 +46,8 @@ class OrganizerPanelControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+
+    WebUIContentsPreloadManager::GetInstance()->DisableNavigationForTesting();
 
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
@@ -53,12 +69,18 @@ class OrganizerPanelControllerTest : public testing::Test {
     // tests.
     controller_ = std::make_unique<OrganizerPanelController>(
         mock_browser_window_interface_, /*root_action_item=*/nullptr);
+    panel_view_ = std::make_unique<TestOrganizerPanelView>(
+        mock_browser_window_interface_);
+    controller_->RegisterPanelView(panel_view_.get());
   }
 
   void TearDown() override {
+    controller_->UnregisterPanelView(panel_view_.get());
+    panel_view_.reset();
     controller_.reset();
     vertical_tab_strip_controller_.reset();
     animation_controller_.reset();
+    WebUIContentsPreloadManager::GetInstance()->ReenableNavigationForTesting();
     testing::Test::TearDown();
   }
 
@@ -71,6 +93,7 @@ class OrganizerPanelControllerTest : public testing::Test {
   std::unique_ptr<tabs::test::MockVerticalTabStripStateController>
       vertical_tab_strip_controller_;
   std::unique_ptr<OrganizerPanelController> controller_;
+  std::unique_ptr<TestOrganizerPanelView> panel_view_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
@@ -106,7 +129,40 @@ TEST_F(OrganizerPanelControllerTest, Subscription) {
   controller()->SetOrganizerVisible(true);
 }
 
+TEST_F(OrganizerPanelControllerTest, LazyWebContentsInitializationAndReuse) {
+  EXPECT_EQ(controller()->web_contents(), nullptr);
+  EXPECT_EQ(controller()->site_engagement_helper(), nullptr);
+  controller()->SetOrganizerVisible(true);
+  content::WebContents* const web_contents = controller()->web_contents();
+  EXPECT_NE(web_contents, nullptr);
+  EXPECT_NE(controller()->site_engagement_helper(), nullptr);
+
+  controller()->SetOrganizerVisible(false);
+  EXPECT_EQ(controller()->web_contents(), web_contents);
+  EXPECT_NE(controller()->site_engagement_helper(), nullptr);
+
+  controller()->SetOrganizerVisible(true);
+  EXPECT_EQ(controller()->web_contents(), web_contents);
+  EXPECT_NE(controller()->site_engagement_helper(), nullptr);
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(OrganizerPanelControllerTest, ExtensionModeSkipsWebContentsAllocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      organizer_panel::kShowExtensionsSidePanelUiInOrganizerPanel);
+
+  EXPECT_EQ(controller()->web_contents(), nullptr);
+  EXPECT_EQ(controller()->site_engagement_helper(), nullptr);
+  controller()->SetOrganizerVisible(true);
+  EXPECT_EQ(controller()->web_contents(), nullptr);
+  EXPECT_EQ(controller()->site_engagement_helper(), nullptr);
+
+  const extensions::ExtensionId kExt1 = "abcdefghijklmnopabcdefghijklmnop";
+  controller()->OpenForExtension(kExt1);
+  EXPECT_EQ(controller()->web_contents(), nullptr);
+}
+
 TEST_F(OrganizerPanelControllerTest, ExtensionOpenToggleClose) {
   UNCALLED_MOCK_CALLBACK(OrganizerPanelController::StateChangedCallback,
                          callback);

@@ -14,6 +14,10 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}
+
 namespace gfx {
 class Point;
 }
@@ -40,6 +44,9 @@ class OrganizerPanelView : public views::View {
   // Returns true if `point` is in an area that should be treated as window
   // caption (for dragging the window).
   virtual bool IsPositionInWindowCaption(const gfx::Point& point) const;
+
+  // Attaches the WebContents to be displayed in the panel.
+  virtual void AttachWebContents(content::WebContents* web_contents);
 
  protected:
   explicit OrganizerPanelView(BrowserWindowInterface& browser);

@@ -62,23 +62,13 @@ OrganizerPanelPageHandler::OrganizerPanelPageHandler(
   pref_change_registrar_.Add(prefs::kOrganizerPanelSectionsShowAll,
                              pref_changed_callback);
 
-  if (auto* browser = webui::GetBrowserWindowInterface(web_contents_)) {
-    if (auto* controller =
-            tabs::VerticalTabStripStateController::From(browser)) {
-      OnVerticalTabStripModeChanged(controller);
-      vertical_tab_strip_mode_subscription_ =
-          controller->RegisterOnModeChanged(base::BindRepeating(
-              &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
+  browser_window_changed_subscription_ =
+      webui::RegisterBrowserWindowInterfaceChanged(
+          web_contents_,
+          base::BindRepeating(
+              &OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged,
               base::Unretained(this)));
-    }
-
-    if (auto* panel_controller = OrganizerPanelController::From(browser)) {
-      UpdateInTrayView(panel_controller);
-      organizer_panel_subscription_ = panel_controller->RegisterOnStateChanged(
-          base::BindRepeating(&OrganizerPanelPageHandler::UpdateInTrayView,
-                              base::Unretained(this)));
-    }
-  }
+  OnBrowserWindowInterfaceChanged();
 }
 
 OrganizerPanelPageHandler::~OrganizerPanelPageHandler() = default;
@@ -133,6 +123,28 @@ OrganizerPanelPageHandler::GetSectionStateForId(
     state->show_all = *show_all;
   }
   return state;
+}
+
+void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {
+  vertical_tab_strip_mode_subscription_ = {};
+  organizer_panel_subscription_ = {};
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+  if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
+    OnVerticalTabStripModeChanged(controller);
+    vertical_tab_strip_mode_subscription_ =
+        controller->RegisterOnModeChanged(base::BindRepeating(
+            &OrganizerPanelPageHandler::OnVerticalTabStripModeChanged,
+            base::Unretained(this)));
+  }
+  if (auto* panel_controller = OrganizerPanelController::From(browser)) {
+    UpdateInTrayView(panel_controller);
+    organizer_panel_subscription_ = panel_controller->RegisterOnStateChanged(
+        base::BindRepeating(&OrganizerPanelPageHandler::UpdateInTrayView,
+                            base::Unretained(this)));
+  }
 }
 
 void OrganizerPanelPageHandler::OnVerticalTabStripModeChanged(

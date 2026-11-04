@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_ui.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -51,7 +53,8 @@ bool OrganizerPanelUIConfig::IsWebUIEnabled(
 }
 
 bool OrganizerPanelUIConfig::IsPreloadable() {
-  return organizer_panel::IsOrganizerPanelFeatureEnabled();
+  return organizer_panel::IsOrganizerPanelFeatureEnabled() &&
+         !organizer_panel::IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
 }
 
 std::optional<int> OrganizerPanelUIConfig::GetCommandIdForTesting() {
