@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/create_window.h"
@@ -307,6 +308,19 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       submitter, data_encoding.EncodingForFormSubmission());
   DCHECK(dom_form_data);
 
+  // 'formdata' event handlers might disconnect the form or detach the frame.
+  if (!form->isConnected()) {
+    form->GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Form submission canceled because the form is not connected"));
+    return nullptr;
+  }
+  LocalFrame* form_local_frame = form->GetDocument().GetFrame();
+  if (!form_local_frame) {
+    return nullptr;
+  }
+
   scoped_refptr<EncodedFormData> form_data;
   String boundary;
 
@@ -349,7 +363,6 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
           AtomicString(StrCat({encoding_type, "; boundary=", boundary})));
     }
   }
-  LocalFrame* form_local_frame = form->GetDocument().GetFrame();
   resource_request->SetFormSubmission(true);
 
   mojom::blink::TriggeringEventInfo triggering_event_info;
@@ -376,7 +389,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   }
   frame_request.SetTriggeringEventInfo(triggering_event_info);
   AtomicString target_or_base_target = frame_request.CleanNavigationTarget(
-      copied_attributes.Target().empty() ? document.BaseTarget()
+      copied_attributes.Target().empty() ? form->GetDocument().BaseTarget()
                                          : copied_attributes.Target());
   if (RuntimeEnabledFeatures::WindowOpenSplitTabEnabled()) {
     WebWindowFeatures window_features = GetWindowFeaturesFromAttribute(
@@ -403,7 +416,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
     frame_request.SetNoOpener();
   }
   if (RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(
-          document.domWindow()) &&
+          form->GetDocument().domWindow()) &&
       form->HasRel(HTMLFormElement::kOpener) &&
       !frame_request.GetWindowFeatures().noopener) {
     frame_request.SetExplicitOpener();

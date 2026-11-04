@@ -995,21 +995,11 @@ void HTMLFormElement::ScheduleFormSubmission(const Event* event,
   FormSubmission* form_submission =
       FormSubmission::Create(this, attributes_, event, submitter);
   if (!form_submission) {
-    // Form submission is not allowed for some NavigationPolicies, e.g. Link
-    // Preview. If an user triggered such user event for form submission, just
-    // ignores it.
+    // Form submission was canceled (e.g. a 'formdata' event handler
+    // disconnected the form or detached the frame).
     return;
   }
   Frame* target_frame = form_submission->TargetFrame();
-
-  // 'formdata' event handlers might disconnect the form.
-  if (!isConnected()) {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kWarning,
-        "Form submission canceled because the form is not connected"));
-    return;
-  }
 
   if (form_submission->Method() == FormSubmission::kDialogMethod) {
     SubmitDialog(form_submission);
