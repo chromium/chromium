@@ -139,7 +139,6 @@
         "args": [
           "--platform=fuchsia"
         ],
-        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

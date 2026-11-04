@@ -2847,8 +2847,6 @@ targets.bundle(
             args = [
                 "--platform=fuchsia",
             ],
-            # TODO(crbug.com/40821367): Remove once it's stable.
-            ci_only = True,
         ),
         "views_perftests_fuchsia": targets.mixin(
             ci_only = True,
