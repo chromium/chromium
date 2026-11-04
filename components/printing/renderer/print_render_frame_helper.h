@@ -575,7 +575,7 @@ class PrintRenderFrameHelper
     size_t pages_rendered_count() const;
     MetafileSkia* metafile();
     ContentProxySet* typeface_content_info();
-    ContentProxySet* image_content_info();
+    ImageSerializationContext* image_content_info();
 
    private:
     enum class State {
@@ -600,7 +600,7 @@ class PrintRenderFrameHelper
     ContentProxySet typeface_content_info_;
 
     // The images encountered in the content during document serialization.
-    ContentProxySet image_content_info_;
+    ImageSerializationContext image_content_info_;
 
     // A document metafile is needed when not using the print compositor.
     std::unique_ptr<MetafileSkia> metafile_;

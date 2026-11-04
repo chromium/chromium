@@ -270,12 +270,12 @@ TEST(MetafileSkiaTest, SerializeUnencodedRasterImageAsPNG) {
 
     auto encoded_data = procs.fImageProc(image.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
-    EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
+    EXPECT_GT(encoded_data->size(), sizeof(uint64_t));
 
     base::SpanReader reader{gfx::SkDataToSpan(encoded_data)};
 
-    uint32_t img_id;
-    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    uint64_t img_id;
+    ASSERT_TRUE(reader.ReadU64NativeEndian(img_id));
     EXPECT_EQ(img_id, image->uniqueID());
     ASSERT_TRUE(images.contains(img_id));
 
@@ -314,12 +314,12 @@ TEST(MetafileSkiaTest, SkipEncodingAsPngWhenImageIsAlreadyEncoded) {
     SkSerialProcs procs = SerializationProcs(&subframes, nullptr, &images);
     auto encoded_data = procs.fImageProc(jpeg_img.get(), procs.fImageCtx);
     ASSERT_TRUE(encoded_data);
-    EXPECT_GT(encoded_data->size(), sizeof(uint32_t));
+    EXPECT_GT(encoded_data->size(), sizeof(uint64_t));
 
     base::SpanReader reader{gfx::SkDataToSpan(encoded_data)};
 
-    uint32_t img_id;
-    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    uint64_t img_id;
+    ASSERT_TRUE(reader.ReadU64NativeEndian(img_id));
     EXPECT_EQ(img_id, jpeg_img->uniqueID());
     ASSERT_TRUE(images.contains(img_id));
 
@@ -352,12 +352,12 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
 
   auto encoded_data1 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data1);
-  EXPECT_GT(encoded_data1->size(), sizeof(uint32_t));
+  EXPECT_GT(encoded_data1->size(), sizeof(uint64_t));
 
   {
     base::SpanReader reader{gfx::SkDataToSpan(encoded_data1)};
-    uint32_t img_id;
-    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    uint64_t img_id;
+    ASSERT_TRUE(reader.ReadU64NativeEndian(img_id));
     EXPECT_EQ(img_id, unencoded_img->uniqueID());
     ASSERT_TRUE(images.contains(img_id));
 
@@ -371,13 +371,13 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
   // Call the serialization proc on the image for the second time.
   auto encoded_data2 = procs.fImageProc(unencoded_img.get(), procs.fImageCtx);
   ASSERT_TRUE(encoded_data2);
-  EXPECT_EQ(encoded_data2->size(), sizeof(uint32_t));
+  EXPECT_EQ(encoded_data2->size(), sizeof(uint64_t));
 
   {
     // The second serialization should only return image id.
     base::SpanReader reader{gfx::SkDataToSpan(encoded_data2)};
-    uint32_t img_id;
-    ASSERT_TRUE(reader.ReadU32NativeEndian(img_id));
+    uint64_t img_id;
+    ASSERT_TRUE(reader.ReadU64NativeEndian(img_id));
     EXPECT_EQ(img_id, unencoded_img->uniqueID());
     EXPECT_FALSE(reader.remaining());
   }

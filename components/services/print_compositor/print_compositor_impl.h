@@ -171,7 +171,7 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       base::flat_map<uint32_t, sk_sp<SkPicture>>;
   using TypefaceDeserializationContext =
       base::flat_map<uint32_t, sk_sp<SkTypeface>>;
-  using ImageDeserializationContext = base::flat_map<uint32_t, sk_sp<SkImage>>;
+  using ImageDeserializationContext = base::flat_map<uint64_t, sk_sp<SkImage>>;
 
   // Base structure to store a frame's content and its subframe
   // content information.

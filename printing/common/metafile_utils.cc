@@ -541,7 +541,7 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
 
   auto* context = reinterpret_cast<ImageSerializationContext*>(ctx);
 
-  uint32_t img_id = img->uniqueID();
+  uint64_t img_id = img->uniqueID();
   if (context->contains(img_id)) {
     return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(img_id));
   }
@@ -576,8 +576,8 @@ sk_sp<SkImage> DeserializeRasterImage(sk_sp<SkData> data,
 
   base::SpanReader reader{gfx::SkDataToSpan(data)};
 
-  uint32_t img_id;
-  if (!reader.ReadU32NativeEndian(img_id)) {
+  uint64_t img_id;
+  if (!reader.ReadU64NativeEndian(img_id)) {
     // If there is no room for id, there cannot be meaningful image data.
     return nullptr;
   }

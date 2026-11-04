@@ -31,7 +31,7 @@ using PictureDeserializationContext =
     base::flat_map<uint32_t, sk_sp<SkPicture>>;
 using TypefaceDeserializationContext =
     base::flat_map<uint32_t, sk_sp<SkTypeface>>;
-using ImageDeserializationContext = base::flat_map<uint32_t, sk_sp<SkImage>>;
+using ImageDeserializationContext = base::flat_map<uint64_t, sk_sp<SkImage>>;
 
 // Stores the mapping between content's unique id and its corresponding frame
 // proxy token.
@@ -41,7 +41,7 @@ using PictureSerializationContext = ContentToProxyTokenMap;
 using TypefaceSerializationContext = ContentProxySet;
 
 // Stores the set of serialized image ids used by the content.
-using ImageSerializationContext = ContentProxySet;
+using ImageSerializationContext = base::flat_set<uint64_t>;
 
 sk_sp<SkDocument> MakePdfDocument(
     std::string_view creator,

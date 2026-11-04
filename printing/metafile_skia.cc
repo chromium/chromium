@@ -81,7 +81,7 @@ struct MetafileSkiaData {
   std::map<uint32_t, sk_sp<SkPicture>> subframe_pics;
   int document_cookie = 0;
   raw_ptr<ContentProxySet> typeface_content_info = nullptr;
-  raw_ptr<ContentProxySet> image_content_info = nullptr;
+  raw_ptr<ImageSerializationContext> image_content_info = nullptr;
 
   // The scale factor is used because Blink occasionally calls
   // PaintCanvas::getTotalMatrix() even though the total matrix is not as
@@ -116,7 +116,8 @@ void MetafileSkia::UtilizeTypefaceContext(
   data_->typeface_content_info = typeface_content_info;
 }
 
-void MetafileSkia::UtilizeImageContext(ContentProxySet* image_content_info) {
+void MetafileSkia::UtilizeImageContext(
+    ImageSerializationContext* image_content_info) {
   data_->image_content_info = image_content_info;
 }
 
