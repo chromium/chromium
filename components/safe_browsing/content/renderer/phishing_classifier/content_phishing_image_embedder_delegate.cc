@@ -136,6 +136,8 @@ void ContentPhishingImageEmbedderDelegate::MaybeStartImageEmbedding(
 
   GURL stripped_last_load_url(StripRef(last_finished_load_url_));
 
+  // TODO(crbug.com/579072786): Check only the host/origin instead of the full
+  // URL path so same-document navigations do not block image embedding.
   if (last_url_received_from_browser_ != stripped_last_load_url) {
     RecordEvent(
         SBPhishingImageEmbedderEvent::kUrlShouldNotBeUsedForImageEmbedding);

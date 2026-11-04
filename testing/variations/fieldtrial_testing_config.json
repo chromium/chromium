@@ -4874,6 +4874,28 @@
             ]
         }
     ],
+    "ClientSideDetectionSecondForceRequestWithDelay": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "RequestDelayMs": "2000"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionSecondForceRequestWithDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionServerModelForScamDetectionDesktop": [
         {
             "platforms": [

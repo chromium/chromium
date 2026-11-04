@@ -8,7 +8,9 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -44,9 +46,12 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -146,6 +151,15 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
     request_callback_ = closure;
   }
 
+  bool IsPrivateIPAddress(const net::IPAddress& address) const override {
+    return !ignore_private_ip_for_testing_ &&
+           ClientSideDetectionService::IsPrivateIPAddress(address);
+  }
+
+  void set_ignore_private_ip_for_testing(bool ignore) {
+    ignore_private_ip_for_testing_ = ignore;
+  }
+
   base::WeakPtr<ClientSideDetectionService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -158,6 +172,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   std::string client_side_model_;
   base::File visual_tflite_model_;
   base::RepeatingClosure request_callback_;
+  bool ignore_private_ip_for_testing_ = false;
   base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
 };
 
@@ -2143,6 +2158,84 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostGeminiAntiscamProtectionTest,
       "SafeBrowsing.GeminiAntiscamProtection.IsHistoryServiceResultValid",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
+}
+
+class ClientSideDetectionHostSecondForceRequestBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ClientSideDetectionHostSecondForceRequestBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kClientSideDetectionSecondForceRequestWithDelay,
+          {{"RequestDelayMs", "1000"}}},
+         {kClientSideDetectionTierSystem, {}}},
+        {kSkipImageClassificationScoringForNonPageLoadTriggers,
+         kClientSideDetectionKillswitch});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ClientSideDetectionHostSecondForceRequestBrowserTest,
+    SameDocumentNavigationSkipsSecondForceRequestAndDoesNotBlockUserReport) {
+  SetSafeBrowsingState(browser()->GetProfile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  const GURL initial_url =
+      embedded_test_server()->GetURL("spa.test", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(set_up_client_side_model());
+  fake_csd_service.set_ignore_private_ip_for_testing(true);
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(web_contents);
+  csd_host->set_client_side_detection_service_for_testing(
+      fake_csd_service.GetWeakPtr());
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop first_ping_loop;
+  fake_csd_service.SetRequestCallback(first_ping_loop.QuitClosure());
+  csd_host->MaybeStartPreClassification(ClientSideDetectionType::FORCE_REQUEST);
+  first_ping_loop.Run();
+
+  fake_csd_service.SetRequestCallback(base::DoNothing());
+  std::move(fake_csd_service.saved_callback())
+      .Run(initial_url, /*is_phishing=*/false, net::HTTP_OK,
+           IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "history.pushState({}, '', '/route2');"));
+  nav_observer.Wait();
+
+  base::RunLoop delay_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(1500));
+  delay_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ForceRequest.DelayedPingEvent",
+      DelayedForceRequestPingEvent::kSkippedUrlChanged, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+
+  csd_host->ReportUnsafeSite(SkBitmap(), base::DoNothing());
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.BlockingRequestType.UserReport", 0);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.UserReport",
+      ClientSideDetectionEvent::kTriggerStartsPreClassification, 1);
 }
 
 }  // namespace safe_browsing

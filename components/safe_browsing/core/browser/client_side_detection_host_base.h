@@ -20,6 +20,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -658,6 +659,8 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // cancelled and the cached raw pointers dropped (crbug.com/561910278).
   void OnScorerChanged();
 
+  void TriggerSecondForceRequest();
+
   // MaybeTriggerCreditCardFormPing is a helper that determines whether
   // a credit card form event should trigger a CSD ping. It takes
   // an optional field_id to specify whether it is an interaction
@@ -746,6 +749,19 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   bool is_classifying_ = false;
   ClientSideDetectionType last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
+
+  // Timer used to delay the second FORCE_REQUEST pre-classification when
+  // `kClientSideDetectionSecondForceRequestWithDelay` is enabled.
+  base::OneShotTimer second_force_request_timer_;
+
+  // True once the delayed second FORCE_REQUEST has been triggered on the
+  // current navigation. Reset in `CancelPendingRequests()`.
+  bool has_triggered_second_force_request_ = false;
+
+  // URL of the first FORCE_REQUEST ping. Reset in `CancelPendingRequests()`.
+  // TODO(crbug.com/579072786): Remove once the renderer allows classification
+  // after same-document URL changes.
+  GURL second_force_request_url_;
 
   // Records the start time of when image embedding started.
   base::TimeTicks image_embedding_start_time_;
