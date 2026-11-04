@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -79,11 +80,17 @@ TEST_F(OrganizerPanelControllerTest, Initial) {
 }
 
 TEST_F(OrganizerPanelControllerTest, OrganizerPanelEnabled) {
+  base::UserActionTester user_action_tester;
+
   controller()->SetOrganizerVisible(true);
   EXPECT_TRUE(controller()->IsOrganizerPanelVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Open"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("OrganizerPanel.Close"));
 
   controller()->SetOrganizerVisible(false);
   EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Open"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("OrganizerPanel.Close"));
 }
 
 TEST_F(OrganizerPanelControllerTest, Subscription) {

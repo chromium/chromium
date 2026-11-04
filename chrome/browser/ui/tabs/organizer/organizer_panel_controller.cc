@@ -9,6 +9,8 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/actions_util.h"
@@ -237,6 +239,8 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
   }
 
   is_visible_ = visible;
+  base::RecordAction(base::UserMetricsAction(
+      is_visible_ ? "OrganizerPanel.Open" : "OrganizerPanel.Close"));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!is_visible_) {
     active_extension_id_.reset();
