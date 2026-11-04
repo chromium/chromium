@@ -26,7 +26,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
@@ -162,15 +161,14 @@ SystemToastView::SystemToastView(const std::u16string& text,
                     : has_text_button ? kToastWithTextButtonInteriorMargin
                                       : kToastInteriorMargin);
 
-  const int rounded_corner_radius = GetPreferredSize().height() / 2;
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(rounded_corner_radius));
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      rounded_corner_radius,
-      views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  const gfx::RoundedCornersF rounded_corners(GetPreferredSize().height() /
+                                             2.0f);
+  layer()->SetRoundedCornerRadius(rounded_corners);
 
-  shadow_ = SystemDecoration::CreateForView(
-      this, SystemDecoration::ShadowType::kElevation4);
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(rounded_corner_radius));
+  decoration_ = SystemDecoration::CreateForView(
+      this, SystemDecoration::ShadowType::kElevation4,
+      SystemDecoration::HighlightBorderMode::kHighlightBorder);
+  decoration_->SetRoundedCorners(rounded_corners);
 
   SetProperty(views::kElementIdentifierKey, kSystemToastViewElementId);
 }

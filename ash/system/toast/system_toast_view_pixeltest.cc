@@ -83,7 +83,7 @@ TEST_P(SystemToastViewPixelTest, TextOnly) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 3,
       GetContentsView()));
 }
 
@@ -97,7 +97,7 @@ TEST_P(SystemToastViewPixelTest, WithLeadingIcon) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 3,
       GetContentsView()));
 }
 
@@ -108,7 +108,7 @@ TEST_P(SystemToastViewPixelTest, WithTextButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetContentsView()));
 }
 
@@ -119,7 +119,7 @@ TEST_P(SystemToastViewPixelTest, WithIconButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetContentsView()));
 }
 
@@ -133,7 +133,7 @@ TEST_P(SystemToastViewPixelTest, WithLeadingIconAndTextButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetContentsView()));
 }
 
@@ -143,7 +143,7 @@ TEST_P(SystemToastViewPixelTest, Multiline_TextOnly) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 3,
       GetContentsView()));
 }
 
@@ -157,7 +157,7 @@ TEST_P(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 3,
       GetContentsView()));
 }
 
@@ -168,7 +168,7 @@ TEST_P(SystemToastViewPixelTest, Multiline_WithTextButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetContentsView()));
 }
 
@@ -182,7 +182,7 @@ TEST_P(SystemToastViewPixelTest, Multiline_WithLeadingIconAndTextButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("screenshot"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 2,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 3,
       GetContentsView()));
 }
 

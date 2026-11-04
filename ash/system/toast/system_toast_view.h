@@ -65,7 +65,7 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
   // `ButtonType`.
   raw_ptr<views::Button> button_ = nullptr;
 
-  std::unique_ptr<SystemDecoration> shadow_;
+  std::unique_ptr<SystemDecoration> decoration_;
 };
 
 }  // namespace ash
