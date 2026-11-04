@@ -1185,8 +1185,12 @@ BrowsingHistoryService::GetSyncedDevicesForFiltering() const {
   base::flat_map<std::pair<std::string, bool>, std::vector<std::string>>
       deduplicated_devices;
 
-  for (const syncer::DeviceInfo* device_info : synced_devices) {
-    deduplicated_devices[{syncer::GetDeviceDisplayName(device_info),
+  std::vector<std::string> device_names =
+      syncer::GetDeviceDisplayNames(synced_devices);
+
+  for (size_t i = 0; i < synced_devices.size(); ++i) {
+    const syncer::DeviceInfo* device_info = synced_devices[i];
+    deduplicated_devices[{device_names[i],
                           device_info_tracker_->IsRecentLocalCacheGuid(
                               device_info->guid())}]
         .push_back(device_info->guid());

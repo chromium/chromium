@@ -26,6 +26,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/fake_web_history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -1559,6 +1560,61 @@ TEST_F(BrowsingHistoryServiceTest,
   ASSERT_EQ(1u, result.first.size());
   EXPECT_EQ(kBoth, result.first[0].entry_type);
   EXPECT_EQ(1, result.first[0].visit_count);
+}
+
+TEST_F(BrowsingHistoryServiceTest,
+       SyncedDevicesDisambiguatedByChannelWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kWebHistoryUseNewApi, kBrowsingHistoryFilterByDevice,
+       syncer::kSyncDisambiguateDeviceNamesWithChannel},
+      {});
+
+  EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
+      .WillRepeatedly(testing::Return(
+          syncer::UserSelectableTypeSet{syncer::UserSelectableType::kHistory}));
+
+  device_info_tracker()->Add(syncer::TestDeviceInfoBuilder(
+                                 syncer::DeviceInfo::OsType::kAndroid)
+                                 .WithGuid("guid1")
+                                 .WithClientName("")
+                                 .WithManufacturerName("Google")
+                                 .WithModelName("Pixel 6")
+                                 .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
+                                 .Build());
+
+  // Assert baseline state with a single device before adding a duplicate model
+  // on a non-stable channel, and capture its base display name.
+  std::vector<ClientGroup> initial_devices =
+      service()->GetSyncedDevicesForFiltering();
+  ASSERT_THAT(
+      initial_devices,
+      ElementsAre(AllOf(Field(&ClientGroup::is_local_device, false),
+                        Field(&ClientGroup::client_ids, ElementsAre("guid1")))));
+  const std::string base_name = initial_devices[0].name;
+  ASSERT_FALSE(base_name.empty());
+
+  device_info_tracker()->Add(syncer::TestDeviceInfoBuilder(
+                                 syncer::DeviceInfo::OsType::kAndroid)
+                                 .WithGuid("guid2")
+                                 .WithClientName("")
+                                 .WithManufacturerName("Google")
+                                 .WithModelName("Pixel 6")
+                                 .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
+                                 .Build());
+
+  // With syncer::GetDeviceDisplayNames(), duplicate base names on different
+  // channels receive release channel disambiguation labels and are un-grouped
+  // into separate client groups rather than merged under `base_name`.
+  EXPECT_THAT(
+      service()->GetSyncedDevicesForFiltering(),
+      UnorderedElementsAre(
+          AllOf(Field(&ClientGroup::name, base_name),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid1"))),
+          AllOf(Field(&ClientGroup::name, base_name + " (Canary)"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid2")))));
 }
 
 }  // namespace
