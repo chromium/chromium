@@ -82,6 +82,11 @@ _DISABLED_TESTS = frozenset(
     'system_health.memory_desktop/load:tools:gmail:2019',
     # crbug.com/509294498, crashing on Linux dbg
     'system_health.memory_desktop/load_accessibility:shopping:amazon:2018',
+    # crbug.com/524833517 - flaky on x86 Android emulators (timeouts, renderer
+    # crashes and memory dump failures).
+    'system_health.memory_mobile/browse:news:reddit:2019',
+    'system_health.memory_mobile/browse:social:twitter:2019',
+    'system_health.memory_mobile/browse:tools:maps:2019',
     # The following tests are disabled because they are disabled on the perf
     # waterfall (using tools/perf/expectations.config) on one platform or
     # another. They may run fine on the CQ, but it isn't worth the bot time to
