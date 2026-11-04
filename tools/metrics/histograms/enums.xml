@@ -7125,6 +7125,8 @@ shown properly on the user-facing crash UI.
   <int value="16" label="Chrome install service (WebAPK)"/>
 </enum>
 
+<!-- LINT.IfChange(LaunchMode) -->
+
 <enum name="LaunchMode">
   <int value="0" label="kNone">Unknown</int>
   <int value="1" label="kOther">Catch-all launch for Windows</int>
@@ -7218,7 +7220,13 @@ shown properly on the user-facing crash UI.
   <int value="30" label="kStartupForegroundLaunch">
     Launched automatically upon system startup
   </int>
+  <int value="31" label="kOmniboxEverywhere">
+    Omnibox Everywhere launched via the command line (e.g. from its taskbar pin
+    or Start Menu shortcut)
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/launch_mode_recorder.h:LaunchMode) -->
 
 <enum name="LaunchSource">
   <int value="0" label="Unknown"/>

@@ -19,6 +19,7 @@ class CommandLine;
 // "Chrome" is Chrome launched with neither of those switches.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(LaunchMode)
 enum class LaunchMode {
   kNone = 0,   // Don't record this launch.
   kOther = 1,  // Catch-all launch for Windows
@@ -75,8 +76,13 @@ enum class LaunchMode {
 
   // Windows-only, Chrome launched in foreground upon system booting up.
   kStartupForegroundLaunch = 30,
-  kMaxValue = kStartupForegroundLaunch,
+
+  // Omnibox Everywhere launched via the command line (e.g. from its taskbar
+  // pin or Start Menu shortcut).
+  kOmniboxEverywhere = 31,
+  kMaxValue = kOmniboxEverywhere,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:LaunchMode)
 
 // Computes and records the launch mode based on `command_line` and process
 // state. The launch mode may be recorded asynchronously.

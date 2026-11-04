@@ -2815,6 +2815,10 @@ chromium-metrics-reviews@google.com.
     --source-shortcut-location are categorized into kShortcutDesktop,
     kShortcutTaskbar, or kShortcutStartMenu (or their WebApp counterparts),
     falling back to kWithAppId if unadorned.
+
+    Omnibox Everywhere launches via the command line (e.g. from its taskbar pin
+    or Start Menu shortcut) are recorded as kOmniboxEverywhere rather than as
+    browser launches.
   </summary>
 </histogram>
 
