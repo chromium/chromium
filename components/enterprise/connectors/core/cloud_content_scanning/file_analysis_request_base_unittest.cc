@@ -92,7 +92,7 @@ class FileAnalysisRequestBaseTest : public testing::Test {
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");
-    base::WriteFile(file_path, file_contents);
+    ASSERT_TRUE(base::WriteFile(file_path, file_contents));
 
     auto request = MakeRequest(file_path, file_path.BaseName(),
                                /*delay_opening_file*/ false);
@@ -247,46 +247,47 @@ class FileAnalysisRequestBaseHashInFinalInvariantTest
             enterprise_connectors::kContentHashInFileUploadFinalCall) {}
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/504414003): de-flake and re-enable.
-#define MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen \
-  DISABLED_LargeFileAlwaysHasHashWhenNotDelayOpen
-#else
-#define MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen \
-  LargeFileAlwaysHasHashWhenNotDelayOpen
-#endif
 TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
-       MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen) {
+       LargeFileAlwaysHasHashWhenNotDelayOpen) {
+  // Keep the threshold above `BinaryUploadService::kMaxUploadSizeBytes`
+  // (50 MB) in case there is interaction with the large file upload limit.
+  static_assert(51 * 1024 * 1024 > BinaryUploadService::kMaxUploadSizeBytes);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kEnableNewUploadSizeLimit, {{"max_file_size_mb", "250"}});
+      kEnableNewUploadSizeLimit, {{"max_file_size_mb", "51"}});
 
   enterprise_connectors::ScanRequestUploadResult result;
   BinaryUploadRequest::Data data;
 
-  std::string large_file_contents(250 * 1024 * 1024 + 1, 'a');
-  GetResultsForFileContents(large_file_contents, &result, &data);
-  EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
-  EXPECT_EQ(data.size, large_file_contents.size());
-  EXPECT_TRUE(data.contents.empty());
-  // python3 -c "print('a' * (250 * 1024 * 1024 + 1), end='')" | sha256sum | tr
-  // '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "1EAD1363BDB75A874D9730E97661672C5CDBAA2F3EBCE01611E06C835D12FE20");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type))
-      << data.mime_type << " is not an expected mimetype";
+  {
+    std::string large_file_contents(51 * 1024 * 1024 + 1, 'a');
+    GetResultsForFileContents(large_file_contents, &result, &data);
+    EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+    EXPECT_EQ(data.size, large_file_contents.size());
+    EXPECT_TRUE(data.contents.empty());
+    // python3 -c "print('a' * (51 * 1024 * 1024 + 1), end='')" |
+    // sha256sum | tr '[:lower:]' '[:upper:]'
+    EXPECT_EQ(
+        data.hash,
+        "432C15C6E49926D1385CADC79DDAC2FDA6FD8C0FFA0F7F7A042F616CDB519CDA");
+    EXPECT_TRUE(IsDocMimeType(data.mime_type))
+        << data.mime_type << " is not an expected mimetype";
+  }
 
-  std::string very_large_file_contents(500 * 1024 * 1024, 'a');
-  GetResultsForFileContents(very_large_file_contents, &result, &data);
-  EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
-  EXPECT_EQ(data.size, very_large_file_contents.size());
-  EXPECT_TRUE(data.contents.empty());
-  // python3 -c "print('a' * (500 * 1024 * 1024), end='')" | sha256sum | tr
-  // '[:lower:]' '[:upper:]'
-  EXPECT_EQ(data.hash,
-            "D2FB707E70A804CF2EA770C9229295689831B4C88879C62BDB966E77E7336F18");
-  EXPECT_TRUE(IsDocMimeType(data.mime_type))
-      << data.mime_type << " is not an expected mimetype";
+  {
+    std::string very_large_file_contents(102 * 1024 * 1024, 'a');
+    GetResultsForFileContents(very_large_file_contents, &result, &data);
+    EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+    EXPECT_EQ(data.size, very_large_file_contents.size());
+    EXPECT_TRUE(data.contents.empty());
+    // python3 -c "print('a' * (102 * 1024 * 1024), end='')" | sha256sum | tr
+    // '[:lower:]' '[:upper:]'
+    EXPECT_EQ(
+        data.hash,
+        "756874F5544AC97D0002D88343687716BAED72FC6C8170D4DBA1D52E95B510FC");
+    EXPECT_TRUE(IsDocMimeType(data.mime_type))
+        << data.mime_type << " is not an expected mimetype";
+  }
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
