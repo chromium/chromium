@@ -337,8 +337,6 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      ::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
-  registry->RegisterBooleanPref(
       prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
   registry->RegisterBooleanPref(
       prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites, false);

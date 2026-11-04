@@ -254,6 +254,10 @@ inline constexpr char kWelcomeBackEligibleItems[] =
 inline constexpr char kHistorySearchSettingState[] =
     "optimization_guide.history_search_setting_state";
 
+// Deprecated 11/2026.
+inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
+    "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -933,6 +937,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 10/2026.
   registry->RegisterIntegerPref(kCustomLinksAiModeTileIndex, 0);
   registry->RegisterIntegerPref(kHistorySearchSettingState, 0);
+
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(
+      kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1030,6 +1038,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   }
   prefs->ClearPref(kCustomLinksAiModeTileIndex);
   prefs->ClearPref(kHistorySearchSettingState);
+
+  // Added 11/2026.
+  prefs->ClearPref(kBundledSettingsCheckedMigrateUserToEnhancedBundle);
 }
 
 void MigrateObsoleteUserDefault() {

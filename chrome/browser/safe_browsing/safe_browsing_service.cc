@@ -24,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,9 +48,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/features.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -180,81 +176,6 @@ void TriggerSecuritySettingsBundleToastIfNeeded(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_MAC)
-}
-
-// Helper function to determine if any Javascript Optimizer settings are
-// managed by a policy.
-// TODO(crbug.com/491533053): Find a better place to define this helper
-// function.
-bool IsJavascriptOptimizerPolicyManaged(const PrefService& prefs) {
-  return prefs.IsManagedPreference(
-             prefs::kManagedDefaultJavaScriptOptimizerSetting) ||
-         prefs.IsManagedPreference(
-             prefs::kManagedJavaScriptOptimizerAllowedForSites) ||
-         prefs.IsManagedPreference(
-             prefs::kManagedJavaScriptOptimizerBlockedForSites);
-}
-
-// Migrate enhanced-safe-browsing user to enhanced-security bundle if needed.
-void MigrateUserToEnhancedSecurityBundleIfNeeded(
-    base::WeakPtr<Profile> profile) {
-  if (!profile) {
-    return;
-  }
-
-  // Do not perform migration if the any bundled settings are managed by a
-  // policy.
-  PrefService* prefs = profile->GetPrefs();
-
-  if (IsSafeBrowsingPolicyManaged(*prefs) ||
-      IsJavascriptOptimizerPolicyManaged(*prefs)) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(kMigrateEnhancedSbUserToEnhancedBundle)) {
-    return;
-  }
-
-  // If we have attempted to migrate the user previously, don't try again. This
-  // is a one-time migration. That's why this check needs to happen before
-  // attempting the checks below.
-  if (prefs->GetBoolean(
-          ::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle)) {
-    return;
-  }
-  prefs->SetBoolean(::prefs::kBundledSettingsCheckedMigrateUserToEnhancedBundle,
-                    true);
-
-  // Don't migrate if the user is already using the enhanced bundle.
-  if (GetSecurityBundleSetting(*prefs) ==
-      SecuritySettingsBundleSetting::ENHANCED) {
-    return;
-  }
-
-  // Only migrate enhanced safe-browsing users.
-  if (GetSafeBrowsingState(*prefs) != SafeBrowsingState::ENHANCED_PROTECTION) {
-    return;
-  }
-
-  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
-
-  // TODO(crbug.com/491533053): Fix the circular dependency for generated
-  // preferences.
-  if (site_protection::CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(
-          profile.get()) &&
-      site_protection::ComputeDefaultJavascriptOptimizerSetting(
-          profile.get()) ==
-          content_settings::JavascriptOptimizerSetting::kAllowed) {
-    HostContentSettingsMapFactory::GetForProfile(profile.get())
-        ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                   CONTENT_SETTING_ALLOW);
-    prefs->SetBoolean(prefs::kJavascriptOptimizerBlockedForUnfamiliarSites,
-                      true);
-  }
-
-  prefs->SetInteger(
-      prefs::kSecuritySettingsBundleMigrationToastState,
-      static_cast<int>(SecuritySettingsBundleToastState::kPending));
 }
 
 // Performs a one-time cleanup for the legacy,
@@ -641,18 +562,7 @@ void SafeBrowsingServiceImpl::OnProfileAdded(Profile* profile) {
 
   CreateServicesForProfile(profile);
 
-  // Post task to isolate enhanced-security-bundle migration from other code
-  // which reads settings controlled by the bundle on startup. Migration should
-  // be viewed similarly to user changing individual settings in the bundle via
-  // chrome://settings.
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(&MigrateUserToEnhancedSecurityBundleIfNeeded,
-                                profile->GetWeakPtr()));
-
   // If the user was migrated to the enhanced security bundle, show the toast.
-  // This is separate from the above task in case the browser was killed after
-  // the migration occurred.
   content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
       ->PostTask(FROM_HERE,
                  base::BindOnce(&TriggerSecuritySettingsBundleToastIfNeeded,

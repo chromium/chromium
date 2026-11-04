@@ -13373,12 +13373,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kEnforceIncognitoIsolation)},
 #endif
 
-    {"migrate-enhanced-sb-user-to-enhanced-bundle",
-     flag_descriptions::kMigrateEnhancedSbUserToEnhancedBundleName,
-     flag_descriptions::kMigrateEnhancedSbUserToEnhancedBundleDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(safe_browsing::kMigrateEnhancedSbUserToEnhancedBundle)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-android-side-panel-logs",
      flag_descriptions::kEnableAndroidSidePanelLogsName,

@@ -417,10 +417,6 @@ extern const base::FeatureParam<std::string>
 BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
 #endif
 
-// Enables one-time migration of enhanced-safe-browsing users to the enhanced
-// bundle.
-BASE_DECLARE_FEATURE(kMigrateEnhancedSbUserToEnhancedBundle);
-
 // When enabled, performs a one-time migration that selects the JavaScript
 // optimizer content setting that automatically blocks the browser from using
 // JavaScript optimizers on unfamiliar sites. Only profiles that have Safe

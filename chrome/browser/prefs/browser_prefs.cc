@@ -1209,6 +1209,10 @@ inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
 inline constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
     "toolbar.tabs_from_other_devices_auto_pinned_migration";
 
+// Deprecated 11/2026.
+inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
+    "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1741,6 +1745,10 @@ void RegisterProfilePrefsForMigration(
                                 false);
   registry->RegisterBooleanPref(kShowArcSettingsOnSessionStart, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(
+      kBundledSettingsCheckedMigrateUserToEnhancedBundle, false);
 }
 
 }  // namespace
@@ -3215,6 +3223,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kFingerprintUnlockFeatureNotificationShown);
   profile_prefs->ClearPref(kShowArcSettingsOnSessionStart);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 11/2026.
+  profile_prefs->ClearPref(kBundledSettingsCheckedMigrateUserToEnhancedBundle);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

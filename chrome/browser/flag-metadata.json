@@ -7070,11 +7070,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "migrate-enhanced-sb-user-to-enhanced-bundle",
-    "owners": [ "jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
     "expiry_milestone": 160
