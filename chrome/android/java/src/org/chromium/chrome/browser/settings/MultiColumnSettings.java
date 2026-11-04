@@ -785,10 +785,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     }
 
     /**
-     * Updates descendant focusability and accessibility for the header pane. When the detail pane
-     * is opened in single-column mode, the header pane is hidden behind the detail pane, so its
-     * descendants must be blocked from keyboard focus and hidden from accessibility to prevent
-     * keyboard tab navigation and screen readers from traversing obscured header items.
+     * Updates visibility, descendant focusability and accessibility for the header pane. When the
+     * detail pane is opened in single-column mode, the header pane is hidden behind the detail
+     * pane, so it is made invisible and its descendants are blocked from keyboard focus and hidden
+     * from accessibility to prevent keyboard tab navigation and screen readers from traversing
+     * obscured header items.
      */
     void updateHeaderPaneFocusability() {
         // May be called before the view is inflated.
@@ -801,10 +802,15 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         ViewGroup headerGroup = (ViewGroup) headerView;
         boolean isHeaderObscured = !isTwoColumn() && isLayoutOpen();
         if (isHeaderObscured) {
+            // SlidingPaneLayout only hides covered panes when the detail pane has an opaque
+            // background, which settings_preference_detail_pane does not have. A visible header
+            // stays reachable by TalkBack even with NO_HIDE_DESCENDANTS set.
+            headerGroup.setVisibility(View.INVISIBLE);
             headerGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             headerGroup.setImportantForAccessibility(
                     View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         } else {
+            headerGroup.setVisibility(View.VISIBLE);
             headerGroup.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
             headerGroup.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         }
@@ -947,6 +953,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         @Override
         public void onPanelSlide(View panel, float slideOffset) {
+            if (mState == SlideState.OPENED && slideOffset > 0f) {
+                // The header is hidden while the detail pane fully covers it. Show it once the
+                // detail pane starts sliding away from the fully open state so it is drawn during
+                // the drag.
+                View headerView = getSlidingPaneLayout().findViewById(R.id.preferences_header);
+                if (headerView != null) headerView.setVisibility(View.VISIBLE);
+            }
             @SlideState int prevState = mState;
             mState = mOffset > slideOffset ? SlideState.OPENING : SlideState.CLOSING;
             mOffset = slideOffset;

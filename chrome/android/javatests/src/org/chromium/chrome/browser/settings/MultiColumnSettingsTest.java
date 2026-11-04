@@ -670,8 +670,10 @@ public class MultiColumnSettingsTest {
                             settings.requireView().findViewById(R.id.preferences_header);
                     assertNotNull(headerGroup);
 
-                    // In single-column mode with detail pane open, header descendants are blocked.
+                    // In single-column mode with detail pane open, header is hidden and its
+                    // descendants are blocked.
                     settings.showDetailFragment(new TestFragment(), false, null);
+                    assertEquals(View.INVISIBLE, headerGroup.getVisibility());
                     assertEquals(
                             ViewGroup.FOCUS_BLOCK_DESCENDANTS,
                             headerGroup.getDescendantFocusability());
@@ -679,9 +681,10 @@ public class MultiColumnSettingsTest {
                             View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
                             headerGroup.getImportantForAccessibility());
 
-                    // In two-column mode, header descendants are allowed.
+                    // In two-column mode, header is visible and its descendants are allowed.
                     settings.setIsTwoColumnForTesting(TriState.TRUE);
                     settings.updateHeaderPaneFocusability();
+                    assertEquals(View.VISIBLE, headerGroup.getVisibility());
                     assertEquals(
                             ViewGroup.FOCUS_AFTER_DESCENDANTS,
                             headerGroup.getDescendantFocusability());
@@ -778,6 +781,16 @@ public class MultiColumnSettingsTest {
                 () -> settingsHolder[0].getTitles().size() == 1,
                 "Detail fragment title should be tracked");
 
+        // The header is hidden while the detail pane covers it.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        settingsHolder[0]
+                                        .requireView()
+                                        .findViewById(R.id.preferences_header)
+                                        .getVisibility()
+                                == View.INVISIBLE,
+                "Header should be hidden behind the open detail pane");
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
@@ -794,6 +807,16 @@ public class MultiColumnSettingsTest {
         CriteriaHelper.pollUiThread(
                 () -> !settingsHolder[0].getSlidingPaneLayout().isOpen(),
                 "SlidingPaneLayout closes when detail fragment is popped in single-column mode");
+
+        // The header is visible again once the detail pane closes.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        settingsHolder[0]
+                                        .requireView()
+                                        .findViewById(R.id.preferences_header)
+                                        .getVisibility()
+                                == View.VISIBLE,
+                "Header should be visible after the detail pane closes");
 
         // The detail pane is empty, so no title may remain. Stale titles used to crash
         // MultiColumnTitleUpdater.initTitlesList(). See https://crbug.com/559531378
