@@ -40,7 +40,6 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/tabs:public",
       "//content/public/browser",
       "//content/test:test_support",

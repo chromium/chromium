@@ -1707,7 +1707,7 @@ static_library("test_support") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ui:browser_init_state",
-      "//chrome/test:test_support_ui",
+      "//chrome/test/base:ui_test_utils",
     ]
   }
 
@@ -1769,6 +1769,7 @@ static_library("test_support") {
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/web_applications",
       "//components/crx_file",
       "//components/safe_browsing/core/browser/db:sb_test_util",
       "//content/public/browser",
@@ -3322,7 +3323,6 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/infobars",
-      "//chrome/test:test_support_ui",
       "//chrome/test/base:browser_test_waiters",
       "//components/feed:feature_list",
       "//components/infobars/content",

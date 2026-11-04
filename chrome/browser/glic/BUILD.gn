@@ -1249,7 +1249,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/views/tabs/glic",
       "//chrome/common:constants",
       "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//components/enterprise/common/proto:dlp_policy_event_proto",
       "//components/enterprise/data_controls/content/browser",
       "//components/enterprise/data_controls/core/browser:test_support",
