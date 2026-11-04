@@ -3375,6 +3375,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter source
 [Worker]     getter streamErrorCode
 [Worker]     method constructor
+[Worker] interface WebTransportReceiveStream : ReadableStream
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method getStats
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter caches

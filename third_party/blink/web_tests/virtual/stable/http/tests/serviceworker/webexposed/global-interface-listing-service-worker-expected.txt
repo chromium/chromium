@@ -3474,6 +3474,10 @@ interface WebTransportError : DOMException
     getter source
     getter streamErrorCode
     method constructor
+interface WebTransportReceiveStream : ReadableStream
+    attribute @@toStringTag
+    method constructor
+    method getStats
 interface WindowClient : Client
     attribute @@toStringTag
     getter focused

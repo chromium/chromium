@@ -7820,8 +7820,7 @@
     },
     {
       name: "WebTransportReceiveStream",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "WebTransportReliability",
