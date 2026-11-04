@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
@@ -17,6 +19,8 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -1165,6 +1169,76 @@ TEST_P(FrameThrottlingTest, ThrottleSubtreeAtomically) {
       frame_element->contentDocument()->View()->CanThrottleRendering());
   EXPECT_FALSE(
       child_frame_element->contentDocument()->View()->CanThrottleRendering());
+}
+
+TEST_P(FrameThrottlingTest, CompositorAnimationStopsWhenFrameIsThrottled) {
+  const bool was_threaded_animation_enabled =
+      content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
+  base::ScopedClosureRunner restore_threaded_animation_setting(base::BindOnce(
+      [](bool enabled) {
+        content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(
+            enabled);
+      },
+      was_threaded_animation_enabled));
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+  SimRequest child_frame_resource("https://example.com/child-iframe.html",
+                                  "text/html");
+
+  LoadURL("https://example.com/");
+  main_resource.Complete("<iframe id=frame sandbox src=iframe.html></iframe>");
+  frame_resource.Complete(
+      "<iframe id=child-frame sandbox src=child-iframe.html></iframe>");
+  child_frame_resource.Complete(R"HTML(
+    <style>
+      @keyframes animation {
+        from { transform: translateX(0); }
+        to { transform: translateX(100px); }
+      }
+      #target {
+        width: 100px;
+        height: 100px;
+        animation: animation 30s;
+      }
+    </style>
+    <div id=target></div>
+  )HTML");
+  CompositeFrame();
+
+  auto* frame_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("frame")));
+  auto* child_frame_element =
+      To<HTMLIFrameElement>(frame_element->contentDocument()->getElementById(
+          AtomicString("child-frame")));
+  auto* child_document = child_frame_element->contentDocument();
+  auto* target = child_document->getElementById(AtomicString("target"));
+  auto* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  ASSERT_EQ(1u, element_animations->Animations().size());
+  Animation* animation = element_animations->Animations().begin()->key;
+  ASSERT_TRUE(animation->HasActiveAnimationsOnCompositor());
+
+  // Throttling the outer frame skips animation updates in its nested document,
+  // so its compositor animation must be cancelled at the transition.
+  frame_element->setAttribute(kStyleAttr,
+                              AtomicString("transform: translateY(480px)"));
+  CompositeFrame();
+  ASSERT_TRUE(frame_element->contentDocument()->View()->CanThrottleRendering());
+  ASSERT_TRUE(child_document->View()->CanThrottleRendering());
+  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
+
+  // The logical animation remains active and restarts on the compositor when
+  // the subtree becomes visible again. The first update unthrottles the frame,
+  // the second actually update layout and paint properties etc.
+  frame_element->setAttribute(kStyleAttr,
+                              AtomicString("transform: translateY(0px)"));
+  CompositeFrame();
+  CompositeFrame();
+  ASSERT_FALSE(
+      frame_element->contentDocument()->View()->CanThrottleRendering());
+  ASSERT_FALSE(child_document->View()->CanThrottleRendering());
+  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
 }
 
 TEST_P(FrameThrottlingTest, SkipPaintingLayersInThrottledFrames) {

@@ -101,6 +101,9 @@ class CORE_EXPORT DocumentAnimations final
 
   void MarkAnimationsCompositorPending();
 
+  // Stops active compositor animations and marks them for a future restart.
+  void CancelCompositorAnimationsAndMarkForRestart();
+
   HeapVector<Member<Animation>> getAnimations(const TreeScope&);
   void PrepareAnimationsForSVGImageReset(
       SVGImageAnimationsToReset& animations_to_reset);

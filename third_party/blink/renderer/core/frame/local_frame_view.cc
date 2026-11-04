@@ -5052,13 +5052,20 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // Ensure we'll recompute viewport intersection for the frame subtree during
     // the scheduled visual update.
     SetIntersectionObservationState(kRequired);
-  } else if (GetFrame().IsLocalRoot()) {
-    DCHECK(!IsUpdatingLifecycle());
-    ForceThrottlingScope force_throttling(*this);
-    // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
-    // failures are fixed.
-    BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
-    RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
+  } else {
+    if (Document* document = frame_->GetDocument()) {
+      document->GetDocumentAnimations()
+          .CancelCompositorAnimationsAndMarkForRestart();
+    }
+
+    if (GetFrame().IsLocalRoot()) {
+      DCHECK(!IsUpdatingLifecycle());
+      ForceThrottlingScope force_throttling(*this);
+      // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once
+      // failures are fixed.
+      BlinkLifecycleScopeWillBeScriptForbidden forbid_script;
+      RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
+    }
   }
 
 #if DCHECK_IS_ON()

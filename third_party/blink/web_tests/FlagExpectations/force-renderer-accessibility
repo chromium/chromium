@@ -70,7 +70,6 @@ crbug.com/485661974 external/wpt/client-hints/critical-ch/request-count.multiple
 crbug.com/485661974 external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure Pass ]
 crbug.com/485661974 external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure Pass ]
 crbug.com/480332818 external/wpt/css/css-image-animation/image-animation-img-running-to-normal.tentative.html [ Failure Pass ]
-crbug.com/485328296 external/wpt/css/css-position/crashtests/inline-containing-block-dynamic-change.html [ Failure Pass ]
 crbug.com/480249475 external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Failure Pass ]
 crbug.com/437902344 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass ]
 crbug.com/485657219 external/wpt/fetch/fetch-later/activate-after.https.window.html [ Failure Pass ]
