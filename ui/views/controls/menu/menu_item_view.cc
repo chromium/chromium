@@ -1102,8 +1102,14 @@ void MenuItemView::SetAlerted() {
 }
 
 bool MenuItemView::IsTraversableByKeyboard() const {
-  bool ignore_enabled =
-      ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kNativeAPIs);
+  const ui::AXMode mode = ui::AXPlatform::GetInstance().GetMode();
+  // Disabled items are traversable with assistive technology so they can be
+  // discovered. Titles (section headers) aren't actionable, so they require
+  // screen-reader-class AT (kScreenReader, which also covers magnifiers).
+  // kNativeAPIs alone is often set on Windows by tools that aren't AT.
+  const bool ignore_enabled = type_ == Type::kTitle
+                                  ? mode.has_mode(ui::AXMode::kScreenReader)
+                                  : mode.has_mode(ui::AXMode::kNativeAPIs);
   return GetVisible() && (ignore_enabled || GetEnabledInViewsSubtree());
 }
 

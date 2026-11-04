@@ -1261,6 +1261,89 @@ TEST_F(MenuControllerTest, InitialSelectedItem) {
   check_has_command(FindInitialSelectableMenuItemUp(menu_item()), 2);
 }
 
+// Tests that disabled titles (section headers) are only traversable by
+// keyboard when a screen reader is active, whereas other disabled items are
+// traversable whenever native accessibility APIs are in use.
+TEST_F(MenuControllerTest, DisabledTitleTraversableOnlyWithScreenReader) {
+  CreateMenu();
+  // The title is appended after item "Four".
+  MenuItemView* const title = menu_item()->AppendTitle(u"Title");
+  title->SetEnabled(false);
+  MenuItemView* const disabled_item =
+      menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  disabled_item->SetEnabled(false);
+
+  // Without assistive technology, neither is traversable.
+  EXPECT_FALSE(title->IsTraversableByKeyboard());
+  EXPECT_FALSE(disabled_item->IsTraversableByKeyboard());
+  EXPECT_EQ(4, FindInitialSelectableMenuItemUp(menu_item())->GetCommand());
+
+  {
+    // With native accessibility APIs but no screen reader (common on Windows),
+    // the disabled item is traversable but the title is not.
+    const ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+    EXPECT_FALSE(title->IsTraversableByKeyboard());
+    EXPECT_TRUE(disabled_item->IsTraversableByKeyboard());
+    EXPECT_EQ(4, FindInitialSelectableMenuItemUp(menu_item())->GetCommand());
+  }
+
+  {
+    // With a screen reader, both are traversable.
+    const ui::ScopedAXModeSetter ax_mode_setter(
+        ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kScreenReader));
+    EXPECT_TRUE(title->IsTraversableByKeyboard());
+    EXPECT_TRUE(disabled_item->IsTraversableByKeyboard());
+    EXPECT_EQ(title, FindInitialSelectableMenuItemUp(menu_item()));
+  }
+
+  {
+    // ChromeOS can set kScreenReader without kNativeAPIs. The title is
+    // traversable, while other disabled items still depend on kNativeAPIs.
+    const ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kScreenReader);
+    EXPECT_TRUE(title->IsTraversableByKeyboard());
+    EXPECT_FALSE(disabled_item->IsTraversableByKeyboard());
+  }
+}
+
+// Tests that accessibility indices of a disabled title match its keyboard
+// traversability, i.e. it is only counted when a screen reader is active.
+TEST_F(MenuControllerTest, AccessibilityDisabledTitleIndices) {
+  CreateMenu();
+  MenuItemView* const title = menu_item()->AppendTitle(u"Title");
+  title->SetEnabled(false);
+  const MenuItemView* const first_item =
+      menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  ui::AXNodeData data;
+
+  {
+    const ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+    OpenMenu(menu_item());
+
+    title->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_FALSE(data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+    data = ui::AXNodeData();
+    first_item->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(1, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+    EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  }
+
+  {
+    const ui::ScopedAXModeSetter ax_mode_setter(
+        ui::AXMode(ui::AXMode::kNativeAPIs | ui::AXMode::kScreenReader));
+    // Recompute the indices under the new mode.
+    MenuChildrenChanged(menu_item());
+
+    data = ui::AXNodeData();
+    title->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+    EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+    data = ui::AXNodeData();
+    first_item->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(1, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+    EXPECT_EQ(5, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+  }
+}
+
 // Verifies that the scroll arrow is shown when the menu content
 // does not fit within the available bounds.
 // (https://crbug.com/338585369)
