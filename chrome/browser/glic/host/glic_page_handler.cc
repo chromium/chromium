@@ -221,12 +221,20 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
   // synchronously by invocations in the same call stack as the show, which
   // would otherwise fail on the stale verdict and never see the retry. A page
   // that does not retry reasserts its failure in response to `IntentToShow()`.
-  host().SetClientLoadFailed(this, false);
+  host().ClearClientLoadFailed(this);
   page_->IntentToShow();
 }
 
-void GlicPageHandler::WaitForLoad(mojom::Page::WaitForLoadCallback callback) {
-  page_->WaitForLoad(std::move(callback));
+void GlicPageHandler::WaitForLoad(
+    base::OnceCallback<void(std::optional<ClientLoadErrorReason>)> callback) {
+  page_->WaitForLoad(base::BindOnce(
+      [](base::OnceCallback<void(std::optional<ClientLoadErrorReason>)>
+             callback,
+         std::optional<mojom::ClientLoadErrorReason> error_reason) {
+        std::move(callback).Run(
+            error_reason.transform(&ToClientLoadErrorReason));
+      },
+      std::move(callback)));
 }
 
 void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
@@ -395,8 +403,13 @@ void GlicPageHandler::NotifyClientLoadError(
   host().ClientLoadErrorOccurred(ToClientLoadErrorReason(reason));
 }
 
-void GlicPageHandler::OnClientLoadFailed(bool failed) {
-  host().SetClientLoadFailed(this, failed);
+void GlicPageHandler::OnClientLoadFailed(
+    std::optional<glic::mojom::ClientLoadErrorReason> error_reason) {
+  if (error_reason.has_value()) {
+    host().SetClientLoadFailed(this, ToClientLoadErrorReason(*error_reason));
+  } else {
+    host().ClearClientLoadFailed(this);
+  }
 }
 
 void GlicPageHandler::ClientReadyToShow(const mojom::OpenPanelInfo& open_info) {
