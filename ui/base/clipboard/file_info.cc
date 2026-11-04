@@ -62,7 +62,7 @@ base::FilePath URLToPath(std::string_view url) {
     }
   } else {
     // file://host/path => //host/path
-    DCHECK_EQ(prefix.size(), 7u);
+    CHECK_EQ(prefix.size(), 7u, base::NotFatalUntil::M163);
     path_start = prefix.size() - 2;
   }
 

@@ -19,7 +19,7 @@ namespace ui {
 namespace {
 
 bool SkipString16(base::PickleIterator* iter) {
-  DCHECK(iter);
+  CHECK(iter, base::NotFatalUntil::M163);
 
   size_t len;
   if (!iter->ReadLength(&len))

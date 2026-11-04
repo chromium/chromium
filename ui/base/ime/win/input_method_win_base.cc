@@ -379,7 +379,7 @@ LRESULT InputMethodWinBase::OnDocumentFeed(RECONVERTSTRING* reconv) {
   std::u16string text;
   if (!GetTextInputClient()->GetTextFromRange(text_range, &text))
     return 0;
-  DCHECK_EQ(text_range.length(), text.length());
+  CHECK_EQ(text_range.length(), text.length(), base::NotFatalUntil::M163);
 
   reconv->dwVersion = 0;
   reconv->dwStrLen = len;
@@ -419,7 +419,7 @@ LRESULT InputMethodWinBase::OnReconvertString(RECONVERTSTRING* reconv) {
     return 0;
   }
 
-  DCHECK(text_range.Contains(selection_range));
+  CHECK(text_range.Contains(selection_range), base::NotFatalUntil::M163);
 
   size_t len = selection_range.length();
   size_t need_size = sizeof(RECONVERTSTRING) + len * sizeof(WCHAR);
@@ -435,7 +435,7 @@ LRESULT InputMethodWinBase::OnReconvertString(RECONVERTSTRING* reconv) {
   std::u16string text;
   if (!GetTextInputClient()->GetTextFromRange(selection_range, &text))
     return 0;
-  DCHECK_EQ(selection_range.length(), text.length());
+  CHECK_EQ(selection_range.length(), text.length(), base::NotFatalUntil::M163);
 
   reconv->dwVersion = 0;
   reconv->dwStrLen = len;
@@ -502,7 +502,7 @@ void InputMethodWinBase::ProcessKeyEventDone(
 ui::EventDispatchDetails InputMethodWinBase::ProcessUnhandledKeyEvent(
     ui::KeyEvent* event,
     const std::vector<CHROME_MSG>* char_msgs) {
-  DCHECK(event);
+  CHECK(event, base::NotFatalUntil::M163);
   ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
   if (details.dispatcher_destroyed || details.target_destroyed ||
       event->stopped_propagation()) {

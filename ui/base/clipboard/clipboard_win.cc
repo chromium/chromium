@@ -290,7 +290,7 @@ void ClipboardWin::OnPreShutdown() {}
 
 void ClipboardWin::GetSource(ClipboardBuffer buffer,
                              GetSourceCallback callback) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow())) {
@@ -322,7 +322,7 @@ void ClipboardWin::GetSource(ClipboardBuffer buffer,
 
 const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(
     ClipboardBuffer buffer) const {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   DWORD sequence_number = ::GetClipboardSequenceNumber();
   if (sequence_number != clipboard_sequence_.sequence_number) {
@@ -348,7 +348,7 @@ ClipboardWin::GetAllAvailableFormatsInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   base::flat_set<ClipboardFormatType> types;
 
   // Acquire the clipboard to safely enumerate formats.
@@ -442,7 +442,7 @@ ClipboardWin::GetAllAvailableFormatsInternal(
 }
 
 void ClipboardWin::Clear(ClipboardBuffer buffer) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   {
     ScopedClipboard clipboard;
     if (!clipboard.Acquire(GetClipboardWindow())) {
@@ -653,7 +653,7 @@ std::u16string ClipboardWin::ReadTextInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kText);
 
   std::u16string result;
@@ -682,7 +682,7 @@ std::string ClipboardWin::ReadAsciiTextInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kText);
   std::string result;
 
@@ -713,12 +713,12 @@ void ClipboardWin::ReadHTMLInternal(
     std::string* src_url,
     uint32_t* fragment_start,
     uint32_t* fragment_end) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kHtml);
 
   markup->clear();
   // TODO(dcheng): Remove these checks, I don't think they should be optional.
-  DCHECK(src_url);
+  CHECK(src_url, base::NotFatalUntil::M163);
   if (src_url)
     src_url->clear();
   *fragment_start = 0;
@@ -772,7 +772,7 @@ std::u16string ClipboardWin::ReadSvgInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kSvg);
 
   std::string data =
@@ -794,7 +794,7 @@ std::string ClipboardWin::ReadRTFInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kRtf);
 
   std::string result =
@@ -844,7 +844,7 @@ std::u16string ClipboardWin::ReadDataTransferCustomDataInternal(
     const std::u16string& type,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kCustomData);
 
   std::u16string result;
@@ -875,7 +875,7 @@ std::vector<ui::FileInfo> ClipboardWin::ReadFilenamesInternal(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kFilenames);
 
   std::vector<ui::FileInfo> result;
@@ -1095,7 +1095,7 @@ void ClipboardWin::WriteURL(const ClipboardUrlInfo& url_info) {
 }
 
 void ClipboardWin::WriteWebSmartPaste() {
-  DCHECK_NE(clipboard_owner_->hwnd(), nullptr);
+  CHECK_NE(clipboard_owner_->hwnd(), nullptr, base::NotFatalUntil::M163);
   ::SetClipboardData(
       ClipboardFormatType::WebKitSmartPasteType().ToFormatEtc().cfFormat,
       nullptr);
@@ -1205,7 +1205,7 @@ ClipboardWin::ReadPngResult ClipboardWin::ReadPngInternal(
 std::vector<uint8_t> ClipboardWin::ReadPngTypeDataInternal(
     ClipboardBuffer buffer,
     HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
@@ -1228,7 +1228,7 @@ std::vector<uint8_t> ClipboardWin::ReadPngTypeDataInternal(
 // static
 SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
                                           HWND owner_window) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   // Acquire the clipboard.
   ScopedClipboard clipboard;
@@ -1401,10 +1401,11 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer,
 
 void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
   UINT cf_format = format.ToFormatEtc().cfFormat;
-  DCHECK_NE(clipboard_owner_->hwnd(), nullptr);
+  CHECK_NE(clipboard_owner_->hwnd(), nullptr, base::NotFatalUntil::M163);
   if (handle && !::SetClipboardData(cf_format, handle)) {
-    DCHECK_NE(GetLastError(),
-              static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
+    CHECK_NE(GetLastError(),
+             static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN),
+             base::NotFatalUntil::M163);
     ::GlobalFree(handle);
   }
 }

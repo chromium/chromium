@@ -15,7 +15,7 @@ struct EnumTraits<blink::mojom::ClipboardBuffer, ui::ClipboardBuffer> {
   static blink::mojom::ClipboardBuffer ToMojom(ui::ClipboardBuffer buffer) {
     // We only convert ui::ClipboardBuffer to blink::mojom::ClipboardBuffer
     // in tests, and they use ui::ClipboardBuffer::kCopyPaste.
-    DCHECK(buffer == ui::ClipboardBuffer::kCopyPaste);
+    CHECK(buffer == ui::ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
     return blink::mojom::ClipboardBuffer::kStandard;
   }
 

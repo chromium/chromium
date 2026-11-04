@@ -21,7 +21,7 @@ DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
     : type_(type),
       origin_(std::nullopt),
       notify_if_restricted_(notify_if_restricted) {
-  DCHECK_NE(type, EndpointType::kUrl);
+  CHECK_NE(type, EndpointType::kUrl, base::NotFatalUntil::M163);
 }
 
 DataTransferEndpoint::DataTransferEndpoint(const DataTransferEndpoint& other) =

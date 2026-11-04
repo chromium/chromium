@@ -171,7 +171,8 @@ class ClipboardInternal {
     *src_url = data->url();
 
     *fragment_start = 0;
-    DCHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max());
+    CHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max(),
+             base::NotFatalUntil::M163);
     *fragment_end = static_cast<uint32_t>(markup->length());
   }
 
@@ -185,7 +186,8 @@ class ClipboardInternal {
     const ClipboardData* data = GetData();
     *markup = base::UTF8ToUTF16(data->svg_data());
 
-    DCHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max());
+    CHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max(),
+             base::NotFatalUntil::M163);
   }
 
   // Reads RTF from the ClipboardData.
@@ -287,7 +289,7 @@ class ClipboardInternal {
   // Writes |data| to the ClipboardData and returns the previous data.
   std::unique_ptr<ClipboardData> WriteData(
       std::unique_ptr<ClipboardData> data) {
-    DCHECK(data);
+    CHECK(data, base::NotFatalUntil::M163);
     std::unique_ptr<ClipboardData> previous_data = std::move(data_);
     data_ = std::move(data);
     sequence_number_ = data_->sequence_number_token();
@@ -334,7 +336,7 @@ class ClipboardInternal {
     auto callbacks = std::move(callbacks_awaiting_image_encoding_.at(token));
     callbacks_awaiting_image_encoding_.erase(token);
 
-    DCHECK(!callbacks.empty());
+    CHECK(!callbacks.empty(), base::NotFatalUntil::M163);
 
     for (auto& callback : callbacks) {
       std::move(callback).Run(png_data);
@@ -464,7 +466,7 @@ ClipboardNonBacked* ClipboardNonBacked::GetForCurrentThread() {
 
 // ClipboardNonBacked implementation.
 ClipboardNonBacked::ClipboardNonBacked() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   RegisterInstance(this);
 
   // Unfortunately we cannot call Clipboard::IsSupportedClipboardBuffer()
@@ -485,7 +487,7 @@ ClipboardNonBacked::ClipboardNonBacked() {
 }
 
 ClipboardNonBacked::~ClipboardNonBacked() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   UnregisterInstance(this);
 }
 
@@ -505,7 +507,7 @@ void ClipboardNonBacked::SetPlatformClipboard(
 const ClipboardData* ClipboardNonBacked::GetClipboardData(
     DataTransferEndpoint* data_dst,
     ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
   if (!clipboard_internal.IsReadAllowed(data_dst, std::nullopt)) {
@@ -518,7 +520,7 @@ const ClipboardData* ClipboardNonBacked::GetClipboardData(
 std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
     std::unique_ptr<ClipboardData> data,
     ClipboardBuffer buffer) {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 #if BUILDFLAG(IS_CHROMEOS)
   SyncToPlatform(buffer, *data);
 #endif
@@ -539,13 +541,13 @@ void ClipboardNonBacked::GetSource(ClipboardBuffer buffer,
 
 const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(
     ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   return GetInternalClipboard(buffer).sequence_number();
 }
 
 int ClipboardNonBacked::NumImagesEncodedForTesting(
     ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
   return clipboard_internal.NumImagesEncodedForTesting();  // IN-TEST
 }
@@ -565,8 +567,8 @@ void ClipboardNonBacked::GetAllAvailableFormats(
     const std::optional<DataTransferEndpoint>& data_dst,
     base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
     const {
-  DCHECK(CalledOnValidThread());
-  DCHECK(IsSupportedClipboardBuffer(buffer));
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(IsSupportedClipboardBuffer(buffer), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
   base::flat_set<ClipboardFormatType> formats;
@@ -619,8 +621,8 @@ void ClipboardNonBacked::GetAllAvailableFormats(
 }
 
 void ClipboardNonBacked::Clear(ClipboardBuffer buffer) {
-  DCHECK(CalledOnValidThread());
-  DCHECK(IsSupportedClipboardBuffer(buffer));
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(IsSupportedClipboardBuffer(buffer), base::NotFatalUntil::M163);
   GetInternalClipboard(buffer).Clear();
 #if BUILDFLAG(IS_CHROMEOS)
   if (platform_clipboard_) {
@@ -671,7 +673,7 @@ void ClipboardNonBacked::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAvailableTypesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -704,7 +706,7 @@ void ClipboardNonBacked::ReadText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -732,7 +734,7 @@ void ClipboardNonBacked::ReadAsciiText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAsciiTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -760,7 +762,7 @@ void ClipboardNonBacked::ReadHTML(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadHtmlCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -793,7 +795,7 @@ void ClipboardNonBacked::ReadSvg(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadSvgCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -821,7 +823,7 @@ void ClipboardNonBacked::ReadRTF(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadRTFCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -849,7 +851,7 @@ void ClipboardNonBacked::ReadPng(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadPngCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -876,7 +878,7 @@ void ClipboardNonBacked::ReadDataTransferCustomData(
     const std::u16string& type,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadDataTransferCustomDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -905,7 +907,7 @@ void ClipboardNonBacked::ReadFilenames(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadFilenamesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
@@ -930,7 +932,7 @@ void ClipboardNonBacked::ReadFilenames(
 void ClipboardNonBacked::ReadURL(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadUrlCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal =
       GetInternalClipboard(ClipboardBuffer::kCopyPaste);
@@ -963,7 +965,7 @@ void ClipboardNonBacked::ReadData(
     const ClipboardFormatType& format,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   const ClipboardInternal& clipboard_internal =
       GetInternalClipboard(ClipboardBuffer::kCopyPaste);
@@ -1005,8 +1007,8 @@ void ClipboardNonBacked::WritePortableAndPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
-  DCHECK(CalledOnValidThread());
-  DCHECK(IsSupportedClipboardBuffer(buffer));
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(IsSupportedClipboardBuffer(buffer), base::NotFatalUntil::M163);
 
   ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 

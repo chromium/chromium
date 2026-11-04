@@ -21,7 +21,7 @@ namespace {
 
 void AppendNonTrivialInputScope(std::vector<InputScope>* input_scopes,
                                 InputScope input_scope) {
-  DCHECK(input_scopes);
+  CHECK(input_scopes, base::NotFatalUntil::M163);
 
   if (input_scope == IS_DEFAULT)
     return;

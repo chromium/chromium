@@ -238,7 +238,7 @@ void OnScreenKeyboardDetector::HideIfNecessary() {
 
 void OnScreenKeyboardDetector::HandleKeyboardVisible(
     const gfx::Rect& occluded_rect) {
-  DCHECK(!osk_visible_notification_received_);
+  CHECK(!osk_visible_notification_received_, base::NotFatalUntil::M163);
   osk_visible_notification_received_ = true;
 
   display_manager_->NotifyKeyboardVisible(occluded_rect);
@@ -302,7 +302,7 @@ void OnScreenKeyboardDisplayManagerTabTip::RemoveObserver(
 }
 
 bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(std::wstring* osk_path) {
-  DCHECK(osk_path);
+  CHECK(osk_path, base::NotFatalUntil::M163);
 
   // We need to launch TabTip.exe from the location specified under the
   // LocalServer32 key for the {{054AAE20-4BEA-4347-8A35-64A533254A9D}}
@@ -351,7 +351,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(std::wstring* osk_path) {
           L"CommonProgramW6432",
           base::WriteInto(&common_program_files_path, buffer_size),
           buffer_size);
-      DCHECK(!common_program_files_path.empty());
+      CHECK(!common_program_files_path.empty(), base::NotFatalUntil::M163);
     } else {
       base::win::ScopedCoMem<wchar_t> common_program_files;
       if (FAILED(SHGetKnownFolderPath(FOLDERID_ProgramFilesCommon, 0, nullptr,

@@ -20,8 +20,9 @@ InputMethodMinimal::~InputMethodMinimal() {}
 
 ui::EventDispatchDetails InputMethodMinimal::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  DCHECK(event->type() == EventType::kKeyPressed ||
-         event->type() == EventType::kKeyReleased);
+  CHECK(event->type() == EventType::kKeyPressed ||
+            event->type() == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
 
   // If no text input client, do nothing.
   if (!GetTextInputClient())

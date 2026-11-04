@@ -64,8 +64,9 @@ LinuxInputMethodContext* InputMethodAuraLinux::GetContextForTesting() {
 
 ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     ui::KeyEvent* event) {
-  DCHECK(event->type() == EventType::kKeyPressed ||
-         event->type() == EventType::kKeyReleased);
+  CHECK(event->type() == EventType::kKeyPressed ||
+            event->type() == EventType::kKeyReleased,
+        base::NotFatalUntil::M163);
   // If there's pending deadkey event, i.e. a key event which is expected to
   // trigger input method actions (like OnCommit, OnPreedit* invocation)
   // and to be dispatched from there, but not yet, dispatch the pending event

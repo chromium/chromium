@@ -61,8 +61,8 @@ void CandidateWindow::CopyFrom(const CandidateWindow& cw) {
 void CandidateWindow::GetInfolistEntries(
     std::vector<ui::InfolistEntry>* infolist_entries,
     bool* has_highlighted) const {
-  DCHECK(infolist_entries);
-  DCHECK(has_highlighted);
+  CHECK(infolist_entries, base::NotFatalUntil::M163);
+  CHECK(has_highlighted, base::NotFatalUntil::M163);
   infolist_entries->clear();
   *has_highlighted = false;
 

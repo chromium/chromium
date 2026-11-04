@@ -13,7 +13,7 @@ VirtualKeyboardDebounceTimer::~VirtualKeyboardDebounceTimer() = default;
 
 void VirtualKeyboardDebounceTimer::RequestRun(base::OnceClosure callback) {
   // Null callback isn't a valid scenario.
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M163);
   callback_ = std::move(callback);
   base::TimeDelta delay(base::Milliseconds(delay_ms_));
   delay -= base::TimeTicks::Now() - time_last_run_;

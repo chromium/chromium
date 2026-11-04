@@ -144,7 +144,7 @@ void Clipboard::SetClipboardForCurrentThread(
 
   ClipboardMap* clipboard_map = ClipboardMapPtr();
   // This shouldn't happen. The clipboard should not already exist.
-  DCHECK(!clipboard_map->contains(id));
+  CHECK(!clipboard_map->contains(id), base::NotFatalUntil::M163);
   clipboard_map->insert({id, std::move(platform_clipboard)});
 }
 
@@ -240,7 +240,7 @@ void Clipboard::ReadAvailableStandardAndCustomFormatNames(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAvailableStandardAndCustomFormatNamesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 
   // Native applications generally read formats in order of
   // fidelity/specificity, reading only the most specific format they support

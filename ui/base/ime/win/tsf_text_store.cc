@@ -544,7 +544,7 @@ HRESULT TSFTextStore::InsertTextAtSelection(DWORD flags,
     }
   }
 
-  DCHECK_LE(start_pos, end_pos);
+  CHECK_LE(start_pos, end_pos, base::NotFatalUntil::M163);
   string_buffer_document_ =
       string_buffer_document_.substr(0, start_pos) +
       std::u16string(text_buffer, UNSAFE_TODO(text_buffer + text_buffer_size)) +
@@ -1132,7 +1132,7 @@ HRESULT TSFTextStore::OnEndEdit(ITfContext* context,
   // that there is no active composition, we then need to reset the cached
   // composition range and set the new composition start as the current
   // selection start.
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M163);
   HRESULT hr = S_OK;
   Microsoft::WRL::ComPtr<ITfContextComposition> context_composition;
   hr = context->QueryInterface(IID_PPV_ARGS(&context_composition));
@@ -1203,9 +1203,9 @@ bool TSFTextStore::GetCompositionStatus(
     const TfEditCookie read_only_edit_cookie,
     size_t* committed_size,
     ImeTextSpans* spans) {
-  DCHECK(context);
-  DCHECK(committed_size);
-  DCHECK(spans);
+  CHECK(context, base::NotFatalUntil::M163);
+  CHECK(committed_size, base::NotFatalUntil::M163);
+  CHECK(spans, base::NotFatalUntil::M163);
   const GUID* rgGuids[2] = {&GUID_PROP_COMPOSING, &GUID_PROP_ATTRIBUTE};
   Microsoft::WRL::ComPtr<ITfReadOnlyProperty> track_property;
   if (FAILED(

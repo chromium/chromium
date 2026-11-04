@@ -33,7 +33,7 @@ UIPasteboard* GetPasteboard() {
 
 NSData* GetDataWithTypeFromPasteboard(UIPasteboard* pasteboard,
                                       NSString* type) {
-  DCHECK(pasteboard);
+  CHECK(pasteboard, base::NotFatalUntil::M163);
   auto items = [pasteboard dataForPasteboardType:type inItemSet:nil];
   if (!items) {
     return nullptr;
@@ -49,11 +49,11 @@ Clipboard* Clipboard::Create() {
 
 // ClipboardIOS implementation.
 ClipboardIOS::ClipboardIOS() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 ClipboardIOS::~ClipboardIOS() {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
 }
 
 void ClipboardIOS::OnPreShutdown() {}
@@ -61,15 +61,15 @@ void ClipboardIOS::OnPreShutdown() {}
 // DataTransferEndpoint is not used on this platform.
 void ClipboardIOS::GetSource(ClipboardBuffer buffer,
                              GetSourceCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   std::move(callback).Run(std::nullopt);
 }
 
 const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
     ClipboardBuffer buffer) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   NSInteger sequence_number = [GetPasteboard() changeCount];
   if (sequence_number != clipboard_sequence_.sequence_number) {
@@ -84,8 +84,8 @@ void ClipboardIOS::GetAllAvailableFormats(
     const std::optional<DataTransferEndpoint>& data_dst,
     base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
     const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   NSArray<NSDictionary<NSString*, id>*>* items = GetPasteboard().items;
   base::flat_set<ClipboardFormatType> formats;
@@ -141,8 +141,8 @@ void ClipboardIOS::GetStandardFormats(
 }
 
 void ClipboardIOS::Clear(ClipboardBuffer buffer) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   [GetPasteboard() setItems:@[]];
 }
@@ -153,7 +153,7 @@ void ClipboardIOS::ReadAvailableTypes(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAvailableTypesCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   GetStandardFormats(
       buffer, data_dst,
       base::BindOnce(
@@ -175,8 +175,8 @@ void ClipboardIOS::ReadAvailableTypes(
 void ClipboardIOS::ReadText(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kText);
 
   std::u16string result;
@@ -196,8 +196,8 @@ void ClipboardIOS::ReadAsciiText(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAsciiTextCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kText);
 
   std::string result;
@@ -216,8 +216,8 @@ void ClipboardIOS::ReadAsciiText(
 void ClipboardIOS::ReadHTML(ClipboardBuffer buffer,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadHtmlCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kHtml);
 
   std::u16string markup;
@@ -241,7 +241,8 @@ void ClipboardIOS::ReadHTML(ClipboardBuffer buffer,
   }
 
   uint32_t fragment_start = 0;
-  DCHECK_LE(markup.length(), std::numeric_limits<uint32_t>::max());
+  CHECK_LE(markup.length(), std::numeric_limits<uint32_t>::max(),
+           base::NotFatalUntil::M163);
   uint32_t fragment_end = static_cast<uint32_t>(markup.length());
 
   // TODO: src_url
@@ -254,8 +255,8 @@ void ClipboardIOS::ReadHTML(ClipboardBuffer buffer,
 void ClipboardIOS::ReadSvg(ClipboardBuffer buffer,
                            const std::optional<DataTransferEndpoint>& data_dst,
                            ReadSvgCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kSvg);
 
   std::u16string result;
@@ -274,8 +275,8 @@ void ClipboardIOS::ReadSvg(ClipboardBuffer buffer,
 void ClipboardIOS::ReadRTF(ClipboardBuffer buffer,
                            const std::optional<DataTransferEndpoint>& data_dst,
                            ReadRTFCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kRtf);
 
   ReadData(ClipboardFormatType::RtfType(), data_dst, std::move(callback));
@@ -286,8 +287,8 @@ void ClipboardIOS::ReadRTF(ClipboardBuffer buffer,
 void ClipboardIOS::ReadPng(ClipboardBuffer buffer,
                            const std::optional<DataTransferEndpoint>& data_dst,
                            ReadPngCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kPng);
 
   std::move(callback).Run(ReadPngInternal(buffer, GetPasteboard()));
@@ -300,8 +301,8 @@ void ClipboardIOS::ReadDataTransferCustomData(
     const std::u16string& type,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadDataTransferCustomDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kCustomData);
 
   std::u16string result;
@@ -323,8 +324,8 @@ void ClipboardIOS::ReadFilenames(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadFilenamesCallback callback) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kFilenames);
 
   auto items = [GetPasteboard()
@@ -353,7 +354,7 @@ void ClipboardIOS::ReadFilenames(
 // platforms.
 void ClipboardIOS::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
                            ReadUrlCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kUrl);
 
   std::string url;
@@ -384,7 +385,7 @@ void ClipboardIOS::ReadURL(const std::optional<DataTransferEndpoint>& data_dst,
 void ClipboardIOS::ReadData(const ClipboardFormatType& format,
                             const std::optional<DataTransferEndpoint>& data_dst,
                             ReadDataCallback callback) const {
-  DCHECK(CalledOnValidThread());
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
   RecordRead(ClipboardFormatMetric::kData);
 
   std::string result;
@@ -405,8 +406,8 @@ void ClipboardIOS::WritePortableAndPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
 
   [GetPasteboard() setItems:@[]];
 
@@ -491,7 +492,7 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
   // The bitmap type is sanitized to be N32 before we get here. The conversion
   // to a UIImage would not explode if we got this wrong, so this is not a
   // security CHECK.
-  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType, base::NotFatalUntil::M163);
 
   base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
@@ -513,9 +514,9 @@ void ClipboardIOS::WriteData(const ClipboardFormatType& format,
 std::vector<uint8_t> ClipboardIOS::ReadPngInternal(
     ClipboardBuffer buffer,
     UIPasteboard* pasteboard) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  DCHECK(pasteboard);
+  CHECK(CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(buffer, ClipboardBuffer::kCopyPaste, base::NotFatalUntil::M163);
+  CHECK(pasteboard, base::NotFatalUntil::M163);
 
   UIImage* image = pasteboard.image;
   if (!image) {

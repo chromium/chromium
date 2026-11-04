@@ -136,7 +136,7 @@ KeyboardClient::KeyboardClient(
     fuchsia_ui_views::ViewRef view_ref,
     InputEventSink* event_sink)
     : event_sink_(event_sink) {
-  DCHECK(event_sink_);
+  CHECK(event_sink_, base::NotFatalUntil::M163);
 
   // Connect to the Keyboard service and register `keyboard_client_` as a
   // listener.

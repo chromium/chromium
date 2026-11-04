@@ -129,7 +129,7 @@ std::optional<size_t> ClipboardData::CalculateSize(
     if (maybe_png_.has_value()) {
       image_size = maybe_png_.value().size();
     } else {
-      DCHECK(maybe_bitmap_.has_value());
+      CHECK(maybe_bitmap_.has_value(), base::NotFatalUntil::M163);
       image_size = maybe_bitmap_.value().computeByteSize();
     }
     if (format.has_value() && *format == ClipboardInternalFormat::kPng)
@@ -172,13 +172,14 @@ void ClipboardData::SetPngDataAfterEncoding(std::vector<uint8_t> png) const {
   // Bitmap data can be kept around since we know it corresponds to this PNG.
   // The bitmap can be used to compare two ClipboardData instances even if only
   // one had been encoded to a PNG.
-  DCHECK(maybe_bitmap_.has_value());
-  DCHECK(format_ & static_cast<int>(ClipboardInternalFormat::kPng));
+  CHECK(maybe_bitmap_.has_value(), base::NotFatalUntil::M163);
+  CHECK(format_ & static_cast<int>(ClipboardInternalFormat::kPng),
+        base::NotFatalUntil::M163);
   maybe_png_ = std::move(png);
 }
 
 void ClipboardData::SetBitmapData(const SkBitmap& bitmap) {
-  DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType, base::NotFatalUntil::M163);
   maybe_bitmap_ = bitmap;
   maybe_png_ = std::nullopt;
   format_ |= static_cast<int>(ClipboardInternalFormat::kPng);

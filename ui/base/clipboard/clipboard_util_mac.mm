@@ -326,7 +326,7 @@ namespace clipboard_util {
 NSArray<NSPasteboardItem*>* PasteboardItemsFromUrls(
     NSArray<NSString*>* urls,
     NSArray<NSString*>* titles) {
-  DCHECK_EQ(urls.count, titles.count);
+  CHECK_EQ(urls.count, titles.count, base::NotFatalUntil::M163);
 
   NSMutableArray<NSPasteboardItem*>* items = [NSMutableArray array];
 

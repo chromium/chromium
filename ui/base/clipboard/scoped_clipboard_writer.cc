@@ -176,7 +176,7 @@ void ScopedClipboardWriter::WriteWebSmartPaste() {
 void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
   if (bitmap.drawsNothing())
     return;
-  DCHECK(bitmap.getPixels());
+  CHECK(bitmap.getPixels(), base::NotFatalUntil::M163);
   RecordWrite(ClipboardFormatMetric::kImage);
 
   // The platform code that sets this bitmap into the system clipboard expects

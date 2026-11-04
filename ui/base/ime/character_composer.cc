@@ -149,7 +149,7 @@ bool CharacterComposer::FilterKeyPress(const ui::KeyEvent& event) {
 }
 
 bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
-  DCHECK(composition_mode_ == KEY_SEQUENCE_MODE);
+  CHECK(composition_mode_ == KEY_SEQUENCE_MODE, base::NotFatalUntil::M163);
   compose_buffer_.push_back(event.GetDomKey());
 
   // Check compose table.
@@ -220,7 +220,7 @@ void CharacterComposer::UpdatePreeditStringSequenceMode() {
 }
 
 bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {
-  DCHECK(composition_mode_ == HEX_MODE);
+  CHECK(composition_mode_ == HEX_MODE, base::NotFatalUntil::M163);
   const size_t kMaxHexSequenceLength = 8;
   char16_t c = event.GetCharacter();
   int hex_digit = 0;
@@ -262,11 +262,11 @@ bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {
 }
 
 void CharacterComposer::CommitHex() {
-  DCHECK(composition_mode_ == HEX_MODE);
+  CHECK(composition_mode_ == HEX_MODE, base::NotFatalUntil::M163);
   uint32_t composed_character_utf32 = 0;
   for (size_t i = 0; i != hex_buffer_.size(); ++i) {
     const uint32_t digit = hex_buffer_[i];
-    DCHECK(0 <= digit && digit < 16);
+    CHECK(0 <= digit && digit < 16, base::NotFatalUntil::M163);
     composed_character_utf32 <<= 4;
     composed_character_utf32 |= digit;
   }
@@ -282,7 +282,7 @@ void CharacterComposer::UpdatePreeditStringHexMode() {
   std::string preedit_string_ascii("u");
   for (size_t i = 0; i != hex_buffer_.size(); ++i) {
     const int digit = hex_buffer_[i];
-    DCHECK(0 <= digit && digit < 16);
+    CHECK(0 <= digit && digit < 16, base::NotFatalUntil::M163);
     preedit_string_ascii += digit <= 9 ? ('0' + digit) : ('a' + (digit - 10));
   }
   preedit_string_ = base::ASCIIToUTF16(preedit_string_ascii);
@@ -297,7 +297,7 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
 
   uint16_t tree_index = 0;
   for (const auto& keystroke : sequence) {
-    DCHECK(tree_index < data_->tree.size());
+    CHECK(tree_index < data_->tree.size(), base::NotFatalUntil::M163);
 
     // If we are looking up a dead key or the Compose key, skip over the
     // character tables.

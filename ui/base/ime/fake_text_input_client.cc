@@ -42,7 +42,7 @@ void FakeTextInputClient::set_source_id(ukm::SourceId source_id) {
 
 void FakeTextInputClient::SetTextAndSelection(const std::u16string& text,
                                               gfx::Range selection) {
-  DCHECK_LE(selection_.end(), text.length());
+  CHECK_LE(selection_.end(), text.length(), base::NotFatalUntil::M163);
   text_ = text;
   selection_ = selection;
 }

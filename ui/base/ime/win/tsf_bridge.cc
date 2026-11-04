@@ -164,7 +164,7 @@ class TSFBridgeImpl : public TSFBridge {
 TSFBridgeImpl::TSFBridgeImpl() = default;
 
 TSFBridgeImpl::~TSFBridgeImpl() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   if (!IsInitialized())
     return;
 
@@ -196,7 +196,7 @@ TSFBridgeImpl::~TSFBridgeImpl() {
 }
 
 HRESULT TSFBridgeImpl::Initialize() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   if (client_id_ != TF_CLIENTID_NULL) {
     DVLOG(1) << "Already initialized.";
     return S_OK;  // shouldn't return error code in this case.
@@ -258,8 +258,8 @@ HRESULT TSFBridgeImpl::Initialize() {
 }
 
 void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
 
   if (client != client_) {
     // Called from not focusing client. Do nothing.
@@ -316,8 +316,8 @@ void TSFBridgeImpl::OnTextLayoutChanged() {
 }
 
 bool TSFBridgeImpl::CancelComposition() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
 
   TSFDocument* document = GetAssociatedDocument();
   if (!document)
@@ -329,8 +329,8 @@ bool TSFBridgeImpl::CancelComposition() {
 }
 
 bool TSFBridgeImpl::ConfirmComposition() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
 
   TSFDocument* document = GetAssociatedDocument();
   if (!document)
@@ -343,9 +343,9 @@ bool TSFBridgeImpl::ConfirmComposition() {
 
 void TSFBridgeImpl::SetFocusedClient(HWND focused_window,
                                      TextInputClient* client) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(client);
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(client, base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
   if (attached_window_handle_ != focused_window)
     ClearAssociateFocus();
   client_ = client;
@@ -363,8 +363,8 @@ void TSFBridgeImpl::SetFocusedClient(HWND focused_window,
 }
 
 void TSFBridgeImpl::RemoveFocusedClient(TextInputClient* client) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
   if (client_ != client)
     return;
   ClearAssociateFocus();
@@ -380,9 +380,9 @@ void TSFBridgeImpl::RemoveFocusedClient(TextInputClient* client) {
 
 void TSFBridgeImpl::SetImeKeyEventDispatcher(
     ImeKeyEventDispatcher* ime_key_event_dispatcher) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(ime_key_event_dispatcher);
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(ime_key_event_dispatcher, base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
 
   for (TSFDocumentMap::iterator it = tsf_document_map_.begin();
        it != tsf_document_map_.end(); ++it) {
@@ -394,8 +394,8 @@ void TSFBridgeImpl::SetImeKeyEventDispatcher(
 
 void TSFBridgeImpl::RemoveImeKeyEventDispatcher(
     ImeKeyEventDispatcher* ime_key_event_dispatcher) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
 
   for (TSFDocumentMap::iterator it = tsf_document_map_.begin();
        it != tsf_document_map_.end(); ++it) {
@@ -428,8 +428,8 @@ void TSFBridgeImpl::OnUrlChanged() {
 }
 
 Microsoft::WRL::ComPtr<ITfThreadMgr> TSFBridgeImpl::GetThreadManager() {
-  DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(IsInitialized());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
+  CHECK(IsInitialized(), base::NotFatalUntil::M163);
   return thread_manager_;
 }
 
