@@ -4,18 +4,17 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import './shared_style.css.js';
 import './checkup_list_item.js';
 import './prefs/pref_toggle_button.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './password_change_details.html.js';
+import {getCss} from './password_change_details.css.js';
+import {getHtml} from './password_change_details.html.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router} from './router.js';
+import {Page, RouteObserverMixinLit, Router} from './router.js';
 
 export interface PasswordChangeDetailsElement {
   $: {
@@ -24,7 +23,7 @@ export interface PasswordChangeDetailsElement {
 }
 
 const PasswordChangeDetailsElementBase =
-    I18nMixin(RouteObserverMixin(PolymerElement));
+    I18nMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class PasswordChangeDetailsElement extends
     PasswordChangeDetailsElementBase {
@@ -32,24 +31,25 @@ export class PasswordChangeDetailsElement extends
     return 'password-change-details';
   }
 
-  static get properties() {
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       isPasswordChangeWithPrivateInferenceLoginCheckEnabled_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isPasswordChangeWithPrivateInferenceLoginCheckEnabled');
-        },
       },
     };
   }
 
-  static get template() {
-    return getTemplate();
-  }
-
-  declare protected isPasswordChangeWithPrivateInferenceLoginCheckEnabled_:
-      boolean;
+  protected accessor isPasswordChangeWithPrivateInferenceLoginCheckEnabled_:
+      boolean = loadTimeData.getBoolean(
+          'isPasswordChangeWithPrivateInferenceLoginCheckEnabled');
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     if (newRoute.page !== Page.PASSWORD_CHANGE ||
@@ -62,7 +62,7 @@ export class PasswordChangeDetailsElement extends
     }, 0);
   }
 
-  private navigateBack_() {
+  protected onBackClick_() {
     Router.getInstance().navigateTo(Page.SETTINGS);
   }
 

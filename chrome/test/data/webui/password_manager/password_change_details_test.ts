@@ -7,9 +7,8 @@ import 'chrome://password-manager/password_manager.js';
 import type {PasswordChangeDetailsElement, PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {makePasswordManagerPrefs} from './test_util.js';
@@ -34,16 +33,16 @@ suite('PasswordChangeDetailsTest', function() {
     });
     element = document.createElement('password-change-details');
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
-    const toggle = element.shadowRoot!.querySelector<PrefToggleButtonElement>(
+    const toggle = element.shadowRoot.querySelector<PrefToggleButtonElement>(
         '#passwordChangeToggle');
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
     assertTrue(toggle.pref!.value);
-    const fallbackDiv = element.shadowRoot!.querySelector('.cr-row.first');
+    const fallbackDiv = element.shadowRoot.querySelector('.cr-row.first');
     assertFalse(!!fallbackDiv);
-    const header = element.shadowRoot!.querySelector('#descriptionHeader');
+    const header = element.shadowRoot.querySelector('#descriptionHeader');
     assertTrue(!!header);
     assertEquals(
         loadTimeData.getString('columnHeadingWhenOn'),
@@ -57,28 +56,28 @@ suite('PasswordChangeDetailsTest', function() {
     prefService.setPrefValue('automated_password_change_enabled', false);
     element = document.createElement('password-change-details');
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
-    const toggle = element.shadowRoot!.querySelector<PrefToggleButtonElement>(
+    const toggle = element.shadowRoot.querySelector<PrefToggleButtonElement>(
         '#passwordChangeToggle');
     assertTrue(!!toggle);
     assertFalse(toggle.checked);
     assertFalse(toggle.pref!.value);
   });
 
-  test('renders fallback description when flag is disabled', function() {
+  test('renders fallback description when flag is disabled', async function() {
     loadTimeData.overrideValues({
       isPasswordChangeWithPrivateInferenceLoginCheckEnabled: false,
     });
     element = document.createElement('password-change-details');
     document.body.appendChild(element);
-    flush();
+    await microtasksFinished();
 
-    const toggle = element.shadowRoot!.querySelector('#passwordChangeToggle');
+    const toggle = element.shadowRoot.querySelector('#passwordChangeToggle');
     assertFalse(!!toggle);
-    const fallbackDiv = element.shadowRoot!.querySelector('.cr-row.first');
+    const fallbackDiv = element.shadowRoot.querySelector('.cr-row.first');
     assertTrue(!!fallbackDiv);
-    const header = element.shadowRoot!.querySelector('#descriptionHeader');
+    const header = element.shadowRoot.querySelector('#descriptionHeader');
     assertTrue(!!header);
     assertEquals(
         loadTimeData.getString('columnHeadingWhenUsed'),

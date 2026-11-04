@@ -1,196 +1,110 @@
-<style include="shared-style cr-shared-style">
-  :host {
-    display: flex;
-    flex-direction: column;
-  }
-
-  site-favicon {
-    padding-inline-end: 20px;
-  }
-
-  #list-item {
-    align-items: center;
-    display: flex;
-    padding: 16px 20px;
-  }
-
-  #credentialInfo {
-    display: grid;
-    flex: 2;
-  }
-
-  #insecurePassword {
-    background-color: transparent;
-    border: none;
-    color: var(--cr-secondary-text-color);
-    font-size: inherit;
-    margin-bottom: 2px;
-    margin-inline-start: 4px;
-    max-width: 10ch;
-  }
-
-  #usernameContainer {
-    display: flex;
-  }
-
-  #username {
-    max-width: 200px;
-  }
-
-  #changeButton {
-    align-items: flex-end;
-    display: flex;
-    flex-direction: column;
-    margin-inline-start: var(--cr-icon-button-margin-start);
-  }
-
-  #change-password-link-icon {
-    --iron-icon-width: 16px;
-    margin-inline-start: 10px;
-  }
-
-    #auto-change-password-link-icon {
-    --iron-icon-width: 16px;
-  }
-
-  .status-container {
-    align-items: center;
-    display: flex;
-  }
-
-  #cancelAutoChangeButton {
-    --cr-icon-button-fill-color:  var(--cr-secondary-text-color);
-    color:  var(--cr-secondary-text-color);
-    margin-inline-start: 8px;
-  }
-
-  #separator {
-    margin-inline-start: 56px;
-  }
-
-  #alreadyChanged {
-    color: var(--cr-link-color);
-    flex: 1;
-    margin-top: 8px;
-    text-align: end;
-  }
-
-  #changePasswordButton,
-  #autoChangePasswordButton {
-    height: auto;
-    padding: 3px 16px;
-  }
-</style>
-<div id="separator" class="hr" hidden="[[first]]"></div>
+<div id="separator" class="hr" ?hidden="${this.first}"></div>
 <div id="list-item" focus-row-container>
-  <site-favicon url="[[getGroupIcon_(group, item)]]"
-      domain="[[getGroupName_(group, item)]]" aria-hidden="true">
+  <site-favicon url="${this.getGroupIcon_()}"
+      domain="${this.getGroupName_()}" aria-hidden="true">
   </site-favicon>
   <div id="credentialInfo">
     <div id="shownUrl" class="label text-elide">
-      [[getGroupName_(group, item)]]
+      ${this.getGroupName_()}
     </div>
     <div id="usernameContainer" class="cr-secondary-text label">
-      <span id="username" class="text-elide">[[item.username]]</span>
+      <span id="username" class="text-elide">${this.item.username}</span>
       <input id="insecurePassword" focus-row-control class="password-input"
           focus-type="passwordField" readonly disabled
-          type="[[getPasswordInputType(isPasswordVisible)]]"
-          value="[[getPasswordValue_(item, isPasswordVisible)]]">
+          type="${this.getPasswordInputType()}"
+          .value="${this.getPasswordValue_()}">
     </div>
-    <template is="dom-if" if="[[showDetails]]">
+    ${this.showDetails ? html`
       <div class="cr-secondary-text label text-elide" id="compromiseType">
-        [[getCompromiseDescription_(item)]]
+        ${this.getCompromiseDescription_()}
       </div>
       <div class="cr-secondary-text label text-elide" id="elapsedTime">
-        [[item.compromisedInfo.elapsedTimeSinceCompromise]]
+        ${this.item.compromisedInfo?.elapsedTimeSinceCompromise}
       </div>
-    </template>
+    ` : ''}
   </div>
-  <template is="dom-if" if="[[item.changePasswordUrl]]">
+  ${this.item.changePasswordUrl ? html`
     <div class="button-container" id="changeButton">
-      <template is="dom-if" if="[[!item.isAutomaticPasswordChangeSupported]]">
-        <cr-button id="changePasswordButton" on-click="onChangePasswordClick_"
-          aria-label$="[[getChangeButtonAriaLabel_(group, item)]]">
+      ${!this.item.isAutomaticPasswordChangeSupported ? html`
+        <cr-button id="changePasswordButton"
+            @click="${this.onChangePasswordClick_}"
+            aria-label="${this.getChangeButtonAriaLabel_()}">
           $i18n{changePassword}
           <cr-icon icon="cr:open-in-new" id="change-password-link-icon">
           </cr-icon>
         </cr-button>
-      </template>
-      <template is="dom-if" if="[[item.isAutomaticPasswordChangeSupported]]">
-        <template is="dom-if"
-        if="[[isAutoChangePasswordIdle_(passwordChangeState)]]">
+      ` : html`
+        ${this.isAutoChangePasswordIdle_() ? html`
           <cr-button
-            class="tonal-button"
-            id="autoChangePasswordButton"
-            on-click="onAutoChangePasswordClick_"
-            aria-label$="[[getAutoChangeButtonAriaLabel_(group, item)]]">
+              class="tonal-button"
+              id="autoChangePasswordButton"
+              @click="${this.onAutoChangePasswordClick_}"
+              aria-label="${this.getAutoChangeButtonAriaLabel_()}">
             <cr-icon
-              icon="[[getArrowSelectorSparkIcon_()]]"
-              id="auto-change-password-link-icon">
+                icon="${this.getArrowSelectorSparkIcon_()}"
+                id="auto-change-password-link-icon">
             </cr-icon>
-            [[getAutoChangePasswordButtonText_(passwordChangeState)]]
+            ${this.getAutoChangePasswordButtonText_()}
           </cr-button>
-        </template>
-        <template is="dom-if"
-          if="[[!isAutoChangePasswordIdle_(passwordChangeState)]]">
+        ` : html`
           <div class="status-container">
             <span class="cr-secondary-text label">
               <cr-icon
-                icon="[[getAutoChangePasswordIcon_(passwordChangeState)]]"
-                id="auto-change-password-link-icon">
+                  icon="${this.getAutoChangePasswordIcon_()}"
+                  id="auto-change-password-link-icon">
               </cr-icon>
-              [[getAutoChangePasswordButtonText_(passwordChangeState)]]
+              ${this.getAutoChangePasswordButtonText_()}
             </span>
             <cr-icon-button id="cancelAutoChangeButton"
                 iron-icon="passwords-icon:stop-circle"
-                on-click="onCancelAutoChangeClick_"
-                hidden="[[hideCancelButton_(passwordChangeState)]]"
-                disabled="[[isCancelDisabled_]]"
+                @click="${this.onCancelAutoChangeClick_}"
+                ?hidden="${this.hideCancelButton_()}"
+                ?disabled="${this.isCancelDisabled_}"
                 aria-label="$i18n{cancel}"
                 title="$i18n{cancel}">
             </cr-icon-button>
           </div>
-        </template>
-      </template>
+        `}
+      `}
       <a
-        id="alreadyChanged"
-        hidden="[[!showAlreadyChanged]]"
-        href="/"
-        on-click="onAlreadyChangedClick_">
+          id="alreadyChanged"
+          ?hidden="${!this.showAlreadyChanged}"
+          href="/"
+          @click="${this.onAlreadyChangedClick_}">
         $i18n{alreadyChangedPasswordLink}
       </a>
     </div>
-  </template>
-  <template is="dom-if" if="[[!item.changePasswordUrl]]">
+  ` : html`
     <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
-  </template>
+  `}
   <cr-icon-button iron-icon="cr:open-in-new" id="openInNew"
-      on-click="onOpenInNewClick_"
-      hidden="[[!shouldShowOpenInNew_(passwordChangeState)]]"
-      aria-label$="[[getOpenInNewButtonAriaLabel_(group, item)]]">
+      @click="${this.onOpenInNewClick_}"
+      ?hidden="${!this.shouldShowOpenInNew_()}"
+      aria-label="${this.getOpenInNewButtonAriaLabel_()}">
   </cr-icon-button>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
-      on-click="onMoreClick_"
-      hidden="[[shouldShowOpenInNew_(passwordChangeState)]]"
-      aria-label$="[[getMoreButtonAriaLabel_(group, item)]]">
+      @click="${this.onMoreClick_}"
+      ?hidden="${this.shouldShowOpenInNew_()}"
+      aria-label="${this.getMoreButtonAriaLabel_()}">
   </cr-icon-button>
 </div>
-<template is="dom-if" if="[[showEditPasswordDisclaimer_]]" restamp>
+${this.showEditPasswordDisclaimer_ ? html`
   <edit-password-disclaimer-dialog
-      on-edit-password-click="onEditPasswordClick_"
-      origin="[[getGroupName_(group)]]"
-      on-close="onEditDisclaimerClosed_">
+      @edit-password-click="${this.onEditPasswordClick_}"
+      origin="${this.getGroupName_()}"
+      @close="${this.onEditDisclaimerClose_}">
   </edit-password-disclaimer-dialog>
-</template>
-<template is="dom-if" if="[[showEditPasswordDialog_]]" restamp>
-  <edit-password-dialog on-close="onEditPasswordDialogClosed_"
-      id="editPasswordDialog" credential="[[item]]" show-redirect>
+` : ''}
+${this.showEditPasswordDialog_ ? html`
+  <edit-password-dialog @close="${this.onEditPasswordDialogClose_}"
+      id="editPasswordDialog" .credential="${this.item}" show-redirect>
   </edit-password-dialog>
-</template>
-<template is="dom-if" if="[[showDeletePasswordDialog_]]" restamp>
+` : ''}
+${this.showDeletePasswordDialog_ ? html`
   <delete-password-disclaimer-dialog id="deletePasswordDialog"
-      on-delete-password-click="onDeletePasswordClick_"
-      on-close="onDeletePasswordDialogClosed_" origin="[[getGroupName_(group)]]"
-      action-url="[[item.changePasswordUrl]]">
+      @delete-password-click="${this.onDeletePasswordClick_}"
+      @close="${this.onDeletePasswordDialogClose_}"
+      origin="${this.getGroupName_()}"
+      action-url="${this.item.changePasswordUrl || ''}">
   </delete-password-disclaimer-dialog>
-</template>
+` : ''}

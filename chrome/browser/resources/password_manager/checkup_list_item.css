@@ -1,0 +1,93 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #include=shared-style-lit cr-shared-style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=./shared_style_lit.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+site-favicon {
+  padding-inline-end: 20px;
+}
+
+#list-item {
+  align-items: center;
+  display: flex;
+  padding: 16px 20px;
+}
+
+#credentialInfo {
+  display: grid;
+  flex: 2;
+}
+
+#insecurePassword {
+  background-color: transparent;
+  border: none;
+  color: var(--cr-secondary-text-color);
+  font-size: inherit;
+  margin-bottom: 2px;
+  margin-inline-start: 4px;
+  max-width: 10ch;
+}
+
+#usernameContainer {
+  display: flex;
+}
+
+#username {
+  max-width: 200px;
+}
+
+#changeButton {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  margin-inline-start: var(--cr-icon-button-margin-start);
+}
+
+#change-password-link-icon {
+  --iron-icon-width: 16px;
+  margin-inline-start: 10px;
+}
+
+#auto-change-password-link-icon {
+  --iron-icon-width: 16px;
+}
+
+.status-container {
+  align-items: center;
+  display: flex;
+}
+
+#cancelAutoChangeButton {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  color: var(--cr-secondary-text-color);
+  margin-inline-start: 8px;
+}
+
+#separator {
+  margin-inline-start: 56px;
+}
+
+#alreadyChanged {
+  color: var(--cr-link-color);
+  flex: 1;
+  margin-top: 8px;
+  text-align: end;
+}
+
+#changePasswordButton,
+#autoChangePasswordButton {
+  height: auto;
+  padding: 3px 16px;
+}

@@ -8,10 +8,9 @@ import type {CrExpandButtonElement} from 'chrome://password-manager/password_man
 import {CheckupSubpage, OpenWindowProxyImpl, Page, PasswordAutomaticChangeState, PasswordCheckInteraction, PasswordManagerImpl, PluralStringProxyImpl, PrefsBrowserProxy, PrefService, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -40,7 +39,7 @@ suite('CheckupDetailsSectionTest', function() {
     pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
     Router.getInstance().navigateTo(Page.CHECKUP);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]
@@ -68,7 +67,7 @@ suite('CheckupDetailsSectionTest', function() {
             document.body.appendChild(section);
             await passwordManager.whenCalled('getInsecureCredentials');
             const params = await pluralString.whenCalled('getPluralString');
-            await flushTasks();
+            await microtasksFinished();
 
             assertEquals(type + 'Passwords', params.messageName);
             assertEquals(2, params.itemCount);
@@ -129,13 +128,13 @@ suite('CheckupDetailsSectionTest', function() {
     await passwordManager.whenCalled('getInsecureCredentials');
     await passwordManager.whenCalled('getCredentialGroups');
     const params = await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('compromisedPasswords', params.messageName);
     assertEquals(3, params.itemCount);
 
     const listItemElements =
-        section.shadowRoot!.querySelectorAll('checkup-list-item');
+        section.shadowRoot.querySelectorAll('checkup-list-item');
     assertEquals(
         listItemElements.length,
         passwordManager.data.insecureCredentials.length);
@@ -159,14 +158,14 @@ suite('CheckupDetailsSectionTest', function() {
           expectedCredential.username,
           listItemElement.$.username.textContent.trim());
       const compromiseType =
-          listItemElement.shadowRoot!.querySelector('#compromiseType');
+          listItemElement.shadowRoot.querySelector('#compromiseType');
 
       assertTrue(!!compromiseType);
       assertTrue(isVisible(compromiseType));
       assertEquals(expectedType[index]!, compromiseType.textContent.trim());
 
       const elapsedTime =
-          listItemElement.shadowRoot!.querySelector('#elapsedTime');
+          listItemElement.shadowRoot.querySelector('#elapsedTime');
       assertTrue(!!elapsedTime);
       assertTrue(isVisible(elapsedTime));
       assertEquals(
@@ -197,13 +196,13 @@ suite('CheckupDetailsSectionTest', function() {
     await passwordManager.whenCalled('getInsecureCredentials');
     await passwordManager.whenCalled('getCredentialGroups');
     const params = await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('weakPasswords', params.messageName);
     assertEquals(1, params.itemCount);
 
     const listItemElements =
-        section.shadowRoot!.querySelectorAll('checkup-list-item');
+        section.shadowRoot.querySelectorAll('checkup-list-item');
     assertEquals(1, listItemElements.length);
     const weakItem = listItemElements[0];
 
@@ -213,8 +212,8 @@ suite('CheckupDetailsSectionTest', function() {
         weakItem.$.shownUrl.textContent.trim());
     assertEquals('viking', weakItem.$.username.textContent.trim());
 
-    assertFalse(!!weakItem.shadowRoot!.querySelector('#compromiseType'));
-    assertFalse(!!weakItem.shadowRoot!.querySelector('#elapsedTime'));
+    assertFalse(!!weakItem.shadowRoot.querySelector('#compromiseType'));
+    assertFalse(!!weakItem.shadowRoot.querySelector('#elapsedTime'));
   });
 
   test('Muted compromised issues shown correctly', async function() {
@@ -254,19 +253,19 @@ suite('CheckupDetailsSectionTest', function() {
     await passwordManager.whenCalled('getInsecureCredentials');
 
     const params = await pluralString.whenCalled('getPluralString');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('compromisedPasswords', params.messageName);
     assertEquals(2, params.itemCount);
 
     const dismissedButton =
-        section.shadowRoot!.querySelector<CrExpandButtonElement>(
+        section.shadowRoot.querySelector<CrExpandButtonElement>(
             '#expandMutedCompromisedCredentialsButton');
     assertTrue(!!dismissedButton);
     assertTrue(isVisible(dismissedButton));
 
     const mutedCredentialsList =
-        section.shadowRoot!.querySelector('#mutedCredentialsList');
+        section.shadowRoot.querySelector('#mutedCredentialsList');
     assertTrue(!!mutedCredentialsList);
 
     const listItemElements =
@@ -276,7 +275,7 @@ suite('CheckupDetailsSectionTest', function() {
     assertFalse(isVisible(listItemElements[0]));
 
     dismissedButton.click();
-    await dismissedButton.updateComplete;
+    await microtasksFinished();
 
     assertTrue(isVisible(listItemElements[0]));
   });
@@ -309,10 +308,10 @@ suite('CheckupDetailsSectionTest', function() {
     // getPluralString() should be called 3 times: 1 for title, and 2 more for
     // each reused password.
     assertEquals(3, pluralString.getCallCount('getPluralString'));
-    await flushTasks();
+    await microtasksFinished();
 
     const listItemElements =
-        section.shadowRoot!.querySelectorAll('checkup-list-item');
+        section.shadowRoot.querySelectorAll('checkup-list-item');
     assertEquals(insecurePasswords.length, listItemElements.length);
 
     for (let index = 0; index < listItemElements.length; ++index) {
@@ -326,11 +325,11 @@ suite('CheckupDetailsSectionTest', function() {
       assertEquals(
           expectedCredential.username,
           listItemElement.$.username.textContent.trim());
-      const leakType = listItemElement.shadowRoot!.querySelector('#leakType');
+      const leakType = listItemElement.shadowRoot.querySelector('#leakType');
       assertFalse(!!leakType);
 
       const elapsedTime =
-          listItemElement.shadowRoot!.querySelector('#elapsedTime');
+          listItemElement.shadowRoot.querySelector('#elapsedTime');
       assertFalse(!!elapsedTime);
     }
   });
@@ -352,9 +351,9 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
     assertTrue(isVisible(listItem));
     assertEquals('password', listItem.$.insecurePassword.type);
@@ -363,6 +362,7 @@ suite('CheckupDetailsSectionTest', function() {
 
     // Click more actions button
     listItem.$.more.click();
+    await microtasksFinished();
 
     assertTrue(isVisible(section.$.menuShowPassword));
     assertEquals(
@@ -376,17 +376,20 @@ suite('CheckupDetailsSectionTest', function() {
 
     section.$.menuShowPassword.click();
     await passwordManager.whenCalled('requestCredentialsDetails');
+    await microtasksFinished();
 
     assertEquals('text', listItem.$.insecurePassword.type);
     assertEquals(
         credentialWithPassword.password, listItem.$.insecurePassword.value);
 
     listItem.$.more.click();
+    await microtasksFinished();
     assertTrue(isVisible(section.$.menuShowPassword));
     assertEquals(
         loadTimeData.getString('hidePassword'),
         section.$.menuShowPassword.textContent?.trim());
     section.$.menuShowPassword.click();
+    await microtasksFinished();
 
     assertEquals('password', listItem.$.insecurePassword.type);
   });
@@ -408,17 +411,18 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
     assertTrue(isVisible(listItem));
 
     // Click more actions button
     listItem.$.more.click();
+    await microtasksFinished();
 
     const muteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuMuteUnmuteButton');
+        section.shadowRoot.querySelector<HTMLElement>('#menuMuteUnmuteButton');
     assertTrue(!!muteButton);
     assertTrue(isVisible(muteButton));
     assertEquals(
@@ -447,25 +451,26 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
     // Expand dismissed compromised credentials.
-    const expandButton = section.shadowRoot!.querySelector<HTMLElement>(
+    const expandButton = section.shadowRoot.querySelector<HTMLElement>(
         '#expandMutedCompromisedCredentialsButton');
     assertTrue(!!expandButton);
     assertTrue(isVisible(expandButton));
     expandButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
     assertFalse(isVisible(section.$.moreActionsMenu));
 
     // Click more actions button
     listItem.$.more.click();
+    await microtasksFinished();
 
     const unMuteButton =
-        section.shadowRoot!.querySelector<HTMLElement>('#menuMuteUnmuteButton');
+        section.shadowRoot.querySelector<HTMLElement>('#menuMuteUnmuteButton');
     assertTrue(!!unMuteButton);
     assertTrue(isVisible(unMuteButton));
     assertEquals(
@@ -495,16 +500,17 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
     assertTrue(isVisible(listItem));
 
     // Click more actions button
     listItem.$.more.click();
+    await microtasksFinished();
 
-    const muteButton = section.shadowRoot!.querySelector<HTMLButtonElement>(
+    const muteButton = section.shadowRoot.querySelector<HTMLButtonElement>(
         '#menuMuteUnmuteButton');
 
     assertTrue(!!muteButton);
@@ -539,10 +545,10 @@ suite('CheckupDetailsSectionTest', function() {
                   'getCredentialsWithReusedPassword');
             }
             await pluralString.whenCalled('getPluralString');
-            await flushTasks();
+            await microtasksFinished();
 
             const listItemElements =
-                section.shadowRoot!.querySelectorAll('checkup-list-item');
+                section.shadowRoot.querySelectorAll('checkup-list-item');
             assertEquals(1, listItemElements.length);
             assertTrue(!!listItemElements[0]);
             assertTrue(isVisible(listItemElements[0]));
@@ -550,20 +556,20 @@ suite('CheckupDetailsSectionTest', function() {
 
             // Verify that 'Already change password?' link is hidden.
             const alreadyChange =
-                listItemElements[0].shadowRoot!.querySelector<HTMLElement>(
+                listItemElements[0].shadowRoot.querySelector<HTMLElement>(
                     '#alreadyChanged');
             assertTrue(!!alreadyChange);
             assertTrue(alreadyChange.hidden);
 
             const changePassword =
-                listItemElements[0].shadowRoot!.querySelector<HTMLElement>(
+                listItemElements[0].shadowRoot.querySelector<HTMLElement>(
                     '#changePasswordButton');
             assertTrue(!!changePassword);
 
             changePassword.click();
             const url = await openWindowProxy.whenCalled('openUrl');
             assertEquals(url, insecureCredential.changePasswordUrl);
-            await flushTasks();
+            await microtasksFinished();
 
             // Verify that 'Already change password?' link is visible.
             assertFalse(alreadyChange.hidden);
@@ -598,29 +604,29 @@ suite('CheckupDetailsSectionTest', function() {
                   'getCredentialsWithReusedPassword');
             }
             await pluralString.whenCalled('getPluralString');
-            await flushTasks();
+            await microtasksFinished();
 
             const listItemElements =
-                section.shadowRoot!.querySelectorAll('checkup-list-item');
+                section.shadowRoot.querySelectorAll('checkup-list-item');
             assertEquals(1, listItemElements.length);
             assertTrue(!!listItemElements[0]);
             assertTrue(isVisible(listItemElements[0]));
 
             // Verify that standard 'Change password' button is hidden.
             const changePassword =
-                listItemElements[0].shadowRoot!.querySelector<HTMLElement>(
+                listItemElements[0].shadowRoot.querySelector<HTMLElement>(
                     '#changePasswordButton');
             assertFalse(!!changePassword);
 
             // Verify that 'Already change password?' link is hidden.
             const alreadyChange =
-                listItemElements[0].shadowRoot!.querySelector<HTMLElement>(
+                listItemElements[0].shadowRoot.querySelector<HTMLElement>(
                     '#alreadyChanged');
             assertTrue(!!alreadyChange);
             assertTrue(alreadyChange.hidden);
 
             const autoChangePassword =
-                listItemElements[0].shadowRoot!.querySelector<HTMLElement>(
+                listItemElements[0].shadowRoot.querySelector<HTMLElement>(
                     '#autoChangePasswordButton');
             assertTrue(!!autoChangePassword);
             assertTrue(autoChangePassword.classList.contains('tonal-button'));
@@ -661,22 +667,21 @@ suite('CheckupDetailsSectionTest', function() {
                   'getCredentialsWithReusedPassword');
             }
             await pluralString.whenCalled('getPluralString');
-            await flushTasks();
+            await microtasksFinished();
 
             const listItemElements =
-                section.shadowRoot!.querySelectorAll('checkup-list-item');
+                section.shadowRoot.querySelectorAll('checkup-list-item');
             assertEquals(1, listItemElements.length);
             assertTrue(!!listItemElements[0]);
             assertTrue(isVisible(listItemElements[0]));
 
             // Verify that 'Change password' button is hidden.
-            const changePassword =
-                listItemElements[0].shadowRoot!.querySelector(
-                    '#changePasswordButton');
+            const changePassword = listItemElements[0].shadowRoot.querySelector(
+                '#changePasswordButton');
             assertFalse(!!changePassword);
 
             const changeInAppString =
-                listItemElements[0].shadowRoot!.querySelector(
+                listItemElements[0].shadowRoot.querySelector(
                     '#changePasswordInApp');
             assertTrue(!!changeInAppString);
             assertTrue(isVisible(changeInAppString));
@@ -703,9 +708,9 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
 
     // Click more actions button.
@@ -716,10 +721,10 @@ suite('CheckupDetailsSectionTest', function() {
 
     section.$.menuEditPassword.click();
     await passwordManager.whenCalled('requestCredentialsDetails');
-    await flushTasks();
+    await microtasksFinished();
 
     const editDialog =
-        listItem.shadowRoot!.querySelector('edit-password-dialog');
+        listItem.shadowRoot.querySelector('edit-password-dialog');
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
   });
@@ -742,9 +747,9 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
 
     // Click more actions button.
@@ -752,10 +757,10 @@ suite('CheckupDetailsSectionTest', function() {
 
     section.$.menuEditPassword.click();
     await passwordManager.whenCalled('requestCredentialsDetails');
-    await flushTasks();
+    await microtasksFinished();
 
     const editDialog =
-        listItem.shadowRoot!.querySelector('edit-password-dialog');
+        listItem.shadowRoot.querySelector('edit-password-dialog');
     assertFalse(!!editDialog);
   });
 
@@ -777,27 +782,27 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
 
     // Click 'Change password'
-    const changePassword = listItem.shadowRoot!.querySelector<HTMLElement>(
-        '#changePasswordButton');
+    const changePassword =
+        listItem.shadowRoot.querySelector<HTMLElement>('#changePasswordButton');
     assertTrue(!!changePassword);
     changePassword.click();
 
     // Click 'Already change password?'
     const alreadyChange =
-        listItem.shadowRoot!.querySelector<HTMLElement>('#alreadyChanged');
+        listItem.shadowRoot.querySelector<HTMLElement>('#alreadyChanged');
     assertTrue(!!alreadyChange);
     alreadyChange.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify edit disclaimer dialog is shown.
     const editDisclaimer =
-        listItem.shadowRoot!.querySelector('edit-password-disclaimer-dialog');
+        listItem.shadowRoot.querySelector('edit-password-disclaimer-dialog');
     assertTrue(!!editDisclaimer);
     assertTrue(editDisclaimer.$.dialog.open);
 
@@ -807,10 +812,10 @@ suite('CheckupDetailsSectionTest', function() {
     editDisclaimer.$.edit.click();
 
     await passwordManager.whenCalled('requestCredentialsDetails');
-    await flushTasks();
+    await microtasksFinished();
 
     const editDialog =
-        listItem.shadowRoot!.querySelector('edit-password-dialog');
+        listItem.shadowRoot.querySelector('edit-password-dialog');
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
   });
@@ -832,19 +837,19 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
 
     // Click more actions button.
     listItem.$.more.click();
 
     section.$.menuDeletePassword.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const deleteDialog =
-        listItem.shadowRoot!.querySelector('delete-password-disclaimer-dialog');
+        listItem.shadowRoot.querySelector('delete-password-disclaimer-dialog');
     assertTrue(!!deleteDialog);
     assertTrue(deleteDialog.$.dialog.open);
 
@@ -882,9 +887,9 @@ suite('CheckupDetailsSectionTest', function() {
         const section = document.createElement('checkup-details-section');
         document.body.appendChild(section);
         await passwordManager.whenCalled('getInsecureCredentials');
-        await flushTasks();
+        await microtasksFinished();
 
-        const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+        const listItem = section.shadowRoot.querySelector('checkup-list-item');
         assertTrue(!!listItem);
 
         // Initially state is Inactive.
@@ -897,7 +902,7 @@ suite('CheckupDetailsSectionTest', function() {
             .onPasswordAutomaticChangeStateUpdated(
                 credential.id, PasswordAutomaticChangeState.kChangingPassword);
         await passwordManager.callbackRouterRemote.$.flushForTesting();
-        await flushTasks();
+        await microtasksFinished();
 
         // Verify that the state was propagated down to the list item property.
         assertEquals(
@@ -910,7 +915,7 @@ suite('CheckupDetailsSectionTest', function() {
                 credential.id,
                 PasswordAutomaticChangeState.kPasswordChangedSuccessfully);
         await passwordManager.callbackRouterRemote.$.flushForTesting();
-        await flushTasks();
+        await microtasksFinished();
 
         // Verify that the success state was propagated down to the list item
         // property.
@@ -937,9 +942,9 @@ suite('CheckupDetailsSectionTest', function() {
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
-    await flushTasks();
+    await microtasksFinished();
 
-    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    const listItem = section.shadowRoot.querySelector('checkup-list-item');
     assertTrue(!!listItem);
 
     // Verify initial state.
@@ -950,7 +955,7 @@ suite('CheckupDetailsSectionTest', function() {
     passwordManager.callbackRouterRemote.onPasswordAutomaticChangeStateUpdated(
         credential.id, PasswordAutomaticChangeState.kChangingPassword);
     await passwordManager.callbackRouterRemote.$.flushForTesting();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
         PasswordAutomaticChangeState.kChangingPassword,
@@ -958,14 +963,14 @@ suite('CheckupDetailsSectionTest', function() {
 
     // Remove section from DOM (disconnectedCallback is called).
     section.remove();
-    await flushTasks();
+    await microtasksFinished();
 
     // Fire state update while disconnected.
     passwordManager.callbackRouterRemote.onPasswordAutomaticChangeStateUpdated(
         credential.id,
         PasswordAutomaticChangeState.kPasswordChangedSuccessfully);
     await passwordManager.callbackRouterRemote.$.flushForTesting();
-    await flushTasks();
+    await microtasksFinished();
 
     // Verify state was not updated because listener was removed.
     assertEquals(
@@ -1004,24 +1009,24 @@ suite('CheckupDetailsSectionTest', function() {
                   await passwordManager.whenCalled(
                       'getCredentialsWithReusedPassword');
                 }
-                await flushTasks();
+                await microtasksFinished();
 
                 const listItemElements =
-                    section.shadowRoot!.querySelectorAll('checkup-list-item');
+                    section.shadowRoot.querySelectorAll('checkup-list-item');
                 assertEquals(1, listItemElements.length);
                 const listItem = listItemElements[0]!;
 
                 // Initially idle, cancel button should not exist.
-                assertFalse(!!listItem.shadowRoot!.querySelector(
+                assertFalse(!!listItem.shadowRoot.querySelector(
                     '#cancelAutoChangeButton'));
 
                 // Set state to active.
                 listItem.passwordChangeState =
                     PasswordAutomaticChangeState.kChangingPassword;
-                await flushTasks();
+                await microtasksFinished();
 
                 const cancelButton =
-                    listItem.shadowRoot!.querySelector<HTMLElement>(
+                    listItem.shadowRoot.querySelector<HTMLElement>(
                         '#cancelAutoChangeButton');
                 assertTrue(!!cancelButton);
                 assertTrue(isVisible(cancelButton));
@@ -1033,7 +1038,7 @@ suite('CheckupDetailsSectionTest', function() {
                 assertEquals(insecureCredential.id, id);
                 listItem.passwordChangeState =
                     PasswordAutomaticChangeState.kInactive;
-                await flushTasks();
+                await microtasksFinished();
 
                 // Cancel button should be hidden.
                 assertFalse(isVisible(cancelButton));

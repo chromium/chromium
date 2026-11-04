@@ -7,23 +7,24 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import './shared_style.css.js';
 import './checkup_list_item.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './checkup_details_section.html.js';
+import {getCss} from './checkup_details_section.css.js';
+import {getHtml} from './checkup_details_section.html.js';
 import type {CheckupListItemElement} from './checkup_list_item.js';
 import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {CheckupSubpage, Page, RouteObserverMixin, Router} from './router.js';
+import {CheckupSubpage, Page, RouteObserverMixinLit, Router} from './router.js';
 
 export class ReusedPasswordInfo {
   constructor(credentials: chrome.passwordsPrivate.PasswordUiEntry[]) {
@@ -51,8 +52,8 @@ export interface CheckupDetailsSectionElement {
   };
 }
 
-const CheckupDetailsSectionElementBase =
-    PrefServiceObserverMixin(I18nMixin(RouteObserverMixin(PolymerElement)));
+const CheckupDetailsSectionElementBase = PrefServiceObserverMixinLit(
+    I18nMixinLit(RouteObserverMixinLit(CrLitElement)));
 
 export class CheckupDetailsSectionElement extends
     CheckupDetailsSectionElementBase {
@@ -60,19 +61,26 @@ export class CheckupDetailsSectionElement extends
     return 'checkup-details-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      pageTitle_: String,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      pageSubtitle_: String,
+  static override get properties() {
+    return {
+      pageTitle_: {
+        type: String,
+      },
+
+      pageSubtitle_: {
+        type: String,
+      },
 
       insecurityType_: {
         type: String,
-        observer: 'updateShownCredentials_',
       },
 
       groups_: {
@@ -81,12 +89,10 @@ export class CheckupDetailsSectionElement extends
 
       allInsecureCredentials_: {
         type: Array,
-        observer: 'updateShownCredentials_',
       },
 
       shownInsecureCredentials_: {
         type: Array,
-        observer: 'onCredentialsChanged_',
       },
 
       credentialsWithReusedPassword_: {
@@ -97,9 +103,12 @@ export class CheckupDetailsSectionElement extends
         type: Array,
       },
 
+      mutedLeakedCredentialsExpanded_: {
+        type: Boolean,
+      },
+
       activeListItem_: {
         type: Object,
-        value: null,
       },
 
       /**
@@ -108,37 +117,36 @@ export class CheckupDetailsSectionElement extends
        */
       clickedChangePasswordIds_: {
         type: Object,
-        value: () => new Set(),
       },
 
       isMutingDisabled_: {
         type: Boolean,
-        value: false,
       },
 
       passwordChangeStates_: {
         type: Object,
-        value: () => ({}),
       },
     };
   }
 
-  declare private pageTitle_: string;
-  declare private pageSubtitle_: string;
-  declare private insecurityType_: CheckupSubpage|undefined;
-  declare private groups_: chrome.passwordsPrivate.CredentialGroup[];
-  declare private allInsecureCredentials_:
-      chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private shownInsecureCredentials_:
-      chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private credentialsWithReusedPassword_: ReusedPasswordInfo[];
-  declare private mutedCompromisedCredentials_:
-      chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private activeListItem_: CheckupListItemElement|null;
-  declare private clickedChangePasswordIds_: Set<number>;
-  declare private isMutingDisabled_: boolean;
-  declare private passwordChangeStates_:
-      Record<number, PasswordAutomaticChangeState>;
+  protected accessor pageTitle_: string = '';
+  protected accessor pageSubtitle_: string = '';
+  private accessor insecurityType_: CheckupSubpage|undefined;
+  private accessor groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
+  private accessor allInsecureCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[]|undefined;
+  protected accessor shownInsecureCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[] = [];
+  protected accessor credentialsWithReusedPassword_: ReusedPasswordInfo[] = [];
+  protected accessor mutedCompromisedCredentials_:
+      chrome.passwordsPrivate.PasswordUiEntry[] = [];
+  protected accessor mutedLeakedCredentialsExpanded_: boolean = false;
+  private accessor activeListItem_: CheckupListItemElement|null = null;
+  private accessor clickedChangePasswordIds_: Set<number> = new Set();
+  protected accessor isMutingDisabled_: boolean = false;
+  private accessor passwordChangeStates_:
+      Record<number, PasswordAutomaticChangeState> = {};
+
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
   private listenerId_: number|null = null;
@@ -190,18 +198,33 @@ export class CheckupDetailsSectionElement extends
     }
   }
 
-  private onStateUpdated_(id: number, state: PasswordAutomaticChangeState) {
-    this.set(`passwordChangeStates_.${id}`, state);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('insecurityType_') ||
+        changedPrivateProperties.has('allInsecureCredentials_')) {
+      this.updateShownCredentials_();
+    }
+    if (changedPrivateProperties.has('shownInsecureCredentials_') &&
+        this.allInsecureCredentials_) {
+      this.onCredentialsChanged_();
+    }
   }
 
-  private getPasswordChangeStateFor_(
-      id: number,
-      _statesRecord: Record<string, unknown>): PasswordAutomaticChangeState {
+  private onStateUpdated_(id: number, state: PasswordAutomaticChangeState) {
+    this.passwordChangeStates_[id] = state;
+    this.requestUpdate();
+  }
+
+  protected getPasswordChangeStateFor_(id: number):
+      PasswordAutomaticChangeState {
     return this.passwordChangeStates_[id] ||
         PasswordAutomaticChangeState.kInactive;
   }
 
-  override currentRouteChanged(route: Route, oldRoute: Route): void {
+  override currentRouteChanged(route: Route, oldRoute?: Route): void {
     if (route.page !== Page.CHECKUP_DETAILS) {
       return;
     }
@@ -214,7 +237,7 @@ export class CheckupDetailsSectionElement extends
     }
   }
 
-  private navigateBack_() {
+  protected onBackButtonClick_() {
     Router.getInstance().navigateTo(Page.CHECKUP);
   }
 
@@ -327,27 +350,30 @@ export class CheckupDetailsSectionElement extends
     }
   }
 
-  private getDescription_() {
-    assert(this.insecurityType_);
+  protected getDescription_() {
+    if (!this.insecurityType_) {
+      return '';
+    }
     return this.i18n(`${this.insecurityType_}PasswordsDescription`);
   }
 
-  private isCompromisedType(): boolean {
+  protected isCompromisedType(): boolean {
     return this.insecurityType_ === CheckupSubpage.COMPROMISED;
   }
 
-  private isReusedType(): boolean {
+  protected isReusedType(): boolean {
     return this.insecurityType_ === CheckupSubpage.REUSED;
   }
 
-  private onMoreActionsClick_(event: CustomEvent) {
+  protected onMoreActionsClick_(
+      event: CustomEvent<
+          {listItem: CheckupListItemElement, target: HTMLElement}>) {
     const target = event.detail.target;
     this.$.moreActionsMenu.showAt(target);
-    this.activeListItem_ =
-        event.detail.listItem as unknown as CheckupListItemElement;
+    this.activeListItem_ = event.detail.listItem;
   }
 
-  private onMenuShowPasswordClick_() {
+  protected onMenuShowPasswordClick_() {
     this.activeListItem_?.showHidePassword();
     this.$.moreActionsMenu.close();
     this.activeListItem_ = null;
@@ -355,7 +381,7 @@ export class CheckupDetailsSectionElement extends
         PasswordCheckInteraction.SHOW_PASSWORD);
   }
 
-  private onMenuEditPasswordClick_() {
+  protected onMenuEditPasswordClick_() {
     this.activeListItem_?.showEditDialog();
     this.$.moreActionsMenu.close();
     this.activeListItem_ = null;
@@ -363,23 +389,23 @@ export class CheckupDetailsSectionElement extends
         PasswordCheckInteraction.EDIT_PASSWORD);
   }
 
-  private onMenuDeletePasswordClick_() {
+  protected onMenuDeletePasswordClick_() {
     this.activeListItem_?.showDeleteDialog();
     this.$.moreActionsMenu.close();
     this.activeListItem_ = null;
   }
 
-  private getShowHideTitle_(): string {
+  protected getShowHideTitle_(): string {
     return this.activeListItem_?.getShowHideButtonLabel() || '';
   }
 
-  private getMuteUnmuteLabel_(): string {
+  protected getMuteUnmuteLabel_(): string {
     return this.activeListItem_?.item.compromisedInfo?.isMuted === true ?
         this.i18n('unmuteCompromisedPassword') :
         this.i18n('muteCompromisedPassword');
   }
 
-  private onMenuMuteUnmuteClick_() {
+  protected onMenuMuteUnmuteClick_() {
     assert(this.activeListItem_);
     if (this.activeListItem_.item.compromisedInfo?.isMuted === true) {
       PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
@@ -395,22 +421,27 @@ export class CheckupDetailsSectionElement extends
     this.$.moreActionsMenu.close();
   }
 
-  private getCurrentGroup_(id: number): chrome.passwordsPrivate.CredentialGroup
-      |undefined {
+  protected getCurrentGroup_(id: number):
+      chrome.passwordsPrivate.CredentialGroup|undefined {
     return this.groups_?.find(
         group => group.entries.some(entry => entry.id === id));
   }
 
-  private onChangePasswordClick_(event: CustomEvent<number>) {
+  protected onChangePasswordClicked_(event: CustomEvent<number>) {
     this.clickedChangePasswordIds_.add(event.detail);
-    this.notifyPath('clickedChangePasswordIds_.size');
+    this.requestUpdate();
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.CHANGE_PASSWORD);
   }
 
-  private clickedChangePassword_(item: chrome.passwordsPrivate.PasswordUiEntry):
-      boolean {
+  protected clickedChangePassword_(
+      item: chrome.passwordsPrivate.PasswordUiEntry): boolean {
     return this.clickedChangePasswordIds_.has(item.id);
+  }
+
+  protected onMutedLeakedCredentialsExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.mutedLeakedCredentialsExpanded_ = e.detail.value;
   }
 }
 

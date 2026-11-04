@@ -116,6 +116,8 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "checkup_details_section.css",
+    "checkup_list_item.css",
     "checkup_section.css",
     "cr_input_style.css",
     "cr_page_host_style.css",
@@ -135,6 +137,7 @@ build_webui("build") {
     "dialogs/trusted_vault_error_dialog.css",
     "full_data_reset.css",
     "notification_cards/notification_card.css",
+    "password_change_details.css",
     "passwords_exporter.css",
     "passwords_importer.css",
     "prefs/pref_toggle_button.css",

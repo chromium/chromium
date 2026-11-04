@@ -4,27 +4,26 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './dialogs/edit_password_dialog.js';
 import './dialogs/delete_password_disclaimer_dialog.js';
 import './dialogs/edit_password_disclaimer_dialog.js';
 import './site_favicon.js';
-import './shared_style.css.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './checkup_list_item.html.js';
+import {getCss} from './checkup_list_item.css.js';
+import {getHtml} from './checkup_list_item.html.js';
 import {PasswordAutomaticChangeState} from './password_manager.mojom-webui.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
-import type {ShowPasswordMixinInterface} from './show_password_mixin.js';
-import {ShowPasswordMixin} from './show_password_mixin.js';
+import type {ShowPasswordMixinLitInterface} from './show_password_mixin_lit.js';
+import {ShowPasswordMixinLit} from './show_password_mixin_lit.js';
 
-export interface CheckupListItemElement extends ShowPasswordMixinInterface {
+export interface CheckupListItemElement extends ShowPasswordMixinLitInterface {
   $: {
     shownUrl: HTMLElement,
     username: HTMLElement,
@@ -33,55 +32,62 @@ export interface CheckupListItemElement extends ShowPasswordMixinInterface {
   };
 }
 
-const CheckupListItemElementBase = ShowPasswordMixin(I18nMixin(PolymerElement));
+const CheckupListItemElementBase =
+    ShowPasswordMixinLit(I18nMixinLit(CrLitElement));
 
 export class CheckupListItemElement extends CheckupListItemElementBase {
   static get is() {
     return 'checkup-list-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      item: Object,
-      group: Object,
-      first: Boolean,
-      showDetails: Boolean,
-      showAlreadyChanged: Boolean,
-      showEditPasswordDialog_: Boolean,
-      showEditPasswordDisclaimer_: Boolean,
-      showDeletePasswordDialog_: Boolean,
-      passwordChangeState: {
-        type: Number,
-        value: PasswordAutomaticChangeState.kInactive,
-        observer: 'onPasswordChangeStateChanged_',
-      },
-      isCancelDisabled_: {
-        type: Boolean,
-        value: false,
-      },
+      item: {type: Object},
+      group: {type: Object},
+      first: {type: Boolean},
+      showDetails: {type: Boolean},
+      showAlreadyChanged: {type: Boolean},
+      showEditPasswordDialog_: {type: Boolean},
+      showEditPasswordDisclaimer_: {type: Boolean},
+      showDeletePasswordDialog_: {type: Boolean},
+      passwordChangeState: {type: Number},
+      isCancelDisabled_: {type: Boolean},
     };
   }
 
-  declare item: chrome.passwordsPrivate.PasswordUiEntry;
-  declare group: chrome.passwordsPrivate.CredentialGroup;
-  declare first: boolean;
-  declare showDetails: boolean;
-  declare showAlreadyChanged: boolean;
-  declare passwordChangeState: PasswordAutomaticChangeState;
-  declare private isCancelDisabled_: boolean;
-  declare private showEditPasswordDialog_: boolean;
-  declare private showEditPasswordDisclaimer_: boolean;
-  declare private showDeletePasswordDialog_: boolean;
+  accessor item: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor group: chrome.passwordsPrivate.CredentialGroup|undefined;
+  accessor first: boolean = false;
+  accessor showDetails: boolean = false;
+  accessor showAlreadyChanged: boolean = false;
+  accessor passwordChangeState: PasswordAutomaticChangeState =
+      PasswordAutomaticChangeState.kInactive;
+  protected accessor isCancelDisabled_: boolean = false;
+  protected accessor showEditPasswordDialog_: boolean = false;
+  protected accessor showEditPasswordDisclaimer_: boolean = false;
+  protected accessor showDeletePasswordDialog_: boolean = false;
 
-  private getPasswordValue_(): string|undefined {
-    return this.isPasswordVisible ? this.item.password : ' '.repeat(10);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('passwordChangeState')) {
+      this.isCancelDisabled_ = false;
+    }
   }
 
-  private getCompromiseDescription_(): string {
+  protected getPasswordValue_(): string {
+    return (this.isPasswordVisible && this.item.password) ? this.item.password :
+                                                            ' '.repeat(10);
+  }
+
+  protected getCompromiseDescription_(): string {
     assert(this.item.compromisedInfo);
     const isLeaked = this.item.compromisedInfo.compromiseTypes.some(
         type => type === chrome.passwordsPrivate.CompromiseType.LEAKED);
@@ -101,15 +107,11 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
         'Can\'t find a string for type: ' + this.item.compromisedInfo);
   }
 
-  private onMoreClick_(event: Event) {
-    this.dispatchEvent(new CustomEvent('more-actions-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        listItem: this,
-        target: event.target,
-      },
-    }));
+  protected onMoreClick_(event: Event) {
+    this.fire('more-actions-click', {
+      listItem: this,
+      target: event.target,
+    });
   }
 
   showHidePassword() {
@@ -150,120 +152,113 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     this.showDeletePasswordDialog_ = true;
   }
 
-  private onChangePasswordClick_() {
+  protected onChangePasswordClick_() {
     assert(this.item.changePasswordUrl);
     OpenWindowProxyImpl.getInstance().openUrl(this.item.changePasswordUrl);
-    this.dispatchEvent(new CustomEvent(
-        'change-password-clicked',
-        {bubbles: true, composed: true, detail: this.item.id}));
+    this.fire('change-password-clicked', this.item.id);
   }
 
-  private onAutoChangePasswordClick_() {
+  protected onAutoChangePasswordClick_() {
     if (this.item && this.item.isAutomaticPasswordChangeSupported) {
       PasswordManagerImpl.getInstance().requestChangePassword(this.item.id);
     }
   }
 
-  private onPasswordChangeStateChanged_() {
-    this.isCancelDisabled_ = false;
-  }
-
-  private onOpenInNewClick_() {
+  protected onOpenInNewClick_() {
     PasswordManagerImpl.getInstance().openPasswordChangeTab(this.item.id);
   }
 
-  private onCancelAutoChangeClick_() {
+  protected onCancelAutoChangeClick_() {
     this.isCancelDisabled_ = true;
     PasswordManagerImpl.getInstance().stopPasswordChange(this.item.id);
   }
 
-  private onAlreadyChangedClick_(e: Event) {
+  protected onAlreadyChangedClick_(e: Event) {
     this.showEditPasswordDisclaimer_ = true;
     e.preventDefault();
   }
 
-  private onEditPasswordDialogClosed_() {
+  protected onEditPasswordDialogClose_() {
     this.showEditPasswordDialog_ = false;
     this.item.password = undefined;
     this.item.note = undefined;
   }
 
-  private onEditPasswordClick_() {
+  protected onEditPasswordClick_() {
     this.showEditDialog();
   }
 
-  private onEditDisclaimerClosed_() {
+  protected onEditDisclaimerClose_() {
     this.showEditPasswordDisclaimer_ = false;
   }
 
-  private onDeletePasswordDialogClosed_() {
+  protected onDeletePasswordDialogClose_() {
     this.showDeletePasswordDialog_ = false;
   }
 
-  private onDeletePasswordClick_() {
+  protected onDeletePasswordClick_() {
     PasswordManagerImpl.getInstance().removeCredential(
         this.item.id, this.item.storedIn);
-    this.dispatchEvent(new CustomEvent('password-removed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        removedFromStores: this.item.storedIn,
-      },
-    }));
+    this.fire('password-removed', {
+      removedFromStores: this.item.storedIn,
+    });
   }
 
-  private getGroupName_(): string {
+  protected getGroupName_(): string {
     return !this.group ? '' : this.group.name;
   }
 
-  private getGroupIcon_(): string {
+  protected getGroupIcon_(): string {
     return !this.group ? '' : this.group.iconUrl;
   }
 
-  private getChangeButtonAriaLabel_(): string {
+  protected getChangeButtonAriaLabel_(): string {
     return this.i18n('changePasswordAriaDescription', this.getGroupName_());
   }
 
-  private getAutoChangeButtonAriaLabel_(): string {
+  protected getAutoChangeButtonAriaLabel_(): string {
     return this.i18n(
         'automatedPasswordChangeCheckupButtonAriaDescription',
         this.getGroupName_());
   }
 
-  private getMoreButtonAriaLabel_(): string {
+  protected getMoreButtonAriaLabel_(): string {
     return this.i18n('moreActionsAriaDescription', this.getGroupName_());
   }
 
-  private getOpenInNewButtonAriaLabel_(): string {
+  protected getOpenInNewButtonAriaLabel_(): string {
     return this.i18n('changePasswordAriaDescription', this.getGroupName_());
   }
 
-  private isAutoChangePasswordIdle_(state: PasswordAutomaticChangeState):
-      boolean {
-    return state === PasswordAutomaticChangeState.kInactive;
+  protected isAutoChangePasswordIdle_(): boolean {
+    return this.passwordChangeState === PasswordAutomaticChangeState.kInactive;
   }
 
-  private hideCancelButton_(state: PasswordAutomaticChangeState): boolean {
-    return state !== PasswordAutomaticChangeState.kAttemptingSignIn &&
-      state !== PasswordAutomaticChangeState.kChangingPassword &&
-      state !== PasswordAutomaticChangeState.kConfirmingChangedPassword;
+  protected hideCancelButton_(): boolean {
+    return this.passwordChangeState !==
+        PasswordAutomaticChangeState.kAttemptingSignIn &&
+        this.passwordChangeState !==
+        PasswordAutomaticChangeState.kChangingPassword &&
+        this.passwordChangeState !==
+        PasswordAutomaticChangeState.kConfirmingChangedPassword;
   }
 
-  private shouldShowOpenInNew_(state: PasswordAutomaticChangeState): boolean {
-    return state !== PasswordAutomaticChangeState.kInactive &&
-        state !== PasswordAutomaticChangeState.kPasswordChangedSuccessfully;
+  protected shouldShowOpenInNew_(): boolean {
+    return this.passwordChangeState !==
+        PasswordAutomaticChangeState.kInactive &&
+        this.passwordChangeState !==
+        PasswordAutomaticChangeState.kPasswordChangedSuccessfully;
   }
 
-  private getAutoChangePasswordIcon_(state: PasswordAutomaticChangeState):
-      string {
-    return state === PasswordAutomaticChangeState.kPasswordChangedSuccessfully ?
+  protected getAutoChangePasswordIcon_(): string {
+    return this.passwordChangeState ===
+            PasswordAutomaticChangeState.kPasswordChangedSuccessfully ?
         'passwords-icon:task-spark' :
         'passwords-icon:arrow-selector-spark';
   }
 
-  private getAutoChangePasswordButtonText_(state: PasswordAutomaticChangeState):
-      string {
-    switch (state) {
+  protected getAutoChangePasswordButtonText_(): string {
+    switch (this.passwordChangeState) {
       case PasswordAutomaticChangeState.kInactive:
         return this.i18n('automatedPasswordChangeCheckupButton');
       case PasswordAutomaticChangeState.kAttemptingSignIn:

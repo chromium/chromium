@@ -157,7 +157,7 @@ suite('PasswordManagerAppTest', function() {
                 assertTrue(!!checkupDetailsPage);
                 assertEquals(app.shadowRoot!.activeElement, checkupDetailsPage);
                 assertEquals(
-                    checkupDetailsPage.shadowRoot!.activeElement,
+                    checkupDetailsPage.shadowRoot.activeElement,
                     checkupDetailsPage.$.backButton);
 
                 checkupDetailsPage.$.backButton.click();
