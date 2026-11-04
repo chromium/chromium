@@ -127,14 +127,6 @@ class AccountPreviewDataService : public KeyedService {
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback,
       base::TimeDelta timeout) = 0;
-
-  // Same as above, using `kAccountPreviewPreferredAccountFREFetchTimeout` as
-  // the default timeout.
-  // TODO(crbug.com/580844796): Remove this method after migrating both
-  // platforms to the timeout overload.
-  virtual void GetPreferredAccountForSigninAsync(
-      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
-          callback) = 0;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

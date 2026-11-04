@@ -39,11 +39,6 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback,
       base::TimeDelta timeout) override;
-  // TODO(crbug.com/580844796): Remove this method after migrating both
-  // platforms to the timeout overload.
-  void GetPreferredAccountForSigninAsync(
-      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
-          callback) override;
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void UpdateExternalAppAccount(

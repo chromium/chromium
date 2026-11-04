@@ -93,9 +93,6 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
           callback,
       base::TimeDelta timeout) override;
-  void GetPreferredAccountForSigninAsync(
-      base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
-          callback) override;
 #endif
 
   // Retrieves the cached preview data. Exposed specifically for testing.

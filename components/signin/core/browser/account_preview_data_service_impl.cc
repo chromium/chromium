@@ -376,14 +376,6 @@ void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
       FetchTriggerCause::kPreferredAccountMissingForAsyncFetch);
 }
 
-void AccountPreviewDataServiceImpl::GetPreferredAccountForSigninAsync(
-    base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
-        callback) {
-  GetPreferredAccountForSigninAsync(
-      std::move(callback),
-      switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get());
-}
-
 void AccountPreviewDataServiceImpl::OnPendingPreferredAccountRequestTimedOut(
     PendingPreferredAccountRequest* request) {
   auto it = std::ranges::find_if(pending_preferred_account_requests_,
