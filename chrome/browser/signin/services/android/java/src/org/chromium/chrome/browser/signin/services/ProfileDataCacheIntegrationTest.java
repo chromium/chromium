@@ -512,7 +512,7 @@ public class ProfileDataCacheIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
-                            ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                            ProfileDataCache.createWithDefaultImageSize(
                                     ContextUtils.getApplicationContext(), mIdentityManager);
                     mProfileDataCache.addObserver(mObserver);
                 });

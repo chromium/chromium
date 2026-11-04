@@ -420,7 +420,7 @@ public class FullscreenSigninMediator
         IdentityManager identityManager = getIdentityManager();
 
         mContinueButtonProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, identityManager);
+                ProfileDataCache.createWithDefaultImageSize(mContext, identityManager);
         mContinueButtonProfileDataCache.addObserver(mContinueButtonObserver);
         // Create a separate cache for the sign-in animation. We use the logo height (110dp)
         // to ensure the profile picture is high-resolution when it replaces the Chrome logo.

@@ -90,7 +90,7 @@ public class ProfileDataCacheUnitTest {
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
                 mIsIdentityManagerSourceOfAccounts);
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
     }
@@ -184,7 +184,7 @@ public class ProfileDataCacheUnitTest {
     public void cacheShouldBePopulatedOnInitialization() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         Assert.assertTrue(profileDataCache.getAccounts().isFulfilled());
@@ -241,7 +241,7 @@ public class ProfileDataCacheUnitTest {
     public void cacheShouldNotBePopulatedOnInitializationWhenGetAccountsFails() {
         mAccountManagerTestRule.blockGetAccountsUpdate();
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
@@ -460,7 +460,7 @@ public class ProfileDataCacheUnitTest {
         var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
@@ -535,7 +535,7 @@ public class ProfileDataCacheUnitTest {
                 .setPrimaryAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         // Create a new ProfileDataCache to ensure that the accounts are not ready.
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
@@ -552,7 +552,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
@@ -575,7 +575,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
@@ -603,7 +603,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
         // Create a new ProfileDataCache to ensure that the accounts are not ready.
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
@@ -642,7 +642,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.setAccountFetchFailed();
 
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
 
@@ -654,7 +654,7 @@ public class ProfileDataCacheUnitTest {
     public void testAccountsPromiseIsFulfilledWhenRefreshTokensLoadingFailsAfterInitialization() {
         var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
         var profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         profileDataCache.addObserver(mObserverMock);
@@ -677,7 +677,7 @@ public class ProfileDataCacheUnitTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         // Create a new ProfileDataCache to ensure that the accounts are not ready.
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
 
@@ -707,7 +707,7 @@ public class ProfileDataCacheUnitTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         mProfileDataCache.addObserver(mObserverMock);
@@ -733,7 +733,7 @@ public class ProfileDataCacheUnitTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         mProfileDataCache.addObserver(mObserverMock);
@@ -758,7 +758,7 @@ public class ProfileDataCacheUnitTest {
         FeatureOverrides.overrideFlag(
                 SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS, false);
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         RuntimeEnvironment.getApplication().getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
         mProfileDataCache.addObserver(mObserverMock);
@@ -1225,7 +1225,7 @@ public class ProfileDataCacheUnitTest {
                 RING_THICKNESS + ringSpacing, createWithAiTierRing().getAiTierRingPadding());
         Assert.assertEquals(
                 0,
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                                 RuntimeEnvironment.getApplication().getApplicationContext(),
                                 mAccountManagerTestRule.getIdentityManager())
                         .getAiTierRingPadding());

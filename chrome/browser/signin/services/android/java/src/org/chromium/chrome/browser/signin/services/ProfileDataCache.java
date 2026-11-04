@@ -191,11 +191,12 @@ public class ProfileDataCache
     }
 
     /**
+     * Create a {@link ProfileDataCache} with the default image size.
+     *
      * @param context Context of the application to extract resources from.
-     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *     and no badge.
+     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size).
      */
-    public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(
+    public static ProfileDataCache createWithDefaultImageSize(
             Context context, IdentityManager identityManager) {
         return new ProfileDataCache(
                 context,

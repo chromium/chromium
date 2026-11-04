@@ -52,8 +52,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
         IdentityManager identityManager = mSigninManager.getIdentityManager();
-        mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, identityManager);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(context, identityManager);
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);

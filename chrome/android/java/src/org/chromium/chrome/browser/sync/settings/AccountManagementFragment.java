@@ -125,8 +125,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
 
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        requireContext(), getIdentityManager());
+                ProfileDataCache.createWithDefaultImageSize(requireContext(), getIdentityManager());
     }
 
     @Override

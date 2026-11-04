@@ -49,8 +49,7 @@ class AccountPickerMediator implements ProfileDataCache.Observer {
         mListModel = listModel;
         mAccountPickerListener = listener;
         mIdentityManager = identityManager;
-        mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, identityManager);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(context, identityManager);
         mProfileDataCache.addObserver(this);
         updateAccounts(getAccounts());
     }

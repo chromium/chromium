@@ -378,8 +378,7 @@ public class SigninPromoMediatorTest {
     }
 
     private void createSigninPromoMediator(SigninPromoDelegate delegate) {
-        mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, mIdentityManager);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(mContext, mIdentityManager);
         mMediator =
                 new SigninPromoMediator(
                         mIdentityManager,

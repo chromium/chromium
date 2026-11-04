@@ -95,7 +95,7 @@ public class SigninPromoCoordinator
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         ProfileDataCache profileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                ProfileDataCache.createWithDefaultImageSize(
                         mContext, assertNonNull(identityManager));
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);

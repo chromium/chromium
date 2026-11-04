@@ -398,8 +398,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             resources.getDimensionPixelSize(R.dimen.ai_tier_ring_thickness_large));
         } else {
             profileDataCache =
-                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                            getContext(), identityManager);
+                    ProfileDataCache.createWithDefaultImageSize(getContext(), identityManager);
         }
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
 

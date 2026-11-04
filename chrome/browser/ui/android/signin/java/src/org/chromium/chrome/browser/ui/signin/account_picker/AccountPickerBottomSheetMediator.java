@@ -232,8 +232,7 @@ public class AccountPickerBottomSheetMediator
         mRequestDisplayBottomSheet = requestDisplayBottomSheet;
         mDismissBottomSheet = dismissBottomSheet;
         mAccountPickerBottomSheetStrings = accountPickerBottomSheetStrings;
-        mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, identityManager);
+        mProfileDataCache = ProfileDataCache.createWithDefaultImageSize(mActivity, identityManager);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mInitialViewState = initialViewState;
         mIsWebSignin = isWebSignin;

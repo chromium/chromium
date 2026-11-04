@@ -104,7 +104,7 @@ class BatchUploadCardMediator
         mIdentityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, mIdentityManager);
+                ProfileDataCache.createWithDefaultImageSize(mActivity, mIdentityManager);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
