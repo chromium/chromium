@@ -81,6 +81,16 @@ export class RecentTabsDelegate implements
   onItemClick(item: OrganizerListSectionItem<RecentlyClosedItem>) {
     const data = item.data;
     assert(data);
+    if (isTabGroup(data)) {
+      chrome.histograms?.recordUserAction?.(
+          'OrganizerPanel.OpenRecentlyClosedTabGroup');
+    } else if (isSplitView(data)) {
+      chrome.histograms?.recordUserAction?.(
+          'OrganizerPanel.OpenRecentlyClosedSplitView');
+    } else {
+      chrome.histograms?.recordUserAction?.(
+          'OrganizerPanel.OpenRecentlyClosedTab');
+    }
     const id =
         isTabGroup(data) || isSplitView(data) ? data.sessionId : data.tabId;
     this.browserProxy_.handler.openRecentlyClosedEntry(id);

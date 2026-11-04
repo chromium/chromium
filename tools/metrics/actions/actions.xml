@@ -29346,12 +29346,30 @@ should be able to be added at any place in this file.
   <description>Settings: Users: Remove a whitelisted user</description>
 </action>
 
+<action name="OrganizerPanel.CloseTab">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking the close button on an open tab row in
+    OpenTabsDelegate.
+  </description>
+</action>
+
 <action name="OrganizerPanel.CollapseSection">
   <owner>agale@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when a section in the organizer panel is manually collapsed by the
     user.
+  </description>
+</action>
+
+<action name="OrganizerPanel.CreateTabGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking &quot;+ Create tab group&quot; zero state in
+    TabGroupsDelegate.
   </description>
 </action>
 
@@ -29369,6 +29387,54 @@ should be able to be added at any place in this file.
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     The user opened the organizer panel via the tab strip entrypoint.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenCrossDeviceTab">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking a foreign tab in ForeignTabsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenRecentlyClosedSplitView">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking a recent split view in RecentTabsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenRecentlyClosedTab">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking a recent tab in RecentTabsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenRecentlyClosedTabGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking a recent tab group in RecentTabsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.OpenTabGroup">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when clicking an existing group in TabGroupsDelegate.
+  </description>
+</action>
+
+<action name="OrganizerPanel.SwitchToTab">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when user clicks an open tab row in OpenTabsDelegate.
   </description>
 </action>
 

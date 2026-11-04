@@ -85,11 +85,13 @@ export class TabGroupsDelegate implements
   }
 
   private onCreateTabGroupClick_() {
+    chrome.histograms?.recordUserAction?.('OrganizerPanel.CreateTabGroup');
     this.organizerPanelBrowserProxy_.handler.closePanel();
     this.browserProxy_.handler.createNewTabGroup();
   }
 
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {
+    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenTabGroup');
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTabGroup(data.id);

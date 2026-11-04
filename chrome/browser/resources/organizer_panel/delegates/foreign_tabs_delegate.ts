@@ -95,6 +95,7 @@ export class ForeignTabsDelegate implements
   }
 
   onItemClick(item: OrganizerListSectionItem<ForeignTab>) {
+    chrome.histograms?.recordUserAction?.('OrganizerPanel.OpenCrossDeviceTab');
     const data = item.data;
     assert(data);
     this.browserProxy_.handler.openTab(data.sessionTag, data.sessionTabId);

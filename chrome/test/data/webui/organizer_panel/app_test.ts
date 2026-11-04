@@ -4,11 +4,14 @@
 
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
-import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, SearchApiProxyImpl, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {ForeignTab, OrganizerPanelAppElement, OrganizerPanelPageRemote, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote, OpenTabsDelegate, OpenTabsItemType, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, SearchApiProxyImpl, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -16,6 +19,7 @@ import {TestSearchApiProxy} from './test_search_api_proxy.js';
 
 suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
+  let metrics: MetricsTracker;
   let mockOrganizerPanelHandler: TestMock<OrganizerPanelPageHandlerRemote>&
       OrganizerPanelPageHandlerRemote;
   let remotePage: OrganizerPanelPageRemote;
@@ -27,6 +31,7 @@ suite('OrganizerPanelAppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
     loadTimeData.resetForTesting({
       clearSearch: 'Clear search',
       close: 'Close',
@@ -571,5 +576,87 @@ suite('OrganizerPanelAppTest', () => {
         sections[0]!.getVisibleItems()[0]!.$.crUrlListItem
             .getFocusableElement(),
         getDeepActiveElement());
+  });
+
+  test('records user actions when delegates are interacted with', () => {
+    const openTabsDelegate =
+        app.$.list.sectionDelegates.find(d => d instanceof OpenTabsDelegate) as
+        OpenTabsDelegate;
+    assertTrue(!!openTabsDelegate);
+
+    // SwitchToTab and CloseTab
+    const dummyTabItem = {
+      title: ['Open Tab'],
+      data: {
+        type: OpenTabsItemType.TAB as const,
+        tab: {tabId: 1, alertStates: []} as unknown as Tab,
+      },
+    };
+    openTabsDelegate.onItemClick(dummyTabItem);
+    assertEquals(1, metrics.count('OrganizerPanel.SwitchToTab'));
+
+    openTabsDelegate.onItemActionButtonClicked(dummyTabItem);
+    assertEquals(1, metrics.count('OrganizerPanel.CloseTab'));
+
+    // RecentTabsDelegate: OpenRecentlyClosedTab, OpenRecentlyClosedTabGroup,
+    // OpenRecentlyClosedSplitView
+    const recentTabsDelegate =
+        app.$.list.sectionDelegates.find(
+            d => d instanceof RecentTabsDelegate) as RecentTabsDelegate;
+    assertTrue(!!recentTabsDelegate);
+
+    const recentTabItem = {
+      title: ['Recent Tab'],
+      data: {tabId: 10} as unknown as RecentlyClosedTab,
+    };
+    recentTabsDelegate.onItemClick(recentTabItem);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenRecentlyClosedTab'));
+
+    const recentTabGroupItem = {
+      title: ['Recent Group'],
+      data: {sessionId: 20, color: 1} as unknown as RecentlyClosedTabGroup,
+    };
+    recentTabsDelegate.onItemClick(recentTabGroupItem);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenRecentlyClosedTabGroup'));
+
+    const recentSplitItem = {
+      title: ['Recent Split'],
+      data: {sessionId: 30, tabUrls: []} as unknown as RecentlyClosedSplitView,
+    };
+    recentTabsDelegate.onItemClick(recentSplitItem);
+    assertEquals(
+        1, metrics.count('OrganizerPanel.OpenRecentlyClosedSplitView'));
+
+    // TabGroupsDelegate: OpenTabGroup and CreateTabGroup
+    const tabGroupsDelegate =
+        app.$.list.sectionDelegates.find(d => d instanceof TabGroupsDelegate) as
+        TabGroupsDelegate;
+    assertTrue(!!tabGroupsDelegate);
+
+    const groupItem = {
+      title: ['Tab Group'],
+      data: {id: 'group-1'} as TabGroup,
+    };
+    tabGroupsDelegate.onItemClick(groupItem);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenTabGroup'));
+
+    // Zero state "+ Create tab group"
+    const zeroState = tabGroupsDelegate.getZeroState();
+    const container = document.createElement('div');
+    render(zeroState, container);
+    const zeroStateItem =
+        container.querySelector('organizer-list-section-item')!;
+    assertTrue(!!zeroStateItem);
+    zeroStateItem.click();
+    assertEquals(1, metrics.count('OrganizerPanel.CreateTabGroup'));
+
+    // ForeignTabsDelegate: OpenCrossDeviceTab
+    const foreignTabsDelegate = new ForeignTabsDelegate();
+    const foreignTabItem = {
+      title: ['Foreign Tab'],
+      data: {sessionTag: 'tag', sessionTabId: 40} as ForeignTab,
+    };
+    foreignTabsDelegate.onItemClick(foreignTabItem);
+    assertEquals(1, metrics.count('OrganizerPanel.OpenCrossDeviceTab'));
   });
 });
