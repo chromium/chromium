@@ -90,7 +90,7 @@ NearbyProcessManagerFactory::BuildServiceInstanceForBrowserContext(
   // primary user.
   if (CanBeLaunchedForProfile(profile) ||
       g_bypass_primary_user_check_for_testing) {
-    return NearbyProcessManagerImpl::Factory::Create(
+    return NearbyProcessManagerImpl::Create(
         NearbyDependenciesProviderFactory::GetForProfile(profile));
   }
 

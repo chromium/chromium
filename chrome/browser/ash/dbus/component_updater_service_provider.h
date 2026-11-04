@@ -45,26 +45,6 @@ class ComponentUpdaterServiceProvider
     : public CrosDBusService::ServiceProviderInterface,
       public component_updater::ComponentManagerAsh::Delegate {
  public:
-  // Delegate interface providing additional resources to
-  // ComponentUpdaterServiceProvider.
-  class Delegate {
-   public:
-    using LoadCallback = base::OnceCallback<void(const base::FilePath&)>;
-
-    Delegate() = default;
-
-    Delegate(const Delegate&) = delete;
-    Delegate& operator=(const Delegate&) = delete;
-
-    virtual ~Delegate() = default;
-
-    virtual void LoadComponent(const std::string& name,
-                               bool mount,
-                               LoadCallback load_callback) = 0;
-
-    virtual bool UnloadComponent(const std::string& name) = 0;
-  };
-
   explicit ComponentUpdaterServiceProvider(
       component_updater::ComponentManagerAsh* cros_component_manager);
 

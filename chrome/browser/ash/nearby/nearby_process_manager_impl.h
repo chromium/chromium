@@ -33,20 +33,8 @@ class NearbyDependenciesProvider;
 // Mojo connection, which results in the process getting killed.
 class NearbyProcessManagerImpl : public NearbyProcessManager {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<NearbyProcessManager> Create(
-        NearbyDependenciesProvider* nearby_dependencies_provider,
-        std::unique_ptr<base::OneShotTimer> timer =
-            std::make_unique<base::OneShotTimer>());
-    static void SetFactoryForTesting(Factory* factory);
-    virtual ~Factory() = default;
-
-   private:
-    virtual std::unique_ptr<NearbyProcessManager> BuildInstance(
-        NearbyDependenciesProvider* nearby_dependencies_provider,
-        std::unique_ptr<base::OneShotTimer> timer) = 0;
-  };
+  static std::unique_ptr<NearbyProcessManager> Create(
+      NearbyDependenciesProvider* nearby_dependencies_provider);
 
   ~NearbyProcessManagerImpl() override;
 

@@ -21,8 +21,6 @@ namespace ash {
 namespace nearby {
 namespace {
 
-NearbyProcessManagerImpl::Factory* g_test_factory = nullptr;
-
 constexpr base::TimeDelta kProcessCleanupTimeout = base::Seconds(5);
 
 void OnSharingShutDownComplete(
@@ -37,22 +35,11 @@ void OnSharingShutDownComplete(
 }  // namespace
 
 // static
-std::unique_ptr<NearbyProcessManager> NearbyProcessManagerImpl::Factory::Create(
-    NearbyDependenciesProvider* nearby_dependencies_provider,
-    std::unique_ptr<base::OneShotTimer> timer) {
-  if (g_test_factory) {
-    return g_test_factory->BuildInstance(nearby_dependencies_provider,
-                                         std::move(timer));
-  }
-
+std::unique_ptr<NearbyProcessManager> NearbyProcessManagerImpl::Create(
+    NearbyDependenciesProvider* nearby_dependencies_provider) {
   return base::WrapUnique(new NearbyProcessManagerImpl(
-      nearby_dependencies_provider, std::move(timer),
+      nearby_dependencies_provider, std::make_unique<base::OneShotTimer>(),
       base::BindRepeating(&sharing::LaunchSharing)));
-}
-
-// static
-void NearbyProcessManagerImpl::Factory::SetFactoryForTesting(Factory* factory) {
-  g_test_factory = factory;
 }
 
 NearbyProcessManagerImpl::NearbyReferenceImpl::NearbyReferenceImpl(

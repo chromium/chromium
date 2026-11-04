@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
@@ -19,16 +18,6 @@ namespace arc {
 // Fake implementation of ARC support Chrome App for testing.
 class FakeArcSupport : public extensions::NativeMessageHost::Client {
  public:
-  // Observer to get arc support related notifications.
-  class Observer {
-   public:
-    // Called when ui_page() changes, with the new page as argument.
-    virtual void OnPageChanged(ArcSupportHost::UIPage page) {}
-
-   protected:
-    virtual ~Observer() = default;
-  };
-
   explicit FakeArcSupport(ArcSupportHost* support_host);
 
   FakeArcSupport(const FakeArcSupport&) = delete;
@@ -89,10 +78,6 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   // Returns the current page.
   ArcSupportHost::UIPage ui_page() const { return ui_page_; }
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-  bool HasObserver(Observer* observer);
-
  private:
   void UnsetMessageHost();
 
@@ -111,7 +96,6 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   bool location_service_mode_ = false;
   std::string tos_content_;
   bool tos_shown_ = false;
-  base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<FakeArcSupport> weak_ptr_factory_{this};
 };

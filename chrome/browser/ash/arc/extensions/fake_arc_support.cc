@@ -117,18 +117,6 @@ void FakeArcSupport::TosLoadResult(bool success) {
                     base::ToString(success), "}"}));
 }
 
-void FakeArcSupport::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void FakeArcSupport::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-bool FakeArcSupport::HasObserver(Observer* observer) {
-  return observer_list_.HasObserver(observer);
-}
-
 void FakeArcSupport::UnsetMessageHost() {
   support_host_->UnsetMessageHost(
       static_cast<ArcSupportMessageHost*>(native_message_host_.get()));
@@ -147,7 +135,6 @@ void FakeArcSupport::PostMessageFromNativeHost(
     NOTREACHED() << message_string;
   }
 
-  ArcSupportHost::UIPage prev_ui_page = ui_page_;
   if (*action == "initialize") {
     // Do nothing as emulation.
   } else if (*action == "showPage") {
@@ -195,10 +182,6 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else {
     // Unknown or unsupported action.
     NOTREACHED() << message_string;
-  }
-  if (prev_ui_page != ui_page_) {
-    for (auto& observer : observer_list_)
-      observer.OnPageChanged(ui_page_);
   }
 }
 

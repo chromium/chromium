@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/publishers/remote_apps.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
@@ -59,14 +58,6 @@ class RemoteAppsManager
       public AppListModelUpdaterObserver,
       public chromeos::remote_apps::mojom::RemoteAppsFactory {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-
-    // Invoked when an app is launched. |id| is the ID of the app.
-    virtual void OnAppLaunched(const std::string& id) {}
-  };
-
   class ImageDownloader {
    public:
     virtual ~ImageDownloader() = default;
@@ -196,7 +187,6 @@ class RemoteAppsManager
   RemoteAppsImpl remote_apps_impl_{this};
   std::unique_ptr<RemoteAppsModel> model_;
   std::unique_ptr<ImageDownloader> image_downloader_;
-  base::ObserverList<Observer> observer_list_;
   mojo::ReceiverSet<chromeos::remote_apps::mojom::RemoteAppsFactory>
       factory_receivers_;
   // Map from id to callback. The callback is run after |OnAppUpdate| for the
