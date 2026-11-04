@@ -44,6 +44,7 @@
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -52,6 +53,7 @@
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/safety_list_manager.h"
@@ -598,6 +600,46 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlInNewTab) {
   content::WebContents* active_contents = web_contents();
   EXPECT_NE(active_contents, source_contents);
   EXPECT_EQ(active_contents->GetLastCommittedURL(), target_url);
+  EXPECT_EQ(source_contents->GetLastCommittedURL(), start_url);
+}
+
+// "Open a new tab" must open the New Tab Page rather than requiring the model
+// to invent a URL for `open_url`.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CreateTabOpensNewTabPage) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  content::WebContents* source_contents = web_contents();
+  const int initial_tab_count = tab_list()->GetTabCount();
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name =
+      std::string(actor::CreateTabToolRequest::kModelFacingName);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  ASSERT_EQ(tab_list()->GetTabCount(), initial_tab_count + 1);
+  content::WebContents* active_contents = web_contents();
+  EXPECT_NE(active_contents, source_contents);
+  // The tool responds once the new tab is opened, which can be before its NTP
+  // navigation finishes loading, so wait for it. Depending on the platform and
+  // timing, the NTP shows up as chrome://newtab/ or as its rewritten URL (e.g.
+  // chrome://new-tab-page/ on desktop Android, chrome-native://newtab/ on
+  // Android).
+  ASSERT_TRUE(content::WaitForLoadStop(active_contents));
+  auto is_ntp = [](const GURL& url) {
+    return url == GURL(chrome::kChromeUINewTabURL) || search::IsNTPURL(url);
+  };
+  EXPECT_TRUE(is_ntp(active_contents->GetLastCommittedURL()))
+      << active_contents->GetLastCommittedURL();
   EXPECT_EQ(source_contents->GetLastCommittedURL(), start_url);
 }
 
@@ -2364,14 +2406,23 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   static constexpr actor::ToolIdSet kExpectedToolIds = {
-      actor::ToolId::kOpenUrl,          actor::ToolId::kPerformSearch,
-      actor::ToolId::kGoBack,           actor::ToolId::kGoForward,
-      actor::ToolId::kReloadPage,       actor::ToolId::kFindAndHighlight,
-      actor::ToolId::kPlayVideo,        actor::ToolId::kPauseVideo,
-      actor::ToolId::kSeekToTimestamp,  actor::ToolId::kTranslatePage,
-      actor::ToolId::kCloseTab,         actor::ToolId::kSwitchTab,
-      actor::ToolId::kEnterFullscreen,  actor::ToolId::kExitFullscreen,
-      actor::ToolId::kOpenKnownPage,    actor::ToolId::kPromptGeminiPanel,
+      actor::ToolId::kOpenUrl,
+      actor::ToolId::kPerformSearch,
+      actor::ToolId::kGoBack,
+      actor::ToolId::kGoForward,
+      actor::ToolId::kReloadPage,
+      actor::ToolId::kFindAndHighlight,
+      actor::ToolId::kPlayVideo,
+      actor::ToolId::kPauseVideo,
+      actor::ToolId::kSeekToTimestamp,
+      actor::ToolId::kTranslatePage,
+      actor::ToolId::kCloseTab,
+      actor::ToolId::kCreateTab,
+      actor::ToolId::kSwitchTab,
+      actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kExitFullscreen,
+      actor::ToolId::kOpenKnownPage,
+      actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
   };
 

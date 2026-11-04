@@ -92,6 +92,7 @@ class ToolController : public content::WebContentsObserver {
                     ToolResponseCallback callback);
   void CloseCurrentTab(ToolResponseCallback callback);
   void CloseGeminiPanel(ToolResponseCallback callback);
+  void CreateNewTab(ToolResponseCallback callback);
   void FindAndHighlight(const base::DictValue& arguments,
                         ToolResponseCallback callback);
   void GetScreenshot(ToolResponseCallback callback);

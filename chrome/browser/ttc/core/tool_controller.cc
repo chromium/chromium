@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
@@ -261,6 +262,9 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kCloseTab:
         CloseCurrentTab(std::move(callback));
         return;
+      case actor::ToolId::kCreateTab:
+        CreateNewTab(std::move(callback));
+        return;
       case actor::ToolId::kSwitchTab:
         SwitchTab(tool_request.arguments, std::move(callback));
         return;
@@ -328,9 +332,9 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kPauseVideo,       actor::ToolId::kSeekToTimestamp,
       actor::ToolId::kTranslatePage,    actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel, actor::ToolId::kCloseTab,
-      actor::ToolId::kSwitchTab,        actor::ToolId::kOpenUrl,
-      actor::ToolId::kEnterFullscreen,  actor::ToolId::kExitFullscreen,
-      actor::ToolId::kOpenKnownPage,
+      actor::ToolId::kCreateTab,        actor::ToolId::kSwitchTab,
+      actor::ToolId::kOpenUrl,          actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kExitFullscreen,   actor::ToolId::kOpenKnownPage,
   };
 
   std::vector<const actor::ToolDefinition*> actor_tools =
@@ -524,6 +528,20 @@ void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
           -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::CloseGeminiPanelToolRequest>(
             actor_surface_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::CreateNewTab(ToolResponseCallback callback) {
+  // `actor::CreateTabToolRequest` opens an about:blank tab, so open the New
+  // Tab Page in a new tab via `actor::OpenUrlToolRequest` instead, matching
+  // what Ctrl/Cmd+T does.
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::OpenUrlToolRequest>(
+            actor_surface_handle, GURL(chrome::kChromeUINewTabURL),
+            /*open_in_new_tab=*/true);
       },
       std::move(callback));
 }
