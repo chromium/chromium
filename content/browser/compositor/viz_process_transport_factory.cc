@@ -427,7 +427,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     root_params->external_begin_frame_controller =
         external_begin_frame_controller.BindNewEndpointAndPassReceiver();
     if (auto* factory =
-            compositor->external_begin_frame_controler_client_factory()) {
+            compositor->external_begin_frame_controller_client_factory()) {
       root_params->external_begin_frame_controller_client =
           factory->CreateExternalBeginFrameControllerClient();
     }

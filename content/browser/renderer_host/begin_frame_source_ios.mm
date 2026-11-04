@@ -23,7 +23,7 @@ BeginFrameSourceIOS::~BeginFrameSourceIOS() {
   // Unregister from `compositor_` so that it does not hold a dangling pointer
   // to `this`. The compositor is owned by BrowserCompositorIOS and outlives
   // this object.
-  if (compositor_->external_begin_frame_controler_client_factory() == this) {
+  if (compositor_->external_begin_frame_controller_client_factory() == this) {
     compositor_->SetExternalBeginFrameControllerClientFactory(nullptr);
   }
 }

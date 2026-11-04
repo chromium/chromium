@@ -533,13 +533,13 @@ class COMPOSITOR_EXPORT Compositor
   const cc::PropertyTrees* property_trees() const;
 
   ExternalBeginFrameControllerClientFactory*
-  external_begin_frame_controler_client_factory() {
-    return external_begin_frame_controler_client_factory_.get();
+  external_begin_frame_controller_client_factory() {
+    return external_begin_frame_controller_client_factory_.get();
   }
 
   void SetExternalBeginFrameControllerClientFactory(
       ExternalBeginFrameControllerClientFactory* factory) {
-    external_begin_frame_controler_client_factory_ = factory;
+    external_begin_frame_controller_client_factory_ = factory;
   }
 
   // Sets wait_for_all_frame_sinks in RootCompositorFrameSinkParams.
@@ -593,7 +593,7 @@ class COMPOSITOR_EXPORT Compositor
   mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
       external_begin_frame_controller_;
   raw_ptr<ExternalBeginFrameControllerClientFactory>
-      external_begin_frame_controler_client_factory_;
+      external_begin_frame_controller_client_factory_;
   bool wait_for_all_frame_sinks_ = true;
 
   // Used to hold on to IssueExternalBeginFrame(NoAck) arguments if
