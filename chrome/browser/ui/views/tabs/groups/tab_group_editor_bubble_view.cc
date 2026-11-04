@@ -461,6 +461,10 @@ void TabGroupEditorBubbleView::UpdateGroup() {
   if (IsEphemeralTabGroup()) {
     return;
   }
+  UpdateGroupVisuals();
+}
+
+void TabGroupEditorBubbleView::UpdateGroupVisuals() {
   const std::optional<int> selected_element =
       color_selector_->GetSelectedElement();
   TabGroup* const tab_group =
@@ -596,8 +600,8 @@ bool TabGroupEditorBubbleView::OwnsGroup() const {
 }
 
 void TabGroupEditorBubbleView::OnEphemeralGroupPromoted() {
+  UpdateGroupVisuals();
   browser_->GetTabStripModel()->PromoteEphemeralTabGroup(group_);
-  UpdateGroup();
   OnBubbleClose();
   if (GetWidget()) {
     GetWidget()->CloseWithReason(

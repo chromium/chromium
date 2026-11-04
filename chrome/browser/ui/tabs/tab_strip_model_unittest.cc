@@ -3398,25 +3398,20 @@ TEST_F(TabStripModelTest, EnterFocusModeWithIndices_CreatesEphemeralGroup) {
 
   MockTabStripModelObserver observer;
   tabstrip()->AddObserver(&observer);
-  std::optional<tab_groups::TabGroupId> added_group;
-  EXPECT_CALL(observer, OnTabGroupAdded(testing::_))
-      .WillOnce([&](const tab_groups::TabGroupId& group) {
-        added_group = group;
-        EXPECT_TRUE(tabstrip()->IsEphemeralTabGroup(group));
-        // The group is focused only after it has been fully created.
-        EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
-      });
+  std::optional<tab_groups::TabGroupId> focused_group;
+  // Ephemeral groups do not fire OnTabGroupAdded() until promoted.
+  EXPECT_CALL(observer, OnTabGroupAdded(testing::_)).Times(0);
   EXPECT_CALL(observer, OnTabGroupFocusChanged(testing::_, testing::_))
       .WillOnce([&](std::optional<tab_groups::TabGroupId> new_group,
                     std::optional<tab_groups::TabGroupId> old_group) {
-        EXPECT_EQ(added_group, new_group);
+        focused_group = new_group;
         EXPECT_EQ(std::nullopt, old_group);
       });
 
   const tab_groups::TabGroupId group = tabstrip()->EnterFocusMode({1, 2});
   tabstrip()->RemoveObserver(&observer);
 
-  EXPECT_EQ(added_group, group);
+  EXPECT_EQ(focused_group, group);
   EXPECT_EQ(group, tabstrip()->GetFocusedGroup());
   EXPECT_TRUE(tabstrip()->IsEphemeralTabGroup(group));
   EXPECT_EQ(group, tabstrip()->GetTabGroupForTab(1));
@@ -3557,6 +3552,83 @@ TEST_F(TabStripModelTest,
   lock.RunAndReset();
   EXPECT_FALSE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
   EXPECT_EQ(std::nullopt, tabstrip()->GetTabGroupForTab(2));
+}
+
+// Ephemeral groups must never be persisted to session storage; regular and
+// promoted groups may be.
+TEST_F(TabStripModelTest, PersistableTabGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 3);
+  tabstrip()->ForgetAllOpeners();
+  const tab_groups::TabGroupId regular_group = tabstrip()->AddToNewGroup({0});
+  const tab_groups::TabGroupId ephemeral_group =
+      tabstrip()->EnterFocusMode({1});
+
+  EXPECT_TRUE(tabstrip()->IsPersistableTabGroup(regular_group));
+  EXPECT_FALSE(tabstrip()->IsPersistableTabGroup(ephemeral_group));
+  // A group that is not in the model cannot be persisted.
+  EXPECT_FALSE(
+      tabstrip()->IsPersistableTabGroup(tab_groups::TabGroupId::GenerateNew()));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableFocusedGroup());
+
+  EXPECT_EQ(regular_group, tabstrip()->GetPersistableTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(1));
+  EXPECT_EQ(std::nullopt, tabstrip()->GetPersistableTabGroupForTab(2));
+
+  tabstrip()->PromoteEphemeralTabGroup(ephemeral_group);
+  EXPECT_TRUE(tabstrip()->IsPersistableTabGroup(ephemeral_group));
+  EXPECT_EQ(ephemeral_group, tabstrip()->GetPersistableFocusedGroup());
+  EXPECT_EQ(ephemeral_group, tabstrip()->GetPersistableTabGroupForTab(1));
+}
+
+// OnTabGroupPromoted() is sent only when an ephemeral group is promoted, not
+// for ordinary group creation (which only sends OnTabGroupAdded()).
+TEST_F(TabStripModelTest, OnTabGroupPromotedOnlyForPromotion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  class PromotionObserver : public TabStripModelObserver {
+   public:
+    void OnTabGroupAdded(const tab_groups::TabGroupId& group_id) override {
+      added.push_back(group_id);
+    }
+    void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) override {
+      // OnTabGroupAdded() is sent for `group_id` immediately before this.
+      EXPECT_EQ(1, std::ranges::count(added, group_id));
+      promoted.push_back(group_id);
+    }
+    std::vector<tab_groups::TabGroupId> added;
+    std::vector<tab_groups::TabGroupId> promoted;
+  } observer;
+
+  PrepareTabs(tabstrip(), 2);
+  tabstrip()->ForgetAllOpeners();
+  tabstrip()->AddObserver(&observer);
+
+  const tab_groups::TabGroupId regular_group = tabstrip()->AddToNewGroup({0});
+  const tab_groups::TabGroupId ephemeral_group =
+      tabstrip()->EnterFocusMode({1});
+  EXPECT_THAT(observer.added, testing::ElementsAre(regular_group));
+  EXPECT_TRUE(observer.promoted.empty());
+
+  tabstrip()->PromoteEphemeralTabGroup(ephemeral_group);
+  EXPECT_THAT(observer.added,
+              testing::ElementsAre(regular_group, ephemeral_group));
+  EXPECT_THAT(observer.promoted, testing::ElementsAre(ephemeral_group));
+
+  // Promoting a group that is not ephemeral is a no-op: neither notification
+  // is sent again.
+  tabstrip()->PromoteEphemeralTabGroup(regular_group);
+  tabstrip()->PromoteEphemeralTabGroup(ephemeral_group);
+  EXPECT_THAT(observer.promoted, testing::ElementsAre(ephemeral_group));
+  EXPECT_THAT(observer.added,
+              testing::ElementsAre(regular_group, ephemeral_group));
+
+  tabstrip()->RemoveObserver(&observer);
 }
 
 TEST_F(TabStripModelTest, AddToNewSplit_MultipleIndices_Active) {

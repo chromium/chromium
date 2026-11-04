@@ -2157,8 +2157,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroupAndNotifyImpl(
   AddToNewGroupImpl(indices, new_group, is_ephemeral);
   delegate_->GroupAdded(new_group);
 
-  for (TabStripModelObserver& observer : observers_) {
-    observer.OnTabGroupAdded(new_group);
+  if (!is_ephemeral) {
+    for (TabStripModelObserver& observer : observers_) {
+      observer.OnTabGroupAdded(new_group);
+    }
   }
 
   return new_group;
@@ -2278,8 +2280,24 @@ bool TabStripModel::IsEphemeralTabGroup(
              : false;
 }
 
+bool TabStripModel::IsPersistableTabGroup(
+    const tab_groups::TabGroupId& group_id) const {
+  return group_model_ && group_model_->ContainsTabGroup(group_id) &&
+         !group_model_->GetTabGroup(group_id)->is_ephemeral();
+}
+
+std::optional<tab_groups::TabGroupId>
+TabStripModel::GetPersistableTabGroupForTab(int index) const {
+  std::optional<tab_groups::TabGroupId> group_id = GetTabGroupForTab(index);
+  return (group_id.has_value() && IsPersistableTabGroup(*group_id))
+             ? group_id
+             : std::nullopt;
+}
+
 void TabStripModel::PromoteEphemeralTabGroup(
     const tab_groups::TabGroupId& group_id) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
   if (!group_model_ || !group_model_->ContainsTabGroup(group_id)) {
     return;
   }
@@ -2291,8 +2309,13 @@ void TabStripModel::PromoteEphemeralTabGroup(
 
   tab_group->SetIsEphemeral(false);
 
+  // Existing observers (e.g. SavedTabGroupModelListener, which saves the
+  // group) treat a promoted group like a newly added one.
   for (TabStripModelObserver& observer : observers_) {
     observer.OnTabGroupAdded(group_id);
+  }
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnTabGroupPromoted(group_id);
   }
 }
 
@@ -2303,6 +2326,14 @@ std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {
     return std::nullopt;
   }
   return selection_model_.focused_group();
+}
+
+std::optional<tab_groups::TabGroupId>
+TabStripModel::GetPersistableFocusedGroup() const {
+  std::optional<tab_groups::TabGroupId> group_id = GetFocusedGroup();
+  return (group_id.has_value() && IsPersistableTabGroup(*group_id))
+             ? group_id
+             : std::nullopt;
 }
 
 void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
@@ -2375,14 +2406,7 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
                                tab_group->IsCustomized());
     }
 
-    if (!closing_all_ && old_focused_group.has_value() &&
-        IsEphemeralTabGroup(old_focused_group.value())) {
-      if (const gfx::Range tabs =
-              group_model_->GetTabGroup(old_focused_group.value())->ListTabs();
-          !tabs.is_empty()) {
-        RemoveFromGroupImpl(tabs.ToIntVector());
-      }
-    }
+    MaybeDissolveEphemeralGroup(old_focused_group);
   }
 }
 
@@ -2433,11 +2457,7 @@ void TabStripModel::ExitFocusMode(
     }
   }
 
-  if (is_ephemeral && !closing_all_ && !locked_ephemeral_group_.has_value()) {
-    RemoveFromGroupImpl(group_model_->GetTabGroup(old_focused_group.value())
-                            ->ListTabs()
-                            .ToIntVector());
-  }
+  MaybeDissolveEphemeralGroup(old_focused_group);
 }
 
 base::ScopedClosureRunner TabStripModel::TakeEphemeralGroupRemovalLock(
@@ -2456,11 +2476,19 @@ void TabStripModel::ReleaseEphemeralGroupRemovalLock(
     const tab_groups::TabGroupId& group_id) {
   CHECK(locked_ephemeral_group_ == group_id);
   locked_ephemeral_group_.reset();
-  // The group may have been promoted, emptied, or re-focused meanwhile.
-  if (!closing_all_ && IsEphemeralTabGroup(group_id) &&
-      GetFocusedGroup() != group_id) {
-    RemoveFromGroupImpl(
-        group_model_->GetTabGroup(group_id)->ListTabs().ToIntVector());
+  MaybeDissolveEphemeralGroup(group_id);
+}
+
+void TabStripModel::MaybeDissolveEphemeralGroup(
+    std::optional<tab_groups::TabGroupId> group_id) {
+  if (closing_all_ || !group_id.has_value() ||
+      locked_ephemeral_group_ == *group_id || GetFocusedGroup() == *group_id ||
+      !IsEphemeralTabGroup(*group_id)) {
+    return;
+  }
+  if (const gfx::Range tabs = group_model_->GetTabGroup(*group_id)->ListTabs();
+      !tabs.is_empty()) {
+    RemoveFromGroupImpl(tabs.ToIntVector());
   }
 }
 

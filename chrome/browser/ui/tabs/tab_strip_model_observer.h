@@ -576,8 +576,13 @@ class TabStripModelObserver {
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id);
 
-  // Notfies us when a Tab Group is added to the Tab Group Model.
+  // Notifies us when a non-ephemeral Tab Group is added to the Tab Group Model
+  // (either created as a regular group or promoted from an ephemeral group).
   virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
+
+  // Called when the ephemeral Tab Group `group_id` is promoted to a regular
+  // group, immediately after `OnTabGroupAdded()`.
+  virtual void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id);
 
   // Notfies us when a Tab Group will be removed from the Tab Group Model.
   virtual void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id);

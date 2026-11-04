@@ -382,6 +382,9 @@ void TabStripModelObserver::OnTabGroupFocusChanged(
 void TabStripModelObserver::OnTabGroupAdded(
     const tab_groups::TabGroupId& group_id) {}
 
+void TabStripModelObserver::OnTabGroupPromoted(
+    const tab_groups::TabGroupId& group_id) {}
+
 void TabStripModelObserver::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {}
 

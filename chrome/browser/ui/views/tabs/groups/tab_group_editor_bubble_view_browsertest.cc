@@ -918,6 +918,18 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   title_field->InsertOrReplaceText(u"Promoted Title");
 
+  class PromotionTitleObserver : public TabStripModelObserver {
+   public:
+    explicit PromotionTitleObserver(TabGroupModel* model) : model_(model) {}
+    void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) override {
+      title_at_promotion =
+          model_->GetTabGroup(group_id)->visual_data()->title();
+    }
+    raw_ptr<TabGroupModel> model_;
+    std::optional<std::u16string> title_at_promotion;
+  } observer(group_model());
+  browser()->GetTabStripModel()->AddObserver(&observer);
+
   views::View* contents_view = editor_bubble->widget_delegate()
                                    ->AsBubbleDialogDelegate()
                                    ->GetContentsView();
@@ -932,8 +944,11 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                                 gfx::PointF(), base::TimeTicks(), 0, 0);
   views::test::ButtonTestApi(create_button).NotifyClick(released_event);
 
+  browser()->GetTabStripModel()->RemoveObserver(&observer);
+
   EXPECT_FALSE(
       browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
+  EXPECT_EQ(observer.title_at_promotion, u"Promoted Title");
   EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
             u"Promoted Title");
 }
