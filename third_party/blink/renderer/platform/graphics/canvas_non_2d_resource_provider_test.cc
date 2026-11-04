@@ -195,41 +195,7 @@ TEST_F(CanvasNon2DResourceProviderTest, Texture) {
             kInfo.makeColorType(kRGBA_8888_SkColorType));
 }
 
-class CanvasNon2DResourceProviderSyncTokenTest
-    : public CanvasNon2DResourceProviderTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CanvasNon2DResourceProviderSyncTokenTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kUseAutomaticSyncTokenManagement);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kUseAutomaticSyncTokenManagement);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         CanvasNon2DResourceProviderSyncTokenTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "AutomaticSyncTokens"
-                                             : "ManualSyncTokens";
-                         });
-
-TEST_P(CanvasNon2DResourceProviderSyncTokenTest, EndExternalWrite) {
-  // Set up this test to use GPU rasterization to be able to verify
-  // conditions against the test raster interface.
-  SharedGpuContext::Reset();
-  auto raster_context_provider = viz::TestContextProvider::CreateRaster();
-  InitializeSharedGpuContext(raster_context_provider.get(),
-                             &image_decode_cache_,
-                             SetIsContextLost::kSetToFalse);
-
+TEST_F(CanvasNon2DResourceProviderTest, EndExternalWrite) {
   const gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
@@ -237,36 +203,20 @@ TEST_P(CanvasNon2DResourceProviderSyncTokenTest, EndExternalWrite) {
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = CanvasNon2DResourceProvider::Create(
-      gfx::Size(10, 10), color_params,
-      SharedGpuContext::ContextProviderWrapper(), shared_image_usage_flags);
+      gfx::Size(10, 10), color_params, context_provider_wrapper_,
+      shared_image_usage_flags);
 
-  auto resource = provider->ProduceCanvasResource();
-  auto old_compositor_read_sync_token = GetSyncToken(resource.get());
-
-  // NOTE: Need to ensure that this SyncToken's release count is greater than
-  // that of the last one that TestRasterInterface waited on for
-  // TestRasterInterface to set this token as `last_waited_sync_token_` when it
-  // waits on the token.
   gpu::SyncToken external_write_sync_token(gpu::CommandBufferNamespace::GPU_IO,
                                            gpu::CommandBufferId(), 42);
 
   provider->EndExternalWrite(external_write_sync_token);
 
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    // The client-visible SyncToken becomes empty after EndAccess.
-    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
-  } else {
-    // EndExternalWrite() should have initiated a wait on
-    // `external_write_sync_token` on the raster interface.
-    EXPECT_EQ(raster_context_provider->GetTestRasterInterface()
-                  ->last_waited_sync_token(),
-              external_write_sync_token);
-
-    // In addition, it should have ensured that the resource generates a new
-    // compositor read sync token on the next request for that token.
-    EXPECT_NE(GetSyncToken(resource.get()), old_compositor_read_sync_token);
-  }
+  // EndExternalWrite() should set the release sync token for compositor reads
+  // and update the acquire sync token for subsequent writes.
+  auto resource = provider->ProduceCanvasResource();
+  EXPECT_EQ(GetSyncToken(resource.get()), external_write_sync_token);
+  EXPECT_EQ(provider->resource()->acquire_sync_token(),
+            external_write_sync_token);
 }
 
 TEST_F(CanvasNon2DResourceProviderTest, SoftwareSharedImage_GPUCompositing) {
