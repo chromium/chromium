@@ -171,7 +171,7 @@ class CacheCounterTest : public PlatformTest {
                              base::Unretained(this)));
           rv = result.net_error();
           if (rv != net::ERR_IO_PENDING) {
-            entry_ = result.ReleaseEntry();
+            entry_.reset(result.ReleaseEntry());
           }
           break;
         }
@@ -195,7 +195,7 @@ class CacheCounterTest : public PlatformTest {
           next_step_ = STEP_DONE;
 
           if (current_operation_ == OPERATION_ADD_ENTRY) {
-            entry_->Close();
+            entry_.reset();
           }
 
           web::GetUIThreadTaskRunner({})->PostTask(
@@ -219,7 +219,7 @@ class CacheCounterTest : public PlatformTest {
 
   void SaveEntryAndStep(disk_cache::EntryResult result) {
     int rv = result.net_error();
-    entry_ = result.ReleaseEntry();
+    entry_.reset(result.ReleaseEntry());
     CacheOperationStep(rv);
   }
 
@@ -240,7 +240,7 @@ class CacheCounterTest : public PlatformTest {
 
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
   raw_ptr<disk_cache::Backend> backend_;
-  raw_ptr<disk_cache::Entry, DanglingUntriaged> entry_;
+  disk_cache::ScopedEntryPtr entry_;
 
   bool finished_ = false;
   browsing_data::BrowsingDataCounter::ResultInt result_;
