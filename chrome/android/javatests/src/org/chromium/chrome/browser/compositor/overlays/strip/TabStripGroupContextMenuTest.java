@@ -85,8 +85,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @Batch(Batch.PER_CLASS)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
+    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
