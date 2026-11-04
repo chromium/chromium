@@ -11,6 +11,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
@@ -32,22 +33,6 @@ NativeContextualSearchContext::~NativeContextualSearchContext() = default;
 base::WeakPtr<ContextualSearchContext>
 NativeContextualSearchContext::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-// static
-base::WeakPtr<NativeContextualSearchContext>
-NativeContextualSearchContext::FromJavaContextualSearchContext(
-    const base::android::JavaRef<jobject>& j_contextual_search_context) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-  if (j_contextual_search_context.is_null())
-    return nullptr;
-
-  NativeContextualSearchContext* contextual_search_context =
-      reinterpret_cast<NativeContextualSearchContext*>(
-          Java_ContextualSearchContext_getNativePointer(
-              base::android::AttachCurrentThread(),
-              j_contextual_search_context));
-  return contextual_search_context->weak_ptr_factory_.GetWeakPtr();
 }
 
 void NativeContextualSearchContext::SetResolveProperties(
@@ -88,16 +73,10 @@ void NativeContextualSearchContext::SetTranslationLanguages(
 
 // Java wrapper boilerplate
 
-void NativeContextualSearchContext::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_ContextualSearchContext_Init(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj) {
-  NativeContextualSearchContext* context =
-      new NativeContextualSearchContext(env, obj);
-  return reinterpret_cast<intptr_t>(context);
+static jni_zero::JniUniquePtr<NativeContextualSearchContext>
+JNI_ContextualSearchContext_Init(JNIEnv* env,
+                                 const base::android::JavaRef<jobject>& obj) {
+  return jni_zero::MakeUnique<NativeContextualSearchContext>(env, obj);
 }
 
 DEFINE_JNI(ContextualSearchContext)

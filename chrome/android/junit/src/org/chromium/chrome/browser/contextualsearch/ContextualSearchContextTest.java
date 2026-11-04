@@ -10,11 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +33,6 @@ public class ContextualSearchContextTest {
     private static final String SAMPLE_TEXT =
             "Now Barack Obama is not the best example.  And Clinton is ambiguous.";
     private static final String HOME_COUNTRY = "unused";
-    private static final long NATIVE_PTR = 1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ContextualSearchContext mContext;
@@ -48,10 +47,13 @@ public class ContextualSearchContextTest {
 
     @Mock private ContextualSearchContext.Natives mContextJniMock;
 
+    @Mock
+    private JniUniquePtr<ContextualSearchContext.NativeContextualSearchContext> mFakeNativeContext;
+
     @Before
     public void setup() {
         ContextualSearchContextJni.setInstanceForTesting(mContextJniMock);
-        when(mContextJniMock.init(any())).thenReturn(NATIVE_PTR);
+        when(mContextJniMock.init(any())).thenReturn(mFakeNativeContext);
         mDidSelectionChange = false;
         mContext = new ContextualSearchContextForTest();
     }
@@ -193,25 +195,21 @@ public class ContextualSearchContextTest {
     @Feature({"ContextualSearch", "Context"})
     public void testRedundantLanguages() {
         // Most common to least common
-        doNothing()
-                .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
+        doNothing().when(mContextJniMock).setTranslationLanguages(any(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("en", "en", "en");
-        doNothing()
-                .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq(""));
+        doNothing().when(mContextJniMock).setTranslationLanguages(any(), eq(""), eq(""), eq(""));
         mContext.setTranslationLanguages("", "en", "en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq(""));
+                .setTranslationLanguages(any(), eq("en"), eq("de"), eq(""));
         mContext.setTranslationLanguages("en", "de", "de");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq("en"), eq("de"), eq("de,en"));
+                .setTranslationLanguages(any(), eq("en"), eq("de"), eq("de,en"));
         mContext.setTranslationLanguages("en", "de", "de,en");
         doNothing()
                 .when(mContextJniMock)
-                .setTranslationLanguages(anyLong(), eq(""), eq(""), eq("de,en"));
+                .setTranslationLanguages(any(), eq(""), eq(""), eq("de,en"));
         mContext.setTranslationLanguages("de", "de", "de,en");
     }
 }

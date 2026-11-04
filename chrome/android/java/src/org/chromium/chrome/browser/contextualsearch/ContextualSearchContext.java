@@ -8,9 +8,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeClassQualifiedName;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.Initializer;
@@ -25,13 +26,16 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public abstract class ContextualSearchContext {
+    @JniType("NativeContextualSearchContext")
+    interface NativeContextualSearchContext extends JniTypeToken {}
+
     static final int INVALID_OFFSET = -1;
 
     // Non-visible word-break marker.
     private static final int SOFT_HYPHEN_CHAR = '\u00AD';
 
     // Pointer to the native instance of this class.
-    private long mNativePointer;
+    private @Nullable JniUniquePtr<NativeContextualSearchContext> mNativePointer;
 
     // Whether this context has had the required properties set so it can Resolve a Search Term.
     private boolean mHasSetResolveProperties;
@@ -98,22 +102,22 @@ public abstract class ContextualSearchContext {
             String fluentLanguages) {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
+        assert mNativePointer != null;
         ContextualSearchContextJni.get()
-                .setResolveProperties(getNativePointer(), homeCountry, doSendBasePageUrl);
+                .setResolveProperties(mNativePointer, homeCountry, doSendBasePageUrl);
         mTargetLanguage = targetLanguage;
         mFluentLanguages = fluentLanguages;
     }
 
     /**
      * This method should be called to clean up storage when an instance of this class is no longer
-     * in use. The ContextualSearchContextJni.get().destroy will call the destructor on the native
-     * instance.
+     * in use.
      */
     @SuppressWarnings("NullAway")
     void destroy() {
-        assert mNativePointer != 0;
-        ContextualSearchContextJni.get().destroy(mNativePointer);
-        mNativePointer = 0;
+        assert mNativePointer != null;
+        mNativePointer.destroy();
+        mNativePointer = null;
 
         // Also zero out private data that may be sizable.
         mSurroundingText = null;
@@ -231,6 +235,7 @@ public abstract class ContextualSearchContext {
     void prepareToResolve(boolean isExactSearch, String relatedSearchesStamp) {
         mSelectionBeingResolved = getCurrentSelection();
         mRelatedSearchesStamp = relatedSearchesStamp;
+        assert mNativePointer != null;
         ContextualSearchContextJni.get()
                 .prepareToResolve(mNativePointer, isExactSearch, relatedSearchesStamp);
     }
@@ -246,8 +251,8 @@ public abstract class ContextualSearchContext {
         // Fully track the selection as it changes.
         mSelectionStartOffset += startAdjust;
         mSelectionEndOffset += endAdjust;
-        ContextualSearchContextJni.get()
-                .adjustSelection(getNativePointer(), startAdjust, endAdjust);
+        assert mNativePointer != null;
+        ContextualSearchContextJni.get().adjustSelection(mNativePointer, startAdjust, endAdjust);
         // Notify of changes.
         onSelectionChanged();
     }
@@ -287,6 +292,7 @@ public abstract class ContextualSearchContext {
     String getDetectedLanguage() {
         assert mSurroundingText != null;
         if (mDetectedLanguage == null) {
+            assert mNativePointer != null;
             mDetectedLanguage = ContextualSearchContextJni.get().detectLanguage(mNativePointer);
         }
         return mDetectedLanguage;
@@ -308,6 +314,7 @@ public abstract class ContextualSearchContext {
         // The target language is essential in order to provide results the user can read, and if
         // not specified the server may fallback onto a guess based on location, which isn't
         // always a good experience.
+        assert mNativePointer != null;
         ContextualSearchContextJni.get()
                 .setTranslationLanguages(
                         mNativePointer, detectedLanguage, targetLanguage, fluentLanguages);
@@ -441,47 +448,33 @@ public abstract class ContextualSearchContext {
         return mRelatedSearchesStamp;
     }
 
-    // ============================================================================================
-    // Native callback support.
-    // ============================================================================================
-
-    @CalledByNative
-    private long getNativePointer() {
-        assert mNativePointer != 0;
+    @Nullable JniPtr<NativeContextualSearchContext> getNativePointer() {
         return mNativePointer;
     }
 
     @NativeMethods
     interface Natives {
-        @NativeClassQualifiedName("NativeContextualSearchContext")
-        long init(ContextualSearchContext self);
+        JniUniquePtr<NativeContextualSearchContext> init(ContextualSearchContext self);
 
-        @NativeClassQualifiedName("NativeContextualSearchContext")
-        void destroy(long nativeContextualSearchContext);
-
-        @NativeClassQualifiedName("NativeContextualSearchContext")
         void setResolveProperties(
-                long nativeContextualSearchContext,
+                JniPtr<NativeContextualSearchContext> self,
                 @JniType("std::string") String homeCountry,
                 boolean doSendBasePageUrl);
 
-        @NativeClassQualifiedName("NativeContextualSearchContext")
-        void adjustSelection(long nativeContextualSearchContext, int startAdjust, int endAdjust);
+        void adjustSelection(
+                JniPtr<NativeContextualSearchContext> self, int startAdjust, int endAdjust);
 
-        @NativeClassQualifiedName("NativeContextualSearchContext")
         @JniType("std::string")
-        String detectLanguage(long nativeContextualSearchContext);
+        String detectLanguage(JniPtr<NativeContextualSearchContext> self);
 
-        @NativeClassQualifiedName("NativeContextualSearchContext")
         void setTranslationLanguages(
-                long nativeContextualSearchContext,
+                JniPtr<NativeContextualSearchContext> self,
                 @JniType("std::string") String detectedLanguage,
                 @JniType("std::string") String targetLanguage,
                 @JniType("std::string") String fluentLanguages);
 
-        @NativeClassQualifiedName("NativeContextualSearchContext")
         void prepareToResolve(
-                long nativeContextualSearchContext,
+                JniPtr<NativeContextualSearchContext> self,
                 boolean isExactSearch,
                 @JniType("std::string") String relatedSearchesStamp);
     }

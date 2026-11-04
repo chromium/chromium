@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
@@ -68,17 +69,17 @@ void ContextualSearchManager::Destroy(JNIEnv* env) {
 
 void ContextualSearchManager::StartSearchTermResolutionRequest(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    NativeContextualSearchContext* contextual_search_context,
     const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   CHECK(base_web_contents, base::NotFatalUntil::M161);
-  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
-      NativeContextualSearchContext::FromJavaContextualSearchContext(
-          j_contextual_search_context);
+  base::WeakPtr<ContextualSearchContext> contextual_search_context_weak =
+      contextual_search_context ? contextual_search_context->AsWeakPtr()
+                                : nullptr;
   // Calls back to OnSearchTermResolutionResponse.
   delegate_->StartSearchTermResolutionRequest(
-      contextual_search_context, base_web_contents,
+      contextual_search_context_weak, base_web_contents,
       base::BindRepeating(
           &ContextualSearchManager::OnSearchTermResolutionResponse,
           base::Unretained(this)));
@@ -86,16 +87,16 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
 
 void ContextualSearchManager::GatherSurroundingText(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    NativeContextualSearchContext* contextual_search_context,
     const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   CHECK(base_web_contents, base::NotFatalUntil::M161);
-  base::WeakPtr<NativeContextualSearchContext> contextual_search_context =
-      NativeContextualSearchContext::FromJavaContextualSearchContext(
-          j_contextual_search_context);
+  base::WeakPtr<ContextualSearchContext> contextual_search_context_weak =
+      contextual_search_context ? contextual_search_context->AsWeakPtr()
+                                : nullptr;
   delegate_->GatherAndSaveSurroundingText(
-      contextual_search_context, base_web_contents,
+      contextual_search_context_weak, base_web_contents,
       base::BindRepeating(
           &ContextualSearchManager::OnTextSurroundingSelectionAvailable,
           base::Unretained(this)));

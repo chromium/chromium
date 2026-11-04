@@ -13,6 +13,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/touch_to_search/core/browser/contextual_search_delegate.h"
 
+class NativeContextualSearchContext;
 class Profile;
 
 // Manages the native extraction and request logic for Contextual Search,
@@ -41,14 +42,14 @@ class ContextualSearchManager {
   // by calling OnSearchTermResolutionResponse().
   void StartSearchTermResolutionRequest(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_contextual_search_context,
+      NativeContextualSearchContext* contextual_search_context,
       const base::android::JavaRef<jobject>& j_base_web_contents);
 
   // Gathers the surrounding text around the selection and saves it locally.
   // Does not send a search term resolution request to the server.
   void GatherSurroundingText(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_contextual_search_context,
+      NativeContextualSearchContext* contextual_search_context,
       const base::android::JavaRef<jobject>& j_base_web_contents);
 
   // Removes a search URL from history. |search_start_time_ms| represents the

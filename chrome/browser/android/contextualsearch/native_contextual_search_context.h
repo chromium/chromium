@@ -25,15 +25,6 @@ class NativeContextualSearchContext final : public ContextualSearchContext {
   // ContextualSearchContext
   base::WeakPtr<ContextualSearchContext> AsWeakPtr() override;
 
-  // Calls the destructor.  Should be called when this native object is no
-  // longer needed.
-  void Destroy(JNIEnv* env);
-
-  // Returns the NativeContextualSearchContext given the Java object.
-  static base::WeakPtr<NativeContextualSearchContext>
-  FromJavaContextualSearchContext(
-      const base::android::JavaRef<jobject>& j_contextual_search_context);
-
   // Sets the properties needed to resolve a context.
   void SetResolveProperties(JNIEnv* env,
                             const std::string& home_country,
