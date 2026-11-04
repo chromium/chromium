@@ -1185,7 +1185,11 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  ParsingContext context(fields_, client_country, language_code,
+  const LanguageCode& page_language =
+      base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
+          ? language_code
+          : LanguageCode();
+  ParsingContext context(fields_, client_country, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else

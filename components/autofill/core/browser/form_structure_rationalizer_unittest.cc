@@ -90,7 +90,9 @@ FormData CreateFormData(std::vector<FieldTemplate> fields) {
 }
 
 std::unique_ptr<FormStructure> BuildFormStructure(
-    const std::vector<FieldTemplate>& fields) {
+    const std::vector<FieldTemplate>& fields,
+    GeoIpCountryCode client_country = GeoIpCountryCode(""),
+    LanguageCode page_language = LanguageCode("")) {
   auto form_structure = std::make_unique<FormStructure>(CreateFormData(fields));
   for (auto [field, field_template] :
        std::views::zip(form_structure->fields(), fields)) {
@@ -107,8 +109,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
           {.section = std::string(field_template.section)}));
     }
   }
-  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
-                                               LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(client_country, page_language,
+                                               nullptr);
   return form_structure;
 }
 
@@ -1509,6 +1511,40 @@ TEST_F(RationalizeRepeatedZipTest, ZipSuffixAndZip) {
   EXPECT_THAT(GetTypes(*form_structure),
               FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
                             ADDRESS_HOME_CITY));
+}
+
+// Tests that `RationalizeByRationalizationEngine` only uses the page language
+// when `kAutofillPageLanguageDetection` is enabled.
+TEST_F(FormStructureRationalizerTest,
+       RationalizeByRationalizationEngine_PageLanguageDetectionFeature) {
+  const std::vector<FieldTemplate> kFields = {
+      {.label = "Dirección",
+       .name = "addressline1",
+       .server_type = ADDRESS_HOME_LINE1},
+      {.label = "Colonia",
+       .name = "addressline2",
+       .server_type = ADDRESS_HOME_LINE2},
+  };
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kAutofillPageLanguageDetection);
+    std::unique_ptr<FormStructure> form_structure =
+        BuildFormStructure(kFields, GeoIpCountryCode("MX"), LanguageCode("en"));
+    EXPECT_THAT(GetTypes(*form_structure),
+                FieldTypesAre(ADDRESS_HOME_STREET_ADDRESS,
+                              ADDRESS_HOME_DEPENDENT_LOCALITY));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list{
+        features::kAutofillPageLanguageDetection};
+    std::unique_ptr<FormStructure> form_structure =
+        BuildFormStructure(kFields, GeoIpCountryCode("MX"), LanguageCode("en"));
+    EXPECT_THAT(GetTypes(*form_structure),
+                FieldTypesAre(ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
+  }
 }
 
 }  // namespace
