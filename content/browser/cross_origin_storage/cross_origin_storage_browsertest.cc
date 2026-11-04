@@ -168,16 +168,41 @@ class CrossOriginStorageBrowserTest : public ContentBrowserTest {
     response->set_content(base::StrCat({R"(
       self.onmessage = async (e) => {
         const port = e.ports[0];
+        // 1. Valid write request rejects with NotAllowedError.
         try {
-          const handle = await navigator.crossOriginStorage.getFileHandle(
+          await navigator.crossOriginStorage.getFileHandle(
               {algorithm: 'SHA-256', value: ')",
                                         kSharedContentDigest, R"('},
               {create: true, origins: '*'});
-          const writable = await handle.createWritable();
-          await writable.write(')",
-                                        kSharedContent, R"(');
-          await writable.close();
-          port.postMessage('ok');
+          port.postMessage('unexpected_write_success');
+          return;
+        } catch (err) {
+          if (err.name !== 'NotAllowedError') {
+            port.postMessage(`unexpected_write_error:${err.name}`);
+            return;
+          }
+        }
+        // 2. Valid read request rejects with NotAllowedError.
+        try {
+          await navigator.crossOriginStorage.getFileHandle(
+              {algorithm: 'SHA-256', value: ')",
+                                        kSharedContentDigest, R"('});
+          port.postMessage('unexpected_read_success');
+          return;
+        } catch (err) {
+          if (err.name !== 'NotAllowedError') {
+            port.postMessage(`unexpected_read_error:${err.name}`);
+            return;
+          }
+        }
+        // 3. A request with invalid hash/origins still rejects with
+        // NotAllowedError rather than TypeError because we are in a service
+        // worker.
+        try {
+          await navigator.crossOriginStorage.getFileHandle(
+              {algorithm: 'SHA-1', value: 'invalid'},
+              {create: true, origins: 'http://insecure.test'});
+          port.postMessage('unexpected_invalid_success');
         } catch (err) {
           port.postMessage(err.name);
         }
@@ -1388,7 +1413,61 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
 }
 
 // Verifies that Cross-Origin Storage is accessible and functional inside a
-// SharedWorker execution context.
+// DedicatedWorker execution context, and that invalid hash/origins arguments
+// reject with TypeError.
+IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
+                       DedicatedWorkerExecutionContext) {
+  ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
+
+  EXPECT_EQ("ok", EvalJs(shell(), base::StrCat({R"(
+    (async () => {
+      const workerScript = `
+        self.onmessage = async () => {
+          try {
+            const handle = await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-256', value: ')",
+                                                kSharedContentDigest, R"('},
+                {create: true, origins: '*'});
+            const writable = await handle.createWritable();
+            await writable.write(')",
+                                                kSharedContent, R"(');
+            await writable.close();
+          } catch (err) {
+            self.postMessage('unexpected_valid_error:' + err.name);
+            return;
+          }
+          try {
+            await navigator.crossOriginStorage.getFileHandle(
+                {algorithm: 'SHA-1', value: 'invalid'},
+                {create: true, origins: 'http://insecure.test'});
+            self.postMessage('unexpected_invalid_success');
+            return;
+          } catch (err) {
+            if (err.name !== 'TypeError') {
+              self.postMessage('unexpected_invalid_error:' + err.name);
+              return;
+            }
+          }
+          self.postMessage('ok');
+        };
+      `;
+      const blob = new Blob([workerScript], {type: 'text/javascript'});
+      const worker = new Worker(URL.createObjectURL(blob));
+      return new Promise((resolve) => {
+        worker.onmessage = (e) => resolve(e.data);
+        worker.onerror = () => resolve('worker_error');
+        worker.postMessage('start');
+      });
+    })()
+  )"})));
+
+  EXPECT_TRUE(BlobExistsOnDisk(kSharedContentDigest));
+  EXPECT_TRUE(StagingIsEmpty());
+}
+
+// Verifies that Cross-Origin Storage is accessible and functional inside a
+// SharedWorker execution context, and that invalid hash/origins arguments
+// reject with TypeError.
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                        SharedWorkerExecutionContext) {
   ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
@@ -1408,10 +1487,23 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
               await writable.write(')",
                                                 kSharedContent, R"(');
               await writable.close();
-              port.postMessage('ok');
             } catch (err) {
-              port.postMessage(err.name);
+              port.postMessage('unexpected_valid_error:' + err.name);
+              return;
             }
+            try {
+              await navigator.crossOriginStorage.getFileHandle(
+                  {algorithm: 'SHA-1', value: 'invalid'},
+                  {create: true, origins: 'http://insecure.test'});
+              port.postMessage('unexpected_invalid_success');
+              return;
+            } catch (err) {
+              if (err.name !== 'TypeError') {
+                port.postMessage('unexpected_invalid_error:' + err.name);
+                return;
+              }
+            }
+            port.postMessage('ok');
           };
         };
       `;
@@ -1430,13 +1522,14 @@ IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
   EXPECT_TRUE(StagingIsEmpty());
 }
 
-// Verifies that Cross-Origin Storage is not exposed in a ServiceWorker
-// execution context.
+// Verifies that Cross-Origin Storage is exposed in a ServiceWorker execution
+// context (`Exposed=(Window,Worker)`), and that `getFileHandle()` rejects with
+// NotAllowedError before hash/options validation (WICG § 3.1 & § 6).
 IN_PROC_BROWSER_TEST_F(CrossOriginStorageBrowserTest,
                        ServiceWorkerExecutionContext) {
   ASSERT_NO_FATAL_FAILURE(NavigateToHost(kOriginA));
 
-  EXPECT_EQ("TypeError", EvalJs(shell(), R"(
+  EXPECT_EQ("NotAllowedError", EvalJs(shell(), R"(
     (async () => {
       await navigator.serviceWorker.register('/cos_service_worker.js');
       const readyReg = await navigator.serviceWorker.ready;

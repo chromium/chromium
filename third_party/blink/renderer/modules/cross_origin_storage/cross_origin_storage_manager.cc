@@ -87,6 +87,17 @@ ScriptPromise<FileSystemFileHandle> CrossOriginStorageManager::getFileHandle(
     return EmptyPromise();
   }
 
+  // Per https://wicg.github.io/cross-origin-storage/#getfilehandle (step 6) and
+  // https://wicg.github.io/cross-origin-storage/#check-cross-origin-storage-permission,
+  // permission checking runs before request validation and always returns false
+  // in ServiceWorkerGlobalScope.
+  if (context->IsServiceWorkerGlobalScope()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Cross-Origin Storage is not available in service workers.");
+    return EmptyPromise();
+  }
+
   if (context->GetSecurityOrigin()->IsOpaque()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
