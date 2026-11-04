@@ -18,6 +18,7 @@ group("java_deobfuscate") {
   data = [
     "java_deobfuscate.py",
     "java_deobfuscate_java.jar",
+    "//third_party/r8/cipd/bin/chrome_r8",
     "//third_party/r8/cipd/lib/r8.jar",
   ]
   deps = [ "//third_party/jdk:java_data" ]
