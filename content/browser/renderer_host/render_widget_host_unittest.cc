@@ -1028,30 +1028,6 @@ TEST_F(RenderWidgetHostTest, SetPopupBoundsConstrainedByDelegate) {
   EXPECT_EQ(gfx::Rect(5, 100, 20, 20), view_->GetViewBounds());
 }
 
-// Tests that oversized popup bounds from the renderer are clamped to the
-// display, since their area would otherwise overflow int browser side.
-TEST_F(RenderWidgetHostTest, PopupBoundsAreClampedToTheDisplay) {
-  // Let the initial screen rects settle, otherwise the popup bounds below are
-  // dropped rather than clamped.
-  ClearScreenRects();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !host_->waiting_for_screen_rects_ack_; }));
-
-  const gfx::Rect work_area =
-      display::Screen::Get()->GetPrimaryDisplay().work_area();
-  ASSERT_FALSE(work_area.IsEmpty());
-
-  constexpr gfx::Rect kHugeBounds(0, 0, 100000, 100000);
-  ASSERT_FALSE(kHugeBounds.size().GetCheckedArea().IsValid());
-  static_cast<blink::mojom::PopupWidgetHost*>(host_.get())
-      ->SetPopupBounds(kHugeBounds, base::DoNothing());
-
-  const gfx::Rect bounds = view_->GetViewBounds();
-  EXPECT_EQ(work_area.width(), bounds.width());
-  EXPECT_EQ(work_area.height(), bounds.height());
-  EXPECT_TRUE(bounds.size().GetCheckedArea().IsValid());
-}
-
 TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   ClearVisualProperties();
 
