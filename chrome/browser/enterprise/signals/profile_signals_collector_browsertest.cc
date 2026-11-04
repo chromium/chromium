@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -30,11 +31,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 constexpr char kFakeUserEnrollmentDomain[] = "fake.domain.google.com";
+constexpr char kFakeUserAffiliationId[] = "fake-user-affiliation-id";
 constexpr char kFakeProfileId[] = "SomeProfileId";
 
 constexpr char kCollectionSuccessHistogram[] =
@@ -70,11 +73,8 @@ class ProfileSignalsCollectorTest : public PlatformBrowserTest {
   void SetFakePolicyAndPrefData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_managed_by(kFakeUserEnrollmentDomain);
-    profile()
-        ->GetCloudPolicyManager()
-        ->core()
-        ->store()
-        ->set_policy_data_for_testing(std::move(policy_data));
+    policy_data->add_user_affiliation_ids(kFakeUserAffiliationId);
+    SetUserPolicyData(std::move(policy_data));
 
     g_browser_process->local_state()->SetBoolean(
         prefs::kBuiltInDnsClientEnabled, true);
@@ -84,10 +84,21 @@ class ProfileSignalsCollectorTest : public PlatformBrowserTest {
     profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   }
 
+  void SetUserPolicyData(
+      std::unique_ptr<enterprise_management::PolicyData> policy_data) {
+    profile()
+        ->GetCloudPolicyManager()
+        ->core()
+        ->store()
+        ->set_policy_data_for_testing(std::move(policy_data));
+  }
+
   // Helper function to check the profile level signals are collected correctly.
   void CheckSignalsCollected(ProfileSignalsResponse& response,
                              bool expected_is_isolated_mode = false) {
     EXPECT_EQ(response.profile_enrollment_domain, kFakeUserEnrollmentDomain);
+    EXPECT_THAT(response.profile_affiliation_ids,
+                testing::ElementsAre(kFakeUserAffiliationId));
     EXPECT_EQ(response.safe_browsing_protection_level,
               safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
     EXPECT_TRUE(response.built_in_dns_client_enabled);
@@ -149,6 +160,83 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_Success) {
   CheckSignalsCollected(response.profile_signals_response.value(),
                         /*expected_is_isolated_mode=*/false);
   ExpectCollectionSuccessLogged();
+}
+
+// Tests that signal collection, including the profile affiliation IDs, is still
+// complete even when consent is missing.
+IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_MissingConsent) {
+  auto signals_collector = CreateProfileSignalsCollector();
+  SetFakePolicyAndPrefData();
+
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
+                               UserPermission::kMissingConsent, empty_request,
+                               response, base::DoNothing());
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.profile_signals_response);
+  CheckSignalsCollected(response.profile_signals_response.value());
+  ExpectCollectionSuccessLogged();
+}
+
+// Tests that the profile affiliation IDs are read from the user policy on every
+// collection (including when no user policy is loaded), and that the device
+// affiliation IDs are never reported in their place.
+IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest,
+                       GetSignal_ProfileAffiliationIdsReadOnEveryCollection) {
+  auto signals_collector = CreateProfileSignalsCollector();
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({"device-id"});
+  SignalsAggregationRequest empty_request;
+
+  ASSERT_FALSE(
+      profile()->GetCloudPolicyManager()->core()->store()->has_policy());
+  SignalsAggregationResponse unmanaged_response;
+  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
+                               UserPermission::kGranted, empty_request,
+                               unmanaged_response, base::DoNothing());
+  ASSERT_TRUE(unmanaged_response.profile_signals_response);
+  EXPECT_FALSE(unmanaged_response.profile_signals_response
+                   ->profile_enrollment_domain.has_value());
+  EXPECT_THAT(
+      unmanaged_response.profile_signals_response->profile_affiliation_ids,
+      testing::IsEmpty());
+
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->add_user_affiliation_ids("id1");
+  policy_data->add_user_affiliation_ids("id2");
+  SetUserPolicyData(std::move(policy_data));
+  SignalsAggregationResponse managed_response;
+  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
+                               UserPermission::kGranted, empty_request,
+                               managed_response, base::DoNothing());
+  ASSERT_TRUE(managed_response.profile_signals_response);
+  EXPECT_THAT(
+      managed_response.profile_signals_response->profile_affiliation_ids,
+      testing::ElementsAre("id1", "id2"));
+
+  SetUserPolicyData(std::make_unique<enterprise_management::PolicyData>());
+  SignalsAggregationResponse empty_policy_response;
+  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
+                               UserPermission::kGranted, empty_request,
+                               empty_policy_response, base::DoNothing());
+  ASSERT_TRUE(empty_policy_response.profile_signals_response);
+  EXPECT_THAT(
+      empty_policy_response.profile_signals_response->profile_affiliation_ids,
+      testing::IsEmpty());
+
+  SetUserPolicyData(nullptr);
+  SignalsAggregationResponse cleared_response;
+  signals_collector->GetSignal(SignalName::kBrowserContextSignals,
+                               UserPermission::kGranted, empty_request,
+                               cleared_response, base::DoNothing());
+  ASSERT_TRUE(cleared_response.profile_signals_response);
+  EXPECT_FALSE(cleared_response.profile_signals_response
+                   ->profile_enrollment_domain.has_value());
+  EXPECT_THAT(
+      cleared_response.profile_signals_response->profile_affiliation_ids,
+      testing::IsEmpty());
 }
 
 // Tests that an unsupported signal is marked as unsupported.

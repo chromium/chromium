@@ -6,14 +6,17 @@
 
 #include <algorithm>
 #include <array>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -36,6 +39,9 @@
 
 using testing::_;
 using testing::ContainerEq;
+using testing::ElementsAre;
+using testing::ElementsAreArray;
+using testing::IsEmpty;
 using testing::NiceMock;
 using testing::Return;
 using testing::StrictMock;
@@ -77,6 +83,7 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
         std::make_unique<NiceMock<MockOsSecurityInfoProvider>>();
     mock_os_security_info_provider_ = mock_os_security_info_provider.get();
     signal_collector_ = std::make_unique<AndroidSignalsCollector>(
+        base::BindLambdaForTesting([this] { return device_affiliation_ids_; }),
         mock_browser_cloud_policy_manager_.get(),
         std::move(mock_os_security_info_provider));
 
@@ -107,6 +114,8 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
     EXPECT_EQ(response.screen_lock_secured, expected_screen_lock_secured_);
     EXPECT_EQ(response.disk_encryption, SettingValue::ENABLED);
     EXPECT_FALSE(response.os_firewall.has_value());
+    EXPECT_THAT(response.device_affiliation_ids,
+                ElementsAreArray(device_affiliation_ids_));
   }
 
   void SetDeviceSecure(bool is_device_secure) {
@@ -190,6 +199,7 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
   // Owned by `signal_collector_`.
   raw_ptr<NiceMock<MockOsSecurityInfoProvider>> mock_os_security_info_provider_;
   SettingValue expected_screen_lock_secured_ = SettingValue::UNKNOWN;
+  base::flat_set<std::string> device_affiliation_ids_;
   bool expected_verify_app_result_;
   HasHarmfulAppsResultStatus expected_harmful_app_result_;
   int expected_harmful_app_count_;
@@ -213,6 +223,7 @@ TEST_F(AndroidSignalsCollectorTest, SupportedSignalNames) {
 // Happy path test case for OS signals collection with full permission.
 TEST_F(AndroidSignalsCollectorTest, GetOsSignals_Success) {
   SetFakeBrowserPolicyData();
+  device_affiliation_ids_ = {"id1", "id2"};
 
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;
@@ -368,6 +379,36 @@ TEST_F(AndroidSignalsCollectorTest, GetAllSignals_Success) {
       {SignalName::kOsSignals, SignalName::kVerifyApps});
 }
 
+// Tests that the device affiliation IDs are read on every collection, so that
+// machine-level policy changes made after the collector was created are
+// reported.
+TEST_F(AndroidSignalsCollectorTest,
+       GetOsSignals_DeviceAffiliationIdsReadOnEveryCollection) {
+  SignalsAggregationRequest empty_request;
+
+  device_affiliation_ids_ = {"id1"};
+  SignalsAggregationResponse first_response;
+  base::RunLoop first_run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals, UserPermission::kGranted,
+                               empty_request, first_response,
+                               first_run_loop.QuitClosure());
+  first_run_loop.Run();
+  ASSERT_TRUE(first_response.os_signals_response);
+  EXPECT_THAT(first_response.os_signals_response->device_affiliation_ids,
+              ElementsAre("id1"));
+
+  device_affiliation_ids_.clear();
+  SignalsAggregationResponse second_response;
+  base::RunLoop second_run_loop;
+  signal_collector_->GetSignal(SignalName::kOsSignals, UserPermission::kGranted,
+                               empty_request, second_response,
+                               second_run_loop.QuitClosure());
+  second_run_loop.Run();
+  ASSERT_TRUE(second_response.os_signals_response);
+  EXPECT_THAT(second_response.os_signals_response->device_affiliation_ids,
+              IsEmpty());
+}
+
 // Tests that an unsupported signal is marked as unsupported.
 TEST_F(AndroidSignalsCollectorTest, GetOsSignal_Unsupported) {
   SignalName signal_name = SignalName::kAntiVirus;
@@ -385,9 +426,11 @@ TEST_F(AndroidSignalsCollectorTest, GetOsSignal_Unsupported) {
   ExpectNoCollectionOutcomeLogged();
 }
 
-// Tests that signal collection is still complete even when consent is missing.
+// Tests that signal collection, including the device affiliation IDs, is still
+// complete even when consent is missing.
 TEST_F(AndroidSignalsCollectorTest, GetOsSignals_MissingConsent) {
   SetFakeBrowserPolicyData();
+  device_affiliation_ids_ = {"id1"};
 
   SignalsAggregationRequest empty_request;
   SignalsAggregationResponse response;

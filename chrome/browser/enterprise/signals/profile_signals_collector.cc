@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_signals/core/browser/browser_utils.h"
@@ -55,6 +57,7 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
           ChromePolicyBlocklistServiceFactory::GetForProfile(profile)),
       profile_prefs_(profile->GetPrefs()),
       policy_manager_(profile->GetCloudPolicyManager()),
+      profile_policy_connector_(profile->GetProfilePolicyConnector()),
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
       connectors_service_(
           enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -68,6 +71,7 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
   CHECK(policy_blocklist_service_);
+  CHECK(profile_policy_connector_);
   CHECK(profile_id_service_);
 }
 
@@ -89,6 +93,8 @@ void ProfileSignalsCollector::GetProfileSignals(
       device_signals::GetPasswordProtectionWarningTrigger(profile_prefs_);
   signal_response.profile_enrollment_domain =
       device_signals::TryGetEnrollmentDomain(policy_manager_);
+  signal_response.profile_affiliation_ids =
+      base::ToVector(profile_policy_connector_->user_affiliation_ids());
   signal_response.safe_browsing_protection_level =
       device_signals::GetSafeBrowsingProtectionLevel(profile_prefs_);
   signal_response.site_isolation_enabled =

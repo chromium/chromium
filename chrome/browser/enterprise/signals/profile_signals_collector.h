@@ -16,6 +16,7 @@ class PolicyBlocklistService;
 
 namespace policy {
 class CloudPolicyManager;
+class ProfilePolicyConnector;
 }  // namespace policy
 
 namespace enterprise_connectors {
@@ -51,6 +52,8 @@ class ProfileSignalsCollector : public BaseSignalsCollector {
   const raw_ptr<PolicyBlocklistService, DisableDanglingPtrDetection> policy_blocklist_service_;
   const raw_ptr<PrefService, DisableDanglingPtrDetection> profile_prefs_;
   const raw_ptr<policy::CloudPolicyManager, DisableDanglingPtrDetection> policy_manager_;
+  const raw_ptr<policy::ProfilePolicyConnector, DisableDanglingPtrDetection>
+      profile_policy_connector_;
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   const raw_ptr<enterprise_connectors::ConnectorsService, DisableDanglingPtrDetection> connectors_service_;
 #endif

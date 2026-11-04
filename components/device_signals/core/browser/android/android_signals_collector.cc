@@ -12,6 +12,8 @@
 
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -63,6 +65,7 @@ void LogSafetyNetMetrics(HasHarmfulAppsResultStatus result,
 }  // namespace
 
 AndroidSignalsCollector::AndroidSignalsCollector(
+    DeviceAffiliationIdsCallback device_affiliation_ids_callback,
     policy::CloudPolicyManager* device_cloud_policy_manager,
     std::unique_ptr<OsSecurityInfoProvider> os_security_info_provider)
     : BaseSignalsCollector({
@@ -73,8 +76,11 @@ AndroidSignalsCollector::AndroidSignalsCollector(
            base::BindRepeating(&AndroidSignalsCollector::GetVerifyApps,
                                base::Unretained(this))},
       }),
+      device_affiliation_ids_callback_(
+          std::move(device_affiliation_ids_callback)),
       device_cloud_policy_manager_(device_cloud_policy_manager),
       os_security_info_provider_(std::move(os_security_info_provider)) {
+  CHECK(device_affiliation_ids_callback_);
   CHECK(os_security_info_provider_);
 }
 
@@ -109,6 +115,8 @@ void AndroidSignalsCollector::GetOsSignals(
       base::android::android_info::manufacturer();
   signal_response.device_enrollment_domain =
       device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
+  signal_response.device_affiliation_ids =
+      base::ToVector(device_affiliation_ids_callback_.Run());
   signal_response.security_patch_ms =
       device_signals::GetSecurityPatchLevelEpoch();
   signal_response.screen_lock_secured =

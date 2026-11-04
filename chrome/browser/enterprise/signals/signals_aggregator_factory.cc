@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -171,29 +172,33 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
 
   if (management_service->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
-    auto* browser_policy_connector =
-        g_browser_process->browser_policy_connector();
-
-    if (browser_policy_connector) {
 #if BUILDFLAG(IS_CHROMEOS)
-      // Only fetch the device-level CloudPolicyManager if the user is
-      // affiliated, as we should only expose device-level signals (like
-      // the enrollment domain) to affiliated users.
-      if (enterprise_util::IsProfileAffiliated(profile)) {
-        browser_policy_manager = g_browser_process->platform_part()
-                                     ->browser_policy_connector_ash()
-                                     ->GetDeviceCloudPolicyManager();
-      }
-#else
-      browser_policy_manager =
-          browser_policy_connector->machine_level_user_cloud_policy_manager();
-#endif
+    // Only fetch the device-level CloudPolicyManager if the user is
+    // affiliated, as we should only expose device-level signals (like
+    // the enrollment domain) to affiliated users.
+    if (enterprise_util::IsProfileAffiliated(profile)) {
+      browser_policy_manager = g_browser_process->platform_part()
+                                   ->browser_policy_connector_ash()
+                                   ->GetDeviceCloudPolicyManager();
     }
+#else
+    browser_policy_manager = g_browser_process->browser_policy_connector()
+                                 ->machine_level_user_cloud_policy_manager();
+#endif
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  // Read the device affiliation IDs through the connector each time signals
+  // are collected. `browser_policy_manager` is captured only once, above, and
+  // stays null if the machine-level policy manager is created after this
+  // service is built.
+  // The connector is owned by the browser process, which outlives all
+  // profile-keyed services, so binding it unretained is safe.
   collectors.push_back(
       std::make_unique<device_signals::AndroidSignalsCollector>(
+          base::BindRepeating(
+              &policy::ChromeBrowserPolicyConnector::device_affiliation_ids,
+              base::Unretained(g_browser_process->browser_policy_connector())),
           browser_policy_manager,
           std::make_unique<device_signals::OsSecurityInfoProvider>()));
 #else
