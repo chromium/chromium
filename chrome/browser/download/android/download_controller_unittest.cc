@@ -23,9 +23,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+class TestMockDownloadItem : public download::MockDownloadItem {
+ public:
+  MOCK_METHOD(void,
+              RemoveObserver,
+              (download::DownloadItem::Observer*),
+              (override));
+};
 
 class DownloadControllerTest : public testing::Test {
  public:
@@ -37,7 +46,7 @@ class DownloadControllerTest : public testing::Test {
   DownloadControllerTest(const DownloadControllerTest&) = delete;
   DownloadControllerTest& operator=(const DownloadControllerTest&) = delete;
 
-  download::MockDownloadItem* item() { return &item_; }
+  TestMockDownloadItem* item() { return &item_; }
   Profile* profile() { return &profile_; }
 
   DownloadController* controller() { return &controller_; }
@@ -46,11 +55,44 @@ class DownloadControllerTest : public testing::Test {
     return controller_.ShouldShowAppVerificationPrompt(item);
   }
 
+  void OnDownloadUpdated(download::DownloadItem* item) {
+    controller_.OnDownloadUpdated(item);
+  }
+
+  void OnDownloadFailed(download::DownloadItem* item) {
+    controller_.OnDownloadFailed(item);
+  }
+
+  void StubDownloadInfoGetters() {
+    EXPECT_CALL(item_, GetDownloadSource())
+        .WillRepeatedly(Return(download::DownloadSource::NAVIGATION));
+    EXPECT_CALL(item_, IsDone()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item_, GetGuid())
+        .WillRepeatedly(ReturnRefOfCopy(std::string("test-guid")));
+    EXPECT_CALL(item_, GetFileNameToReportUser())
+        .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("test.pdf"))));
+    EXPECT_CALL(item_, GetTargetFilePath())
+        .WillRepeatedly(
+            ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("test.pdf"))));
+    EXPECT_CALL(item_, GetURL())
+        .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/test.pdf")));
+    EXPECT_CALL(item_, GetOriginalUrl())
+        .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/test.pdf")));
+    EXPECT_CALL(item_, GetReferrerUrl())
+        .WillRepeatedly(ReturnRefOfCopy(GURL()));
+    EXPECT_CALL(item_, GetTabUrl())
+        .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/path")));
+    EXPECT_CALL(item_, GetMimeType()).WillRepeatedly(Return("application/pdf"));
+    EXPECT_CALL(item_, GetTotalBytes()).WillRepeatedly(Return(1024));
+    EXPECT_CALL(item_, IsDangerous()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item_, IsTransient()).WillRepeatedly(Return(true));
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   DownloadController controller_;
-  download::MockDownloadItem item_;
+  TestMockDownloadItem item_;
 };
 
 TEST_F(DownloadControllerTest, ShouldShowAppVerificationPrompt) {
@@ -120,4 +162,21 @@ TEST_F(DownloadControllerTest,
   EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
 
   EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
+}
+
+TEST_F(DownloadControllerTest,
+       OnDownloadFailed_RemovesObserverWhenNotResumable) {
+  StubDownloadInfoGetters();
+  EXPECT_CALL(*item(), CanResume()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*item(), RemoveObserver(controller()));
+
+  OnDownloadFailed(item());
+}
+
+TEST_F(DownloadControllerTest, OnDownloadFailed_KeepsObserverWhenResumable) {
+  StubDownloadInfoGetters();
+  EXPECT_CALL(*item(), CanResume()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*item(), RemoveObserver(_)).Times(0);
+
+  OnDownloadFailed(item());
 }

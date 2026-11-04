@@ -46,6 +46,9 @@ public interface PdfCoordinatorInterface {
     /** Called after pdf download complete. */
     void onDownloadComplete(String pdfFilePath, String pdfFileName);
 
+    /** Called when the pdf download fails. */
+    void onDownloadFailed();
+
     /** Show pdf specific find in page UI. */
     boolean findInPage();
 

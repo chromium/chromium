@@ -869,7 +869,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/ui/android/pdf:pdf_page_java",
+    ]
   }
 
   robolectric_library(

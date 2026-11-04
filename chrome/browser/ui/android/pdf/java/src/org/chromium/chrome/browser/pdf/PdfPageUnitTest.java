@@ -39,6 +39,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.lifetime.Destroyable;
@@ -71,7 +72,8 @@ import java.io.File;
         instrumentedPackages = {"androidx.fragment.app", "androidx.pdf"},
         shadows = {
             PdfCoordinatorUnitTest.ShadowPdfViewerFragment.class,
-            PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class
+            PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class,
+            ShadowToast.class
         })
 public class PdfPageUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -130,6 +132,7 @@ public class PdfPageUnitTest {
 
     @After
     public void tearDown() throws Exception {
+        ShadowToast.reset();
         ChromeFileProvider.setGeneratedUriForTesting(null);
         PdfContentProvider.cleanUpForTesting();
         PdfCoordinator.skipLoadPdfForTesting(false);
@@ -1172,5 +1175,27 @@ public class PdfPageUnitTest {
                         mPdfFragmentViewTracker);
         pdfPage.download();
         verify(mMockNativePageHost).downloadUrl(PDF_LINK);
+    }
+
+    @Test
+    public void testOnDownloadFailed_NotifiesCoordinator() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.onDownloadFailed();
+
+        Assert.assertEquals(
+                View.GONE,
+                pdfPage.mPdfCoordinator.getView().findViewById(R.id.progress_bar).getVisibility());
+        Assert.assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_download_failed), R.id.toast_text));
+        pdfPage.destroy();
     }
 }

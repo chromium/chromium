@@ -330,6 +330,11 @@ public class PdfPage extends BasicNativePage {
         mPdfCoordinator.onDownloadComplete(pdfFilePath, pdfFileName);
     }
 
+    /** Called when the pdf download fails. */
+    public void onDownloadFailed() {
+        mPdfCoordinator.onDownloadFailed();
+    }
+
     /**
      * Show pdf specific find in page UI.
      *

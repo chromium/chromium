@@ -69,6 +69,32 @@ public class DownloadController {
     }
 
     /**
+     * Notifies the pdf native page that its inline pdf download failed, so the user can be
+     * informed.
+     */
+    @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static void onDownloadFailed(@Nullable Tab tab, DownloadInfo downloadInfo) {
+        String mimeType = downloadInfo.getMimeType();
+        if (tab == null
+                || mimeType == null
+                || !PdfUtils.shouldOpenPdfInline(tab.isIncognito())
+                || !mimeType.equals(MimeTypeUtils.PDF_MIME_TYPE)
+                || !downloadInfo.getIsTransient()) {
+            return;
+        }
+        NativePage nativePage = tab.getNativePage();
+        if (nativePage == null || !nativePage.isPdf()) {
+            return;
+        }
+        // The PdfPage may become a FrozenNativePage while downloading.
+        // Need to check before cast to PdfPage.
+        if (nativePage instanceof PdfPage pdfPage) {
+            pdfPage.onDownloadFailed();
+        }
+    }
+
+    /**
      * Enqueue a request to download a file using Android DownloadManager.
      *
      * @param url Url to download.

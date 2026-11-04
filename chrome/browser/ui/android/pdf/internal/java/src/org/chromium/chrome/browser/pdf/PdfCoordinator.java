@@ -1871,6 +1871,13 @@ public class PdfCoordinator
         }
     }
 
+    @Override
+    public void onDownloadFailed() {
+        mProgressBar.setVisibility(View.GONE);
+        Toast.makeText(mView.getContext(), R.string.pdf_download_failed, Toast.LENGTH_SHORT)
+                .show();
+    }
+
     /** Returns the filepath of the pdf document. */
     @Nullable
     @Override
@@ -2256,6 +2263,8 @@ public class PdfCoordinator
                 }
             }
         } else {
+            mProgressBar.setVisibility(View.GONE);
+            onDocumentLoadFailed();
             // TODO(crbug.com/348712628): show some error UI when content URI is null.
             Log.e(TAG, "Uri is null.");
         }
@@ -2554,11 +2563,14 @@ public class PdfCoordinator
         final String finalFilename = filename;
         final String finalSourcePath = sourcePath;
 
-        Toast.makeText(context, R.string.pdf_downloading, Toast.LENGTH_SHORT).show();
+        Toast downloadingToast =
+                Toast.makeText(context, R.string.pdf_downloading, Toast.LENGTH_SHORT);
+        downloadingToast.show();
 
         PostTask.postTask(
                 TaskTraits.USER_BLOCKING_MAY_BLOCK,
                 () -> {
+                    boolean success = false;
                     try {
                         ContentValues values = new ContentValues();
                         values.put(MediaColumns.DISPLAY_NAME, finalFilename);
@@ -2583,6 +2595,7 @@ public class PdfCoordinator
                                     values.clear();
                                     values.put(MediaColumns.IS_PENDING, 0);
                                     resolver.update(uri, values, null, null);
+                                    success = true;
                                 } else {
                                     resolver.delete(uri, null, null);
                                 }
@@ -2593,6 +2606,17 @@ public class PdfCoordinator
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to download PDF", e);
+                    }
+                    if (!success) {
+                        ThreadUtils.postOnUiThread(
+                                () -> {
+                                    downloadingToast.cancel();
+                                    Toast.makeText(
+                                                    context,
+                                                    R.string.pdf_download_failed,
+                                                    Toast.LENGTH_SHORT)
+                                            .show();
+                                });
                     }
                 });
     }

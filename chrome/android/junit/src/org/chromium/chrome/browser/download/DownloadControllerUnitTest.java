@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,8 +27,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestOrigins;
 import org.chromium.url.Origin;
@@ -99,5 +103,40 @@ public class DownloadControllerUnitTest {
         assertNull(param.getInitiatorOrigin());
         assertFalse(param.getIsRendererInitiated());
         assertTrue(param.getIsPdf());
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testOnDownloadFailed_NonPdf_NoOp() {
+        when(mTab.isIncognito()).thenReturn(false);
+        DownloadInfo info =
+                new DownloadInfo.Builder()
+                        .setUrl(new GURL(PDF_URL))
+                        .setMimeType("text/plain")
+                        .setIsTransient(true)
+                        .build();
+
+        DownloadController.onDownloadFailed(mTab, info);
+
+        verify(mTab, never()).getNativePage();
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testOnDownloadFailed_InlinePdf_NotifiesPdfPage() {
+        PdfPage pdfPage = mock(PdfPage.class);
+        when(pdfPage.isPdf()).thenReturn(true);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.getNativePage()).thenReturn(pdfPage);
+        DownloadInfo info =
+                new DownloadInfo.Builder()
+                        .setUrl(new GURL(PDF_URL))
+                        .setMimeType(MimeTypeUtils.PDF_MIME_TYPE)
+                        .setIsTransient(true)
+                        .build();
+
+        DownloadController.onDownloadFailed(mTab, info);
+
+        verify(pdfPage).onDownloadFailed();
     }
 }

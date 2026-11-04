@@ -454,6 +454,13 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
       OnDownloadComplete(item);
     }
   }
+
+  // Transient inline PDF downloads have no download notification, so tell
+  // the PDF page directly when the download fails. The early return above
+  // already guarantees that any transient item here is an inline PDF.
+  if (item->GetState() == DownloadItem::INTERRUPTED && item->IsTransient()) {
+    OnDownloadFailed(item);
+  }
 }
 
 void DownloadController::OnDownloadDestroyed(download::DownloadItem* item) {
@@ -582,6 +589,28 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
   }
   Java_DownloadController_onDownloadCompleted(
       env, tab ? tab->GetJavaObject() : nullptr, j_item, is_download_safe);
+}
+
+void DownloadController::OnDownloadFailed(download::DownloadItem* item) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_item =
+      DownloadManagerService::CreateJavaDownloadInfo(env, item);
+  // Keep observing resumable downloads so a later auto-resumption still
+  // reaches OnDownloadComplete(); otherwise stop observing, as the
+  // COMPLETE path does.
+  if (!item->CanResume()) {
+    item->RemoveObserver(this);
+  }
+  TabAndroid* tab = nullptr;
+  // The primary page changed when the native page was shown, so use the
+  // original WebContents (see OnDownloadComplete()).
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetOriginalWebContents(item);
+  if (web_contents) {
+    tab = TabAndroid::FromWebContents(web_contents);
+  }
+  Java_DownloadController_onDownloadFailed(
+      env, tab ? tab->GetJavaObject() : nullptr, j_item);
 }
 
 void DownloadController::StartContextMenuDownload(

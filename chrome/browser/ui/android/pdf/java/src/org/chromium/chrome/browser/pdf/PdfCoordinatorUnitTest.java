@@ -135,7 +135,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
         shadows = {
             PdfCoordinatorUnitTest.ShadowPdfViewerFragment.class,
             PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class,
-            PdfCoordinatorUnitTest.CustomShadowParcelFileDescriptor.class
+            PdfCoordinatorUnitTest.CustomShadowParcelFileDescriptor.class,
+            ShadowToast.class
         })
 public class PdfCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -2723,6 +2724,37 @@ public class PdfCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnDownloadFailed_HidesProgressBarAndShowsToast() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadFailed();
+
+        assertEquals(
+                View.GONE,
+                mPdfCoordinator.getView().findViewById(R.id.progress_bar).getVisibility());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_download_failed), R.id.toast_text));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testLoadPdf_WhenUriIsNull_HidesProgressBarAndDoesNotShowDownloadFailedToast() {
+        ChromeFileProvider.setGeneratedUriForTesting(null);
+        ShadowToast.reset();
+
+        createPdfCoordinator();
+
+        assertEquals(
+                View.GONE,
+                mPdfCoordinator.getView().findViewById(R.id.progress_bar).getVisibility());
+        View container =
+                mPdfCoordinator.getView().findViewById(mPdfCoordinator.mFragmentContainerViewId);
+        assertEquals(View.VISIBLE, container.getVisibility());
+        assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
     @EnableFeatures({ChromeFeatureList.INLINE_PDF_V2, ChromeFeatureList.PDF_REUSE_FRAGMENT})
     public void testOnDownloadComplete_WhenLoaded_FragmentReuseEnabled_ReusesFragment() {
         createPdfCoordinator();
@@ -3469,6 +3501,7 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testDownload_WithAnnotations_ShowsDownloadingToastImmediately() {
+        PostTask.setPrenativeThreadPoolExecutorForTesting(r -> {});
         createPdfCoordinator();
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
         mPdfCoordinator.onEditsApplied();
@@ -3478,6 +3511,129 @@ public class PdfCoordinatorUnitTest {
         assertTrue(
                 ShadowToast.showedCustomToast(
                         mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_InsertReturnsNull_ShowsFailureToast() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        TestContentProvider mediaProvider =
+                new TestContentProvider(/* pfd= */ null) {
+                    @Override
+                    public Uri insert(Uri uri, ContentValues values) {
+                        return null;
+                    }
+                };
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = "media";
+        mediaProvider.attachInfo(mActivity, providerInfo);
+        ShadowContentResolver.registerProviderInternal("media", mediaProvider);
+
+        mPdfCoordinator.download();
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_download_failed), R.id.toast_text));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_CopyFails_DeletesUriAndShowsFailureToast() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        Uri insertedUri = Uri.parse("content://media/external/downloads/1");
+        AtomicBoolean deleted = new AtomicBoolean(false);
+        TestContentProvider mediaProvider =
+                new TestContentProvider(/* pfd= */ null) {
+                    @Override
+                    public Uri insert(Uri uri, ContentValues values) {
+                        return insertedUri;
+                    }
+
+                    @Override
+                    public int delete(Uri uri, String selection, String[] selectionArgs) {
+                        if (insertedUri.equals(uri)) {
+                            deleted.set(true);
+                        }
+                        return 1;
+                    }
+                };
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = "media";
+        mediaProvider.attachInfo(mActivity, providerInfo);
+        ShadowContentResolver.registerProviderInternal("media", mediaProvider);
+
+        mPdfCoordinator.download();
+        ShadowLooper.idleMainLooper();
+
+        assertTrue("Pending MediaStore entry should be deleted on failure", deleted.get());
+        assertTrue(
+                ShadowToast.showedCustomToast(
+                        mActivity.getString(R.string.pdf_download_failed), R.id.toast_text));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_Success_UpdatesPendingAndDoesNotShowFailureToast()
+            throws Exception {
+        File sourceFile = File.createTempFile("source_pdf", ".pdf");
+        sourceFile.deleteOnExit();
+        try (FileWriter writer = new FileWriter(sourceFile)) {
+            writer.write("annotated pdf content");
+        }
+        ChromeFileProvider.setGeneratedUriForTesting(Uri.fromFile(sourceFile));
+
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(sourceFile.getPath(), PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        File destFile = File.createTempFile("dest_pdf", ".pdf");
+        destFile.deleteOnExit();
+        try (ParcelFileDescriptor pfd =
+                ParcelFileDescriptor.open(destFile, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            Uri insertedUri = Uri.parse("content://media/external/downloads/2");
+            AtomicBoolean updated = new AtomicBoolean(false);
+            TestContentProvider mediaProvider =
+                    new TestContentProvider(pfd) {
+                        @Override
+                        public Uri insert(Uri uri, ContentValues values) {
+                            return insertedUri;
+                        }
+
+                        @Override
+                        public int update(
+                                Uri uri,
+                                ContentValues values,
+                                String selection,
+                                String[] selectionArgs) {
+                            if (insertedUri.equals(uri)) {
+                                updated.set(true);
+                            }
+                            return 1;
+                        }
+                    };
+            ProviderInfo providerInfo = new ProviderInfo();
+            providerInfo.authority = "media";
+            mediaProvider.attachInfo(mActivity, providerInfo);
+            ShadowContentResolver.registerProviderInternal("media", mediaProvider);
+
+            mPdfCoordinator.download();
+            ShadowLooper.idleMainLooper();
+
+            assertTrue("MediaStore entry should be updated on success", updated.get());
+            assertTrue(
+                    ShadowToast.showedCustomToast(
+                            mActivity.getString(R.string.pdf_downloading), R.id.toast_text));
+        } finally {
+            sourceFile.delete();
+            destFile.delete();
+        }
     }
 
     @Test
@@ -3585,6 +3741,7 @@ public class PdfCoordinatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testDownload_WithAnnotations_LocalPdf_CallsDownloadAnnotatedPdf() {
+        PostTask.setPrenativeThreadPoolExecutorForTesting(r -> {});
         mPdfCoordinator =
                 new PdfCoordinator(
                         mNativePageHost,
@@ -3623,6 +3780,7 @@ public class PdfCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(shadows = {ShadowEditablePdfViewerFragment.class})
     public void testOnPdfEditsSaved_TriggersDownloadIfDownloadAfterSave() throws Exception {
+        PostTask.setPrenativeThreadPoolExecutorForTesting(r -> {});
         createPdfCoordinator();
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
 
@@ -3642,6 +3800,7 @@ public class PdfCoordinatorUnitTest {
 
         File tempFile = File.createTempFile("test_saved_pdf", ".pdf");
         tempFile.deleteOnExit();
+        ChromeFileProvider.setGeneratedUriForTesting(Uri.fromFile(tempFile));
         java.util.concurrent.atomic.AtomicBoolean onDoneCalled =
                 new java.util.concurrent.atomic.AtomicBoolean(false);
 
