@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/signin/core/browser/test_account_preview_data_service.h"
@@ -226,8 +227,8 @@ TEST_F(FullscreenSigninScreenMediatorTest,
   }
 }
 
-// Tests that the preferred identity is selected right away if the preferred
-// account is not being computed.
+// Tests that the preferred identity is selected asynchronously without waiting
+// for a fetch if the preferred account is already available.
 TEST_F(FullscreenSigninScreenMediatorTest,
        SelectsPreferredIdentityImmediately) {
   base::test::ScopedFeatureList feature_list(
@@ -237,6 +238,11 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+  EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
+  EXPECT_TRUE(consumer_.contentLoading);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !consumer_.contentLoading; }));
 
   EXPECT_NSEQ(preferred_identity_, mediator.selectedIdentity);
   EXPECT_NSEQ(preferred_identity_.userEmail, consumer_.selectedEmail);
@@ -307,6 +313,10 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+  EXPECT_TRUE(consumer_.contentLoading);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !consumer_.contentLoading; }));
 
   EXPECT_NSEQ(default_identity_, mediator.selectedIdentity);
   EXPECT_FALSE(consumer_.contentLoading);
@@ -364,6 +374,8 @@ TEST_F(FullscreenSigninScreenMediatorTest,
 
   FullscreenSigninScreenMediator* mediator =
       CreateMediatorWithConsumer(signin_metrics::AccessPoint::kStartPage);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !consumer_.contentLoading; }));
   EXPECT_NSEQ(third_identity, mediator.selectedIdentity);
 
   // User manually switches to `default_identity_`, which is then removed from
