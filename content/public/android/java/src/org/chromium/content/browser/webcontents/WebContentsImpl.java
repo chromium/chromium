@@ -1198,12 +1198,6 @@ public class WebContentsImpl
     }
 
     @Override
-    public void showInterestInElement(int nodeID) {
-        if (mNativeWebContentsAndroid == 0) return;
-        WebContentsImplJni.get().showInterestInElement(mNativeWebContentsAndroid, nodeID);
-    }
-
-    @Override
     public void notifyRendererPreferenceUpdate() {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().notifyRendererPreferenceUpdate(mNativeWebContentsAndroid);
@@ -1535,8 +1529,6 @@ public class WebContentsImpl
 
         void setDisplayCutoutSafeArea(
                 long nativeWebContentsAndroid, int top, int left, int bottom, int right);
-
-        void showInterestInElement(long nativeWebContentsAndroid, int nodeID);
 
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);
 

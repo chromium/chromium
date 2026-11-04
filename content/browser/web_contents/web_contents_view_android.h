@@ -160,7 +160,6 @@ class CONTENT_EXPORT WebContentsViewAndroid : public WebContentsView,
   void OnControlsResizeViewChanged() override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
-  void ShowInterestInElement(int nodeID) override;
 
   virtual bool ShouldShowBlurTransitionAnimation(
       NavigationHandle* navigation_handle);

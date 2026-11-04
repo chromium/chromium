@@ -574,14 +574,6 @@ public interface WebContents extends Parcelable {
      */
     void setDisplayCutoutSafeArea(Rect insets);
 
-    /**
-     * Instructs the web contents to "show interest" in the Element corresponding to the provided
-     * nodeID.
-     *
-     * @param nodeID The DOMNodeID of the element that should receive interest.
-     */
-    void showInterestInElement(int nodeID);
-
     /** Notify that web preferences needs update for various properties. */
     void notifyRendererPreferenceUpdate();
 

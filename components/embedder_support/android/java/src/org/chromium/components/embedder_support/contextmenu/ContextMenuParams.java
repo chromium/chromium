@@ -51,7 +51,6 @@ public class ContextMenuParams {
     private final boolean mOpenedFromHighlight;
 
     private final boolean mOpenedFromInterestFor;
-    private final int mInterestForNodeID;
 
     private @Nullable AdditionalNavigationParams mAdditionalNavigationParams;
     private final MenuModelBridge mMenuModelBridge;
@@ -210,15 +209,6 @@ public class ContextMenuParams {
     }
 
     /**
-     * @return Only valid if `getOpenedFromInterestFor()` is true. This returns the DOMNodeID
-     *     for the element that should be "shown interest" in case the "show interest" menu
-     *     item is chosen by the user.
-     */
-    public int getInterestForNodeID() {
-        return mInterestForNodeID;
-    }
-
-    /**
      * Takes ownership of the additional navigation params associated with this Context Menu.
      *
      * @return The additional navigation params associated with this Context Menu, or null if none
@@ -262,7 +252,6 @@ public class ContextMenuParams {
             int sourceType,
             boolean openedFromHighlight,
             boolean openedFromInterestFor,
-            int interestForNodeID,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         mNativePtr = nativePtr;
         mMenuModelBridge = menuModelBridge;
@@ -291,7 +280,6 @@ public class ContextMenuParams {
         mSourceType = sourceType;
         mOpenedFromHighlight = openedFromHighlight;
         mOpenedFromInterestFor = openedFromInterestFor;
-        mInterestForNodeID = interestForNodeID;
         mAdditionalNavigationParams = additionalNavigationParams;
     }
 
@@ -315,7 +303,6 @@ public class ContextMenuParams {
             int sourceType,
             boolean openedFromHighlight,
             boolean openedFromInterestFor,
-            int interestForNodeID,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
         // TODO(crbug.com/40549331): Convert Referrer to use GURL.
         Referrer referrer =
@@ -340,7 +327,6 @@ public class ContextMenuParams {
                 sourceType,
                 openedFromHighlight,
                 openedFromInterestFor,
-                interestForNodeID,
                 additionalNavigationParams);
     }
 }

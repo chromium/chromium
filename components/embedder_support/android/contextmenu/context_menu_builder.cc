@@ -60,8 +60,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           params.y, static_cast<int>(params.source_type),
           params.annotation_type ==
               blink::mojom::AnnotationType::kSharedHighlight,
-          params.opened_from_interest_for, params.interest_for_node_id,
-          additional_navigation_params));
+          params.opened_from_interest_for, additional_navigation_params));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

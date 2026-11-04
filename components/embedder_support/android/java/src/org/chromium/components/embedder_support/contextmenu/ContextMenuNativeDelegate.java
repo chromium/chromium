@@ -75,4 +75,10 @@ public interface ContextMenuNativeDelegate {
 
     /** Download the current video frame to the device. */
     void downloadVideoFrame();
+
+    /**
+     * Instructs the initiating document to "show interest" in the Element that the context menu was
+     * triggered on.
+     */
+    void showInterestInElement();
 }

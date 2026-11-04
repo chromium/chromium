@@ -364,9 +364,6 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void setDisplayCutoutSafeArea(Rect insets) {}
 
     @Override
-    public void showInterestInElement(int nodeID) {}
-
-    @Override
     public void notifyRendererPreferenceUpdate() {}
 
     @Override

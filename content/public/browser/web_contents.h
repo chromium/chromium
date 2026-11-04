@@ -145,6 +145,7 @@ class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
 class WebUI;
 struct DropData;
+struct GlobalDOMNodeId;
 struct MHTMLGenerationParams;
 class PreloadingAttempt;
 #if BUILDFLAG(IS_ANDROID)
@@ -1642,6 +1643,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
   // Tells the WebContents whether the context menu is showing.
   virtual void SetShowingContextMenu(bool showing) = 0;
+
+  // Instructs the document identified by `node_id` to "show interest" in the
+  // target element, which is presumed to have an `interestfor` attribute.
+  virtual void ShowInterestInElement(const GlobalDOMNodeId& node_id) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   CONTENT_EXPORT static WebContents* FromJavaWebContents(

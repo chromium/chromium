@@ -620,7 +620,6 @@ public class ContextMenuTest extends AwParameterizedTest {
                         /* sourceType= */ 0,
                         /* openedFromHighlight= */ false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         Assert.assertFalse(mHelper.showContextMenu(params, mTestContainerView));
@@ -911,7 +910,6 @@ public class ContextMenuTest extends AwParameterizedTest {
                 MenuSourceType.TOUCH,
                 false,
                 /* openedFromInterestFor= */ false,
-                /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
     }
 

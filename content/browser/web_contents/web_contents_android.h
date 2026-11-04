@@ -208,8 +208,6 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 int bottom,
                                 int right);
 
-  void ShowInterestInElement(JNIEnv* env, int nodeID);
-
   void NotifyRendererPreferenceUpdate(JNIEnv* env);
 
   void NotifyBrowserControlsHeightChanged(JNIEnv* env);

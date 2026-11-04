@@ -373,10 +373,6 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
       keyboard_rect);
 }
 
-void PageImpl::ShowInterestInElement(int nodeID) {
-  GetMainDocument().GetAssociatedLocalFrame()->ShowInterestInElement(nodeID);
-}
-
 void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
   if (virtual_keyboard_mode_ == mode) {
     return;

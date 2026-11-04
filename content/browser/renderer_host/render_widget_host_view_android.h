@@ -306,7 +306,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnWindowPositionChanged() override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
-  void ShowInterestInElement(int) override;
   void OnPointerLockRelease() override;
 
   // ui::ViewAndroidObserver implementation:

@@ -382,7 +382,6 @@ public class ContextMenuCoordinatorTest {
                         0,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         final Window window = Mockito.mock(Window.class);

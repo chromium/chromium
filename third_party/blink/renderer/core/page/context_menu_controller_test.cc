@@ -2646,7 +2646,38 @@ TEST_F(InterestForTouchscreenTest, LinkWithInterestFor) {
   // Simulate choosing the "Show details" context menu item
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
-  link->ShowInterestNow();
+  document->GetFrame()->ShowInterestInElement(
+      context_menu_data.interest_for_node_id);
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(link->GetInterestState(),
+            Element::InterestState::kExplicitInterest);
+}
+
+TEST_F(InterestForTouchscreenTest, ShowInterestInElementWrongDocument) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(R"(
+    <a href="foo.html" interestfor=target id=link>Link</a>
+    <div id=target popover>Target</div>
+    <iframe id=iframe></iframe>
+    )");
+  Document* document = GetDocument();
+  Element* link = document->getElementById(AtomicString("link"));
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  ASSERT_TRUE(link);
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
+
+  LocalFrame* main_frame = document->GetFrame();
+  ASSERT_TRUE(main_frame);
+  LocalFrame* child_frame = To<LocalFrame>(main_frame->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  // Calling ShowInterestInElement on a different frame than the element's
+  // document should be a no-op.
+  child_frame->ShowInterestInElement(link->GetDomNodeId());
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  EXPECT_EQ(link->GetInterestState(), Element::InterestState::kNoInterest);
+
+  // Calling ShowInterestInElement on the element's own frame succeeds.
+  main_frame->ShowInterestInElement(link->GetDomNodeId());
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_EQ(link->GetInterestState(),
             Element::InterestState::kExplicitInterest);

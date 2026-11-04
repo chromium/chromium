@@ -1279,13 +1279,6 @@ void WebContentsViewAndroid::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
-void WebContentsViewAndroid::ShowInterestInElement(int nodeID) {
-  auto* rwhv = GetRenderWidgetHostViewAndroid();
-  if (rwhv) {
-    rwhv->ShowInterestInElement(nodeID);
-  }
-}
-
 bool WebContentsViewAndroid::ShouldShowBlurTransitionAnimation(
     NavigationHandle* navigation_handle) {
   if (delegate_) {

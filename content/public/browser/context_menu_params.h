@@ -55,6 +55,10 @@ struct CONTENT_EXPORT ContextMenuParams
   // identifying GlobalDOMNodeId will be in this field.
   GlobalDOMNodeId form_field_dom_node_id;
 
+  // If the context menu was opened from an element with the `interestfor`
+  // attribute, its identifying GlobalDOMNodeId will be in this field.
+  GlobalDOMNodeId interest_for_dom_node_id;
+
  private:
   // RenderFrameHostImpl is responsible for validating and sanitizing
   // blink::UntrustworthyContextMenuParams into ContextMenuParams and therefore

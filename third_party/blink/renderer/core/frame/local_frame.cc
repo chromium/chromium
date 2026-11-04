@@ -3873,7 +3873,7 @@ void LocalFrame::SetVirtualKeyboardOverlayGeometry(const gfx::Rect& rect) {
 
 void LocalFrame::ShowInterestInElement(int nodeID) const {
   Element* element = DynamicTo<Element>(DOMNodeIds::NodeForId(nodeID));
-  if (!element) {
+  if (!element || element->GetDocument() != GetDocument()) {
     return;
   }
   element->ShowInterestNow();

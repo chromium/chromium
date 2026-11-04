@@ -2704,14 +2704,20 @@ void WebContentsImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
   }
 }
 
-void WebContentsImpl::ShowInterestInElement(int nodeID) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ShowInterestInElement");
-  if (auto* rwhv = GetRenderWidgetHostView()) {
-    rwhv->ShowInterestInElement(nodeID);
-  }
-}
-
 #endif
+
+void WebContentsImpl::ShowInterestInElement(const GlobalDOMNodeId& node_id) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ShowInterestInElement");
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      node_id.document.AsRenderFrameHostIfValid());
+  if (!rfh || !rfh->IsRenderFrameLive() ||
+      WebContents::FromRenderFrameHost(rfh) != this ||
+      node_id.target_element_dom_id.is_null()) {
+    return;
+  }
+  rfh->GetAssociatedLocalFrame()->ShowInterestInElement(
+      node_id.target_element_dom_id.value());
+}
 
 const std::u16string& WebContentsImpl::GetTitle() {
   WebUI* our_web_ui =

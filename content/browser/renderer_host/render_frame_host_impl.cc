@@ -10460,6 +10460,9 @@ void RenderFrameHostImpl::ShowContextMenu(
 
   validated_params.form_field_dom_node_id =
       GlobalDOMNodeId{GetWeakDocumentPtr(), validated_params.field_renderer_id};
+  validated_params.interest_for_dom_node_id = GlobalDOMNodeId{
+      GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(validated_params.interest_for_node_id)};
 
   // Cache coordinates so actions from this menu act where the user clicked.
   context_menu_location_ = {

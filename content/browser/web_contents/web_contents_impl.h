@@ -647,6 +647,7 @@ class CONTENT_EXPORT WebContentsImpl
   void ClearFocusedElement() override;
   bool IsShowingContextMenu() override;
   void SetShowingContextMenu(bool showing) override;
+  void ShowInterestInElement(const GlobalDOMNodeId& node_id) override;
   base::UnguessableToken GetAudioGroupId() override;
   bool CompletedFirstVisuallyNonEmptyPaint() override;
   void UpdateFaviconURL(
@@ -1569,9 +1570,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Called by WebContentsAndroid to send the Display Cutout safe area to
   // DisplayCutoutHostImpl.
   void SetDisplayCutoutSafeArea(gfx::Insets insets);
-  // Called by WebContentsAndroid to instruct the web contents to "show
-  // interest" in the referenced element.
-  void ShowInterestInElement(int nodeID);
 #endif
 
   // Notify observers that the viewport fit value changed. This is called by

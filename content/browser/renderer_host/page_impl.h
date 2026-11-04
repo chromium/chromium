@@ -216,10 +216,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // See https://github.com/w3c/csswg-drafts/issues/4670.
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
-  // This call will "show interest" in the Element with the provided DOMNodeID,
-  // which is presumed to have an `interestfor` attribute.
-  void ShowInterestInElement(int);
-
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode);
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode() const {
     return virtual_keyboard_mode_;

@@ -893,10 +893,6 @@ void WebContentsAndroid::SetDisplayCutoutSafeArea(JNIEnv* env,
       gfx::Insets::TLBR(top, left, bottom, right));
 }
 
-void WebContentsAndroid::ShowInterestInElement(JNIEnv* env, int nodeID) {
-  web_contents()->ShowInterestInElement(nodeID);
-}
-
 void WebContentsAndroid::NotifyRendererPreferenceUpdate(JNIEnv* env) {
   web_contents_->OnWebPreferencesChanged();
 }

@@ -101,7 +101,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         false,
-                        0,
                         null);
 
         HeaderInfo headerInfo =
@@ -141,7 +140,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         false,
-                        0,
                         null);
 
         HeaderInfo headerInfo =
@@ -186,7 +184,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         false,
-                        0,
                         null);
 
         HeaderInfo headerInfo =
@@ -226,7 +223,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         false,
-                        0,
                         null);
 
         HeaderInfo headerInfo =
@@ -266,7 +262,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(ALT_TEXT, ContextMenuUtils.getAltText(params));
@@ -293,7 +288,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(sLinkText, ContextMenuUtils.getAltText(params));
@@ -320,7 +314,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(
@@ -348,7 +341,6 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertEquals("", ContextMenuUtils.getAltText(params));
@@ -453,7 +445,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.MOUSE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertTrue(
@@ -482,7 +473,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         true, // openedFromHighlight
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertTrue(
@@ -511,7 +501,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         assertFalse(
@@ -558,7 +547,6 @@ public class ContextMenuUtilsUnitTest {
                 MenuSourceType.KEYBOARD,
                 false,
                 /* openedFromInterestFor= */ false,
-                /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
     }
 
@@ -615,7 +603,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         Point result =
@@ -717,7 +704,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
         // getContextMenuAnchorRect depends on static methods, and since we can't create static
@@ -815,7 +801,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         unusedParams);
         menuParamsUnused.destroy();
         verify(unusedParams).destroy();
@@ -840,7 +825,6 @@ public class ContextMenuUtilsUnitTest {
                         MenuSourceType.NONE,
                         false,
                         /* openedFromInterestFor= */ false,
-                        /* interestForNodeID= */ 0,
                         takenParams);
         Assert.assertEquals(takenParams, menuParamsTaken.takeAdditionalNavigationParams());
         Assert.assertNull(menuParamsTaken.takeAdditionalNavigationParams());

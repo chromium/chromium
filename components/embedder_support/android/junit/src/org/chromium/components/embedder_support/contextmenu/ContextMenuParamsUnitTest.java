@@ -38,7 +38,6 @@ public class ContextMenuParamsUnitTest {
                 MenuSourceType.TOUCH,
                 /* openedFromHighlight= */ false,
                 /* openedFromInterestFor= */ false,
-                /* interestForNodeID= */ 0,
                 /* additionalNavigationParams= */ null);
     }
 

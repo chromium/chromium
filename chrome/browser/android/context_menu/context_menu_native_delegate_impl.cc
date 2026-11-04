@@ -259,6 +259,11 @@ void ContextMenuNativeDelegateImpl::DownloadVideoFrame(
           blink::mojom::MediaPlayerActionType::kSaveVideoFrameAs, true));
 }
 
+void ContextMenuNativeDelegateImpl::ShowInterestInElement(JNIEnv* env) {
+  web_contents_->ShowInterestInElement(
+      context_menu_params_->interest_for_dom_node_id);
+}
+
 static jni_zero::JniUniquePtr<ContextMenuNativeDelegateImpl>
 JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,

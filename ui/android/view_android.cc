@@ -884,15 +884,6 @@ void ViewAndroid::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
-void ViewAndroid::ShowInterestInElement(int nodeID) {
-  if (event_handler_) {
-    event_handler_->ShowInterestInElement(nodeID);
-  }
-  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
-    child->ShowInterestInElement(nodeID);
-  }
-}
-
 template <typename E>
 bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,

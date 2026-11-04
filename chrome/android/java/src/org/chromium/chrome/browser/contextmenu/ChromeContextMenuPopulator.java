@@ -1360,8 +1360,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mNativeDelegate.setPictureInPicture(enterPiP);
         } else if (itemId == R.id.contextmenu_show_interest_in_element) {
             recordContextMenuSelection(ContextMenuUma.Action.SHOW_INTEREST_IN_ELEMENT);
-            WebContents webContents = mItemDelegate.getWebContents();
-            webContents.showInterestInElement(mParams.getInterestForNodeID());
+            mNativeDelegate.showInterestInElement();
         } else if (itemId == R.id.contextmenu_open_image_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IMAGE_IN_NEW_TAB);
             GURL url =
