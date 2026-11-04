@@ -1,2 +1,3 @@
 per-file signin_test_util.*=file://components/signin/IOS_OWNERS
 per-file sync_test_util.*=file://components/sync/OWNERS
+per-file uikit_test_util.*=arthurmilchior@chromium.org
