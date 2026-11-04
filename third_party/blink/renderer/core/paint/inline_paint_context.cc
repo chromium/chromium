@@ -126,7 +126,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
           if (decorations->size() == 1 &&
               decorations->front().Lines() == style->GetTextDecorationLine()) {
             inline_context_->ClearDecoratingBoxes(&saved_decorating_boxes_);
-            PushDecoratingBox(item, *layout_object, *style, *decorations);
+            PushDecoratingBox(item, *layout_object, *style);
             return 1;
           }
 
@@ -194,7 +194,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
       if (base_decorations == &parent_decorations) {
         DCHECK_EQ(decorations.size(), parent_decorations.size() + 1);
         DCHECK_NE(style.GetTextDecorationLine(), TextDecorationLine::kNone);
-        PushDecoratingBox(item, layout_object, style, decorations);
+        PushDecoratingBox(item, layout_object, style);
         return 1;
       }
 
@@ -204,15 +204,15 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
         // the normal style inherits from the parent, and the `:first-line`
         // inherits from the normal style, resulting two decorating boxes.
         DCHECK_NE(style.GetTextDecorationLine(), TextDecorationLine::kNone);
-        PushDecoratingBox(item, layout_object, style, *base_decorations);
-        PushDecoratingBox(item, layout_object, style, decorations);
+        PushDecoratingBox(item, layout_object, style);
+        PushDecoratingBox(item, layout_object, style);
         return 2;
       }
 
       // The style engine may create a clone, not an inherited decorations,
       // such as a `<span>` in `::first-line`.
       if (decorations.size() == parent_decorations.size() + 1) {
-        PushDecoratingBox(item, layout_object, style, decorations);
+        PushDecoratingBox(item, layout_object, style);
         return 1;
       }
 
@@ -221,7 +221,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
       if (decorations.size() > parent_decorations.size()) {
         const wtf_size_t count = decorations.size() - parent_decorations.size();
         for (wtf_size_t i = 0; i < count; ++i) {
-          PushDecoratingBox(item, layout_object, style, decorations);
+          PushDecoratingBox(item, layout_object, style);
         }
         return count;
       }
@@ -232,8 +232,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
 
     void PushDecoratingBox(const FragmentItem* item,
                            const LayoutObject& layout_object,
-                           const ComputedStyle& style,
-                           const AppliedTextDecorationVector& decorations) {
+                           const ComputedStyle& style) {
       DCHECK(!item || item->GetLayoutObject() == &layout_object);
       if (!item) {
         // If the item is not known, it is either a culled inline or it is found
@@ -246,8 +245,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
         item = line_cursor_->Current().Item();
       }
       DCHECK(item);
-      inline_context_->PushDecoratingBox(*item, style, item->GetUsedFont(),
-                                         &decorations);
+      inline_context_->PushDecoratingBox(*item, style, item->GetUsedFont());
     }
 
     InlinePaintContext* inline_context_;
@@ -345,8 +343,7 @@ void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   // https://drafts.csswg.org/css-text-decor-3/#line-decoration, EXAMPLE 1 in
   // the spec, and crbug.com/855589.
   for (wtf_size_t i = 0; i < applied_text_decorations.size(); ++i) {
-    decorating_boxes_.emplace_back(offset, style, used_font,
-                                   &applied_text_decorations);
+    decorating_boxes_.emplace_back(offset, style, used_font);
   }
 }
 

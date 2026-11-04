@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/used_font.h"
-#include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
@@ -23,32 +22,23 @@ class CORE_EXPORT DecoratingBox {
  public:
   DecoratingBox(const PhysicalOffset& content_offset_in_container,
                 const ComputedStyle& style,
-                const UsedFont& used_font,
-                const AppliedTextDecorationVector* decorations)
+                const UsedFont& used_font)
       : content_offset_in_container_(content_offset_in_container),
         used_font_(used_font),
-        style_(&style),
-        decorations_(decorations ? decorations
-                                 : &style.AppliedTextDecorations()) {}
+        style_(&style) {}
   DecoratingBox(const FragmentItem& item,
                 const ComputedStyle& style,
-                const UsedFont& used_font,
-                const AppliedTextDecorationVector* decorations)
+                const UsedFont& used_font)
       : DecoratingBox(
             item.ContentOffsetInContainerFragmentIgnoringTextBoxTrim(),
             style,
-            used_font,
-            decorations) {}
+            used_font) {}
   explicit DecoratingBox(const FragmentItem& item)
-      : DecoratingBox(item,
-                      item.Style(),
-                      item.GetUsedFont(),
-                      /* decorations */ nullptr) {}
+      : DecoratingBox(item, item.Style(), item.GetUsedFont()) {}
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(used_font_);
     visitor->Trace(style_);
-    visitor->Trace(decorations_);
   }
 
   const PhysicalOffset& ContentOffsetInContainer() const {
@@ -56,15 +46,11 @@ class CORE_EXPORT DecoratingBox {
   }
   const ComputedStyle& Style() const { return *style_; }
   const UsedFont& GetUsedFont() const { return used_font_; }
-  const AppliedTextDecorationVector* AppliedTextDecorations() const {
-    return decorations_.Get();
-  }
 
  private:
   PhysicalOffset content_offset_in_container_;
   UsedFont used_font_;
   Member<const ComputedStyle> style_;
-  Member<const AppliedTextDecorationVector> decorations_;
 };
 
 }  // namespace blink
