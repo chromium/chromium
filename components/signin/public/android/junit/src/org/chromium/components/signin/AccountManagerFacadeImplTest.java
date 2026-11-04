@@ -388,6 +388,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testGetCoreAccountInfosWithAccountPatternsChange() throws Exception {
         mDelegate.callOnAccountsChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(List.of(), mFacade.getAccounts().getResult());
 
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
@@ -821,6 +822,7 @@ public class AccountManagerFacadeImplTest {
             testGetCoreAccountInfosWithAccountPatternsChange_migrateAccountManagerDelegateEnabled()
                     throws Exception {
         mDelegate.callOnAccountsChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(List.of(), mFacade.getAccounts().getResult());
 
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
@@ -901,6 +903,35 @@ public class AccountManagerFacadeImplTest {
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);
         inOrder.verify(mObserverMock).onAccountsChanged();
         inOrder.verify(mMockCallback).onResult(any());
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testUpdateCredentialsCallbackPreservedOnConcurrentAccountsChanged() {
+        mDelegate.addAccount(TestAccounts.ACCOUNT1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(true);
+                            // Simulate GMS Core broadcasting LOGIN_ACCOUNTS_CHANGED_ACTION
+                            // concurrently with updateCredentials() completing.
+                            mDelegate.callOnAccountsChanged();
+                            return null;
+                        })
+                .when(mDelegate)
+                .updateCredentials(any(), any(), any());
+
+        mFacade.addObserver(mObserverMock);
+        mFacade.updateCredentials(TestAccounts.ACCOUNT1.getId(), null, mMockCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        InOrder inOrder = inOrder(mObserverMock, mMockCallback);
+        inOrder.verify(mObserverMock).onAccountsChanged();
+        inOrder.verify(mMockCallback).onResult(true);
+        inOrder.verify(mObserverMock).onAccountsChanged();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test

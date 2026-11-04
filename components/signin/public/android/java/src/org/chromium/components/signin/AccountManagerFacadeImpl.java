@@ -83,8 +83,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             new AtomicReference<>();
     private Promise<List<AccountInfo>> mAccountsPromise = new Promise<>();
 
-    private @Nullable AsyncTask<@Nullable List<GaiaId>> mFetchGaiaIdsTask;
-
     private int mNumberOfRetries;
     private boolean mDidAccountFetchSucceed;
 
@@ -591,14 +589,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private void fetchGaiaIdsAndUpdateCoreAccountInfos(@Nullable Runnable callback) {
         assert !AccountManagerDelegate.isAccountManagerDelegateMigrationEnabled();
         ThreadUtils.assertOnUiThread();
-        if (mFetchGaiaIdsTask != null) {
-            // Cancel previous fetch task as it is obsolete now.
-            mFetchGaiaIdsTask.cancel(true);
-            mFetchGaiaIdsTask = null;
-        }
-
-        mFetchGaiaIdsTask = new GetAccountAsyncTask(getFilteredAccountEmails(), callback);
-        mFetchGaiaIdsTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        new GetAccountAsyncTask(getFilteredAccountEmails(), callback)
+                .executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
     @VisibleForTesting
@@ -849,9 +841,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             final long seedingStartTime = SystemClock.elapsedRealtime();
             List<GaiaId> gaiaIds = new ArrayList<>();
             for (String email : mEmails) {
-                if (isCancelled()) {
-                    return null;
-                }
                 final GaiaId gaiaId;
                 try {
                     gaiaId = mDelegate.getAccountGaiaId(email);
@@ -874,7 +863,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         public void onPostExecute(@Nullable List<GaiaId> gaiaIds) {
-            mFetchGaiaIdsTask = null;
             if (gaiaIds == null) {
                 fetchGaiaIdsAndUpdateCoreAccountInfos(mCallback);
                 return;
