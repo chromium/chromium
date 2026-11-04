@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 
 #import <utility>
 
 #import "components/dom_distiller/core/distiller.h"
 #import "components/dom_distiller/core/distiller_options.h"
-#import "ios/chrome/browser/dom_distiller/model/constants.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/web_distiller/model/constants.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 
 DistillerServiceFactory::DistillerServiceFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(

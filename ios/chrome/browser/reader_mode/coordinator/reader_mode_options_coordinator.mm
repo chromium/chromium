@@ -6,8 +6,6 @@
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_mediator.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
@@ -17,6 +15,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 
 namespace {
 

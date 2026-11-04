@@ -21,7 +21,6 @@ include_rules = [
   "+ios/chrome/browser/default_browser/model/promo_source.h",
   "+ios/chrome/browser/default_browser/model/utils.h",
   "+ios/chrome/browser/discover_feed/model",
-  "+ios/chrome/browser/dom_distiller/model",
   "+ios/chrome/browser/download/coordinator/auto_deletion",
   "+ios/chrome/browser/download/ui/auto_deletion",
   "+ios/chrome/browser/favicon/model",
@@ -66,6 +65,7 @@ include_rules = [
   "+ios/chrome/browser/upgrade/model",
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
+  "+ios/chrome/browser/web_distiller/model",
   "+ios/chrome/browser/web_extension/model",
   "+ios/chrome/browser/webauthn",
   # keep-sorted end

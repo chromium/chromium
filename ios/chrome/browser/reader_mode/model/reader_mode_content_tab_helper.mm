@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
 #import "components/translate/core/browser/translate_manager.h"
-#import "ios/chrome/browser/dom_distiller/model/constants.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
@@ -13,6 +12,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/web_distiller/model/constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

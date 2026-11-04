@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
@@ -19,6 +17,8 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 
 @interface ReaderModeCoordinator () <ReaderModeOptionsCommands>
 @end

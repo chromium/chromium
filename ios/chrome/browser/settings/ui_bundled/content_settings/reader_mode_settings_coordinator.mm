@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/reader_mode_settings_coordinator.h"
 
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/reader_mode_settings_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 
 @implementation ReaderModeSettingsCoordinator {
   ReaderModeSettingsTableViewController* _viewController;

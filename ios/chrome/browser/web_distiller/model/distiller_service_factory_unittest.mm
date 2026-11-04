@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"

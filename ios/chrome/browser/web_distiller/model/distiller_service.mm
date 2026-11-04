@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -53,10 +53,10 @@ void DistillerService::Shutdown() {
 
 void DistillerService::DistillationFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // dom_distiller::Distiller asserts that the object is not deleted as part
-  // of calling the finished callback. Thus it is not possible to delete the
-  // object here. Instead schedule a call to ProcessNextDistillation() where
-  // the deletion will be performed.
+  // Distiller asserts that the object is not deleted as part of calling the
+  // finished callback. Thus it is not possible to delete the object here.
+  // Instead schedule a call to ProcessNextDistillation() where the deletion
+  // will be performed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistillerService::ProcessNextDistillation,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -67,7 +67,7 @@ void DistillerService::ProcessNextDistillation() {
   distiller_.reset();
 
   // The queue may be empty since this method is also taking care of destroying
-  // the dom_distiller::Distiller, since it is not possible to do it in the
+  // the Distiller, since it is not possible to do it in the
   // DistillationFinished() method (see the comment there). Graciously handle
   // an empty queue by doing nothing.
   if (!pending_requests_.empty()) {

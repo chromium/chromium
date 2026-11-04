@@ -11,7 +11,7 @@
 #import "base/scoped_observation.h"
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/core/dom_distiller_request_view_base.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 #import "ios/web/public/web_state.h"
 
 class GURL;

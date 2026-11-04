@@ -16,7 +16,7 @@
 #import "components/dom_distiller/core/dom_distiller_request_view_base.h"
 #import "components/dom_distiller/core/proto/distilled_article.pb.h"
 #import "components/dom_distiller/core/viewer.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 

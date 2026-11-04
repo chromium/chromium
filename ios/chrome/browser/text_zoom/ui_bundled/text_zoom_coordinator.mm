@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h"
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
-#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -16,6 +15,7 @@
 #import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_view_controller.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface TextZoomCoordinator ()
