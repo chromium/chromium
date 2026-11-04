@@ -1942,7 +1942,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Operation">
     <variant name="SecCodeCheckValidityAdHoc"/>
-    <variant name="SecCodeCheckValidityLegacy"/>
     <variant name="SecCodeCopyGuestWithAttributes"/>
     <variant name="SecCodeCopySigningInformation"/>
   </token>

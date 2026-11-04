@@ -835,9 +835,12 @@ chromium-metrics-reviews@google.com.
   </summary>
   <int value="0" label="Signature is invalid"/>
   <int value="1" label="The app shim had a valid ad-hoc signature"/>
-  <int value="2" label="The app shim had a valid legacy signature"/>
+  <int value="2"
+      label="(Obsolete) The app shim had a valid legacy signature. Removed in
+             2026/10."/>
   <int value="3"
-      label="Expected an ad-hoc signature, but got a valid legacy signature"/>
+      label="(Obsolete) Expected an ad-hoc signature, but got a valid legacy
+             signature. Removed in 2026/10."/>
 </enum>
 
 <enum name="ZeroStateResultType">

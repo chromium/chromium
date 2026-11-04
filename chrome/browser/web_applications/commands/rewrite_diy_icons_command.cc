@@ -79,19 +79,17 @@ void RewriteDiyIconsCommand::OnGetShortcutInfo(
   internals::PostShortcutIOTask(
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
-             bool use_ad_hoc_signing_for_web_app_shims,
              const ShortcutInfo& info) {
             WebAppShortcutCreator shortcut_creator(
                 internals::GetShortcutDataDir(info), GetChromeAppsFolder(),
-                &info, use_ad_hoc_signing_for_web_app_shims);
+                &info);
             std::vector<base::FilePath> updated_app_paths;
             std::move(callback).Run(shortcut_creator.UpdateShortcuts(
                 /*create_if_needed=*/false, &updated_app_paths));
           },
           base::BindPostTaskToCurrentDefault(
               base::BindOnce(&RewriteDiyIconsCommand::OnUpdatedShortcuts,
-                             weak_factory_.GetWeakPtr())),
-          web_app::UseAdHocSigningForWebAppShims()),
+                             weak_factory_.GetWeakPtr()))),
       std::move(info));
 }
 

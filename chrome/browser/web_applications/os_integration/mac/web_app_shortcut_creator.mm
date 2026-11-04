@@ -281,19 +281,14 @@ bool AppShimRevealDisabledForTest() {
          OsIntegrationTestOverride::Get();
 }
 
-bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
-                                    base::FilePath staging_path,
+bool CopyStagingBundleToDestination(base::FilePath staging_path,
                                     base::FilePath dst_app_path) {
-  if (!use_ad_hoc_signing_for_web_app_shims) {
-    return base::CopyDirectory(staging_path, dst_app_path, true);
-  }
-
-  // When using ad-hoc signing for web app shims, the final app shim must be
-  // written to disk by a separate helper tool. This helper tool is used
-  // so that binary authorization tools, such as Santa, can transitively trust
-  // app shims that it creates without trusting all files written by Chrome.
-  // This allows app shims to be trusted by the binary authorization tool
-  // despite having only ad-hoc code signatures.
+  // The final app shim must be written to disk by a separate helper tool.
+  // This helper tool is used so that binary authorization tools, such as
+  // Santa, can transitively trust app shims that it creates without
+  // trusting all files written by Chrome. This allows app shims to be trusted
+  // by the binary authorization tool despite having only ad-hoc code
+  // signatures.
 
   base::FilePath web_app_shortcut_copier_path =
       base::apple::FrameworkBundlePath().Append("Helpers").Append(
@@ -444,13 +439,10 @@ NSData* AppShimEntitlements() {
 WebAppShortcutCreator::WebAppShortcutCreator(
     const base::FilePath& app_data_dir,
     const base::FilePath& chrome_apps_dir,
-    const ShortcutInfo* shortcut_info,
-    bool use_ad_hoc_signing_for_web_app_shims)
+    const ShortcutInfo* shortcut_info)
     : app_data_dir_(app_data_dir),
       chrome_apps_dir_(chrome_apps_dir),
-      info_(shortcut_info),
-      use_ad_hoc_signing_for_web_app_shims_(
-          use_ad_hoc_signing_for_web_app_shims) {
+      info_(shortcut_info) {
   CHECK(shortcut_info, base::NotFatalUntil::M162);
 }
 
@@ -808,8 +800,7 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::DeletePathRecursively(dst_app_path);
 
     // Copy the bundle to |dst_app_path|.
-    if (!CopyStagingBundleToDestination(UseAdHocSigningForWebAppShims(),
-                                        staging_path, dst_app_path)) {
+    if (!CopyStagingBundleToDestination(staging_path, dst_app_path)) {
       RecordCreateShortcut(CreateShortcutResult::kFailToCopyApp);
       LOG(ERROR) << "Copying app to dst dir: " << dst_parent_dir.value()
                  << " failed";
@@ -930,8 +921,9 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
   }
   plist[app_mode::kLSHasLocalizedDisplayNameKey] = @YES;
   plist[app_mode::kNSHighResolutionCapableKey] = @YES;
-  plist[app_mode::kCrAppModeIsAdHocSignedKey] =
-      @(UseAdHocSigningForWebAppShims());
+  // TODO(crbug.com/579546179): Remove kCrAppModeIsAdHocSignedKey and its
+  // readers in AppShimController now that all app shims are ad-hoc signed.
+  plist[app_mode::kCrAppModeIsAdHocSignedKey] = @YES;
 
   // 3. Fill in file handlers.
   // The plist needs to contain file handlers for all profiles the app is
@@ -1070,10 +1062,6 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
 
 bool WebAppShortcutCreator::UpdateSignature(
     const base::FilePath& app_path) const {
-  if (!UseAdHocSigningForWebAppShims()) {
-    return true;
-  }
-
   base::apple::ScopedCFTypeRef<CFURLRef> app_url =
       base::apple::FilePathToCFURL(app_path);
   base::apple::ScopedCFTypeRef<SecStaticCodeRef> app_code;
@@ -1136,11 +1124,6 @@ bool WebAppShortcutCreator::UpdateSignature(
 
   RecordUpdateSignatureResult(UpdateSignatureResult::kSuccess);
   return true;
-}
-
-// Return true if ad-hoc signing should be used for web app shims.
-bool WebAppShortcutCreator::UseAdHocSigningForWebAppShims() const {
-  return use_ad_hoc_signing_for_web_app_shims_;
 }
 
 }  // namespace web_app

@@ -1,7 +1,7 @@
 caption: Native application signing during Progressive Web Application installation
 deprecated: true
 desc: |-
-  This policy will be deprecated in M153 and will be unsupported (have no effect) in a future release. Ad-hoc signatures for native applications created when installing a Progressive Web Application (PWA) are now permanently enabled on <ph name="MAC_OS_NAME">macOS</ph>. This ensures that each installed application has a unique identity to <ph name="MAC_OS_NAME">macOS</ph> system components.
+  This policy was deprecated in M153 and has no effect starting in M159. Ad-hoc signatures for native applications created when installing a Progressive Web Application (PWA) are now permanently enabled on <ph name="MAC_OS_NAME">macOS</ph>. This ensures that each installed application has a unique identity to <ph name="MAC_OS_NAME">macOS</ph> system components.
 
   Setting the policy to Enabled or leaving it unset enables the use of ad-hoc signatures for the native application that is created when installing a Progressive Web Application (PWA). This ensures that each installed application has a unique identity to <ph name="MAC_OS_NAME">macOS</ph> system components.
 
@@ -10,7 +10,7 @@ desc: |-
   Only turn off the policy if you are using an endpoint security solution that blocks applications with an ad-hoc signature.
 
 supported_on:
-- chrome.mac:129-
+- chrome.mac:129-158
 
 features:
   dynamic_refresh: false

@@ -97,7 +97,6 @@ class ContentSettingImageModelTest : public ChromeRenderViewHostTestHarness {
         {features::kQuietNotificationPrompts,
 #if BUILDFLAG(IS_MAC)
          features::kAppShimNotificationAttribution,
-         features::kUseAdHocSigningForWebAppShims,
 #endif
          // Enable all sensors just to avoid hardcoding the expected messages
          // to the motion sensor-specific ones.

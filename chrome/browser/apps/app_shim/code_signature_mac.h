@@ -27,12 +27,6 @@ base::expected<base::apple::ScopedCFTypeRef<CFStringRef>,
                MissingRequirementReason>
 FrameworkBundleDesignatedRequirementString();
 
-// Create a SecRequirementRef from a requirement string.
-//
-// Returns a null reference if the requirement string was invalid.
-base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
-    CFStringRef requirement_string);
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SHIM_CODE_SIGNATURE_MAC_H_

@@ -7423,13 +7423,6 @@ inline constexpr char kUnexportableKeyDeletionDescription[] =
     "Enables the garbage collection and deletion of obsolete cryptographic "
     "keys used for Device Bound Session Credentials.";
 
-inline constexpr char kUseAdHocSigningForWebAppShimsName[] =
-    "Use Ad-hoc Signing for Web App Shims";
-inline constexpr char kUseAdHocSigningForWebAppShimsDescription[] =
-    "Ad-hoc code signing ensures that each PWA app shim has a unique identity. "
-    "This allows macOS subsystems to correctly distinguish between multiple "
-    "PWAs.";
-
 inline constexpr char kUseSCContentSharingPickerName[] =
     "Use ScreenCaptureKit picker for stream selection";
 inline constexpr char kUseSCContentSharingPickerDescription[] =

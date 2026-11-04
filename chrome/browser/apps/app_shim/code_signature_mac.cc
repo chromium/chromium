@@ -10,7 +10,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace {
@@ -129,20 +128,4 @@ FrameworkBundleDesignatedRequirementString() {
 
   return framework_requirement_string;
 }
-
-base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
-    CFStringRef requirement_string) {
-  base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;
-  OSStatus status = SecRequirementCreateWithString(
-      requirement_string, kSecCSDefaultFlags, requirement.InitializeInto());
-  if (status != errSecSuccess) {
-    DumpOSStatusError(status,
-                      std::string("SecRequirementCreateWithString: ") +
-                          base::SysCFStringRefToUTF8(requirement_string));
-    return base::apple::ScopedCFTypeRef<SecRequirementRef>(nullptr);
-  }
-
-  return requirement;
-}
-
 }  // namespace apps

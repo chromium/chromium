@@ -1910,13 +1910,6 @@ inline constexpr char kWebAppsPreviouslyAppSupportedLinks[] =
     "web_apps.previously_app_supported_links";
 #endif
 
-#if BUILDFLAG(IS_MAC)
-// A boolean that indicates whether ad-hoc code signing should be used for
-// PWA app shims. This is managed by enterprise policy.
-inline constexpr char kWebAppsUseAdHocCodeSigningForAppShims[] =
-    "web_apps.use_adhoc_code_signing_for_app_shims";
-#endif  // BUILDFLAG(IS_MAC)
-
 // The default audio capture device used by the Media content setting.
 // TODO(crbug.com/311205211): Remove this once users have been migrated to
 // `kAudioInputUserPreferenceRanking`.

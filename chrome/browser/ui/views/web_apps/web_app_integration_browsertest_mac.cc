@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app::integration_tests {
@@ -94,22 +93,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, QuitAppShim) {
   helper_.CheckWindowCreated();
   helper_.QuitAppShim(Site::kStandalone);
   helper_.CheckWindowClosed();
-}
-
-class WebAppIntegrationTestAdHocSignedShims : public WebAppIntegrationTest {
- public:
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kUseAdHocSigningForWebAppShims};
-};
-
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationTestAdHocSignedShims,
-                       LaunchFromPlatformShortcut) {
-  helper_.InstallMenuOption(Site::kStandalone);
-  helper_.CheckWindowCreated();
-  helper_.ClosePwa();
-  helper_.LaunchFromPlatformShortcut(Site::kStandalone);
-  helper_.CheckWindowCreated();
 }
 
 // Generated tests:

@@ -312,9 +312,6 @@ class AppShimManager
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
 
-  static base::apple::ScopedCFTypeRef<CFStringRef>
-      BuildAppShimRequirementStringFromFrameworkRequirementString(CFStringRef);
-
   class AppShimObserver {
    public:
     virtual void OnShimProcessConnected(base::ProcessId pid) {}

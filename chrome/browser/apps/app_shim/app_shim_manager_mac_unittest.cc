@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -27,7 +26,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
-#include "chrome/browser/apps/app_shim/code_signature_mac.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -1340,9 +1338,7 @@ TEST_F(AppShimManagerTest, NotificationAction) {
   };
 
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // Use SetAppCanCreateHost to simulate the case where there isn't already a
   // loaded profile.
@@ -2075,90 +2071,9 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
   ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
 }
 
-TEST_F(AppShimManagerTest,
-       BuildAppShimRequirementStringFromFrameworkRequirementStringTest) {
-  EXPECT_TRUE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
-                "leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
-  EXPECT_TRUE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
-                "leaf[subject.OU] = \"42HXZ8M8AV\"")));
-
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR(
-              "cdhash H\"daa66a31aeb85125bd2459bebf548b2dff5ee83b\" or cdhash "
-              "H\"a8e5300bf9223510fc5b107b23de0d12f419acac\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("malformed")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"\"\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"\"")));
-  EXPECT_FALSE(
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("\"")));
-
-  // Crafted to pass all our requirement checks but fail
-  // SecRequirementCreateWithString().
-  base::apple::ScopedCFTypeRef<CFStringRef> requirement_string =
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\" and fail here"));
-  EXPECT_TRUE(requirement_string);
-  EXPECT_FALSE(apps::RequirementFromString(requirement_string.get()));
-  // Missing quote in the post "identifier" portion which is caught by
-  // SecRequirementCreateWithString().
-  requirement_string =
-      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
-          CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
-                "leaf = Hc9a99324ca3fcb23dbcc36bd5fd4f9753305130a\""));
-  EXPECT_TRUE(requirement_string);
-  EXPECT_FALSE(apps::RequirementFromString(requirement_string.get()));
-
-  CFStringRef framework_req_string = CFSTR(
-      "identifier \"com.google.Chrome.framework\" and anchor "
-      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
-      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
-      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
-  base::apple::ScopedCFTypeRef<SecRequirementRef> got_req(
-      apps::RequirementFromString(
-          manager_
-              ->BuildAppShimRequirementStringFromFrameworkRequirementString(
-                  framework_req_string)
-              .get()));
-  ASSERT_TRUE(got_req);
-  base::apple::ScopedCFTypeRef<CFStringRef> got_req_string;
-  ASSERT_EQ(SecRequirementCopyString(got_req.get(), kSecCSDefaultFlags,
-                                     got_req_string.InitializeInto()),
-            errSecSuccess);
-  CFStringRef want_req_string = CFSTR(
-      "identifier \"app_mode_loader\" and anchor "
-      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
-      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
-      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
-  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req_string.get()),
-            base::SysCFStringRefToUTF8(want_req_string));
-}
-
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2189,9 +2104,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2220,9 +2133,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2256,9 +2167,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
 
 TEST_F(AppShimManagerTest, LaunchNotificationProviderWhileShuttingDown) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
                                                    profile_path_a_);
@@ -2282,9 +2191,7 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWhileShuttingDown) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2316,9 +2223,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2350,9 +2255,7 @@ TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithoutAppRunningAndBrowserClosing) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2397,9 +2300,7 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        AppShimFailToConnectForNotificationPermissionAfterBrowserClosed) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2447,9 +2348,7 @@ TEST_F(AppShimManagerTest,
 TEST_F(AppShimManagerTest,
        RequestNotificationPermissionWithAppShimFailingToLaunch) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // This app is installed for profile A throughout this test.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2482,9 +2381,7 @@ TEST_F(AppShimManagerTest,
 
 TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
       .WillOnce(Return(nullptr));
@@ -2502,9 +2399,7 @@ TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
   using PermissionStatus = mac_notifications::mojom::PermissionStatus;
   using RegistryStatus = AppShimRegistry::NotificationPermissionStatus;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // Create and launch shim for app A in profile A.
   AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
@@ -2596,9 +2491,7 @@ TEST_F(AppShimManagerTest, CachedNotificationPermissionStatus) {
 
 TEST_F(AppShimManagerTest, OnShimFocusMultiProfileWithoutRemoteCocoa) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kAppShimNotificationAttribution,
-       features::kUseAdHocSigningForWebAppShims},
-      {});
+      {features::kAppShimNotificationAttribution}, {});
 
   // Simulate a multi-profile web app that opens in a browser tab (does not use
   // RemoteCocoa).

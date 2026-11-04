@@ -26,8 +26,7 @@ class WebAppShortcutCreator {
   // the WebAppShortcutCreator.
   WebAppShortcutCreator(const base::FilePath& app_data_dir,
                         const base::FilePath& chrome_apps_dir,
-                        const ShortcutInfo* shortcut_info,
-                        bool use_ad_hoc_signing_for_web_app_shims);
+                        const ShortcutInfo* shortcut_info);
   WebAppShortcutCreator(const WebAppShortcutCreator&) = delete;
   WebAppShortcutCreator& operator=(const WebAppShortcutCreator&) = delete;
 
@@ -84,9 +83,6 @@ class WebAppShortcutCreator {
   // Return true if the bundle for this app should be profile-agnostic.
   bool IsMultiProfile() const;
 
-  // Return true if ad-hoc signing should be used for web app shims.
-  bool UseAdHocSigningForWebAppShims() const;
-
   // Copies the app loader template into a temporary directory and fills in all
   // relevant information. This works around a Finder bug where the app's icon
   // doesn't properly update.
@@ -123,8 +119,6 @@ class WebAppShortcutCreator {
 
   // Information about the app. Owned by the caller of the constructor.
   const raw_ptr<const ShortcutInfo> info_;
-
-  const bool use_ad_hoc_signing_for_web_app_shims_;
 };
 
 }  // namespace web_app

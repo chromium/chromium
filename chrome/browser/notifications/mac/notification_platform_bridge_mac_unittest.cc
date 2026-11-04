@@ -568,8 +568,7 @@ class NotificationPlatformBridgeMacTestWithNotificationAttribution
  public:
   NotificationPlatformBridgeMacTestWithNotificationAttribution() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAppShimNotificationAttribution,
-                              features::kUseAdHocSigningForWebAppShims},
+        /*enabled_features=*/{features::kAppShimNotificationAttribution},
         /*disabled_features=*/{});
   }
 

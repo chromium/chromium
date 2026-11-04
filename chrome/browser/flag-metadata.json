@@ -9951,14 +9951,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "use-adhoc-signing-for-web-app-shims",
-    "owners": [
-      "markrowe@chromium.org",
-      "chrome-platform-security@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "use-android-staging-smds",
     "owners": [
       "cros-device-enablement@google.com",

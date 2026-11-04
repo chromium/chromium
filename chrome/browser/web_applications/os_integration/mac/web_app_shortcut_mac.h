@@ -28,12 +28,7 @@ std::string GetBundleIdentifierForShim(
 // Must be called on a thread that allows blocking I/O.
 void RevealAppShimInFinder(const std::string& app_id);
 
-// Returns true when running on version of macOS that can perform code signing
-// at runtime and the UseAdHocSigningForWebAppShims feature is enabled.
-bool UseAdHocSigningForWebAppShims();
-
-// Returns true if we're using ad-hoc signed app shims and the
-// kAppShimNotificationAttribution feature is enabled.
+// Returns true if the kAppShimNotificationAttribution feature is enabled.
 bool UseNotificationAttributionForWebAppShims();
 
 }  // namespace web_app

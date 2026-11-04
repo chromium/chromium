@@ -309,7 +309,7 @@ void AppShimController::PreInitFeatureState(
        "NonSpecialLeadingSlashHandling", "PreservePercentEncodedDotInPath",
        "UseIDNAContextJRules", "MojoBindingsInlineSLS", "MojoIpczMemV2",
        "MojoFixGeometricBufferGrowth", "MojoFixGeometricBufferGrowth2",
-       "UseAdHocSigningForWebAppShims", "UseNSURLDataForGURLConversion",
+       "UseNSURLDataForGURLConversion",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
 }
