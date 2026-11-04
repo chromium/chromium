@@ -9,16 +9,45 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 
 namespace autofill {
+namespace {
 
-AutofillManager::FormAndField FindOtpField(const AutofillManager& manager,
+bool IsHostFrameActive(AutofillManager& manager, LocalFrameToken host_frame) {
+  if (!IsActiveNonEmbeddedDriver(manager.driver())) {
+    return false;
+  }
+  if (manager.driver().GetFrameToken() == host_frame) {
+    return true;
+  }
+  return std::ranges::any_of(
+      manager.client().GetAutofillDriverFactory().GetExistingDrivers(),
+      [host_frame](const AutofillDriver* driver) {
+        return driver && driver->GetFrameToken() == host_frame &&
+               IsActiveNonEmbeddedDriver(*driver);
+      });
+}
+
+}  // namespace
+
+bool IsActiveNonEmbeddedDriver(const AutofillDriver& driver) {
+  return !driver.IsEmbedded() && driver.IsActive() &&
+         driver.GetLifecycleState() !=
+             AutofillDriver::LifecycleState::kPendingDeletion;
+}
+
+AutofillManager::FormAndField FindOtpField(AutofillManager& manager,
                                            std::optional<FormGlobalId> form_id,
                                            FieldGlobalId field_id) {
+  if (!IsActiveNonEmbeddedDriver(manager.driver())) {
+    return {nullptr, nullptr};
+  }
   const FormStructure* form = nullptr;
   const AutofillField* field = nullptr;
   if (form_id) {
@@ -34,44 +63,54 @@ AutofillManager::FormAndField FindOtpField(const AutofillManager& manager,
     }
   }
   if (form && field && OtpFieldDetector::IsOtpForm(*form) &&
-      OtpFieldDetector::IsOtpField(*form, *field)) {
+      OtpFieldDetector::IsOtpField(*form, *field) &&
+      IsHostFrameActive(manager, field->host_frame())) {
     return {form, field};
   }
   return {nullptr, nullptr};
 }
 
-AutofillManager::FormAndField FirstEligibleOtpField(
-    const AutofillManager& manager) {
+AutofillManager::FormAndField FirstEligibleOtpField(AutofillManager& manager) {
+  if (!IsActiveNonEmbeddedDriver(manager.driver())) {
+    return {nullptr, nullptr};
+  }
   const FormStructure* target_form = nullptr;
   const AutofillField* target_field = nullptr;
-  manager.ForEachCachedForm([&target_form,
-                             &target_field](const FormStructure& form) {
-    if (target_field || !OtpFieldDetector::IsOtpForm(form)) {
-      return;
-    }
-    auto it = std::ranges::find_if(form.fields(), [&form](const auto& field) {
-      return OtpFieldDetector::IsOtpField(form, *field);
-    });
-    if (it != form.fields().end()) {
-      target_form = &form;
-      target_field = it->get();
-    }
-  });
+  manager.ForEachCachedForm(
+      [&manager, &target_form, &target_field](const FormStructure& form) {
+        if (target_field || !OtpFieldDetector::IsOtpForm(form)) {
+          return;
+        }
+        auto it = std::ranges::find_if(
+            form.fields(), [&manager, &form](const auto& field) {
+              return OtpFieldDetector::IsOtpField(form, *field) &&
+                     IsHostFrameActive(manager, field->host_frame());
+            });
+        if (it != form.fields().end()) {
+          target_form = &form;
+          target_field = it->get();
+        }
+      });
   return {target_form, target_field};
 }
 
-bool AnyOtpFieldContainsTypedInput(const AutofillManager& manager) {
+bool AnyOtpFieldContainsTypedInput(AutofillManager& manager) {
+  if (!IsActiveNonEmbeddedDriver(manager.driver())) {
+    return false;
+  }
   bool has_typed_input = false;
-  manager.ForEachCachedForm([&has_typed_input](const FormStructure& form) {
-    if (has_typed_input) {
-      return;
-    }
-    has_typed_input =
-        std::ranges::any_of(form.fields(), [&form](const auto& field) {
-          return OtpFieldDetector::IsOtpField(form, *field) &&
-                 field->all_modifiers().contains(FieldModifier::kUser);
-        });
-  });
+  manager.ForEachCachedForm(
+      [&manager, &has_typed_input](const FormStructure& form) {
+        if (has_typed_input || !OtpFieldDetector::IsOtpForm(form)) {
+          return;
+        }
+        has_typed_input = std::ranges::any_of(
+            form.fields(), [&manager, &form](const auto& field) {
+              return field->all_modifiers().contains(FieldModifier::kUser) &&
+                     OtpFieldDetector::IsOtpField(form, *field) &&
+                     IsHostFrameActive(manager, field->host_frame());
+            });
+      });
   return has_typed_input;
 }
 

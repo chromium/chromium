@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -44,6 +45,7 @@ class FormCacheQueryUtilTest
     autofill_client().set_last_committed_primary_main_frame_url(
         GURL("https://example.test"));
     CreateAutofillDriver();
+    autofill_driver().SetLocalFrameToken(test::MakeLocalFrameToken());
   }
 
   FormStructure* AddForm(const FormDescription& form_description) {
@@ -146,14 +148,130 @@ TEST_F(FormCacheQueryUtilTest, FindOtpField) {
 }
 
 // Verifies that `AnyOtpFieldContainsTypedInput()` only reports user input typed
-// into an OTP field and ignores user input in other fields of the form.
+// into an eligible OTP field of an OTP form and ignores user input in non-OTP
+// fields or non-OTP forms.
 TEST_F(FormCacheQueryUtilTest, AnyOtpFieldContainsTypedInput) {
+  FormStructure* cross_site_form =
+      AddOtpForm(url::Origin::Create(GURL("https://other.test")));
+  cross_site_form->field(1)->AddFieldModifier(FieldModifier::kUser);
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
   FormStructure* form = AddOtpForm();
   form->field(0)->AddFieldModifier(FieldModifier::kUser);
   EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 
   form->field(1)->AddFieldModifier(FieldModifier::kUser);
   EXPECT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+}
+
+// Verifies that `IsActiveNonEmbeddedDriver()`, `FindOtpField()`,
+// `FirstEligibleOtpField()`, and `AnyOtpFieldContainsTypedInput()` ignore
+// cached OTP fields when the owning `AutofillDriver` is inactive, embedded, or
+// pending deletion.
+TEST_F(FormCacheQueryUtilTest, OwningDriverInactiveOrEmbedded) {
+  FormStructure* form = AddOtpForm();
+  FieldGlobalId otp_field_id = form->field(1)->global_id();
+  form->field(1)->AddFieldModifier(FieldModifier::kUser);
+
+  ASSERT_TRUE(IsActiveNonEmbeddedDriver(autofill_driver()));
+  ASSERT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(form, form->field(1)));
+  ASSERT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(form, form->field(1)));
+  ASSERT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  autofill_driver().SetIsActive(false);
+  EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  autofill_driver().SetIsActive(true);
+  autofill_driver().SetIsEmbedded(true);
+  EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  autofill_driver().SetIsEmbedded(false);
+  const AutofillDriver::LifecycleState initial_state =
+      autofill_driver().GetLifecycleState();
+  test_api(autofill_driver())
+      .SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion);
+  EXPECT_FALSE(IsActiveNonEmbeddedDriver(autofill_driver()));
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+  test_api(autofill_driver()).SetLifecycleState(initial_state);
+}
+
+// Verifies that flattened cross-frame OTP fields hosted by a child
+// `AutofillDriver` are returned only while that child driver is active,
+// non-embedded, and still alive in `AutofillDriverFactory`.
+TEST_F(FormCacheQueryUtilTest, ChildFrameOtpField_HostDriverState) {
+  CreateAutofillDriver();
+  autofill_driver(1).SetLocalFrameToken(test::MakeLocalFrameToken());
+  ActivateAutofillDriver(autofill_driver(0));
+  ActivateAutofillDriver(autofill_driver(1));
+
+  FormStructure* form = AddForm({
+      .fields =
+          {
+              {.server_type = NAME_FIRST},
+              {.server_type = ONE_TIME_CODE,
+               .host_frame = autofill_driver(1).GetFrameToken(),
+               .origin = url::Origin::Create(GURL("https://sub.example.test"))},
+          },
+      .host_frame = autofill_driver(0).GetFrameToken(),
+      .main_frame_origin = main_origin_,
+  });
+  FieldGlobalId otp_field_id = form->field(1)->global_id();
+  form->field(1)->AddFieldModifier(FieldModifier::kUser);
+
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(form, form->field(1)));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(form, form->field(1)));
+  EXPECT_TRUE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  // Deactivating the child frame suppresses lookup, eligibility, and
+  // typed-input detection for fields hosted in that child frame.
+  DeactivateAutofillDriver(autofill_driver(1));
+  autofill_driver(1).SetIsActive(false);
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  // Marking the reactivated child frame as embedded also suppresses it.
+  ActivateAutofillDriver(autofill_driver(1));
+  autofill_driver(1).SetIsActive(true);
+  autofill_driver(1).SetIsEmbedded(true);
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
+
+  // Restoring active, non-embedded state makes the child-frame field eligible
+  // again until the child driver transitions to `kPendingDeletion` and is
+  // removed from `AutofillDriverFactory`.
+  autofill_driver(1).SetIsEmbedded(false);
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(form, form->field(1)));
+  DeleteAutofillDriver(autofill_driver(1));
+  EXPECT_THAT(FindOtpField(autofill_manager(), form->global_id(), otp_field_id),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_THAT(FirstEligibleOtpField(autofill_manager()),
+              FieldsAre(nullptr, nullptr));
+  EXPECT_FALSE(AnyOtpFieldContainsTypedInput(autofill_manager()));
 }
 
 // Verifies that `BuildOtpTarget()` populates all target identifiers and

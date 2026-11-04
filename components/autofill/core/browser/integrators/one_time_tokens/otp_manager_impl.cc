@@ -92,7 +92,7 @@ void OtpManagerImpl::GetOtpSuggestions(
     const FormStructure& form,
     const FormFieldData& field,
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
-  if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
+  if (!sms_otp_service_ || !IsActiveNonEmbeddedDriver(owner_->driver()) ||
       !OtpFieldDetector::IsOtpField(form, field) ||
       !OtpFieldDetector::IsOtpForm(form)) {
     std::move(callback).Run({});
@@ -239,9 +239,9 @@ void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
     ClearGmailOtpState();
     return;
   }
-  if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
-      !owner_->driver().IsActive() || !IsOtpFieldDetected() ||
-      AnyOtpFieldContainsTypedInput() || !HasOtpForm(*owner_)) {
+  if (!sms_otp_service_ || !IsActiveNonEmbeddedDriver(owner_->driver()) ||
+      !IsOtpFieldDetected() || AnyOtpFieldContainsTypedInput() ||
+      !HasOtpForm(*owner_)) {
     return;
   }
   MaybeRetrieveGmailOtp();
@@ -253,9 +253,9 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
   // On non-Android platforms and in tests the backend may be not initialized.
-  // Furthermore, do not retrieve or subscribe to OTPs for embedded frame trees
-  // (such as fenced frames or GuestViews).
-  if (!sms_otp_service_ || manager.driver().IsEmbedded()) {
+  // Furthermore, do not retrieve or subscribe to OTPs for embedded or inactive
+  // frames (such as fenced frames, GuestViews, BFCache, or prerender).
+  if (!sms_otp_service_ || !IsActiveNonEmbeddedDriver(manager.driver())) {
     return;
   }
 
@@ -362,6 +362,13 @@ void OtpManagerImpl::OnAfterFormSubmitted(AutofillManager& manager,
 void OtpManagerImpl::OnTickleReceived() {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens << "Gmail OTP tickle received.";
+  if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "OTP tickle received but frame is embedded or inactive. Skipping "
+           "payload fetch.";
+    return;
+  }
   if (!IsOtpFieldDetected()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens
@@ -466,6 +473,14 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   if (!token_or_error) {
     if (last_pending_get_suggestions_callback_ &&
         !is_gmail_phish_guard_pending_) {
+      std::move(last_pending_get_suggestions_callback_).Run({});
+    }
+    return;
+  }
+
+  if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
+    if (last_pending_get_suggestions_callback_) {
+      is_gmail_phish_guard_pending_ = false;
       std::move(last_pending_get_suggestions_callback_).Run({});
     }
     return;
@@ -589,7 +604,12 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     suggestions.push_back(std::move(token));
   }
 
-  if (IsOtpDeliveryBlocked()) {
+  if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+        << "Reason: Frame is inactive.";
+    suggestions.clear();
+  } else if (IsOtpDeliveryBlocked()) {
     LOG_AF(owner_->client().GetCurrentLogManager())
         << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
         << "Reason: OTP delivery is blocked due to the WebOTP API.";
@@ -649,6 +669,10 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
           << "Reason: PhishGuard verdict is phishing.";
+    } else if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
+      LOG_AF(owner_->client().GetCurrentLogManager())
+          << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+          << "Reason: Frame is inactive.";
     } else if (!token.value().empty()) {
       LOG_AF(owner_->client().GetCurrentLogManager())
           << LoggingScope::kOneTimeTokens
@@ -673,6 +697,13 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
   }
 
   if (token.value().empty()) {
+    return;
+  }
+
+  if (!IsActiveNonEmbeddedDriver(owner_->driver())) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens << LogMessage::kSuggestionSuppressed
+        << "Reason: Frame is inactive.";
     return;
   }
 

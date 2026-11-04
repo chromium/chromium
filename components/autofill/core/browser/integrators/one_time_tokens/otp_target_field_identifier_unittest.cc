@@ -167,12 +167,14 @@ TEST_F(OtpTargetFieldIdentifierTest, FrameLifecycleAndRegistration) {
           Field(&OtpTarget::field, otp_form_0.fields()[0].global_id()),
           Field(&OtpTarget::field, otp_form_1.fields()[0].global_id())));
 
-  // Focusing frame 0 and then marking frame 0 inactive clears focus and falls
-  // back to active frame 1.
+  // Focusing frame 0 and then marking frame 0 inactive suppresses focused
+  // target resolution immediately and falls back to active frame 1 once
+  // `OnFrameBecameInactive()` clears focus.
   identifier.OnFocusChanged(autofill_driver(0).GetFrameToken(),
                             otp_form_0.global_id(),
                             otp_form_0.fields()[0].global_id());
   autofill_driver(0).SetIsActive(false);
+  EXPECT_FALSE(identifier.GetTarget().has_value());
   identifier.OnFrameBecameInactive(autofill_driver(0).GetFrameToken());
 
   EXPECT_FALSE(identifier.IsFieldFocused(otp_form_0.fields()[0].global_id()));
@@ -208,21 +210,32 @@ TEST_F(OtpTargetFieldIdentifierTest, FrameLifecycleAndRegistration) {
   EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
 
   autofill_driver(1).SetIsActive(false);
+  EXPECT_FALSE(identifier.GetTarget().has_value());
   identifier.OnFrameBecameInactive(autofill_driver(1).GetFrameToken());
   EXPECT_FALSE(identifier.IsFieldFocused(child_otp_field));
   EXPECT_FALSE(identifier.AnyOtpFieldContainsTypedInput());
   EXPECT_FALSE(identifier.GetTarget().has_value());
   EXPECT_THAT(identifier.GetEligibleTargets(), IsEmpty());
 
-  // Reactivating frame 1 makes the flattened field eligible again;
-  // unregistering frame 1 (e.g. when the child frame is destroyed) excludes
-  // fields hosted in frame 1 even if parent frame 0 still caches the form.
+  // Reactivating frame 1 makes the flattened field eligible again; destroying
+  // and unregistering child frame 1 excludes fields hosted in frame 1 even if
+  // parent frame 0 still caches the form.
   autofill_driver(1).SetIsActive(true);
   EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
   target = identifier.GetTarget();
   ASSERT_TRUE(target.has_value());
   EXPECT_EQ(target->field, child_otp_field);
   identifier.UnregisterManager(autofill_manager(1));
+  DeleteAutofillDriver(autofill_driver(1));
+  EXPECT_FALSE(identifier.AnyOtpFieldContainsTypedInput());
+  EXPECT_FALSE(identifier.GetTarget().has_value());
+  EXPECT_THAT(identifier.GetEligibleTargets(), IsEmpty());
+
+  // Unregistering an active owning frame (frame 0) also excludes its forms.
+  AddForm(autofill_manager(0), {ONE_TIME_CODE}, /*user_typed=*/true);
+  EXPECT_TRUE(identifier.AnyOtpFieldContainsTypedInput());
+  EXPECT_TRUE(identifier.GetTarget().has_value());
+  identifier.UnregisterManager(autofill_manager(0));
   EXPECT_FALSE(identifier.AnyOtpFieldContainsTypedInput());
   EXPECT_FALSE(identifier.GetTarget().has_value());
   EXPECT_THAT(identifier.GetEligibleTargets(), IsEmpty());

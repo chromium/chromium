@@ -17,25 +17,31 @@
 
 namespace autofill {
 
+class AutofillDriver;
 class AutofillField;
 class FormStructure;
 struct OtpTarget;
 
+// Returns true if `driver` is active, non-embedded, and not pending deletion.
+bool IsActiveNonEmbeddedDriver(const AutofillDriver& driver);
+
 // Finds `field_id` in `manager`'s form cache (using `form_id` if provided) and
 // returns the `AutofillManager::FormAndField` if it is an eligible OTP field in
-// an OTP form, or `{nullptr, nullptr}` otherwise.
-AutofillManager::FormAndField FindOtpField(const AutofillManager& manager,
+// an OTP form and both `manager`'s frame and the field's host frame are active
+// and non-embedded, or `{nullptr, nullptr}` otherwise.
+AutofillManager::FormAndField FindOtpField(AutofillManager& manager,
                                            std::optional<FormGlobalId> form_id,
                                            FieldGlobalId field_id);
 
-// Returns the first eligible OTP field in `manager`'s cached forms, or
+// Returns the first eligible OTP field in `manager`'s cached forms whose
+// owning and field-hosting frames are active and non-embedded, or
 // `{nullptr, nullptr}` if none exists.
-AutofillManager::FormAndField FirstEligibleOtpField(
-    const AutofillManager& manager);
+AutofillManager::FormAndField FirstEligibleOtpField(AutofillManager& manager);
 
-// Returns true if any OTP field in `manager`'s cached forms already contains
-// user-typed input (`FieldModifier::kUser`).
-bool AnyOtpFieldContainsTypedInput(const AutofillManager& manager);
+// Returns true if `manager`'s frame is active and non-embedded and any OTP
+// field hosted in an active, non-embedded frame within `manager`'s cached OTP
+// forms already contains user-typed input (`FieldModifier::kUser`).
+bool AnyOtpFieldContainsTypedInput(AutofillManager& manager);
 
 // Returns true if `manager` has at least one cached OTP form.
 bool HasOtpForm(const AutofillManager& manager);

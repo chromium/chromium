@@ -117,7 +117,10 @@ class OtpManagerImplTest
     test_field_.set_origin(url::Origin::Create(GURL("https://example.test")));
   }
 
-  const FormStructure* AddForm(const FormDescription& form_description) {
+  const FormStructure* AddForm(FormDescription form_description) {
+    if (!form_description.host_frame) {
+      form_description.host_frame = autofill_driver().GetFrameToken();
+    }
     FormData form = test::GetFormData(form_description);
     FormGlobalId form_id = form.global_id();
     auto form_structure = std::make_unique<FormStructure>(form);
@@ -2370,8 +2373,10 @@ TEST_F(
   const FormStructure* form = AddForm(form_description);
   ASSERT_TRUE(form);
 
+  CreateAutofillDriver();
+  autofill_driver(1).SetLocalFrameToken(test::MakeLocalFrameToken());
   LocalFrameToken frame_a = form->field(0)->host_frame();
-  LocalFrameToken frame_b = test::MakeLocalFrameToken();
+  LocalFrameToken frame_b = autofill_driver(1).GetFrameToken();
   test_api(autofill_manager())
       .FindCachedFormById(form->global_id())
       ->field(1)
@@ -3955,4 +3960,85 @@ TEST_F(OtpManagerImplTest,
   EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
 }
 
+// Tests that `OnFieldTypesDetermined`, `GetOtpSuggestions`, `OnTickleReceived`,
+// and `OnOneTimeTokenReceived` do not fetch or deliver OTPs when the frame is
+// inactive (e.g. in BFCache or prerender).
+TEST_F(OtpManagerImplTest, InactiveFrame_SuppressesFetchingAndSuggestions) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  autofill_driver().SetIsActive(false);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  EXPECT_EQ(sms_otp_service_.num_subscribers(), 0u);
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+
+  test_api(otp_manager).OnTickleReceived();
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+  EXPECT_CALL(autofill_driver(), RendererShouldTriggerSuggestions).Times(0);
+  test_api(otp_manager).OnGmailOtpRetrieved(CreateSampleGmailOtpResult());
+}
+
+// Tests that if the frame becomes inactive while an asynchronous PhishGuard
+// check is in flight, proactive suggestion triggering is suppressed.
+TEST_F(OtpManagerImplTest,
+       InactiveFrameDuringPhishGuard_SuppressesProactiveSuggestionTrigger) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  base::OnceCallback<void(bool)> phish_guard_callback;
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> callback) {
+        phish_guard_callback = std::move(callback);
+      });
+  EXPECT_CALL(autofill_driver(), RendererShouldTriggerSuggestions).Times(0);
+
+  test_api(otp_manager)
+      .OnGmailOtpRetrieved(CreateSampleGmailOtpResult("654321"));
+  ASSERT_TRUE(phish_guard_callback);
+
+  autofill_driver().SetIsActive(false);
+  std::move(phish_guard_callback).Run(/*is_phishing=*/false);
+}
+
+// Tests that if the frame becomes inactive while an asynchronous PhishGuard
+// check is in flight for a pending `GetOtpSuggestions` request, reactive OTP
+// delivery is suppressed and the callback resolves with empty suggestions.
+TEST_F(OtpManagerImplTest,
+       InactiveFrameDuringPhishGuard_SuppressesReactiveDelivery) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("654321").token);
+
+  base::OnceCallback<void(bool)> phish_guard_callback;
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> callback) {
+        phish_guard_callback = std::move(callback);
+      });
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+  ASSERT_TRUE(phish_guard_callback);
+
+  autofill_driver().SetIsActive(false);
+  std::move(phish_guard_callback).Run(/*is_phishing=*/false);
+
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(test_api(otp_manager).last_triggered_otp_value().empty());
+}
 }  // namespace autofill
