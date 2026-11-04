@@ -1247,7 +1247,9 @@ ci.builder(
     ),
     contact_team_email = "clank-engprod@google.com",
     siso_output_local_strategy = "full",
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
+    # Local ThinLTO links are much faster than remote ones (e.g. ~2 minutes
+    # vs ~8 minutes for libchrome.so).
+    siso_remote_linking = False,
 )
 
 ci.builder(
